@@ -27,10 +27,6 @@ goto :end
 
 :init
 	echo ** Initializing Lib Stella for Windows
-
-	echo ** Init Tools 
-	call %STELLA_ROOT%\tools.bat init
-	@echo off
 goto :end
 
 

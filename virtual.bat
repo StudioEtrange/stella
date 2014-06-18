@@ -16,7 +16,6 @@ set "options=-v: -vv: -distrib:"ubuntu64 debian64 centos64 archlinux boot2docker
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
 if "%ARGOPT_FLAG_HELP%"=="1" goto :usage
-call %STELLA_COMMON%\common.bat :init_arg
 
 :: setting env
 call %STELLA_COMMON%\common.bat :init_env

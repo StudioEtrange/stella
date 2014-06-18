@@ -15,8 +15,6 @@ if "%ARGOPT_FLAG_HELP%"=="1" goto :usage
 :: setting env
 call %STELLA_COMMON%\common.bat :init_env
 
-::setting verbose mode
-call %STELLA_COMMON%\common.bat :set_verbose_mode %VERBOSE_MODE%
 
 if "%action%"=="init" (
 	call :init_tools
