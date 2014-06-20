@@ -143,25 +143,6 @@ function _stella_env_debian() {
 
 
 
-# TODO remove dev env
-function _dev_env_ubuntu() {
-	echo " ** INFO : Needs sudouser rights" 
-	# TOOLS
-	#apt-get -y install rrdtool libtool cmake autoconf automake
-	apt-get -y install bison util-linux build-essential gcc-multilib g++-multilib g++
-	apt-get -y install mercurial wget pkg-config unzip p7zip-full dos2unix git
-	# LIBS
-	apt-get -y install libidn11-dev
-}
-
-function _dev_env_macos() {
-	echo " ** INFO : Needs sudouser rights and macport installed"
-	# TOOLS
-	port install getopt p7zip
-	# LIBS
-	port install libpng xz libwww libidn freetype libogg libvorbis
-}
-
 
 
 function init_env_from_os() {

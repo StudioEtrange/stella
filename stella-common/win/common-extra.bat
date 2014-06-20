@@ -62,7 +62,7 @@ goto :eof
 		call %STELLA_COMMON%\common.bat :del_folder "%INSTALL_DIR%"
 	)
 	if "!TEST_FEATURE!"=="0" (
-		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "TRUE" "TRUE"
+		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "DEST_ERASE STRIP"
 		cd /D "%INSTALL_DIR%"
 		python bootstrap.py
 
@@ -152,7 +152,7 @@ goto :eof
 		call %STELLA_COMMON%\common.bat :del_folder "%INSTALL_DIR%"
 	)
 	if "!TEST_FEATURE!"=="0" (
-		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "TRUE" "TRUE"
+		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "DEST_ERASE STRIP"
 		
 		call :feature_cmake
 		if not "!TEST_FEATURE!"=="0" (
@@ -201,7 +201,7 @@ goto :eof
 		call %STELLA_COMMON%\common.bat :del_folder "%INSTALL_DIR%"
 	)
 	if "!TEST_FEATURE!"=="0" (
-		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "TRUE" "FALSE"
+		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "DEST_ERASE"
 
 		call :feature_jom
 		if not "!TEST_FEATURE!"=="0" (
@@ -256,7 +256,7 @@ goto :eof
 		call %STELLA_COMMON%\common.bat :del_folder "%INSTALL_DIR%"
 	)
 	if "!TEST_FEATURE!"=="0" (
-		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "TRUE" "FALSE"
+		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "DEST_ERASE"
 		
 		call :feature_packer
 		if not "!TEST_FEATURE!"=="0" (
@@ -366,7 +366,7 @@ goto :eof
 		call %STELLA_COMMON%\common.bat :del_folder "%INSTALL_DIR%"
 	)
 	if "!TEST_FEATURE!"=="0" (
-		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "TRUE" "FALSE"
+		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "DEST_ERASE"
 		
 		call :feature_perl
 		if not "!TEST_FEATURE!"=="0" (
@@ -466,7 +466,7 @@ goto :eof
 		call %STELLA_COMMON%\common.bat :del_folder "%INSTALL_DIR%"
 	)
 	if "!TEST_FEATURE!"=="0" (
-		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "TRUE" "TRUE"
+		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "DEST_ERASE STRIP"
 		
 		call :feature_ruby2
 		if not "!TEST_FEATURE!"=="0" (

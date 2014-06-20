@@ -15,25 +15,36 @@ if "%ARGOPT_FLAG_HELP%"=="1" goto :usage
 :: setting env
 call %STELLA_COMMON%\common.bat :init_env
 
+if "%-properties%"=="" (
+	set "-properties=%PROJECT_ROOT%\%APP%.properties"
+)
+set "PROPERTIES=%-properties%"
+
 if not exist "%PROPERTIES%" (
 	echo  ** ERROR properties file does not exist
 	goto :end
 )
 
 
-call :get_properties
+call :get_all_properties
 
 if "%ACTION%"=="init" (
 	call %STELLA_ROOT%\init.bat
 	call %STELLA_ROOT%\tools.bat init
+	@echo off
+	goto :end
 )
 
 
 if "%ACTION%"=="get-data" (
 	call :get_data
+	goto :end
 )
 
-goto :end
+if "%ACTION%"=="get-assets" (
+	call :get_assets
+	goto :end
+)
 
 
 :usage
@@ -43,48 +54,48 @@ goto :end
 
 
 :get_data
-	set _list_id=%~1
 	if not exist "%DATA_ROOT%" mkdir "%DATA_ROOT%"
-	call :_get_stella_ressources "DATA" "%_list_id%"
-goto :end
+	call :_get_stella_ressources "DATA" "%~1"
+goto :eof
+
+:get_assets
+	if not exist "%ASSETS_ROOT%" mkdir "%ASSETS_ROOT%"
+	if not exist "%ASSETS_REPOSITORY%" mkdir "%ASSETS_REPOSITORY%"
+	call :_get_stella_ressources "ASSETS" "%~1"
+goto :eof
+
+:get_all_data
+	get_data %STELLA_DATA_LIST%
+goto :eof
+
+:get_all_assets
+	get_assets %STELLA_ASSETS_LIST%
+goto :eof
 
 :_get_stella_ressources
-	
+	set "_mode=%~1"
+	set "_list_id=%~2"
 
-
-	echo * Get DATA ressources
-	echo * Main DATA package is %DATA_MAIN_PACKAGE%
-	for /l %%x in (1, 1, %DATA_NUMBER%) do (
-		set _opt=!DATA_OPTIONS_%%x!
-		set _uri=!DATA_URI_%%x!
-		set _prot=!DATA_GET_PROTOCOL_%%x!
-		set _name=!DATA_NAME_%%x!
+	for %%A in (!_list_id!) do (
+		set _opt=!"%%A"_DATA_OPTIONS!
+		set _uri=!"%%A"_DATA_URI!
+		set _prot=!"%%A"_DATA_GET_PROTOCOL!
+		set _name=!"%%A"_DATA_NAME!
+		set _main_package=!"%%A"_DATA_MAIN_PACKAGE!
 		
-		set _merge=
-		set _strip=
-		for %%O in (!_opt!) do (
-			if "%%O"=="MERGE" set _merge=MERGE
-			if "%%O"=="STRIP" set _strip=STRIP
+
+		set _artefact_link=0
+		if "%_mode%"=="DATA" (
+			set "_artefact_dest=%DATA_ROOT%"
+			set _artefact_link=0
 		)
-
-		if "!_merge!"=="MERGE" (
-			call %STELLA_COMMON%\common.bat :get_ressource "DATA #%%x [%DATA_MAIN_PACKAGE% - !_name!]" "!_uri!" "!_prot!" "%DEST%\data\%DATA_MAIN_PACKAGE%" "!_merge! !_strip!"
-			echo * !_name! merged into %DATA_MAIN_PACKAGE%
-		) else (
-			call %STELLA_COMMON%\common.bat :get_ressource "DATA #%%x [!_name!]" "!_uri!" "!_prot!" "%DEST%\data\!_name!" "!_strip!"
+		if "%_mode%"=="ASSETS" (
+			set "_artefact_dest=%ASSETS_REPOSITORY%"
+			set _artefact_link=1
+			set "_artefact_link_target=%ASSETS_ROOT%"
 		)
-	)
+		
 
-
-
-
-	echo * Get RAW ASSETS ressources
-	echo * Main RAW ASSETS package is %RAW_ASSETS_MAIN_PACKAGE%
-	for /l %%x in (1, 1, %RAW_ASSETS_NUMBER%) do (
-		set _opt=!RAW_ASSETS_OPTIONS_%%x!
-		set _uri=!RAW_ASSETS_URI_%%x!
-		set _prot=!RAW_ASSETS_GET_PROTOCOL_%%x!
-		set _name=!RAW_ASSETS_NAME_%%x!
 
 		set _merge=
 		set _strip=
@@ -93,112 +104,99 @@ goto :end
 			if "%%O"=="STRIP" set _strip=STRIP
 		)
 
+		echo * Get %_name% [%%A] ressources
+
 		if "!_merge!"=="MERGE" (
-			call %STELLA_COMMON%\common.bat :get_ressource "RAW ASSETS #%%x [%RAW_ASSETS_MAIN_PACKAGE% - !_name!]" "!_uri!" "!_prot!" "%ASSETS_REPOSITORY%\RAW\%RAW_ASSETS_MAIN_PACKAGE%" "!_merge! !_strip!"
-			echo * !_name! merged into %RAW_ASSETS_MAIN_PACKAGE%
-			if exist "%DEST%\assets\%RAW_ASSETS_MAIN_PACKAGE%" if "%FORCE%"=="1" rmdir "%DEST%\assets\%RAW_ASSETS_MAIN_PACKAGE%"
-			if not exist "%DEST%\assets\%RAW_ASSETS_MAIN_PACKAGE%" (
-				echo ** Make symbolic link for %RAW_ASSETS_MAIN_PACKAGE%
-				call %STELLA_COMMON%\common.bat :run_admin %STELLA_COMMON%\symlink.bat "%ASSETS_REPOSITORY%\RAW\%RAW_ASSETS_MAIN_PACKAGE%" "%DEST%\assets\%RAW_ASSETS_MAIN_PACKAGE%"
+			echo * Main package of [%%A] is %_main_package%
+		)
+
+
+		if "!_merge!"=="MERGE" (
+			call %STELLA_COMMON%\common.bat :get_ressource "%_mode% : !_name! [!_main_package!]" "!_uri!" "!_prot!" "!_artefact_dest!\!_main_package!" "!_merge! !_strip!"
+			echo * !_name! merged into !_main_package!
+			if "%_artefact_link%"=="1" (
+				if exist "%!_artefact_link_target!\!_main_package!" if "%FORCE%"=="1" rmdir "!_artefact_link_target!\!_main_package!"
+				if not exist "!_artefact_link_target!\!_main_package!" (
+					echo ** Make symbolic link for !_main_package!
+					call %STELLA_COMMON%\common.bat :run_admin %STELLA_COMMON%\symlink.bat "!_artefact_dest!\!_main_package!" "!_artefact_link_target!\!_main_package!"
+				)
 			)
 		) else (
-			call %STELLA_COMMON%\common.bat :get_ressource "RAW ASSETS #%%x [!_name!]" "!_uri!" "!_prot!" "%ASSETS_REPOSITORY%\RAW\!_name!" "!_strip!"
-			if exist "%DEST%\assets\!_name!" if "%FORCE%"=="1" rmdir "%DEST%\assets\!_name!"
-			if not exist "%DEST%\assets\!_name!" (
-				echo ** Make symbolic link for !_name!
-				call %STELLA_COMMON%\common.bat :run_admin %STELLA_COMMON%\symlink.bat "%ASSETS_REPOSITORY%\RAW\!_name!" "%DEST%\assets\!_name!"
+			call %STELLA_COMMON%\common.bat :get_ressource "%_mode% : !_name!" "!_uri!" "!_prot!" "!_artefact_dest!\!_name!" "!_strip!"
+			if "%_artefact_link%"=="1" (
+				if exist "%!_artefact_link_target!\!_name!" if "%FORCE%"=="1" rmdir "!_artefact_link_target!\!_name!"
+				if not exist "!_artefact_link_target!\!_name!" (
+					echo ** Make symbolic link for !_name!
+					call %STELLA_COMMON%\common.bat :run_admin %STELLA_COMMON%\symlink.bat "!_artefact_dest!\!_name!" "!_artefact_link_target!\!_name!"
+				)
 			)
 		)
 	)
-
-
-
-
- 	REM EXPORTED ASSETS MAIN PACKAGE must contain a root directory named "export"
-	echo * Get EXPORTED ASSETS ressources
-	echo * Main EXPORTED ASSETS package is %EXPORTED_ASSETS_MAIN_PACKAGE%
-	for /l %%x in (1, 1, %EXPORTED_ASSETS_NUMBER%) do (
-		set _opt=!EXPORTED_ASSETS_OPTIONS_%%x!
-		set _uri=!EXPORTED_ASSETS_URI_%%x!
-		set _prot=!EXPORTED_ASSETS_GET_PROTOCOL_%%x!
-		set _name=!EXPORTED_ASSETS_NAME_%%x!
-
-		set _merge=
-		set _strip=
-		for %%O in (!_opt!) do (
-			if "%%O"=="MERGE" set _merge=MERGE
-			if "%%O"=="STRIP" set _strip=STRIP
-		)
-
-		if "!_merge!"=="MERGE" (
-			call %STELLA_COMMON%\common.bat :get_ressource "EXPORTED ASSETS #%%x [%EXPORTED_ASSETS_MAIN_PACKAGE% - !_name!]" "!_uri!" "!_prot!" "%ASSETS_REPOSITORY%\EXPORTED\%EXPORTED_ASSETS_MAIN_PACKAGE%" "!_merge! !_strip!"
-			echo * !_name! merged into %EXPORTED_ASSETS_MAIN_PACKAGE%
-			if exist "%DEST%\build\export\%EXPORTED_ASSETS_MAIN_PACKAGE%" if "%FORCE%"=="1" rmdir "%DEST%\build\export\%EXPORTED_ASSETS_MAIN_PACKAGE%"
-			if not exist "%DEST%\build\export\%EXPORTED_ASSETS_MAIN_PACKAGE%" (
-				echo ** Make symbolic link for %EXPORTED_ASSETS_MAIN_PACKAGE%
-				call %STELLA_COMMON%\common.bat :run_admin %STELLA_COMMON%\symlink.bat "%ASSETS_REPOSITORY%\EXPORTED\%EXPORTED_ASSETS_MAIN_PACKAGE%" "%DEST%\build\export\%EXPORTED_ASSETS_MAIN_PACKAGE%"
-			)
-		) else (
-			call %STELLA_COMMON%\common.bat :get_ressource "EXPORTED ASSETS #%%x [!_name!]" "!_uri!" "!_prot!" "%ASSETS_REPOSITORY%\EXPORTED\!_name!" "!_strip!"
-			if exist "%DEST%\build\export\!_name!" if "%FORCE%"=="1" rmdir "%DEST%\build\export\!_name!"
-			if not exist "%DEST%\build\export\!_name!" (
-				echo ** Make symbolic link for !_name!
-				call %STELLA_COMMON%\common.bat :run_admin %STELLA_COMMON%\symlink.bat "%ASSETS_REPOSITORY%\EXPORTED\!_name!" "%DEST%\build\export\!_name!"
-			)			
-		)
-	)
-
 goto :eof
 
 
 
 :: extract game properties
-:get_properties
+:get_all_properties
 
-	for %%A in (DATA RAW_ASSETS EXPORTED_ASSETS) do (
-		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" "%%A"_MAIN_PACKAGE
-		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" "%%A"_NUMBER
-		set _number=!"%%A"_NUMBER!
-		if "%_number%"=="" set _number=0
-		for /l %%x in (1, 1, %_number%) do (
-			call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" "%%A"_OPTIONS_"%%x"
-			call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" "%%A"_NAME_"%%x"
-			call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" "%%A"_URI_"%%x"
-			call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" "%%A"_GET_PROTOCOL_"%%x"
-		)
+	REM LISTs
+	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "DATA_LIST" "PREFIX"
+	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "ASSETS_LIST" "PREFIX"
+	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "ENV_LIST" "PREFIX"
+	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "INFRA_LIST" "PREFIX"
+
+	REM DATA
+	for %%A in (!STELLA_DATA_LIST!) do (
+		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" DATA_MAIN_PACKAGE "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" DATA_OPTIONS "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" DATA_NAME "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" DATA_URI "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" DATA_GET_PROTOCOL "PREFIX"
 	)
 
-	REM call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "DATA_MAIN_PACKAGE"
-	REM call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "DATA_NUMBER"
-	REM if "%DATA_NUMBER%"=="" set DATA_NUMBER=0
-	REM for /l %%x in (1, 1, %DATA_NUMBER%) do (
-	REM 	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "DATA_OPTIONS_%%x"
-	REM 	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "DATA_NAME_%%x"
-	REM 	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "DATA_URI_%%x"
-	REM 	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "DATA_GET_PROTOCOL_%%x"
-	REM )
+	REM ASSETS
+	for %%A in (!STELLA_ASSETS_LIST!) do (
+		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" ASSETS_MAIN_PACKAGE "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" ASSETS_OPTIONS "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" ASSETS_NAME "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" ASSETS_URI "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" ASSETS_GET_PROTOCOL "PREFIX"
+	)
 
-	REM call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "RAW_ASSETS_MAIN_PACKAGE"
-	REM call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "RAW_ASSETS_NUMBER"
-	REM if "%RAW_ASSETS_NUMBER%"=="" set RAW_ASSETS_NUMBER=0
-	REM for /l %%x in (1, 1, %RAW_ASSETS_NUMBER%) do (
-	REM 	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "RAW_ASSETS_OPTIONS_%%x"
-	REM 	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "RAW_ASSETS_NAME_%%x"
-	REM 	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "RAW_ASSETS_URI_%%x"
-	REM 	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "RAW_ASSETS_GET_PROTOCOL_%%x"
-	REM )
+	REM ENV
+	for %%A in (!STELLA_ENV_LIST!) do (
+		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" ENV_NAME "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" INFRA_ID "PREFIX"
+	)
+	
+	REM INFRA
+	for %%A in (!STELLA_INFRA_LIST!) do (
+		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" INFRA_NAME "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" INFRA_DISTRIB "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" INFRA_CPU "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" INFRA_MEM "PREFIX"
+	)
 
-	REM call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "EXPORTED_ASSETS_MAIN_PACKAGE"
-	REM call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "EXPORTED_ASSETS_NUMBER"
-	REM if "%EXPORTED_ASSETS_NUMBER%"=="" set EXPORTED_ASSETS_NUMBER=0
-	REM for /l %%x in (1, 1, %EXPORTED_ASSETS_NUMBER%) do (
-	REM 	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "EXPORTED_ASSETS_OPTIONS_%%x"
-	REM 	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "EXPORTED_ASSETS_NAME_%%x"
-	REM 	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "EXPORTED_ASSETS_URI_%%x"
-	REM 	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "EXPORTED_ASSETS_GET_PROTOCOL_%%x"
-	REM )
-
-
+	REM INFRA-ENV
+	for %%A in (!STELLA_ENV_LIST!) do (
+		echo %%A
+		set "_artefact_infra_id=!%%A_INFRA_ID!"
+		REM echo TODO : to finish INFRA-ENV
+		if not "!_artefact_infra_id!"=="default" (
+			set _artefact_distrib=!_artefact_infra_id!_INFRA_DISTRIB
+			for %%Z in (!_artefact_distrib!) do (
+				set "%%A_DISTRIB=!%%Z!"
+			)
+			set _artefact_mem=!_artefact_infra_id!_INFRA_MEM
+			for %%Z in (!_artefact_mem!) do (
+				set "%%A_MEM=!%%Z!"
+			)
+			set _artefact_cpu=!_artefact_infra_id!_INFRA_CPU
+			for %%Z in (!_artefact_cpu!) do (
+				set "%%A_CPU=!%%Z!"
+			)
+		)
+	)
 goto :eof
 
 :end

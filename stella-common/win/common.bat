@@ -75,51 +75,6 @@ goto :eof
 goto :eof
 
 
-:useqt
-	if "%~1"=="4" (
-		if "%~2"=="x64" (
-			if "%QT4_X64%"=="" set "QT4_X64=%QT_ROOT%\qt4_x64"
-			set "QTDIR=!QT4_X64!"
-			set "PATH=!QTDIR!\bin;%PATH%"
-			echo ** Setting Qt%~1% dir !QTDIR! and setting system path
-		)
-		if "%~2"=="x86" (
-			if "%QT4_X86%"=="" set "QT4_X64=%QT_ROOT%\qt4_x86"
-			set "QTDIR=!QT4_X86!"
-			set "PATH=!QTDIR!\bin;%PATH%"
-			echo ** Setting Qt%~1% dir !QTDIR! and setting system path
-		)
-	)
-	if "%~1"=="5" (
-		if "%~2"=="x64" (
-			if "%QT5_X64%"=="" set "QT5_X64=%QT_ROOT%\qt5_x64"
-			set "QTDIR=!QT5_X64!"
-			set "PATH=!QTDIR!\qtbase\bin;%PATH%"
-			echo ** Setting Qt%~1% dir !QTDIR! and setting system path
-		)
-		if "%~2"=="x86" (
-			if "%QT5_X86%"=="" set "QT5_X86=%QT_ROOT%\qt5_x86"
-			set "QTDIR=!QT5_X86!"
-			set "PATH=!QTDIR!\qtbase\bin;%PATH%"
-			echo ** Setting Qt%~1% dir !QTDIR! and setting system path
-		)
-	)
-goto :eof
-
-:set_verbose_mode
-	if "%~1"=="1" (
-		set "MAKE_CMD=%MAKE_CMD_VERBOSE%"
-		set "CMAKE_CMD=%CMAKE_CMD_VERBOSE%"
-	)
-
-	if "%~1"=="2" (
-		set "MAKE_CMD=%MAKE_CMD_VERBOSE_ULTRA%"
-		set "CMAKE_CMD=%CMAKE_CMD_VERBOSE_ULTRA%"
-	)
-goto :eof
-
-
-
 
 :: FILES TOOL ---------------------------------------
 :del_folder
@@ -158,7 +113,7 @@ goto :eof
 	set _end_time=%time%
 	set _start_time=!_rcs_timecount_start_%~1!
 
-	:: TODO the separator change depending of the local language. it is not always : and .
+	:: TODO the separator change depending of the local language. it is not always ':' and '.'
 	set _options="tokens=1-4 delims=:,."
 	for /f %_options% %%a in ("%_start_time%") do set start_h=%%a&set /a start_m=100%%b %% 100&set /a start_s=100%%c %% 100&set /a start_ms=100%%d %% 100
 	for /f %_options% %%a in ("%_end_time%") do set end_h=%%a&set /a end_m=100%%b %% 100&set /a end_s=100%%c %% 100&set /a end_ms=100%%d %% 100
@@ -180,56 +135,75 @@ goto :eof
 
 :: PROCESSUS TOOL--------------
 :fork
+	REM TODO APP NAME
 	set _TITLE=%APP_NAME_FULL% -- %~1
 	REM folder in will the terminal will stay after command is over
 	set _FOLDER=%~2
 	set _COMMAND=%~3
-	REM the launcher script will wait until the forked terminal is finished
-	set _WAIT=%~4
-	REM will compute in the same terminal
-	set _SAME_WINDOW=%~5
-	REM terminal will not close at the end
-	set _DETACH=%~6
+	set _OPT=%~4
+	
+	REM set _WAIT=%~4
+	REM set _SAME_WINDOW=%~5
+	REM set _DETACH=%~6
+	
+	REM OPTIONS
+	REM WAIT : the launcher script will wait until the forked terminal is finished
+	REM SAME_WINDOW : will compute in the same terminal
+	REM DETACH : terminal will not close at the end
+	
+	set _opt_wait=OFF
+	set _opt_same_window=OFF
+	set _opt_detach=OFF
+	for %%O in (%_OPT%) do (
+		if "%%O"=="WAIT" set _opt_wait=ON
+		if "%%O"=="SAME_WINDOW" set _opt_same_window=ON
+		if "%%O"=="DETACH" set _opt_detach=ON
+		if "%%O"=="TRUE" echo ************ WARNING TODO PLEASE CHANGE CODE ****************
+		if "%%O"=="FALSE" echo ************ WARNING TODO PLEASE CHANGE CODE ****************
+	)
+
+
 
 	echo ** Forking: %~3
-	if "%_DETACH%"=="TRUE" (
+	if "%_opt_detach%"=="ON" (
 		set "_DETACH=/K"
 	) else (
 		set "_DETACH=/C"
 	)
 
-	if "%_WAIT%"=="TRUE" ( 
+	if "%_opt_wait%"=="ON" ( 
 		set "_WAIT=/wait"
 	) else (
 		set _WAIT=
 	)
 		
-	if "%_SAME_WINDOW%"=="TRUE" (
+	if "%_opt_same_window%"=="ON" (
 		set "_SAME_WINDOW=/b"
 	) else (
 		set _SAME_WINDOW=
 	)
 
-	if "%_WAIT%"=="TRUE" (
+	if "%_opt_wait%"=="ON" (
 		call %STELLA_COMMON%\common.bat :timecount_start timecount_id
 	)
 	
 	start "%_TITLE%" %_WAIT% %_SAME_WINDOW% /D%_FOLDER% cmd %_DETACH% %_COMMAND%
 
-	if "%_WAIT%"=="TRUE" (
+	if "%_opt_wait%"=="ON" (
 		call %STELLA_COMMON%\common.bat :timecount_stop !timecount_id!
 		echo ** Fork terminated in !RCS_TIMECOUNT_ELAPSED!
 	)
 goto :eof
 
-:: set a new command line with RCS var initialized
+:: set a new command line with STELLA var initialized
 :bootstrap_env
+	REM TODO APP NAME
 	set _TITLE=%APP_NAME_FULL% -- %~1
 	:: folder in wich the new bootstraped env will remain
 	set _FOLDER=%~2
 
-	call :fork "%_TITLE%" "%_FOLDER%" "%STELLA_COMMON%\bootstrap-rcs-env.bat -internalcall" "FALSE" "FALSE" "TRUE"
-	echo ** A new env %_TITLE% is bootstrapped with all RCS default variable setted
+	call :fork "%_TITLE%" "%_FOLDER%" "%STELLA_COMMON%\bootstrap-stella-env.bat -internalcall" "DETACH"
+	echo ** A new env %_TITLE% is bootstrapped with all STELLA default variable setted
 goto :eof
 
 
@@ -283,8 +257,8 @@ goto :eof
 	)
 	
 	:: strip root folder mode
-	set "_STRIP=FALSE"
-	if "%_opt_strip%"=="ON" set "_STRIP=TRUE"
+	set "_STRIP="
+	if "%_opt_strip%"=="ON" set "_STRIP=STRIP"
 
 	if "%_FLAG%"=="1" (
 		if not exist "%FINAL_DESTINATION%" mkdir %FINAL_DESTINATION%
@@ -292,7 +266,7 @@ goto :eof
 		if "%PROTOCOL%"=="HTTP_ZIP" (
 			echo MERGE : %_opt_merge%
 			echo STRIP : %_opt_strip%
-			call :download_uncompress "%URI%" "_AUTO_" "%FINAL_DESTINATION%" "FALSE" "%_STRIP%"
+			call :download_uncompress "%URI%" "_AUTO_" "%FINAL_DESTINATION%" "%_STRIP%"
 			if "%_opt_merge%"=="ON" echo 1 > "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
 		)
 		if "%PROTOCOL%"=="HTTP" (
@@ -323,7 +297,7 @@ goto :eof
 		if "%PROTOCOL%"=="FILE_ZIP" (
 			echo MERGE : %_opt_merge%
 			echo STRIP : %_opt_strip%
-			call :uncompress "%URI%" "%FINAL_DESTINATION%" "FALSE" "%_STRIP%"
+			call :uncompress "%URI%" "%FINAL_DESTINATION%" "%_STRIP%"
 			if "%_opt_merge%"=="ON" echo 1 > "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
 		)
 	)
@@ -333,14 +307,24 @@ goto :eof
 	set URL=%~1
 	set FILE_NAME=%~2
 	set UNZIP_DIR=%~3
-	:: delete destination folder (default : FALSE)
-	set DEST_ERASE=%~4
-	:: delete first level folders in archive (aka STRIP) (default : FALSE)
-	set STRIP=%~5
+	set OPT=%~4
 
-	if not "%DEST_ERASE%"=="TRUE" set DEST_ERASE=FALSE
-	if not "%STRIP%"=="TRUE" set STRIP=FALSE
 	
+	REM OPTIONS
+	REM 	DEST_ERASE
+	REM 		delete destination folder
+	REM 	STRIP
+	REM 		delete first level folders in archive
+	
+	set _opt_dest_erase=OFF
+	set _opt_strip=OFF
+	for %%O in (%OPT%) do (
+		if "%%O"=="DEST_ERASE" set _opt_dest_erase=ON
+		if "%%O"=="STRIP" set _opt_strip=ON
+		if "%%O"=="TRUE" echo ************ WARNING TODO PLEASE CHANGE CODE ****************
+		if "%%O"=="FALSE" echo ************ WARNING TODO PLEASE CHANGE CODE ****************
+	)
+
 	if "%URL%"=="" (
 		echo ** ERROR missing URL
 		goto :eof
@@ -357,21 +341,32 @@ goto :eof
 
 	call :download "%URL%" "%FILE_NAME%"
 
-	call :uncompress "%CACHE_DIR%\%FILE_NAME%" "%UNZIP_DIR%" "%DEST_ERASE%" "%STRIP%" 
+	call :uncompress "%CACHE_DIR%\%FILE_NAME%" "%UNZIP_DIR%" "%OPT%"
 goto :eof
 
 :uncompress
 	set FILE_PATH=%~1
 	set UNZIP_DIR=%~2
-	:: delete destination folder (default : FALSE)
-	set DEST_ERASE=%~3
-	:: delete first level folders in archive (aka STRIP) (default : FALSE)
-	set STRIP=%~4
+	set OPT=%~3
+
 	
-	if not "%DEST_ERASE%"=="TRUE" set DEST_ERASE=FALSE
-	if not "%STRIP%"=="TRUE" set STRIP=FALSE
+	REM OPTIONS
+	REM 	DEST_ERASE
+	REM 		delete destination folder
+	REM 	STRIP
+	REM 		delete first level folders in archive
 	
-	if "%DEST_ERASE%"=="TRUE" if exist "%UNZIP_DIR%" call :del_folder "%UNZIP_DIR%"
+	set _opt_dest_erase=OFF
+	set _opt_strip=OFF
+	for %%O in (%OPT%) do (
+		if "%%O"=="DEST_ERASE" set _opt_dest_erase=ON
+		if "%%O"=="STRIP" set _opt_strip=ON
+		if "%%O"=="TRUE" echo ************ WARNING TODO PLEASE CHANGE CODE ****************
+		if "%%O"=="FALSE" echo ************ WARNING TODO PLEASE CHANGE CODE ****************
+	)
+	
+	
+	if "%_opt_dest_erase%"=="ON" if exist "%UNZIP_DIR%" call :del_folder "%UNZIP_DIR%"
 	if not exist "%UNZIP_DIR%" mkdir "%UNZIP_DIR%"
 
 	echo ** Uncompress %FILE_PATH% in %UNZIP_DIR%
@@ -386,7 +381,7 @@ goto :eof
 		set "USE7ZIP=FALSE"
 	)
 
-	if "%STRIP%"=="FALSE" (
+	if "%_opt_strip%"=="ON" (
 		if "%USE7ZIP%"=="FALSE" "%UZIP%" -o "%FILE_PATH%" -d "%UNZIP_DIR%"
 		if "%USE7ZIP%"=="TRUE" "%U7ZIP%" x "%FILE_PATH%" -y -o"%UNZIP_DIR%"
 	) else (
@@ -401,6 +396,7 @@ goto :eof
 		cd /D "%TEMP_DIR%\%_FILENAME%"
 		for /D %%i in (*) do (
 			::for /D %%i in (*) do xcopy /q /y /e /i %%i "%UNZIP_DIR%"
+			REM TODO why not cd /D %%i ?????
 			cd %%i			
 			for /D %%j in (*) do move /y %%j "%UNZIP_DIR%\"
 			for %%j in (*) do move /y %%j "%UNZIP_DIR%\"
@@ -475,7 +471,7 @@ goto :eof
 	set "_OPT=%~4"
 
 	set _opt_section_prefix=OFF
-	for %%O in (%OPT%) do (
+	for %%O in (%_OPT%) do (
 		if "%%O"=="PREFIX" set _opt_section_prefix=ON
 	)
 

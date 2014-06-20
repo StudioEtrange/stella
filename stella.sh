@@ -50,7 +50,7 @@ function get_all_properties() {
 	for a in $STELLA_ENV_LIST; do
 		_artefact_infra_id="$a"_INFRA_ID
 		_artefact_infra_id=${!_artefact_infra_id}
-		eval "$a"_INFRA_ID=$_artefact_infra_id
+		# eval "$a"_INFRA_ID=$_artefact_infra_id
 		if [ "$_artefact_infra_id" == "default" ]; then
 			eval "$a"_OS=\$CURRENT_OS
 			eval "$a"_PLATFORM=\$CURRENT_PLATFORM
@@ -133,7 +133,7 @@ function _get_stella_ressources() {
 		fi
 
 		if [ "$_merge" == "MERGE" ]; then
-			get_ressource "$_name [$_artefact_main_package]" "$_uri" "$_prot" "$_artefact_dest/$_artefact_main_package" "$_merge $_strip"
+			get_ressource "$_mode : $_name [$_artefact_main_package]" "$_uri" "$_prot" "$_artefact_dest/$_artefact_main_package" "$_merge $_strip"
 			echo "* $_name merged into $_artefact_main_package"
 			if [ "$_artefact_link" == "1" ]; then
 				if [ "$FORCE" == "1" ]; then rm -f "$_artefact_link_target/$_artefact_main_package"; fi
@@ -143,7 +143,7 @@ function _get_stella_ressources() {
 				)
 			fi
 		else
-			get_ressource "$_name" "$_uri" "$_prot" "$_artefact_dest/$_name" "$_strip"
+			get_ressource "$_mode : $_name" "$_uri" "$_prot" "$_artefact_dest/$_name" "$_strip"
 			if [ "$_artefact_link" == "1" ]; then
 				if [ "$FORCE" == "1" ]; then rm -f "$_artefact_link_target/$_name"; fi
 				[ ! -L "$_artefact_link_target/$_name" ] && (
