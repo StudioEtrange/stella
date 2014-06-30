@@ -1,6 +1,7 @@
 :::::::::::::::::::::::::::::::::::::::::
 :: Automatically check & get admin rights
 :: http://stackoverflow.com/questions/7044985/how-can-i-auto-elevate-my-batch-file-so-that-it-requests-from-uac-admin-rights/12264592#12264592
+:: Add hack for VM. In example Virtual Box shared folders mapped with a drive letter are not accessible from Admin accout. We have to remap the letter.
 :: Pass command to execute as arg to this batch
 :::::::::::::::::::::::::::::::::::::::::
 @echo off
@@ -27,14 +28,22 @@ set "_arg=%*"
 
 
 :get_privileges
-	ECHO ** Invoking UAC for Privilege Escalation 
-	setlocal DisableDelayedExpansion
+	ECHO ** Invoking UAC for Privilege Escalation
+
+	ECHO Set UAC = CreateObject^("Shell.Application"^) > "%temp%\OEgetPrivileges.vbs"
+
+	REM setlocal DisableDelayedExpansion
 	set "batchPath=%~0"
-	setlocal EnableDelayedExpansion
-	ECHO Set UAC = CreateObject^("Shell.Application"^) > "%temp%\OEgetPrivileges.vbs" 
-	ECHO UAC.ShellExecute "!batchPath!", "###_FLAG_### !_arg!", "", "runas", 1 >> "%temp%\OEgetPrivileges.vbs" 
+	REM setlocal EnableDelayedExpansion
+	
+	REM Hack for VM : re-map a drive letter for shared folder for Admin user
+	REM set "driveLetter=%~d0"
+	REM "SHARED_FOLDER=\\VBOXSVR\nomorgan"
+	REM ECHO UAC.ShellExecute "cmd", "/k net use !driveLetter! %SHARED_FOLDER% 1>NUL 2>&1 && echo OK || echo KO && call !batchPath! ###_FLAG_### !_arg!", "", "runas", 1 >> "%temp%\OEgetPrivileges.vbs"
+
+	ECHO UAC.ShellExecute "!batchPath!", "###_FLAG_### !_arg!", "", "runas", 1 >> "%temp%\OEgetPrivileges.vbs"
 	"%temp%\OEgetPrivileges.vbs"
-	exit /B 
+	exit /B
 
 :got_privileges
 	ECHO =============================
@@ -45,6 +54,7 @@ set "_arg=%*"
 	ECHO ** We have privileges
 	set "_arg=%_arg:###_FLAG_###=%"
 	
-	REM echo %_arg%
+	rem echo %_arg%
+	rem cmd /k
 	cmd /C %_arg%
 	

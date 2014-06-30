@@ -1,5 +1,5 @@
 if [ ! "$_CONF_INCLUDED_" == "1" ]; then
-# _INCLUDING_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+_CONF_INCLUDED_=1
 
 # STELLA PATHS ---------------------------------------------
 STELLA_ROOT="$_INCLUDED_FILE_DIR"
@@ -11,12 +11,19 @@ source $STELLA_COMMON/libscreenfetch.sh
 source $STELLA_COMMON/platform.sh
 
 source $STELLA_COMMON/common.sh
-source $STELLA_COMMON/common-extra.sh
+source $STELLA_COMMON/common-tools.sh
+source $STELLA_COMMON/common-app.sh
 
-
+# GATHER PLATFORM INFO ---------------------------------------------
+set_current_platform_info
 
 # APP PATHS ---------------------------------------------
-PROJECT_ROOT="$_CALLING_FILE_DIR"
+if [ "$APP_ROOT" == "" ]; then
+	APP_ROOT="$_CALLING_FILE_DIR"
+fi
+
+#PROJECT_ROOT="$_CALLING_FILE_DIR"
+PROJECT_ROOT="$APP_ROOT"
 CACHE_DIR="$PROJECT_ROOT/cache"
 TEMP_DIR="$PROJECT_ROOT/temp"
 TOOL_ROOT="$PROJECT_ROOT/tool_$CURRENT_PLATFORM_SUFFIX/$CURRENT_OS"

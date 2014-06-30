@@ -16,6 +16,9 @@ goto :eof
 		set /a "VERBOSE_MODE = 1"
 	)
 
+	set ARCH=%-arch%
+	set FORCE=%-f%
+
 goto :eof
 
 
@@ -54,7 +57,7 @@ goto :eof
 		)
 		if "%_flag%"=="" (
 			set FEATURE_PATH=
-			call %STELLA_COMMON%\common-extra.bat :%%F
+			call %STELLA_COMMON%\common-tools.bat :%%F
 			if not "!TEST_FEATURE!"=="0" (
 				set "FEATURE_LIST_ENABLED=!FEATURE_LIST_ENABLED! %%F"
 				if not "!FEATURE_PATH!"=="" set "PATH=!FEATURE_PATH!;!PATH!"
@@ -67,7 +70,7 @@ goto :eof
 :reinit_all_features
 	for %%F in (%FEATURE_LIST_ENABLED%) do (
 		set FEATURE_PATH=
-		call %STELLA_COMMON%\common-extra.bat :%%F
+		call %STELLA_COMMON%\common-tools.bat :%%F
 		if not "!TEST_FEATURE!"=="0" (
 			if not "!FEATURE_PATH!"=="" set "PATH=!FEATURE_PATH!;!PATH!"
 		)
@@ -198,6 +201,7 @@ goto :eof
 :: set a new command line with STELLA var initialized
 :bootstrap_env
 	REM TODO APP NAME
+	REM Useless ?
 	set _TITLE=%APP_NAME_FULL% -- %~1
 	:: folder in wich the new bootstraped env will remain
 	set _FOLDER=%~2
@@ -381,7 +385,7 @@ goto :eof
 		set "USE7ZIP=FALSE"
 	)
 
-	if "%_opt_strip%"=="ON" (
+	if "%_opt_strip%"=="OFF" (
 		if "%USE7ZIP%"=="FALSE" "%UZIP%" -o "%FILE_PATH%" -d "%UNZIP_DIR%"
 		if "%USE7ZIP%"=="TRUE" "%U7ZIP%" x "%FILE_PATH%" -y -o"%UNZIP_DIR%"
 	) else (
@@ -556,6 +560,22 @@ goto :eof
 
 
 :: VARIOUS ---------------------------------------
+:: check if a "findstr windows regexp" can be found in a string
+:: by setting 
+::		_match_exp with TRUE or FALSE
+:: first argument is the regexp
+:: second argument is the string
+:: NOTE : read result var with !_match_exp!
+:match_exp
+	set _win_regexp=%~1
+	set _string=%~2
+
+	set "_match_exp=FALSE"
+	for /f %%m in ('echo  %_string%^| findstr /N "%_win_regexp%" ^| find /c ":"') do (
+		if not "%%m"=="0" set "_match_exp=TRUE"
+	)
+goto :eof
+
 :: check if file.lib is an import lib or a static lib
 :: by setting 
 ::		LIB_TYPE with UNKNOW, STATIC, IMPORT

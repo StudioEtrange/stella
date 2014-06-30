@@ -2,6 +2,7 @@
 
 REM Author: Josh Jaques.
 REM Copyright: Josh Jaques, 2011. All rights reserved.
+REM One fix by StudioEtrange
 
 REM set xp=true for XP mode, false for vista/win7 mode
 REM xp mode requires that you have junction on your path
@@ -33,8 +34,9 @@ set xp=false
     echo Using linkname: "%link_name%"
 
 :main
-    REM Check if target is a directory 
-    if EXIST %target%\ (
+    REM Check if target is a directory
+    REM fix by StudioEtrange 
+    if EXIST %target%\* (
 	goto :link_directory
     ) else (
         goto :link_file
@@ -52,7 +54,7 @@ goto :eof
 goto :eof
 
 :link_file
-    cho Doing file link
+    echo Doing file link
     if %xp% EQU true (
         echo Using XP Mode
         fsutil hardlink create "%link_name%" "%target%" > NUL

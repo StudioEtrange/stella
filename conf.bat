@@ -2,16 +2,14 @@ set FILE_DIR=%~dp0
 set CUR_DIR=%cd%
 
 
-set CURRENT_OS=windows
-set CURRENT_PLATFORM=windows
-set CURRENT_PLATFORM_SUFFIX=win
-
-
 :: PATHS
 set STELLA_ROOT=%FILE_DIR%
 set STELLA_ROOT=%STELLA_ROOT:~0,-1%
 set STELLA_COMMON=%STELLA_ROOT%\stella-common\win
 set POOL_DIR=%STELLA_ROOT%\stella-pool\win
+
+:: GATHER PLATFORM INFO
+call %STELLA_COMMON%\platform.bat :set_current_platform_info
 
 :: APP PATHS
 if "%APP_ROOT%"=="" (
@@ -23,7 +21,7 @@ set PROJECT_ROOT=%PROJECT_ROOT:~0,-1%
 
 set CACHE_DIR=%PROJECT_ROOT%\cache
 set TEMP_DIR=%PROJECT_ROOT%\temp
-set TOOL_ROOT=%PROJECT_ROOT%\tool_%CURRENT_PLATFORM_SUFFIX%
+set TOOL_ROOT=%PROJECT_ROOT%\tool_%CURRENT_PLATFORM_SUFFIX%\%CURRENT_OS%
 set DATA_ROOT=%PROJECT_ROOT%\data
 set ASSETS_ROOT=%PROJECT_ROOT%\assets
 

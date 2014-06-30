@@ -1,168 +1,112 @@
-if [ ! "$_PLATFORM_INCLUDED_" == "1" ]; then
-_PLATFORM_INCLUDED_=1
+@echo off
+call %*
+goto :eof
+::--------------------------------------------------------
+::-- Functions
+::---------------
 
+:get_os_from_distro
+	set _return_var=%~1
+	set _distro=%~2
 
-# PLATFORM INFO ---------------------------
+	for %%V in (!_return_var!) do (
+		set "%%V=unknown"
 
+		call %STELLA_COMMON%\common.bat :match_exp "buntu.*" "%_distro%"
+		if "!_match_exp!"=="TRUE" set "%%V=ubuntu"
 
-function get_os_from_distro() {
-	local _os=$1
+		call %STELLA_COMMON%\common.bat :match_exp "ebian.*" "%_distro%"
+		if "!_match_exp!"=="TRUE" set "%%V=debian"
 
-	case $_os in
-		Ubuntu|ubuntu*)
-			echo "ubuntu"
-			;;
-		Debian|debian*)
-			echo "debian"
-			;;
-		centos*)
-			echo "centos"
-			;;
-		archlinux*)
-			echo "archlinux"
-			;;
-		boot2docker*)
-			echo "linuxgeneric"
-			;;
-		"Mac OS X"|macos)
-			echo "macos"
-			;;
-		windows*)
-			echo "windows"
-			;;
-		*)
-			echo "unknown"
-			;;
-	esac	
-}
+		call %STELLA_COMMON%\common.bat :match_exp "archlinux.*" "%_distro%"
+		if "!_match_exp!"=="TRUE" set "%%V=archlinux"
 
-function get_platform_from_os() {
-	local _os=$1
+		call %STELLA_COMMON%\common.bat :match_exp "boot2docker.*" "%_distro%"
+		if "!_match_exp!"=="TRUE" set "%%V=linuxgeneric"
 
-	case $_os in
-		centos*|archlinux*|ubuntu*|debian*|linuxgeneric*)
-			echo "linux"
-			;;
-		macos)
-			echo "macos"
-			;;
-		windows)
-			echo "windows"
-			;;
-		*)
-			echo "unknown"
-			;;
-	esac	
-}
+		call %STELLA_COMMON%\common.bat :match_exp "Mac OS X.*" "%_distro%"
+		if "!_match_exp!"=="TRUE" set "%%V=macos"
 
-function get_platform_suffix() {
-	local _platform=$1
+		call %STELLA_COMMON%\common.bat :match_exp "macos.*" "%_distro%"
+		if "!_match_exp!"=="TRUE" set "%%V=macos"
 
-	case $_platform in
-		linux)
-			echo "linux"
-			;;
-		macos)
-			echo "macos"
-			;;
-		windows)
-			echo "win"
-			;;
-		*)
-			echo "unknown"
-			;;
-	esac	
-}
+		call %STELLA_COMMON%\common.bat :match_exp "indows.*" "%_distro%"
+		if "!_match_exp!"=="TRUE" set "%%V=windows"
+
+	)
+goto :eof
 
 
 
-# Linux
-if [[ -n `which lscpu 2> /dev/null` ]]; then
-	HOST_CPU=`lscpu | awk 'NR== 1 {print $2}'`
-# MacOS
-elif [[ -n `which sysctl 2> /dev/null` ]]; then
-	HOST_CPU=`sysctl hw 2> /dev/null | egrep -i 'hw.machine' | awk '{print $NF}'`
-else
-	HOST_CPU="cannot determine cpu"
-fi
+:get_platform_from_os
+	set _return_var=%~1
+	set _os=%~2
 
-# linux
-if [[ -n `which nproc 2> /dev/null` ]]; then
-	NB_CPU=`nproc`
-# MacOs
-elif [[ -n `which sysctl 2> /dev/null` ]]; then
-	NB_CPU=`sysctl hw.ncpu 2> /dev/null | awk '{print $NF}'`
-else
-	NB_CPU=0
-fi
+	for %%V in (!_return_var!) do (
+		set "%%V=unknown"
 
+		call %STELLA_COMMON%\common.bat :match_exp "centos.*" "%_os%"
+		if "!_match_exp!"=="TRUE" set "%%V=linux"
 
-detectdistro
-CURRENT_OS=$(get_os_from_distro "$distro")
-CURRENT_PLATFORM=$(get_platform_from_os "$CURRENT_OS")
-CURRENT_PLATFORM_SUFFIX=$(get_platform_suffix "$CURRENT_PLATFORM")
+		call %STELLA_COMMON%\common.bat :match_exp "archlinux.*" "%_os%"
+		if "!_match_exp!"=="TRUE" set "%%V=linux"
 
-# MacOS ---------------------------
-if [ "$CURRENT_PLATFORM" == "macos" ]; then
-	function wget() {
-		"$TOOL_ROOT/wget/bin/wget" "$@"
-	}
-fi
-#http://unix.stackexchange.com/questions/30091/fix-or-alternative-for-mktemp-in-os-x
-if [ "$CURRENT_PLATFORM" == "macos" ]; then
-	function mktmp() {
-		local tempfile=$(mktemp -d -t rcs)
-    	echo "$tempfile"
-	}
-else
-	function mktmp() {
-		local tempfile=$(mktemp -d)
-    	echo "$tempfile"
-	}
-fi
+		call %STELLA_COMMON%\common.bat :match_exp "ubuntu.*" "%_os%"
+		if "!_match_exp!"=="TRUE" set "%%V=linux"
+
+		call %STELLA_COMMON%\common.bat :match_exp "debian.*" "%_os%"
+		if "!_match_exp!"=="TRUE" set "%%V=linux"
+
+		call %STELLA_COMMON%\common.bat :match_exp "linuxgeneric.*" "%_os%"
+		if "!_match_exp!"=="TRUE" set "%%V=linux"
+
+		call %STELLA_COMMON%\common.bat :match_exp "windows.*" "%_os%"
+		if "!_match_exp!"=="TRUE" set "%%V=windows"
+
+		call %STELLA_COMMON%\common.bat :match_exp "macos.*" "%_os%"
+		if "!_match_exp!"=="TRUE" set "%%V=macos"
+	)
+goto :eof
 
 
-# TOOL & LIB DEPENDENCIES -------------
 
-function _stella_env_ubuntu() {
-	echo " ** INFO : Needs sudouser rights" 
-	apt-get -y install mercurial unzip p7zip-full git wget
-	apt-get -y install bison util-linux build-essential gcc-multilib g++-multilib g++ pkg-config
-}
+:get_platform_suffix
+	set _return_var=%~1
+	set _platform=%~2
 
-function _stella_env_macos() {
-	echo " ** INFO : Needs sudouser rights and macport installed"
-	port install getopt p7zip
-}
+	for %%V in (!_return_var!) do (
+		set "%%V=unknown"
 
-function _stella_env_debian() {
-	echo " ** INFO : Needs sudouser rights" 
-	apt-get -y install mercurial unzip p7zip-full git wget
-	apt-get -y install bison util-linux build-essential gcc-multilib g++-multilib g++ pkg-config
-}
+		call %STELLA_COMMON%\common.bat :match_exp "linux" "%_platform%"
+		if "!_match_exp!"=="TRUE" set "%%V=linux"
+
+		call %STELLA_COMMON%\common.bat :match_exp "macos" "%_platform%"
+		if "!_match_exp!"=="TRUE" set "%%V=macos"
+
+		call %STELLA_COMMON%\common.bat :match_exp "windows" "%_platform%"
+		if "!_match_exp!"=="TRUE" set "%%V=win"
+	)
+goto :eof
 
 
 
 
+:set_current_platform_info
+	set HOST_CPU=unknown
+	set NB_CPU=unknown
+	
+	call :get_os_from_distro "CURRENT_OS" "windows"
+	call :get_platform_from_os "CURRENT_PLATFORM" "%CURRENT_OS%"
+	call :get_platform_suffix "CURRENT_PLATFORM_SUFFIX" "%CURRENT_PLATFORM%"
+goto :eof
 
-function init_env_from_os() {
-	local _env=$1
-	local _os=$2
 
-	case $_os in
-		ubuntu)
-			_"$1"_env_ubuntu
-			;;
-		debian)
-			_"$1"_env_debian
-			;;
-		macos)
-			_"$1"_env_macos
-			;;
-		*)
-			echo "unknown"
-			;;
-	esac	
-}
+:: INIT OS PACKAGES --------------
 
-fi
+:init_stella_by_os
+	set _os=%~1
+	
+	echo ** Initializing Stella for %_os%
+goto :eof
+
+

@@ -16,8 +16,9 @@ if "%ARGOPT_FLAG_HELP%"=="1" goto :usage
 :: setting env
 call %STELLA_COMMON%\common.bat :init_env
 
-goto :init
+call :init_stella
 
+goto :end
 
 :usage
    echo USAGE :
@@ -25,11 +26,9 @@ goto :init
 goto :end
 
 
-:init
-	echo ** Initializing Lib Stella for Windows
-goto :end
-
-
+:init_stella
+	call %STELLA_COMMON%\platform.bat :init_stella_by_os %CURRENT_OS%
+goto :eof
 
 
 :end

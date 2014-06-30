@@ -74,55 +74,54 @@ function get_platform_suffix() {
 	esac	
 }
 
+function set_current_platform_info() {
+	# Linux
+	if [[ -n `which lscpu 2> /dev/null` ]]; then
+		HOST_CPU=`lscpu | awk 'NR== 1 {print $2}'`
+	# MacOS
+	elif [[ -n `which sysctl 2> /dev/null` ]]; then
+		HOST_CPU=`sysctl hw 2> /dev/null | egrep -i 'hw.machine' | awk '{print $NF}'`
+	else
+		HOST_CPU="cannot determine cpu"
+	fi
+
+	# linux
+	if [[ -n `which nproc 2> /dev/null` ]]; then
+		NB_CPU=`nproc`
+	# MacOs
+	elif [[ -n `which sysctl 2> /dev/null` ]]; then
+		NB_CPU=`sysctl hw.ncpu 2> /dev/null | awk '{print $NF}'`
+	else
+		NB_CPU=0
+	fi
 
 
-# Linux
-if [[ -n `which lscpu 2> /dev/null` ]]; then
-	HOST_CPU=`lscpu | awk 'NR== 1 {print $2}'`
-# MacOS
-elif [[ -n `which sysctl 2> /dev/null` ]]; then
-	HOST_CPU=`sysctl hw 2> /dev/null | egrep -i 'hw.machine' | awk '{print $NF}'`
-else
-	HOST_CPU="cannot determine cpu"
-fi
+	detectdistro
+	CURRENT_OS=$(get_os_from_distro "$distro")
+	CURRENT_PLATFORM=$(get_platform_from_os "$CURRENT_OS")
+	CURRENT_PLATFORM_SUFFIX=$(get_platform_suffix "$CURRENT_PLATFORM")
 
-# linux
-if [[ -n `which nproc 2> /dev/null` ]]; then
-	NB_CPU=`nproc`
-# MacOs
-elif [[ -n `which sysctl 2> /dev/null` ]]; then
-	NB_CPU=`sysctl hw.ncpu 2> /dev/null | awk '{print $NF}'`
-else
-	NB_CPU=0
-fi
+	
+	if [ "$CURRENT_PLATFORM" == "macos" ]; then
+		function wget() {
+			"$TOOL_ROOT/wget/bin/wget" "$@"
+		}
+	fi
+	#http://unix.stackexchange.com/questions/30091/fix-or-alternative-for-mktemp-in-os-x
+	if [ "$CURRENT_PLATFORM" == "macos" ]; then
+		function mktmp() {
+			local tempfile=$(mktemp -t stella)
+	    	echo "$tempfile"
+		}
+	else
+		function mktmp() {
+			local tempfile=$(mktemp)
+	    	echo "$tempfile"
+		}
+	fi
+}
 
-
-detectdistro
-CURRENT_OS=$(get_os_from_distro "$distro")
-CURRENT_PLATFORM=$(get_platform_from_os "$CURRENT_OS")
-CURRENT_PLATFORM_SUFFIX=$(get_platform_suffix "$CURRENT_PLATFORM")
-
-# MacOS ---------------------------
-if [ "$CURRENT_PLATFORM" == "macos" ]; then
-	function wget() {
-		"$TOOL_ROOT/wget/bin/wget" "$@"
-	}
-fi
-#http://unix.stackexchange.com/questions/30091/fix-or-alternative-for-mktemp-in-os-x
-if [ "$CURRENT_PLATFORM" == "macos" ]; then
-	function mktmp() {
-		local tempfile=$(mktemp -d -t rcs)
-    	echo "$tempfile"
-	}
-else
-	function mktmp() {
-		local tempfile=$(mktemp -d)
-    	echo "$tempfile"
-	}
-fi
-
-
-# TOOL & LIB DEPENDENCIES -------------
+# INIT OS PACKAGES -------------
 
 function _stella_env_ubuntu() {
 	echo " ** INFO : Needs sudouser rights" 
@@ -143,40 +142,20 @@ function _stella_env_debian() {
 
 
 
-# TODO remove dev env
-function _dev_env_ubuntu() {
-	echo " ** INFO : Needs sudouser rights" 
-	# TOOLS
-	#apt-get -y install rrdtool libtool cmake autoconf automake
-	apt-get -y install bison util-linux build-essential gcc-multilib g++-multilib g++
-	apt-get -y install mercurial wget pkg-config unzip p7zip-full dos2unix git
-	# LIBS
-	apt-get -y install libidn11-dev
-}
 
-function _dev_env_macos() {
-	echo " ** INFO : Needs sudouser rights and macport installed"
-	# TOOLS
-	port install getopt p7zip
-	# LIBS
-	port install libpng xz libwww libidn freetype libogg libvorbis
-}
+function init_stella_by_os() {
+	local _os=$1
 
-
-
-function init_env_from_os() {
-	local _env=$1
-	local _os=$2
-
+	echo "** Initializing Stella for $_os"
 	case $_os in
 		ubuntu)
-			_"$1"_env_ubuntu
+			_stella_env_ubuntu
 			;;
 		debian)
-			_"$1"_env_debian
+			_stella_env_debian
 			;;
 		macos)
-			_"$1"_env_macos
+			_stella_env_macos
 			;;
 		*)
 			echo "unknown"

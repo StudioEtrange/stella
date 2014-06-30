@@ -16,6 +16,7 @@ function init_tools() {
 
 function init_tools_macos {
 	# wget
+	mkdir -p "$CACHE_DIR"
 	# TODO use existing function for download/install ?
 	if [ ! -f "$TOOL_ROOT/wget/bin/wget" ]; then
 		if [ ! -f "$CACHE_DIR/wget-1.15.tar.gz" ]; then
@@ -46,15 +47,13 @@ function init_tools_macos {
 
 # MAIN ------------------------
 PARAMETERS="
-ACTION=											'action' 			a						'init install'					Action to compute. 'init' install minimal tools. \
-																																	'install' install bonus tool specified by --extra option
+ACTION=											'action' 			a						'install'					Action to compute. 'install' install tools specified by name argument.
+TOOL= 											''					a 						'default ninja cmake packer autotools ide perl list' Select tool to install. 'Autotools' means autoconf, automake, libtool, m4. Use 'default' to initialize tools. Use 'list' to list available tools. 
 "
 OPTIONS="
 ARCH='x64'				'a'			''					a			0			'x86 x64 arm'			Select architecture.
 JOB='1'					'j'			'nb_job'			i			0			'1:100'					Number of jobs used by build tool. (Only for supported build tool)
-VERBOSE=$DEFAULT_VERBOSE_MODE		'v'			'level'				i			0			'0:2'					Verbose level : 0 (default) no verbose, 1 verbose, 2 ultraverbose.
-EXTRA=''				''			'tool'				a			0			'ninja cmake packer autotools ide perl'		Select tool to install. \
-																													(autotools means autoconf, automake, libtool, m4).																			
+VERBOSE=$DEFAULT_VERBOSE_MODE		'v'			'level'				i			0			'0:2'					Verbose level : 0 (default) no verbose, 1 verbose, 2 ultraverbose.																		
 "
 
 argparse "$0" "$OPTIONS" "$PARAMETERS" "Stella tools management" "Stella tools management" "" "$@"
@@ -66,11 +65,14 @@ init_env
 BUILD_JOB=$JOB
 
 case $ACTION in
-    init)
-    	init_tools
-    	;;
     install)
-		case $EXTRA in
+		case $TOOL in
+			list)
+				echo "default cmake ninja packer autotools perl ide"
+				;;
+			default)
+				init_tools
+				;;
 			cmake)
 				cmake_install
 				;;

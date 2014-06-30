@@ -4,6 +4,7 @@ echo ***************************************************************
 echo ** EXECUTING : %~n0
 echo ** Requirement : Vagrant from http://www.vagrantup.com/
 echo ** Requirement : vagrant-vbguest plugin https://github.com/dotless-de/vagrant-vbguest http://kvz.io/blog/2013/01/16/vagrant-tip-keep-virtualbox-guest-additions-in-sync/
+echo 					vagrant plugin install vagrant-vbguest
 echo ** Requirement : Virtualbox from https://www.virtualbox.org/
 call %~dp0\conf.bat
 
