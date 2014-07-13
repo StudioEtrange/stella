@@ -27,7 +27,7 @@ goto :end
 
 
 :init_stella
-	call %STELLA_COMMON%\platform.bat :init_stella_by_os %CURRENT_OS%
+	call %STELLA_COMMON%\platform.bat :init_stella_by_os %STELLA_CURRENT_OS%
 goto :eof
 
 

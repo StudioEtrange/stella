@@ -122,7 +122,7 @@ function feature_cmake() {
 
 
 function packer_install() {
-	if [ "$CURRENT_PLATFORM" == "macos" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
 		if [ "$ARCH" == "x64" ]; then
 			URL=https://dl.bintray.com/mitchellh/packer/0.6.0_darwin_amd64.zip
 			FILE_NAME=0.6.0_darwin_amd64.zip

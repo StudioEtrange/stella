@@ -134,11 +134,11 @@ goto :eof
 
 		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "APP_ROOT" "%_approot%"
 		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "APP_WORK_ROOT" "%_workroot%"
+		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "CACHE_DIR" "%_cachedir%"
 		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "DATA_LIST" ""
 		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "ASSETS_LIST" ""
 		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "ENV_LIST" ""
 		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "INFRA_LIST" ""
-		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "CACHE_DIR" "%_cachedir%"
 	)
 goto :eof
 
@@ -212,9 +212,9 @@ goto :eof
 			call %STELLA_COMMON%\platform.bat :get_platform_from_os "%%A_PLATFORM" "!%%A_OS!"
 			call %STELLA_COMMON%\platform.bat :get_platform_suffix "%%A_PLATFORM_SUFFIX" "!%%A_PLATFORM!"
 		) else (
-			set "%%A_OS=%CURRENT_OS%"
-			set "%%A_PLATFORM=%CURRENT_PLATFORM%"
-			set "%%A_PLATFORM_SUFFIX=%CURRENT_PLATFORM_SUFFIX%"
+			set "%%A_OS=%STELLA_CURRENT_OS%"
+			set "%%A_PLATFORM=%STELLA_CURRENT_PLATFORM%"
+			set "%%A_PLATFORM_SUFFIX=%STELLA_CURRENT_PLATFORM_SUFFIX%"
 		)
 	)
 goto :eof

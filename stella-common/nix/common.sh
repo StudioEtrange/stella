@@ -106,7 +106,7 @@ function copy_folder_content_into() {
 		filter="*"
 	fi
 	mkdir -p $2
-	if [ "$CURRENT_PLATFORM" == "macos" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
 		cp -R $1/$filter $2
 	else
 		cp -R $1/$filter --target-directory=$2

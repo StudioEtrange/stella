@@ -95,9 +95,9 @@ goto :eof
 	set HOST_CPU=unknown
 	set NB_CPU=unknown
 	
-	call :get_os_from_distro "CURRENT_OS" "windows"
-	call :get_platform_from_os "CURRENT_PLATFORM" "%CURRENT_OS%"
-	call :get_platform_suffix "CURRENT_PLATFORM_SUFFIX" "%CURRENT_PLATFORM%"
+	call :get_os_from_distro "STELLA_CURRENT_OS" "windows"
+	call :get_platform_from_os "STELLA_CURRENT_PLATFORM" "%STELLA_CURRENT_OS%"
+	call :get_platform_suffix "STELLA_CURRENT_PLATFORM_SUFFIX" "%STELLA_CURRENT_PLATFORM%"
 goto :eof
 
 

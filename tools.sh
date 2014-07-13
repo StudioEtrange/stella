@@ -9,7 +9,7 @@ function init_tools() {
 		mkdir -p "$TOOL_ROOT"
 	fi
 
-	if [ "$CURRENT_PLATFORM" == "macos" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
 		init_tools_macos
 	fi
 }

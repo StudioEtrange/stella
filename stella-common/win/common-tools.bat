@@ -117,7 +117,7 @@ goto :eof
 	echo ** Installing ninja in %INSTALL_DIR%
 	echo ** NEED PYTHON !!
 
-	call %STELLA_COMMON%\common.bat :init_features python27
+	call %STELLA_COMMON%\common.bat :init_features feature_python27
 
 	call :feature_ninja
 	if "%FORCE%"=="1" ( 
@@ -153,7 +153,7 @@ goto :eof
 		)
 		set "NINJA_MAKE_CMD=!TEST_FEATURE!\%NINJA_MAKE_CMD%"
 		set "NINJA_MAKE_CMD_VERBOSE=!TEST_FEATURE!\%NINJA_MAKE_CMD_VERBOSE%"
-		set "NINJA_MAKE_CMD_VERBOSE_ULSSA=!TEST_FEATURE!\%NINJA_MAKE_CMD_VERBOSE_ULSSA%"
+		set "NINJA_MAKE_CMD_VERBOSE_ULTRA=!TEST_FEATURE!\%NINJA_MAKE_CMD_VERBOSE_ULSSA%"
 		set "FEATURE_PATH=!TEST_FEATURE!"
 	)
 goto :eof
@@ -241,7 +241,7 @@ goto :eof
 		)
 		set "CMAKE_CMD=!TEST_FEATURE!\bin\%CMAKE_CMD%"
 		set "CMAKE_CMD_VERBOSE=!TEST_FEATURE!\bin\%CMAKE_CMD_VERBOSE%"
-		set "CMAKE_CMD_VERBOSE_ULSSA=!TEST_FEATURE!\bin\%CMAKE_CMD_VERBOSE_ULSSA%"
+		set "CMAKE_CMD_VERBOSE_ULTRA=!TEST_FEATURE!\bin\%CMAKE_CMD_VERBOSE_ULSSA%"
 		set "FEATURE_PATH=!TEST_FEATURE!\bin"
 	)
 goto :eof
@@ -481,6 +481,7 @@ goto :eof
 		call %STELLA_COMMON%\common.bat :download "%URL%" "%FILE_NAME%"
 		cd /D %CACHE_DIR%
 
+		echo ** Launch MSIEXEC with TARGETDIR=%INSTALL_DIR%
 		msiexec /qb /i %FILE_NAME% TARGETDIR="%INSTALL_DIR%\"
 
 		call :feature_python27

@@ -97,18 +97,18 @@ function set_current_platform_info() {
 
 
 	detectdistro
-	CURRENT_OS=$(get_os_from_distro "$distro")
-	CURRENT_PLATFORM=$(get_platform_from_os "$CURRENT_OS")
-	CURRENT_PLATFORM_SUFFIX=$(get_platform_suffix "$CURRENT_PLATFORM")
+	STELLA_CURRENT_OS=$(get_os_from_distro "$distro")
+	STELLA_CURRENT_PLATFORM=$(get_platform_from_os "$STELLA_CURRENT_OS")
+	STELLA_CURRENT_PLATFORM_SUFFIX=$(get_platform_suffix "$STELLA_CURRENT_PLATFORM")
 
 	
-	if [ "$CURRENT_PLATFORM" == "macos" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
 		function wget() {
 			"$TOOL_ROOT/wget/bin/wget" "$@"
 		}
 	fi
 	#http://unix.stackexchange.com/questions/30091/fix-or-alternative-for-mktemp-in-os-x
-	if [ "$CURRENT_PLATFORM" == "macos" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
 		function mktmp() {
 			local tempfile=$(mktemp -t stella)
 	    	echo "$tempfile"

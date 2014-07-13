@@ -47,11 +47,11 @@ function init_app() {
 	else
 		add_key "$PROPERTIES" "STELLA" "APP_ROOT" "$_approot"
 		add_key "$PROPERTIES" "STELLA" "APP_WORK_ROOT" "$_workroot"
+		add_key "$PROPERTIES" "STELLA" "CACHE_DIR" "$_cachedir"
 		add_key "$PROPERTIES" "STELLA" "DATA_LIST"
 		add_key "$PROPERTIES" "STELLA" "ASSETS_LIST"
 		add_key "$PROPERTIES" "STELLA" "ENV_LIST"
 		add_key "$PROPERTIES" "STELLA" "INFRA_LIST"
-		add_key "$PROPERTIES" "STELLA" "CACHE_DIR" "$_cachedir"
 	fi
 }
 
@@ -107,9 +107,9 @@ function get_all_properties() {
 			_artefact_infra_id=${!_artefact_infra_id}
 			# eval "$a"_INFRA_ID=$_artefact_infra_id
 			if [ "$_artefact_infra_id" == "default" ]; then
-				eval "$a"_OS=\$CURRENT_OS
-				eval "$a"_PLATFORM=\$CURRENT_PLATFORM
-				eval "$a"_PLATFORM_SUFFIX=\$CURRENT_PLATFORM_SUFFIX
+				eval "$a"_OS=\$STELLA_CURRENT_OS
+				eval "$a"_PLATFORM=\$STELLA_CURRENT_PLATFORM
+				eval "$a"_PLATFORM_SUFFIX=\$STELLA_CURRENT_PLATFORM_SUFFIX
 			else
 				_artefact_distrib="$_artefact_infra_id"_INFRA_DISTRIB
 				eval "$a"_DISTRIB=${!_artefact_distrib}

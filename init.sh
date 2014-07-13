@@ -5,7 +5,7 @@ source $_INCLUDED_FILE_DIR/conf.sh
 
 
 function init_stella(){
-	init_stella_by_os "$CURRENT_OS"
+	init_stella_by_os "$STELLA_CURRENT_OS"
 }
 
 
