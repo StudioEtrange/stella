@@ -15,32 +15,66 @@ if "%ARGOPT_FLAG_HELP%"=="1" goto :usage
 :: setting env
 call %STELLA_COMMON%\common.bat :init_env
 
-
 if "%action%"=="install" (
-	if "%name%"=="default" call :init_tools
-	if "%name%"=="ninja" call %STELLA_COMMON%\common-tools.bat :ninja
-	if "%name%"=="jom" call %STELLA_COMMON%\common-tools.bat :jom
-	if "%name%"=="cmake" call %STELLA_COMMON%\common-tools.bat :cmake
-	if "%name%"=="packer" call %STELLA_COMMON%\common-tools.bat :packer
-	if "%name%"=="perl" call %STELLA_COMMON%\common-tools.bat :perl
-	if "%name%"=="nasm" call %STELLA_COMMON%\common-tools.bat :nasm
-	if "%name%"=="python27" call %STELLA_COMMON%\common-tools.bat :python27
-	if "%name%"=="vagrant-git" call %STELLA_COMMON%\common-tools.bat :vagrant_git
-	if "%name%"=="openssh" call %STELLA_COMMON%\common-tools.bat :openssh
+
+	if "%name%"=="default" (
+		call :init_tools
+		goto :end
+	)
+	if "%name%"=="ninja" (
+		call %STELLA_COMMON%\common-tools.bat :ninja
+		goto :end
+	)
+	if "%name%"=="jom" (
+		call %STELLA_COMMON%\common-tools.bat :jom
+		goto :end
+	)
+	if "%name%"=="cmake" (
+		call %STELLA_COMMON%\common-tools.bat :cmake
+		goto :end
+	)
+	if "%name%"=="packer" (
+		call %STELLA_COMMON%\common-tools.bat :packer
+		goto :end
+	)
+	if "%name%"=="perl" (
+		call %STELLA_COMMON%\common-tools.bat :perl
+		goto :end
+	)
+	if "%name%"=="nasm" (
+		call %STELLA_COMMON%\common-tools.bat :nasm
+		goto :end
+	)
+	if "%name%"=="python27" (
+		call %STELLA_COMMON%\common-tools.bat :python27
+		goto :end
+	)
+	if "%name%"=="vagrant-git" (
+		call %STELLA_COMMON%\common-tools.bat :vagrant_git
+		goto :end
+	)
+	if "%name%"=="openssh" (
+		call %STELLA_COMMON%\common-tools.bat :openssh
+		goto :end
+	)
 	if "%name%"=="ruby2" (
 		call %STELLA_COMMON%\common-tools.bat :ruby2
 		call %STELLA_COMMON%\common-tools.bat :rdevkit2
+		goto :end
 	)
+
 	if "%name%"=="ruby19" (
 		call %STELLA_COMMON%\common-tools.bat :ruby19
 		call %STELLA_COMMON%\common-tools.bat :rdevkit19
+		goto :end
 	)
 
 	if "%name%"=="list" (
-		echo default ninja jom cmake packer perl nasm python27 vagrant-git openssh ruby2 (with rdevki2) ruby19 (with rdevkit19)
+		echo "default ninja jom cmake packer perl nasm python27 vagrant-git openssh ruby2 (with rdevki2) ruby19 (with rdevkit19)"
+		goto :end
 	)
 
-	goto :end
+	
 )
 
 goto :usage

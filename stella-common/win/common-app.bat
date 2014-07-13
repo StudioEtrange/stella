@@ -90,36 +90,56 @@ goto :eof
 
 :select_app_properties
 	set "_app_name=%~1"
+	set "_app_path=%~2"
 
 	set "PROPERTIES="
 
+	if "%_app_path%"=="" (
+		set "_app_path=%PROJECT_ROOT%"		
+	)
+
 	if "%_app_name%"=="" (
-		for %%f in ("%PROJECT_ROOT%\*.stella") do (
+		for %%f in ("%_app_path%\*.stella") do (
 			set "PROPERTIES=%%f"
 		)
 	) else (
-		if exist "%PROJECT_ROOT%\%_app_name%.stella" (
-			set "PROPERTIES=%PROJECT_ROOT%\%_app_name%.stella"
+		if exist "%_app_path%\%_app_name%.stella" (
+			set "PROPERTIES=%_app_path%\%_app_name%.stella"
 		)
 	)
 goto :eof
 
 :init_app
 	set "_app_name=%~1"
+	set "_approot=%~2"
+	set "_workroot=%~3"
+	set "_cachedir=%~4"
+
+	if not exist "%_approot%" mkdir "%_approot%"
+
+	> "%_approot%\stella.bat" ECHO(@setlocal enableExtensions enableDelayedExpansion
+	>> "%_approot%\stella.bat" ECHO(@echo off
+	>> "%_approot%\stella.bat" ECHO(call %STELLA_ROOT%\stella.bat %%*
+	>> "%_approot%\stella.bat" ECHO(@echo on
+	>> "%_approot%\stella.bat" ECHO(@endlocal
+
+	> "%_approot%\stella-include.bat" ECHO(call %STELLA_ROOT%\include.bat
 	
-	> "%PROJECT_ROOT%\stella.bat" ECHO(@setlocal enableExtensions enableDelayedExpansion
-	>> "%PROJECT_ROOT%\stella.bat" ECHO(@echo off
-	>> "%PROJECT_ROOT%\stella.bat" ECHO(call %STELLA_ROOT%\stella.bat %%*
-	>> "%PROJECT_ROOT%\stella.bat" ECHO(@echo on
-	>> "%PROJECT_ROOT%\stella.bat" ECHO(@endlocal
 
-	set "PROPERTIES=%PROJECT_ROOT%\%_app_name%.stella"
+	set "PROPERTIES=%_approot%\%_app_name%.stella"
 
-	call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "APP_ROOT" "%PROJECT_ROOT%"
-	call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "DATA_LIST" ""
-	call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "ASSETS_LIST" ""
-	call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "ENV_LIST" ""
-	call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "INFRA_LIST" ""
+	if exist "%PROPERTIES%" (
+		echo ** Properties file already exists
+	) else (
+
+		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "APP_ROOT" "%_approot%"
+		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "APP_WORK_ROOT" "%_workroot%"
+		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "DATA_LIST" ""
+		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "ASSETS_LIST" ""
+		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "ENV_LIST" ""
+		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "INFRA_LIST" ""
+		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "CACHE_DIR" "%_cachedir%"
+	)
 goto :eof
 
 
@@ -132,6 +152,8 @@ goto :eof
 
 	REM STELLA VARs
 	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "APP_ROOT"
+	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "APP_WORK_ROOT"
+	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "CACHE_DIR"
 	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "DATA_LIST" "PREFIX"
 	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "ASSETS_LIST" "PREFIX"
 	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "ENV_LIST" "PREFIX"

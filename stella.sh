@@ -17,7 +17,10 @@ ID=							 ''								s 			'' 						Data or Assets or Env or Box ID.
 OPTIONS="	
 FORCE=''                       	'f'    		''            		b     		0     		'1'           			Force operation.
 ARCH='x64'						'a'			''					a			0			'x86 x64 arm'			Select architecture.
-VERBOSE=$DEFAULT_VERBOSE_MODE		'v'			'level'				i			0			'0:2'					Verbose level : 0 (default) no verbose, 1 verbose, 2 ultraverbose.
+VERBOSE=$DEFAULT_VERBOSE_MODE		'v'			'level'				i		0			'0:2'					Verbose level : 0 (default) no verbose, 1 verbose, 2 ultraverbose.
+APPROOT=''						'' 			'path'				s 			0			'' 						App path (default current)
+WORKROOT='' 					'' 			'path'				s 			0			''						Work app path (default equal to app path)
+CACHEDIR=''						'' 			'path'				s 			0			''						Cache folder path
 "
 
 argparse "$0" "$OPTIONS" "$PARAMETERS" "Lib Stella" "Lib Stella" "" "$@"
@@ -32,16 +35,24 @@ if [ "$DOMAIN" == "app" ]; then
 
 	if [ "$ACTION" == "init" ]; then
 		sudo $STELLA_ROOT/init.sh
-		init_app $ID
+		if [ "$APPROOT" == "" ]; then
+			APPROOT=$PROJECT_ROOT
+		fi
+		if [ "$WORKROOT" == "" ]; then
+			WORKROOT=$APPROOT
+		fi
+		init_app $ID $APPROOT $WORKROOT
+
+		cd $APPROOT
 		$STELLA_ROOT/tools.sh install default
 	else
-		select_app_properties
+		#select_app_properties
 		if [ ! -f "$PROPERTIES" ]; then
 			echo "** ERROR properties file does not exist"
 			exit
 		fi
 
-		get_all_properties
+		#get_all_properties
 
 		case $ACTION in
 		    get-data)
@@ -79,8 +90,8 @@ if [ "$DOMAIN" == "tools" ]; then
 	if [ "$FORCE" == "1" ]; then
 		_tools_options="$_tools_options -f"
 	fi
-	select_app_properties
-	get_all_properties
+	#select_app_properties
+	#get_all_properties
 
 	if [ "$ACTION" == "install" ]; then
 		$STELLA_ROOT/tools.sh install $ID $_tools_options

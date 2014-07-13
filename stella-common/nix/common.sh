@@ -327,7 +327,7 @@ function download() {
 function _unzip-strip() (
     local zip=$1
     local dest=${2:-.}
-    local temp=$(mktmp)
+    local temp=$(mktmpdir)
 
     unzip -a -o -d "$temp" "$zip"
     shopt -s dotglob 
@@ -344,7 +344,7 @@ function _unzip-strip() (
 function _sevenzip-strip() (
     local zip=$1
     local dest=${2:-.}
-    local temp=$(mktmp)
+    local temp=$(mktmpdir)
     7z x "$zip" -y -o"$temp"
     shopt -s dotglob 
     local f=("$temp"/*)
@@ -395,6 +395,10 @@ function add_key() {
 	local _SECTION=$2
 	local _KEY=$3
 	local _VALUE=$4
+
+	if [ ! -f "$_FILE" ]; then
+		touch $_FILE
+	fi
 
 	_ini_file "ADD" "$_FILE" "$_SECTION" "$_KEY" "$_VALUE"
 }

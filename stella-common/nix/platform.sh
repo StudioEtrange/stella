@@ -113,10 +113,18 @@ function set_current_platform_info() {
 			local tempfile=$(mktemp -t stella)
 	    	echo "$tempfile"
 		}
+		function mktmpdir(){
+			local tempdir=$(mktemp -d -t stella)
+	    	echo "$tempdir"
+		}
 	else
 		function mktmp() {
 			local tempfile=$(mktemp)
 	    	echo "$tempfile"
+		}
+		function mktmpdir() {
+			local tempdir=$(mktemp -d)
+	    	echo "$tempdir"
 		}
 	fi
 }

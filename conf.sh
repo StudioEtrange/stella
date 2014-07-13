@@ -17,14 +17,18 @@ source $STELLA_COMMON/common-app.sh
 # GATHER PLATFORM INFO ---------------------------------------------
 set_current_platform_info
 
-# APP PATHS ---------------------------------------------
-if [ "$APP_ROOT" == "" ]; then
-	APP_ROOT="$_CALLING_FILE_DIR"
-fi
+# GATHER CURRENT APP INFO ---------------------------------------------
+APP_ROOT="$_CALLING_FILE_DIR"
+APP_WORK_ROOT="$_CALLING_FILE_DIR"
+PROJECT_ROOT="$APP_WORK_ROOT"
+select_app_properties
+get_all_properties
 
-#PROJECT_ROOT="$_CALLING_FILE_DIR"
-PROJECT_ROOT="$APP_ROOT"
-CACHE_DIR="$PROJECT_ROOT/cache"
+# APP PATHS ---------------------------------------------
+PROJECT_ROOT="$APP_WORK_ROOT"
+if [ "$CACHE_DIR" == "" ]; then
+	CACHE_DIR="$PROJECT_ROOT/cache"
+fi
 TEMP_DIR="$PROJECT_ROOT/temp"
 TOOL_ROOT="$PROJECT_ROOT/tool_$CURRENT_PLATFORM_SUFFIX/$CURRENT_OS"
 DATA_ROOT="$PROJECT_ROOT/data"

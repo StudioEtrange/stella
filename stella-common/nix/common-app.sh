@@ -13,8 +13,10 @@ function select_app_properties() {
 	PROPERTIES=
 
 	if [ "$_app_name" == "" ]; then
-		for f in "$PROJECT_ROOT/*.stella"; do
-			PROPERTIES="$f"
+		for f in $PROJECT_ROOT/*.stella; do
+			if [ -f $f ]; then
+				PROPERTIES="$f"
+			fi
 		done
 	else
 		if [ -f "$PROJECT_ROOT/$_app_name.stella" ]; then
@@ -25,18 +27,32 @@ function select_app_properties() {
 
 function init_app() {
 	local _app_name=$1
+	local _approot=$2
+	local _workroot=$3
+	local _cachedir=$4
 
-	echo "#!/bin/bash" >$PROJECT_ROOT/stella.sh
-	echo "$STELLA_ROOT/stella.sh \$*" >>$PROJECT_ROOT/stella.sh
-	chmod +x $PROJECT_ROOT/stella.sh
+	mkdir -p $_approot
+
+	echo "#!/bin/bash" >$_approot/stella.sh
+	echo "$STELLA_ROOT/stella.sh \$*" >>$_approot/stella.sh
+	chmod +x $_approot/stella.sh
 	
-	PROPERTIES="$PROJECT_ROOT/$_app_name.stella"
+	echo "#!/bin/bash" >$_approot/stella-include.sh
+	echo "source $STELLA_ROOT/include.sh" >>$_approot/stella-include.sh
 
-	add_key "$PROPERTIES" "STELLA" "APP_ROOT" "$PROJECT_ROOT"
-	add_key "$PROPERTIES" "STELLA" "DATA_LIST"
-	add_key "$PROPERTIES" "STELLA" "ASSETS_LIST"
-	add_key "$PROPERTIES" "STELLA" "ENV_LIST"
-	add_key "$PROPERTIES" "STELLA" "INFRA_LIST"
+
+	PROPERTIES="$_approot/$_app_name.stella"
+	if [ -f "$PROPERTIES" ]; then
+		echo " ** Properties file already exist"
+	else
+		add_key "$PROPERTIES" "STELLA" "APP_ROOT" "$_approot"
+		add_key "$PROPERTIES" "STELLA" "APP_WORK_ROOT" "$_workroot"
+		add_key "$PROPERTIES" "STELLA" "DATA_LIST"
+		add_key "$PROPERTIES" "STELLA" "ASSETS_LIST"
+		add_key "$PROPERTIES" "STELLA" "ENV_LIST"
+		add_key "$PROPERTIES" "STELLA" "INFRA_LIST"
+		add_key "$PROPERTIES" "STELLA" "CACHE_DIR" "$_cachedir"
+	fi
 }
 
 # extract APP properties
@@ -46,6 +62,8 @@ function get_all_properties() {
 			
 		# STELLA VARs
 		get_key "$PROPERTIES" "STELLA" "APP_ROOT"
+		get_key "$PROPERTIES" "STELLA" "APP_WORK_ROOT"
+		get_key "$PROPERTIES" "STELLA" "CACHE_DIR"
 		get_key "$PROPERTIES" "STELLA" "DATA_LIST" "PREFIX"
 		get_key "$PROPERTIES" "STELLA" "ASSETS_LIST" "PREFIX"
 		get_key "$PROPERTIES" "STELLA" "ENV_LIST" "PREFIX"

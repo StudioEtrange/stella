@@ -616,7 +616,7 @@ goto :eof
 
 
 :ruby19
-	:: Note: choose a directory name without spaces and non us-ascii characters
+	REM Note: choose a directory name without spaces and non us-ascii characters
 	set URL=http://dl.bintray.com/oneclick/rubyinstaller/ruby-1.9.3-p545-i386-mingw32.7z
 	set FILE_NAME=ruby-1.9.3-p545-i386-mingw32.7z
 	set VERSION=1.9.3-p545

@@ -11,15 +11,22 @@ set POOL_DIR=%STELLA_ROOT%\stella-pool\win
 :: GATHER PLATFORM INFO
 call %STELLA_COMMON%\platform.bat :set_current_platform_info
 
+:: GATHER APP INFO
+set APP_ROOT=%CUR_DIR%
+set APP_WORK_ROOT=%CUR_DIR%
+set PROJECT_ROOT=%APP_WORK_ROOT%
+for %%A in ( %PROJECT_ROOT%\ ) do set PROJECT_ROOT=%%~dpA
+set PROJECT_ROOT=%PROJECT_ROOT:~0,-1%
+set CACHE_DIR=%PROJECT_ROOT%\cache
+
+call %STELLA_COMMON%\common-app.bat :select_app_properties
+call %STELLA_COMMON%\common-app.bat :get_all_properties
+
 :: APP PATHS
-if "%APP_ROOT%"=="" (
-	set APP_ROOT=%CUR_DIR%
-)
-set PROJECT_ROOT=%APP_ROOT%
+set PROJECT_ROOT=%APP_WORK_ROOT%
 for %%A in ( %PROJECT_ROOT%\ ) do set PROJECT_ROOT=%%~dpA
 set PROJECT_ROOT=%PROJECT_ROOT:~0,-1%
 
-set CACHE_DIR=%PROJECT_ROOT%\cache
 set TEMP_DIR=%PROJECT_ROOT%\temp
 set TOOL_ROOT=%PROJECT_ROOT%\tool_%CURRENT_PLATFORM_SUFFIX%\%CURRENT_OS%
 set DATA_ROOT=%PROJECT_ROOT%\data
