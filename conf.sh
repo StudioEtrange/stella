@@ -21,6 +21,7 @@ set_current_platform_info
 APP_ROOT="$_CALLING_FILE_DIR"
 APP_WORK_ROOT="$_CALLING_FILE_DIR"
 PROJECT_ROOT="$APP_WORK_ROOT"
+CACHE_DIR=
 select_app_properties
 get_all_properties
 

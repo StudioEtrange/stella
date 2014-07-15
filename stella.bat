@@ -40,6 +40,7 @@ if "%DOMAIN%"=="app" (
 
 		cd /D "!-approot!"
 		call %STELLA_ROOT%\tools.bat install default
+		@echo off
 	)
 
 	if not "%ACTION%"=="init" (
@@ -73,8 +74,7 @@ if "%DOMAIN%"=="app" (
 	)
 
 )
-
-@if "%DOMAIN%"=="app" goto :end
+if "%DOMAIN%"=="app" goto :end
 
 REM --------------- TOOLS ----------------------------
 if "%DOMAIN%"=="tools" (
@@ -85,11 +85,10 @@ if "%DOMAIN%"=="tools" (
 
 	if "%ACTION%"=="install" (
 		call %STELLA_ROOT%\tools.bat install "%id%" %_tools_options%
+		@echo off
 	)
 )
-
-
-@if "%DOMAIN%"=="tools" goto :end
+if "%DOMAIN%"=="tools" goto :end
 
 
 REM --------------- VIRTUAL ----------------------------
@@ -108,35 +107,41 @@ if "%DOMAIN%"=="virtual" (
 	
 	if "%ACTION%"=="create-env" (
 		call %STELLA_ROOT%\virtual.bat create-env -envname="%id%" %_virtual_options%
+		@echo off
 	)
 
 	if "%ACTION%"=="run-env" (
 		call %STELLA_ROOT%\virtual.bat run-env -envname="%id%" %_virtual_options%
+		@echo off
 	)
 
 	if "%ACTION%"=="stop-env" (
 		call %STELLA_ROOT%\virtual.bat stop-env -envname="%id%" %_virtual_options%
+		@echo off
 	)
 
 	if "%ACTION%"=="destroy-env" (
 		call %STELLA_ROOT%\virtual.bat destroy-env -envname="%id%" %_virtual_options%
+		@echo off
 	)
 
 	if "%ACTION%"=="create-box" (
 		call %STELLA_ROOT%\virtual.bat create-box -distrib="%id%" %_virtual_options%
+		@echo off
 	)
 
 	if "%ACTION%"=="get-box" (
 		call %STELLA_ROOT%\virtual.bat get-box -distrib="%id%" %_virtual_options%
+		@echo off
 	)
 
 	if "%ACTION%"=="destroy-box" (
 		call %STELLA_ROOT%\virtual.bat destroy-box -distrib="%id%" %_virtual_options%
+		@echo off
 	)
 
 )
-
-@if "%DOMAIN%"=="virtual" goto :end
+if "%DOMAIN%"=="virtual" goto :end
 
 
 

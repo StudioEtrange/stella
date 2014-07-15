@@ -89,24 +89,19 @@ goto :eof
 goto :eof
 
 :select_app_properties
-	set "_app_name=%~1"
-	set "_app_path=%~2"
+	set "_app_path=%~1"
 
 	set "PROPERTIES="
 
 	if "%_app_path%"=="" (
-		set "_app_path=%PROJECT_ROOT%"		
+		set "_app_path=%PROJECT_ROOT%"
 	)
 
-	if "%_app_name%"=="" (
-		for %%f in ("%_app_path%\*.stella") do (
-			set "PROPERTIES=%%f"
-		)
-	) else (
-		if exist "%_app_path%\%_app_name%.stella" (
-			set "PROPERTIES=%_app_path%\%_app_name%.stella"
-		)
+
+	if exist "%_app_path%\.stella" (
+		set "PROPERTIES=%_app_path%\.stella"
 	)
+	
 goto :eof
 
 :init_app
@@ -117,16 +112,21 @@ goto :eof
 
 	if not exist "%_approot%" mkdir "%_approot%"
 
-	> "%_approot%\stella.bat" ECHO(@setlocal enableExtensions enableDelayedExpansion
-	>> "%_approot%\stella.bat" ECHO(@echo off
-	>> "%_approot%\stella.bat" ECHO(call %STELLA_ROOT%\stella.bat %%*
-	>> "%_approot%\stella.bat" ECHO(@echo on
-	>> "%_approot%\stella.bat" ECHO(@endlocal
+	REM > "%_approot%\.stella-link.bat" ECHO(@setlocal enableExtensions enableDelayedExpansion
+	REM >> "%_approot%\.stella-link.bat" ECHO(@echo off
+	> "%_approot%\.stella-link.bat" ECHO(@set STELLA_ROOT=%STELLA_ROOT%
+	REM >> "%_approot%\.stella-link.bat" ECHO(@echo on
+	REM >> "%_approot%\.stella-link.bat" ECHO(@endlocal
 
-	> "%_approot%\stella-include.bat" ECHO(call %STELLA_ROOT%\include.bat
-	
+	copy /y "%STELLA_COMMON%\stella-template.bat" "%_approot%\stella.bat"
+	REM > "%_approot%\stella.bat" ECHO(@setlocal enableExtensions enableDelayedExpansion
+	REM >> "%_approot%\stella.bat" ECHO(@echo off
+	REM >> "%_approot%\stella.bat" ECHO(call %STELLA_ROOT%\stella.bat %%*
+	REM >> "%_approot%\stella.bat" ECHO(@echo on
+	REM >> "%_approot%\stella.bat" ECHO(@endlocal
 
-	set "PROPERTIES=%_approot%\%_app_name%.stella"
+
+	set "PROPERTIES=%_approot%\.stella"
 
 	if exist "%PROPERTIES%" (
 		echo ** Properties file already exists

@@ -8,21 +8,18 @@ _COMMON_APP_INCLUDED_=1
 
 
 function select_app_properties() {
-	local _app_name=$1
+	local _app_path=$1
 
 	PROPERTIES=
 
-	if [ "$_app_name" == "" ]; then
-		for f in $PROJECT_ROOT/*.stella; do
-			if [ -f $f ]; then
-				PROPERTIES="$f"
-			fi
-		done
-	else
-		if [ -f "$PROJECT_ROOT/$_app_name.stella" ]; then
-			PROPERTIES="$PROJECT_ROOT/$_app_name.stella"
-		fi
+	if [ "$_app_path" == "" ]; then
+		_app_path=$PROJECT_ROOT
 	fi
+
+	if [ -f "$_app_path/.stella" ]; then
+		PROPERTIES="$_app_path/.stella"
+	fi
+	
 }
 
 function init_app() {
@@ -33,6 +30,7 @@ function init_app() {
 
 	mkdir -p $_approot
 
+	# TODO : review stella.sh see stella-template.bat
 	echo "#!/bin/bash" >$_approot/stella.sh
 	echo "$STELLA_ROOT/stella.sh \$*" >>$_approot/stella.sh
 	chmod +x $_approot/stella.sh
@@ -41,7 +39,7 @@ function init_app() {
 	echo "source $STELLA_ROOT/include.sh" >>$_approot/stella-include.sh
 
 
-	PROPERTIES="$_approot/$_app_name.stella"
+	PROPERTIES="$_approot/.stella"
 	if [ -f "$PROPERTIES" ]; then
 		echo " ** Properties file already exist"
 	else
