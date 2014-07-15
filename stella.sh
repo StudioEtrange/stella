@@ -50,6 +50,7 @@ init_env
 if [ "$DOMAIN" == "app" ]; then
 
 	if [ "$ACTION" == "init" ]; then
+		# first init STELLA
 		sudo $STELLA_ROOT/init.sh
 		if [ "$APPROOT" == "" ]; then
 			APPROOT=$PROJECT_ROOT
@@ -57,18 +58,21 @@ if [ "$DOMAIN" == "app" ]; then
 		if [ "$WORKROOT" == "" ]; then
 			WORKROOT=$APPROOT
 		fi
-		init_app $ID $APPROOT $WORKROOT
+		if [ "$CACHEDIR" == "" ]; then
+			CACHEDIR=$WORKROOT/cache
+		fi
+
+		init_app $ID $APPROOT $WORKROOT $CACHEDIR
 
 		cd $APPROOT
 		$STELLA_ROOT/tools.sh install default
 	else
-		#select_app_properties
+
 		if [ ! -f "$PROPERTIES" ]; then
 			echo "** ERROR properties file does not exist"
 			exit
 		fi
 
-		#get_all_properties
 
 		case $ACTION in
 		    get-data)
@@ -106,9 +110,7 @@ if [ "$DOMAIN" == "tools" ]; then
 	if [ "$FORCE" == "1" ]; then
 		_tools_options="$_tools_options -f"
 	fi
-	#select_app_properties
-	#get_all_properties
-
+	
 	if [ "$ACTION" == "install" ]; then
 		$STELLA_ROOT/tools.sh install $ID $_tools_options
 	fi

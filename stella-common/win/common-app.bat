@@ -132,7 +132,7 @@ goto :eof
 		echo ** Properties file already exists
 	) else (
 
-		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "APP_ROOT" "%_approot%"
+		REM call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "APP_ROOT" "%_approot%"
 		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "APP_WORK_ROOT" "%_workroot%"
 		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "CACHE_DIR" "%_cachedir%"
 		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "DATA_LIST" ""
@@ -151,7 +151,7 @@ goto :eof
 	)
 
 	REM STELLA VARs
-	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "APP_ROOT"
+	REM call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "APP_ROOT"
 	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "APP_WORK_ROOT"
 	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "CACHE_DIR"
 	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "DATA_LIST" "PREFIX"

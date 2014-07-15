@@ -31,21 +31,15 @@ function init_app() {
 	mkdir -p $_approot
 
 	echo "STELLA_ROOT=$STELLA_ROOT" >$_approot/.stella-link.sh
-	#echo "#!/bin/bash" >$_approot/stella.sh
-	#echo "$STELLA_ROOT/stella.sh \$*" >>$_approot/stella.sh
-	#chmod +x $_approot/stella.sh
-	
+
 	cp -f "$STELLA_COMMON/stella-template.sh" "$_approot/stella.sh"
 	chmod +x $_approot/stella.sh
-	#echo "#!/bin/bash" >$_approot/stella-include.sh
-	#echo "source $STELLA_ROOT/include.sh" >>$_approot/stella-include.sh
-
 
 	PROPERTIES="$_approot/.stella"
 	if [ -f "$PROPERTIES" ]; then
 		echo " ** Properties file already exist"
 	else
-		add_key "$PROPERTIES" "STELLA" "APP_ROOT" "$_approot"
+		#add_key "$PROPERTIES" "STELLA" "APP_ROOT" "$_approot"
 		add_key "$PROPERTIES" "STELLA" "APP_WORK_ROOT" "$_workroot"
 		add_key "$PROPERTIES" "STELLA" "CACHE_DIR" "$_cachedir"
 		add_key "$PROPERTIES" "STELLA" "DATA_LIST"
@@ -61,7 +55,7 @@ function get_all_properties() {
 	if [ -f "$PROPERTIES" ]; then
 			
 		# STELLA VARs
-		get_key "$PROPERTIES" "STELLA" "APP_ROOT"
+		#get_key "$PROPERTIES" "STELLA" "APP_ROOT"
 		get_key "$PROPERTIES" "STELLA" "APP_WORK_ROOT"
 		get_key "$PROPERTIES" "STELLA" "CACHE_DIR"
 		get_key "$PROPERTIES" "STELLA" "DATA_LIST" "PREFIX"

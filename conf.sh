@@ -18,7 +18,7 @@ source $STELLA_COMMON/common-app.sh
 set_current_platform_info
 
 # GATHER CURRENT APP INFO ---------------------------------------------
-APP_ROOT="$_CALLING_FILE_DIR"
+#APP_ROOT="$_CALLING_FILE_DIR"
 APP_WORK_ROOT="$_CALLING_FILE_DIR"
 PROJECT_ROOT="$APP_WORK_ROOT"
 CACHE_DIR=
@@ -30,6 +30,7 @@ PROJECT_ROOT="$APP_WORK_ROOT"
 if [ "$CACHE_DIR" == "" ]; then
 	CACHE_DIR="$PROJECT_ROOT/cache"
 fi
+
 TEMP_DIR="$PROJECT_ROOT/temp"
 TOOL_ROOT="$PROJECT_ROOT/tool_$STELLA_CURRENT_PLATFORM_SUFFIX/$STELLA_CURRENT_OS"
 DATA_ROOT="$PROJECT_ROOT/data"
@@ -37,6 +38,13 @@ ASSETS_ROOT="$PROJECT_ROOT/assets"
 ASSETS_REPOSITORY="$(dirname $PROJECT_ROOT)"/assets_repository
 
 # OTHERS
+# TODO
+#WGET="wget" # for macos see TOOL_ROOT/wget
+#UZIP="unzip"
+#U7ZIP="7z"
+#PATCH="patch"
+#GNUMAKE="make"
+
 FEATURE_LIST_ENABLED=
 DEFAULT_VERBOSE_MODE=0
 

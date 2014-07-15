@@ -11,7 +11,7 @@ set POOL_DIR=%STELLA_ROOT%\stella-pool\win
 call %STELLA_COMMON%\platform.bat :set_current_platform_info
 
 :: GATHER APP INFO
-set APP_ROOT=%CUR_DIR%
+REM set APP_ROOT=%CUR_DIR%
 set APP_WORK_ROOT=%CUR_DIR%
 set PROJECT_ROOT=%APP_WORK_ROOT%
 for %%A in ( %PROJECT_ROOT%\ ) do set PROJECT_ROOT=%%~dpA

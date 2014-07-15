@@ -24,7 +24,9 @@ REM --------------- APP ----------------------------
 if "%DOMAIN%"=="app" (
 
 	if "%ACTION%"=="init" (
+		REM first init STELLA
 		call %STELLA_ROOT%\init.bat
+		@echo off
 		if "%-approot%"=="" (
 			set "-approot=%PROJECT_ROOT%"
 		)
