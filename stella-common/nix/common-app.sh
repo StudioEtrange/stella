@@ -30,13 +30,15 @@ function init_app() {
 
 	mkdir -p $_approot
 
-	# TODO : review stella.sh see stella-template.bat
-	echo "#!/bin/bash" >$_approot/stella.sh
-	echo "$STELLA_ROOT/stella.sh \$*" >>$_approot/stella.sh
-	chmod +x $_approot/stella.sh
+	echo "STELLA_ROOT=$STELLA_ROOT" >$_approot/.stella-link.sh
+	#echo "#!/bin/bash" >$_approot/stella.sh
+	#echo "$STELLA_ROOT/stella.sh \$*" >>$_approot/stella.sh
+	#chmod +x $_approot/stella.sh
 	
-	echo "#!/bin/bash" >$_approot/stella-include.sh
-	echo "source $STELLA_ROOT/include.sh" >>$_approot/stella-include.sh
+	cp -f "$STELLA_COMMON/stella-template.sh" "$_approot/stella.sh"
+	chmod +x $_approot/stella.sh
+	#echo "#!/bin/bash" >$_approot/stella-include.sh
+	#echo "source $STELLA_ROOT/include.sh" >>$_approot/stella-include.sh
 
 
 	PROPERTIES="$_approot/.stella"

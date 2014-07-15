@@ -4,6 +4,22 @@ _CALLING_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
 source $_INCLUDED_FILE_DIR/conf.sh
 
 
+function usage() {
+	echo "USAGE :"
+	echo "----------------"
+	echo "List of commands"
+	echo " o-- application management :"
+	echo " L     app init <application name> [-approot=<path>] [-workroot=<path>] [-cachedir=<path>]"
+	echo " L     app get-data get-assets <data OR assets id OR all>"
+	echo " L     app setup-env <env id OR all>"
+	echo " o-- tools management :"
+	echo " L     tools install default : install default tools"
+	echo " L     tools install <tool name> : install a tools"
+	echo " L     tools install list : list available tools"
+	echo " o-- virtual management :"
+	echo " L     virtual create-env run-env stop-env destroy-env <env id>"
+	echo " L     virtual create-box get-box destroy-box <distrib id>"
+}
 
 
 # MAIN -----------------------------------------------------------------------------------
@@ -23,7 +39,7 @@ WORKROOT='' 					'' 			'path'				s 			0			''						Work app path (default equal t
 CACHEDIR=''						'' 			'path'				s 			0			''						Cache folder path
 "
 
-argparse "$0" "$OPTIONS" "$PARAMETERS" "Lib Stella" "Lib Stella" "" "$@"
+argparse "$0" "$OPTIONS" "$PARAMETERS" "Lib Stella" "$(usage)" "" "$@"
 
 # common initializations
 init_env
@@ -101,5 +117,7 @@ fi
 
 # --------------- VIRTUAL ----------------------------
 # TODO
+
+
 
 echo "** END **"

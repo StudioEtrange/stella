@@ -1046,6 +1046,8 @@ default_usage() {
     local PARAM_ABSTRACT=$(print_abstract_param)
     local FMT="fmt -w $GARGP_RMARGIN -s"
     type fmt &> /dev/null || FMT=cat
+    echo "${SHORT_DESC:-}"
+    echo
     echo -e "Usage: $ARGP_PROG ${PARAM_ABSTRACT:-} $FLAGS$LFLAGS $OPT_ARGS" |$FMT
     echo
     echo "${LONG_DESC:-}"
