@@ -89,6 +89,6 @@ goto :eof
 
 :end
 echo ** END **
-cd /D %CUR_DIR%
+cd /D %_CURRENT_RUNNING_DIR%
 @echo on
 @endlocal

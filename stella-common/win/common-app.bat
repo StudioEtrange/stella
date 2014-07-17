@@ -94,12 +94,13 @@ goto :eof
 	set "PROPERTIES="
 
 	if "%_app_path%"=="" (
-		set "_app_path=%PROJECT_ROOT%"
+		set "_app_path=%_CURRENT_RUNNING_DIR%"
 	)
 
 
 	if exist "%_app_path%\.stella" (
 		set "PROPERTIES=%_app_path%\.stella"
+		set "APP_ROOT=%_app_path%"
 	)
 	
 goto :eof

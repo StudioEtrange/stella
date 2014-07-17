@@ -1,8 +1,8 @@
-set FILE_DIR=%~dp0
-set CUR_DIR=%cd%
+set _CURRENT_FILE_DIR=%~dp0
+set _CURRENT_RUNNING_DIR=%cd%
 
 :: PATHS
-set STELLA_ROOT=%FILE_DIR%
+set STELLA_ROOT=%_CURRENT_FILE_DIR%
 set STELLA_ROOT=%STELLA_ROOT:~0,-1%
 set STELLA_COMMON=%STELLA_ROOT%\stella-common\win
 set POOL_DIR=%STELLA_ROOT%\stella-pool\win
@@ -11,9 +11,9 @@ set POOL_DIR=%STELLA_ROOT%\stella-pool\win
 call %STELLA_COMMON%\platform.bat :set_current_platform_info
 
 :: DEFAULT APP PATH INFO -------------
-set APP_ROOT=%CUR_DIR%
-set APP_WORK_ROOT=%CUR_DIR%
-set PROJECT_ROOT=%CUR_DIR%
+set APP_ROOT=%_CURRENT_RUNNING_DIR%
+set APP_WORK_ROOT=%_CURRENT_RUNNING_DIR%
+set PROJECT_ROOT=%_CURRENT_RUNNING_DIR%
 set CACHE_DIR=
 
 :: GATHER APP INFO
@@ -21,8 +21,7 @@ call %STELLA_COMMON%\common-app.bat :select_app
 call %STELLA_COMMON%\common-app.bat :get_all_properties
 
 :: APP PATH
-call %STELLA_COMMON%\common.bat :rel_to_abs_path "APP_ROOT" "%APP_ROOT%" "%CUR_DIR%"
-
+call %STELLA_COMMON%\common.bat :rel_to_abs_path "APP_ROOT" "%APP_ROOT%" "%_CURRENT_RUNNING_DIR%"
 call %STELLA_COMMON%\common.bat :rel_to_abs_path "PROJECT_ROOT" "%APP_WORK_ROOT%" "%APP_ROOT%"
 
 if "%CACHE_DIR%"=="" (

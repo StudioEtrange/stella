@@ -2,7 +2,7 @@ if [ ! "$_CONF_INCLUDED_" == "1" ]; then
 _CONF_INCLUDED_=1
 
 # STELLA PATHS ---------------------------------------------
-STELLA_ROOT="$_SOURCE_ORIGIN_FILE_DIR"
+STELLA_ROOT="$_CURRENT_FILE_DIR"
 STELLA_COMMON="$STELLA_ROOT/stella-common/nix"
 
 # STELLA INCLUDE ---------------------------------------------
@@ -18,9 +18,9 @@ source $STELLA_COMMON/common-app.sh
 set_current_platform_info
 
 # DEFAULT APP PATH INFO -------------
-APP_ROOT="$_CALL_ORIGIN_FILE_DIR"
-APP_WORK_ROOT="$_CALL_ORIGIN_FILE_DIR"
-PROJECT_ROOT="$_CALL_ORIGIN_FILE_DIR"
+APP_ROOT="$_CURRENT_RUNNING_DIR"
+APP_WORK_ROOT="$_CURRENT_RUNNING_DIR"
+PROJECT_ROOT="$_CURRENT_RUNNING_DIR"
 CACHE_DIR=
 
 # GATHER CURRENT APP INFO ---------------------------------------------

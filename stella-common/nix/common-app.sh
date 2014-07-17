@@ -13,7 +13,7 @@ function select_app() {
 	PROPERTIES=
 
 	if [ "$_app_path" == "" ]; then
-		_app_path=$_CALL_ORIGIN_FILE_DIR
+		_app_path=$_CURRENT_RUNNING_DIR
 	fi
 
 	if [ -f "$_app_path/.stella" ]; then
@@ -30,7 +30,7 @@ function init_app() {
 	local _workroot=$3
 	local _cachedir=$4
 
-	_approot=$(rel_to_abs_path "$_approot" "$_CALL_ORIGIN_FILE_DIR")
+	_approot=$(rel_to_abs_path "$_approot" "$_CURRENT_RUNNING_DIR")
 
 	mkdir -p $_approot
 
@@ -59,7 +59,6 @@ function get_all_properties() {
 	if [ -f "$PROPERTIES" ]; then
 			
 		# STELLA VARs
-		#get_key "$PROPERTIES" "STELLA" "APP_ROOT"
 		get_key "$PROPERTIES" "STELLA" "APP_WORK_ROOT"
 		get_key "$PROPERTIES" "STELLA" "CACHE_DIR"
 		get_key "$PROPERTIES" "STELLA" "DATA_LIST" "PREFIX"
