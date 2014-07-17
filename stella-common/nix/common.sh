@@ -31,11 +31,46 @@ function get_filename_from_url() {
 }
 
 
+
+function rel_to_abs_path() {
+	local _rel_path=$1
+	local _abs_root_path=$2
+
+
+	case $_rel_path in
+		/*)
+			# path is already absolute
+			echo "$_rel_path"
+			;;
+		*)
+			if [ "$_abs_root_path" == "" ]; then
+				# relative to current path
+				if [ -f "$_rel_path" ]; then
+					echo "$(cd "$_rel_path" && pwd )"
+				else
+					echo "$_rel_path"
+				fi
+			else
+				# relative to a given absolute path
+				if [ -f "$_abs_root_path/$_rel_path" ]; then
+					echo "$(cd "$_abs_root_path/$_rel_path" && pwd )"
+				else
+					echo "$_abs_root_path/$_rel_path"
+				fi
+			fi
+			;;
+	esac
+
+	
+
+	
+}
+
+
 function init_env() {
 	init_arg
 	init_all_features
 }
-
 
 
 

@@ -1,14 +1,11 @@
 #!/bin/bash
 # Usage :
 # stella.sh include
-# 		OR call stella :include
-#  stella.sh bootstrap [install path] --- install path is first fixed into link file (.-stella-link.bat)
-# 		OR call stella :bootstrap [install path]
-#  stella.sh <standard stella command>
+# stella.sh bootstrap [install path] --- By default, use value setted in .-stella-link.sh
+# stella.sh <standard stella command>
 
-#!/bin/bash
-_INCLUDED_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-_CALLING_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
+_SOURCE_ORIGIN_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+_CALL_ORIGIN_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
 
 
 
@@ -24,7 +21,7 @@ function bootstrap() {
 			if [ ! "$STELLA_ROOT" == "" ]; then
 				# install STELLA into STELLA_ROOT, and linked to the app
 				git clone https://bitbucket.org/StudioEtrange/lib-stella.git "$STELLA_ROOT"
-				echo "STELLA_ROOT=$STELLA_ROOT" >$_INCLUDED_FILE_DIR/.stella-link.sh
+				echo "STELLA_ROOT=$STELLA_ROOT" >$_SOURCE_ORIGIN_FILE_DIR/.stella-link.sh
 				$STELLA_ROOT/tools.sh install default
 			else
 				echo "** ERROR please specify an install path for STELLA"
@@ -38,7 +35,7 @@ function bootstrap() {
 			else
 				# install STELLA into arg #2, and linked to the app
 				git clone https://bitbucket.org/StudioEtrange/lib-stella.git "$ARG"
-				echo "STELLA_ROOT=$ARG" >$_INCLUDED_FILE_DIR/.stella-link.sh
+				echo "STELLA_ROOT=$ARG" >$_SOURCE_ORIGIN_FILE_DIR/.stella-link.sh
 				$STELLA_ROOT/tools.sh install default
 			fi
 		fi
@@ -62,8 +59,8 @@ STELLA_ROOT=
 
 
 # Check if APP is linked to STELLA -------------------------
-if [ -f "$_INCLUDED_FILE_DIR/.stella-link.sh" ]; then (
-	source "$_INCLUDED_FILE_DIR/.stella-link.sh"
+if [ -f "$_SOURCE_ORIGIN_FILE_DIR/.stella-link.sh" ]; then
+	source "$_SOURCE_ORIGIN_FILE_DIR/.stella-link.sh"
 	if [ ! "$STELLA_ROOT" == "" ]; then
 		if [ -f "$STELLA_ROOT/stella.sh" ]; then
 			IS_STELLA_LINKED="TRUE"

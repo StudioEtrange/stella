@@ -106,15 +106,55 @@ goto :eof
 	)
 goto :eof
 
+
+:: Test if a path is absolute
+:: ARG1 is the name of the return variable - TRUE if path is absolute, FALSE if path is not absolute
+:: ARG2 path to test
+REM http://stackoverflow.com/questions/141344/how-to-check-if-directory-exists-in-path
+:is_path_abs
+	set "_result_var_is_path_abs=%~1"
+	set "_test_path=%~2"
+echo("%_test_path%"|findstr /i /r /c:^"^^\"[a-zA-Z]:[\\/][^\\/]" ^
+                           /c:^"^^\"[\\][\\]" >nul ^
+  && set "%_result_var_is_path_abs%=TRUE" || set "%_result_var_is_path_abs%=FALSE"
+goto :eof
+
+:: Convert relative to absolute path
+:: ARG1 is the name of the return variable
+:: ARG2 is the path to Convert
+:: ARG3 is optional - This is the absolute path from which the path is relative - By default we take current directory
+REM http://stackoverflow.com/questions/1645843/resolve-absolute-path-from-relative-path-and-or-file-name
+REM %~f1 get the fully qualified path of your first argument but this gives a path according to the current working directory
+REM %~dp0 get the fully qualified path of the 0th argument (which is the current script)
+:rel_to_abs_path
+	set "_result_var_rel_to_abs_path=%~1"
+	set "_rel_path=%~2"
+	if defined %2 set "_rel_path=!%~2!"
+
+	call :is_path_abs "IS_ABS" "%_rel_path%"
+	if "%IS_ABS%"=="TRUE" ( 
+		set "_abs_root_path="
+		for %%A in ( %_rel_path%\ ) do set "_temp_path=%%~dpA"
+		set %_result_var_rel_to_abs_path%=!_temp_path:~0,-1!
+	) else (
+		set "_abs_root_path=%~3"
+		if not defined _abs_root_path set "_abs_root_path=%CD%"
+		for /f "tokens=*" %%A in ("!_abs_root_path!.\%_rel_path%") do set "%_result_var_rel_to_abs_path%=%%~fA"
+	)
+	
+	REM for %%A in ( %_rel_path%\ ) do set _rel_path=%%~dpA
+	REM set _rel_path=%_rel_path:~0,-1%
+goto :eof
+
 :: MEASURE TOOL------------
 :timecount_start
 	set %~1=%RANDOM%%RANDOM%
-	set "_rcs_timecount_start_!%~1!=%time%"
+	set "_stella_timecount_start_!%~1!=%time%"
 goto :eof
 
 :timecount_stop
 	set _end_time=%time%
-	set _start_time=!_rcs_timecount_start_%~1!
+	set _start_time=!_stella_timecount_start_%~1!
 
 	:: TODO the separator change depending of the local language. it is not always ':' and '.'
 	set _options="tokens=1-4 delims=:,."
@@ -133,7 +173,7 @@ goto :eof
 	if 1%_ms% lss 100 set _ms=0%_ms%
 
 	set /a _totalsecs = %_hours%*3600 + %_mins%*60 + %_secs% 
-	set "RCS_TIMECOUNT_ELAPSED=%_hours%:%_mins%:%_secs%.%_ms% -- total : %_totalsecs%.%_ms%s"
+	set "STELLA_TIMECOUNT_ELAPSED=%_hours%:%_mins%:%_secs%.%_ms% -- total : %_totalsecs%.%_ms%s"
 goto :eof
 
 :: PROCESSUS TOOL--------------
@@ -194,7 +234,7 @@ goto :eof
 
 	if "%_opt_wait%"=="ON" (
 		call %STELLA_COMMON%\common.bat :timecount_stop !timecount_id!
-		echo ** Fork terminated in !RCS_TIMECOUNT_ELAPSED!
+		echo ** Fork terminated in !STELLA_TIMECOUNT_ELAPSED!
 	)
 goto :eof
 

@@ -1,7 +1,7 @@
 #!/bin/bash
-_INCLUDED_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-_CALLING_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
-source $_INCLUDED_FILE_DIR/conf.sh
+_SOURCE_ORIGIN_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+_CALL_ORIGIN_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
+source $_SOURCE_ORIGIN_FILE_DIR/conf.sh
 
 
 function usage() {
@@ -9,7 +9,7 @@ function usage() {
 	echo "----------------"
 	echo "List of commands"
 	echo " o-- application management :"
-	echo " L     app init <application name> [-approot=<path>] [-workroot=<path>] [-cachedir=<path>]"
+	echo " L     app init <application name> [-approot=<path>] [-workroot=<abs or relative path to approot>] [-cachedir=<abs or relative path to approot>]"
 	echo " L     app get-data get-assets <data OR assets id OR all>"
 	echo " L     app setup-env <env id OR all>"
 	echo " o-- tools management :"

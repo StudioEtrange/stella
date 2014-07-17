@@ -2,7 +2,7 @@ if [ ! "$_CONF_INCLUDED_" == "1" ]; then
 _CONF_INCLUDED_=1
 
 # STELLA PATHS ---------------------------------------------
-STELLA_ROOT="$_INCLUDED_FILE_DIR"
+STELLA_ROOT="$_SOURCE_ORIGIN_FILE_DIR"
 STELLA_COMMON="$STELLA_ROOT/stella-common/nix"
 
 # STELLA INCLUDE ---------------------------------------------
@@ -17,19 +17,23 @@ source $STELLA_COMMON/common-app.sh
 # GATHER PLATFORM INFO ---------------------------------------------
 set_current_platform_info
 
-# GATHER CURRENT APP INFO ---------------------------------------------
-#APP_ROOT="$_CALLING_FILE_DIR"
-APP_WORK_ROOT="$_CALLING_FILE_DIR"
-PROJECT_ROOT="$APP_WORK_ROOT"
+# DEFAULT APP PATH INFO -------------
+APP_ROOT="$_CALL_ORIGIN_FILE_DIR"
+APP_WORK_ROOT="$_CALL_ORIGIN_FILE_DIR"
+PROJECT_ROOT="$_CALL_ORIGIN_FILE_DIR"
 CACHE_DIR=
-select_app_properties
+
+# GATHER CURRENT APP INFO ---------------------------------------------
+select_app
 get_all_properties
 
-# APP PATHS ---------------------------------------------
+# APP PATH ---------------------------------------------
 PROJECT_ROOT="$APP_WORK_ROOT"
+PROJECT_ROOT=$(rel_to_abs_path "$PROJECT_ROOT" "$APP_ROOT")
 if [ "$CACHE_DIR" == "" ]; then
 	CACHE_DIR="$PROJECT_ROOT/cache"
 fi
+CACHE_DIR=$(rel_to_abs_path "$CACHE_DIR" "$APP_ROOT")
 
 TEMP_DIR="$PROJECT_ROOT/temp"
 TOOL_ROOT="$PROJECT_ROOT/tool_$STELLA_CURRENT_PLATFORM_SUFFIX/$STELLA_CURRENT_OS"

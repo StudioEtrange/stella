@@ -88,8 +88,8 @@ goto :eof
 	)
 goto :eof
 
-:select_app_properties
-	set "_app_path=%~1"
+:select_app
+	set "_app_path="
 
 	set "PROPERTIES="
 

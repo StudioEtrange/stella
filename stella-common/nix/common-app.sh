@@ -7,19 +7,21 @@ _COMMON_APP_INCLUDED_=1
 # APP RESSOURCES & ENV MANAGEMENT ---------------
 
 
-function select_app_properties() {
-	local _app_path=$1
+function select_app() {
+	local _app_path=
 
 	PROPERTIES=
 
 	if [ "$_app_path" == "" ]; then
-		_app_path=$PROJECT_ROOT
+		_app_path=$_CALL_ORIGIN_FILE_DIR
 	fi
 
 	if [ -f "$_app_path/.stella" ]; then
 		PROPERTIES="$_app_path/.stella"
+		APP_ROOT=$_app_path
 	fi
 	
+
 }
 
 function init_app() {
@@ -27,6 +29,8 @@ function init_app() {
 	local _approot=$2
 	local _workroot=$3
 	local _cachedir=$4
+
+	_approot=$(rel_to_abs_path "$_approot" "$_CALL_ORIGIN_FILE_DIR")
 
 	mkdir -p $_approot
 
@@ -39,7 +43,7 @@ function init_app() {
 	if [ -f "$PROPERTIES" ]; then
 		echo " ** Properties file already exist"
 	else
-		#add_key "$PROPERTIES" "STELLA" "APP_ROOT" "$_approot"
+		add_key "$PROPERTIES" "STELLA" "APP_ROOT" "$_approot"
 		add_key "$PROPERTIES" "STELLA" "APP_WORK_ROOT" "$_workroot"
 		add_key "$PROPERTIES" "STELLA" "CACHE_DIR" "$_cachedir"
 		add_key "$PROPERTIES" "STELLA" "DATA_LIST"
