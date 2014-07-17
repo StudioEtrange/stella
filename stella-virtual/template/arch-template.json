@@ -1,0 +1,54 @@
+{
+    "variables": {
+        "iso_url": "https://mirrors.kernel.org/archlinux/iso/2014.07.03/archlinux-2014.07.03-dual.iso",
+        "iso_checksum": "fb183aa53b5bb895223111cd5319bddef8ff8f5f",
+        "iso_checksum_type": "sha1"
+    },
+    "builders": [
+        {
+            "type": "virtualbox-iso",
+            "iso_url": "{{user `iso_url`}}",
+            "iso_checksum": "{{user `iso_checksum`}}",
+            "iso_checksum_type": "{{user `iso_checksum_type`}}",
+            "guest_os_type": "ArchLinux_64",
+            "guest_additions_mode": "disable",
+            "http_directory": ".",
+            "boot_wait": "5s",
+            "boot_command": [
+                "<enter><wait10><wait10>",
+                "/usr/bin/curl -O http://{{.HTTPIP}}:{{.HTTPPort}}/install-virtualbox.sh<enter><wait5>",
+                "/usr/bin/curl -O http://{{.HTTPIP}}:{{.HTTPPort}}/poweroff.timer<enter><wait5>",
+                "/usr/bin/bash ./install-virtualbox.sh<enter>"
+            ],
+            "disk_size": 20480,
+            "hard_drive_interface": "sata",
+            "ssh_username": "root",
+            "ssh_password": "vagrant",
+            "shutdown_command": "systemctl start poweroff.timer"
+        },
+        {
+            "type": "vmware-iso",
+            "iso_url": "{{user `iso_url`}}",
+            "iso_checksum": "{{user `iso_checksum`}}",
+            "iso_checksum_type": "{{user `iso_checksum_type`}}",
+            "http_directory": ".",
+            "boot_wait": "5s",
+            "boot_command": [
+                "<enter><wait10><wait10>",
+                "/usr/bin/curl -O http://{{.HTTPIP}}:{{.HTTPPort}}/install-vmware.sh<enter><wait5>",
+                "/usr/bin/curl -O http://{{.HTTPIP}}:{{.HTTPPort}}/poweroff.timer<enter><wait5>",
+                "/usr/bin/bash ./install-vmware.sh<enter>"
+            ],
+            "disk_size": 20480,
+            "ssh_username": "root",
+            "ssh_password": "vagrant",
+            "shutdown_command": "systemctl start poweroff.timer"
+        }
+    ],
+    "post-processors": [
+        {
+            "type": "vagrant",
+            "output": "packer_arch_{{.Provider}}.box"
+        }
+    ]
+}
