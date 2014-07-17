@@ -31,10 +31,10 @@ function init_app() {
 	local _cachedir=$4
 
 	_approot=$(rel_to_abs_path "$_approot" "$_CURRENT_RUNNING_DIR")
-
 	mkdir -p $_approot
 
-	echo "STELLA_ROOT=$STELLA_ROOT" >$_approot/.stella-link.sh
+	_stella_root=$(abs_to_rel_path "$STELLA_ROOT" "$_approot")
+	echo "STELLA_ROOT=$_stella_root" >$_approot/.stella-link.sh
 
 	cp -f "$STELLA_COMMON/stella-template.sh" "$_approot/stella.sh"
 	chmod +x $_approot/stella.sh

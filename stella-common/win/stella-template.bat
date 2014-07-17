@@ -8,6 +8,7 @@ REM		OR call stella :bootstrap [install path]
 REM stella.bat <standard stella command>
 
 set _CURRENT_FILE_DIR=%~dp0
+set _CURRENT_FILE_DIR=%_CURRENT_FILE_DIR:~0,-1%
 set _CURRENT_RUNNING_DIR=%cd%
 
 set IS_STELLA_LINKED=FALSE

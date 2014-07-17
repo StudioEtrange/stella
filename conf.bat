@@ -1,11 +1,15 @@
 set _CURRENT_FILE_DIR=%~dp0
+set _CURRENT_FILE_DIR=%_CURRENT_FILE_DIR:~0,-1%
 set _CURRENT_RUNNING_DIR=%cd%
+
 
 :: PATHS
 set STELLA_ROOT=%_CURRENT_FILE_DIR%
-set STELLA_ROOT=%STELLA_ROOT:~0,-1%
+REM set STELLA_ROOT=%STELLA_ROOT:~0,-1%
 set STELLA_COMMON=%STELLA_ROOT%\stella-common\win
 set POOL_DIR=%STELLA_ROOT%\stella-pool\win
+
+
 
 :: GATHER PLATFORM INFO
 call %STELLA_COMMON%\platform.bat :set_current_platform_info
@@ -29,22 +33,22 @@ if "%CACHE_DIR%"=="" (
 )
 call %STELLA_COMMON%\common.bat :rel_to_abs_path "CACHE_DIR" "%CACHE_DIR%" "%APP_ROOT%"
 
-
 set TEMP_DIR=%PROJECT_ROOT%\temp
 set TOOL_ROOT=%PROJECT_ROOT%\tool_%STELLA_CURRENT_PLATFORM_SUFFIX%\%STELLA_CURRENT_OS%
 set DATA_ROOT=%PROJECT_ROOT%\data
 set ASSETS_ROOT=%PROJECT_ROOT%\assets
 
-set ASSETS_REPOSITORY=%PROJECT_ROOT%\..\assets_repository
-for %%A in ( %ASSETS_REPOSITORY%\ ) do set ASSETS_REPOSITORY=%%~dpA
+call %STELLA_COMMON%\common.bat :rel_to_abs_path "ASSETS_REPOSITORY" "..\assets_repository" "%PROJECT_ROOT%"
 
-:: OTHERS
+:: DEFAULT TOOLS ---------------------------------------------
 set WGET="%TOOL_ROOT%\wget\bin\wget.exe"
 set UZIP="%TOOL_ROOT%\unzip\bin\unzip.exe"
 set U7ZIP="%TOOL_ROOT%\sevenzip\7z.exe"
 set PATCH="%TOOL_ROOT%\patch\bin\patch.exe"
 set GNUMAKE="%TOOL_ROOT%\make\bin\make.exe"
 
+
+:: OTHERS ---------------------------------------------
 set FEATURE_LIST_ENABLED=
 set DEFAULT_VERBOSE_MODE=0
 
@@ -65,6 +69,7 @@ set "PACKER_CACHE_DIR=%CACHE_DIR%"
 :: choose a default hypervisor for packer and vagrant
 :: vmware or virtualbox
 set VIRTUAL_DEFAULT_HYPERVISOR=virtualbox
+
 
 
 

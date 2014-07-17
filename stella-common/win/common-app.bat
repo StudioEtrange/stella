@@ -111,29 +111,19 @@ goto :eof
 	set "_workroot=%~3"
 	set "_cachedir=%~4"
 
+	call %STELLA_COMMON%\common.bat :rel_to_abs_path "_approot" "%_approot%" "%_CURRENT_RUNNING_DIR%"
 	if not exist "%_approot%" mkdir "%_approot%"
 
-	REM > "%_approot%\.stella-link.bat" ECHO(@setlocal enableExtensions enableDelayedExpansion
-	REM >> "%_approot%\.stella-link.bat" ECHO(@echo off
-	> "%_approot%\.stella-link.bat" ECHO(@set STELLA_ROOT=%STELLA_ROOT%
-	REM >> "%_approot%\.stella-link.bat" ECHO(@echo on
-	REM >> "%_approot%\.stella-link.bat" ECHO(@endlocal
+
+	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_STELLA_ROOT" "%STELLA_ROOT%" "%_approot%"
+	> "%_approot%\.stella-link.bat" ECHO(@set STELLA_ROOT=%_STELLA_ROOT%
 
 	copy /y "%STELLA_COMMON%\stella-template.bat" "%_approot%\stella.bat"
-	REM > "%_approot%\stella.bat" ECHO(@setlocal enableExtensions enableDelayedExpansion
-	REM >> "%_approot%\stella.bat" ECHO(@echo off
-	REM >> "%_approot%\stella.bat" ECHO(call %STELLA_ROOT%\stella.bat %%*
-	REM >> "%_approot%\stella.bat" ECHO(@echo on
-	REM >> "%_approot%\stella.bat" ECHO(@endlocal
-
 
 	set "PROPERTIES=%_approot%\.stella"
-
 	if exist "%PROPERTIES%" (
 		echo ** Properties file already exists
 	) else (
-
-		REM call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "APP_ROOT" "%_approot%"
 		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "APP_WORK_ROOT" "%_workroot%"
 		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "CACHE_DIR" "%_cachedir%"
 		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "DATA_LIST" ""

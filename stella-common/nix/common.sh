@@ -31,6 +31,18 @@ function get_filename_from_url() {
 }
 
 
+function is_abs() {
+	local _path=$1
+
+	case $_path in
+		/*)
+			echo "TRUE"
+			;;
+		*)
+			echo "FALSE"
+			;;
+	esac
+}
 
 function rel_to_abs_path() {
 	local _rel_path=$1
@@ -60,11 +72,67 @@ function rel_to_abs_path() {
 			fi
 			;;
 	esac
-
-	
-
-	
 }
+
+
+function abs_to_rel_path() {
+	local _abs_path="$1"
+	local target="$2"
+	#echo "_abs_path : \"$_abs_path\""
+	#echo "target : \"$target\""
+	
+	local common_part=$_abs_path # for now
+
+	local result=""
+
+	#echo "common_part is now : \"$common_part\""
+	#echo "result is now      : \"$result\""
+	#echo "target#common_part : \"${target#$common_part}\""
+	while [[ "${target#$common_part}" == "${target}" ]]; do
+		# no match, means that candidate common part is not correct
+		# go up one level (reduce common part)
+		common_part="$(dirname $common_part)"
+		# and record that we went back
+		if [[ -z $result ]]; then
+			result=".."
+		else
+			result="../$result"
+		fi
+		#echo "common_part is now : \"$common_part\""
+		#echo "result is now      : \"$result\""
+		#echo "target#common_part : \"${target#$common_part}\""
+	done
+
+	#echo "common_part is     : \"$common_part\""
+
+	if [[ $common_part == "/" ]]; then
+		# special case for root (no common path)
+		result="$result/"
+	fi
+
+	# since we now have identified the common part,
+	# compute the non-common part
+	forward_part="${target#$common_part}"
+	#echo "forward_part = \"$forward_part\""
+
+	if [[ -n $result ]] && [[ -n $forward_part ]]; then
+		#echo "(simple concat)"
+		result="$result$forward_part"
+	elif [[ -n $forward_part ]]; then
+		#echo "(concat with slash removal)"
+		result="${forward_part:1}"
+	else
+		#echo "(no concat)"
+		do_nothing=1
+	fi
+	#echo "result = \"$result\""
+	return_value=$result
+
+	echo "$return_value"
+
+
+}
+
 
 
 function init_env() {

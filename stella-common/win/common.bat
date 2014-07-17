@@ -5,7 +5,7 @@ goto :eof
 ::-- Functions
 ::--------------------------------------------------------
 
-:: COMMON COMMAND LINE ARG PARSE
+:: COMMON COMMAND LINE ARG PARSE------------------------ 
 :init_arg
 
 	:: VERBOSE
@@ -21,7 +21,7 @@ goto :eof
 
 goto :eof
 
-
+:: COMMON ENV------------------------ 
 :init_env
 	call :init_arg
 	call :init_all_features
@@ -138,12 +138,44 @@ REM %~dp0 get the fully qualified path of the 0th argument (which is the current
 		set %_result_var_rel_to_abs_path%=!_temp_path:~0,-1!
 	) else (
 		set "_abs_root_path=%~3"
-		if not defined _abs_root_path set "_abs_root_path=%CD%"
+		if not defined _abs_root_path set "_abs_root_path=%_CURRENT_RUNNING_DIR%"
 		for /f "tokens=*" %%A in ("!_abs_root_path!.\%_rel_path%") do set "%_result_var_rel_to_abs_path%=%%~fA"
 	)
 	
 	REM for %%A in ( %_rel_path%\ ) do set _rel_path=%%~dpA
 	REM set _rel_path=%_rel_path:~0,-1%
+goto :eof
+
+:: Convert absolute to relative path
+:: ARG1 is the name of the return variable
+:: ARG2 is the path to Convert
+:: ARG3 is optional - This is the absolute path from which the path will be relative - By default we take current directory
+REM http://www.dostips.com/DtCodeCmdLib.php#Function.MakeRelative
+:abs_to_rel_path
+	set "_result_var_abs_to_rel_path=%~1"
+	set _abs_path=%~2
+	if defined %2 set _abs_path=!%~2!
+	set _base_path=%~3
+
+	call :is_path_abs "IS_ABS" "%_abs_path%"
+	
+	REM Do not try to put code below in a IF statement
+	
+	if not defined _base_path set _base_path=%_CURRENT_RUNNING_DIR%
+	for /f "tokens=*" %%a in ("%_abs_path%") do set _abs_path=%%~fa
+	for /f "tokens=*" %%a in ("%_base_path%") do set _base_path=%%~fa
+	set _mat=&rem variable to store matching part of the name
+	set _upp=&rem variable to reference a parent
+	for /f "tokens=*" %%a in ('echo.%_base_path:\=^&echo.%') do (
+	    set _sub=!_sub!%%a\
+	    call set _tmp=%%_abs_path:!_sub!=%%
+	    if "!_tmp!" NEQ "!_abs_path!" (set _mat=!_sub!)ELSE (set _upp=!_upp!..\)
+	)
+	set _abs_path=%_upp%!_abs_path:%_mat%=!
+	set %_result_var_abs_to_rel_path%=%_abs_path%
+
+
+	if "%IS_ABS%"=="FALSE" set %_result_var_abs_to_rel_path%=%~2
 goto :eof
 
 :: MEASURE TOOL------------

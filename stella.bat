@@ -25,13 +25,14 @@ if "%DOMAIN%"=="app" (
 
 	if "%ACTION%"=="init" (
 		REM first init STELLA
+		REM TODO init stella when creating each app ?
 		call %STELLA_ROOT%\init.bat
 		@echo off
 		if "%-approot%"=="" (
-			set "-approot=%PROJECT_ROOT%"
+			set "-approot=%_CURRENT_RUNNING_DIR%"
 		)
 		if "%-workroot%"=="" (
-			set "-workroot=!-approot!"
+			set "-workroot=."
 		)
 
 		if "%-cachedir%"=="" (

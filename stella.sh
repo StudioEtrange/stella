@@ -50,12 +50,13 @@ if [ "$DOMAIN" == "app" ]; then
 
 	if [ "$ACTION" == "init" ]; then
 		# first init STELLA
+		# TODO init stella when creating each app ?
 		sudo $STELLA_ROOT/init.sh
 		if [ "$APPROOT" == "" ]; then
-			APPROOT=$PROJECT_ROOT
+			APPROOT=$_CURRENT_RUNNING_DIR
 		fi
 		if [ "$WORKROOT" == "" ]; then
-			WORKROOT=$APPROOT
+			WORKROOT=.
 		fi
 		if [ "$CACHEDIR" == "" ]; then
 			CACHEDIR=$WORKROOT/cache
