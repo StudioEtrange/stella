@@ -1,8 +1,15 @@
 #!/bin/bash
 _CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 _CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
-source $__CURRENT_FILE_DIR/conf.sh
+source $_CURRENT_FILE_DIR/conf.sh
 
+
+function _virtual_init_folder() {
+
+	[ ! -d "$VIRTUAL_WORK_ROOT" ] && mkdir -p "$VIRTUAL_WORK_ROOT"
+	[ ! -d "$VIRTUAL_ENV_ROOT" ] && mkdir -p "$VIRTUAL_ENV_ROOT"
+	[ ! -d "$VIRTUAL_TEMPLATE_ROOT" ] && mkdir -p "$VIRTUAL_TEMPLATE_ROOT"	
+}
 
 function list_env() {
 	"$VAGRANT_CMD" global-status
@@ -63,10 +70,6 @@ function create_env() {
 		echo "** Env $ENVNAME is initialized"
 
 	fi
-
-	#echo "** Now starting it ..."
-
-	#run_env
 }
 
 
@@ -251,7 +254,7 @@ ENVNAME=''							'e'			''					s			0		''						Environment name.
 LOGIN=''							'l'			''					b			0		'1'						Autologin in env.
 ENVCPU=''							''			''					i 			0		''						Nb CPU attributed to the virtual env.
 ENVMEM=''							''			''					i 			0		''						Memory attributed to the virtual env.
-VMGUI=''							''			''					b			0		'1'						Hypervison headless.
+VMGUI=''							''			''					b			0		'1'						Hyperviser head.
 "
 
 
@@ -265,13 +268,10 @@ if [ ! "$DISTRIB" == "" ]; then
 fi
 
 
-[ ! -d "$VIRTUAL_WORK_ROOT" ] && mkdir -p "$VIRTUAL_WORK_ROOT"
-[ ! -d "$VIRTUAL_ENV_ROOT" ] && mkdir -p "$VIRTUAL_ENV_ROOT"
-[ ! -d "$VIRTUAL_TEMPLATE_ROOT" ] && mkdir -p "$VIRTUAL_TEMPLATE_ROOT"
-
 
 case $ACTION in
     create-box)
+		_virtual_init_folder
     	create_box
     	;;
 	get-box)
@@ -281,21 +281,26 @@ case $ACTION in
     	list_box
     	;;
     create-env)
+		_virtual_init_folder
     	create_env
     	;;
     run-env)
+		_virtual_init_folder
     	run_env
     	;;
     stop-env)
+		_virtual_init_folder
     	stop_env
     	;;
     list-env)
     	list_env
     	;;
     info-env)
+		_virtual_init_folder
     	info_env
     	;;
     destroy-env)
+		_virtual_init_folder
     	destroy_env
     	;;
 	*)

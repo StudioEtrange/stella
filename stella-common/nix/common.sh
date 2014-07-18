@@ -76,8 +76,9 @@ function rel_to_abs_path() {
 
 
 function abs_to_rel_path() {
-	local _abs_path="$1"
-	local target="$2"
+	
+	local target="$1"
+	local _abs_path="$2"
 	local common_part=$_abs_path # for now
 
 	local result=""

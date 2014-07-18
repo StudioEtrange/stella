@@ -8,8 +8,8 @@ call %~dp0\conf.bat
 
 
 :: arguments
-set "params=domain:"app tools virtual" action:"init get-data get-assets setup-env install run-env stop-env destroy-env create-box get-box destroy-box" id:"_ANY_""
-set "options=-v: -vv: -f: -arch:"#x64 x86" -envcpu:_ANY_ -envmem:_ANY_ -vmgui: -l: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_"
+set "params=domain:"app tools virtual" action:"init get-data get-assets setup-env install list create-env run-env stop-env destroy-env info-env create-box get-box destroy-box" id:"_ANY_""
+set "options=-v: -vv: -f: -arch:"#x64 x86" -distrib:_ANY_ -envcpu:_ANY_ -envmem:_ANY_ -vmgui: -l: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_"
 
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
@@ -95,7 +95,6 @@ if "%DOMAIN%"=="tools" goto :end
 
 
 REM --------------- VIRTUAL ----------------------------
-REM TODO info-env list-env list-box commands
 if "%DOMAIN%"=="virtual" (
 	set "_virtual_options="
 	if not "%-envcpu%"=="" set "_virtual_options=%_virtual_options% -envcpu=%-envcpu%"
@@ -108,8 +107,20 @@ if "%DOMAIN%"=="virtual" (
 	if "%-vv%"=="1" set "_virtual_options=%_virtual_options% -vv"
 
 	
-	if "%ACTION%"=="setup-env" (
-		call %STELLA_COMMON%\common-app.bat :setup_env %id%
+	if "%ACTION%"=="list" (
+		if "%id%"=="env" (
+			call %STELLA_ROOT%\virtual.bat list-env %_virtual_options%
+			@echo off
+		)
+		if "%id%"=="box" (
+			call %STELLA_ROOT%\virtual.bat list-box %_virtual_options%
+			@echo off
+		)
+		
+	)
+
+	if "%ACTION%"=="create-env" (
+		call %STELLA_ROOT%\virtual.bat create-env -distrib=!-distrib! -envname="%id%" %_virtual_options%
 		@echo off
 	)
 
@@ -125,6 +136,11 @@ if "%DOMAIN%"=="virtual" (
 
 	if "%ACTION%"=="destroy-env" (
 		call %STELLA_ROOT%\virtual.bat destroy-env -envname="%id%" %_virtual_options%
+		@echo off
+	)
+
+	if "%ACTION%"=="info-env" (
+		call %STELLA_ROOT%\virtual.bat info-env -envname="%id%" %_virtual_options%
 		@echo off
 	)
 
@@ -156,14 +172,16 @@ if "%DOMAIN%"=="virtual" goto :end
 	echo 	* application management :
 	echo 		%~n0 app init ^<application name^> [-approot=^<path^>] [-workroot=^<path^>] [-cachedir=^<path^>]
 	echo 		%~n0 app get-data get-assets ^<data OR assets id OR all^>
-	echo 		%~n0 app setup-env ^<env id OR all^>
+	echo 		%~n0 app setup-env ^<env id OR all^> : download, build, deploy and run virtual environment based on app properties
 	echo	* tools management :
 	echo 		%~n0 tools install default : install default tools
 	echo 		%~n0 tools install ^<tool name^> : install a tools
 	echo 		%~n0 tools install list : list available tools
 	echo	* virtual management :
-	echo 		%~n0 virtual setup-env run-env stop-env destroy-env ^<env id^>
-	echo 		%~n0 virtual create-box get-box destroy-box ^<distrib id^>
+	echo 		%~n0 virtual create-env ^<env id^> -distrib=^<id^>: create a new environment from a generic box prebuilt with a specific distribution
+	echo		%~n0 virtual run-env stop-env destroy-env info-env ^<env id^> : manage environment
+	echo 		%~n0 virtual create-box get-box destroy-box ^<distrib id^> : manage generic boxes built with a specific distribution
+	echo 		%~n0 virtual list ^<box|env^>
 goto :end
 
 

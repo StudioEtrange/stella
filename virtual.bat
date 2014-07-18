@@ -35,12 +35,10 @@ if not "%DISTRIB%"=="" (
 	call :_set_matrix %DISTRIB%
 )
 
-if not exist "%VIRTUAL_WORK_ROOT%" mkdir "%VIRTUAL_WORK_ROOT%"
-if not exist "%VIRTUAL_ENV_ROOT%" mkdir "%VIRTUAL_ENV_ROOT%"
-if not exist "%VIRTUAL_TEMPLATE_ROOT%" mkdir "%VIRTUAL_TEMPLATE_ROOT%"
 
 REM --------------- BOX MANAGEMENT -------------------------
 if "%action%"=="create-box" (
+	call :_virtual_init_folder
 	call :create_box
 	goto :end
 )
@@ -59,6 +57,7 @@ if "%action%"=="list-box" (
 REM --------------- ENV MANAGEMENT -------------------------
 
 if "%action%"=="create-env" (
+	call :_virtual_init_folder
 	call :create_env
 	goto :end
 )
@@ -69,21 +68,25 @@ if "%action%"=="list-env" (
 )
 
 if "%action%"=="destroy-env" (
+	call :_virtual_init_folder
 	call :destroy_env
 	goto :end
 )
 
 if "%action%"=="run-env" (
+	call :_virtual_init_folder
 	call :run_env
 	goto :end
 )
 
 if "%action%"=="stop-env" (
+	call :_virtual_init_folder
 	call :stop_env
 	goto :end
 )
 
 if "%action%"=="info-env" (
+	call :_virtual_init_folder
 	call :info_env
 	goto :end
 )
@@ -99,7 +102,11 @@ REM ------------------------------------ INTERNAL FUNCTIONS --------------------
    echo %~n0 %ARGOPT_HELP_SYNTAX%
 goto :end
 
-
+:_virtual_init_folder
+	if not exist "%VIRTUAL_WORK_ROOT%" mkdir "%VIRTUAL_WORK_ROOT%"
+	if not exist "%VIRTUAL_ENV_ROOT%" mkdir "%VIRTUAL_ENV_ROOT%"
+	if not exist "%VIRTUAL_TEMPLATE_ROOT%" mkdir "%VIRTUAL_TEMPLATE_ROOT%"
+goto :eof
 
 :_set_matrix
 	set "_distrib=%~1"
@@ -296,9 +303,6 @@ goto :eof
 		echo ** Env %VM_ENV_NAME% is initialized
 
 	)
-	
-	REM echo ** Now starting it ...
-	REM call :run_env
 	
 goto :eof
 

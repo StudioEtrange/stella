@@ -4,8 +4,8 @@
 APP_NAME=test
 APP_WORK_ROOT=.
 CACHE_DIR=.\cache
-DATA_LIST=
-ASSETS_LIST=
+DATA_LIST=PACK_DATA PACK_DATA2 PACK_DATA3
+ASSETS_LIST=PACK_ASSETS1 PACK_ASSETS2
 ENV_LIST=ENV1
 INFRA_LIST=INFRA1
 
@@ -19,3 +19,41 @@ INFRA_MEM=2048
 [ENV1]
 ENV_NAME=mytest
 INFRA_ID=INFRA1
+
+[PACK_DATA]
+DATA_MAIN_PACKAGE=data_demo
+DATA_NAME=official_data
+DATA_URI=https://bitbucket.org/ryzom/ryzomcore-data
+DATA_GET_PROTOCOL=HG
+DATA_OPTIONS=MERGE
+
+[PACK_DATA2]
+DATA_MAIN_PACKAGE=data_demo2
+DATA_NAME=official_data2
+DATA_URI=https://bitbucket.org/studioetrange/ryzomcore-script
+DATA_GET_PROTOCOL=HG
+DATA_OPTIONS=MERGE
+
+[PACK_DATA3]
+DATA_MAIN_PACKAGE=
+DATA_NAME=test_data2
+DATA_URI=https://bitbucket.org/studioetrange/ryzomcore-script
+DATA_GET_PROTOCOL=HG
+DATA_OPTIONS=
+
+
+
+[PACK_ASSETS1]
+ASSETS_MAIN_PACKAGE=asset_demo
+ASSETS_NAME=ryzom_assets_rev3
+ASSETS_URI=http://dl.kaetemi.be/ryzom/assets/ryzom_assets_rev3.7z
+ASSETS_GET_PROTOCOL=HTTP_ZIP
+ASSETS_OPTIONS=MERGE
+
+[PACK_ASSETS2]
+ASSETS_MAIN_PACKAGE=asset_demo_export
+ASSETS_NAME=ryzom_assets_export_rev3
+ASSETS_URI=http://dl.kaetemi.be/ryzom/bin/ryzom_assets_export_rev3.7z
+ASSETS_GET_PROTOCOL=HTTP_ZIP
+ASSETS_OPTIONS=MERGE
+

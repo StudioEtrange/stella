@@ -44,7 +44,6 @@ function init_app() {
 		echo " ** Properties file already exist"
 	else
 		add_key "$PROPERTIES" "STELLA" "APP_NAME" "$_app_name"
-		add_key "$PROPERTIES" "STELLA" "APP_ROOT" "$_approot"
 		add_key "$PROPERTIES" "STELLA" "APP_WORK_ROOT" "$_workroot"
 		add_key "$PROPERTIES" "STELLA" "CACHE_DIR" "$_cachedir"
 		add_key "$PROPERTIES" "STELLA" "DATA_LIST"
