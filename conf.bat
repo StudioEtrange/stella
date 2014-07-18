@@ -5,7 +5,6 @@ set _CURRENT_RUNNING_DIR=%cd%
 
 :: PATHS
 set STELLA_ROOT=%_CURRENT_FILE_DIR%
-REM set STELLA_ROOT=%STELLA_ROOT:~0,-1%
 set STELLA_COMMON=%STELLA_ROOT%\stella-common\win
 set POOL_DIR=%STELLA_ROOT%\stella-pool\win
 
@@ -14,11 +13,12 @@ set POOL_DIR=%STELLA_ROOT%\stella-pool\win
 :: GATHER PLATFORM INFO
 call %STELLA_COMMON%\platform.bat :set_current_platform_info
 
-:: DEFAULT APP PATH INFO -------------
+:: DEFAULT APP INFO -------------
 set APP_ROOT=%_CURRENT_RUNNING_DIR%
 set APP_WORK_ROOT=%_CURRENT_RUNNING_DIR%
 set PROJECT_ROOT=%_CURRENT_RUNNING_DIR%
 set CACHE_DIR=
+set APP_NAME=
 
 :: GATHER APP INFO
 call %STELLA_COMMON%\common-app.bat :select_app

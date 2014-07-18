@@ -8,8 +8,8 @@ call %~dp0\conf.bat
 
 
 :: arguments
-set "params=domain:"app tools virtual" action:"init get-data get-assets setup-env install create-env run-env stop-env destroy-env create-box get-box destroy-box" id:"_ANY_""
-set "options=-v: -vv: -f: -arch:"#x64 x86" -vmcpu:_ANY_ -vmmemory:_ANY_ -vmgui: -l: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_"
+set "params=domain:"app tools virtual" action:"init get-data get-assets setup-env install run-env stop-env destroy-env create-box get-box destroy-box" id:"_ANY_""
+set "options=-v: -vv: -f: -arch:"#x64 x86" -envcpu:_ANY_ -envmem:_ANY_ -vmgui: -l: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_"
 
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
@@ -98,8 +98,8 @@ REM --------------- VIRTUAL ----------------------------
 REM TODO info-env list-env list-box commands
 if "%DOMAIN%"=="virtual" (
 	set "_virtual_options="
-	if not "%-vmcpu%"=="" set "_virtual_options=%_virtual_options% -vmcpu=%-vmcpu%"
-	if not "%-vmmemory%"=="" set "_virtual_options=%_virtual_options% -vmmemory=%-vmmemory%"
+	if not "%-envcpu%"=="" set "_virtual_options=%_virtual_options% -envcpu=%-envcpu%"
+	if not "%-envmem%"=="" set "_virtual_options=%_virtual_options% -envmem=%-envmem%"
 	if "%-vmgui%"=="1" set "_virtual_options=%_virtual_options% -vmgui"
 	if "%-l%"=="1" set "_virtual_options=%_virtual_options% -l"
 
@@ -108,8 +108,8 @@ if "%DOMAIN%"=="virtual" (
 	if "%-vv%"=="1" set "_virtual_options=%_virtual_options% -vv"
 
 	
-	if "%ACTION%"=="create-env" (
-		call %STELLA_ROOT%\virtual.bat create-env -envname="%id%" %_virtual_options%
+	if "%ACTION%"=="setup-env" (
+		call %STELLA_COMMON%\common-app.bat :setup_env %id%
 		@echo off
 	)
 
@@ -162,7 +162,7 @@ if "%DOMAIN%"=="virtual" goto :end
 	echo 		%~n0 tools install ^<tool name^> : install a tools
 	echo 		%~n0 tools install list : list available tools
 	echo	* virtual management :
-	echo 		%~n0 virtual create-env run-env stop-env destroy-env ^<env id^>
+	echo 		%~n0 virtual setup-env run-env stop-env destroy-env ^<env id^>
 	echo 		%~n0 virtual create-box get-box destroy-box ^<distrib id^>
 goto :end
 

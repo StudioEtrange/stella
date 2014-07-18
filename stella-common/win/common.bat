@@ -311,7 +311,11 @@ goto :eof
 		if "%%O"=="STRIP" set _opt_strip=ON
 	)
 	
-	echo ** Getting ressource : %NAME% into %FINAL_DESTINATION%
+	if not "%FINAL_DESTINATION%"=="" (
+		echo ** Getting ressource : %NAME% into %FINAL_DESTINATION%
+	) else (
+		echo ** Getting ressource : %NAME%
+	)
 
 	if "%FORCE%"=="1" (
 		call :del_folder "%FINAL_DESTINATION%"
@@ -397,8 +401,6 @@ goto :eof
 	for %%O in (%OPT%) do (
 		if "%%O"=="DEST_ERASE" set _opt_dest_erase=ON
 		if "%%O"=="STRIP" set _opt_strip=ON
-		if "%%O"=="TRUE" echo ************ WARNING TODO PLEASE CHANGE CODE ****************
-		if "%%O"=="FALSE" echo ************ WARNING TODO PLEASE CHANGE CODE ****************
 	)
 
 	if "%URL%"=="" (
@@ -437,8 +439,6 @@ goto :eof
 	for %%O in (%OPT%) do (
 		if "%%O"=="DEST_ERASE" set _opt_dest_erase=ON
 		if "%%O"=="STRIP" set _opt_strip=ON
-		if "%%O"=="TRUE" echo ************ WARNING TODO PLEASE CHANGE CODE ****************
-		if "%%O"=="FALSE" echo ************ WARNING TODO PLEASE CHANGE CODE ****************
 	)
 	
 	
@@ -486,8 +486,7 @@ goto :eof
 	set URL=%~1
 	set FILE_NAME=%~2
 	set DEST_DIR=%~3
-	set "DL_DIR=%CACHE_DIR%"
-
+	
 	if "%URL%"=="" (
 		echo ** ERROR missing URL
 		goto :eof
@@ -501,26 +500,26 @@ goto :eof
 		echo ** Guessed file name is %FILE_NAME%
 	)
 
-	if not exist "%DL_DIR%" (
-		mkdir "%DL_DIR%"
+	if not exist "%CACHE_DIR%" (
+		mkdir "%CACHE_DIR%"
 	)
 
 	echo ** Download %FILE_NAME% from %URL% into cache
 	
 	REM if "%FORCE%"=="1" (
-	REM	del /q /s "%DL_DIR%\%FILE_NAME%"
+	REM	del /q /s "%CACHE_DIR%\%FILE_NAME%"
 	REM )
 
-	if not exist "%DL_DIR%\%FILE_NAME%" (
-		"%WGET%" "%URL%" -O "%DL_DIR%\%FILE_NAME%" --no-check-certificate
+	if not exist "%CACHE_DIR%\%FILE_NAME%" (
+		"%WGET%" "%URL%" -O "%CACHE_DIR%\%FILE_NAME%" --no-check-certificate
 	) else (
 		echo ** Already downloaded
 	)
 
-	if not "%DEST_DIR%"=="" (
+	if not "%DEST_DIR%"=="" if not "%DEST_DIR%"=="%CACHE_DIR%" (
 		if not exist "%DEST_DIR%" mkdir "%DEST_DIR%"
-		copy /y "%DL_DIR%\%FILE_NAME%" "%DEST_DIR%\"
-		echo ** %FILE_NAME% is in %DEST_DIR%
+		copy /y "%CACHE_DIR%\%FILE_NAME%" "%DEST_DIR%\"
+		echo ** Downloaded %FILE_NAME% is in %DEST_DIR%
 	)
 
 goto :eof

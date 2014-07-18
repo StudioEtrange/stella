@@ -124,6 +124,7 @@ goto :eof
 	if exist "%PROPERTIES%" (
 		echo ** Properties file already exists
 	) else (
+		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "APP_NAME" "%_app_name%"
 		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "APP_WORK_ROOT" "%_workroot%"
 		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "CACHE_DIR" "%_cachedir%"
 		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "DATA_LIST" ""
@@ -142,7 +143,7 @@ goto :eof
 	)
 
 	REM STELLA VARs
-	REM call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "APP_ROOT"
+	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "APP_NAME"
 	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "APP_WORK_ROOT"
 	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "CACHE_DIR"
 	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "DATA_LIST" "PREFIX"
@@ -216,7 +217,7 @@ goto :eof
 
 :setup_env
 	set "_list_id=%~1"
-	
+
 	for %%A in (%_list_id%) do (
 		set "_env_infra_id=!%%A_INFRA_ID!"
 		set "_env_distrib=!%%A_DISTRIB!"
@@ -224,13 +225,17 @@ goto :eof
 		set "_env_name=!%%A_ENV_NAME!"
 		set "_env_cpu=!%%A_CPU!"
 		set "_env_mem=!%%A_MEM!"
-		if not "%_env_infra_id%"=="default" (
-			call %STELLA_ROOT%\virtual.bat get-box -distrib=%_env_distrib%
-			call %STELLA_ROOT%\virtual.bat create-box -distrib=%_env_distrib%
-			call %STELLA_ROOT%\virtual.bat create-env -distrib=%_env_distrib% -envname=%_env_name% -envcpu=%_env_cpu% -envmem=%_env_mem%
+
+		
+		if not "!_env_infra_id!"=="default" (
+			echo * Setting up env '!_env_name! [%%A]' with infra '[!_env_infra_id!]' - using !_env_cpu! cpu and !_env_mem! Mo - built with '!_env_distrib!', a !_env_os! operating system
+			
+			call %STELLA_ROOT%\virtual.bat get-box -distrib=!_env_distrib!
+			call %STELLA_ROOT%\virtual.bat create-box -distrib=!_env_distrib!
+			call %STELLA_ROOT%\virtual.bat create-env -distrib=!_env_distrib! -envname=%%A -envcpu=!_env_cpu! -envmem=!_env_mem!
 			@echo off
 			echo * Now you can use your env using %STELLA_ROOT%\virtual.bat OR with Vagrant
 		) else (
-			echo * ENV [%%A] use default current env
+			echo * Env '!_env_name! [%%A]' is the default current system
 		)
 	)	

@@ -53,6 +53,8 @@ function create_env() {
 		echo "Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|" >> Vagrantfile
 		echo 'config.vm.synced_folder "../../../.", "/stella"' >> Vagrantfile
 		echo 'config.vm.provider "virtualbox" do |vb|' >> Vagrantfile
+		[ "$VMGUI" == "1" ] && echo 'vb.gui = true' >> Vagrantfile
+		[ ! "$VMGUI" == "1" ] && echo 'vb.gui = false' >> Vagrantfile
 		[ ! "$ENVMEM" == "" ] && echo 'vb.customize ["modifyvm", :id, "--memory", "'$ENVMEM'"]' >> Vagrantfile
 		[ ! "$ENVCPU" == "" ] && echo 'vb.customize ["modifyvm", :id, "--cpus", "'$ENVCPU'"]' >> Vagrantfile
 		echo "end" >> Vagrantfile
@@ -122,25 +124,25 @@ function stop_env() {
 }
 
 
-function _set_box_matrix() {
+function _set_matrix() {
+	local _distrib=$1
 	
-	
-	get_key "$VIRTUAL_CONF_FILE" "$DISTRIB" "PACKER_TEMPLATE"
-	get_key "$VIRTUAL_CONF_FILE" "$DISTRIB" "PACKER_TEMPLATE_URI"
-	get_key "$VIRTUAL_CONF_FILE" "$DISTRIB" "PACKER_TEMPLATE_URI_PROTOCOL"
+	get_key "$VIRTUAL_CONF_FILE" "$_distrib" "PACKER_TEMPLATE"
+	get_key "$VIRTUAL_CONF_FILE" "$_distrib" "PACKER_TEMPLATE_URI"
+	get_key "$VIRTUAL_CONF_FILE" "$_distrib" "PACKER_TEMPLATE_URI_PROTOCOL"
 
-	get_key "$VIRTUAL_CONF_FILE" "$DISTRIB" "PACKER_BUILDER"
-	get_key "$VIRTUAL_CONF_FILE" "$DISTRIB" "PACKER_PREBUILD_CALLBACK"
-	get_key "$VIRTUAL_CONF_FILE" "$DISTRIB" "PACKER_POSTBUILD_CALLBACK"
+	get_key "$VIRTUAL_CONF_FILE" "$_distrib" "PACKER_BUILDER"
+	get_key "$VIRTUAL_CONF_FILE" "$_distrib" "PACKER_PREBUILD_CALLBACK"
+	get_key "$VIRTUAL_CONF_FILE" "$_distrib" "PACKER_POSTBUILD_CALLBACK"
 
-	get_key "$VIRTUAL_CONF_FILE" "$DISTRIB" "VAGRANT_BOX_NAME"
-	get_key "$VIRTUAL_CONF_FILE" "$DISTRIB" "VAGRANT_BOX_FILENAME"
-	get_key "$VIRTUAL_CONF_FILE" "$DISTRIB" "VAGRANT_BOX_URI"
-	get_key "$VIRTUAL_CONF_FILE" "$DISTRIB" "VAGRANT_BOX_URI_PROTOCOL"
-	get_key "$VIRTUAL_CONF_FILE" "$DISTRIB" "VAGRANT_BOX_OUTPUT_DIR"
+	get_key "$VIRTUAL_CONF_FILE" "$_distrib" "VAGRANT_BOX_NAME"
+	get_key "$VIRTUAL_CONF_FILE" "$_distrib" "VAGRANT_BOX_FILENAME"
+	get_key "$VIRTUAL_CONF_FILE" "$_distrib" "VAGRANT_BOX_URI"
+	get_key "$VIRTUAL_CONF_FILE" "$_distrib" "VAGRANT_BOX_URI_PROTOCOL"
+	get_key "$VIRTUAL_CONF_FILE" "$_distrib" "VAGRANT_BOX_OUTPUT_DIR"
 
-	get_key "$VIRTUAL_CONF_FILE" "$DISTRIB" "VAGRANT_BOX_USERNAME"
-	get_key "$VIRTUAL_CONF_FILE" "$DISTRIB" "VAGRANT_BOX_PASSWORD"
+	get_key "$VIRTUAL_CONF_FILE" "$_distrib" "VAGRANT_BOX_USERNAME"
+	get_key "$VIRTUAL_CONF_FILE" "$_distrib" "VAGRANT_BOX_PASSWORD"
 }
 
 
@@ -195,7 +197,7 @@ function create_box() {
 	if [ ! -f "$CACHE_DIR/$VAGRANT_BOX_FILENAME" ]; then
 
 		if [ ! "$PACKER_TEMPLATE_URI_PROTOCOL" == "_INTERNAL_" ]; then
-			get_ressource "$DISTRIB" "$PACKER_TEMPLATE_URI" "$PACKER_TEMPLATE_URI_PROTOCOL" "$VIRTUAL_TEMPLATE_ROOT/$DISTRIB"
+			get_ressource "$DISTRIB" "$PACKER_TEMPLATE_URI" "$PACKER_TEMPLATE_URI_PROTOCOL" "$VIRTUAL_TEMPLATE_ROOT/$DISTRIB" "$CACHE_DIR"
 			PACKER_TEMPLATE_URI="$VIRTUAL_TEMPLATE_ROOT/$DISTRIB/$PACKER_TEMPLATE"
 		else
 			PACKER_TEMPLATE_URI="$VIRTUAL_INTERNAL_TEMPLATE_ROOT/$PACKER_TEMPLATE_URI/$PACKER_TEMPLATE"
@@ -249,6 +251,7 @@ ENVNAME=''							'e'			''					s			0		''						Environment name.
 LOGIN=''							'l'			''					b			0		'1'						Autologin in env.
 ENVCPU=''							''			''					i 			0		''						Nb CPU attributed to the virtual env.
 ENVMEM=''							''			''					i 			0		''						Memory attributed to the virtual env.
+VMGUI=''							''			''					b			0		'1'						Hypervison headless.
 "
 
 
@@ -257,7 +260,9 @@ argparse "$0" "$OPTIONS" "$PARAMETERS" "Stella virtualization management" "Stell
 # common initializations
 init_env
 
-_set_box_matrix
+if [ ! "$DISTRIB" == "" ]; then
+	_set_matrix $DISTRIB
+fi
 
 
 [ ! -d "$VIRTUAL_WORK_ROOT" ] && mkdir -p "$VIRTUAL_WORK_ROOT"

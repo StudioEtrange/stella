@@ -43,6 +43,7 @@ function init_app() {
 	if [ -f "$PROPERTIES" ]; then
 		echo " ** Properties file already exist"
 	else
+		add_key "$PROPERTIES" "STELLA" "APP_NAME" "$_app_name"
 		add_key "$PROPERTIES" "STELLA" "APP_ROOT" "$_approot"
 		add_key "$PROPERTIES" "STELLA" "APP_WORK_ROOT" "$_workroot"
 		add_key "$PROPERTIES" "STELLA" "CACHE_DIR" "$_cachedir"
@@ -59,6 +60,7 @@ function get_all_properties() {
 	if [ -f "$PROPERTIES" ]; then
 			
 		# STELLA VARs
+		get_key "$PROPERTIES" "STELLA" "APP_NAME"
 		get_key "$PROPERTIES" "STELLA" "APP_WORK_ROOT"
 		get_key "$PROPERTIES" "STELLA" "CACHE_DIR"
 		get_key "$PROPERTIES" "STELLA" "DATA_LIST" "PREFIX"
@@ -229,14 +231,18 @@ function setup_env() {
 		_env_cpu=${!_env_cpu}
 		_env_mem="$a"_MEM
 		_env_mem=${!_env_mem}
+
+
 		if [ ! "$_env_infra_id" == "default" ]; then
+			echo" * Setting up env '$_env_name [$a]' with infra '[$_env_infra_id]' - using $_env_cpu cpu and $_env_mem Mo - built with '$_env_distrib', a $_env_os operating system"
+
 			$STELLA_ROOT/virtual.sh get-box --distrib=$_env_distrib
 			$STELLA_ROOT/virtual.sh create-box --distrib=$_env_distrib
-			$STELLA_ROOT/virtual.sh create-env --distrib=$_env_distrib --envname=$_env_name --envcpu=$_env_cpu --envmem=$_env_mem
+			$STELLA_ROOT/virtual.sh create-env --distrib=$_env_distrib --envname=$a --envcpu=$_env_cpu --envmem=$_env_mem
 
 			echo " * Now you can use your env using $STELLA_ROOT/virtual.sh OR with Vagrant"
 		else
-			echo "* ENV [$a] use default current env"
+			echo "* Env '$_env_name [$a]' is the default current system"
 		fi
 	done
 

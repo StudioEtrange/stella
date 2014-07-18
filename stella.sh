@@ -16,7 +16,7 @@ function usage() {
 	echo " L     tools install <tool name> : install a tools"
 	echo " L     tools install list : list available tools"
 	echo " o-- virtual management :"
-	echo " L     virtual create-env run-env stop-env destroy-env <env id>"
+	echo " L     virtual setup-env run-env stop-env destroy-env <env id>"
 	echo " L     virtual create-box get-box destroy-box <distrib id>"
 }
 
@@ -26,7 +26,7 @@ function usage() {
 # arguments
 PARAMETERS="
 DOMAIN=                          'domain'     		a           'app tools virtual'         										   				Action domain.
-ACTION=                         'action'   					a           'init get-data get-assets setup-env install create-env run-env stop-env destroy-env create-box get-box destroy-box'         	Action to compute.
+ACTION=                         'action'   					a           'init get-data get-assets setup-env install setup-env run-env stop-env destroy-env create-box get-box destroy-box'         	Action to compute.
 ID=							 ''								s 			'' 						Data or Assets or Env or Box ID.
 "
 OPTIONS="	
@@ -36,6 +36,8 @@ VERBOSE=$DEFAULT_VERBOSE_MODE		'v'			'level'				i		0			'0:2'					Verbose level :
 APPROOT=''						'' 			'path'				s 			0			'' 						App path (default current)
 WORKROOT='' 					'' 			'path'				s 			0			''						Work app path (default equal to app path)
 CACHEDIR=''						'' 			'path'				s 			0			''						Cache folder path
+ENVCPU=''						''			''					i 			0		''						Nb CPU attributed to the virtual env.
+ENVMEM=''							''			''					i 			0		''						Memory attributed to the virtual env.
 "
 
 argparse "$0" "$OPTIONS" "$PARAMETERS" "Lib Stella" "$(usage)" "" "$@"

@@ -78,58 +78,49 @@ function rel_to_abs_path() {
 function abs_to_rel_path() {
 	local _abs_path="$1"
 	local target="$2"
-	#echo "_abs_path : \"$_abs_path\""
-	#echo "target : \"$target\""
-	
 	local common_part=$_abs_path # for now
 
 	local result=""
 
-	#echo "common_part is now : \"$common_part\""
-	#echo "result is now      : \"$result\""
-	#echo "target#common_part : \"${target#$common_part}\""
-	while [[ "${target#$common_part}" == "${target}" ]]; do
-		# no match, means that candidate common part is not correct
-		# go up one level (reduce common part)
-		common_part="$(dirname $common_part)"
-		# and record that we went back
-		if [[ -z $result ]]; then
-			result=".."
-		else
-			result="../$result"
-		fi
-		#echo "common_part is now : \"$common_part\""
-		#echo "result is now      : \"$result\""
-		#echo "target#common_part : \"${target#$common_part}\""
-	done
+	case $_abs_path in
+		/*)
+			while [[ "${target#$common_part}" == "${target}" ]]; do
+				# no match, means that candidate common part is not correct
+				# go up one level (reduce common part)
+				common_part="$(dirname $common_part)"
+				# and record that we went back
+				if [[ -z $result ]]; then
+					result=".."
+				else
+					result="../$result"
+				fi
+				
+			done
 
-	#echo "common_part is     : \"$common_part\""
+			if [[ $common_part == "/" ]]; then
+				# special case for root (no common path)
+				result="$result/"
+			fi
 
-	if [[ $common_part == "/" ]]; then
-		# special case for root (no common path)
-		result="$result/"
-	fi
+			# since we now have identified the common part,
+			# compute the non-common part
+			forward_part="${target#$common_part}"
+			
+			if [[ -n $result ]] && [[ -n $forward_part ]]; then
+				result="$result$forward_part"
+			elif [[ -n $forward_part ]]; then
+				result="${forward_part:1}"
+			else
+				do_nothing=1
+			fi
+			return_value=$result
+			echo "$return_value"
+			;;
 
-	# since we now have identified the common part,
-	# compute the non-common part
-	forward_part="${target#$common_part}"
-	#echo "forward_part = \"$forward_part\""
-
-	if [[ -n $result ]] && [[ -n $forward_part ]]; then
-		#echo "(simple concat)"
-		result="$result$forward_part"
-	elif [[ -n $forward_part ]]; then
-		#echo "(concat with slash removal)"
-		result="${forward_part:1}"
-	else
-		#echo "(no concat)"
-		do_nothing=1
-	fi
-	#echo "result = \"$result\""
-	return_value=$result
-
-	echo "$return_value"
-
+		*)
+			echo "$_abs_path"
+			;;
+	esac
 
 }
 
@@ -385,7 +376,7 @@ function download() {
 	local URL
 	local FILE_NAME
 	local DEST_DIR
-	local DL_DIR
+
 
 
 	URL="$1"
@@ -402,28 +393,28 @@ function download() {
 		echo "** Guessed file name is $FILE_NAME"
 	fi
 
-	DL_DIR="$CACHE_DIR"
-
-	mkdir -p "$DL_DIR"
+	mkdir -p "$CACHE_DIR"
 
 	echo " ** Download $FILE_NAME from $URL into cache"
 	
 	#if [ "$FORCE" == "1" ]; then
-	#	rm -Rf "$DL_DIR/$FILE_NAME"
+	#	rm -Rf "$CACHE_DIR/$FILE_NAME"
 	#fi
 
-	if [ ! -f "$DL_DIR/$FILE_NAME" ]; then
-		wget "$URL" -O "$DL_DIR/$FILE_NAME" --no-check-certificate
+	if [ ! -f "$CACHE_DIR/$FILE_NAME" ]; then
+		wget "$URL" -O "$CACHE_DIR/$FILE_NAME" --no-check-certificate
 	else
 		echo " ** Already downloaded"
 	fi
 
 	if [ ! "$DEST_DIR" == "" ]; then
-		if [ ! -d "$DEST_DIR" ]; then
-			mkdir -p "$DEST_DIR"
+		if [ ! "$DEST_DIR" == "$CACHE_DIR" ]; then
+			if [ ! -d "$DEST_DIR" ]; then
+				mkdir -p "$DEST_DIR"
+			fi
+			cp "$CACHE_DIR/$FILE_NAME" "$DEST_DIR/"
+			echo "** Downloaded $FILE_NAME is in $DEST_DIR"
 		fi
-		cp "$DL_DIR/$FILE_NAME" "$DEST_DIR/"
-		echo "** $FILE_NAME is in $DEST_DIR"
 	fi
 }
 
@@ -468,6 +459,7 @@ function get_key() {
 	local _KEY=$3
 	local _OPT=$4
 
+	# TODO : bug when reading windows end line
 	# key will be prefixed with the section name
 	_opt_section_prefix=OFF
 	for o in $_OPT; do

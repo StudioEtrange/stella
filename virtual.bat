@@ -2,10 +2,10 @@
 @echo off
 echo ***************************************************************
 echo ** EXECUTING : %~n0
-echo ** Requirement : Vagrant from http://www.vagrantup.com/
-echo ** Requirement : vagrant-vbguest plugin https://github.com/dotless-de/vagrant-vbguest http://kvz.io/blog/2013/01/16/vagrant-tip-keep-virtualbox-guest-additions-in-sync/
+echo ** Requirement : Vagrant 1.6 from http://www.vagrantup.com/
+echo ** Recommanded : vagrant-vbguest plugin https://github.com/dotless-de/vagrant-vbguest http://kvz.io/blog/2013/01/16/vagrant-tip-keep-virtualbox-guest-additions-in-sync/
 echo 					vagrant plugin install vagrant-vbguest
-echo ** Requirement : Virtualbox from https://www.virtualbox.org/
+echo ** Requirement : Virtualbox 4.3.12 from https://www.virtualbox.org/
 call %~dp0\conf.bat
 
 
@@ -13,7 +13,7 @@ call %~dp0\conf.bat
 
 :: arguments
 set "params=action:"create-env run-env stop-env destroy-env info-env list-env create-box get-box list-box destroy-box""
-set "options=-v: -vv: -distrib:"ubuntu64 debian64 centos64 archlinux boot2docker" -f: -envname:_ANY_ -vmcpu:_ANY_ -vmmemory:_ANY_ -vmgui: -l:"
+set "options=-v: -vv: -distrib:"ubuntu64 debian64 centos64 archlinux boot2docker" -f: -envname:_ANY_ -envcpu:_ANY_ -envmem:_ANY_ -vmgui: -l:"
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
 if "%ARGOPT_FLAG_HELP%"=="1" goto :usage
@@ -24,13 +24,16 @@ call %STELLA_COMMON%\common.bat :init_env
 
 ::other command line arguments
 set VM_ENV_NAME=%-envname%
-set VM_NB_CPU=%-vmcpu%
-set VM_MEMORY_SIZE=%-vmmemory%
+set ENV_CPU=%-envcpu%
+set ENV_MEM=%-envmem%
 if "%-vmgui%"=="" set VM_HEADLESS=false
-if "%VM_NB_CPU%"=="" set VM_NB_CPU=1
-if "%VM_MEMORY_SIZE%"=="" set VM_MEMORY_SIZE=384
+if "%ENV_CPU%"=="" set ENV_CPU=1
+if "%ENV_MEM%"=="" set ENV_MEM=384
 set DISTRIB=%-distrib%
-call :_set_box_matrix
+
+if not "%DISTRIB%"=="" (
+	call :_set_matrix %DISTRIB%
+)
 
 if not exist "%VIRTUAL_WORK_ROOT%" mkdir "%VIRTUAL_WORK_ROOT%"
 if not exist "%VIRTUAL_ENV_ROOT%" mkdir "%VIRTUAL_ENV_ROOT%"
@@ -98,24 +101,25 @@ goto :end
 
 
 
-:_set_box_matrix
+:_set_matrix
+	set "_distrib=%~1"
 
-	call %STELLA_COMMON%\common.bat :get_key "%VIRTUAL_CONF_FILE%" "%DISTRIB%" "PACKER_TEMPLATE"
-	call %STELLA_COMMON%\common.bat :get_key "%VIRTUAL_CONF_FILE%" "%DISTRIB%" "PACKER_TEMPLATE_URI"
-	call %STELLA_COMMON%\common.bat :get_key "%VIRTUAL_CONF_FILE%" "%DISTRIB%" "PACKER_TEMPLATE_URI_PROTOCOL"
+	call %STELLA_COMMON%\common.bat :get_key "%VIRTUAL_CONF_FILE%" "%_distrib%" "PACKER_TEMPLATE"
+	call %STELLA_COMMON%\common.bat :get_key "%VIRTUAL_CONF_FILE%" "%_distrib%" "PACKER_TEMPLATE_URI"
+	call %STELLA_COMMON%\common.bat :get_key "%VIRTUAL_CONF_FILE%" "%_distrib%" "PACKER_TEMPLATE_URI_PROTOCOL"
 
-	call %STELLA_COMMON%\common.bat :get_key "%VIRTUAL_CONF_FILE%" "%DISTRIB%" "PACKER_BUILDER"
-	call %STELLA_COMMON%\common.bat :get_key "%VIRTUAL_CONF_FILE%" "%DISTRIB%" "PACKER_PREBUILD_CALLBACK"
-	call %STELLA_COMMON%\common.bat :get_key "%VIRTUAL_CONF_FILE%" "%DISTRIB%" "PACKER_POSTBUILD_CALLBACK"
+	call %STELLA_COMMON%\common.bat :get_key "%VIRTUAL_CONF_FILE%" "%_distrib%" "PACKER_BUILDER"
+	call %STELLA_COMMON%\common.bat :get_key "%VIRTUAL_CONF_FILE%" "%_distrib%" "PACKER_PREBUILD_CALLBACK"
+	call %STELLA_COMMON%\common.bat :get_key "%VIRTUAL_CONF_FILE%" "%_distrib%" "PACKER_POSTBUILD_CALLBACK"
 
-	call %STELLA_COMMON%\common.bat :get_key "%VIRTUAL_CONF_FILE%" "%DISTRIB%" "VAGRANT_BOX_NAME"
-	call %STELLA_COMMON%\common.bat :get_key "%VIRTUAL_CONF_FILE%" "%DISTRIB%" "VAGRANT_BOX_FILENAME"
-	call %STELLA_COMMON%\common.bat :get_key "%VIRTUAL_CONF_FILE%" "%DISTRIB%" "VAGRANT_BOX_URI"
-	call %STELLA_COMMON%\common.bat :get_key "%VIRTUAL_CONF_FILE%" "%DISTRIB%" "VAGRANT_BOX_URI_PROTOCOL"
-	call %STELLA_COMMON%\common.bat :get_key "%VIRTUAL_CONF_FILE%" "%DISTRIB%" "VAGRANT_BOX_OUTPUT_DIR"
+	call %STELLA_COMMON%\common.bat :get_key "%VIRTUAL_CONF_FILE%" "%_distrib%" "VAGRANT_BOX_NAME"
+	call %STELLA_COMMON%\common.bat :get_key "%VIRTUAL_CONF_FILE%" "%_distrib%" "VAGRANT_BOX_FILENAME"
+	call %STELLA_COMMON%\common.bat :get_key "%VIRTUAL_CONF_FILE%" "%_distrib%" "VAGRANT_BOX_URI"
+	call %STELLA_COMMON%\common.bat :get_key "%VIRTUAL_CONF_FILE%" "%_distrib%" "VAGRANT_BOX_URI_PROTOCOL"
+	call %STELLA_COMMON%\common.bat :get_key "%VIRTUAL_CONF_FILE%" "%_distrib%" "VAGRANT_BOX_OUTPUT_DIR"
 
-	call %STELLA_COMMON%\common.bat :get_key "%VIRTUAL_CONF_FILE%" "%DISTRIB%" "VAGRANT_BOX_USERNAME"
-	call %STELLA_COMMON%\common.bat :get_key "%VIRTUAL_CONF_FILE%" "%DISTRIB%" "VAGRANT_BOX_PASSWORD"
+	call %STELLA_COMMON%\common.bat :get_key "%VIRTUAL_CONF_FILE%" "%_distrib%" "VAGRANT_BOX_USERNAME"
+	call %STELLA_COMMON%\common.bat :get_key "%VIRTUAL_CONF_FILE%" "%_distrib%" "VAGRANT_BOX_PASSWORD"
 
 goto :eof
 
@@ -144,19 +148,23 @@ goto :eof
 	> %VAGRANT_FILEPATH% echo(VAGRANTFILE_API_VERSION = "2"
 	>> %VAGRANT_FILEPATH% echo(Vagrant.configure(VAGRANTFILE_API_VERSION^) do ^|config^|
 	>> %VAGRANT_FILEPATH% echo(		config.vm.box = "%VAGRANT_BOX_NAME%"
+	>> %VAGRANT_FILEPATH% echo(		config.vm.synced_folder "%STELLA_ROOT:\=/%", "/home/vagrant/lib-stella" >> Vagrantfile
+	>> %VAGRANT_FILEPATH% echo(		config.vm.synced_folder "%APP_ROOT:\=/%", "/home/vagrant/%APP_NAME%" >> Vagrantfile
+	>> %VAGRANT_FILEPATH% echo(		config.vm.synced_folder "%CACHE_DIR:\=/%", "/home/vagrant/%APP_NAME%-CACHE" >> Vagrantfile
+	>> %VAGRANT_FILEPATH% echo(		config.vm.synced_folder "%PROJECT_ROOT:\=/%", "/home/vagrant/%APP_NAME%-WORK" >> Vagrantfile
 	>> %VAGRANT_FILEPATH% echo(		config.vm.provider :virtualbox do ^|vb^|
 	>> %VAGRANT_FILEPATH% echo(			vb.gui = %VM_HEADLESS%
 	>> %VAGRANT_FILEPATH% echo(			vb.name = "%VM_ENV_NAME%"
-	>> %VAGRANT_FILEPATH% echo(			vb.customize ["modifyvm", :id, "--memory", %VM_MEMORY_SIZE%]
+	>> %VAGRANT_FILEPATH% echo(			vb.customize ["modifyvm", :id, "--memory", %ENV_MEM%]
 	REM >> %VAGRANT_FILEPATH% echo(			vb.customize ["modifyvm", :id, "--vram", 8]
-	>> %VAGRANT_FILEPATH% echo(			vb.customize ["modifyvm", :id, "--cpus", %VM_NB_CPU%]
+	>> %VAGRANT_FILEPATH% echo(			vb.customize ["modifyvm", :id, "--cpus", %ENV_CPU%]
 	REM >> %VAGRANT_FILEPATH% echo(			vb.customize ["modifyvm", :id, "--cpuexecutioncap", 100]
 	>> %VAGRANT_FILEPATH% echo(		end
 	>> %VAGRANT_FILEPATH% echo(		["vmware_fusion", "vmware_workstation"].each do ^|vmware^|
 	>> %VAGRANT_FILEPATH% echo(			config.vm.provider :vmware do ^|v^|
 	>> %VAGRANT_FILEPATH% echo(				v.gui = %VM_HEADLESS%
-	>> %VAGRANT_FILEPATH% echo(				v.vmx["memsize"] = %VM_MEMORY_SIZE%
-	>> %VAGRANT_FILEPATH% echo(				v.vmx["numvcpus"] = %VM_NB_CPU%
+	>> %VAGRANT_FILEPATH% echo(				v.vmx["memsize"] = %ENV_MEM%
+	>> %VAGRANT_FILEPATH% echo(				v.vmx["numvcpus"] = %ENV_CPU%
 	>> %VAGRANT_FILEPATH% echo(			end
 	>> %VAGRANT_FILEPATH% echo(		end
 	>> %VAGRANT_FILEPATH% echo(end
@@ -173,7 +181,7 @@ REM ------------------------------------ ADMINISTRATION OF BOX WITH PACKER -----
 	if "%FORCE%"=="1" (
 		del /f /q /s "%CACHE_DIR%\%VAGRANT_BOX_FILENAME%"
 	)
-	call %STELLA_COMMON%\common.bat :get_ressource "%DISTRIB%" "%VAGRANT_BOX_URI%" "%VAGRANT_BOX_URI_PROTOCOL%"
+	call %STELLA_COMMON%\common.bat :get_ressource "%DISTRIB%" "%VAGRANT_BOX_URI%" "%VAGRANT_BOX_URI_PROTOCOL%" "%CACHE_DIR%"
 	call :_import_box_into_vagrant %VAGRANT_BOX_NAME% "%CACHE_DIR%\%VAGRANT_BOX_FILENAME%"
 goto :eof
 
@@ -233,6 +241,9 @@ goto :eof
 	call :_import_box_into_vagrant %VAGRANT_BOX_NAME% "%CACHE_DIR%\%VAGRANT_BOX_FILENAME%"
 goto :eof
 
+
+
+
 REM ------------------------------------ ADMINISTRATION OF ENV WITH VAGRANT -----------------------
 
 :list_env
@@ -279,7 +290,8 @@ goto :eof
 		if not exist "%VIRTUAL_ENV_ROOT%\%VM_ENV_NAME%" mkdir "%VIRTUAL_ENV_ROOT%\%VM_ENV_NAME%"
 		
 		cd /D  "%VIRTUAL_ENV_ROOT%\%VM_ENV_NAME%"
-		%VAGRANT_CMD% init %VAGRANT_BOX_NAME%
+		call :_create_vagrantfile
+		REM %VAGRANT_CMD% init %VAGRANT_BOX_NAME%
 
 		echo ** Env %VM_ENV_NAME% is initialized
 

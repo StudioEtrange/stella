@@ -17,11 +17,12 @@ source $STELLA_COMMON/common-app.sh
 # GATHER PLATFORM INFO ---------------------------------------------
 set_current_platform_info
 
-# DEFAULT APP PATH INFO -------------
+# DEFAULT APP INFO -------------
 APP_ROOT="$_CURRENT_RUNNING_DIR"
 APP_WORK_ROOT="$_CURRENT_RUNNING_DIR"
 PROJECT_ROOT="$_CURRENT_RUNNING_DIR"
 CACHE_DIR=
+APP_NAME=
 
 # GATHER CURRENT APP INFO ---------------------------------------------
 select_app
@@ -35,8 +36,6 @@ if [ "$CACHE_DIR" == "" ]; then
 fi
 CACHE_DIR=$(rel_to_abs_path "$CACHE_DIR" "$APP_ROOT")
 
-
-echo $(abs_to_rel_path "$CACHE_DIR" "$APP_ROOT")
 TEMP_DIR="$PROJECT_ROOT/temp"
 TOOL_ROOT="$PROJECT_ROOT/tool_$STELLA_CURRENT_PLATFORM_SUFFIX/$STELLA_CURRENT_OS"
 DATA_ROOT="$PROJECT_ROOT/data"
