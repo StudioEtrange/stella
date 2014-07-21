@@ -8,7 +8,7 @@ function usage() {
 	echo "----------------"
 	echo "List of commands"
 	echo " o-- application management :"
-	echo " L     app init <application name> [-approot=<path>] [-workroot=<abs or relative path to approot>] [-cachedir=<abs or relative path to approot>]"
+	echo " L     app init <application name> [--approot=<path>] [--workroot=<abs or relative path to approot>] [--cachedir=<abs or relative path to approot>]"
 	echo " L     app get-data get-assets <data OR assets id OR all>"
 	echo " L     app setup-env <env id OR all> : download, build, deploy and run virtual environment based on app properties"
 	echo " o-- tools management :"

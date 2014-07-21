@@ -217,10 +217,6 @@ goto :eof
 	set _COMMAND=%~3
 	set _OPT=%~4
 	
-	REM set _WAIT=%~4
-	REM set _SAME_WINDOW=%~5
-	REM set _DETACH=%~6
-	
 	REM OPTIONS
 	REM WAIT : the launcher script will wait until the forked terminal is finished
 	REM SAME_WINDOW : will compute in the same terminal
@@ -233,8 +229,6 @@ goto :eof
 		if "%%O"=="WAIT" set _opt_wait=ON
 		if "%%O"=="SAME_WINDOW" set _opt_same_window=ON
 		if "%%O"=="DETACH" set _opt_detach=ON
-		if "%%O"=="TRUE" echo ************ WARNING TODO PLEASE CHANGE CODE ****************
-		if "%%O"=="FALSE" echo ************ WARNING TODO PLEASE CHANGE CODE ****************
 	)
 
 
