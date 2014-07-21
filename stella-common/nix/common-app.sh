@@ -34,10 +34,17 @@ function init_app() {
 	mkdir -p $_approot
 
 	_stella_root=$(abs_to_rel_path "$STELLA_ROOT" "$_approot")
-	echo "STELLA_ROOT=$_stella_root" >$_approot/.stella-link.sh
+	echo "_STELLA_LINK_CURRENT_FILE_DIR=\"\$( cd \"\$( dirname \"\${BASH_SOURCE[0]}\" )\" && pwd )\"" >$_approot/.stella-link.sh
+	echo "STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$_approot/.stella-link.sh
+	# echo "STELLA_ROOT=$_stella_root" >$_approot/.stella-link.sh
 
 	cp -f "$STELLA_COMMON/stella-template.sh" "$_approot/stella.sh"
 	chmod +x $_approot/stella.sh
+
+	cp -f "$STELLA_COMMON/example-app.sh" "$_approot/example-app.sh"
+	chmod +x $_approot/example-app.sh
+
+	cp -f "$STELLA_ROOT/example-app-properties.stella" "$_approot/example-app-properties.stella"
 
 	PROPERTIES="$_approot/.stella"
 	if [ -f "$PROPERTIES" ]; then

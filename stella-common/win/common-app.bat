@@ -116,9 +116,16 @@ goto :eof
 
 
 	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_STELLA_ROOT" "%STELLA_ROOT%" "%_approot%"
-	> "%_approot%\.stella-link.bat" ECHO(@set STELLA_ROOT=%_STELLA_ROOT%
+	> "%_approot%\.stella-link.bat" ECHO(@set _STELLA_CURRENT_FILE_DIR=^%~dp0
+	>> "%_approot%\.stella-link.bat" ECHO(@set _STELLA_CURRENT_FILE_DIR=^%_STELLA_CURRENT_FILE_DIR:~0,-1^%
+	>> "%_approot%\.stella-link.bat" ECHO(@set STELLA_ROOT=^%_STELLA_CURRENT_FILE_DIR^%\%_STELLA_ROOT%
 
 	copy /y "%STELLA_COMMON%\stella-template.bat" "%_approot%\stella.bat"
+
+	REM TODO
+	REM	copy /y "%STELLA_COMMON%\example-app.bat" "%_approot%\example-app.bat"
+
+	copy /y "%STELLA_ROOT%\example-app-properties.stella" "%_approot%\example-app-properties.stella"
 
 	set "PROPERTIES=%_approot%\.stella"
 	if exist "%PROPERTIES%" (
