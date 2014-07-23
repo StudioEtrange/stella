@@ -7,8 +7,8 @@ goto :eof
 	echo ** Install wget
 	if "%FORCE%"=="1" call %STELLA_COMMON%\common.bat :del_folder "%TOOL_ROOT%\wget"
 	if not exist "%TOOL_ROOT%\wget\bin\wget.exe" (
-		"%UZIP%" -o "%POOL_DIR%\tool\wget-1.11.4-1-bin.zip" -d "%TOOL_ROOT%\wget"
-		"%UZIP%" -o "%POOL_DIR%\tool\wget-1.11.4-1-dep.zip" -d "%TOOL_ROOT%\wget" 
+		"%UZIP%" -o "%STELLA_POOL%\tool\wget-1.11.4-1-bin.zip" -d "%TOOL_ROOT%\wget"
+		"%UZIP%" -o "%STELLA_POOL%\tool\wget-1.11.4-1-dep.zip" -d "%TOOL_ROOT%\wget" 
 	) else (
 		echo ** Already installed
 	)
@@ -37,7 +37,7 @@ goto :eof
 	echo ** Install unzip
 	if "%FORCE%"=="1" call %STELLA_COMMON%\common.bat :del_folder "%TOOL_ROOT%\unzip"
 	if not exist "%TOOL_ROOT%\unzip\bin\unzip.exe" (
-		call %STELLA_COMMON%\common.bat :copy_folder_content_into "%POOL_DIR%\tool\unzip-5.51-1-bin" "%TOOL_ROOT%\unzip\"
+		call %STELLA_COMMON%\common.bat :copy_folder_content_into "%STELLA_POOL%\tool\unzip-5.51-1-bin" "%TOOL_ROOT%\unzip\"
 	) else (
 		echo ** Already installed
 	)
@@ -47,7 +47,7 @@ goto :eof
 	echo ** Install sevenzip
 	if "%FORCE%"=="1" call %STELLA_COMMON%\common.bat :del_folder "%TOOL_ROOT%\sevenzip"
 	if not exist "%TOOL_ROOT%\sevenzip\7z.exe" (
-		call %STELLA_COMMON%\common.bat :copy_folder_content_into "%POOL_DIR%\tool\sevenzip" "%TOOL_ROOT%\sevenzip\"
+		call %STELLA_COMMON%\common.bat :copy_folder_content_into "%STELLA_POOL%\tool\sevenzip" "%TOOL_ROOT%\sevenzip\"
 	) else (
 		echo ** Already installed
 	)
@@ -58,7 +58,7 @@ goto :eof
 	echo ** Install gnu patch
 	if "%FORCE%"=="1" call %STELLA_COMMON%\common.bat :del_folder "%TOOL_ROOT%\patch"
 	if not exist "%TOOL_ROOT%\patch\bin\patch.exe" (
-		"%UZIP%" -o "%POOL_DIR%\tool\patch-2.5.9-7-bin.zip" -d "%TOOL_ROOT%\patch"
+		"%UZIP%" -o "%STELLA_POOL%\tool\patch-2.5.9-7-bin.zip" -d "%TOOL_ROOT%\patch"
 	) else (
 		echo ** Already installed
 	)

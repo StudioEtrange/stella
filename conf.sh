@@ -4,6 +4,7 @@ _CONF_INCLUDED_=1
 # STELLA PATHS ---------------------------------------------
 STELLA_ROOT="$_CURRENT_FILE_DIR"
 STELLA_COMMON="$STELLA_ROOT/stella-common/nix"
+STELLA_POOL="$STELLA_ROOT/stella-pool/nix"
 
 # STELLA INCLUDE ---------------------------------------------
 

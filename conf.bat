@@ -6,7 +6,7 @@ set _CURRENT_RUNNING_DIR=%cd%
 :: PATHS
 set STELLA_ROOT=%_CURRENT_FILE_DIR%
 set STELLA_COMMON=%STELLA_ROOT%\stella-common\win
-set POOL_DIR=%STELLA_ROOT%\stella-pool\win
+set STELLA_POOL=%STELLA_ROOT%\stella-pool\win
 
 
 
