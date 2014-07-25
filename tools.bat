@@ -6,8 +6,8 @@ echo ** EXECUTING : %~n0
 call %~dp0\conf.bat
 
 :: arguments
-set "params=action:"install" name:"default ninja jom cmake packer perl ruby2 nasm python27 vagrant-git ruby19 openssh list""
-set "options=-arch:"#x64 x86" -f: -v: -vv:"
+set "params=action:"install list" id:"default all %TOOL_LIST%""
+set "options=-arch:"#x64 x86" -f: -v: -vv: -vers:"_ANY_""
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
 if "%ARGOPT_FLAG_HELP%"=="1" goto :usage
@@ -17,50 +17,51 @@ call %STELLA_COMMON%\common.bat :init_env
 
 if "%action%"=="install" (
 
-	if "%name%"=="default" (
+	if "%id%"=="default" (
 		call :init_tools
 	)
-	if "%name%"=="ninja" (
-		call %STELLA_COMMON%\common-tools.bat :ninja
+	if "%id%"=="ninja" (
+		call %STELLA_COMMON%\common-tools.bat :install_feature ninja %-vers%
 	)
-	if "%name%"=="jom" (
-		call %STELLA_COMMON%\common-tools.bat :jom
+	if "%id%"=="jom" (
+		call %STELLA_COMMON%\common-tools.bat :install_feature jom %-vers%
 	)
-	if "%name%"=="cmake" (
-		call %STELLA_COMMON%\common-tools.bat :cmake
+	if "%id%"=="cmake" (
+		call %STELLA_COMMON%\common-tools.bat :install_feature cmake %-vers%
 	)
-	if "%name%"=="packer" (
-		call %STELLA_COMMON%\common-tools.bat :packer
+	if "%id%"=="packer" (
+		call %STELLA_COMMON%\common-tools.bat :install_feature packer %-vers%
 	)
-	if "%name%"=="perl" (
-		call %STELLA_COMMON%\common-tools.bat :perl
+	if "%id%"=="perl" (
+		call %STELLA_COMMON%\common-tools.bat :install_feature perl %-vers%
 	)
-	if "%name%"=="nasm" (
-		call %STELLA_COMMON%\common-tools.bat :nasm
+	if "%id%"=="nasm" (
+		call %STELLA_COMMON%\common-tools.bat :install_feature nasm %-vers%
 	)
-	if "%name%"=="python27" (
-		call %STELLA_COMMON%\common-tools.bat :python27
+	if "%id%"=="python" (
+		call %STELLA_COMMON%\common-tools.bat :install_feature python %-vers%
 	)
-	if "%name%"=="vagrant-git" (
-		call %STELLA_COMMON%\common-tools.bat :vagrant_git
+	if "%id%"=="vagrant" (
+		call %STELLA_COMMON%\common-tools.bat :install_feature vagrant %-vers%
 	)
-	if "%name%"=="openssh" (
-		call %STELLA_COMMON%\common-tools.bat :openssh
+	if "%id%"=="openssh" (
+		call %STELLA_COMMON%\common-tools.bat :install_feature openssh %-vers%
 	)
-	if "%name%"=="ruby2" (
-		call %STELLA_COMMON%\common-tools.bat :ruby2
-		call %STELLA_COMMON%\common-tools.bat :rdevkit2
-	)
-
-	if "%name%"=="ruby19" (
-		call %STELLA_COMMON%\common-tools.bat :ruby19
-		call %STELLA_COMMON%\common-tools.bat :rdevkit19
+	if "%id%"=="ruby" (
+		call %STELLA_COMMON%\common-tools.bat :install_feature ruby %-vers%
 	)
 
-	if "%name%"=="list" (
-		echo "default ninja jom cmake packer perl nasm python27 vagrant-git openssh ruby2 (with rdevki2) ruby19 (with rdevkit19)"
-	)
+	goto :end	
+)
 
+
+if "%action%"=="list" (
+	if "%id%"=="all" (
+		echo "default %TOOL_LIST%"
+	) else (
+		call %STELLA_COMMON%\common-tools.bat :list_feature_version %id% _TMP
+		echo !_TMP!
+	)
 	goto :end
 )
 

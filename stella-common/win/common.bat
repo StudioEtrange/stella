@@ -24,57 +24,7 @@ goto :eof
 :: COMMON ENV------------------------ 
 :init_env
 	call :init_arg
-	call :init_all_features
-goto :eof
-
-
-:: ------------------------ FEATURES MANAGEMENT-------------------------------
-:init_all_features
-	call :init_features feature_openssh
-	call :init_features feature_python27
-	call :init_features feature_ninja
-	call :init_features feature_jom
-	call :init_features feature_cmake
-	call :init_features feature_perl
-	call :init_features feature_ruby2
-	::rubydevkit have binaries which override other features like perl
-	::call :init_features feature_rdevkit2
-	call :init_features feature_packer
-	REM call :init_features feature_vagrant_git
-	call :init_features feature_nasm
-goto :eof
-
-
-:: enable a list of feature 
-:: call :init_features feat1 feat2
-:init_features
-	set "_FEATURE_LIST=%~1"
-
-	for %%F in (%_FEATURE_LIST%) do (
-		set _flag=
-		for %%A in (%FEATURE_LIST_ENABLED%) do (
-			if "%%A"=="%%F" set _flag=1
-		)
-		if "%_flag%"=="" (
-			set FEATURE_PATH=
-			call %STELLA_COMMON%\common-tools.bat :%%F
-			if not "!TEST_FEATURE!"=="0" (
-				set "FEATURE_LIST_ENABLED=!FEATURE_LIST_ENABLED! %%F"
-				if not "!FEATURE_PATH!"=="" set "PATH=!FEATURE_PATH!;!PATH!"
-			)
-		)
-	)
-goto :eof
-
-:: reinit all feature previously enabled
-:reinit_all_features
-	for %%F in (%FEATURE_LIST_ENABLED%) do (
-		set FEATURE_PATH=
-		call %STELLA_COMMON%\common-tools.bat :%%F
-		if not "!TEST_FEATURE!"=="0" (
-			if not "!FEATURE_PATH!"=="" set "PATH=!FEATURE_PATH!;!PATH!"
-		)
-	)
+	call %STELLA_COMMON%\common-tools.bat :init_all_features
 goto :eof
 
 

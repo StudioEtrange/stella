@@ -143,49 +143,6 @@ function init_arg() {
 	VERBOSE_MODE=$VERBOSE
 }
 
-# --------------- FEATURES MANAGEMENT ----------------------------
-
-function init_all_features() {
-	init_features "feature_autotools"
-	init_features "feature_last_ninja feature_cmake"
-	init_features "feature_perl"
-	init_features "feature_packer"
-}
-
-function init_features() {
-	local _FEATURE_LIST=$1
-
-	for f in $_FEATURE_LIST; do
-		_flag=0
-		for a in $FEATURE_LIST_ENABLED; do 
-			[ "$f" == "$a" ] && _flag=1
-		done
-		if [ "$_flag" == "0" ]; then
-			FEATURE_PATH=
-			$f
-			if [ ! "$TEST_FEATURE" == "0" ]; then
-				FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $f"
-				if [ ! "$FEATURE_PATH" == "" ]; then 
-					PATH="$FEATURE_PATH:$PATH"
-				fi
-			fi
-		fi
-	done
-}
-
-function reinit_all_features() {
-	for f in $FEATURE_LIST_ENABLED; do
-		FEATURE_PATH=
-		$f
-		if [ ! "$TEST_FEATURE" == "0" ]; then
-			if [ ! "$FEATURE_PATH" == "" ]; then 
-				PATH="$FEATURE_PATH:$PATH"
-			fi
-		fi
-	done
-}
-
-
 
 
 
@@ -402,8 +359,13 @@ function download() {
 	#	rm -Rf "$CACHE_DIR/$FILE_NAME"
 	#fi
 
+
 	if [ ! -f "$CACHE_DIR/$FILE_NAME" ]; then
-		wget "$URL" -O "$CACHE_DIR/$FILE_NAME" --no-check-certificate
+		if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
+			curl "$URL" -o "$CACHE_DIR/$FILE_NAME"
+		else
+			wget "$URL" -O "$CACHE_DIR/$FILE_NAME" --no-check-certificate
+		fi
 	else
 		echo " ** Already downloaded"
 	fi

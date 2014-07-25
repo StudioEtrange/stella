@@ -9,17 +9,17 @@ function usage() {
 	echo "List of commands"
 	echo " o-- application management :"
 	echo " L     app init <application name> [--approot=<path>] [--workroot=<abs or relative path to approot>] [--cachedir=<abs or relative path to approot>]"
-	echo " L     app get-data get-assets <data OR assets id OR all>"
-	echo " L     app setup-env <env id OR all> : download, build, deploy and run virtual environment based on app properties"
+	echo " L     app get-data get-assets <data id|assets id|all>"
+	echo " L     app setup-env <env id|all> : download, build, deploy and run virtual environment based on app properties"
 	echo " o-- tools management :"
 	echo " L     tools install default : install default tools"
-	echo " L     tools install <tool name> : install a tools"
-	echo " L     tools install list : list available tools"
+	echo " L     tools install <tool name#version> : install a tools. version is optionnal"
+	echo " L     tools list <all|tool name> : list all available tools OR available versions of a tool"
 	echo " o-- virtual management :"
-	echo " L     virtual create-env <env id> --distrib=<id> : create a new environment from a generic box prebuilt with a specific distribution"
+	echo " L     virtual create-env <env id#distrib id> : create a new environment from a generic box prebuilt with a specific distribution"
 	echo " L     virtual run-env stop-env destroy-env <env id> : manage environment"
 	echo " L     virtual create-box get-box destroy-box <distrib id> : manage generic boxes built with a specific distribution"
-	echo " L     virtual list <env|box> : list existing environment and box"
+	echo " L     virtual list <env|box|distrib> : list existing available environment, box and distribution"
 }
 
 
@@ -40,7 +40,6 @@ WORKROOT='' 					'' 			'path'				s 			0			''						Work app path (default equal t
 CACHEDIR=''						'' 			'path'				s 			0			''						Cache folder path
 ENVCPU=''						''			''					i 			0		''						Nb CPU attributed to the virtual env.
 ENVMEM=''							''			''					i 			0		''						Memory attributed to the virtual env.
-DISTRIB=''    						'd'     	'distribution' 		a 			0		'ubuntu64 debian64 centos64 archlinux boot2docker'		select a distribution.
 VMGUI=''							''			''					b			0		'1'						Hyperviser head.
 LOGIN=''							'l'			''					b			0		'1'						Autologin in env.
 "
@@ -118,7 +117,16 @@ if [ "$DOMAIN" == "tools" ]; then
 	fi
 	
 	if [ "$ACTION" == "install" ]; then
-		$STELLA_ROOT/tools.sh install $ID $_tools_options
+		VERS=
+		if [[ ${ID} =~ "#" ]]; then
+			VER=${ID##*#}
+			ID=${ID%#*}
+		fi
+		$STELLA_ROOT/tools.sh install $ID --vers=$VERS $_tools_options
+	fi
+
+	if [ "$ACTION" == "list" ]; then
+		$STELLA_ROOT/tools.sh list $ID $_tools_options
 	fi
 fi
 
@@ -149,9 +157,17 @@ if [ "$DOMAIN" == "virtual" ]; then
 		if [ "$ID" == "box" ]; then
 			$STELLA_ROOT/virtual.sh list-box $_virtual_options
 		fi
+		if [ "$ID" == "distrib" ]; then
+			$STELLA_ROOT/virtual.sh list-distrib $_virtual_options
+		fi
 	fi
 
 	if [ "$ACTION" == "create-env" ]; then
+		DISTRIB=
+		if [[ ${ID} =~ "#" ]]; then
+			DISTRIB=${ID##*#}
+			ID=${ID%#*}
+		fi
 		$STELLA_ROOT/virtual.sh create-env --envname=$ID --distrib=$DISTRIB $_virtual_options
 	fi
 

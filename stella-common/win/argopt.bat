@@ -161,7 +161,7 @@ if "%ARGOPT_FLAG_ERROR%"=="" if "!ARGOPT_FLAG_HELP!"=="" if not "%~1"=="" (
 		  goto :hack2
 		  :: hack to force refresh value of !%~1!
 		  :hack2
-		  if "!%~1!"=="" (
+		  if "!%~1!"=="" if not "!av!"=="%ARGOPT_ANY_VALUE%" (
 			echo ** ERROR invalid argument #!i! - Option : '%~1' must have one of this values : !av!
 			set ARGOPT_FLAG_ERROR=1
 		  )

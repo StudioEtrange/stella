@@ -7,7 +7,7 @@ set _CURRENT_RUNNING_DIR=%cd%
 set STELLA_ROOT=%_CURRENT_FILE_DIR%
 set STELLA_COMMON=%STELLA_ROOT%\stella-common\win
 set STELLA_POOL=%STELLA_ROOT%\stella-pool\win
-
+set STELLA_TOOL_RECIPE=%STELLA_POOL%\tool-recipe
 
 
 :: GATHER PLATFORM INFO
@@ -71,5 +71,16 @@ set "PACKER_CACHE_DIR=%CACHE_DIR%"
 set VIRTUAL_DEFAULT_HYPERVISOR=virtualbox
 
 
+:: INTERNAL LIST ---------------------------------------------
+set "DISTRIB_LIST=ubuntu64 debian64 centos64 archlinux boot2docker"
+set "TOOL_LIST=ninja jom cmake packer perl ruby nasm python vagrant openssh"
 
+:: API
+set "STELLA_API_COMMON_PUBLIC=is_path_abs"
+set "STELLA_API_APP_PUBLIC=get_data get_assets get_all_data get_all_assets"
+set "STELLA_API_TOOLS_PUBLIC=install_feature init_feature"
+
+
+
+set "STELLA_API=%STELLA_COMMON%\common-api.bat :stella_api_proxy+"
 

@@ -5,6 +5,7 @@ _CONF_INCLUDED_=1
 STELLA_ROOT="$_CURRENT_FILE_DIR"
 STELLA_COMMON="$STELLA_ROOT/stella-common/nix"
 STELLA_POOL="$STELLA_ROOT/stella-pool/nix"
+STELLA_TOOL_RECIPE="$STELLA_POOL/tool-recipe"
 
 # STELLA INCLUDE ---------------------------------------------
 
@@ -74,5 +75,9 @@ export PACKER_CACHE_DIR="$CACHE_DIR"
 # choose a default hypervisor for packer and vagrant
 # vmware or virtualbox
 VIRTUAL_DEFAULT_HYPERVISOR=virtualbox
+
+# INTERNAL LIST
+DISTRIB_LIST="ubuntu64 debian64 centos64 archlinux boot2docker"
+TOOL_LIST="wget ninja cmake packer autotools perl"
 
 fi

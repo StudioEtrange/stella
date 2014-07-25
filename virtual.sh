@@ -244,10 +244,10 @@ function create_box() {
 
 # MAIN ------------------------
 PARAMETERS="
-ACTION=											'action' 			a			'create-env run-env stop-env info-env list-env destroy-env create-box get-box list-box'		Action to compute.
+ACTION=											'action' 			a			'create-env run-env stop-env info-env list-env destroy-env create-box get-box list-box list-distrib'		Action to compute.
 "
 OPTIONS="
-DISTRIB=''    						'd'     	'distribution' 		a 			0		'ubuntu64 debian64 centos64 archlinux boot2docker'		select a distribution.
+DISTRIB=''    						'd'     	'distribution' 		a 			0		'$DISTRIB_LIST'		select a distribution.
 VERBOSE=0							'v'			'level'				i			0		'0:2'					Verbose level : 0 (default) no verbose, 1 verbose, 2 ultraverbose.
 FORCE=''							'f'			''					b			0		'1'						Force.
 ENVNAME=''							'e'			''					s			0		''						Environment name.
@@ -270,6 +270,9 @@ fi
 
 
 case $ACTION in
+	list-distrib)
+		echo "$DISTRIB_LIST"
+		;;
     create-box)
 		_virtual_init_folder
     	create_box

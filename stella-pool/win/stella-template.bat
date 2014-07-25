@@ -1,11 +1,18 @@
-@setlocal enableExtensions enableDelayedExpansion
 @echo off
+if not "%~1"==":include" if not "%~1"==":bootstrap" (
+	@setlocal enableExtensions enableDelayedExpansion
+) else (
+	call %*
+	goto :eof
+)
+
+
 REM Usage :
 REM stella.bat include
 REM		OR call stella :include
 REM stella.bat bootstrap [install path] --- absolute or relative to app path where to install STELLA the system. If not provided, use setted value in link file (.-stella-link.bat) or in ..\lib-stella by default
 REM		OR call stella :bootstrap [install path]
-REM stella.bat <standard stella command>
+REM stella.bat ^<standard stella command^>
 
 set _CURRENT_FILE_DIR=%~dp0
 set _CURRENT_FILE_DIR=%_CURRENT_FILE_DIR:~0,-1%
@@ -30,7 +37,7 @@ if exist "%APP_ROOT%\.stella-link.bat" (
 REM Standard mode ------------------
 if not "%~1"==":include" if not "%~1"=="include" if not "%~1"==":bootstrap" if not "%~1"=="bootstrap" (
 	if "%IS_STELLA_LINKED%"=="TRUE" (
-		call "!STELLA_ROOT!\stella.bat %*"
+		call !STELLA_ROOT!\stella.bat %*
 		@echo off
 	) else (
 		echo ** ERROR This app is not linked to a STELLA installation path
@@ -50,6 +57,7 @@ if "%~1"==":bootstrap" (
 if "%~1"=="bootstrap" (
 	call :bootstrap %~2
 )
+
 goto :eof
 
 
@@ -100,11 +108,13 @@ goto :eof
 REM Include mode ------------------
 :include
 	if "%IS_STELLA_LINKED%"=="TRUE" (
-		call "!STELLA_ROOT!\include.bat"
+		call "!STELLA_ROOT!\conf.bat"
 	) else (
 		echo ** ERROR This app is not linked to a STELLA install path
 	)
 goto :eof
 
 @echo on
-@endlocal
+if not "%~1"==":include" if not "%~1"==":bootstrap" (
+	@endlocal
+)

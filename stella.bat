@@ -8,8 +8,8 @@ call %~dp0\conf.bat
 
 
 :: arguments
-set "params=domain:"app tools virtual" action:"init get-data get-assets setup-env install list create-env run-env stop-env destroy-env info-env create-box get-box destroy-box" id:"_ANY_""
-set "options=-v: -vv: -f: -arch:"#x64 x86" -distrib:_ANY_ -envcpu:_ANY_ -envmem:_ANY_ -vmgui: -l: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_"
+set "params=domain:"app tools virtual api" action:"init get-data get-assets setup-env install list create-env run-env stop-env destroy-env info-env create-box get-box destroy-box" id:"_ANY_""
+set "options=-v: -vv: -f: -arch:"#x64 x86" -envcpu:_ANY_ -envmem:_ANY_ -vmgui: -l: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_"
 
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
@@ -79,6 +79,20 @@ if "%DOMAIN%"=="app" (
 )
 if "%DOMAIN%"=="app" goto :end
 
+
+
+REM --------------- API ----------------------------
+if "%DOMAIN%"=="api" (
+	if "%ACTION%"=="list" (
+		if "%id%"=="all" (
+			call %STELLA_COMMON%\common-api.bat :stella_api_list "VAR"
+			echo !VAR!
+		)
+	)
+)
+if "%DOMAIN%"=="api" goto :end
+
+
 REM --------------- TOOLS ----------------------------
 if "%DOMAIN%"=="tools" (
 	set "_tools_options=-arch=%ARCH%"
@@ -87,7 +101,14 @@ if "%DOMAIN%"=="tools" (
 	if "%-vv%"=="1" set "_tools_options=%_tools_options% -vv"
 
 	if "%ACTION%"=="install" (
-		call %STELLA_ROOT%\tools.bat install "%id%" %_tools_options%
+		set vers=%id:*#=%
+		set "id=%id:#="^&REM #%
+		call %STELLA_ROOT%\tools.bat install "%id%" -vers=%vers% %_tools_options%
+		@echo off
+	)
+
+	if "%ACTION%"=="list" (
+		call %STELLA_ROOT%\tools.bat list "%id%" %_tools_options%
 		@echo off
 	)
 )
@@ -116,11 +137,17 @@ if "%DOMAIN%"=="virtual" (
 			call %STELLA_ROOT%\virtual.bat list-box %_virtual_options%
 			@echo off
 		)
+		if "%id%"=="distrib" (
+			call %STELLA_ROOT%\virtual.bat list-distrib %_virtual_options%
+			@echo off
+		)
 		
 	)
 
 	if "%ACTION%"=="create-env" (
-		call %STELLA_ROOT%\virtual.bat create-env -distrib=!-distrib! -envname="%id%" %_virtual_options%
+		set distrib=%id:*#=%
+		set "id=%id:#="^&REM #%
+		call %STELLA_ROOT%\virtual.bat create-env -distrib=!distrib! -envname="%id%" %_virtual_options%
 		@echo off
 	)
 
@@ -171,17 +198,20 @@ if "%DOMAIN%"=="virtual" goto :end
 	echo List of commands
 	echo 	* application management :
 	echo 		%~n0 app init ^<application name^> [-approot=^<path^>] [-workroot=^<path^>] [-cachedir=^<path^>]
-	echo 		%~n0 app get-data get-assets ^<data OR assets id OR all^>
-	echo 		%~n0 app setup-env ^<env id OR all^> : download, build, deploy and run virtual environment based on app properties
+	echo 		%~n0 app get-data get-assets ^<data id^|assets id^|all^>
+	echo 		%~n0 app setup-env ^<env id^|all^> : download, build, deploy and run virtual environment based on app properties
 	echo	* tools management :
 	echo 		%~n0 tools install default : install default tools
-	echo 		%~n0 tools install ^<tool name^> : install a tools
-	echo 		%~n0 tools install list : list available tools
+	echo 		%~n0 tools install ^<tool name#version^> : install a tools. version is optionnal
+	echo 		%~n0 tools list ^<all^|tool name^>: list all available tools OR available version of a tool
+	echo 		%~n0 tools list all: list available tools
 	echo	* virtual management :
-	echo 		%~n0 virtual create-env ^<env id^> -distrib=^<id^>: create a new environment from a generic box prebuilt with a specific distribution
+	echo 		%~n0 virtual create-env ^<env id#distrib id^> : create a new environment from a generic box prebuilt with a specific distribution
 	echo		%~n0 virtual run-env stop-env destroy-env info-env ^<env id^> : manage environment
 	echo 		%~n0 virtual create-box get-box destroy-box ^<distrib id^> : manage generic boxes built with a specific distribution
-	echo 		%~n0 virtual list ^<box|env^>
+	echo 		%~n0 virtual list ^<box^|env^|distrib^>
+	echo	* API :
+	echo 		%~n0 api list all : list public functions of stella api
 goto :end
 
 

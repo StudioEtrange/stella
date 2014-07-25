@@ -12,8 +12,8 @@ call %~dp0\conf.bat
 :: docker installation on windows : http://docs.docker.io/en/latest/installation/windows/
 
 :: arguments
-set "params=action:"create-env run-env stop-env destroy-env info-env list-env create-box get-box list-box destroy-box""
-set "options=-v: -vv: -distrib:"ubuntu64 debian64 centos64 archlinux boot2docker" -f: -envname:_ANY_ -envcpu:_ANY_ -envmem:_ANY_ -vmgui: -l:"
+set "params=action:"create-env run-env stop-env destroy-env info-env list-env create-box get-box list-box destroy-box list-distrib""
+set "options=-v: -vv: -distrib:"%DISTRIB_LIST%" -f: -envname:_ANY_ -envcpu:_ANY_ -envmem:_ANY_ -vmgui: -l:"
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
 if "%ARGOPT_FLAG_HELP%"=="1" goto :usage
@@ -55,6 +55,11 @@ if "%action%"=="list-box" (
 
 
 REM --------------- ENV MANAGEMENT -------------------------
+
+if "%action%"=="list-distrib" (
+	echo %DISTRIB_LIST%
+	goto :end
+)
 
 if "%action%"=="create-env" (
 	call :_virtual_init_folder
