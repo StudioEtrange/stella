@@ -50,7 +50,7 @@ set GNUMAKE="%TOOL_ROOT%\make\bin\make.exe"
 
 :: OTHERS ---------------------------------------------
 set FEATURE_LIST_ENABLED=
-set DEFAULT_VERBOSE_MODE=0
+set VERBOSE_MODE=0
 
 :: VIRTUALIZATION ----------------------
 set "VIRTUAL_WORK_ROOT=%PROJECT_ROOT%\virtual"
@@ -75,12 +75,12 @@ set VIRTUAL_DEFAULT_HYPERVISOR=virtualbox
 set "DISTRIB_LIST=ubuntu64 debian64 centos64 archlinux boot2docker"
 set "TOOL_LIST=ninja jom cmake packer perl ruby nasm python vagrant openssh"
 
-:: API
+:: API ---------------------------------------------
 set "STELLA_API_COMMON_PUBLIC=is_path_abs"
 set "STELLA_API_APP_PUBLIC=get_data get_assets get_all_data get_all_assets"
 set "STELLA_API_TOOLS_PUBLIC=install_feature init_feature"
+set "STELLA_API_VIRTUAL_PUBLIC="
 
 
-
-set "STELLA_API=%STELLA_COMMON%\common-api.bat :stella_api_proxy+"
+set "STELLA_API=%STELLA_COMMON%\common-api.bat :api_proxy+"
 

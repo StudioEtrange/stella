@@ -8,6 +8,35 @@ _CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 _CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
 
 
+function ___rel_to_abs_path() {
+	local _rel_path=$1
+	local _abs_root_path=$2
+
+
+	case $_rel_path in
+		/*)
+			# path is already absolute
+			echo "$_rel_path"
+			;;
+		*)
+			if [ "$_abs_root_path" == "" ]; then
+				# relative to current path
+				if [ -f "$_rel_path" ]; then
+					echo "$(cd "$_rel_path" && pwd )"
+				else
+					echo "$_rel_path"
+				fi
+			else
+				# relative to a given absolute path
+				if [ -f "$_abs_root_path/$_rel_path" ]; then
+					echo "$(cd "$_abs_root_path/$_rel_path" && pwd )"
+				else
+					echo "$_abs_root_path/$_rel_path"
+				fi
+			fi
+			;;
+	esac
+}
 
 # Bootstrap/auto install mode ------------------
 function bootstrap() {
@@ -20,17 +49,17 @@ function bootstrap() {
 		if [ "$PROVIDED_PATH" == "" ]; then
 			if [ ! "$STELLA_ROOT" == "" ]; then
 				# install STELLA into STELLA_ROOT, and linked to the app
-				_STELLA_INSTALL_PATH=$(rel_to_abs_path "$STELLA_ROOT" "$APP_ROOT")
+				_STELLA_INSTALL_PATH=$(___rel_to_abs_path "$STELLA_ROOT" "$APP_ROOT")
 				echo "STELLA_ROOT=$STELLA_ROOT" >$APP_ROOT/.stella-link.sh
 			else
 				# install STELLA into default path, and linked to the app
-				_STELLA_INSTALL_PATH=$(rel_to_abs_path "../lib-stella" "$APP_ROOT")
+				_STELLA_INSTALL_PATH=$(___rel_to_abs_path "../lib-stella" "$APP_ROOT")
 				echo "STELLA_ROOT=../lib-stella" >$APP_ROOT/.stella-link.sh
 			fi
 			git clone https://bitbucket.org/StudioEtrange/lib-stella.git "$_STELLA_INSTALL_PATH"
 		else
 			# install STELLA into ARG#2, and linked to the app
-			_STELLA_INSTALL_PATH=$(rel_to_abs_path "$PROVIDED_PATH" "$APP_ROOT")
+			_STELLA_INSTALL_PATH=$(___rel_to_abs_path "$PROVIDED_PATH" "$APP_ROOT")
 			if [ -f "$_STELLA_INSTALL_PATH/stella.sh" ]; then
 				# STELLA already installed, update it
 				(cd "$_STELLA_INSTALL_PATH" && git pull)
@@ -40,6 +69,7 @@ function bootstrap() {
 			fi
 			echo "PROVIDED_PATH=$ARG" >$APP_ROOT/.stella-link.sh
 		fi
+		sudo $_STELLA_INSTALL_PATH/init.sh
 		$_STELLA_INSTALL_PATH/tools.sh install default
 	fi
 }
@@ -48,7 +78,9 @@ function bootstrap() {
 # Include mode ------------------
 function include() {
 	if [ "$IS_STELLA_LINKED" == "TRUE" ]; then
-		source "$STELLA_ROOT/include.sh"
+		source "$STELLA_ROOT/conf.sh"
+
+		__init_stella_env
 	else
 		echo "** ERROR This app is not linked to a STELLA install path"
 	fi

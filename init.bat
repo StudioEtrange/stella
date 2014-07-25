@@ -14,9 +14,9 @@ if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
 if "%ARGOPT_FLAG_HELP%"=="1" goto :usage
 
 :: setting env
-call %STELLA_COMMON%\common.bat :init_env
+call %STELLA_COMMON%\common.bat :init_stella_env
 
-call :init_stella
+call %STELLA_COMMON%\platform.bat :init_stella_by_os %STELLA_CURRENT_OS%
 
 goto :end
 
@@ -25,10 +25,6 @@ goto :end
    echo %~n0 %ARGOPT_HELP_SYNTAX%
 goto :end
 
-
-:init_stella
-	call %STELLA_COMMON%\platform.bat :init_stella_by_os %STELLA_CURRENT_OS%
-goto :eof
 
 
 :end

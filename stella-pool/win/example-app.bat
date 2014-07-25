@@ -13,8 +13,6 @@ call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
 if "%ARGOPT_FLAG_HELP%"=="1" goto :usage
 
-:: setting env
-call %STELLA_COMMON%\common.bat :init_env
 
 
 echo PARAM1 = %param1%

@@ -1,22 +1,22 @@
-if [ ! "$_COMMON_EXTRA_INCLUDED_" == "1" ]; then 
-_COMMON_EXTRA_INCLUDED_=1
+if [ ! "$_COMMON_TOOLS_INCLUDED_" == "1" ]; then 
+_COMMON_TOOLS_INCLUDED_=1
 
 
 # --------------- FEATURES MANAGEMENT ----------------------------
 
-function init_all_features() {
+function __init_all_features() {
 	for a in $TOOL_LIST; do
-		init_feature $a
+		__init_feature $a
 	done
 }
 
-function list_feature_version() {
+function __list_feature_version() {
 	local _FEATURE=$1
 	source $STELLA_TOOL_RECIPE/feature_$_FEATURE.sh
-	echo $(list_"$_FEATURE")
+	echo $(__list_"$_FEATURE")
 }
 
-function init_feature() {
+function __init_feature() {
 	local _FEATURE=$1
 	local _VER=$2
 
@@ -28,7 +28,7 @@ function init_feature() {
 	if [ "$_flag" == "0" ]; then
 		FEATURE_PATH=
 		source $STELLA_TOOL_RECIPE/feature_$_FEATURE.sh
-		feature_"$_FEATURE" $_VER
+		__feature_"$_FEATURE" $_VER
 		if [ ! "$TEST_FEATURE" == "0" ]; then
 			FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $_FEATURE#$FEATURE_VER"
 			if [ ! "$FEATURE_PATH" == "" ]; then
@@ -38,7 +38,7 @@ function init_feature() {
 	fi
 }
 
-function install_feature() {
+function __install_feature() {
 	local _FEATURE=$1
 	local _VER=$2
 
@@ -50,7 +50,7 @@ function install_feature() {
 	if [ "$_flag" == "0" ]; then
 		FEATURE_PATH=
 		source $STELLA_TOOL_RECIPE/feature_$_FEATURE.sh
-		install_"$_FEATURE" $_VER
+		__install_"$_FEATURE" $_VER
 		if [ ! "$TEST_FEATURE" == "0" ]; then
 			FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $_FEATURE#$FEATURE_VER"
 			if [ ! "$FEATURE_PATH" == "" ]; then
@@ -60,7 +60,7 @@ function install_feature() {
 	fi
 }
 
-function reinit_all_features() {
+function __reinit_all_features() {
 	local _VER=
 	local _FEATURE=
 	for f in $FEATURE_LIST_ENABLED; do
@@ -68,7 +68,7 @@ function reinit_all_features() {
 		_FEATURE=${f%#*}
 		FEATURE_PATH=
 		source $STELLA_TOOL_RECIPE/feature_$_FEATURE.sh
-		feature_"$_FEATURE" $_VER
+		__feature_"$_FEATURE" $_VER
 		if [ ! "$TEST_FEATURE" == "0" ]; then
 			if [ ! "$FEATURE_PATH" == "" ]; then 
 				PATH="$FEATURE_PATH:$PATH"
@@ -84,7 +84,7 @@ function reinit_all_features() {
 
 #TOOLS FOR CROSS COMPILING------------------------------------
 
-function texinfo() {
+function __texinfo() {
 	URL=http://ftp.gnu.org/gnu/texinfo/texinfo-5.1.tar.xz
 	VER=5.1
 	FILE_NAME=texinfo-5.1.tar.xz
@@ -96,11 +96,11 @@ function texinfo() {
 	CONFIGURE_FLAG_POSTFIX=
 
 	
-	_auto_install "configure" "texinfo" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
+	__auto_install "configure" "texinfo" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
 
 }
 
-function bc() {
+function __bc() {
 	#http://www.gnu.org/software/bc/bc.html
 
 	URL=http://alpha.gnu.org/gnu/bc/bc-1.06.95.tar.bz2
@@ -113,10 +113,10 @@ function bc() {
 	CONFIGURE_FLAG_PREFIX=
 	CONFIGURE_FLAG_POSTFIX=
 	
-	_auto_install "configure" "bc" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
+	__auto_install "configure" "bc" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
 }
 
-function file5() {
+function __file5() {
 	URL=ftp://ftp.astron.com/pub/file/file-5.15.tar.gz
 	VER=5.15
 	FILE_NAME=file-5.15.tar.gz
@@ -127,11 +127,11 @@ function file5() {
 	CONFIGURE_FLAG_PREFIX=
 	CONFIGURE_FLAG_POSTFIX="--disable-static"
 
-	_auto_install "configure" "file" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
+	__auto_install "configure" "file" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
 
 }
 
-function m4() {
+function __m4() {
 
 	URL=http://ftp.gnu.org/gnu/m4/m4-1.4.17.tar.gz
 	VER=1.4.17
@@ -143,10 +143,10 @@ function m4() {
 	CONFIGURE_FLAG_PREFIX=
 	CONFIGURE_FLAG_POSTFIX=
 
-	_auto_install "configure" "m4" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
+	__auto_install "configure" "m4" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
 }
 
-function binutils() {
+function __binutils() {
 	#TODO configure flag
 	URL=http://ftp.gnu.org/gnu/binutils/binutils-2.23.2.tar.bz2
 	VER=2.23.2
@@ -160,7 +160,7 @@ function binutils() {
   	--with-sysroot=${CLFS} --with-lib-path=/tools/lib --disable-nls \
   	--disable-static --enable-64-bit-bfd"
 
-	_auto_install "configure" "binutils" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
+	__auto_install "configure" "binutils" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
 }
 
 
@@ -172,7 +172,7 @@ function binutils() {
 
 
 #INTERNAL FUNCTION---------------------------------------------------
-function _auto_build_install_configure() {
+function __auto_build_install_configure() {
 	local AUTO_SOURCE_DIR
 	local AUTO_BUILD_DIR
 	local AUTO_INSTALL_DIR
@@ -223,7 +223,7 @@ function _auto_build_install_configure() {
 
 }
 
-function _auto_install() {
+function __auto_install() {
 	local MODE
 	local NAME
 	local FILE_NAME
@@ -256,7 +256,7 @@ function _auto_install() {
 
 	echo " ** Installing $NAME in $INSTALL_DIR"
 
-	download_uncompress "$URL" "$FILE_NAME" "$SOURCE_DIR" "$OPT"
+	__download_uncompress "$URL" "$FILE_NAME" "$SOURCE_DIR" "$OPT"
 	
 	DEST_ERASE=
 	[ "$_opt_dest_erase" == "ON" ] && DEST_ERASE=DEST_ERASE
@@ -266,7 +266,7 @@ function _auto_install() {
 				echo "TODO"
 				;;
 		configure)
-				_auto_build_install_configure "$SOURCE_DIR" "$BUILD_DIR" "$INSTALL_DIR" "$DEST_ERASE" 
+				__auto_build_install_configure "$SOURCE_DIR" "$BUILD_DIR" "$INSTALL_DIR" "$DEST_ERASE" 
 				;;
 	esac
 

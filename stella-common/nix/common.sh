@@ -16,22 +16,22 @@ set +h
 # ext = ${file#*.}
 # To get: tar.gz
 
-function get_path_from_string() {
+function __get_path_from_string() {
 	echo ${1%/*}
 }
 
-function get_filename_from_string() {
+function __get_filename_from_string() {
 	echo ${1##*/}
 }
 
-function get_filename_from_url() {
+function __get_filename_from_url() {
 	local _AFTER_SLASH
 	_AFTER_SLASH=${1##*/}
 	echo ${_AFTER_SLASH%%\?*}
 }
 
 
-function is_abs() {
+function __is_abs() {
 	local _path=$1
 
 	case $_path in
@@ -44,7 +44,7 @@ function is_abs() {
 	esac
 }
 
-function rel_to_abs_path() {
+function __rel_to_abs_path() {
 	local _rel_path=$1
 	local _abs_root_path=$2
 
@@ -75,7 +75,7 @@ function rel_to_abs_path() {
 }
 
 
-function abs_to_rel_path() {
+function __abs_to_rel_path() {
 	
 	local target="$1"
 	local _abs_path="$2"
@@ -127,32 +127,19 @@ function abs_to_rel_path() {
 
 
 
-function init_env() {
-	init_arg
-	init_all_features
+function __init_stella_env() {
+	__init_all_features
 }
-
-
-
-
-# COMMON COMMAND LINE ARG PARSE
-function init_arg() {
-
-	# VERBOSE
-	[ "$VERBOSE" == "" ] && VERBOSE=$DEFAULT_VERBOSE_MODE
-	VERBOSE_MODE=$VERBOSE
-}
-
 
 
 
 #FILE TOOLS----------------------------------------------
-function del_folder() {
+function __del_folder() {
 	echo "** Deleting $1 folder"
 	[ -d $1 ] && rm -Rf $1
 }
 # copy content of folder ARG1 into folder ARG2
-function copy_folder_content_into() {
+function __copy_folder_content_into() {
 	local filter=$3
 	if [ "$filter" == "" ]; then
 		filter="*"
@@ -166,7 +153,7 @@ function copy_folder_content_into() {
 }
 
 #DOWNLOAD AND ZIP FUNCTIONS---------------------------------------------------
-function get_ressource() {
+function __get_ressource() {
 	local NAME=$1
 	local URI=$2
 	local PROTOCOL=$3
@@ -212,14 +199,14 @@ function get_ressource() {
 			HTTP_ZIP)
 				echo "MERGE : $_opt_merge"
 				echo "STRIP : $_opt_strip"
-				download_uncompress "$URI" "_AUTO_" "$FINAL_DESTINATION" "$_STRIP"
+				__download_uncompress "$URI" "_AUTO_" "$FINAL_DESTINATION" "$_STRIP"
 				[ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
 			HTTP)
 				echo "MERGE : $_opt_merge"
 				# HTTP protocol use always merge by default : because it never erase destination folder
 				# the flag file will be setted only if we pass the option MERGE
-				download "$URI" "_AUTO_" "$FINAL_DESTINATION"
+				__download "$URI" "_AUTO_" "$FINAL_DESTINATION"
 				[ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
 			HG)
@@ -237,13 +224,13 @@ function get_ressource() {
 			FILE)
 				echo "MERGE : $_opt_merge"
 				[ "$_opt_strip" == "ON" ] && echo "STRIP Not supported with FILE protocol"
-				copy_folder_content_into "$URI" "$FINAL_DESTINATION"
+				__copy_folder_content_into "$URI" "$FINAL_DESTINATION"
 				[ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
 			FILE_ZIP)
 				echo "MERGE : $_opt_merge"
 				echo "STRIP : $_opt_strip"
-				uncompress "$URI" "$FINAL_DESTINATION%" "$_STRIP"
+				__uncompress "$URI" "$FINAL_DESTINATION%" "$_STRIP"
 				[ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
 			*)
@@ -253,7 +240,7 @@ function get_ressource() {
 	fi
 }
 
-function download_uncompress() {
+function __download_uncompress() {
 	local URL
 	local FILE_NAME
 	local UNZIP_DIR
@@ -275,15 +262,15 @@ function download_uncompress() {
 	
 	if [ "$FILE_NAME" == "_AUTO_" ]; then
 		#_AFTER_SLASH=${URL##*/}
-		FILE_NAME=$(get_filename_from_url "$URL")
+		FILE_NAME=$(__get_filename_from_url "$URL")
 		echo "** Guessed file name is $FILE_NAME"
 	fi
 	
-	download $URL $FILE_NAME
-	uncompress "$CACHE_DIR/$FILE_NAME" "$UNZIP_DIR" "$OPT"
+	__download $URL $FILE_NAME
+	__uncompress "$CACHE_DIR/$FILE_NAME" "$UNZIP_DIR" "$OPT"
 }
 
-function uncompress() {
+function __uncompress() {
 	local FILE_PATH
 	local UNZIP_DIR
 	local OPT
@@ -311,7 +298,7 @@ function uncompress() {
 	case "$FILE_PATH" in
 		*.zip)
 			[ "$_opt_strip" == "OFF" ] && unzip -a -o "$FILE_PATH"
-			[ "$_opt_strip" == "ON" ] && _unzip-strip "$FILE_PATH" "$UNZIP_DIR"
+			[ "$_opt_strip" == "ON" ] && __unzip-strip "$FILE_PATH" "$UNZIP_DIR"
 			;;
 		*.gz | *.tgz) 
 			[ "$_opt_strip" == "OFF" ] && tar xvf "$FILE_PATH"
@@ -323,14 +310,14 @@ function uncompress() {
 			;;
 		*.7z)
 			[ "$_opt_strip" == "OFF" ] && 7z x "$FILE_PATH" -y -o"$UNZIP_DIR"
-			[ "$_opt_strip" == "ON" ] && _sevenzip-strip "$FILE_PATH" "$UNZIP_DIR"
+			[ "$_opt_strip" == "ON" ] && __sevenzip-strip "$FILE_PATH" "$UNZIP_DIR"
 			;;
 		*)
 			echo " ** ERROR : Unknown archive format"
 	esac
 }
 
-function download() {
+function __download() {
 	local URL
 	local FILE_NAME
 	local DEST_DIR
@@ -347,7 +334,7 @@ function download() {
 
 	if [ "$FILE_NAME" == "_AUTO_" ]; then
 		#_AFTER_SLASH=${URL##*/}
-		FILE_NAME=$(get_filename_from_url "$URL")
+		FILE_NAME=$(__get_filename_from_url "$URL")
 		echo "** Guessed file name is $FILE_NAME"
 	fi
 
@@ -362,7 +349,7 @@ function download() {
 
 	if [ ! -f "$CACHE_DIR/$FILE_NAME" ]; then
 		if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
-			curl "$URL" -o "$CACHE_DIR/$FILE_NAME"
+			curl -L -o "$CACHE_DIR/$FILE_NAME" "$URL"
 		else
 			wget "$URL" -O "$CACHE_DIR/$FILE_NAME" --no-check-certificate
 		fi
@@ -381,7 +368,7 @@ function download() {
 	fi
 }
 
-function _unzip-strip() (
+function __unzip-strip() (
     local zip=$1
     local dest=${2:-.}
     local temp=$(mktmpdir)
@@ -398,7 +385,7 @@ function _unzip-strip() (
     rm -Rf "$temp"
 )
 
-function _sevenzip-strip() (
+function __sevenzip-strip() (
     local zip=$1
     local dest=${2:-.}
     local temp=$(mktmpdir)
@@ -416,7 +403,7 @@ function _sevenzip-strip() (
 
 
 # INI FILE MANAGEMENT---------------------------------------------------
-function get_key() {
+function __get_key() {
 	local _FILE=$1
 	local _SECTION=$2
 	local _KEY=$3
@@ -440,15 +427,15 @@ function get_key() {
 	fi
 }
 
-function del_key() {
+function __del_key() {
 	local _FILE=$1
 	local _SECTION=$2
 	local _KEY=$3
 
-	_ini_file "DEL" "$_FILE" "$_SECTION" "$_KEY"
+	__ini_file "DEL" "$_FILE" "$_SECTION" "$_KEY"
 }
 
-function add_key() {
+function __add_key() {
 	local _FILE=$1 
 	local _SECTION=$2
 	local _KEY=$3
@@ -458,10 +445,10 @@ function add_key() {
 		touch $_FILE
 	fi
 
-	_ini_file "ADD" "$_FILE" "$_SECTION" "$_KEY" "$_VALUE"
+	__ini_file "ADD" "$_FILE" "$_SECTION" "$_KEY" "$_VALUE"
 }
 
-function _ini_file() {
+function __ini_file() {
 	local _MODE=$1
 	local _FILE=$2
 	local _SECTION=$3
@@ -525,61 +512,9 @@ function _ini_file() {
 }
 
 
-# FLAG MANAGEMENT---------------------------------------------------
-function add_flag() {
-	local FLAG_FILE=$1
-	local FLAG_NAME=$2
-	local FLAG_VALUE=$3
-
-	[ -f $FLAG_FILE ] && (
-		del_flag $FLAG_FILE $FLAG_NAME
-	)
-	echo $FLAG_NAME=$FLAG_VALUE >> "$FLAG_FILE"
-}
-
-function del_flag() {
-	local FLAG_FILE=$1
-	local FLAG_NAME=$2
-	FLAGS_FILE_TEMP="$FLAG_FILE".temp
-
-	[ -f $FLAG_FILE ] && (
-		touch "$FLAGS_FILE_TEMP"
-		while IFS== read flag value || [ -n "$flag" ]
-		do   
-			if [ "$flag" == "" ]; then 
-				echo "" >> "$FLAGS_FILE_TEMP"
-			else
-	   			[ ! "$flag" == $FLAG_NAME ] && ( echo $flag=$value >> "$FLAGS_FILE_TEMP" )
-	   		fi
-		done < "$FLAG_FILE"
-		rm "$FLAG_FILE"
-		mv "$FLAGS_FILE_TEMP" "$FLAG_FILE"
-	)
-}
-
-function get_flag() {
-	local FLAG_FILE=$1
-	local FLAG_NAME=$2
-
-	[ ! -f $FLAG_FILE ] && $FLAG_NAME=
-
-	while IFS== read flag value || [ -n "$flag" ]
-	do   
-   		if [ "$flag" == "$FLAG_NAME" ];then
-   			eval "$FLAG_NAME=\$value"
-   		fi
-	done < "$FLAG_FILE"
-}
-
-function reset_all_flag() {
-	local FLAG_FILE=$1
-	rm -f $FLAG_FILE
-}
-
-
 
 # ARG COMMAND LINE MANAGEMENT---------------------------------------------------
-function argparse(){
+function __argparse(){
 	local PROGNAME="$1"
 	local OPTIONS="$2"
 	local PARAMETERS="$3"

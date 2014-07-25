@@ -9,14 +9,17 @@ call %~dp0\conf.bat
 
 :: arguments
 set "params=domain:"app tools virtual api" action:"init get-data get-assets setup-env install list create-env run-env stop-env destroy-env info-env create-box get-box destroy-box" id:"_ANY_""
-set "options=-v: -vv: -f: -arch:"#x64 x86" -envcpu:_ANY_ -envmem:_ANY_ -vmgui: -l: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_"
+set "options=-f: -arch:"#x64 x86" -envcpu:_ANY_ -envmem:_ANY_ -vmgui: -l: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_"
 
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
 if "%ARGOPT_FLAG_HELP%"=="1" goto :usage
 
+set ARCH=%-arch%
+set FORCE=%-f%
+
 :: setting env
-call %STELLA_COMMON%\common.bat :init_env
+call %STELLA_COMMON%\common.bat :init_stella_env
 
 
 
@@ -24,10 +27,7 @@ REM --------------- APP ----------------------------
 if "%DOMAIN%"=="app" (
 
 	if "%ACTION%"=="init" (
-		REM first init STELLA
-		REM TODO init stella when creating each app ?
-		call %STELLA_ROOT%\init.bat
-		@echo off
+		
 		if "%-approot%"=="" (
 			set "-approot=%_CURRENT_RUNNING_DIR%"
 		)
@@ -85,7 +85,7 @@ REM --------------- API ----------------------------
 if "%DOMAIN%"=="api" (
 	if "%ACTION%"=="list" (
 		if "%id%"=="all" (
-			call %STELLA_COMMON%\common-api.bat :stella_api_list "VAR"
+			call %STELLA_COMMON%\common-api.bat :api_list "VAR"
 			echo !VAR!
 		)
 	)

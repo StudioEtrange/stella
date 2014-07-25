@@ -3,36 +3,36 @@ _PERL_INCLUDED_=1
 
 
  
-function list_perl() {
+function __list_perl() {
 	echo "5_18_2"
 }
 
 
-function install_perl() {
+function __install_perl() {
 	local _VER=$1
 	local _DEFAULT_VER="5_18_2"
 
 	mkdir -p $TOOL_ROOT/perl
 
 	if [ "$_VER" == "" ]; then
-		install_perl_$_DEFAULT_VER
+		__install_perl_$_DEFAULT_VER
 	else
-		install_perl_$_VER
+		__install_perl_$_VER
 	fi
 }
-function feature_perl() {
+function __feature_perl() {
 	local _VER=$1
 	local _DEFAULT_VER="5_18_2"
 
 	if [ "$_VER" == "" ]; then
-		feature_perl_$_DEFAULT_VER
+		__feature_perl_$_DEFAULT_VER
 	else
-		feature_perl_$_VER
+		__feature_perl_$_VER
 	fi
 }
 
 
-function install_perl_5_18_2() { 
+function __install_perl_5_18_2() { 
 	URL=http://www.cpan.org/src/5.0/perl-5.18.2.tar.gz
 	VER=5_18_2
 	FILE_NAME=perl-5.18.2.tar.gz
@@ -43,13 +43,13 @@ function install_perl_5_18_2() {
 	CONFIGURE_FLAG_PREFIX=
 	CONFIGURE_FLAG_POSTFIX=
 
-	feature_perl_5_18_2
+	__feature_perl_5_18_2
 	if [ "$FORCE" ]; then
 		TEST_FEATURE=0
-		del_folder $INSTALL_DIR
+		__del_folder $INSTALL_DIR
 	fi
 	if [ "$TEST_FEATURE" == "0" ]; then
-		download_uncompress "$URL" "$FILE_NAME" "$SRC_DIR" "DEST_ERASE STRIP"
+		__download_uncompress "$URL" "$FILE_NAME" "$SRC_DIR" "DEST_ERASE STRIP"
 
 		rm -Rf "$BUILD_DIR"
 		mkdir -p "$INSTALL_DIR"
@@ -63,7 +63,7 @@ function install_perl_5_18_2() {
 		make -j$BUILD_JOB
 		make install
 
-		feature_perl_5_18_2
+		__feature_perl_5_18_2
 		if [ ! "$TEST_FEATURE" == "0" ]; then
 			echo " ** Perl installed"
 			"$TEST_FEATURE/bin/perl" --version
@@ -75,7 +75,7 @@ function install_perl_5_18_2() {
 		echo " ** Already installed"
 	fi
 }
-function feature_perl_5_18_2() {
+function __feature_perl_5_18_2() {
 	TEST_FEATURE=0
 	FEATURE_PATH=
 	FEATURE_VER=

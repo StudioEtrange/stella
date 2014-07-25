@@ -7,13 +7,16 @@ call %~dp0\conf.bat
 
 :: arguments
 set "params=action:"install list" id:"default all %TOOL_LIST%""
-set "options=-arch:"#x64 x86" -f: -v: -vv: -vers:"_ANY_""
+set "options=-arch:"#x64 x86" -f: -vers:"_ANY_""
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
 if "%ARGOPT_FLAG_HELP%"=="1" goto :usage
 
+set ARCH=%-arch%
+set FORCE=%-f%
+
 :: setting env
-call %STELLA_COMMON%\common.bat :init_env
+call %STELLA_COMMON%\common.bat :init_stella_env
 
 if "%action%"=="install" (
 

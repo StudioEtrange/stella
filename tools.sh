@@ -3,7 +3,7 @@ _CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 _CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
 source $_CURRENT_FILE_DIR/conf.sh
 
-function init_tools() {
+function __init_tools() {
 	echo "** Initialize Tools"
 	if [ ! -d "$TOOL_ROOT" ]; then
 		mkdir -p "$TOOL_ROOT"
@@ -25,44 +25,26 @@ ARCH='x64'			'a'			''					a			0			'x86 x64 arm'			Select architecture.
 FORCE=''                       	'f'    		''            		b     		0     		'1'           			Force operation.
 VERS=''				''			''					s 			0			'' 						tool version
 JOB='1'				'j'			'nb_job'			i			0			'1:100'					Number of jobs used by build tool. (Only for supported build tool)
-VERBOSE=$DEFAULT_VERBOSE_MODE		'v'			'level'				i			0			'0:2'					Verbose level : 0 (default) no verbose, 1 verbose, 2 ultraverbose.																		
 "
 
-argparse "$0" "$OPTIONS" "$PARAMETERS" "Stella tools management" "Stella tools management" "" "$@"
+__argparse "$0" "$OPTIONS" "$PARAMETERS" "Stella tools management" "Stella tools management" "" "$@"
 
 
 
 # common initializations
-init_env
+__init_stella_env
+
 BUILD_JOB=$JOB
 
 case $ACTION in
     install)
 		case $ID in
 			default)
-				init_tools
-				;;
-			cmake)
-				install_feature cmake $VERS
-				;;
-			ninja)
-				install_feature ninja $VERS
-				;;
-			packer)
-				install_feature packer $VERS
-				;;
-			autotools)
-				install_feature autotools
-				;;
-			perl)
-				install_feature perl $VERS
-				;;
-			wget)
-				install_feature wget $VER
+				__init_tools
 				;;
 
 			*)
-				echo "use option --help for help"
+				__install_feature $ID $VER
 				;;
 		esac
 		;;
@@ -72,7 +54,7 @@ case $ACTION in
 				echo "default $TOOL_LIST"
 				;;
 			*)
-				echo $(list_feature_version $ID)
+				echo $(__list_feature_version $ID)
 				;;
 		esac
 		;;

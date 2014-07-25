@@ -2,34 +2,34 @@ if [ ! "$_CMAKE_INCLUDED_" == "1" ]; then
 _CMAKE_INCLUDED_=1
 
 
-function list_cmake() {
+function __list_cmake() {
 	echo "2_8_12"
 }
 
-function install_cmake() {
+function __install_cmake() {
 	local _VER=$1
 	local _DEFAULT_VER="2_8_12"
 
 	mkdir -p $TOOL_ROOT/cmake
 	if [ "$_VER" == "" ]; then
-		install_cmake_$_DEFAULT_VER
+		__install_cmake_$_DEFAULT_VER
 	else
-		install_cmake_$_VER
+		__install_cmake_$_VER
 	fi
 }
-function feature_cmake() {
+function __feature_cmake() {
 	local _VER=$1
 	local _DEFAULT_VER="2_8_12"
 
 	if [ "$_VER" == "" ]; then
-		feature_cmake_$_DEFAULT_VER
+		__feature_cmake_$_DEFAULT_VER
 	else
-		feature_cmake_$_VER
+		__feature_cmake_$_VER
 	fi
 }
 
 
-function install_cmake_2_8_12() {
+function __install_cmake_2_8_12() {
 	URL=http://www.cmake.org/files/v2.8/cmake-2.8.12.tar.gz
 	VER=2_8_12
 	FILE_NAME=cmake-2.8.12.tar.gz
@@ -44,14 +44,14 @@ function install_cmake_2_8_12() {
 	#TODO
 	#prerequires Recommended cURL-7.32.0, libarchive-3.1.2 and expat-2.1.0
 
-	feature_cmake_2_8_12
+	__feature_cmake_2_8_12
 	if [ "$FORCE" ]; then
 		TEST_FEATURE=0
-		del_folder $INSTALL_DIR
+		__del_folder $INSTALL_DIR
 	fi
 	if [ "$TEST_FEATURE" == "0" ]; then
 
-		download_uncompress "$URL" "$FILE_NAME" "$SRC_DIR" "DEST_ERASE STRIP"
+		__download_uncompress "$URL" "$FILE_NAME" "$SRC_DIR" "DEST_ERASE STRIP"
 
 		rm -Rf "$BUILD_DIR"
 		mkdir -p "$INSTALL_DIR"
@@ -66,7 +66,7 @@ function install_cmake_2_8_12() {
 		make install
 
 
-		feature_cmake_2_8_12
+		__feature_cmake_2_8_12
 		if [ ! "$TEST_FEATURE" == "0" ]; then
 			echo " ** CMake installed"
 			"$TEST_FEATURE/bin/cmake" --version
@@ -78,7 +78,7 @@ function install_cmake_2_8_12() {
 	fi
 
 }
-function feature_cmake_2_8_12() {
+function __feature_cmake_2_8_12() {
 	TEST_FEATURE=0
 	FEATURE_PATH=
 	FEATURE_VER=

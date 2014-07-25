@@ -1,22 +1,22 @@
 if [ ! "$_AUTOTOOLS_INCLUDED_" == "1" ]; then 
 _AUTOTOOLS_INCLUDED_=1
 
-function list_autotools() {
+function __list_autotools() {
 	echo "N/A"
 }
 
-function install_autotools() {
+function __install_autotools() {
 	[ "$FORCE" ] && rm -Rf "$TOOL_ROOT/autotools"
 	[ ! -d "$TOOL_ROOT/autotools" ] && mkdir -p "$TOOL_ROOT/autotools"
 	# order is important
 	# see http://petio.org/tools.html
-	install_m4_1_4_17
-	install_autoconf_2_69
-	install_automake_1_14
-	install_libtool_2_4_2
-	feature_autotools
+	__install_m4_1_4_17
+	__install_autoconf_2_69
+	__install_automake_1_14
+	__install_libtool_2_4_2
+	__feature_autotools
 }
-function feature_autotools() {
+function __feature_autotools() {
 	TEST_FEATURE=0
 	FEATURE_PATH=
 	FEATURE_VER=
@@ -27,7 +27,7 @@ function feature_autotools() {
 	fi
 }
 
-function install_autoconf_2_69() {
+function __install_autoconf_2_69() {
 	URL=http://ftp.gnu.org/gnu/autoconf/autoconf-2.69.tar.gz
 	VER=2.69
 	FILE_NAME=autoconf-2.69.tar.gz
@@ -37,20 +37,20 @@ function install_autoconf_2_69() {
 
 	echo " ** NEED : perl 5.6"
 	# TODO prerequites
-	init_feature "perl"
+	__init_feature "perl"
 
 	CONFIGURE_FLAG_PREFIX=
 	CONFIGURE_FLAG_POSTFIX="--docdir=$INSTALL_DIR/share/doc/automake-1.14"
 
-	feature_autoconf_2_69
+	__feature_autoconf_2_69
 	[ "$FORCE" ] && TEST_FEATURE=0
 	if [ "$TEST_FEATURE" == "0" ]; then
-		_auto_install "configure" "autoconf" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
+		__auto_install "configure" "autoconf" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
 	else
 		echo " ** Already installed"
 	fi
 }
-function feature_autoconf_2_69() {
+function __feature_autoconf_2_69() {
 	TEST_FEATURE=0
 	FEATURE_PATH=
 	FEATURE_VER=
@@ -64,7 +64,7 @@ function feature_autoconf_2_69() {
 }
 
 
-function install_automake_1_14() {
+function __install_automake_1_14() {
 	URL=http://ftp.gnu.org/gnu/automake/automake-1.14.tar.gz
 	VER=1.14
 	FILE_NAME=automake-1.14.tar.gz
@@ -75,15 +75,15 @@ function install_automake_1_14() {
 	CONFIGURE_FLAG_PREFIX=
 	CONFIGURE_FLAG_POSTFIX="--docdir=$INSTALL_DIR/share/doc/automake-1.14"
 
-	feature_automake_1_14
+	__feature_automake_1_14
 	[ "$FORCE" ] && TEST_FEATURE=0
 	if [ "$TEST_FEATURE" == "0" ]; then
-		_auto_install "configure" "automake" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
+		__auto_install "configure" "automake" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
 	else
 		echo " ** Already installed"
 	fi
 }
-function feature_automake_1_14() {
+function __feature_automake_1_14() {
 	TEST_FEATURE=0
 	FEATURE_PATH=
 	FEATURE_VER=
@@ -96,7 +96,7 @@ function feature_automake_1_14() {
 	fi
 }
 
-function install_libtool_2_4_2() {
+function __install_libtool_2_4_2() {
 	URL=http://ftp.gnu.org/gnu/libtool/libtool-2.4.2.tar.gz
 	VER=2.4.2
 	FILE_NAME=libtool-2.4.2.tar.gz
@@ -110,12 +110,12 @@ function install_libtool_2_4_2() {
 	feature_libtool_2_4_2
 	[ "$FORCE" ] && TEST_FEATURE=0
 	if [ "$TEST_FEATURE" == "0" ]; then
-		_auto_install "configure" "libtool" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
+		__auto_install "configure" "libtool" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
 	else
 		echo " ** Already installed"
 	fi
 }
-function feature_libtool_2_4_2() {
+function __feature_libtool_2_4_2() {
 	TEST_FEATURE=0
 	FEATURE_PATH=
 	FEATURE_VER=
@@ -128,7 +128,7 @@ function feature_libtool_2_4_2() {
 	fi
 }
 
-function install_m4_1_4_17() {
+function __install_m4_1_4_17() {
 	URL=http://ftp.gnu.org/gnu/m4/m4-1.4.17.tar.gz
 	VER=1.4.17
 	FILE_NAME=m4-1.4.17.tar.gz
@@ -139,15 +139,15 @@ function install_m4_1_4_17() {
 	CONFIGURE_FLAG_PREFIX=
 	CONFIGURE_FLAG_POSTFIX=
 
-	feature_m4_1_4_17
+	__feature_m4_1_4_17
 	[ "$FORCE" ] && TEST_FEATURE=0
 	if [ "$TEST_FEATURE" == "0" ]; then
-		_auto_install "configure" "m4" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
+		__auto_install "configure" "m4" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
 	else
 		echo " ** Already installed"
 	fi
 }
-function feature_m4_1_4_17() {
+function __feature_m4_1_4_17() {
 	TEST_FEATURE=0
 	FEATURE_PATH=
 	FEATURE_VER=

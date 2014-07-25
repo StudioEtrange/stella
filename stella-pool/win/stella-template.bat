@@ -76,18 +76,18 @@ REM Bootstrap/auto install mode ------------------
 		if "%_provided_path%"=="" (
 			if not "!STELLA_ROOT!"=="" (
 				REM install STELLA into STELLA_ROOT, and linked to the app
-				call %STELLA_COMMON%\common.bat :rel_to_abs_path "_stella_install_path" "!STELLA_ROOT!" "%APP_ROOT%"
+				call :___rel_to_abs_path "_stella_install_path" "!STELLA_ROOT!" "%APP_ROOT%"
 				> "%APP_ROOT%\.stella-link.bat" ECHO(set STELLA_ROOT=!STELLA_ROOT!			
 			) else (
 				REM install STELLA into default path, and linked to the app
-				call %STELLA_COMMON%\common.bat :rel_to_abs_path "_stella_install_path" "..\lib-stella" "%APP_ROOT%"
+				call :___rel_to_abs_path "_stella_install_path" "..\lib-stella" "%APP_ROOT%"
 				> "%APP_ROOT%\.stella-link.bat" ECHO(set STELLA_ROOT=..\lib-stella
 			)
 			git clone https://bitbucket.org/StudioEtrange/lib-stella.git "!_stella_install_path!"
 		) else (
 
 			REM install STELLA into ARG#2, and linked to the app
-			call %STELLA_COMMON%\common.bat :rel_to_abs_path "_stella_install_path" "%_provided_path%" "%APP_ROOT%"
+			call :___rel_to_abs_path "_stella_install_path" "%_provided_path%" "%APP_ROOT%"
 			if exist "!_stella_install_path!\stella.bat" (
 				REM STELLA already installed, update it
 				pushd
@@ -99,6 +99,8 @@ REM Bootstrap/auto install mode ------------------
 			)
 			> "%APP_ROOT%\.stella-link.bat" ECHO(set STELLA_ROOT=%_provided_path%
 		)
+		call !_stella_install_path!\init.bat
+		@echo off
 		call !_stella_install_path!\tools.bat install default
 		@echo off
 	)
@@ -109,8 +111,35 @@ REM Include mode ------------------
 :include
 	if "%IS_STELLA_LINKED%"=="TRUE" (
 		call "!STELLA_ROOT!\conf.bat"
+		call !STELLA_COMMON!\common.bat :init_stella_env
 	) else (
 		echo ** ERROR This app is not linked to a STELLA install path
+	)
+goto :eof
+
+
+:___is_path_abs
+	set "_result_var_is_path_abs=%~1"
+	set "_test_path=%~2"
+echo("%_test_path%"|findstr /i /r /c:^"^^\"[a-zA-Z]:[\\/][^\\/]" ^
+                           /c:^"^^\"[\\][\\]" >nul ^
+  && set "%_result_var_is_path_abs%=TRUE" || set "%_result_var_is_path_abs%=FALSE"
+goto :eof
+
+:___rel_to_abs_path
+	set "_result_var_rel_to_abs_path=%~1"
+	set "_rel_path=%~2"
+	if defined %2 set "_rel_path=!%~2!"
+
+	call :___is_path_abs "IS_ABS" "%_rel_path%"
+	if "%IS_ABS%"=="TRUE" ( 
+		set "_abs_root_path="
+		for %%A in ( %_rel_path%\ ) do set "_temp_path=%%~dpA"
+		set %_result_var_rel_to_abs_path%=!_temp_path:~0,-1!
+	) else (
+		set "_abs_root_path=%~3"
+		if not defined _abs_root_path set "_abs_root_path=%_CURRENT_RUNNING_DIR%"
+		for /f "tokens=*" %%A in ("!_abs_root_path!.\%_rel_path%") do set "%_result_var_rel_to_abs_path%=%%~fA"
 	)
 goto :eof
 

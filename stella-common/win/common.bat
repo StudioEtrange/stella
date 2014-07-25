@@ -5,25 +5,8 @@ goto :eof
 ::-- Functions
 ::--------------------------------------------------------
 
-:: COMMON COMMAND LINE ARG PARSE------------------------ 
-:init_arg
-
-	:: VERBOSE
-	if "%-vv%"=="" if "%-v%"=="" set /a "VERBOSE_MODE = %DEFAULT_VERBOSE_MODE%"
-	if "%-vv%"=="1" ( 
-		set /a "VERBOSE_MODE = 2"
-	) else if "%-v%"=="1" (
-		set /a "VERBOSE_MODE = 1"
-	)
-
-	set ARCH=%-arch%
-	set FORCE=%-f%
-
-goto :eof
-
 :: COMMON ENV------------------------ 
-:init_env
-	call :init_arg
+:init_stella_env
 	call %STELLA_COMMON%\common-tools.bat :init_all_features
 goto :eof
 

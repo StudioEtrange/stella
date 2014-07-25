@@ -2,30 +2,30 @@ if [ ! "$_PACKER_INCLUDED_" == "1" ]; then
 _PACKER_INCLUDED_=1
 
  
-function list_packer() {
+function __list_packer() {
 	echo "0_6_0"
 }
 
 
-function install_packer() {
+function __install_packer() {
 	local _VER=$1
 	local _DEFAULT_VER="0_6_0"
 
 	mkdir -p $TOOL_ROOT/packer
 	if [ "$_VER" == "" ]; then
-		install_packer_$_DEFAULT_VER
+		__install_packer_$_DEFAULT_VER
 	else
-		install_packer_$_VER
+		__install_packer_$_VER
 	fi
 }
-function feature_packer() {
+function __feature_packer() {
 	local _VER=$1
 	local _DEFAULT_VER="0_6_0"
 
 	if [ "$_VER" == "" ]; then
-		feature_packer_$_DEFAULT_VER
+		__feature_packer_$_DEFAULT_VER
 	else
-		feature_packer_$_VER
+		__feature_packer_$_VER
 	fi
 }
 
@@ -33,7 +33,7 @@ function feature_packer() {
 
 
 
-function install_packer_0_6_0() {
+function __install_packer_0_6_0() {
 	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
 		if [ "$ARCH" == "x64" ]; then
 			URL=https://dl.bintray.com/mitchellh/packer/0.6.0_darwin_amd64.zip
@@ -56,16 +56,16 @@ function install_packer_0_6_0() {
 	
 	echo " ** Installing packer version $VER in $INSTALL_DIR"
 	
-	feature_packer_0_6_0
+	__feature_packer_0_6_0
 	if [ "$FORCE" ]; then
 		TEST_FEATURE=0
 		del_folder $INSTALL_DIR
 	fi
 	if [ "$TEST_FEATURE" == "0" ]; then
 
-		download_uncompress "$URL" "$FILE_NAME" "$INSTALL_DIR" "DEST_ERASE STRIP"
+		__download_uncompress "$URL" "$FILE_NAME" "$INSTALL_DIR" "DEST_ERASE STRIP"
 		
-		feature_packer_0_6_0
+		__feature_packer_0_6_0
 		if [ ! "$TEST_FEATURE" == "0" ]; then
 			cd $INSTALL_DIR
 			chmod +x *
@@ -78,7 +78,7 @@ function install_packer_0_6_0() {
 		echo " ** Already installed"
 	fi
 }
-function feature_packer_0_6_0() {
+function __feature_packer_0_6_0() {
 	TEST_FEATURE=0
 	FEATURE_PATH=
 	FEATURE_VER=

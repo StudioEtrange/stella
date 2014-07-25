@@ -3,37 +3,37 @@ _NINJA_INCLUDED_=1
 
 
 
-function list_ninja() {
+function __list_ninja() {
 	echo "last_release"
 }
 
-function install_ninja() {
+function __install_ninja() {
 	local _VER=$1
 	local _DEFAULT_VER="last_release"
 
 	mkdir -p $TOOL_ROOT/ninja
 
 	if [ "$_VER" == "" ]; then
-		install_ninja_$_DEFAULT_VER
+		__install_ninja_$_DEFAULT_VER
 	else
-		install_ninja_$_VER
+		__install_ninja_$_VER
 	fi
 }
-function feature_ninja() {
+function __feature_ninja() {
 	local _VER=$1
 	local _DEFAULT_VER="last_release"
 
 	if [ "$_VER" == "" ]; then
-		feature_ninja_$_DEFAULT_VER
+		__feature_ninja_$_DEFAULT_VER
 	else
-		feature_ninja_$_VER
+		__feature_ninja_$_VER
 	fi
 }
 
 
 
 
-function install_ninja_last_release() {
+function __install_ninja_last_release() {
 	URL="https://github.com/martine/ninja/archive/release.zip"
 	VER="last_release"
 	FILE_NAME=ninja-release.zip
@@ -42,13 +42,13 @@ function install_ninja_last_release() {
 	echo " ** Installing ninja in $INSTALL_DIR"
 	echo " ** NEED : python"
 
-	feature_ninja_last_release
+	__feature_ninja_last_release
 	if [ "$FORCE" ]; then
 		TEST_FEATURE=0
-		del_folder $INSTALL_DIR
+		__del_folder $INSTALL_DIR
 	fi
 	if [ "$TEST_FEATURE" == "0" ]; then
-		download_uncompress "$URL" "$FILE_NAME" "$INSTALL_DIR" "DEST_ERASE STRIP"
+		__download_uncompress "$URL" "$FILE_NAME" "$INSTALL_DIR" "DEST_ERASE STRIP"
 
 		#TODO
 		#prerequites python
@@ -56,7 +56,7 @@ function install_ninja_last_release() {
 		cd "$INSTALL_DIR"
 		python ./bootstrap.py
 
-		feature_ninja_last_release
+		__feature_ninja_last_release
 		if [ ! "$TEST_FEATURE" == "0" ]; then
 			echo " ** Ninja installed"
 			"$TEST_FEATURE/ninja" --version
@@ -68,7 +68,7 @@ function install_ninja_last_release() {
 	fi
 }
 
-function feature_ninja_last_release() {
+function __feature_ninja_last_release() {
 	TEST_FEATURE=0
 	FEATURE_VER=
 	FEATURE_PATH=

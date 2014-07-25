@@ -15,9 +15,11 @@ source $STELLA_COMMON/platform.sh
 source $STELLA_COMMON/common.sh
 source $STELLA_COMMON/common-tools.sh
 source $STELLA_COMMON/common-app.sh
+source $STELLA_COMMON/common-virtual.sh
+source $STELLA_COMMON/common-api.sh
 
 # GATHER PLATFORM INFO ---------------------------------------------
-set_current_platform_info
+__set_current_platform_info
 
 # DEFAULT APP INFO -------------
 APP_ROOT="$_CURRENT_RUNNING_DIR"
@@ -27,22 +29,22 @@ CACHE_DIR=
 APP_NAME=
 
 # GATHER CURRENT APP INFO ---------------------------------------------
-select_app
-get_all_properties
+__select_app
+__get_all_properties
 
 # APP PATH ---------------------------------------------
-APP_ROOT=$(rel_to_abs_path "$APP_ROOT" "$_CURRENT_RUNNING_DIR")
-PROJECT_ROOT=$(rel_to_abs_path "$APP_WORK_ROOT" "$APP_ROOT")
+APP_ROOT=$(__rel_to_abs_path "$APP_ROOT" "$_CURRENT_RUNNING_DIR")
+PROJECT_ROOT=$(__rel_to_abs_path "$APP_WORK_ROOT" "$APP_ROOT")
 if [ "$CACHE_DIR" == "" ]; then
 	CACHE_DIR="$PROJECT_ROOT/cache"
 fi
-CACHE_DIR=$(rel_to_abs_path "$CACHE_DIR" "$APP_ROOT")
+CACHE_DIR=$(__rel_to_abs_path "$CACHE_DIR" "$APP_ROOT")
 
 TEMP_DIR="$PROJECT_ROOT/temp"
 TOOL_ROOT="$PROJECT_ROOT/tool_$STELLA_CURRENT_PLATFORM_SUFFIX/$STELLA_CURRENT_OS"
 DATA_ROOT="$PROJECT_ROOT/data"
 ASSETS_ROOT="$PROJECT_ROOT/assets"
-ASSETS_REPOSITORY=$(rel_to_abs_path "../assets_repository" "$PROJECT_ROOT")
+ASSETS_REPOSITORY=$(__rel_to_abs_path "../assets_repository" "$PROJECT_ROOT")
 
 
 # DEFAULT TOOLS ---------------------------------------------
@@ -56,7 +58,7 @@ ASSETS_REPOSITORY=$(rel_to_abs_path "../assets_repository" "$PROJECT_ROOT")
 
 # OTHERS ---------------------------------------------
 FEATURE_LIST_ENABLED=
-DEFAULT_VERBOSE_MODE=0
+VERBOSE_MODE=0
 
 # VIRTUALIZATION ------------------------------------------
 VIRTUAL_WORK_ROOT="$PROJECT_ROOT/virtual"
@@ -76,8 +78,18 @@ export PACKER_CACHE_DIR="$CACHE_DIR"
 # vmware or virtualbox
 VIRTUAL_DEFAULT_HYPERVISOR=virtualbox
 
-# INTERNAL LIST
+# INTERNAL LIST---------------------------------------------
 DISTRIB_LIST="ubuntu64 debian64 centos64 archlinux boot2docker"
 TOOL_LIST="wget ninja cmake packer autotools perl"
+
+# API ---------------------------------------------
+STELLA_API_COMMON_PUBLIC="is_abs argparse get_ressource"
+STELLA_API_APP_PUBLIC=""
+STELLA_API_TOOLS_PUBLIC=""
+STELLA_API_VIRTUAL_PUBLIC=""
+
+STELLA_API="api_proxy"
+
+
 
 fi

@@ -20,6 +20,8 @@ function usage() {
 	echo " L     virtual run-env stop-env destroy-env <env id> : manage environment"
 	echo " L     virtual create-box get-box destroy-box <distrib id> : manage generic boxes built with a specific distribution"
 	echo " L     virtual list <env|box|distrib> : list existing available environment, box and distribution"
+	echo " o-- stella api :"
+	echo " L     api list all : list public functions of stella api"
 }
 
 
@@ -27,14 +29,13 @@ function usage() {
 
 # arguments
 PARAMETERS="
-DOMAIN=                          'domain'     		a           'app tools virtual'         										   				Action domain.
+DOMAIN=                          'domain'     		a           'app tools virtual api'         										   				Action domain.
 ACTION=                         'action'   					a           'init get-data get-assets setup-env install list create-env run-env stop-env destroy-env create-box get-box destroy-box'         	Action to compute.
 ID=							 ''								s 			'' 						Data or Assets or Env or Box ID.
 "
 OPTIONS="
 FORCE=''                       	'f'    		''            		b     		0     		'1'           			Force operation.
 ARCH='x64'						'a'			''					a			0			'x86 x64'			Select architecture.
-VERBOSE=$DEFAULT_VERBOSE_MODE		'v'			'level'				i		0			'0:2'					Verbose level : 0 (default) no verbose, 1 verbose, 2 ultraverbose.
 APPROOT=''						'' 			'path'				s 			0			'' 						App path (default current)
 WORKROOT='' 					'' 			'path'				s 			0			''						Work app path (default equal to app path)
 CACHEDIR=''						'' 			'path'				s 			0			''						Cache folder path
@@ -44,10 +45,11 @@ VMGUI=''							''			''					b			0		'1'						Hyperviser head.
 LOGIN=''							'l'			''					b			0		'1'						Autologin in env.
 "
 
-argparse "$0" "$OPTIONS" "$PARAMETERS" "Lib Stella" "$(usage)" "" "$@"
+__argparse "$0" "$OPTIONS" "$PARAMETERS" "Lib Stella" "$(usage)" "" "$@"
 
 # common initializations
-init_env
+__init_stella_env
+
 
 
 
@@ -55,9 +57,7 @@ init_env
 if [ "$DOMAIN" == "app" ]; then
 
 	if [ "$ACTION" == "init" ]; then
-		# first init STELLA
-		# TODO init stella when creating each app ?
-		sudo $STELLA_ROOT/init.sh
+
 		if [ "$APPROOT" == "" ]; then
 			APPROOT=$_CURRENT_RUNNING_DIR
 		fi
@@ -68,7 +68,7 @@ if [ "$DOMAIN" == "app" ]; then
 			CACHEDIR=$WORKROOT/cache
 		fi
 
-		init_app $ID $APPROOT $WORKROOT $CACHEDIR
+		__init_app $ID $APPROOT $WORKROOT $CACHEDIR
 
 		cd $APPROOT
 		$STELLA_ROOT/tools.sh install default
@@ -82,23 +82,23 @@ if [ "$DOMAIN" == "app" ]; then
 		case $ACTION in
 		    get-data)
 				if [ "$ID" == "all" ]; then
-					get_all_data
+					__get_all_data
 				else
-					get_data $ID
+					__get_data $ID
 				fi
 				;;
 			get-assets)
 				if [ "$ID" == "all" ]; then
-					get_all_assets
+					__get_all_assets
 				else
-					get_assets $ID
+					__get_assets $ID
 				fi
 				;;
 			setup-env)
 				if [ "$ID" == "all" ]; then
-					setup_all_env
+					__setup_all_env
 				else
-					setup_env $ID
+					__setup_env $ID
 				fi
 				;;
 			*)
@@ -111,7 +111,7 @@ fi
 
 # --------------- TOOLS ----------------------------
 if [ "$DOMAIN" == "tools" ]; then
-	_tools_options="--arch=$ARCH -v $VERBOSE_MODE"
+	_tools_options="--arch=$ARCH"
 	if [ "$FORCE" == "1" ]; then
 		_tools_options="$_tools_options -f"
 	fi
@@ -131,9 +131,18 @@ if [ "$DOMAIN" == "tools" ]; then
 fi
 
 
+# --------------- API ----------------------------
+if [ "$DOMAIN" == "api" ]; then
+
+	if [ "$ACTION" == "list" ]; then
+		echo $(__api_list)
+	fi
+fi
+
+
 # --------------- VIRTUAL ----------------------------
 if [ "$DOMAIN" == "virtual" ]; then
-	_virtual_options="-v $VERBOSE_MODE"
+	_virtual_options=
 	if [ "$FORCE" == "1" ]; then
 		_virtual_options="$_virtual_options -f"
 	fi
