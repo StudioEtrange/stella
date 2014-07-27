@@ -9,7 +9,7 @@ function usage() {
 	echo "List of commands"
 	echo " o-- application management :"
 	echo " L     app init <application name> [--approot=<path>] [--workroot=<abs or relative path to approot>] [--cachedir=<abs or relative path to approot>]"
-	echo " L     app get-data get-assets <data id|assets id|all>"
+	echo " L     app get-data get-assets update-data update-assets revert-data revert-assets <data id|assets id|all>"
 	echo " L     app setup-env <env id|all> : download, build, deploy and run virtual environment based on app properties"
 	echo " o-- tools management :"
 	echo " L     tools install default : install default tools"
@@ -30,7 +30,7 @@ function usage() {
 # arguments
 PARAMETERS="
 DOMAIN=                          'domain'     		a           'app tools virtual api'         										   				Action domain.
-ACTION=                         'action'   					a           'init get-data get-assets setup-env install list create-env run-env stop-env destroy-env create-box get-box destroy-box'         	Action to compute.
+ACTION=                         'action'   					a           'init get-data get-assets update-data update-assets revert-data revert-assets setup-env install list create-env run-env stop-env destroy-env create-box get-box destroy-box'         	Action to compute.
 ID=							 ''								s 			'' 						Data or Assets or Env or Box ID.
 "
 OPTIONS="
@@ -93,6 +93,18 @@ if [ "$DOMAIN" == "app" ]; then
 				else
 					__get_assets $ID
 				fi
+				;;
+			udpate-data)
+				__update_data $ID
+				;;
+			update-assets)
+				__update_assets $ID
+				;;
+			revert-data)
+				__revert_data $ID
+				;;
+			revert-assets)
+				__revert_assets $ID
 				;;
 			setup-env)
 				if [ "$ID" == "all" ]; then

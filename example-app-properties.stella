@@ -21,22 +21,27 @@ ENV_NAME=mytest
 INFRA_ID=INFRA1
 
 [PACK_DATA]
-DATA_MAIN_PACKAGE=data_demo
 DATA_NAME=official_data
+DATA_ROOT=.
+DATA_NAMESPACE=data_demo
 DATA_URI=https://bitbucket.org/ryzom/ryzomcore-data
 DATA_GET_PROTOCOL=HG
 DATA_OPTIONS=MERGE
 
+
 [PACK_DATA2]
-DATA_MAIN_PACKAGE=data_demo2
 DATA_NAME=official_data2
+DATA_ROOT=.
+DATA_NAMESPACE=data_demo2
 DATA_URI=https://bitbucket.org/studioetrange/ryzomcore-script
 DATA_GET_PROTOCOL=HG
 DATA_OPTIONS=MERGE
 
+
 [PACK_DATA3]
-DATA_MAIN_PACKAGE=
 DATA_NAME=test_data2
+DATA_ROOT=.
+DATA_NAMESPACE=
 DATA_URI=https://bitbucket.org/studioetrange/ryzomcore-script
 DATA_GET_PROTOCOL=HG
 DATA_OPTIONS=

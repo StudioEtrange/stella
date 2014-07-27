@@ -10,7 +10,7 @@ goto :eof
 	set "_VER=%~1"
 	set "_DEFAULT_VER=2_0_0"
 
-	REM if not exist %TOOL_ROOT%\ruby mkdir %TOOL_ROOT%\ruby
+	REM if not exist %STELLA_TOOL_ROOT%\ruby mkdir %STELLA_TOOL_ROOT%\ruby
 	if "%_VER%"=="" (
 		call :install_ruby_%_DEFAULT_VER%
 	) else (
@@ -45,7 +45,7 @@ goto :eof
 		set FILE_NAME=ruby-2.0.0-p451-x64-mingw32.7z
 	)
 	set VERSION=2.0.0-p451
-	set "INSTALL_DIR=%TOOL_ROOT%\ruby2"
+	set "INSTALL_DIR=%STELLA_TOOL_ROOT%\ruby2"
 
 	echo ** Installing ruby version %VERSION% in %INSTALL_DIR%
 
@@ -74,8 +74,8 @@ goto :eof
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
-	if exist "%TOOL_ROOT%\ruby2\ruby-2.0.0-p451-mingw32\bin\ruby.exe" (
-		set "TEST_FEATURE=%TOOL_ROOT%\ruby2\ruby-2.0.0-p451-mingw32"
+	if exist "%STELLA_TOOL_ROOT%\ruby2\ruby-2.0.0-p451-mingw32\bin\ruby.exe" (
+		set "TEST_FEATURE=%STELLA_TOOL_ROOT%\ruby2\ruby-2.0.0-p451-mingw32"
 	)
 	if not "!TEST_FEATURE!"=="0" (
 		if %VERBOSE_MODE% GTR 0 (
@@ -99,7 +99,7 @@ goto :eof
 		set FILE_NAME=DevKit-mingw64-64-4.7.2-20130224-1432-sfx.exe
 	)
 	set VERSION=4.7.2-20130224
-	set INSTALL_DIR="%TOOL_ROOT%\ruby2\rubydevkit-4.7.2-20130224"
+	set INSTALL_DIR="%STELLA_TOOL_ROOT%\ruby2\rubydevkit-4.7.2-20130224"
 
 	echo ** Installing Ruby DevKit-mingw64-64-4 version %VERSION% in %INSTALL_DIR%
 
@@ -130,14 +130,14 @@ goto :eof
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
-	if exist "%TOOL_ROOT%\ruby2\rubydevkit-4.7.2-20130224\devkitvars.bat" (
-		set "TEST_FEATURE=%TOOL_ROOT%\ruby2\rubydevkit-4.7.2-20130224"
+	if exist "%STELLA_TOOL_ROOT%\ruby2\rubydevkit-4.7.2-20130224\devkitvars.bat" (
+		set "TEST_FEATURE=%STELLA_TOOL_ROOT%\ruby2\rubydevkit-4.7.2-20130224"
 	)
 	if not "!TEST_FEATURE!"=="0" (
 		if %VERBOSE_MODE% GTR 0 (
 			echo ** EXTRA FEATURE Detected : Ruby DevKit for Ruby2 in !TEST_FEATURE!
 		)
-		REM call %TOOL_ROOT%\rubydevkit-4.7.2-20130224\devkitvars.bat
+		REM call %STELLA_TOOL_ROOT%\rubydevkit-4.7.2-20130224\devkitvars.bat
 		SET "RI_DEVKIT=!TEST_FEATURE!\"
 		set "FEATURE_PATH=!TEST_FEATURE!\bin;!TEST_FEATURE!\mingw\bin"
 		REM set "FEATURE_PATH=!TEST_FEATURE!\bin;!TEST_FEATURE!\mingw\bin"
@@ -156,7 +156,7 @@ goto :eof
 	set URL=http://dl.bintray.com/oneclick/rubyinstaller/ruby-1.9.3-p545-i386-mingw32.7z
 	set FILE_NAME=ruby-1.9.3-p545-i386-mingw32.7z
 	set VERSION=1.9.3-p545
-	set INSTALL_DIR="%TOOL_ROOT%\ruby19"
+	set INSTALL_DIR="%STELLA_TOOL_ROOT%\ruby19"
 
 	echo ** Installing ruby version %VERSION% in %INSTALL_DIR%
 
@@ -185,8 +185,8 @@ goto :eof
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
-	if exist "%TOOL_ROOT%\ruby19\ruby-1.9.3-p545-i386-mingw32\bin\ruby.exe" (
-		set "TEST_FEATURE=%TOOL_ROOT%\ruby19\ruby-1.9.3-p484-i386-mingw32"
+	if exist "%STELLA_TOOL_ROOT%\ruby19\ruby-1.9.3-p545-i386-mingw32\bin\ruby.exe" (
+		set "TEST_FEATURE=%STELLA_TOOL_ROOT%\ruby19\ruby-1.9.3-p484-i386-mingw32"
 	)
 	if not "!TEST_FEATURE!"=="0" (
 		if %VERBOSE_MODE% GTR 0 (
@@ -203,7 +203,7 @@ goto :eof
 	set URL=https://github.com/downloads/oneclick/rubyinstaller/DevKit-tdm-32-4.5.2-20111229-1559-sfx.exe
 	set FILE_NAME=DevKit-tdm-32-4.5.2-20111229-1559-sfx.exe
 	set VERSION=4.5.2-20111229-1559
-	set INSTALL_DIR="%TOOL_ROOT%\ruby19\rubydevkit-4.5.2-20111229"
+	set INSTALL_DIR="%STELLA_TOOL_ROOT%\ruby19\rubydevkit-4.5.2-20111229"
 
 	echo ** Installing Ruby DevKit version %VERSION% in %INSTALL_DIR%
 
@@ -234,8 +234,8 @@ goto :eof
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
-	if exist "%TOOL_ROOT%\ruby19\rubydevkit-4.5.2-20111229\devkitvars.bat" (
-		set "TEST_FEATURE=%TOOL_ROOT%\ruby19\rubydevkit-4.5.2-20111229"
+	if exist "%STELLA_TOOL_ROOT%\ruby19\rubydevkit-4.5.2-20111229\devkitvars.bat" (
+		set "TEST_FEATURE=%STELLA_TOOL_ROOT%\ruby19\rubydevkit-4.5.2-20111229"
 	)
 	if not "!TEST_FEATURE!"=="0" (
 		if %VERBOSE_MODE% GTR 0 (

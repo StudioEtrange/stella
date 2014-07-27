@@ -33,17 +33,16 @@ if "%STELLA_APP_CACHE_DIR%"=="" (
 call %STELLA_COMMON%\common.bat :rel_to_abs_path "STELLA_APP_CACHE_DIR" "%STELLA_APP_CACHE_DIR%" "%STELLA_APP_ROOT%"
 
 set TEMP_DIR=%STELLA_APP_WORK_ROOT%\temp
-set TOOL_ROOT=%STELLA_APP_WORK_ROOT%\tool_%STELLA_CURRENT_PLATFORM_SUFFIX%\%STELLA_CURRENT_OS%
-set DATA_ROOT=%STELLA_APP_WORK_ROOT%\data
+set STELLA_TOOL_ROOT=%STELLA_APP_WORK_ROOT%\tool_%STELLA_CURRENT_PLATFORM_SUFFIX%\%STELLA_CURRENT_OS%
 set ASSETS_ROOT=%STELLA_APP_WORK_ROOT%\assets
 call %STELLA_COMMON%\common.bat :rel_to_abs_path "ASSETS_REPOSITORY" "..\assets_repository" "%STELLA_APP_WORK_ROOT%"
 
 :: DEFAULT TOOLS ---------------------------------------------
-set WGET="%TOOL_ROOT%\wget\bin\wget.exe"
-set UZIP="%TOOL_ROOT%\unzip\bin\unzip.exe"
-set U7ZIP="%TOOL_ROOT%\sevenzip\7z.exe"
-set PATCH="%TOOL_ROOT%\patch\bin\patch.exe"
-set GNUMAKE="%TOOL_ROOT%\make\bin\make.exe"
+set WGET="%STELLA_TOOL_ROOT%\wget\bin\wget.exe"
+set UZIP="%STELLA_TOOL_ROOT%\unzip\bin\unzip.exe"
+set U7ZIP="%STELLA_TOOL_ROOT%\sevenzip\7z.exe"
+set PATCH="%STELLA_TOOL_ROOT%\patch\bin\patch.exe"
+set GNUMAKE="%STELLA_TOOL_ROOT%\make\bin\make.exe"
 
 
 :: OTHERS ---------------------------------------------
@@ -74,8 +73,8 @@ set "DISTRIB_LIST=ubuntu64 debian64 centos64 archlinux boot2docker"
 set "TOOL_LIST=ninja jom cmake packer perl ruby nasm python vagrant openssh"
 
 :: API ---------------------------------------------
-set "STELLA_API_COMMON_PUBLIC=is_path_abs get_ressource download_uncompress"
-set "STELLA_API_APP_PUBLIC=get_data get_assets get_all_data get_all_assets"
+set "STELLA_API_COMMON_PUBLIC=is_path_abs get_ressource download_uncompress del_folder"
+set "STELLA_API_APP_PUBLIC=get_data get_assets get_all_data get_all_assets update_data update_assets revert_data revert_assets"
 set "STELLA_API_TOOLS_PUBLIC=install_feature init_feature"
 set "STELLA_API_VIRTUAL_PUBLIC="
 

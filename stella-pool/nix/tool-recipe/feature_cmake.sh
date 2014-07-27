@@ -10,7 +10,7 @@ function __install_cmake() {
 	local _VER=$1
 	local _DEFAULT_VER="2_8_12"
 
-	mkdir -p $TOOL_ROOT/cmake
+	mkdir -p $STELLA_TOOL_ROOT/cmake
 	if [ "$_VER" == "" ]; then
 		__install_cmake_$_DEFAULT_VER
 	else
@@ -33,9 +33,9 @@ function __install_cmake_2_8_12() {
 	URL=http://www.cmake.org/files/v2.8/cmake-2.8.12.tar.gz
 	VER=2_8_12
 	FILE_NAME=cmake-2.8.12.tar.gz
-	INSTALL_DIR="$TOOL_ROOT/cmake/$VER"
-	SRC_DIR="$TOOL_ROOT/cmake/$VER/cmake_$VER-src"
-	BUILD_DIR="$TOOL_ROOT/cmake/$VER/cmake_$VER-build"
+	INSTALL_DIR="$STELLA_TOOL_ROOT/cmake/$VER"
+	SRC_DIR="$STELLA_TOOL_ROOT/cmake/$VER/cmake_$VER-src"
+	BUILD_DIR="$STELLA_TOOL_ROOT/cmake/$VER/cmake_$VER-build"
 
 
 	echo " ** Installing cmake version $VER in $INSTALL_DIR"
@@ -82,8 +82,8 @@ function __feature_cmake_2_8_12() {
 	TEST_FEATURE=0
 	FEATURE_PATH=
 	FEATURE_VER=
-	if [ -f "$TOOL_ROOT/cmake/2_8_12/bin/cmake" ]; then
-		TEST_FEATURE="$TOOL_ROOT/cmake/2_8_12"
+	if [ -f "$STELLA_TOOL_ROOT/cmake/2_8_12/bin/cmake" ]; then
+		TEST_FEATURE="$STELLA_TOOL_ROOT/cmake/2_8_12"
 	fi
 
 	if [ ! "$TEST_FEATURE" == "0" ]; then

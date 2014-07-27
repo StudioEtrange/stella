@@ -220,6 +220,8 @@ goto :eof
 	REM option should passed as one string "OPT1 OPT2"
 	REM 	"MERGE" for merge in FINAL_DESTINATION
 	REM 	"STRIP" for remove root folder and copy content of root folder in FINAL_DESTINATION
+	REM 	"UPDATE" pull and update ressource (only for HG or GIT)
+	REM 	"REVERT" complete revert of the ressource (only for HG or GIT)
 	SET "OPT=%~5"
 
 	set "_name_legal=%NAME::=%"
@@ -233,15 +235,35 @@ goto :eof
 
 	set _opt_merge=OFF
 	set _opt_strip=OFF
+
+	:: operation is GET by default
+	set _opt_get=ON
+	set _opt_update=OFF
+	set _opt_revert=OFF
 	for %%O in (%OPT%) do (
 		if "%%O"=="MERGE" set _opt_merge=ON
 		if "%%O"=="STRIP" set _opt_strip=ON
+		if "%%O"=="UPDATE" set _opt_update=ON
+		if "%%O"=="REVERT" set _opt_revert=ON
 	)
+
+	set "_text=Getting"
+	if "!_opt_update!"=="ON" (
+		set _opt_get=OFF
+		set _opt_revert=OFF
+		set "_text=Updating"
+	)
+	if "!_opt_revert!"=="ON" (
+		set _opt_get=OFF
+		set _opt_update=OFF
+		set "_text=Reverting"
+	)
+
 	
 	if not "%FINAL_DESTINATION%"=="" (
-		echo ** Getting ressource : %NAME% into %FINAL_DESTINATION%
+		echo ** !_text! ressource : %NAME% into %FINAL_DESTINATION%
 	) else (
-		echo ** Getting ressource : %NAME%
+		echo ** !_text! ressource : %NAME%
 	)
 
 	if "%FORCE%"=="1" (
@@ -251,61 +273,100 @@ goto :eof
 
 	:: check if ressource already grabbed or merged
 	set _FLAG=1
-	if "%_opt_merge%"=="ON" (
+	if "!_opt_merge!"=="ON" (
 		if exist "%FINAL_DESTINATION%\._MERGED_!_name_legal!" ( 
-			set _FLAG=0
-			echo ** Ressource already merged
+			if "!_opt_get!"=="ON" (
+				set _FLAG=0
+				echo ** Ressource already merged
+			)
+		) else (
+			if not "!_opt_get!"=="ON" (
+				set _FLAG=0
+				echo ** Ressource does not exist
+			)
 		)
 	) else (
 		if exist "%FINAL_DESTINATION%" (
-			set _FLAG=0
-			echo ** Ressource already grabbed
+			if "!_opt_get!"=="ON" (
+				set _FLAG=0
+				echo ** Ressource already grabbed
+			)
+		) else (
+			if not "!_opt_get!"=="ON" (
+				set _FLAG=0
+				echo ** Ressource does not exist
+			)
 		)
 	)
 	
 	:: strip root folder mode
 	set "_STRIP="
-	if "%_opt_strip%"=="ON" set "_STRIP=STRIP"
+	if "!_opt_strip!"=="ON" set "_STRIP=STRIP"
 
 	if "%_FLAG%"=="1" (
 		if not exist "%FINAL_DESTINATION%" mkdir %FINAL_DESTINATION%
 
 		if "%PROTOCOL%"=="HTTP_ZIP" (
-			echo MERGE : %_opt_merge%
-			echo STRIP : %_opt_strip%
-			call :download_uncompress "%URI%" "_AUTO_" "%FINAL_DESTINATION%" "%_STRIP%"
-			if "%_opt_merge%"=="ON" echo 1 > "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
+			echo MERGE : !_opt_merge!
+			echo STRIP : !_opt_strip!
+			if "!_opt_revert!"=="ON" echo REVERT Not supported with HTTP_ZIP protocol
+			if "!_opt_update!"=="ON" echo UPDATE Not supported with HTTP_ZIP protocol
+			if "!_opt_get!"=="ON" call :download_uncompress "%URI%" "_AUTO_" "%FINAL_DESTINATION%" "%_STRIP%"
+			if "!_opt_merge!"=="ON" echo 1 > "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
 		)
 		if "%PROTOCOL%"=="HTTP" (
-			echo MERGE : %_opt_merge%
+			echo MERGE : !_opt_merge!
 			:: HTTP protocol use always merge by default : because it never erase destination folder
 			:: the flag file will be setted only if we pass the option MERGE
-			call :download "%URI%" "_AUTO_" "%FINAL_DESTINATION%"
-			if "%_opt_merge%"=="ON" echo 1 > "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
+			if "!_opt_revert!"=="ON" echo REVERT Not supported with HTTP protocol
+			if "!_opt_update!"=="ON" echo UPDATE Not supported with HTTP protocol
+			if "!_opt_get!"=="ON" call :download "%URI%" "_AUTO_" "%FINAL_DESTINATION%"
+			if "!_opt_merge!"=="ON" echo 1 > "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
 		)
 		if "%PROTOCOL%"=="HG" (
-			echo MERGE : %_opt_merge%
-			if "%_opt_strip%"=="ON" echo STRIP Not supported with HG protocol
-			hg clone %URI% "%FINAL_DESTINATION%"
-			if "%_opt_merge%"=="ON" echo 1 > "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
+			echo MERGE : !_opt_merge!
+			if "!_opt_strip!"=="ON" echo STRIP Not supported with HG protocol
+			if "!_opt_revert!"=="ON" (
+				cd /D "%FINAL_DESTINATION%"
+				hg revert --all -C
+			)
+			if "!_opt_update!"=="ON" (
+				cd /D "%FINAL_DESTINATION%"
+				hg pull
+				hg update
+			)
+			if "!_opt_get!"=="ON" hg clone %URI% "%FINAL_DESTINATION%"
+			if "!_opt_merge!"=="ON" echo 1 > "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
 		)
 		if "%PROTOCOL%"=="GIT" (
-			echo MERGE : %_opt_merge%
-			if "%_opt_strip%"=="ON" echo STRIP Not supported with GIT protocol
-			git clone %URI% "%FINAL_DESTINATION%"
-			if "%_opt_merge%"=="ON" echo 1 > "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
+			echo MERGE : !_opt_merge!
+			if "!_opt_strip!"=="ON" echo STRIP Not supported with GIT protocol
+			if "!_opt_revert!"=="ON" (
+				cd /D "%FINAL_DESTINATION%"
+				git reset --hard
+			)
+			if "!_opt_update!"=="ON" (
+				cd /D "%FINAL_DESTINATION%"
+				git pull
+			)
+			if "!_opt_get!"=="ON" git clone %URI% "%FINAL_DESTINATION%"
+			if "!_opt_merge!"=="ON" echo 1 > "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
 		)
 		if "%PROTOCOL%"=="FILE" (
-			echo MERGE : %_opt_merge%
-			if "%_opt_strip%"=="ON" echo STRIP Not supported with FILE protocol
-			call :copy_folder_content_into "%URI%" "%FINAL_DESTINATION%"
-			if "%_opt_merge%"=="ON" echo 1 > "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
+			echo MERGE : !_opt_merge!
+			if "!_opt_strip!"=="ON" echo STRIP Not supported with FILE protocol
+			if "!_opt_revert!"=="ON" echo REVERT Not supported with FILE protocol
+			if "!_opt_update!"=="ON" echo UPDATE Not supported with FILE protocol
+			if "!_opt_get!"=="ON" call :copy_folder_content_into "%URI%" "%FINAL_DESTINATION%"
+			if "!_opt_merge!"=="ON" echo 1 > "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
 		)
 		if "%PROTOCOL%"=="FILE_ZIP" (
-			echo MERGE : %_opt_merge%
-			echo STRIP : %_opt_strip%
-			call :uncompress "%URI%" "%FINAL_DESTINATION%" "%_STRIP%"
-			if "%_opt_merge%"=="ON" echo 1 > "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
+			echo MERGE : !_opt_merge!
+			echo STRIP : !_opt_strip!
+			if "!_opt_revert!"=="ON" echo REVERT Not supported with FILE_ZIP protocol
+			if "!_opt_update!"=="ON" echo UPDATE Not supported with FILE_ZIP protocol
+			if "!_opt_get!"=="ON" call :uncompress "%URI%" "%FINAL_DESTINATION%" "%_STRIP%"
+			if "!_opt_merge!"=="ON" echo 1 > "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
 		)
 	)
 goto :eof
@@ -384,7 +445,7 @@ goto :eof
 		set "USE7ZIP=FALSE"
 	)
 
-	if "%_opt_strip%"=="OFF" (
+	if "!_opt_strip!"=="OFF" (
 		if "%USE7ZIP%"=="FALSE" "%UZIP%" -o "%FILE_PATH%" -d "%UNZIP_DIR%"
 		if "%USE7ZIP%"=="TRUE" "%U7ZIP%" x "%FILE_PATH%" -y -o"%UNZIP_DIR%"
 	) else (

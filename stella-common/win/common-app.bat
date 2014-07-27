@@ -6,82 +6,98 @@ goto :eof
 REM APP RESSOURCES & ENV MANAGEMENT ---------------
 
 :get_data
-	if not exist "%DATA_ROOT%" mkdir "%DATA_ROOT%"
-	call :_get_stella_ressources "DATA" "%~1"
+	call :_get_app_ressources "DATA" "GET" "%~1"
 goto :eof
 
 :get_assets
 	if not exist "%ASSETS_ROOT%" mkdir "%ASSETS_ROOT%"
 	if not exist "%ASSETS_REPOSITORY%" mkdir "%ASSETS_REPOSITORY%"
-	call :_get_stella_ressources "ASSETS" "%~1"
+	call :_get_app_ressources "ASSETS" "GET" "%~1"
+goto :eof
+
+:update_data
+	call :_get_app_ressources "DATA" "UPDATE" "%~1"
+goto :eof
+
+:update_assets
+	call :_get_app_ressources "ASSETS" "UPDATE" "%~1"
+goto :eof
+
+:revert_data
+	call :_get_app_ressources "DATA" "REVERT" "%~1"
+goto :eof
+
+:revert_assets
+	call :_get_app_ressources "ASSETS" "REVERT" "%~1"
 goto :eof
 
 :get_all_data
-	get_data %STELLA_DATA_LIST%
+	call :get_data "%STELLA_DATA_LIST%"
 goto :eof
 
 :get_all_assets
-	get_assets %STELLA_ASSETS_LIST%
+	call :get_assets "%STELLA_ASSETS_LIST%"
 goto :eof
 
 
-
-:_get_stella_ressources
+:: ARG1 ressource mode is DATA or ASSET
+:: ARG2 operation is GET or UPDATE or REVERT (UPDATE or REVERT if applicable)
+:: ARG3 list of ressource ID
+:_get_app_ressources
 	set "_mode=%~1"
-	set "_list_id=%~2"
+	set "_operation=%~2"
+	set "_list_id=%~3"
 
 	for %%A in (!_list_id!) do (
-		set _opt=!"%%A"_DATA_OPTIONS!
-		set _uri=!"%%A"_DATA_URI!
-		set _prot=!"%%A"_DATA_GET_PROTOCOL!
-		set _name=!"%%A"_DATA_NAME!
-		set _main_package=!"%%A"_DATA_MAIN_PACKAGE!
+
+		set "_opt=!%%A_%_mode%_OPTIONS!"
+		set "_uri=!%%A_%_mode%_URI!"
+		set "_prot=!%%A_%_mode%_GET_PROTOCOL!"
+		set "_name=!%%A_%_mode%_NAME!"
+		set "_namespace=!%%A_%_mode%_NAMESPACE!"
 		
-
-		set _artefact_link=0
-		if "%_mode%"=="DATA" (
-			set "_artefact_dest=%DATA_ROOT%"
-			set _artefact_link=0
-		)
-		if "%_mode%"=="ASSETS" (
-			set "_artefact_dest=%ASSETS_REPOSITORY%"
-			set _artefact_link=1
-			set "_artefact_link_target=%ASSETS_ROOT%"
-		)
-		
-
-
-		set _merge=
-		set _strip=
-		for %%O in (!_opt!) do (
-			if "%%O"=="MERGE" set _merge=MERGE
-			if "%%O"=="STRIP" set _strip=STRIP
-		)
-
-		echo * Get %_name% [%%A] ressources
-
-		if "!_merge!"=="MERGE" (
-			echo * Main package of [%%A] is %_main_package%
-		)
-
-
-		if "!_merge!"=="MERGE" (
-			call %STELLA_COMMON%\common.bat :get_ressource "%_mode% : !_name! [!_main_package!]" "!_uri!" "!_prot!" "!_artefact_dest!\!_main_package!" "!_merge! !_strip!"
-			echo * !_name! merged into !_main_package!
-			if "%_artefact_link%"=="1" (
-				if exist "%!_artefact_link_target!\!_main_package!" if "%FORCE%"=="1" rmdir "!_artefact_link_target!\!_main_package!"
-				if not exist "!_artefact_link_target!\!_main_package!" (
-					echo ** Make symbolic link for !_main_package!
-					call %STELLA_COMMON%\common.bat :run_admin %STELLA_COMMON%\symlink.bat "!_artefact_dest!\!_main_package!" "!_artefact_link_target!\!_main_package!"
-				)
-			)
+		if "!_name!"=="" (
+			echo ** Error : %%A does not exist
 		) else (
-			call %STELLA_COMMON%\common.bat :get_ressource "%_mode% : !_name!" "!_uri!" "!_prot!" "!_artefact_dest!\!_name!" "!_strip!"
+
+			set _artefact_link=0
+			if "%_mode%"=="DATA" (
+				set "_root=!%%A_DATA_ROOT!"
+				call %STELLA_COMMON%\common.bat :rel_to_abs_path "_artefact_dest" "!_root!" "%STELLA_APP_WORK_ROOT%"
+				::set "_artefact_dest=%DATA_ROOT%"
+				set _artefact_link=0
+			)
+			if "%_mode%"=="ASSETS" (
+				set "_artefact_dest=%ASSETS_REPOSITORY%"
+				set _artefact_link=1
+				set "_artefact_link_target=%ASSETS_ROOT%"
+			)
+			
+
+
+			set _merge=
+			set _strip=
+			for %%O in (!_opt!) do (
+				if "%%O"=="MERGE" set _merge=MERGE
+				if "%%O"=="STRIP" set _strip=STRIP
+			)
+
+			echo * !_operation! !_name! [%%A] ressources
+
+			if "!_merge!"=="MERGE" (
+				echo * Main package of [%%A] is !_namespace!
+			)
+
+
+			call %STELLA_COMMON%\common.bat :get_ressource "%_mode% : !_name! [!_namespace!]" "!_uri!" "!_prot!" "!_artefact_dest!\!_namespace!" "!_merge! !_strip! !_operation!"
+			if "!_merge!"=="MERGE" (
+				echo * !_name! merged into !_namespace!
+			)
 			if "%_artefact_link%"=="1" (
-				if exist "%!_artefact_link_target!\!_name!" if "%FORCE%"=="1" rmdir "!_artefact_link_target!\!_name!"
-				if not exist "!_artefact_link_target!\!_name!" (
-					echo ** Make symbolic link for !_name!
-					call %STELLA_COMMON%\common.bat :run_admin %STELLA_COMMON%\symlink.bat "!_artefact_dest!\!_name!" "!_artefact_link_target!\!_name!"
+				if exist "%!_artefact_link_target!\!_namespace!" if "%FORCE%"=="1" rmdir "!_artefact_link_target!\!_namespace!"
+				if not exist "!_artefact_link_target!\!_namespace!" (
+					echo ** Make symbolic link for !_namespace!
+					call %STELLA_COMMON%\common.bat :run_admin %STELLA_COMMON%\symlink.bat "!_artefact_dest!" "!_artefact_link_target!\!_namespace!"
 				)
 			)
 		)
@@ -159,7 +175,8 @@ goto :eof
 
 	REM DATA
 	for %%A in (!STELLA_DATA_LIST!) do (
-		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" DATA_MAIN_PACKAGE "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" DATA_NAMESPACE "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" DATA_ROOT "PREFIX"
 		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" DATA_OPTIONS "PREFIX"
 		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" DATA_NAME "PREFIX"
 		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" DATA_URI "PREFIX"

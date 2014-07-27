@@ -80,7 +80,7 @@ goto :end
 
 :init_tools
 	echo ** Initialize Tools
-	if not exist "%TOOL_ROOT%" mkdir "%TOOL_ROOT%"
+	if not exist "%STELLA_TOOL_ROOT%" mkdir "%STELLA_TOOL_ROOT%"
 	
 	call %STELLA_COMMON%\common-tools.bat :unzip
 	call %STELLA_COMMON%\common-tools.bat :wget

@@ -11,7 +11,7 @@ function __install_packer() {
 	local _VER=$1
 	local _DEFAULT_VER="0_6_0"
 
-	mkdir -p $TOOL_ROOT/packer
+	mkdir -p $STELLA_TOOL_ROOT/packer
 	if [ "$_VER" == "" ]; then
 		__install_packer_$_DEFAULT_VER
 	else
@@ -52,7 +52,7 @@ function __install_packer_0_6_0() {
 		fi
 	fi
 	VER=0_6_0
-	INSTALL_DIR="$TOOL_ROOT/packer/$VER"
+	INSTALL_DIR="$STELLA_TOOL_ROOT/packer/$VER"
 	
 	echo " ** Installing packer version $VER in $INSTALL_DIR"
 	
@@ -82,8 +82,8 @@ function __feature_packer_0_6_0() {
 	TEST_FEATURE=0
 	FEATURE_PATH=
 	FEATURE_VER=
-	if [ -f "$TOOL_ROOT/packer/0_6_0/packer" ]; then
-		TEST_FEATURE="$TOOL_ROOT/packer/0_6_0"
+	if [ -f "$STELLA_TOOL_ROOT/packer/0_6_0/packer" ]; then
+		TEST_FEATURE="$STELLA_TOOL_ROOT/packer/0_6_0"
 	fi
 
 	if [ ! "$TEST_FEATURE" == "0" ]; then

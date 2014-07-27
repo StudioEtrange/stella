@@ -10,7 +10,7 @@ goto :eof
 	set "_VER=%~1"
 	set "_DEFAULT_VER=5_18_2"
 
-	if not exist %TOOL_ROOT%\perl mkdir %TOOL_ROOT%\perl
+	if not exist %STELLA_TOOL_ROOT%\perl mkdir %STELLA_TOOL_ROOT%\perl
 	if "%_VER%"=="" (
 		call :install_perl_%_DEFAULT_VER%
 	) else (
@@ -42,7 +42,7 @@ goto :eof
 		set FILE_NAME=strawberry-perl-5.18.2.1-32bit-portable.zip
 	)
 	set VERSION=5.18.2.1
-	set "INSTALL_DIR=%TOOL_ROOT%\perl\strawberry-perl-5.18.2.1"
+	set "INSTALL_DIR=%STELLA_TOOL_ROOT%\perl\strawberry-perl-5.18.2.1"
 
 	echo ** Installing strawberry perl portable edition version %VERSION% in %INSTALL_DIR%
 
@@ -71,8 +71,8 @@ goto :eof
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
-	if exist "%TOOL_ROOT%\perl\strawberry-perl-5.18.2.1\perl\bin\perl.exe" (
-		set "TEST_FEATURE=%TOOL_ROOT%\perl\strawberry-perl-5.18.2.1"
+	if exist "%STELLA_TOOL_ROOT%\perl\strawberry-perl-5.18.2.1\perl\bin\perl.exe" (
+		set "TEST_FEATURE=%STELLA_TOOL_ROOT%\perl\strawberry-perl-5.18.2.1"
 	)
 
 	if not "!TEST_FEATURE!"=="0" (

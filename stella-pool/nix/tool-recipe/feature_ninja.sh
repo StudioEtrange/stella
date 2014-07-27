@@ -11,7 +11,7 @@ function __install_ninja() {
 	local _VER=$1
 	local _DEFAULT_VER="last_release"
 
-	mkdir -p $TOOL_ROOT/ninja
+	mkdir -p $STELLA_TOOL_ROOT/ninja
 
 	if [ "$_VER" == "" ]; then
 		__install_ninja_$_DEFAULT_VER
@@ -37,7 +37,7 @@ function __install_ninja_last_release() {
 	URL="https://github.com/martine/ninja/archive/release.zip"
 	VER="last_release"
 	FILE_NAME=ninja-release.zip
-	INSTALL_DIR="$TOOL_ROOT/ninja/$VER"
+	INSTALL_DIR="$STELLA_TOOL_ROOT/ninja/$VER"
 
 	echo " ** Installing ninja in $INSTALL_DIR"
 	echo " ** NEED : python"
@@ -72,8 +72,8 @@ function __feature_ninja_last_release() {
 	TEST_FEATURE=0
 	FEATURE_VER=
 	FEATURE_PATH=
-	if [ -f "$TOOL_ROOT/ninja/last_release/ninja" ]; then
-		TEST_FEATURE="$TOOL_ROOT/ninja/last_release"
+	if [ -f "$STELLA_TOOL_ROOT/ninja/last_release/ninja" ]; then
+		TEST_FEATURE="$STELLA_TOOL_ROOT/ninja/last_release"
 	fi
 
 	if [ ! "$TEST_FEATURE" == "0" ]; then

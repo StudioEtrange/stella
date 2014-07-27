@@ -10,7 +10,7 @@ goto :eof
 	set "_VER=%~1"
 	set "_DEFAULT_VER=2_8_12"
 
-	if not exist %TOOL_ROOT%\cmake mkdir %TOOL_ROOT%\cmake
+	if not exist %STELLA_TOOL_ROOT%\cmake mkdir %STELLA_TOOL_ROOT%\cmake
 	if "%_VER%"=="" (
 		call :install_cmake_%_DEFAULT_VER%
 	) else (
@@ -35,7 +35,7 @@ goto :eof
 	set URL=http://www.cmake.org/files/v2.8/cmake-2.8.12-win32-x86.zip
 	set VERSION=2.8.12
 	set FILE_NAME=cmake-2.8.12-win32-x86.zip
-	set "INSTALL_DIR=%TOOL_ROOT%\cmake\%VERSION%-win32-x86"
+	set "INSTALL_DIR=%STELLA_TOOL_ROOT%\cmake\%VERSION%-win32-x86"
 
 	echo ** Installing cmake version %VERSION% in %INSTALL_DIR%
 
@@ -64,8 +64,8 @@ goto :eof
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
-	if exist "%TOOL_ROOT%\cmake\2_8_12-win32-x86\bin\cmake.exe" (
-		set "TEST_FEATURE=%TOOL_ROOT%\cmake\2_8_12-win32-x86"
+	if exist "%STELLA_TOOL_ROOT%\cmake\2_8_12-win32-x86\bin\cmake.exe" (
+		set "TEST_FEATURE=%STELLA_TOOL_ROOT%\cmake\2_8_12-win32-x86"
 	)
 
 	if not "!TEST_FEATURE!"=="0" (

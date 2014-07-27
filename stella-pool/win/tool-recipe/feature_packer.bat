@@ -10,7 +10,7 @@ goto :eof
 	set "_VER=%~1"
 	set "_DEFAULT_VER=0_6_0"
 
-	if not exist %TOOL_ROOT%\packer mkdir %TOOL_ROOT%\packer
+	if not exist %STELLA_TOOL_ROOT%\packer mkdir %STELLA_TOOL_ROOT%\packer
 	if "%_VER%"=="" (
 		call :install_packer_%_DEFAULT_VER%
 	) else (
@@ -40,7 +40,7 @@ goto :eof
 		set FILE_NAME=0.6.0_windows_386.zip
 	)
 	set VERSION=0_6_0
-	set "INSTALL_DIR=%TOOL_ROOT%\packer\%VERSION%"
+	set "INSTALL_DIR=%STELLA_TOOL_ROOT%\packer\%VERSION%"
 
 	echo ** Installing packer version %VERSION% in %INSTALL_DIR%
 	call :feature_packer_0_6_0
@@ -68,8 +68,8 @@ goto :eof
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
-	if exist "%TOOL_ROOT%\packer\0_6_0\packer.exe" (
-		set "TEST_FEATURE=%TOOL_ROOT%\packer\0_6_0"
+	if exist "%STELLA_TOOL_ROOT%\packer\0_6_0\packer.exe" (
+		set "TEST_FEATURE=%STELLA_TOOL_ROOT%\packer\0_6_0"
 	)
 
 	if not "!TEST_FEATURE!"=="0" (

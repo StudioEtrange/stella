@@ -40,16 +40,15 @@ fi
 STELLA_APP_CACHE_DIR=$(__rel_to_abs_path "$STELLA_APP_CACHE_DIR" "$STELLA_APP_ROOT")
 
 TEMP_DIR="$STELLA_APP_WORK_ROOT/temp"
-TOOL_ROOT="$STELLA_APP_WORK_ROOT/tool_$STELLA_CURRENT_PLATFORM_SUFFIX/$STELLA_CURRENT_OS"
-DATA_ROOT="$STELLA_APP_WORK_ROOT/data"
+STELLA_TOOL_ROOT="$STELLA_APP_WORK_ROOT/tool_$STELLA_CURRENT_PLATFORM_SUFFIX/$STELLA_CURRENT_OS"
 ASSETS_ROOT="$STELLA_APP_WORK_ROOT/assets"
 ASSETS_REPOSITORY=$(__rel_to_abs_path "../assets_repository" "$STELLA_APP_WORK_ROOT")
 
 
 # DEFAULT TOOLS ---------------------------------------------
 # TODO replace command with these variables
-#WGET="wget" # for macos see TOOL_ROOT/wget
-#WGET=$TOOL_ROOT/wget
+#WGET="wget" # for macos see STELLA_TOOL_ROOT/wget
+#WGET=$STELLA_TOOL_ROOT/wget
 #UZIP="unzip"
 #U7ZIP="7z"
 #PATCH="patch"
@@ -83,7 +82,7 @@ TOOL_LIST="wget ninja cmake packer autotools perl"
 
 # API ---------------------------------------------
 STELLA_API_COMMON_PUBLIC="is_abs argparse get_ressource download_uncompress"
-STELLA_API_APP_PUBLIC="get_data get_assets get_all_data get_all_assets"
+STELLA_API_APP_PUBLIC="get_data get_assets get_all_data get_all_assets update_data update_assets revert_data revert_assets"
 STELLA_API_TOOLS_PUBLIC="install_feature init_feature"
 STELLA_API_VIRTUAL_PUBLIC=""
 

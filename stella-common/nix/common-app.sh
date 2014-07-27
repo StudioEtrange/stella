@@ -76,7 +76,8 @@ function __get_all_properties() {
 
 		# DATA
 		for a in $STELLA_DATA_LIST; do
-			__get_key "$PROPERTIES" "$a" DATA_MAIN_PACKAGE "PREFIX"
+			__get_key "$PROPERTIES" "$a" DATA_NAMESPACE "PREFIX"
+			__get_key "$PROPERTIES" "$a" DATA_ROOT "PREFIX"
 			__get_key "$PROPERTIES" "$a" DATA_OPTIONS "PREFIX"
 			__get_key "$PROPERTIES" "$a" DATA_NAME "PREFIX"
 			__get_key "$PROPERTIES" "$a" DATA_URI "PREFIX"
@@ -135,9 +136,7 @@ function __get_all_properties() {
 function __get_data() {
 	local _list_id=$1
 	
-	mkdir -p "$DATA_ROOT"
-	
-	__get_stella_ressources "DATA" "$_list_id"
+	__get_app_ressources "DATA" "GET" "$_list_id"
 
 }
 
@@ -147,7 +146,33 @@ function __get_assets() {
 	mkdir -p "$ASSETS_ROOT"
 	mkdir -p "$ASSETS_REPOSITORY"
 	
-	__get_stella_ressources "ASSETS" "$_list_id"
+	__get_app_ressources "ASSETS" "GET" "$_list_id"
+}
+
+function __update_data() {
+	local _list_id=$1
+	
+	__get_app_ressources "DATA" "UPDATE" "$_list_id"
+
+}
+
+function __update_assets() {
+	local _list_id=$1
+	
+	__get_app_ressources "ASSETS" "UPDATE" "$_list_id"
+}
+
+function __revert_data() {
+	local _list_id=$1
+	
+	__get_app_ressources "DATA" "REVERT" "$_list_id"
+
+}
+
+function __revert_assets() {
+	local _list_id=$1
+	
+	__get_app_ressources "ASSETS" "REVERT" "$_list_id"
 }
 
 function __get_all_data() {
@@ -158,15 +183,25 @@ function __get_all_assets() {
 	__get_assets $STELLA_ASSETS_LIST
 }
 
-function __get_stella_ressources() {
+# ARG1 ressource mode is DATA or ASSET
+# ARG2 operation is GET or UPDATE or REVERT (UPDATE or REVERT if applicable)
+# ARG3 list of ressource ID
+function __get_app_ressources() {
 	local _mode=$1
-	local _list_id=$2
+	local _operation=$2
+	local _list_id=$3
 
 	for a in $_list_id; do
-		_artefact_main_package="$a"_"$_mode"_MAIN_PACKAGE
-		_artefact_main_package=${!_artefact_main_package}
+		_artefact_namespace="$a"_"$_mode"_NAMESPACE
+		_artefact_namespace=${!_artefact_namespace}
+		
 		_artefact_link=0
-		if [ "$_mode" == "DATA" ]; then _artefact_dest="$DATA_ROOT"; _artefact_link=0; fi
+		if [ "$_mode" == "DATA" ]; then
+			_artefact_root="$a"_"$_mode"_ROOT
+			_artefact_root=${!_artefact_root}
+			_artefact_dest=$(__rel_to_abs_path "_artefact_root" "$STELLA_APP_WORK_ROOT")
+			_artefact_link=0; 
+		fi
 		if [ "$_mode" == "ASSETS" ]; then _artefact_dest="$ASSETS_REPOSITORY"; _artefact_link=1; _artefact_link_target="$ASSETS_ROOT"; fi
 		
 
@@ -179,6 +214,10 @@ function __get_stella_ressources() {
 		_name="$a"_"$_mode"_NAME
 		_name=${!_name}
 		
+		if [ "$_name" == "" ]; then
+			echo "** Error : $a does not exist"
+		fi
+
 		_merge=
 		_strip=
 		for o in $_opt; do 
@@ -187,32 +226,23 @@ function __get_stella_ressources() {
 		done
 
 
-		echo "* Get $_name [$a] ressources"
+		echo "* $_operation $_name [$a] ressources"
 
 		if [ "$_merge" == "MERGE" ]; then 
-			echo "* Main package of [$a] is $_artefact_main_package"
+			echo "* Main package of [$a] is $_artefact_namespace"
 		fi
 
-		if [ "$_merge" == "MERGE" ]; then
-			__get_ressource "$_mode : $_name [$_artefact_main_package]" "$_uri" "$_prot" "$_artefact_dest/$_artefact_main_package" "$_merge $_strip"
-			echo "* $_name merged into $_artefact_main_package"
-			if [ "$_artefact_link" == "1" ]; then
-				if [ "$FORCE" == "1" ]; then rm -f "$_artefact_link_target/$_artefact_main_package"; fi
-				[ ! -L "$_artefact_link_target/$_artefact_main_package" ] && (
-					echo "** Make symbolic link for $_artefact_main_package"
-					ln -s "$_artefact_dest/$_artefact_main_package" "$_artefact_link_target/$_artefact_main_package"
-				)
-			fi
-		else
-			__get_ressource "$_mode : $_name" "$_uri" "$_prot" "$_artefact_dest/$_name" "$_strip"
-			if [ "$_artefact_link" == "1" ]; then
-				if [ "$FORCE" == "1" ]; then rm -f "$_artefact_link_target/$_name"; fi
-				[ ! -L "$_artefact_link_target/$_name" ] && (
-					echo " ** Make symbolic link for $_name"
-					ln -s "$_artefact_dest/$_name" "$_artefact_link_target/$_name"
-				)
-			fi
+		
+		__get_ressource "$_mode : $_name [$_artefact_namespace]" "$_uri" "$_prot" "$_artefact_dest/$_artefact_namespace" "$_merge $_strip $_operation"
+		if [ "$_merge" == "MERGE" ]; then echo "* $_name merged into $_artefact_namespace"; fi
+		if [ "$_artefact_link" == "1" ]; then
+			if [ "$FORCE" == "1" ]; then rm -f "$_artefact_link_target/$_artefact_namespace"; fi
+			[ ! -L "$_artefact_link_target/$_artefact_namespace" ] && (
+				echo "** Make symbolic link for $_artefact_namespace"
+				ln -s "$_artefact_dest/$_artefact_namespace" "$_artefact_link_target/$_artefact_namespace"
+			)
 		fi
+	
 	done
 }
 

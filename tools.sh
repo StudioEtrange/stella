@@ -5,8 +5,8 @@ source $_CURRENT_FILE_DIR/conf.sh
 
 function __init_tools() {
 	echo "** Initialize Tools"
-	if [ ! -d "$TOOL_ROOT" ]; then
-		mkdir -p "$TOOL_ROOT"
+	if [ ! -d "$STELLA_TOOL_ROOT" ]; then
+		mkdir -p "$STELLA_TOOL_ROOT"
 	fi
 
 }

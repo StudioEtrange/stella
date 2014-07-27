@@ -12,7 +12,7 @@ function __install_perl() {
 	local _VER=$1
 	local _DEFAULT_VER="5_18_2"
 
-	mkdir -p $TOOL_ROOT/perl
+	mkdir -p $STELLA_TOOL_ROOT/perl
 
 	if [ "$_VER" == "" ]; then
 		__install_perl_$_DEFAULT_VER
@@ -36,8 +36,8 @@ function __install_perl_5_18_2() {
 	URL=http://www.cpan.org/src/5.0/perl-5.18.2.tar.gz
 	VER=5_18_2
 	FILE_NAME=perl-5.18.2.tar.gz
-	INSTALL_DIR="$TOOL_ROOT/perl/$VER"
-	SRC_DIR="$TOOL_ROOT/perl/$VER/code/perl-$VER-src"
+	INSTALL_DIR="$STELLA_TOOL_ROOT/perl/$VER"
+	SRC_DIR="$STELLA_TOOL_ROOT/perl/$VER/code/perl-$VER-src"
 	BUILD_DIR=
 
 	CONFIGURE_FLAG_PREFIX=
@@ -79,8 +79,8 @@ function __feature_perl_5_18_2() {
 	TEST_FEATURE=0
 	FEATURE_PATH=
 	FEATURE_VER=
-	if [ -f "$TOOL_ROOT/perl/5_18_2/bin/perl" ]; then
-		TEST_FEATURE="$TOOL_ROOT/perl/5_18_2"
+	if [ -f "$STELLA_TOOL_ROOT/perl/5_18_2/bin/perl" ]; then
+		TEST_FEATURE="$STELLA_TOOL_ROOT/perl/5_18_2"
 	fi
 
 	if [ ! "$TEST_FEATURE" == "0" ]; then

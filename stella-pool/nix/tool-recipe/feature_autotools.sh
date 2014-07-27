@@ -6,8 +6,8 @@ function __list_autotools() {
 }
 
 function __install_autotools() {
-	[ "$FORCE" ] && rm -Rf "$TOOL_ROOT/autotools"
-	[ ! -d "$TOOL_ROOT/autotools" ] && mkdir -p "$TOOL_ROOT/autotools"
+	[ "$FORCE" ] && rm -Rf "$STELLA_TOOL_ROOT/autotools"
+	[ ! -d "$STELLA_TOOL_ROOT/autotools" ] && mkdir -p "$STELLA_TOOL_ROOT/autotools"
 	# order is important
 	# see http://petio.org/tools.html
 	__install_m4_1_4_17
@@ -20,8 +20,8 @@ function __feature_autotools() {
 	TEST_FEATURE=0
 	FEATURE_PATH=
 	FEATURE_VER=
-	if [ -f "$TOOL_ROOT/autotools/bin/autoconf" ]; then
-		TEST_FEATURE="$TOOL_ROOT/autotools/bin"
+	if [ -f "$STELLA_TOOL_ROOT/autotools/bin/autoconf" ]; then
+		TEST_FEATURE="$STELLA_TOOL_ROOT/autotools/bin"
 		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : autotools in $TEST_FEATURE"
 		FEATURE_PATH="$TEST_FEATURE"
 	fi
@@ -31,9 +31,9 @@ function __install_autoconf_2_69() {
 	URL=http://ftp.gnu.org/gnu/autoconf/autoconf-2.69.tar.gz
 	VER=2.69
 	FILE_NAME=autoconf-2.69.tar.gz
-	INSTALL_DIR="$TOOL_ROOT/autotools"
-	SRC_DIR="$TOOL_ROOT/autotools/code/autoconf-$VER-src"
-	BUILD_DIR="$TOOL_ROOT/autotools/code/autoconf-$VER-build"
+	INSTALL_DIR="$STELLA_TOOL_ROOT/autotools"
+	SRC_DIR="$STELLA_TOOL_ROOT/autotools/code/autoconf-$VER-src"
+	BUILD_DIR="$STELLA_TOOL_ROOT/autotools/code/autoconf-$VER-build"
 
 	echo " ** NEED : perl 5.6"
 	# TODO prerequites
@@ -54,8 +54,8 @@ function __feature_autoconf_2_69() {
 	TEST_FEATURE=0
 	FEATURE_PATH=
 	FEATURE_VER=
-	if [ -f "$TOOL_ROOT/autotools/bin/autoconf" ]; then
-		TEST_FEATURE="$TOOL_ROOT/autotools/bin"
+	if [ -f "$STELLA_TOOL_ROOT/autotools/bin/autoconf" ]; then
+		TEST_FEATURE="$STELLA_TOOL_ROOT/autotools/bin"
 		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : autoconf in $TEST_FEATURE"
 		$TEST_FEATURE/autoconf --version | sed -ne "1,1p"
 		FEATURE_PATH="$TEST_FEATURE"
@@ -68,9 +68,9 @@ function __install_automake_1_14() {
 	URL=http://ftp.gnu.org/gnu/automake/automake-1.14.tar.gz
 	VER=1.14
 	FILE_NAME=automake-1.14.tar.gz
-	INSTALL_DIR="$TOOL_ROOT/autotools"
-	SRC_DIR="$TOOL_ROOT/autotools/code/automake-$VER-src"
-	BUILD_DIR="$TOOL_ROOT/autotools/code/automake-$VER-build"
+	INSTALL_DIR="$STELLA_TOOL_ROOT/autotools"
+	SRC_DIR="$STELLA_TOOL_ROOT/autotools/code/automake-$VER-src"
+	BUILD_DIR="$STELLA_TOOL_ROOT/autotools/code/automake-$VER-build"
 
 	CONFIGURE_FLAG_PREFIX=
 	CONFIGURE_FLAG_POSTFIX="--docdir=$INSTALL_DIR/share/doc/automake-1.14"
@@ -87,8 +87,8 @@ function __feature_automake_1_14() {
 	TEST_FEATURE=0
 	FEATURE_PATH=
 	FEATURE_VER=
-	if [ -f "$TOOL_ROOT/autotools/bin/automake" ]; then
-		TEST_FEATURE="$TOOL_ROOT/autotools/bin"
+	if [ -f "$STELLA_TOOL_ROOT/autotools/bin/automake" ]; then
+		TEST_FEATURE="$STELLA_TOOL_ROOT/autotools/bin"
 		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : automake in $TEST_FEATURE"
 		$TEST_FEATURE/automake --version | sed -ne "1,1p"
 		FEATURE_PATH="$TEST_FEATURE"
@@ -100,9 +100,9 @@ function __install_libtool_2_4_2() {
 	URL=http://ftp.gnu.org/gnu/libtool/libtool-2.4.2.tar.gz
 	VER=2.4.2
 	FILE_NAME=libtool-2.4.2.tar.gz
-	INSTALL_DIR="$TOOL_ROOT/autotools"
-	SRC_DIR="$TOOL_ROOT/autotools/code/libtool-$VER-src"
-	BUILD_DIR="$TOOL_ROOT/autotools/code/libtool-$VER-build"
+	INSTALL_DIR="$STELLA_TOOL_ROOT/autotools"
+	SRC_DIR="$STELLA_TOOL_ROOT/autotools/code/libtool-$VER-src"
+	BUILD_DIR="$STELLA_TOOL_ROOT/autotools/code/libtool-$VER-build"
 
 	CONFIGURE_FLAG_PREFIX=
 	CONFIGURE_FLAG_POSTFIX=
@@ -119,8 +119,8 @@ function __feature_libtool_2_4_2() {
 	TEST_FEATURE=0
 	FEATURE_PATH=
 	FEATURE_VER=
-	if [ -f "$TOOL_ROOT/autotools/bin/libtool" ]; then
-		TEST_FEATURE="$TOOL_ROOT/autotools/bin"
+	if [ -f "$STELLA_TOOL_ROOT/autotools/bin/libtool" ]; then
+		TEST_FEATURE="$STELLA_TOOL_ROOT/autotools/bin"
 		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : libtool in $TEST_FEATURE"
 		$TEST_FEATURE/libtool --version | sed -ne "1,1p"
 		FEATURE_PATH="$TEST_FEATURE"
@@ -132,9 +132,9 @@ function __install_m4_1_4_17() {
 	URL=http://ftp.gnu.org/gnu/m4/m4-1.4.17.tar.gz
 	VER=1.4.17
 	FILE_NAME=m4-1.4.17.tar.gz
-	INSTALL_DIR="$TOOL_ROOT/autotools"
-	SRC_DIR="$TOOL_ROOT/autotools/code/m4-$VER-src"
-	BUILD_DIR="$TOOL_ROOT/autotools/code/m4-$VER-build"
+	INSTALL_DIR="$STELLA_TOOL_ROOT/autotools"
+	SRC_DIR="$STELLA_TOOL_ROOT/autotools/code/m4-$VER-src"
+	BUILD_DIR="$STELLA_TOOL_ROOT/autotools/code/m4-$VER-build"
 
 	CONFIGURE_FLAG_PREFIX=
 	CONFIGURE_FLAG_POSTFIX=
@@ -151,8 +151,8 @@ function __feature_m4_1_4_17() {
 	TEST_FEATURE=0
 	FEATURE_PATH=
 	FEATURE_VER=
-	if [ -f "$TOOL_ROOT/autotools/bin/m4" ]; then
-		TEST_FEATURE="$TOOL_ROOT/autotools/bin"
+	if [ -f "$STELLA_TOOL_ROOT/autotools/bin/m4" ]; then
+		TEST_FEATURE="$STELLA_TOOL_ROOT/autotools/bin"
 		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : m4 in $TEST_FEATURE"
 		$TEST_FEATURE/m4 --version | sed -ne "1,1p"
 		FEATURE_PATH="$TEST_FEATURE"

@@ -159,18 +159,31 @@ function __get_ressource() {
 	local PROTOCOL=$3
 	local FINAL_DESTINATION=$4
 	local OPT="$5"
+	# option should passed as one string "OPT1 OPT2"
+	# 	"MERGE" for merge in FINAL_DESTINATION
+	# 	"STRIP" for remove root folder and copy content of root folder in FINAL_DESTINATION
+	# 	"UPDATE" pull and update ressource (only for HG or GIT)
+	# 	"REVERT" complete revert of the ressource (only for HG or GIT)
 
 	# TODO : remove illegal characters in NAME. NAME is used in flag file name when merging
 
 	local _opt_merge=OFF
 	local _opt_strip=OFF
+	local _opt_get=ON
+	local _opt_update=OFF
+	local _opt_revert=OFF
 	for o in $OPT; do 
 		[ "$o" == "MERGE" ] && _opt_merge=ON
 		[ "$o" == "STRIP" ] && _opt_strip=ON
+		if [ "$o" == "UPDATE" ]; then _opt_update=ON;  _opt_revert=OFF;  _opt_get=OFF; fi
+		if [ "$o" == "REVERT" ]; then _opt_revert=ON;  _opt_update=OFF;  _opt_get=OFF; fi
 	done
 
 
-	[ ! "$FINAL_DESTINATION" == "" ] && echo " ** Getting ressource : $NAME into $FINAL_DESTINATION" || echo " ** Getting ressource : $NAME"
+	[ "$_opt_revert" == "ON" ] && echo " ** Reverting ressource :"
+	[ "$_opt_update" == "ON" ] && echo " ** Updating ressource :"
+	[ "$_opt_get" == "ON" ] && echo " ** Getting ressource :"
+	[ ! "$FINAL_DESTINATION" == "" ] && echo " ** $NAME into $FINAL_DESTINATION" || echo " ** $NAME"
 
 	[ "$FORCE" ] && rm -Rf $FINAL_DESTINATION
 
@@ -180,12 +193,22 @@ function __get_ressource() {
 		if [ -f "$FINAL_DESTINATION/._MERGED_$NAME" ]; then 
 			_FLAG=0
 			echo " ** Ressource already merged"
+		else 
+			if [ ! "$_opt_get" == "ON" ]; then
+				_FLAG=0
+				echo "** Ressource does not exist"
+			fi
 		fi
 	else	
 		if [ -d "$FINAL_DESTINATION" ]; then
 			_FLAG=0
 			echo " ** Ressource already grabbed"
-		fi	
+		else
+			if [ ! "$_opt_get" == "ON" ]; then
+				_FLAG=0
+				echo "** Ressource does not exist"
+			fi
+		fi
 	fi
 
 	# strip root folde mode
@@ -199,37 +222,49 @@ function __get_ressource() {
 			HTTP_ZIP)
 				echo "MERGE : $_opt_merge"
 				echo "STRIP : $_opt_strip"
-				__download_uncompress "$URI" "_AUTO_" "$FINAL_DESTINATION" "$_STRIP"
+				[ "$_opt_revert" == "ON" ] && echo "REVERT Not supported with HTTP_ZIP protocol"
+				[ "$_opt_update" == "ON" ] && echo "UPDATE Not supported with HTTP_ZIP protocol"
+				[ "$_opt_get" == "ON" ] && __download_uncompress "$URI" "_AUTO_" "$FINAL_DESTINATION" "$_STRIP"
 				[ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
 			HTTP)
 				echo "MERGE : $_opt_merge"
 				# HTTP protocol use always merge by default : because it never erase destination folder
 				# the flag file will be setted only if we pass the option MERGE
-				__download "$URI" "_AUTO_" "$FINAL_DESTINATION"
+				[ "$_opt_revert" == "ON" ] && echo "REVERT Not supported with HTTP protocol"
+				[ "$_opt_update" == "ON" ] && echo "UPDATE Not supported with HTTP protocol"
+				[ "$_opt_get" == "ON" ] && __download "$URI" "_AUTO_" "$FINAL_DESTINATION"
 				[ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
 			HG)
 				echo "MERGE : $_opt_merge"
 				[ "$_opt_strip" == "ON" ] && echo "STRIP Not supported with HG protocol"
-				hg clone $URI "$FINAL_DESTINATION"
+				if [ "$_opt_revert" == "ON" ]; then cd "$FINAL_DESTINATION"; hg revert --all -C; fi
+				if [ "$_opt_update" == "ON" ]; then cd "$FINAL_DESTINATION"; hg pull; hg update; fi
+				[ "$_opt_get" == "ON" ] && hg clone $URI "$FINAL_DESTINATION"
 				[ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
 			GIT)
 				echo "MERGE : $_opt_merge"
 				[ "$_opt_strip" == "ON" ] && echo "STRIP Not supported with GIT protocol"
-				git clone $URI "$FINAL_DESTINATION"
+				if [ "$_opt_revert" == "ON" ]; then cd "$FINAL_DESTINATION"; git reset --hard; fi
+				if [ "$_opt_update" == "ON" ]; then cd "$FINAL_DESTINATION"; git pull; fi
+				[ "$_opt_get" == "ON" ] && git clone $URI "$FINAL_DESTINATION"
 				[ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
 			FILE)
 				echo "MERGE : $_opt_merge"
 				[ "$_opt_strip" == "ON" ] && echo "STRIP Not supported with FILE protocol"
-				__copy_folder_content_into "$URI" "$FINAL_DESTINATION"
+				[ "$_opt_revert" == "ON" ] && echo "REVERT Not supported with FILE protocol"
+				[ "$_opt_update" == "ON" ] && echo "UPDATE Not supported with FILE protocol"
+				[ "$_opt_get" == "ON" ] && __copy_folder_content_into "$URI" "$FINAL_DESTINATION"
 				[ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
 			FILE_ZIP)
 				echo "MERGE : $_opt_merge"
 				echo "STRIP : $_opt_strip"
+				[ "$_opt_revert" == "ON" ] && echo "REVERT Not supported with FILE_ZIP protocol"
+				[ "$_opt_update" == "ON" ] && echo "UPDATE Not supported with FILE_ZIP protocol"
 				__uncompress "$URI" "$FINAL_DESTINATION%" "$_STRIP"
 				[ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;

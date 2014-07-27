@@ -8,7 +8,7 @@ call %~dp0\conf.bat
 
 
 :: arguments
-set "params=domain:"app tools virtual api" action:"init get-data get-assets setup-env install list create-env run-env stop-env destroy-env info-env create-box get-box destroy-box" id:"_ANY_""
+set "params=domain:"app tools virtual api" action:"init get-data get-assets update-data update-assets revert-data revert-assets setup-env install list create-env run-env stop-env destroy-env info-env create-box get-box destroy-box" id:"_ANY_""
 set "options=-f: -arch:"#x64 x86" -envcpu:_ANY_ -envmem:_ANY_ -vmgui: -l: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_"
 
 call %STELLA_COMMON%\argopt.bat :argopt %*
@@ -67,6 +67,23 @@ if "%DOMAIN%"=="app" (
 			call %STELLA_COMMON%\common-app.bat :get_assets "%id%"
 		)
 	)
+
+	if "%ACTION%"=="update-data" (
+		call %STELLA_COMMON%\common-app.bat :update_data "%id%"
+	)
+	
+	if "%ACTION%"=="update-assets" (
+		call %STELLA_COMMON%\common-app.bat :update_assets "%id%"
+	)
+
+	if "%ACTION%"=="revert-data" (
+		call %STELLA_COMMON%\common-app.bat :revert_data "%id%"
+	)
+	
+	if "%ACTION%"=="revert-assets" (
+		call %STELLA_COMMON%\common-app.bat :revert_assets "%id%"
+	)
+
 	
 	if "%ACTION%"=="setup-env" (
 		if "%id%"=="all" (
@@ -198,7 +215,7 @@ if "%DOMAIN%"=="virtual" goto :end
 	echo List of commands
 	echo 	* application management :
 	echo 		%~n0 app init ^<application name^> [-approot=^<path^>] [-workroot=^<path^>] [-cachedir=^<path^>]
-	echo 		%~n0 app get-data get-assets ^<data id^|assets id^|all^>
+	echo 		%~n0 app get-data get-asset supdate-data update-assets revert-data revert-assets ^<data id^|assets id^|all^>
 	echo 		%~n0 app setup-env ^<env id^|all^> : download, build, deploy and run virtual environment based on app properties
 	echo	* tools management :
 	echo 		%~n0 tools install default : install default tools
