@@ -100,7 +100,7 @@ goto :eof
 
 	if exist "%_app_path%\.stella" (
 		set "PROPERTIES=%_app_path%\.stella"
-		set "APP_ROOT=%_app_path%"
+		set "STELLA_APP_ROOT=%_app_path%"
 	)
 	
 goto :eof
@@ -132,7 +132,7 @@ goto :eof
 	) else (
 		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "APP_NAME" "%_app_name%"
 		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "APP_WORK_ROOT" "%_workroot%"
-		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "CACHE_DIR" "%_cachedir%"
+		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "APP_CACHE_DIR" "%_cachedir%"
 		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "DATA_LIST" ""
 		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "ASSETS_LIST" ""
 		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "ENV_LIST" ""
@@ -150,9 +150,9 @@ goto :eof
 
 	REM STELLA VARs
 	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "APP_NAME"
-	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "APP_WORK_ROOT"
-	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "CACHE_DIR"
-	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "DATA_LIST" "PREFIX"
+	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "APP_WORK_ROOT" "PREFIX"
+	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "APP_CACHE_DIR" "PREFIX"
+	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "DATA_LIST" "PREFIX" "PREFIX"
 	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "ASSETS_LIST" "PREFIX"
 	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "ENV_LIST" "PREFIX"
 	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "INFRA_LIST" "PREFIX"

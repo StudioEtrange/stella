@@ -111,7 +111,7 @@ goto :eof
 	if "!TEST_FEATURE!"=="0" (
 
 		call %STELLA_COMMON%\common.bat :download "%URL%" "%FILE_NAME%"
-		cd /D %CACHE_DIR%
+		cd /D %STELLA_APP_CACHE_DIR%
 
 		%FILE_NAME% -y -o"%INSTALL_DIR%"
 
@@ -215,7 +215,7 @@ goto :eof
 	if "!TEST_FEATURE!"=="0" (
 
 		call %STELLA_COMMON%\common.bat :download "%URL%" "%FILE_NAME%"
-		cd /D %CACHE_DIR%
+		cd /D %STELLA_APP_CACHE_DIR%
 
 		DevKit-tdm-32-4.5.2-20111229-1559-sfx.exe -y -o"%INSTALL_DIR%"
 

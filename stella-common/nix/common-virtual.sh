@@ -42,8 +42,8 @@ function __create_env() {
 	else
 
 		# Re importing box into vagrant in case of
-		if [ -f "$CACHE_DIR/$VAGRANT_BOX_FILENAME" ]; then
-			__import_box_into_vagrant $VAGRANT_BOX_NAME "$CACHE_DIR/$VAGRANT_BOX_FILENAME"
+		if [ -f "$STELLA_APP_CACHE_DIR/$VAGRANT_BOX_FILENAME" ]; then
+			__import_box_into_vagrant $VAGRANT_BOX_NAME "$STELLA_APP_CACHE_DIR/$VAGRANT_BOX_FILENAME"
 		fi
 
 		[ ! -d "$VIRTUAL_ENV_ROOT/$ENVNAME" ] && mkdir -p "$VIRTUAL_ENV_ROOT/$ENVNAME"
@@ -168,10 +168,10 @@ function __get_box() {
 		return
 	fi
 	[ "$FORCE" ] && (
-		rm -f "$CACHE_DIR/$VAGRANT_BOX_FILENAME"
+		rm -f "$STELLA_APP_CACHE_DIR/$VAGRANT_BOX_FILENAME"
 	)
 	__get_ressource "$DISTRIB" "$VAGRANT_BOX_URI" "$VAGRANT_BOX_URI_PROTOCOL"
-	__import_box_into_vagrant $VAGRANT_BOX_NAME "$CACHE_DIR/$VAGRANT_BOX_FILENAME"
+	__import_box_into_vagrant $VAGRANT_BOX_NAME "$STELLA_APP_CACHE_DIR/$VAGRANT_BOX_FILENAME"
 }
 
 function __list_box() {
@@ -188,13 +188,13 @@ function __create_box() {
 	echo "** Packing a vagrant box for $VIRTUAL_DEFAULT_HYPERVISOR with Packer"
 		
 	if [ "$FORCE" == "1" ]; then
-		rm -f "$CACHE_DIR/$VAGRANT_BOX_FILENAME"
+		rm -f "$STELLA_APP_CACHE_DIR/$VAGRANT_BOX_FILENAME"
 	fi
 
-	if [ ! -f "$CACHE_DIR/$VAGRANT_BOX_FILENAME" ]; then
+	if [ ! -f "$STELLA_APP_CACHE_DIR/$VAGRANT_BOX_FILENAME" ]; then
 
 		if [ ! "$PACKER_TEMPLATE_URI_PROTOCOL" == "_INTERNAL_" ]; then
-			__get_ressource "$DISTRIB" "$PACKER_TEMPLATE_URI" "$PACKER_TEMPLATE_URI_PROTOCOL" "$VIRTUAL_TEMPLATE_ROOT/$DISTRIB" "$CACHE_DIR"
+			__get_ressource "$DISTRIB" "$PACKER_TEMPLATE_URI" "$PACKER_TEMPLATE_URI_PROTOCOL" "$VIRTUAL_TEMPLATE_ROOT/$DISTRIB" "$STELLA_APP_CACHE_DIR"
 			PACKER_TEMPLATE_URI="$VIRTUAL_TEMPLATE_ROOT/$DISTRIB/$PACKER_TEMPLATE"
 		else
 			PACKER_TEMPLATE_URI="$VIRTUAL_INTERNAL_TEMPLATE_ROOT/$PACKER_TEMPLATE_URI/$PACKER_TEMPLATE"
@@ -222,17 +222,17 @@ function __create_box() {
 			PACKER_POSTBUILD_CALLBACK=
 		fi
 
-		__copy_folder_content_into "$VAGRANT_BOX_OUTPUT_DIR" "$CACHE_DIR" "*.box"
+		__copy_folder_content_into "$VAGRANT_BOX_OUTPUT_DIR" "$STELLA_APP_CACHE_DIR" "*.box"
 		rm -f "$VAGRANT_BOX_OUTPUT_DIR/*.box"
 
-		if [  -d "$CACHE_DIR/$VAGRANT_BOX_FILENAME" ]; then
+		if [  -d "$STELLA_APP_CACHE_DIR/$VAGRANT_BOX_FILENAME" ]; then
 			echo "** Box created"
 		fi
 	else
 		echo "** Box already created"
 	fi
 
-	__import_box_into_vagrant $VAGRANT_BOX_NAME "$CACHE_DIR/$VAGRANT_BOX_FILENAME"
+	__import_box_into_vagrant $VAGRANT_BOX_NAME "$STELLA_APP_CACHE_DIR/$VAGRANT_BOX_FILENAME"
 
 }
 

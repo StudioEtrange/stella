@@ -21,11 +21,11 @@ set _CURRENT_RUNNING_DIR=%cd%
 set IS_STELLA_LINKED=FALSE
 set STELLA_ROOT=
 
-set APP_ROOT=%_CURRENT_FILE_DIR%
+set STELLA_APP_ROOT=%_CURRENT_FILE_DIR%
 
 REM Check if APP is linked to STELLA -------------------------
-if exist "%APP_ROOT%\.stella-link.bat" (
-	call %APP_ROOT%\.stella-link.bat
+if exist "%STELLA_APP_ROOT%\.stella-link.bat" (
+	call %STELLA_APP_ROOT%\.stella-link.bat
 	if not "!STELLA_ROOT!"=="" (
 		if exist "!STELLA_ROOT!\stella.bat" (
 			set IS_STELLA_LINKED=TRUE
@@ -76,18 +76,18 @@ REM Bootstrap/auto install mode ------------------
 		if "%_provided_path%"=="" (
 			if not "!STELLA_ROOT!"=="" (
 				REM install STELLA into STELLA_ROOT, and linked to the app
-				call :___rel_to_abs_path "_stella_install_path" "!STELLA_ROOT!" "%APP_ROOT%"
-				> "%APP_ROOT%\.stella-link.bat" ECHO(set STELLA_ROOT=!STELLA_ROOT!			
+				call :___rel_to_abs_path "_stella_install_path" "!STELLA_ROOT!" "%STELLA_APP_ROOT%"
+				> "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(set STELLA_ROOT=!STELLA_ROOT!			
 			) else (
 				REM install STELLA into default path, and linked to the app
-				call :___rel_to_abs_path "_stella_install_path" "..\lib-stella" "%APP_ROOT%"
-				> "%APP_ROOT%\.stella-link.bat" ECHO(set STELLA_ROOT=..\lib-stella
+				call :___rel_to_abs_path "_stella_install_path" "..\lib-stella" "%STELLA_APP_ROOT%"
+				> "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(set STELLA_ROOT=..\lib-stella
 			)
 			git clone https://bitbucket.org/StudioEtrange/lib-stella.git "!_stella_install_path!"
 		) else (
 
 			REM install STELLA into ARG#2, and linked to the app
-			call :___rel_to_abs_path "_stella_install_path" "%_provided_path%" "%APP_ROOT%"
+			call :___rel_to_abs_path "_stella_install_path" "%_provided_path%" "%STELLA_APP_ROOT%"
 			if exist "!_stella_install_path!\stella.bat" (
 				REM STELLA already installed, update it
 				pushd
@@ -97,7 +97,7 @@ REM Bootstrap/auto install mode ------------------
 			) else (
 				git clone https://bitbucket.org/StudioEtrange/lib-stella.git "!_stella_install_path!"
 			)
-			> "%APP_ROOT%\.stella-link.bat" ECHO(set STELLA_ROOT=%_provided_path%
+			> "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(set STELLA_ROOT=%_provided_path%
 		)
 		call !_stella_install_path!\init.bat
 		@echo off

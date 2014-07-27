@@ -18,7 +18,7 @@ function __select_app() {
 
 	if [ -f "$_app_path/.stella" ]; then
 		PROPERTIES="$_app_path/.stella"
-		APP_ROOT=$_app_path
+		STELLA_APP_ROOT=$_app_path
 	fi
 	
 
@@ -52,7 +52,7 @@ function __init_app() {
 	else
 		__add_key "$PROPERTIES" "STELLA" "APP_NAME" "$_app_name"
 		__add_key "$PROPERTIES" "STELLA" "APP_WORK_ROOT" "$_workroot"
-		__add_key "$PROPERTIES" "STELLA" "CACHE_DIR" "$_cachedir"
+		__add_key "$PROPERTIES" "STELLA" "APP_CACHE_DIR" "$_cachedir"
 		__add_key "$PROPERTIES" "STELLA" "DATA_LIST"
 		__add_key "$PROPERTIES" "STELLA" "ASSETS_LIST"
 		__add_key "$PROPERTIES" "STELLA" "ENV_LIST"
@@ -67,8 +67,8 @@ function __get_all_properties() {
 			
 		# STELLA VARs
 		__get_key "$PROPERTIES" "STELLA" "APP_NAME"
-		__get_key "$PROPERTIES" "STELLA" "APP_WORK_ROOT"
-		__get_key "$PROPERTIES" "STELLA" "CACHE_DIR"
+		__get_key "$PROPERTIES" "STELLA" "APP_WORK_ROOT" "PREFIX"
+		__get_key "$PROPERTIES" "STELLA" "APP_CACHE_DIR" "PREFIX"
 		__get_key "$PROPERTIES" "STELLA" "DATA_LIST" "PREFIX"
 		__get_key "$PROPERTIES" "STELLA" "ASSETS_LIST" "PREFIX"
 		__get_key "$PROPERTIES" "STELLA" "ENV_LIST" "PREFIX"

@@ -54,9 +54,9 @@ goto :eof
 	>> %VAGRANT_FILEPATH% echo(Vagrant.configure(VAGRANTFILE_API_VERSION^) do ^|config^|
 	>> %VAGRANT_FILEPATH% echo(		config.vm.box = "%VAGRANT_BOX_NAME%"
 	>> %VAGRANT_FILEPATH% echo(		config.vm.synced_folder "%STELLA_ROOT:\=/%", "/home/vagrant/lib-stella" >> Vagrantfile
-	>> %VAGRANT_FILEPATH% echo(		config.vm.synced_folder "%APP_ROOT:\=/%", "/home/vagrant/%APP_NAME%" >> Vagrantfile
-	>> %VAGRANT_FILEPATH% echo(		config.vm.synced_folder "%CACHE_DIR:\=/%", "/home/vagrant/%APP_NAME%-CACHE" >> Vagrantfile
-	>> %VAGRANT_FILEPATH% echo(		config.vm.synced_folder "%PROJECT_ROOT:\=/%", "/home/vagrant/%APP_NAME%-WORK" >> Vagrantfile
+	>> %VAGRANT_FILEPATH% echo(		config.vm.synced_folder "%STELLA_APP_ROOT:\=/%", "/home/vagrant/%APP_NAME%" >> Vagrantfile
+	>> %VAGRANT_FILEPATH% echo(		config.vm.synced_folder "%STELLA_APP_CACHE_DIR:\=/%", "/home/vagrant/%APP_NAME%-CACHE" >> Vagrantfile
+	>> %VAGRANT_FILEPATH% echo(		config.vm.synced_folder "%STELLA_APP_WORK_ROOT:\=/%", "/home/vagrant/%APP_NAME%-WORK" >> Vagrantfile
 	>> %VAGRANT_FILEPATH% echo(		config.vm.provider :virtualbox do ^|vb^|
 	>> %VAGRANT_FILEPATH% echo(			vb.gui = %VM_HEADLESS%
 	>> %VAGRANT_FILEPATH% echo(			vb.name = "%VM_ENV_NAME%"
@@ -84,10 +84,10 @@ REM ------------------------------------ ADMINISTRATION OF BOX WITH PACKER -----
 		goto :eof
 	)
 	if "%FORCE%"=="1" (
-		del /f /q /s "%CACHE_DIR%\%VAGRANT_BOX_FILENAME%"
+		del /f /q /s "%STELLA_APP_CACHE_DIR%\%VAGRANT_BOX_FILENAME%"
 	)
-	call %STELLA_COMMON%\common.bat :get_ressource "%DISTRIB%" "%VAGRANT_BOX_URI%" "%VAGRANT_BOX_URI_PROTOCOL%" "%CACHE_DIR%"
-	call :_import_box_into_vagrant %VAGRANT_BOX_NAME% "%CACHE_DIR%\%VAGRANT_BOX_FILENAME%"
+	call %STELLA_COMMON%\common.bat :get_ressource "%DISTRIB%" "%VAGRANT_BOX_URI%" "%VAGRANT_BOX_URI_PROTOCOL%" "%STELLA_APP_CACHE_DIR%"
+	call :_import_box_into_vagrant %VAGRANT_BOX_NAME% "%STELLA_APP_CACHE_DIR%\%VAGRANT_BOX_FILENAME%"
 goto :eof
 
 
@@ -104,7 +104,7 @@ goto :eof
 	echo ** Packing a vagrant box for %VIRTUAL_DEFAULT_HYPERVISOR% with Packer
 		
 	if "%FORCE%"=="1" (
-		del /f /q /s "%CACHE_DIR%\%VAGRANT_BOX_FILENAME%"
+		del /f /q /s "%STELLA_APP_CACHE_DIR%\%VAGRANT_BOX_FILENAME%"
 	)
 
 	if not "%PACKER_TEMPLATE_URI_PROTOCOL%"=="_INTERNAL_" (
@@ -120,7 +120,7 @@ goto :eof
 	set "VAGRANT_BOX_OUTPUT_DIR=%PACKER_TEMPLATE_URI%\%VAGRANT_BOX_OUTPUT_DIR%"
 
 
-	if not exist "%CACHE_DIR%\%VAGRANT_BOX_FILENAME%" (
+	if not exist "%STELLA_APP_CACHE_DIR%\%VAGRANT_BOX_FILENAME%" (
 		cd /D "%PACKER_TEMPLATE_URI%"
 
 		if not "%PACKER_PREBUILD_CALLBACK%"=="" call :%PACKER_PREBUILD_CALLBACK%
@@ -132,18 +132,18 @@ goto :eof
 		if not "%PACKER_POSTBUILD_CALLBACK%"=="" call :%PACKER_POSTBUILD_CALLBACK%
 		set PACKER_POSTBUILD_CALLBACK=
 
-		copy_folder_content_into "%VAGRANT_BOX_OUTPUT_DIR%" "%CACHE_DIR%" "*.box"
-		xcopy /q /y /e /i "%VAGRANT_BOX_OUTPUT_DIR%\*.box" "%CACHE_DIR%\"
+		copy_folder_content_into "%VAGRANT_BOX_OUTPUT_DIR%" "%STELLA_APP_CACHE_DIR%" "*.box"
+		xcopy /q /y /e /i "%VAGRANT_BOX_OUTPUT_DIR%\*.box" "%STELLA_APP_CACHE_DIR%\"
 		del /f /q /s "%VAGRANT_BOX_OUTPUT_DIR%\*.box"
 
-		if exist "%CACHE_DIR%\%VAGRANT_BOX_FILENAME%" (
+		if exist "%STELLA_APP_CACHE_DIR%\%VAGRANT_BOX_FILENAME%" (
 			echo ** Box created
 		)
 	) else (
 		echo ** Box already created
 	)
 
-	call :_import_box_into_vagrant %VAGRANT_BOX_NAME% "%CACHE_DIR%\%VAGRANT_BOX_FILENAME%"
+	call :_import_box_into_vagrant %VAGRANT_BOX_NAME% "%STELLA_APP_CACHE_DIR%\%VAGRANT_BOX_FILENAME%"
 goto :eof
 
 
@@ -188,8 +188,8 @@ goto :eof
 	) else (
 
 		:: Re importing box into vagrant in case of
-		if exist "%CACHE_DIR%\%VAGRANT_BOX_FILENAME%" (
-			call :_import_box_into_vagrant %VAGRANT_BOX_NAME% "%CACHE_DIR%\%VAGRANT_BOX_FILENAME%"
+		if exist "%STELLA_APP_CACHE_DIR%\%VAGRANT_BOX_FILENAME%" (
+			call :_import_box_into_vagrant %VAGRANT_BOX_NAME% "%STELLA_APP_CACHE_DIR%\%VAGRANT_BOX_FILENAME%"
 		)
 
 		if not exist "%VIRTUAL_ENV_ROOT%\%VM_ENV_NAME%" mkdir "%VIRTUAL_ENV_ROOT%\%VM_ENV_NAME%"

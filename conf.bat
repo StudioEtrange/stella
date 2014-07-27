@@ -14,10 +14,9 @@ set STELLA_TOOL_RECIPE=%STELLA_POOL%\tool-recipe
 call %STELLA_COMMON%\platform.bat :set_current_platform_info
 
 :: DEFAULT APP INFO -------------
-set APP_ROOT=%_CURRENT_RUNNING_DIR%
-set APP_WORK_ROOT=%_CURRENT_RUNNING_DIR%
-set PROJECT_ROOT=%_CURRENT_RUNNING_DIR%
-set CACHE_DIR=
+set STELLA_APP_ROOT=%_CURRENT_RUNNING_DIR%
+set STELLA_APP_WORK_ROOT=%_CURRENT_RUNNING_DIR%
+set STELLA_APP_CACHE_DIR=
 set APP_NAME=
 
 :: GATHER APP INFO
@@ -25,20 +24,19 @@ call %STELLA_COMMON%\common-app.bat :select_app
 call %STELLA_COMMON%\common-app.bat :get_all_properties
 
 :: APP PATH
-call %STELLA_COMMON%\common.bat :rel_to_abs_path "APP_ROOT" "%APP_ROOT%" "%_CURRENT_RUNNING_DIR%"
-call %STELLA_COMMON%\common.bat :rel_to_abs_path "PROJECT_ROOT" "%APP_WORK_ROOT%" "%APP_ROOT%"
+call %STELLA_COMMON%\common.bat :rel_to_abs_path "STELLA_APP_ROOT" "%STELLA_APP_ROOT%" "%_CURRENT_RUNNING_DIR%"
+call %STELLA_COMMON%\common.bat :rel_to_abs_path "STELLA_APP_WORK_ROOT" "%STELLA_APP_WORK_ROOT%" "%STELLA_APP_ROOT%"
 
-if "%CACHE_DIR%"=="" (
-	set CACHE_DIR=%PROJECT_ROOT%\cache
+if "%STELLA_APP_CACHE_DIR%"=="" (
+	set STELLA_APP_CACHE_DIR=%STELLA_APP_WORK_ROOT%\cache
 )
-call %STELLA_COMMON%\common.bat :rel_to_abs_path "CACHE_DIR" "%CACHE_DIR%" "%APP_ROOT%"
+call %STELLA_COMMON%\common.bat :rel_to_abs_path "STELLA_APP_CACHE_DIR" "%STELLA_APP_CACHE_DIR%" "%STELLA_APP_ROOT%"
 
-set TEMP_DIR=%PROJECT_ROOT%\temp
-set TOOL_ROOT=%PROJECT_ROOT%\tool_%STELLA_CURRENT_PLATFORM_SUFFIX%\%STELLA_CURRENT_OS%
-set DATA_ROOT=%PROJECT_ROOT%\data
-set ASSETS_ROOT=%PROJECT_ROOT%\assets
-
-call %STELLA_COMMON%\common.bat :rel_to_abs_path "ASSETS_REPOSITORY" "..\assets_repository" "%PROJECT_ROOT%"
+set TEMP_DIR=%STELLA_APP_WORK_ROOT%\temp
+set TOOL_ROOT=%STELLA_APP_WORK_ROOT%\tool_%STELLA_CURRENT_PLATFORM_SUFFIX%\%STELLA_CURRENT_OS%
+set DATA_ROOT=%STELLA_APP_WORK_ROOT%\data
+set ASSETS_ROOT=%STELLA_APP_WORK_ROOT%\assets
+call %STELLA_COMMON%\common.bat :rel_to_abs_path "ASSETS_REPOSITORY" "..\assets_repository" "%STELLA_APP_WORK_ROOT%"
 
 :: DEFAULT TOOLS ---------------------------------------------
 set WGET="%TOOL_ROOT%\wget\bin\wget.exe"
@@ -53,7 +51,7 @@ set FEATURE_LIST_ENABLED=
 set VERBOSE_MODE=0
 
 :: VIRTUALIZATION ----------------------
-set "VIRTUAL_WORK_ROOT=%PROJECT_ROOT%\virtual"
+set "VIRTUAL_WORK_ROOT=%STELLA_APP_WORK_ROOT%\virtual"
 set "VIRTUAL_TEMPLATE_ROOT=%VIRTUAL_WORK_ROOT%\template"
 set "VIRTUAL_ENV_ROOT=%VIRTUAL_WORK_ROOT%\env"
 
@@ -64,7 +62,7 @@ set "VIRTUAL_CONF_FILE=%VIRTUAL_INTERNAL_ROOT%\virtual.ini"
 set PACKER_CMD=packer
 set VAGRANT_CMD=vagrant
 
-set "PACKER_CACHE_DIR=%CACHE_DIR%"
+set "PACKER_STELLA_APP_CACHE_DIR=%STELLA_APP_CACHE_DIR%"
 
 :: choose a default hypervisor for packer and vagrant
 :: vmware or virtualbox
@@ -76,7 +74,7 @@ set "DISTRIB_LIST=ubuntu64 debian64 centos64 archlinux boot2docker"
 set "TOOL_LIST=ninja jom cmake packer perl ruby nasm python vagrant openssh"
 
 :: API ---------------------------------------------
-set "STELLA_API_COMMON_PUBLIC=is_path_abs"
+set "STELLA_API_COMMON_PUBLIC=is_path_abs get_ressource download_uncompress"
 set "STELLA_API_APP_PUBLIC=get_data get_assets get_all_data get_all_assets"
 set "STELLA_API_TOOLS_PUBLIC=install_feature init_feature"
 set "STELLA_API_VIRTUAL_PUBLIC="

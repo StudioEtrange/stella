@@ -51,7 +51,7 @@ goto :eof
 	)
 	if "!TEST_FEATURE!"=="0" (
 		call %STELLA_COMMON%\common.bat :download "%URL%" "%FILE_NAME%"
-		cd /D %CACHE_DIR%
+		cd /D %STELLA_APP_CACHE_DIR%
 
 		echo ** Launch MSIEXEC with TARGETDIR=%INSTALL_DIR%
 		msiexec /qb /i %FILE_NAME% TARGETDIR="%INSTALL_DIR%\"

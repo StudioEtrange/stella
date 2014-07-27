@@ -267,7 +267,7 @@ function __download_uncompress() {
 	fi
 	
 	__download $URL $FILE_NAME
-	__uncompress "$CACHE_DIR/$FILE_NAME" "$UNZIP_DIR" "$OPT"
+	__uncompress "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$UNZIP_DIR" "$OPT"
 }
 
 function __uncompress() {
@@ -338,31 +338,31 @@ function __download() {
 		echo "** Guessed file name is $FILE_NAME"
 	fi
 
-	mkdir -p "$CACHE_DIR"
+	mkdir -p "$STELLA_APP_CACHE_DIR"
 
 	echo " ** Download $FILE_NAME from $URL into cache"
 	
 	#if [ "$FORCE" == "1" ]; then
-	#	rm -Rf "$CACHE_DIR/$FILE_NAME"
+	#	rm -Rf "$STELLA_APP_CACHE_DIR/$FILE_NAME"
 	#fi
 
 
-	if [ ! -f "$CACHE_DIR/$FILE_NAME" ]; then
+	if [ ! -f "$STELLA_APP_CACHE_DIR/$FILE_NAME" ]; then
 		if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
-			curl -L -o "$CACHE_DIR/$FILE_NAME" "$URL"
+			curl -L -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL"
 		else
-			wget "$URL" -O "$CACHE_DIR/$FILE_NAME" --no-check-certificate
+			wget "$URL" -O "$STELLA_APP_CACHE_DIR/$FILE_NAME" --no-check-certificate
 		fi
 	else
 		echo " ** Already downloaded"
 	fi
 
 	if [ ! "$DEST_DIR" == "" ]; then
-		if [ ! "$DEST_DIR" == "$CACHE_DIR" ]; then
+		if [ ! "$DEST_DIR" == "$STELLA_APP_CACHE_DIR" ]; then
 			if [ ! -d "$DEST_DIR" ]; then
 				mkdir -p "$DEST_DIR"
 			fi
-			cp "$CACHE_DIR/$FILE_NAME" "$DEST_DIR/"
+			cp "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$DEST_DIR/"
 			echo "** Downloaded $FILE_NAME is in $DEST_DIR"
 		fi
 	fi

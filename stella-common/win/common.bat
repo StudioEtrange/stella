@@ -346,7 +346,7 @@ goto :eof
 
 	call :download "%URL%" "%FILE_NAME%"
 
-	call :uncompress "%CACHE_DIR%\%FILE_NAME%" "%UNZIP_DIR%" "%OPT%"
+	call :uncompress "%STELLA_APP_CACHE_DIR%\%FILE_NAME%" "%UNZIP_DIR%" "%OPT%"
 goto :eof
 
 :uncompress
@@ -404,7 +404,7 @@ goto :eof
 			for /D %%j in (*) do move /y %%j "%UNZIP_DIR%\"
 			for %%j in (*) do move /y %%j "%UNZIP_DIR%\"
 		)
-		cd /D "%PROJECT_ROOT%"
+		cd /D "%STELLA_APP_WORK_ROOT%"
 		if exist "%TEMP_DIR%\%_FILENAME%" rmdir /q /s "%TEMP_DIR%\%_FILENAME%"
 	)
 goto :eof
@@ -427,25 +427,25 @@ goto :eof
 		echo ** Guessed file name is %FILE_NAME%
 	)
 
-	if not exist "%CACHE_DIR%" (
-		mkdir "%CACHE_DIR%"
+	if not exist "%STELLA_APP_CACHE_DIR%" (
+		mkdir "%STELLA_APP_CACHE_DIR%"
 	)
 
 	echo ** Download %FILE_NAME% from %URL% into cache
 	
 	REM if "%FORCE%"=="1" (
-	REM	del /q /s "%CACHE_DIR%\%FILE_NAME%"
+	REM	del /q /s "%STELLA_APP_CACHE_DIR%\%FILE_NAME%"
 	REM )
 
-	if not exist "%CACHE_DIR%\%FILE_NAME%" (
-		"%WGET%" "%URL%" -O "%CACHE_DIR%\%FILE_NAME%" --no-check-certificate
+	if not exist "%STELLA_APP_CACHE_DIR%\%FILE_NAME%" (
+		"%WGET%" "%URL%" -O "%STELLA_APP_CACHE_DIR%\%FILE_NAME%" --no-check-certificate
 	) else (
 		echo ** Already downloaded
 	)
 
-	if not "%DEST_DIR%"=="" if not "%DEST_DIR%"=="%CACHE_DIR%" (
+	if not "%DEST_DIR%"=="" if not "%DEST_DIR%"=="%STELLA_APP_CACHE_DIR%" (
 		if not exist "%DEST_DIR%" mkdir "%DEST_DIR%"
-		copy /y "%CACHE_DIR%\%FILE_NAME%" "%DEST_DIR%\"
+		copy /y "%STELLA_APP_CACHE_DIR%\%FILE_NAME%" "%DEST_DIR%\"
 		echo ** Downloaded %FILE_NAME% is in %DEST_DIR%
 	)
 
