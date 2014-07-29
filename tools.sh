@@ -1,12 +1,12 @@
 #!/bin/bash
-_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
-source $_CURRENT_FILE_DIR/conf.sh
+_STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+_STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
+source $_STELLA_CURRENT_FILE_DIR/conf.sh
 
 function __init_tools() {
 	echo "** Initialize Tools"
-	if [ ! -d "$STELLA_TOOL_ROOT" ]; then
-		mkdir -p "$STELLA_TOOL_ROOT"
+	if [ ! -d "$STELLA_APP_TOOL_ROOT" ]; then
+		mkdir -p "$STELLA_APP_TOOL_ROOT"
 	fi
 
 }
@@ -21,7 +21,6 @@ ACTION=											'action' 			a						'install list'					Action to compute. 'inst
 ID= 											''					a 						'$TOOL_LIST default all' 	Select tool to install. 'Autotools' means autoconf, automake, libtool, m4. Use 'default' to initialize tools. Use 'list' to list available tools. 
 "
 OPTIONS="
-ARCH='x64'			'a'			''					a			0			'x86 x64 arm'			Select architecture.
 FORCE=''                       	'f'    		''            		b     		0     		'1'           			Force operation.
 VERS=''				''			''					s 			0			'' 						tool version
 JOB='1'				'j'			'nb_job'			i			0			'1:100'					Number of jobs used by build tool. (Only for supported build tool)
@@ -44,7 +43,7 @@ case $ACTION in
 				;;
 
 			*)
-				__install_feature $ID $VER
+				__install_feature $ID $VERS
 				;;
 		esac
 		;;

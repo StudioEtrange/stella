@@ -5,10 +5,10 @@ goto :eof
 
 :wget
 	echo ** Install wget
-	if "%FORCE%"=="1" call %STELLA_COMMON%\common.bat :del_folder "%STELLA_TOOL_ROOT%\wget"
-	if not exist "%STELLA_TOOL_ROOT%\wget\bin\wget.exe" (
-		"%UZIP%" -o "%STELLA_POOL%\tool\wget-1.11.4-1-bin.zip" -d "%STELLA_TOOL_ROOT%\wget"
-		"%UZIP%" -o "%STELLA_POOL%\tool\wget-1.11.4-1-dep.zip" -d "%STELLA_TOOL_ROOT%\wget" 
+	if "%FORCE%"=="1" call %STELLA_COMMON%\common.bat :del_folder "%STELLA_APP_TOOL_ROOT%\wget"
+	if not exist "%STELLA_APP_TOOL_ROOT%\wget\bin\wget.exe" (
+		"%UZIP%" -o "%STELLA_POOL%\tool\wget-1.11.4-1-bin.zip" -d "%STELLA_APP_TOOL_ROOT%\wget"
+		"%UZIP%" -o "%STELLA_POOL%\tool\wget-1.11.4-1-dep.zip" -d "%STELLA_APP_TOOL_ROOT%\wget" 
 	) else (
 		echo ** Already installed
 	)
@@ -18,7 +18,7 @@ goto :eof
 :gnumake
 	echo ** Install gnumake
 	set VERSION=3.81
-	set INSTALL_DIR="%STELLA_TOOL_ROOT%\make"
+	set INSTALL_DIR="%STELLA_APP_TOOL_ROOT%\make"
 	if "%FORCE%"=="1" call %STELLA_COMMON%\common.bat :del_folder "%INSTALL_DIR%"
 	if not exist "%INSTALL_DIR%\bin\make.exe" (
 		set URL=http://downloads.sourceforge.net/project/gnuwin32/make/3.81/make-3.81-bin.zip
@@ -35,9 +35,9 @@ goto :eof
 
 :unzip
 	echo ** Install unzip
-	if "%FORCE%"=="1" call %STELLA_COMMON%\common.bat :del_folder "%STELLA_TOOL_ROOT%\unzip"
-	if not exist "%STELLA_TOOL_ROOT%\unzip\bin\unzip.exe" (
-		call %STELLA_COMMON%\common.bat :copy_folder_content_into "%STELLA_POOL%\tool\unzip-5.51-1-bin" "%STELLA_TOOL_ROOT%\unzip\"
+	if "%FORCE%"=="1" call %STELLA_COMMON%\common.bat :del_folder "%STELLA_APP_TOOL_ROOT%\unzip"
+	if not exist "%STELLA_APP_TOOL_ROOT%\unzip\bin\unzip.exe" (
+		call %STELLA_COMMON%\common.bat :copy_folder_content_into "%STELLA_POOL%\tool\unzip-5.51-1-bin" "%STELLA_APP_TOOL_ROOT%\unzip\"
 	) else (
 		echo ** Already installed
 	)
@@ -45,9 +45,9 @@ goto :eof
 
 :sevenzip
 	echo ** Install sevenzip
-	if "%FORCE%"=="1" call %STELLA_COMMON%\common.bat :del_folder "%STELLA_TOOL_ROOT%\sevenzip"
-	if not exist "%STELLA_TOOL_ROOT%\sevenzip\7z.exe" (
-		call %STELLA_COMMON%\common.bat :copy_folder_content_into "%STELLA_POOL%\tool\sevenzip" "%STELLA_TOOL_ROOT%\sevenzip\"
+	if "%FORCE%"=="1" call %STELLA_COMMON%\common.bat :del_folder "%STELLA_APP_TOOL_ROOT%\sevenzip"
+	if not exist "%STELLA_APP_TOOL_ROOT%\sevenzip\7z.exe" (
+		call %STELLA_COMMON%\common.bat :copy_folder_content_into "%STELLA_POOL%\tool\sevenzip" "%STELLA_APP_TOOL_ROOT%\sevenzip\"
 	) else (
 		echo ** Already installed
 	)
@@ -56,9 +56,9 @@ goto :eof
 
 :patch
 	echo ** Install gnu patch
-	if "%FORCE%"=="1" call %STELLA_COMMON%\common.bat :del_folder "%STELLA_TOOL_ROOT%\patch"
-	if not exist "%STELLA_TOOL_ROOT%\patch\bin\patch.exe" (
-		"%UZIP%" -o "%STELLA_POOL%\tool\patch-2.5.9-7-bin.zip" -d "%STELLA_TOOL_ROOT%\patch"
+	if "%FORCE%"=="1" call %STELLA_COMMON%\common.bat :del_folder "%STELLA_APP_TOOL_ROOT%\patch"
+	if not exist "%STELLA_APP_TOOL_ROOT%\patch\bin\patch.exe" (
+		"%UZIP%" -o "%STELLA_POOL%\tool\patch-2.5.9-7-bin.zip" -d "%STELLA_APP_TOOL_ROOT%\patch"
 	) else (
 		echo ** Already installed
 	)

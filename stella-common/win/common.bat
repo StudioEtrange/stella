@@ -450,14 +450,14 @@ goto :eof
 		if "%USE7ZIP%"=="TRUE" "%U7ZIP%" x "%FILE_PATH%" -y -o"%UNZIP_DIR%"
 	) else (
 		echo ** Stripping first folder
-		if exist "%TEMP_DIR%\%_FILENAME%" (
-			rmdir /q /s "%TEMP_DIR%\%_FILENAME%"
+		if exist "%STELLA_APP_TEMP_DIR%\%_FILENAME%" (
+			rmdir /q /s "%STELLA_APP_TEMP_DIR%\%_FILENAME%"
 		)
-		mkdir "%TEMP_DIR%\%_FILENAME%"
-		if "%USE7ZIP%"=="FALSE" "%UZIP%" -o "%FILE_PATH%" -d "%TEMP_DIR%\%_FILENAME%"
-		if "%USE7ZIP%"=="TRUE" "%U7ZIP%" x "%FILE_PATH%" -y -o"%TEMP_DIR%\%_FILENAME%"
+		mkdir "%STELLA_APP_TEMP_DIR%\%_FILENAME%"
+		if "%USE7ZIP%"=="FALSE" "%UZIP%" -o "%FILE_PATH%" -d "%STELLA_APP_TEMP_DIR%\%_FILENAME%"
+		if "%USE7ZIP%"=="TRUE" "%U7ZIP%" x "%FILE_PATH%" -y -o"%STELLA_APP_TEMP_DIR%\%_FILENAME%"
 		
-		cd /D "%TEMP_DIR%\%_FILENAME%"
+		cd /D "%STELLA_APP_TEMP_DIR%\%_FILENAME%"
 		for /D %%i in (*) do (
 			::for /D %%i in (*) do xcopy /q /y /e /i %%i "%UNZIP_DIR%"
 			REM TODO why not cd /D %%i ?????
@@ -466,7 +466,7 @@ goto :eof
 			for %%j in (*) do move /y %%j "%UNZIP_DIR%\"
 		)
 		cd /D "%STELLA_APP_WORK_ROOT%"
-		if exist "%TEMP_DIR%\%_FILENAME%" rmdir /q /s "%TEMP_DIR%\%_FILENAME%"
+		if exist "%STELLA_APP_TEMP_DIR%\%_FILENAME%" rmdir /q /s "%STELLA_APP_TEMP_DIR%\%_FILENAME%"
 	)
 goto :eof
 

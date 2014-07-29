@@ -10,7 +10,7 @@ goto :eof
 	set "_VER=%~1"
 	set "_DEFAULT_VER=6_6"
 
-	if not exist %STELLA_TOOL_ROOT%\openssh mkdir %STELLA_TOOL_ROOT%\openssh
+	if not exist %STELLA_APP_TOOL_ROOT%\openssh mkdir %STELLA_APP_TOOL_ROOT%\openssh
 	if "%_VER%"=="" (
 		call :install_openssh_%_DEFAULT_VER%
 	) else (
@@ -34,7 +34,7 @@ goto :eof
 	set URL=http://www.mls-software.com/files/installer_source_files.66p1-1-v1.zip
 	set FILE_NAME=installer_source_files.66p1-1-v1.zip
 	set VERSION=6.6p1-1-v1
-	set INSTALL_DIR="%STELLA_TOOL_ROOT%\openssh\6_6"
+	set INSTALL_DIR="%STELLA_APP_TOOL_ROOT%\openssh\6_6"
 
 	echo ** Installing OpenSSH in %INSTALL_DIR%
 	
@@ -62,8 +62,8 @@ goto :eof
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
-	if exist "%STELLA_TOOL_ROOT%\openssh\6_6\bin\ssh.exe" (
-		set "TEST_FEATURE=%STELLA_TOOL_ROOT%\openssh\6_6"
+	if exist "%STELLA_APP_TOOL_ROOT%\openssh\6_6\bin\ssh.exe" (
+		set "TEST_FEATURE=%STELLA_APP_TOOL_ROOT%\openssh\6_6"
 	)
 	if not "!TEST_FEATURE!"=="0" (
 		if %VERBOSE_MODE% GTR 0 (

@@ -3,14 +3,14 @@ call %*
 goto :eof
 
 :list_packer
-	set "%~1=0_6_0"
+	set "%~1=0_6_0_x64 0_6_0_x86"
 goto :eof
 
 :install_packer
 	set "_VER=%~1"
-	set "_DEFAULT_VER=0_6_0"
+	set "_DEFAULT_VER=0_6_0_x64"
 
-	if not exist %STELLA_TOOL_ROOT%\packer mkdir %STELLA_TOOL_ROOT%\packer
+	if not exist %STELLA_APP_TOOL_ROOT%\packer mkdir %STELLA_APP_TOOL_ROOT%\packer
 	if "%_VER%"=="" (
 		call :install_packer_%_DEFAULT_VER%
 	) else (
@@ -20,7 +20,7 @@ goto :eof
 
 :feature_packer
 	set "_VER=%~1"
-	set "_DEFAULT_VER=0_6_0"
+	set "_DEFAULT_VER=0_6_0_x64"
 
 	if "%_VER%"=="" (
 		call :feature_packer_%_DEFAULT_VER%
@@ -29,21 +29,43 @@ goto :eof
 	)
 goto :eof
 
+REM --------------------------------------------------------------
+:install_packer_0_6_0_x64
+	set URL=https://dl.bintray.com/mitchellh/packer/0.6.0_windows_amd64.zip
+	set FILE_NAME=0.6.0_windows_amd64.zip
+	set VERSION=0_6_0_x64
+	call :install_packer_internal
+goto :eof
 
-:install_packer_0_6_0
-	if "%ARCH%"=="x64" (
-		set URL=https://dl.bintray.com/mitchellh/packer/0.6.0_windows_amd64.zip
-		set FILE_NAME=0.6.0_windows_amd64.zip
-	)
-	if "%ARCH%"=="x86" (
-		set URL=https://dl.bintray.com/mitchellh/packer/0.6.0_windows_386.zip
-		set FILE_NAME=0.6.0_windows_386.zip
-	)
-	set VERSION=0_6_0
-	set "INSTALL_DIR=%STELLA_TOOL_ROOT%\packer\%VERSION%"
+:install_packer_0_6_0_x86
+	set URL=https://dl.bintray.com/mitchellh/packer/0.6.0_windows_386.zip
+	set FILE_NAME=0.6.0_windows_386.zip
+	set VERSION=0_6_0_x86
+	call :install_packer_internal
+goto :eof
+
+:feature_packer_0_6_0_x64
+	set "FEATURE_TEST=%STELLA_APP_TOOL_ROOT%\packer\0_6_0_x64\packer.exe"
+	set "FEATURE_RESULT_PATH=%STELLA_APP_TOOL_ROOT%\packer\0_6_0_x64"
+	set "FEATURE_RESULT_VER=0_6_0_x64"
+	call :feature_packer_internal
+goto :eof
+
+:feature_packer_0_6_0_x86
+	set "FEATURE_TEST=%STELLA_APP_TOOL_ROOT%\packer\0_6_0_x86\packer.exe"
+	set "FEATURE_RESULT_PATH=%STELLA_APP_TOOL_ROOT%\packer\0_6_0_x86"
+	set "FEATURE_RESULT_VER=0_6_0_x86"
+	call :feature_packer_internal
+goto :eof
+
+
+
+REM --------------------------------------------------------------
+:install_packer_internal
+	set "INSTALL_DIR=%STELLA_APP_TOOL_ROOT%\packer\%VERSION%"
 
 	echo ** Installing packer version %VERSION% in %INSTALL_DIR%
-	call :feature_packer_0_6_0
+	call :feature_packer_%VERSION%
 	if "%FORCE%"=="1" ( 
 		set TEST_FEATURE=0
 		call %STELLA_COMMON%\common.bat :del_folder "%INSTALL_DIR%"
@@ -51,7 +73,7 @@ goto :eof
 	if "!TEST_FEATURE!"=="0" (
 		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "DEST_ERASE"
 		
-		call :feature_packer_0_6_0
+		call :feature_packer_%VERSION%
 		if not "!TEST_FEATURE!"=="0" (
 			cd /D "!TEST_FEATURE!"
 			echo Packer installed
@@ -64,12 +86,12 @@ goto :eof
 	)
 goto :eof
 
-:feature_packer_0_6_0
+:feature_packer_internal
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
-	if exist "%STELLA_TOOL_ROOT%\packer\0_6_0\packer.exe" (
-		set "TEST_FEATURE=%STELLA_TOOL_ROOT%\packer\0_6_0"
+	if exist "!FEATURE_TEST!" (
+		set "TEST_FEATURE=!FEATURE_RESULT_PATH!"
 	)
 
 	if not "!TEST_FEATURE!"=="0" (
@@ -78,9 +100,8 @@ goto :eof
 		)
 		set "PACKER_CMD=!TEST_FEATURE!\%PACKER_CMD%"
 		set "FEATURE_PATH=!TEST_FEATURE!"
-		set FEATURE_VER=0_6_0
+		set FEATURE_VER=!FEATURE_RESULT_VER!
 	)
 goto :eof
-
 
 

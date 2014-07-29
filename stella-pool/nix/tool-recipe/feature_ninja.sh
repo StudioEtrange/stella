@@ -11,7 +11,7 @@ function __install_ninja() {
 	local _VER=$1
 	local _DEFAULT_VER="last_release"
 
-	mkdir -p $STELLA_TOOL_ROOT/ninja
+	mkdir -p $STELLA_APP_TOOL_ROOT/ninja
 
 	if [ "$_VER" == "" ]; then
 		__install_ninja_$_DEFAULT_VER
@@ -31,18 +31,35 @@ function __feature_ninja() {
 }
 
 
-
-
+# --------------------------------------
 function __install_ninja_last_release() {
 	URL="https://github.com/martine/ninja/archive/release.zip"
 	VER="last_release"
 	FILE_NAME=ninja-release.zip
-	INSTALL_DIR="$STELLA_TOOL_ROOT/ninja/$VER"
+	__install_ninja_internal
+}
+
+
+function __feature_ninja_last_release() {
+	FEATURE_TEST="$STELLA_APP_TOOL_ROOT/ninja/last_release/ninja"
+	FEATURE_RESULT_PATH="$STELLA_APP_TOOL_ROOT/ninja/last_release"
+	FEATURE_RESULT_VER="last_release"
+	__feature_ninja_internal
+}
+
+
+# --------------------------------------
+
+
+
+function __install_ninja_internal() {
+	
+	INSTALL_DIR="$STELLA_APP_TOOL_ROOT/ninja/$VER"
 
 	echo " ** Installing ninja in $INSTALL_DIR"
 	echo " ** NEED : python"
 
-	__feature_ninja_last_release
+	__feature_ninja_$VER
 	if [ "$FORCE" ]; then
 		TEST_FEATURE=0
 		__del_folder $INSTALL_DIR
@@ -56,7 +73,7 @@ function __install_ninja_last_release() {
 		cd "$INSTALL_DIR"
 		python ./bootstrap.py
 
-		__feature_ninja_last_release
+		__feature_ninja_$VER
 		if [ ! "$TEST_FEATURE" == "0" ]; then
 			echo " ** Ninja installed"
 			"$TEST_FEATURE/ninja" --version
@@ -68,12 +85,12 @@ function __install_ninja_last_release() {
 	fi
 }
 
-function __feature_ninja_last_release() {
+function __feature_ninja_internal() {
 	TEST_FEATURE=0
 	FEATURE_VER=
 	FEATURE_PATH=
-	if [ -f "$STELLA_TOOL_ROOT/ninja/last_release/ninja" ]; then
-		TEST_FEATURE="$STELLA_TOOL_ROOT/ninja/last_release"
+	if [ -f "$FEATURE_TEST" ]; then
+		TEST_FEATURE="$FEATURE_RESULT_PATH"
 	fi
 
 	if [ ! "$TEST_FEATURE" == "0" ]; then
@@ -82,7 +99,7 @@ function __feature_ninja_last_release() {
 		NINJA_MAKE_CMD_VERBOSE="$TEST_FEATURE/./$NINJA_MAKE_CMD_VERBOSE"
 		NINJA_MAKE_CMD_VERBOSE_ULTRA="$TEST_FEATURE/./$NINJA_MAKE_CMD_VERBOSE_ULTRA"
 		FEATURE_PATH="$TEST_FEATURE"
-		FEATURE_VER="last_release"
+		FEATURE_VER="$FEATURE_RESULT_VER"
 	fi
 }
 

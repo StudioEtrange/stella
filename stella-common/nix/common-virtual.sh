@@ -1,5 +1,5 @@
-if [ ! "$_COMMON_VIRTUAL_INCLUDED_" == "1" ]; then 
-_COMMON_VIRTUAL_INCLUDED_=1
+if [ ! "$_STELLA_COMMON_VIRTUAL_INCLUDED_" == "1" ]; then 
+_STELLA_COMMON_VIRTUAL_INCLUDED_=1
 
 function __list_distrib() {
 	echo "$DISTRIB_LIST"

@@ -32,17 +32,17 @@ if "%STELLA_APP_CACHE_DIR%"=="" (
 )
 call %STELLA_COMMON%\common.bat :rel_to_abs_path "STELLA_APP_CACHE_DIR" "%STELLA_APP_CACHE_DIR%" "%STELLA_APP_ROOT%"
 
-set TEMP_DIR=%STELLA_APP_WORK_ROOT%\temp
-set STELLA_TOOL_ROOT=%STELLA_APP_WORK_ROOT%\tool_%STELLA_CURRENT_PLATFORM_SUFFIX%\%STELLA_CURRENT_OS%
+set STELLA_APP_TEMP_DIR=%STELLA_APP_WORK_ROOT%\temp
+set STELLA_APP_TOOL_ROOT=%STELLA_APP_WORK_ROOT%\tool_%STELLA_CURRENT_PLATFORM_SUFFIX%\%STELLA_CURRENT_OS%
 set ASSETS_ROOT=%STELLA_APP_WORK_ROOT%\assets
 call %STELLA_COMMON%\common.bat :rel_to_abs_path "ASSETS_REPOSITORY" "..\assets_repository" "%STELLA_APP_WORK_ROOT%"
 
 :: DEFAULT TOOLS ---------------------------------------------
-set WGET="%STELLA_TOOL_ROOT%\wget\bin\wget.exe"
-set UZIP="%STELLA_TOOL_ROOT%\unzip\bin\unzip.exe"
-set U7ZIP="%STELLA_TOOL_ROOT%\sevenzip\7z.exe"
-set PATCH="%STELLA_TOOL_ROOT%\patch\bin\patch.exe"
-set GNUMAKE="%STELLA_TOOL_ROOT%\make\bin\make.exe"
+set WGET="%STELLA_APP_ROOT%\wget\bin\wget.exe"
+set UZIP="%STELLA_APP_ROOT%\unzip\bin\unzip.exe"
+set U7ZIP="%STELLA_APP_ROOT%\sevenzip\7z.exe"
+set PATCH="%STELLA_APP_ROOT%\patch\bin\patch.exe"
+set GNUMAKE="%STELLA_APP_ROOT%\make\bin\make.exe"
 
 
 :: OTHERS ---------------------------------------------

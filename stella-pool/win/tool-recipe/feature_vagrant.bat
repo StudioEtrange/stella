@@ -10,7 +10,7 @@ goto :eof
 	set "_VER=%~1"
 	set "_DEFAULT_VER=git"
 
-	if not exist %STELLA_TOOL_ROOT%\vagrant mkdir %STELLA_TOOL_ROOT%\vagrant
+	if not exist %STELLA_APP_TOOL_ROOT%\vagrant mkdir %STELLA_APP_TOOL_ROOT%\vagrant
 	if "%_VER%"=="" (
 		call :install_vagrant_%_DEFAULT_VER%
 	) else (
@@ -34,7 +34,7 @@ goto :eof
 :install_vagrant_git
 	set URL=https://github.com/mitchellh/vagrant.git
 	set VERSION=git
-	set "INSTALL_DIR=%STELLA_TOOL_ROOT%\vagrant\%VERSION%"
+	set "INSTALL_DIR=%STELLA_APP_TOOL_ROOT%\vagrant\%VERSION%"
 
 	echo ** Installing vagrant version %VERSION% in %INSTALL_DIR%
 	echo ** This version from git need RUBY 2.0 !!
@@ -70,8 +70,8 @@ goto :eof
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
-	if exist "%STELLA_TOOL_ROOT%\vagrant\git\bin\vagrant" (
-		set "TEST_FEATURE=%STELLA_TOOL_ROOT%\vagrant\git"
+	if exist "%STELLA_APP_TOOL_ROOT%\vagrant\git\bin\vagrant" (
+		set "TEST_FEATURE=%STELLA_APP_TOOL_ROOT%\vagrant\git"
 	)
 	if not "!TEST_FEATURE!"=="0" (
 		if %VERBOSE_MODE% GTR 0 (

@@ -10,7 +10,7 @@ goto :eof
 	set "_VER=%~1"
 	set "_DEFAULT_VER=last_release"
 
-	if not exist %STELLA_TOOL_ROOT%\ninja mkdir %STELLA_TOOL_ROOT%\ninja
+	if not exist %STELLA_APP_TOOL_ROOT%\ninja mkdir %STELLA_APP_TOOL_ROOT%\ninja
 
 	if "%_VER%"=="" (
 		call :install_ninja_%_DEFAULT_VER%
@@ -37,7 +37,7 @@ goto :eof
 	set URL=https://github.com/martine/ninja/archive/release.zip
 	set VERSION="last_release"
 	set FILE_NAME=ninja-release.zip
-	set "INSTALL_DIR=%STELLA_TOOL_ROOT%\ninja\%VERSION%"
+	set "INSTALL_DIR=%STELLA_APP_TOOL_ROOT%\ninja\%VERSION%"
 
 	echo ** Installing ninja in %INSTALL_DIR%
 	echo ** NEED PYTHON !!
@@ -70,8 +70,8 @@ goto :eof
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
-	if exist "%STELLA_TOOL_ROOT%\ninja\last_release\ninja.exe" (
-		set "TEST_FEATURE=%STELLA_TOOL_ROOT%\ninja\last_release"
+	if exist "%STELLA_APP_TOOL_ROOT%\ninja\last_release\ninja.exe" (
+		set "TEST_FEATURE=%STELLA_APP_TOOL_ROOT%\ninja\last_release"
 	)
 
 	if not "!TEST_FEATURE!"=="0" (

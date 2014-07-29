@@ -1,5 +1,5 @@
-if [ ! "$_COMMON_APP_INCLUDED_" == "1" ]; then 
-_COMMON_APP_INCLUDED_=1
+if [ ! "$_STELLA_COMMON_APP_INCLUDED_" == "1" ]; then 
+_STELLA_COMMON_APP_INCLUDED_=1
 
 
 
@@ -13,7 +13,7 @@ function __select_app() {
 	PROPERTIES=
 
 	if [ "$_app_path" == "" ]; then
-		_app_path=$_CURRENT_RUNNING_DIR
+		_app_path=$_STELLA_CURRENT_RUNNING_DIR
 	fi
 
 	if [ -f "$_app_path/.stella" ]; then
@@ -199,7 +199,7 @@ function __get_app_ressources() {
 		if [ "$_mode" == "DATA" ]; then
 			_artefact_root="$a"_"$_mode"_ROOT
 			_artefact_root=${!_artefact_root}
-			_artefact_dest=$(__rel_to_abs_path "_artefact_root" "$STELLA_APP_WORK_ROOT")
+			_artefact_dest=$(__rel_to_abs_path "$_artefact_root" "$STELLA_APP_WORK_ROOT")
 			_artefact_link=0; 
 		fi
 		if [ "$_mode" == "ASSETS" ]; then _artefact_dest="$ASSETS_REPOSITORY"; _artefact_link=1; _artefact_link_target="$ASSETS_ROOT"; fi

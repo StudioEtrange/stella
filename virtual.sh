@@ -1,7 +1,7 @@
 #!/bin/bash
-_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
-source $_CURRENT_FILE_DIR/conf.sh
+_STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+_STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
+source $_STELLA_CURRENT_FILE_DIR/conf.sh
 
 
 function __virtual_init_folder() {

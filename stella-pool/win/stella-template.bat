@@ -14,14 +14,14 @@ REM stella.bat bootstrap [install path] --- absolute or relative to app path whe
 REM		OR call stella :bootstrap [install path]
 REM stella.bat ^<standard stella command^>
 
-set _CURRENT_FILE_DIR=%~dp0
-set _CURRENT_FILE_DIR=%_CURRENT_FILE_DIR:~0,-1%
-set _CURRENT_RUNNING_DIR=%cd%
+set _STELLA_CURRENT_FILE_DIR=%~dp0
+set _STELLA_CURRENT_FILE_DIR=%_STELLA_CURRENT_FILE_DIR:~0,-1%
+set _STELLA_CURRENT_RUNNING_DIR=%cd%
 
 set IS_STELLA_LINKED=FALSE
 set STELLA_ROOT=
 
-set STELLA_APP_ROOT=%_CURRENT_FILE_DIR%
+set STELLA_APP_ROOT=%_STELLA_CURRENT_FILE_DIR%
 
 REM Check if APP is linked to STELLA -------------------------
 if exist "%STELLA_APP_ROOT%\.stella-link.bat" (
@@ -138,7 +138,7 @@ goto :eof
 		set %_result_var_rel_to_abs_path%=!_temp_path:~0,-1!
 	) else (
 		set "_abs_root_path=%~3"
-		if not defined _abs_root_path set "_abs_root_path=%_CURRENT_RUNNING_DIR%"
+		if not defined _abs_root_path set "_abs_root_path=%_STELLA_CURRENT_RUNNING_DIR%"
 		for /f "tokens=*" %%A in ("!_abs_root_path!.\%_rel_path%") do set "%_result_var_rel_to_abs_path%=%%~fA"
 	)
 goto :eof

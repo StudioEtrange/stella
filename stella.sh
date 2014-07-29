@@ -1,7 +1,8 @@
 #!/bin/bash
-_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
-source $_CURRENT_FILE_DIR/conf.sh
+_STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+_STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
+source $_STELLA_CURRENT_FILE_DIR/conf.sh
+
 
 function usage() {
 	echo "USAGE :"
@@ -49,9 +50,6 @@ __argparse "$0" "$OPTIONS" "$PARAMETERS" "Lib Stella" "$(usage)" "" "$@"
 
 # common initializations
 __init_stella_env
-
-
-
 
 # --------------- APP ----------------------------
 if [ "$DOMAIN" == "app" ]; then
@@ -131,7 +129,7 @@ if [ "$DOMAIN" == "tools" ]; then
 	if [ "$ACTION" == "install" ]; then
 		VERS=
 		if [[ ${ID} =~ "#" ]]; then
-			VER=${ID##*#}
+			VERS=${ID##*#}
 			ID=${ID%#*}
 		fi
 		$STELLA_ROOT/tools.sh install $ID --vers=$VERS $_tools_options

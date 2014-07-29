@@ -10,7 +10,7 @@ function __install_cmake() {
 	local _VER=$1
 	local _DEFAULT_VER="2_8_12"
 
-	mkdir -p $STELLA_TOOL_ROOT/cmake
+	mkdir -p $STELLA_APP_TOOL_ROOT/cmake
 	if [ "$_VER" == "" ]; then
 		__install_cmake_$_DEFAULT_VER
 	else
@@ -29,22 +29,41 @@ function __feature_cmake() {
 }
 
 
+
+# --------------------------------------
 function __install_cmake_2_8_12() {
 	URL=http://www.cmake.org/files/v2.8/cmake-2.8.12.tar.gz
 	VER=2_8_12
 	FILE_NAME=cmake-2.8.12.tar.gz
-	INSTALL_DIR="$STELLA_TOOL_ROOT/cmake/$VER"
-	SRC_DIR="$STELLA_TOOL_ROOT/cmake/$VER/cmake_$VER-src"
-	BUILD_DIR="$STELLA_TOOL_ROOT/cmake/$VER/cmake_$VER-build"
+	echo " ** NEED : cURL-7.32.0, libarchive-3.1.2 and expat-2.1.0"
+	__install_cmake_internal
+}
+
+
+function __feature_cmake_2_8_12() {
+	FEATURE_TEST="$STELLA_APP_TOOL_ROOT/cmake/2_8_12/bin/cmake"
+	FEATURE_RESULT_PATH="$STELLA_APP_TOOL_ROOT/cmake/2_8_12"
+	FEATURE_RESULT_VER="2_8_12"
+	__feature_cmake_internal
+}
+
+
+# --------------------------------------
+
+
+
+function __install_cmake_internal() {
+	
+	INSTALL_DIR="$STELLA_APP_TOOL_ROOT/cmake/$VER"
+	SRC_DIR="$STELLA_APP_TOOL_ROOT/cmake/$VER/cmake_$VER-src"
+	BUILD_DIR="$STELLA_APP_TOOL_ROOT/cmake/$VER/cmake_$VER-build"
 
 
 	echo " ** Installing cmake version $VER in $INSTALL_DIR"
-	echo " ** NEED : cURL-7.32.0, libarchive-3.1.2 and expat-2.1.0"
-
 	#TODO
 	#prerequires Recommended cURL-7.32.0, libarchive-3.1.2 and expat-2.1.0
 
-	__feature_cmake_2_8_12
+	__feature_cmake_$VER
 	if [ "$FORCE" ]; then
 		TEST_FEATURE=0
 		__del_folder $INSTALL_DIR
@@ -66,7 +85,7 @@ function __install_cmake_2_8_12() {
 		make install
 
 
-		__feature_cmake_2_8_12
+		__feature_cmake_$VER
 		if [ ! "$TEST_FEATURE" == "0" ]; then
 			echo " ** CMake installed"
 			"$TEST_FEATURE/bin/cmake" --version
@@ -78,12 +97,12 @@ function __install_cmake_2_8_12() {
 	fi
 
 }
-function __feature_cmake_2_8_12() {
+function __feature_cmake_internal() {
 	TEST_FEATURE=0
 	FEATURE_PATH=
 	FEATURE_VER=
-	if [ -f "$STELLA_TOOL_ROOT/cmake/2_8_12/bin/cmake" ]; then
-		TEST_FEATURE="$STELLA_TOOL_ROOT/cmake/2_8_12"
+	if [ -f "$FEATURE_TEST" ]; then
+		TEST_FEATURE="$FEATURE_RESULT_PATH"
 	fi
 
 	if [ ! "$TEST_FEATURE" == "0" ]; then
@@ -92,7 +111,7 @@ function __feature_cmake_2_8_12() {
 		CMAKE_CMD_VERBOSE="$TEST_FEATURE/bin/$CMAKE_CMD_VERBOSE"
 		CMAKE_CMD_VERBOSE_ULTRA="$TEST_FEATURE/bin/$CMAKE_CMD_VERBOSE_ULTRA"
 		FEATURE_PATH="$TEST_FEATURE/bin"
-		FEATURE_VER="2_8_12"
+		FEATURE_VER="$FEATURE_RESULT_VER"
 	fi
 }
 

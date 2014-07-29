@@ -1,5 +1,5 @@
-if [ ! "$_COMMON_INCLUDED_" == "1" ]; then
-_COMMON_INCLUDED_=1
+if [ ! "$_STELLA_COMMON_INCLUDED_" == "1" ]; then
+_STELLA_COMMON_INCLUDED_=1
 
 #turns off bash's hash function
 set +h
@@ -183,16 +183,18 @@ function __get_ressource() {
 	[ "$_opt_revert" == "ON" ] && echo " ** Reverting ressource :"
 	[ "$_opt_update" == "ON" ] && echo " ** Updating ressource :"
 	[ "$_opt_get" == "ON" ] && echo " ** Getting ressource :"
-	[ ! "$FINAL_DESTINATION" == "" ] && echo " ** $NAME into $FINAL_DESTINATION" || echo " ** $NAME"
+	[ ! "$FINAL_DESTINATION" == "" ] && echo " $NAME into $FINAL_DESTINATION" || echo " $NAME"
 
 	[ "$FORCE" ] && rm -Rf $FINAL_DESTINATION
 
 	# check if ressource already grabbed or merged
 	_FLAG=1
 	if [ "$_opt_merge" == "ON" ]; then
-		if [ -f "$FINAL_DESTINATION/._MERGED_$NAME" ]; then 
-			_FLAG=0
-			echo " ** Ressource already merged"
+		if [ -f "$FINAL_DESTINATION/._MERGED_$NAME" ]; then
+			if [ "$_opt_get" == "ON" ]; then
+				_FLAG=0
+				echo " ** Ressource already merged"
+			fi
 		else 
 			if [ ! "$_opt_get" == "ON" ]; then
 				_FLAG=0
@@ -201,14 +203,17 @@ function __get_ressource() {
 		fi
 	else	
 		if [ -d "$FINAL_DESTINATION" ]; then
-			_FLAG=0
-			echo " ** Ressource already grabbed"
+			if [ "$_opt_get" == "ON" ]; then
+				_FLAG=0
+				echo " ** Ressource already grabbed"
+			fi
 		else
 			if [ ! "$_opt_get" == "ON" ]; then
 				_FLAG=0
 				echo "** Ressource does not exist"
 			fi
 		fi
+
 	fi
 
 	# strip root folde mode
@@ -560,7 +565,6 @@ function __argparse(){
 	
 	local COMMAND_LINE="$@"
 	
-
 	ARGP="
 	--HEADER--
 	ARGP_PROG=$PROGNAME

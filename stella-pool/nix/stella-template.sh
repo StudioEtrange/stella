@@ -4,9 +4,8 @@
 # stella.sh bootstrap [install path] --- absolute or relative to app path where to install STELLA the system. If not provided, use setted value in link file (.-stella-link.sh) or in ../lib-stella by default
 # stella.sh <standard stella command>
 
-_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
-
+_STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+_STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
 
 function ___rel_to_abs_path() {
 	local _rel_path=$1
@@ -91,7 +90,7 @@ function include() {
 IS_STELLA_LINKED="FALSE"
 STELLA_ROOT=
 
-STELLA_APP_ROOT=$_CURRENT_FILE_DIR
+STELLA_APP_ROOT=$_STELLA_CURRENT_FILE_DIR
 
 # Check if APP is linked to STELLA -------------------------
 if [ -f "$STELLA_APP_ROOT/.stella-link.sh" ]; then
