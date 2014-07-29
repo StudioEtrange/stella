@@ -112,7 +112,7 @@ function __get_all_properties() {
 			_artefact_infra_id="$a"_INFRA_ID
 			_artefact_infra_id=${!_artefact_infra_id}
 			# eval "$a"_INFRA_ID=$_artefact_infra_id
-			if [ "$_artefact_infra_id" == "default" ]; then
+			if [ "$_artefact_infra_id" == "current" ]; then
 				eval "$a"_OS=\$STELLA_CURRENT_OS
 				eval "$a"_PLATFORM=\$STELLA_CURRENT_PLATFORM
 				eval "$a"_PLATFORM_SUFFIX=\$STELLA_CURRENT_PLATFORM_SUFFIX
@@ -269,7 +269,7 @@ function __setup_env() {
 		_env_mem=${!_env_mem}
 
 
-		if [ ! "$_env_infra_id" == "default" ]; then
+		if [ ! "$_env_infra_id" == "current" ]; then
 			echo" * Setting up env '$_env_name [$a]' with infra '[$_env_infra_id]' - using $_env_cpu cpu and $_env_mem Mo - built with '$_env_distrib', a $_env_os operating system"
 
 			$STELLA_ROOT/virtual.sh get-box --distrib=$_env_distrib

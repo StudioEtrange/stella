@@ -209,7 +209,7 @@ goto :eof
 	REM INFRA-ENV
 	for %%A in (!STELLA_ENV_LIST!) do (
 		set "_artefact_infra_id=!%%A_INFRA_ID!"
-		if not "!_artefact_infra_id!"=="default" (
+		if not "!_artefact_infra_id!"=="current" (
 			set _artefact_distrib=!_artefact_infra_id!_INFRA_DISTRIB
 			for %%Z in (!_artefact_distrib!) do (
 				set "%%A_DISTRIB=!%%Z!"
@@ -250,7 +250,7 @@ goto :eof
 		set "_env_mem=!%%A_MEM!"
 
 		
-		if not "!_env_infra_id!"=="default" (
+		if not "!_env_infra_id!"=="current" (
 			echo * Setting up env '!_env_name! [%%A]' with infra '[!_env_infra_id!]' - using !_env_cpu! cpu and !_env_mem! Mo - built with '!_env_distrib!', a !_env_os! operating system
 			
 			call %STELLA_ROOT%\virtual.bat get-box -distrib=!_env_distrib!
