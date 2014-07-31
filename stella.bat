@@ -104,6 +104,7 @@ if "%DOMAIN%"=="api" (
 		if "%id%"=="all" (
 			call %STELLA_COMMON%\common-api.bat :api_list "VAR"
 			echo !VAR!
+			goto :end
 		)
 	)
 )
@@ -118,6 +119,7 @@ if "%DOMAIN%"=="feature" (
 	
 	call %STELLA_ROOT%\feature.bat %ACTION% %id% %_feature_options%
 	@echo off
+	goto :end
 	
 )
 if "%DOMAIN%"=="feature" goto :end
@@ -135,6 +137,7 @@ if "%DOMAIN%"=="virtual" (
 	
 	call %STELLA_ROOT%\virtual.bat %ACTION% %id% !_virtual_options!
 	@echo off
+	goto :end
 )
 if "%DOMAIN%"=="virtual" goto :end
 

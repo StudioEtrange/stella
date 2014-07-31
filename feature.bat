@@ -24,14 +24,13 @@ if "%action%"=="install" (
 	) else (
 		call %STELLA_COMMON%\common-feature.bat :install_feature %id% %-vers%
 	)
-
 	goto :end	
 )
 
 
 if "%action%"=="list" (
 	if "%id%"=="all" (
-		echo "default all %__STELLA_FEATURE_LIST%"
+		echo default all %__STELLA_FEATURE_LIST%
 	) else (
 		call %STELLA_COMMON%\common-feature.bat :list_feature_version %id% _TMP
 		echo !_TMP!
