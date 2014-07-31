@@ -7,8 +7,10 @@ _STELLA_COMMON_APP_INCLUDED_=1
 # APP RESSOURCES & ENV MANAGEMENT ---------------
 
 
+# ARG 1 optional : specify an app path
+# return properties file path
 function __select_app() {
-	local _app_path=
+	local _app_path=$1
 
 	local _properties_file=
 

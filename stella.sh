@@ -71,7 +71,8 @@ if [ "$DOMAIN" == "app" ]; then
 		__init_app $ID $APPROOT $WORKROOT $CACHEDIR
 
 		cd $APPROOT
-		$STELLA_ROOT/feature.sh install default
+		#$STELLA_ROOT/feature.sh install default
+		./stella.sh feature install default
 	else
 
 		if [ ! -f "$_STELLA_APP_PROPERTIES_FILE" ]; then

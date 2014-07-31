@@ -42,7 +42,8 @@ if "%DOMAIN%"=="app" (
 		call %STELLA_COMMON%\common-app :init_app "%id%" "!-approot!" "!-workroot!" "!-cachedir!"
 
 		cd /D "!-approot!"
-		call %STELLA_ROOT%\feature.bat install default
+		call stella.bat feature install default
+
 		@echo off
 	)
 

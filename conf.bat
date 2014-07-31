@@ -26,7 +26,6 @@ call %STELLA_COMMON%\common-app.bat :get_all_properties !_STELLA_APP_PROPERTIES_
 :: APP PATH
 call %STELLA_COMMON%\common.bat :rel_to_abs_path "STELLA_APP_ROOT" "%STELLA_APP_ROOT%" "%_STELLA_CURRENT_RUNNING_DIR%"
 call %STELLA_COMMON%\common.bat :rel_to_abs_path "STELLA_APP_WORK_ROOT" "%STELLA_APP_WORK_ROOT%" "%STELLA_APP_ROOT%"
-
 if "%STELLA_APP_CACHE_DIR%"=="" (
 	set STELLA_APP_CACHE_DIR=%STELLA_APP_WORK_ROOT%\cache
 )
@@ -73,7 +72,7 @@ set "__STELLA_DISTRIB_LIST=ubuntu64 debian64 centos64 archlinux boot2docker"
 set "__STELLA_FEATURE_LIST=ninja jom cmake packer perl ruby nasm python vagrant openssh"
 
 :: API ---------------------------------------------
-set "STELLA_API_COMMON_PUBLIC=is_path_abs get_ressource download_uncompress del_folder"
+set "STELLA_API_COMMON_PUBLIC=is_path_abs get_ressource download_uncompress del_folder copy_folder_content_into"
 set "STELLA_API_APP_PUBLIC=get_data get_assets get_all_data get_all_assets update_data update_assets revert_data revert_assets"
 set "STELLA_API_FEATURE_PUBLIC=install_feature init_feature"
 set "STELLA_API_VIRTUAL_PUBLIC="

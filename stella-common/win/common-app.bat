@@ -104,9 +104,10 @@ goto :eof
 	)
 goto :eof
 
-:: ARG 1 Return var
+:: ARG 1 Return properties file path
+:: ARG 2 optional : specify an app path
 :select_app
-	set "_app_path="
+	set "_app_path=%~2"
 
 	set "_properties_file="
 
