@@ -10,7 +10,7 @@ goto :eof
 	set "_VER=%~1"
 	set "_DEFAULT_VER=2_7_6"
 
-	if not exist %STELLA_APP_TOOL_ROOT%\python mkdir %STELLA_APP_TOOL_ROOT%\python
+	if not exist %STELLA_APP_FEATURE_ROOT%\python mkdir %STELLA_APP_FEATURE_ROOT%\python
 	if "%_VER%"=="" (
 		call :install_python_%_DEFAULT_VER%
 	) else (
@@ -41,7 +41,7 @@ goto :eof
 	)
 
 	set VERSION=2_7_6
-	set "INSTALL_DIR=%STELLA_APP_TOOL_ROOT%\python\%VERSION%"
+	set "INSTALL_DIR=%STELLA_APP_FEATURE_ROOT%\python\%VERSION%"
 
 	echo ** Installing python version %VERSION% in %INSTALL_DIR%
 	call :feature_python_2_7_6
@@ -73,8 +73,8 @@ goto :eof
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
-	if exist "%STELLA_APP_TOOL_ROOT%\python\2_7_6\python.exe" (
-		set "TEST_FEATURE=%STELLA_APP_TOOL_ROOT%\python\2_7_6"
+	if exist "%STELLA_APP_FEATURE_ROOT%\python\2_7_6\python.exe" (
+		set "TEST_FEATURE=%STELLA_APP_FEATURE_ROOT%\python\2_7_6"
 	)
 	if not "!TEST_FEATURE!"=="0" (
 		if %VERBOSE_MODE% GTR 0 (

@@ -8,13 +8,12 @@ function __api_proxy() {
 	local _result=
 	shift
 
-	for f in $STELLA_API_COMMON_PUBLIC $STELLA_API_APP_PUBLIC $STELLA_API_TOOLS_PUBLIC $STELLA_API_VIRTUAL_PUBLIC; do
+	for f in $STELLA_API_COMMON_PUBLIC $STELLA_API_APP_PUBLIC $STELLA_API_FEATURE_PUBLIC $STELLA_API_VIRTUAL_PUBLIC; do
 		if [ "$f" == "$FUNC_NAME" ]; then
 			for j in $STELLA_API_RETURN_FUNCTION; do
 				if [ "$j" == "$FUNC_NAME" ]; then
 					_result=$(__$FUNC_NAME "$@")
 					echo $_result
-					echo
 					return
 				fi
 			done
@@ -27,7 +26,10 @@ function __api_proxy() {
 }
 
 function __api_list() {
-	echo "[ COMMON-API : $STELLA_API_COMMON_PUBLIC ] [ TOOLS-API : $STELLA_API_TOOLS_PUBLIC ] [ APP-API : $STELLA_API_APP_PUBLIC ] [ VIRTUAL-API : $STELLA_API_VIRTUAL_PUBLIC ]"
+	echo "[ COMMON-API : $STELLA_API_COMMON_PUBLIC ] \
+	[ FEATURE-API : $STELLA_API_FEATURE_PUBLIC ] \
+	[ APP-API : $STELLA_API_APP_PUBLIC ] 
+	[ VIRTUAL-API : $STELLA_API_VIRTUAL_PUBLIC ]"
 }
 
 fi

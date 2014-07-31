@@ -3,78 +3,92 @@ _STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 _STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
 source $_STELLA_CURRENT_FILE_DIR/conf.sh
 
+function usage() {
+    echo "USAGE :"
+    echo "----------------"
+    echo "List of commands"
+    echo " o-- virtual management :"
+    echo " L     create-env <env id#distrib id> [--head] [--vmem=xxxx] [--vcpu=xx] : create a new environment from a generic box prebuilt with a specific distribution"
+    echo " L     run-env <env id> [--login] : manage environment"
+    echo " L     stop-env destroy-env <env id> : manage environment"
+    echo " L     create-box get-box <distrib id> : manage generic boxes built with a specific distribution"
+    echo " L     list <env|box|distrib> : list existing available environment, box and distribution"
 
-function __virtual_init_folder() {
-
-	[ ! -d "$VIRTUAL_WORK_ROOT" ] && mkdir -p "$VIRTUAL_WORK_ROOT"
-	[ ! -d "$VIRTUAL_ENV_ROOT" ] && mkdir -p "$VIRTUAL_ENV_ROOT"
-	[ ! -d "$VIRTUAL_TEMPLATE_ROOT" ] && mkdir -p "$VIRTUAL_TEMPLATE_ROOT"	
 }
+
+
 
 
 # MAIN ------------------------
 PARAMETERS="
-ACTION=											'action' 			a			'create-env run-env stop-env info-env list-env destroy-env create-box get-box list-box list-distrib'		Action to compute.
+ACTION=											'action' 			a			'create-env run-env stop-env info-env destroy-env list create-box get-box'		Action to compute.
+ID=                                              ''                 s           ''                    Distrib ID or Env ID or Box ID or List target.
 "
 OPTIONS="
-DISTRIB=''    						'd'     	'distribution' 		a 			0		'$DISTRIB_LIST'		select a distribution.
 FORCE=''							'f'			''					b			0		'1'						Force.
-ENVNAME=''							'e'			''					s			0		''						Environment name.
 LOGIN=''							'l'			''					b			0		'1'						Autologin in env.
-ENVCPU=''							''			''					i 			0		''						Nb CPU attributed to the virtual env.
-ENVMEM=''							''			''					i 			0		''						Memory attributed to the virtual env.
-VMGUI=''							''			''					b			0		'1'						Hyperviser head.
+VCPU=''							''			''					i 			0		''						Nb CPU attributed to the virtual env.
+VMEM=''							''			''					i 			0		''						Memory attributed to the virtual env.
+HEAD=''						       	''			''					b			0		'1'						Active hyperviser head.
 "
 
 
-__argparse "$0" "$OPTIONS" "$PARAMETERS" "Stella virtualization management" "Stella virtualization management" "" "$@"
+__argparse "$0" "$OPTIONS" "$PARAMETERS" "Stella virtualization management" "$(usage)" "" "$@"
 
 # common initializations
 __init_stella_env
 
 
-if [ ! "$DISTRIB" == "" ]; then
-	__set_matrix $DISTRIB
-fi
-
-
 
 case $ACTION in
-	list-distrib)
-		__list_distrib
+	list)
+        case $ID in
+            distrib)
+                __list_distrib
+                ;;
+            box)
+                __list_box
+                ;;
+            env)
+                __list_env
+                ;;
+            *)
+                echo " ** Error : list env or list box or list distrib"
+                ;;
+        esac
 		;;
     create-box)
-		__virtual_init_folder
-    	__create_box
+    	__create_box $ID
     	;;
 	get-box)
-    	__get_box
-    	;;
-    list-box)
-    	__list_box
+    	__get_box $ID
     	;;
     create-env)
-		__virtual_init_folder
-    	__create_env
+        local _distrib_id=
+        if [[ ${ID} =~ "#" ]]; then
+            _distrib_id=${ID##*#}
+            ID=${ID%#*}
+        fi
+        local _opt=
+        [ "$HEAD" ] && _opt="HEAD"
+        [ ! "$VMEM" == "" ] && _opt="$_opt MEM $VMEM"
+        [ ! "$VCPU" == "" ] && _opt="$_opt CPU $VCPU"
+    	__create_env $ID $_distrib_id "$_opt"
     	;;
     run-env)
-		__virtual_init_folder
-    	__run_env
+        if [ "$LOGIN" ]; then
+    	   __run_env $ID "TRUE"
+        else
+           __run_env $ID
     	;;
     stop-env)
-		__virtual_init_folder
-    	__stop_env
-    	;;
-    list-env)
-    	__list_env
+    	__stop_env $ID
     	;;
     info-env)
-		__virtual_init_folder
-    	__info_env
+    	__info_env $ID
     	;;
     destroy-env)
-		__virtual_init_folder
-    	__destroy_env
+    	__destroy_env $ID
     	;;
 	*)
 		echo "use option --help for help"

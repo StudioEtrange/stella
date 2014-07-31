@@ -10,7 +10,7 @@ goto :eof
 	set "_VER=%~1"
 	set "_DEFAULT_VER=2_0_0_x64"
 
-	REM if not exist %STELLA_APP_TOOL_ROOT%\ruby mkdir %STELLA_APP_TOOL_ROOT%\ruby
+	REM if not exist %STELLA_APP_FEATURE_ROOT%\ruby mkdir %STELLA_APP_FEATURE_ROOT%\ruby
 	if "%_VER%"=="" (
 		call :install_ruby_%_DEFAULT_VER%
 	) else (
@@ -57,22 +57,22 @@ goto :eof
 
 
 :feature_ruby_2_0_0_x64
-	set "FEATURE_TEST=%STELLA_APP_TOOL_ROOT%\ruby\2_0_0_x64\ruby-2.0.0-p451-mingw32\bin\ruby.exe"
-	set "FEATURE_RESULT_PATH=%STELLA_APP_TOOL_ROOT%\ruby\2_0_0_x64\ruby-2.0.0-p451-mingw32"
+	set "FEATURE_TEST=%STELLA_APP_FEATURE_ROOT%\ruby\2_0_0_x64\ruby-2.0.0-p451-mingw32\bin\ruby.exe"
+	set "FEATURE_RESULT_PATH=%STELLA_APP_FEATURE_ROOT%\ruby\2_0_0_x64\ruby-2.0.0-p451-mingw32"
 	set "FEATURE_RESULT_VER=2_0_0_x64"
 	call :feature_ruby_internal
 goto :eof
 
 :feature_ruby_2_0_0_x86
-	set "FEATURE_TEST=%STELLA_APP_TOOL_ROOT%\ruby\2_0_0_x86\ruby-2.0.0-p451-mingw32\bin\ruby.exe"
-	set "FEATURE_RESULT_PATH=%STELLA_APP_TOOL_ROOT%\ruby\2_0_0_x86\ruby-2.0.0-p451-mingw32"
+	set "FEATURE_TEST=%STELLA_APP_FEATURE_ROOT%\ruby\2_0_0_x86\ruby-2.0.0-p451-mingw32\bin\ruby.exe"
+	set "FEATURE_RESULT_PATH=%STELLA_APP_FEATURE_ROOT%\ruby\2_0_0_x86\ruby-2.0.0-p451-mingw32"
 	set "FEATURE_RESULT_VER=2_0_0_x86"
 	call :feature_ruby_internal
 goto :eof
 
 :feature_ruby_1_9_3
-	set "FEATURE_TEST=%STELLA_APP_TOOL_ROOT%\ruby\1_9_3\ruby-1.9.3-p545-i386-mingw32\bin\ruby.exe"
-	set "FEATURE_RESULT_PATH=%STELLA_APP_TOOL_ROOT%\ruby\1_9_3\ruby-1.9.3-p545-i386-mingw32"
+	set "FEATURE_TEST=%STELLA_APP_FEATURE_ROOT%\ruby\1_9_3\ruby-1.9.3-p545-i386-mingw32\bin\ruby.exe"
+	set "FEATURE_RESULT_PATH=%STELLA_APP_FEATURE_ROOT%\ruby\1_9_3\ruby-1.9.3-p545-i386-mingw32"
 	set "FEATURE_RESULT_VER=1_9_3"
 	call :feature_ruby_internal
 goto :eof
@@ -101,29 +101,29 @@ goto :eof
 
 :feature_rubydevkit_4_7_2_x64
 	set "FEATURE_RESULT_VER=4_7_2_x64"
-	set "FEATURE_TEST=%STELLA_APP_TOOL_ROOT%\rubydevkit\!FEATURE_RESULT_VER!\devkitvars.bat"
-	set "FEATURE_RESULT_PATH=%STELLA_APP_TOOL_ROOT%\rubydevkit\!FEATURE_RESULT_VER!"
+	set "FEATURE_TEST=%STELLA_APP_FEATURE_ROOT%\rubydevkit\!FEATURE_RESULT_VER!\devkitvars.bat"
+	set "FEATURE_RESULT_PATH=%STELLA_APP_FEATURE_ROOT%\rubydevkit\!FEATURE_RESULT_VER!"
 	call :feature_rubydevkit_internal
 goto :eof
 
 :feature_rubydevkit_4_7_2_x86
 	set "FEATURE_RESULT_VER=4_7_2_x86"
-	set "FEATURE_TEST=%STELLA_APP_TOOL_ROOT%\rubydevkit\!FEATURE_RESULT_VER!\devkitvars.bat"
-	set "FEATURE_RESULT_PATH=%STELLA_APP_TOOL_ROOT%\rubydevkit\!FEATURE_RESULT_VER!"
+	set "FEATURE_TEST=%STELLA_APP_FEATURE_ROOT%\rubydevkit\!FEATURE_RESULT_VER!\devkitvars.bat"
+	set "FEATURE_RESULT_PATH=%STELLA_APP_FEATURE_ROOT%\rubydevkit\!FEATURE_RESULT_VER!"
 	call :feature_rubydevkit_internal
 goto :eof
 
 :feature_rubydevkit_4_5_2
 	set "FEATURE_RESULT_VER=4_5_2"
-	set "FEATURE_TEST=%STELLA_APP_TOOL_ROOT%\rubydevkit\!FEATURE_RESULT_VER!\devkitvars.bat"
-	set "FEATURE_RESULT_PATH=%STELLA_APP_TOOL_ROOT%\rubydevkit\!FEATURE_RESULT_VER!"
+	set "FEATURE_TEST=%STELLA_APP_FEATURE_ROOT%\rubydevkit\!FEATURE_RESULT_VER!\devkitvars.bat"
+	set "FEATURE_RESULT_PATH=%STELLA_APP_FEATURE_ROOT%\rubydevkit\!FEATURE_RESULT_VER!"
 	call :feature_rubydevkit_internal
 goto :eof
 
 REM --------------------------------------------------------------
 :install_ruby_internal
 		:: Note: choose a directory name without spaces and non us-ascii characters
-	set "INSTALL_DIR=%STELLA_APP_TOOL_ROOT%\ruby\%VERSION%"
+	set "INSTALL_DIR=%STELLA_APP_FEATURE_ROOT%\ruby\%VERSION%"
 
 	echo ** Installing ruby version %VERSION% in %INSTALL_DIR%
 
@@ -170,7 +170,7 @@ REM --------------------------------------------------------------
 
 :install_rubydevkit_internal
 	:: Note: choose a directory name without spaces and non us-ascii characters
-	set INSTALL_DIR="%STELLA_APP_TOOL_ROOT%\rubydevkit\%VERSION%"
+	set INSTALL_DIR="%STELLA_APP_FEATURE_ROOT%\rubydevkit\%VERSION%"
 
 	echo ** Installing Ruby DevKit version %VERSION% in %INSTALL_DIR%
 

@@ -10,7 +10,7 @@ goto :eof
 	set "_VER=%~1"
 	set "_DEFAULT_VER=2_11"
 
-	if not exist %STELLA_APP_TOOL_ROOT%\nasm mkdir %STELLA_APP_TOOL_ROOT%\nasm
+	if not exist %STELLA_APP_FEATURE_ROOT%\nasm mkdir %STELLA_APP_FEATURE_ROOT%\nasm
 	if "%_VER%"=="" (
 		call :install_nasm_%_DEFAULT_VER%
 	) else (
@@ -36,7 +36,7 @@ goto :eof
 	set URL=http://www.nasm.us/pub/nasm/releasebuilds/2.11/win32/nasm-2.11-win32.zip
 	set FILE_NAME=nasm-2.11-win32.zip
 	set VERSION=2_11
-	set INSTALL_DIR="%STELLA_APP_TOOL_ROOT%\nasm\%VERSION%"
+	set INSTALL_DIR="%STELLA_APP_FEATURE_ROOT%\nasm\%VERSION%"
 	
 	echo ** Installing NASM version %VERSION% in %INSTALL_DIR%
 
@@ -65,8 +65,8 @@ goto :eof
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
-	if exist "%STELLA_APP_TOOL_ROOT%\nasm\2_11\nasm.exe" (
-		set "TEST_FEATURE=%STELLA_APP_TOOL_ROOT%\nasm\2_11"
+	if exist "%STELLA_APP_FEATURE_ROOT%\nasm\2_11\nasm.exe" (
+		set "TEST_FEATURE=%STELLA_APP_FEATURE_ROOT%\nasm\2_11"
 	)
 	if not "!TEST_FEATURE!"=="0" (
 		if %VERBOSE_MODE% GTR 0 (

@@ -1,18 +1,18 @@
-if [ ! "$_STELLA_COMMON_TOOLS_INCLUDED_" == "1" ]; then 
-_STELLA_COMMON_TOOLS_INCLUDED_=1
+if [ ! "$_STELLA_COMMON_FEATURE_INCLUDED_" == "1" ]; then 
+_STELLA_COMMON_FEATURE_INCLUDED_=1
 
 
 # --------------- FEATURES MANAGEMENT ----------------------------
 
 function __init_all_features() {
-	for a in $TOOL_LIST; do
+	for a in $__STELLA_FEATURE_LIST; do
 		__init_feature $a
 	done
 }
 
 function __list_feature_version() {
 	local _FEATURE=$1
-	source $STELLA_TOOL_RECIPE/feature_$_FEATURE.sh
+	source $STELLA_FEATURE_RECIPE/feature_$_FEATURE.sh
 	echo $(__list_"$_FEATURE")
 }
 
@@ -27,7 +27,7 @@ function __init_feature() {
 	done
 	if [ "$_flag" == "0" ]; then
 		FEATURE_PATH=
-		source $STELLA_TOOL_RECIPE/feature_$_FEATURE.sh
+		source $STELLA_FEATURE_RECIPE/feature_$_FEATURE.sh
 		__feature_"$_FEATURE" $_VER
 		if [ ! "$TEST_FEATURE" == "0" ]; then
 			FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $_FEATURE#$FEATURE_VER"
@@ -49,7 +49,7 @@ function __install_feature() {
 	done
 	if [ "$_flag" == "0" ]; then
 		FEATURE_PATH=
-		source $STELLA_TOOL_RECIPE/feature_$_FEATURE.sh
+		source $STELLA_FEATURE_RECIPE/feature_$_FEATURE.sh
 		__install_"$_FEATURE" $_VER
 		if [ ! "$TEST_FEATURE" == "0" ]; then
 			FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $_FEATURE#$FEATURE_VER"
@@ -67,7 +67,7 @@ function __reinit_all_features() {
 		_VER=${f##*#}
 		_FEATURE=${f%#*}
 		FEATURE_PATH=
-		source $STELLA_TOOL_RECIPE/feature_$_FEATURE.sh
+		source $STELLA_FEATURE_RECIPE/feature_$_FEATURE.sh
 		__feature_"$_FEATURE" $_VER
 		if [ ! "$TEST_FEATURE" == "0" ]; then
 			if [ ! "$FEATURE_PATH" == "" ]; then 
@@ -82,15 +82,15 @@ function __reinit_all_features() {
 
 
 
-#TOOLS FOR CROSS COMPILING------------------------------------
+#FEATURES FOR CROSS COMPILING------------------------------------
 
 function __texinfo() {
 	URL=http://ftp.gnu.org/gnu/texinfo/texinfo-5.1.tar.xz
 	VER=5.1
 	FILE_NAME=texinfo-5.1.tar.xz
-	INSTALL_DIR="$STELLA_APP_TOOL_ROOT/cross-tools"
-	SRC_DIR="$STELLA_APP_TOOL_ROOT/cross-tools/code/texinfo-$VER-src"
-	BUILD_DIR="$STELLA_APP_TOOL_ROOT/cross-tools/code/texinfo-$VER-build"
+	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools"
+	SRC_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools/code/texinfo-$VER-src"
+	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools/code/texinfo-$VER-build"
 
 	CONFIGURE_FLAG_PREFIX=
 	CONFIGURE_FLAG_POSTFIX=
@@ -106,9 +106,9 @@ function __bc() {
 	URL=http://alpha.gnu.org/gnu/bc/bc-1.06.95.tar.bz2
 	VER=1.06.95
 	FILE_NAME=bc-1.06.95.tar.bz2
-	INSTALL_DIR="$STELLA_APP_TOOL_ROOT/cross-tools"	
-	SRC_DIR="$STELLA_APP_TOOL_ROOT/cross-tools/code/bc-$VER-src"
-	BUILD_DIR="$STELLA_APP_TOOL_ROOT/cross-tools/code/bc-$VER-build"
+	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools"	
+	SRC_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools/code/bc-$VER-src"
+	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools/code/bc-$VER-build"
 
 	CONFIGURE_FLAG_PREFIX=
 	CONFIGURE_FLAG_POSTFIX=
@@ -120,9 +120,9 @@ function __file5() {
 	URL=ftp://ftp.astron.com/pub/file/file-5.15.tar.gz
 	VER=5.15
 	FILE_NAME=file-5.15.tar.gz
-	INSTALL_DIR="$STELLA_APP_TOOL_ROOT/cross-tools"
-	SRC_DIR="$STELLA_APP_TOOL_ROOT/cross-tools/code/file-$VER-src"
-	BUILD_DIR="$STELLA_APP_TOOL_ROOT/cross-tools/code/file-$VER-build"
+	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools"
+	SRC_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools/code/file-$VER-src"
+	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools/code/file-$VER-build"
 
 	CONFIGURE_FLAG_PREFIX=
 	CONFIGURE_FLAG_POSTFIX="--disable-static"
@@ -136,9 +136,9 @@ function __m4() {
 	URL=http://ftp.gnu.org/gnu/m4/m4-1.4.17.tar.gz
 	VER=1.4.17
 	FILE_NAME=m4-1.4.17.tar.gz
-	INSTALL_DIR="$STELLA_APP_TOOL_ROOT/cross-tools"	
-	SRC_DIR="$STELLA_APP_TOOL_ROOT/cross-tools/code/m4-$VER-src"
-	BUILD_DIR="$STELLA_APP_TOOL_ROOT/cross-tools/code/m4-$VER-build"
+	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools"	
+	SRC_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools/code/m4-$VER-src"
+	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools/code/m4-$VER-build"
 
 	CONFIGURE_FLAG_PREFIX=
 	CONFIGURE_FLAG_POSTFIX=
@@ -151,9 +151,9 @@ function __binutils() {
 	URL=http://ftp.gnu.org/gnu/binutils/binutils-2.23.2.tar.bz2
 	VER=2.23.2
 	FILE_NAME=binutils-2.23.2.tar.bz2
-	INSTALL_DIR="$STELLA_APP_TOOL_ROOT/cross-tools"
-	SRC_DIR="$STELLA_APP_TOOL_ROOT/cross-tools/code/binutils-$VER-src"
-	BUILD_DIR="$STELLA_APP_TOOL_ROOT/cross-tools/code/binutils-$VER-build"
+	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools"
+	SRC_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools/code/binutils-$VER-src"
+	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools/code/binutils-$VER-build"
 
 	CONFIGURE_FLAG_PREFIX="AR=ar AS=as"
 	CONFIGURE_FLAG_POSTFIX="--host=$CROSS_HOST --target=$CROSS_TARGET \

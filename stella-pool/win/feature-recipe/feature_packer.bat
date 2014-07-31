@@ -10,7 +10,7 @@ goto :eof
 	set "_VER=%~1"
 	set "_DEFAULT_VER=0_6_0_x64"
 
-	if not exist %STELLA_APP_TOOL_ROOT%\packer mkdir %STELLA_APP_TOOL_ROOT%\packer
+	if not exist %STELLA_APP_FEATURE_ROOT%\packer mkdir %STELLA_APP_FEATURE_ROOT%\packer
 	if "%_VER%"=="" (
 		call :install_packer_%_DEFAULT_VER%
 	) else (
@@ -45,15 +45,15 @@ goto :eof
 goto :eof
 
 :feature_packer_0_6_0_x64
-	set "FEATURE_TEST=%STELLA_APP_TOOL_ROOT%\packer\0_6_0_x64\packer.exe"
-	set "FEATURE_RESULT_PATH=%STELLA_APP_TOOL_ROOT%\packer\0_6_0_x64"
+	set "FEATURE_TEST=%STELLA_APP_FEATURE_ROOT%\packer\0_6_0_x64\packer.exe"
+	set "FEATURE_RESULT_PATH=%STELLA_APP_FEATURE_ROOT%\packer\0_6_0_x64"
 	set "FEATURE_RESULT_VER=0_6_0_x64"
 	call :feature_packer_internal
 goto :eof
 
 :feature_packer_0_6_0_x86
-	set "FEATURE_TEST=%STELLA_APP_TOOL_ROOT%\packer\0_6_0_x86\packer.exe"
-	set "FEATURE_RESULT_PATH=%STELLA_APP_TOOL_ROOT%\packer\0_6_0_x86"
+	set "FEATURE_TEST=%STELLA_APP_FEATURE_ROOT%\packer\0_6_0_x86\packer.exe"
+	set "FEATURE_RESULT_PATH=%STELLA_APP_FEATURE_ROOT%\packer\0_6_0_x86"
 	set "FEATURE_RESULT_VER=0_6_0_x86"
 	call :feature_packer_internal
 goto :eof
@@ -62,7 +62,7 @@ goto :eof
 
 REM --------------------------------------------------------------
 :install_packer_internal
-	set "INSTALL_DIR=%STELLA_APP_TOOL_ROOT%\packer\%VERSION%"
+	set "INSTALL_DIR=%STELLA_APP_FEATURE_ROOT%\packer\%VERSION%"
 
 	echo ** Installing packer version %VERSION% in %INSTALL_DIR%
 	call :feature_packer_%VERSION%
@@ -98,7 +98,7 @@ goto :eof
 		if %VERBOSE_MODE% GTR 0 (
 			echo ** EXTRA FEATURE Detected : packer in !TEST_FEATURE!
 		)
-		set "PACKER_CMD=!TEST_FEATURE!\%PACKER_CMD%"
+		REM set "PACKER_CMD=!TEST_FEATURE!\%PACKER_CMD%"
 		set "FEATURE_PATH=!TEST_FEATURE!"
 		set FEATURE_VER=!FEATURE_RESULT_VER!
 	)

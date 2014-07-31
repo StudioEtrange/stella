@@ -41,7 +41,7 @@ function ___rel_to_abs_path() {
 function bootstrap() {
 	if [ "$IS_STELLA_LINKED" == "TRUE" ]; then
 		echo "** This app is already linked to a STELLA installation located in $STELLA_ROOT"
-		$STELLA_ROOT/tools.sh install default
+		$STELLA_ROOT/feature.sh install default
 	else
 
 		# Try to determine install path of STELLA
@@ -69,7 +69,7 @@ function bootstrap() {
 			echo "PROVIDED_PATH=$ARG" >$STELLA_APP_ROOT/.stella-link.sh
 		fi
 		sudo $_STELLA_INSTALL_PATH/init.sh
-		$_STELLA_INSTALL_PATH/tools.sh install default
+		$_STELLA_INSTALL_PATH/feature.sh install default
 	fi
 }
 

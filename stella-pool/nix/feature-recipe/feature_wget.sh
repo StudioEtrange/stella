@@ -10,7 +10,7 @@ function __install_wget() {
 	local _VER=$1
 	local _DEFAULT_VER="1_15"
 
-	mkdir -p $STELLA_APP_TOOL_ROOT/wget
+	mkdir -p $STELLA_APP_FEATURE_ROOT/wget
 
 	if [ "$_VER" == "" ]; then
 		__install_wget_$_DEFAULT_VER
@@ -39,8 +39,8 @@ function __install_wget_1_15() {
 
 
 function __feature_wget_1_15() {
-	FEATURE_TEST="$STELLA_APP_TOOL_ROOT/wget/1_15/bin/wget"
-	FEATURE_RESULT_PATH="$STELLA_APP_TOOL_ROOT/wget/1_15/bin"
+	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/wget/1_15/bin/wget"
+	FEATURE_RESULT_PATH="$STELLA_APP_FEATURE_ROOT/wget/1_15/bin"
 	FEATURE_RESULT_VER="1_15"
 	__feature_wget_internal
 }
@@ -50,9 +50,9 @@ function __feature_wget_1_15() {
 
 function __install_wget_internal() {
 	
-	INSTALL_DIR="$STELLA_APP_TOOL_ROOT/wget/$VER"
-	SRC_DIR="$STELLA_APP_TOOL_ROOT/wget/$VER/code/wget-$VER-src"
-	BUILD_DIR="$STELLA_APP_TOOL_ROOT/wget/$VER/code/wget-$VER-build"
+	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/wget/$VER"
+	SRC_DIR="$STELLA_APP_FEATURE_ROOT/wget/$VER/code/wget-$VER-src"
+	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/wget/$VER/code/wget-$VER-build"
 
 
 	CONFIGURE_FLAG_PREFIX=

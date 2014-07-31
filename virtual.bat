@@ -12,8 +12,8 @@ call %~dp0\conf.bat
 :: docker installation on windows : http://docs.docker.io/en/latest/installation/windows/
 
 :: arguments
-set "params=action:"create-env run-env stop-env destroy-env info-env list-env create-box get-box list-box destroy-box list-distrib""
-set "options=-distrib:"%DISTRIB_LIST%" -f: -envname:_ANY_ -envcpu:_ANY_ -envmem:_ANY_ -vmgui: -l:"
+set "params=action:"create-env run-env stop-env destroy-env info-env create-box get-box list" id:"_ANY_""
+set "options=-f: -login: -vcpu:_ANY_ -vmem:_ANY_ -head:"
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
 if "%ARGOPT_FLAG_HELP%"=="1" goto :usage
@@ -23,79 +23,74 @@ set FORCE=%-f%
 :: setting env
 call %STELLA_COMMON%\common.bat :init_stella_env
 
-
-::other command line arguments
-set VM_ENV_NAME=%-envname%
-set ENV_CPU=%-envcpu%
-set ENV_MEM=%-envmem%
-if "%-vmgui%"=="" set VM_HEADLESS=false
-if "%ENV_CPU%"=="" set ENV_CPU=1
-if "%ENV_MEM%"=="" set ENV_MEM=384
-set DISTRIB=%-distrib%
-
-if not "%DISTRIB%"=="" (
-	call :_set_matrix %DISTRIB%
+REM --------------- BOX MANAGEMENT -------------------------
+if "%action%"=="list" (
+	if "%id"=="distrib" (
+		call %STELLA_COMMON%\common-virtual.bat :list_distrib "VAR"
+		echo !VAR!
+	)
+	if "%id"=="box" (
+		call %STELLA_COMMON%\common-virtual.bat :list_box
+	)
+	if "%id"=="env" (
+		call %STELLA_COMMON%\common-virtual.bat :list_env
+	)
+	goto :end
 )
-
 
 REM --------------- BOX MANAGEMENT -------------------------
 if "%action%"=="create-box" (
-	call :_virtual_init_folder
-	call %STELLA_COMMON%\common-virtual.bat :create_box
+	call %STELLA_COMMON%\common-virtual.bat :create_box %id%
 	goto :end
 )
 
 if "%action%"=="get-box" (
-	call %STELLA_COMMON%\common-virtual.bat :get_box
+	call %STELLA_COMMON%\common-virtual.bat :get_box %id%
 	goto :end
 )
 
-if "%action%"=="list-box" (
-	call %STELLA_COMMON%\common-virtual.bat :list_box
-	goto :end
-)
 
 
 REM --------------- ENV MANAGEMENT -------------------------
-
-if "%action%"=="list-distrib" (
-	call %STELLA_COMMON%\common-virtual.bat :list_distrib "VAR"
-	echo !VAR!
-	goto :end
-)
-
 if "%action%"=="create-env" (
-	call :_virtual_init_folder
-	call %STELLA_COMMON%\common-virtual.bat :create_env
-	goto :end
-)
+	set distrib=%id:*#=%
+	set "id=%id:#="^&REM #%
 
-if "%action%"=="list-env" (
-	call %STELLA_COMMON%\common-virtual.bat :list_env
+	set _create_opt=
+	if "%-head%"=="1" (
+		set _create_opt="HEAD"
+	)
+	if not "%-vmem%"=="" (
+		set _create_opt="!_create_opt! MEM !-vmem!"
+	)
+	if not "%-vcpu%"=="" (
+		set _create_opt="!_create_opt! MEM !-vcpu!"
+	)
+	call %STELLA_COMMON%\common-virtual.bat :create_env !id! !distrib! "!_create_opt!"
 	goto :end
 )
 
 if "%action%"=="destroy-env" (
-	call :_virtual_init_folder
-	call %STELLA_COMMON%\common-virtual.bat :destroy_env
+	call %STELLA_COMMON%\common-virtual.bat :destroy_env %id%
 	goto :end
 )
 
 if "%action%"=="run-env" (
-	call :_virtual_init_folder
-	call %STELLA_COMMON%\common-virtual.bat :run_env
+	if "%-login%"=="1" (
+		call %STELLA_COMMON%\common-virtual.bat :run_env %id% "TRUE"
+	) else (
+		call %STELLA_COMMON%\common-virtual.bat :run_env %id%
+	)
 	goto :end
 )
 
 if "%action%"=="stop-env" (
-	call :_virtual_init_folder
-	call %STELLA_COMMON%\common-virtual.bat :stop_env
+	call %STELLA_COMMON%\common-virtual.bat :stop_env %id%
 	goto :end
 )
 
 if "%action%"=="info-env" (
-	call :_virtual_init_folder
-	call %STELLA_COMMON%\common-virtual.bat :info_env
+	call %STELLA_COMMON%\common-virtual.bat :info_env %id%
 	goto :end
 )
 
@@ -106,19 +101,23 @@ goto :usage
 
 REM ------------------------------------ INTERNAL FUNCTIONS -----------------------
 :usage
-   echo USAGE :
-   echo %~n0 %ARGOPT_HELP_SYNTAX%
+	echo USAGE :
+	echo %~n0 %ARGOPT_HELP_SYNTAX%
+
+	echo ----------------
+	echo List of commands
+	echo	* virtual management :
+	echo 		%~n0 create-env ^<env id#distrib id^> [-head] [-vmem=xxxx] [-vcpu=xx] : create a new environment from a generic box prebuilt with a specific distribution
+	echo		%~n0 run-env ^<env id^> [-login] : manage environment
+	echo		%~n0 stop-env destroy-env ^<env id^> : manage environment
+	echo 		%~n0 create-box get-box ^<distrib id^> : manage generic boxes built with a specific distribution
+	echo 		%~n0 list ^<box^|env^|distrib^>
 goto :end
 
-:_virtual_init_folder
-	if not exist "%VIRTUAL_WORK_ROOT%" mkdir "%VIRTUAL_WORK_ROOT%"
-	if not exist "%VIRTUAL_ENV_ROOT%" mkdir "%VIRTUAL_ENV_ROOT%"
-	if not exist "%VIRTUAL_TEMPLATE_ROOT%" mkdir "%VIRTUAL_TEMPLATE_ROOT%"
-goto :eof
 
 
 :end
 echo ** END **
-cd /D %_CURRENT_RUNNING_DIR%
+cd /D %_STELLA_CURRENT_RUNNING_DIR%
 @echo on
 @endlocal

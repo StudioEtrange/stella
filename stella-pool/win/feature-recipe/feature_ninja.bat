@@ -10,7 +10,7 @@ goto :eof
 	set "_VER=%~1"
 	set "_DEFAULT_VER=last_release"
 
-	if not exist %STELLA_APP_TOOL_ROOT%\ninja mkdir %STELLA_APP_TOOL_ROOT%\ninja
+	if not exist %STELLA_APP_FEATURE_ROOT%\ninja mkdir %STELLA_APP_FEATURE_ROOT%\ninja
 
 	if "%_VER%"=="" (
 		call :install_ninja_%_DEFAULT_VER%
@@ -37,12 +37,12 @@ goto :eof
 	set URL=https://github.com/martine/ninja/archive/release.zip
 	set VERSION="last_release"
 	set FILE_NAME=ninja-release.zip
-	set "INSTALL_DIR=%STELLA_APP_TOOL_ROOT%\ninja\%VERSION%"
+	set "INSTALL_DIR=%STELLA_APP_FEATURE_ROOT%\ninja\%VERSION%"
 
 	echo ** Installing ninja in %INSTALL_DIR%
 	echo ** NEED PYTHON !!
 
-	call %STELLA_COMMON%\common-tools.bat :init_feature python 2_7_6
+	call %STELLA_COMMON%\common-feature.bat :init_feature python 2_7_6
 
 	call :feature_ninja_last_release
 	if "%FORCE%"=="1" ( 
@@ -70,17 +70,17 @@ goto :eof
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
-	if exist "%STELLA_APP_TOOL_ROOT%\ninja\last_release\ninja.exe" (
-		set "TEST_FEATURE=%STELLA_APP_TOOL_ROOT%\ninja\last_release"
+	if exist "%STELLA_APP_FEATURE_ROOT%\ninja\last_release\ninja.exe" (
+		set "TEST_FEATURE=%STELLA_APP_FEATURE_ROOT%\ninja\last_release"
 	)
 
 	if not "!TEST_FEATURE!"=="0" (
 		if %VERBOSE_MODE% GTR 0 (
 			echo ** EXTRA FEATURE Detected : ninja in !TEST_FEATURE!
 		)
-		set "NINJA_MAKE_CMD=!TEST_FEATURE!\%NINJA_MAKE_CMD%"
-		set "NINJA_MAKE_CMD_VERBOSE=!TEST_FEATURE!\%NINJA_MAKE_CMD_VERBOSE%"
-		set "NINJA_MAKE_CMD_VERBOSE_ULTRA=!TEST_FEATURE!\%NINJA_MAKE_CMD_VERBOSE_ULSSA%"
+		REM set "NINJA_MAKE_CMD=!TEST_FEATURE!\%NINJA_MAKE_CMD%"
+		REM set "NINJA_MAKE_CMD_VERBOSE=!TEST_FEATURE!\%NINJA_MAKE_CMD_VERBOSE%"
+		REM set "NINJA_MAKE_CMD_VERBOSE_ULTRA=!TEST_FEATURE!\%NINJA_MAKE_CMD_VERBOSE_ULSSA%"
 		set "FEATURE_PATH=!TEST_FEATURE!"
 		set FEATURE_VER=last_release
 	)

@@ -21,5 +21,6 @@ echo "Opt1 value: $OPT1"
 echo "APP_ROOT : $STELLA_APP_ROOT"
 echo "APP_WORK_ROOT : $STELLA_APP_WORK_ROOT"
 
+
 result=$($STELLA_API is_abs "../")
 echo $result

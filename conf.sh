@@ -2,13 +2,15 @@ if [ ! "$_STELLA_CONF_INCLUDED_" == "1" ]; then
 _STELLA_CONF_INCLUDED_=1
 
 _STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-#_STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
+if [ "$_STELLA_CURRENT_RUNNING_DIR" == "" ]; then
+	_STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
+fi
 
 # STELLA PATHS ---------------------------------------------
 STELLA_ROOT="$_STELLA_CURRENT_FILE_DIR"
 STELLA_COMMON="$STELLA_ROOT/stella-common/nix"
 STELLA_POOL="$STELLA_ROOT/stella-pool/nix"
-STELLA_TOOL_RECIPE="$STELLA_POOL/tool-recipe"
+STELLA_FEATURE_RECIPE="$STELLA_POOL/feature-recipe"
 
 # STELLA INCLUDE ---------------------------------------------
 
@@ -16,7 +18,7 @@ source $STELLA_COMMON/libscreenfetch.sh
 source $STELLA_COMMON/platform.sh
 
 source $STELLA_COMMON/common.sh
-source $STELLA_COMMON/common-tools.sh
+source $STELLA_COMMON/common-feature.sh
 source $STELLA_COMMON/common-app.sh
 source $STELLA_COMMON/common-virtual.sh
 source $STELLA_COMMON/common-api.sh
@@ -28,11 +30,11 @@ __set_current_platform_info
 STELLA_APP_ROOT="$_STELLA_CURRENT_RUNNING_DIR"
 STELLA_APP_WORK_ROOT="$_STELLA_CURRENT_RUNNING_DIR"
 STELLA_APP_CACHE_DIR=
-APP_NAME=
+STELLA_APP_NAME=
 
 # GATHER CURRENT APP INFO ---------------------------------------------
-__select_app
-__get_all_properties
+_STELLA_APP_PROPERTIES_FILE=$(__select_app)
+__get_all_properties $_STELLA_APP_PROPERTIES_FILE
 
 # APP PATH ---------------------------------------------
 STELLA_APP_ROOT=$(__rel_to_abs_path "$STELLA_APP_ROOT" "$_STELLA_CURRENT_RUNNING_DIR")
@@ -43,15 +45,15 @@ fi
 STELLA_APP_CACHE_DIR=$(__rel_to_abs_path "$STELLA_APP_CACHE_DIR" "$STELLA_APP_ROOT")
 
 STELLA_APP_TEMP_DIR="$STELLA_APP_WORK_ROOT/temp"
-STELLA_APP_TOOL_ROOT="$STELLA_APP_WORK_ROOT/tool_$STELLA_CURRENT_PLATFORM_SUFFIX/$STELLA_CURRENT_OS"
+STELLA_APP_FEATURE_ROOT="$STELLA_APP_WORK_ROOT/feature_$STELLA_CURRENT_PLATFORM_SUFFIX/$STELLA_CURRENT_OS"
 ASSETS_ROOT="$STELLA_APP_WORK_ROOT/assets"
 ASSETS_REPOSITORY=$(__rel_to_abs_path "../assets_repository" "$STELLA_APP_WORK_ROOT")
 
 
-# DEFAULT TOOLS ---------------------------------------------
+# DEFAULT FEATURE ---------------------------------------------
 # TODO replace command with these variables
-#WGET="wget" # for macos see STELLA_APP_ROOT/wget
-#WGET=$STELLA_APP_ROOT/wget
+#WGET="wget" # for macos see STELLA_APP_FEATURE_ROOT/wget
+#WGET=$STELLA_APP_FEATURE_ROOT/wget
 #UZIP="unzip"
 #U7ZIP="7z"
 #PATCH="patch"
@@ -80,13 +82,13 @@ export PACKER_STELLA_APP_CACHE_DIR="$STELLA_APP_CACHE_DIR"
 VIRTUAL_DEFAULT_HYPERVISOR=virtualbox
 
 # INTERNAL LIST---------------------------------------------
-DISTRIB_LIST="ubuntu64 debian64 centos64 archlinux boot2docker"
-TOOL_LIST="wget ninja cmake packer autotools perl"
+__STELLA_DISTRIB_LIST="ubuntu64 debian64 centos64 archlinux boot2docker"
+__STELLA_FEATURE_LIST="wget ninja cmake packer autotools perl"
 
 # API ---------------------------------------------
-STELLA_API_COMMON_PUBLIC="is_abs argparse get_ressource download_uncompress copy_folder_content_into del_folder"
-STELLA_API_APP_PUBLIC="get_data get_assets get_all_data get_all_assets update_data update_assets revert_data revert_assets"
-STELLA_API_TOOLS_PUBLIC="install_feature init_feature"
+STELLA_API_COMMON_PUBLIC="is_abs argparse get_ressource download_uncompress copy_folder_content_into del_folder get_key"
+STELLA_API_APP_PUBLIC="get_data get_assets get_all_data get_all_assets update_data update_assets revert_data revert_assets get_env_properties setup_env"
+STELLA_API_FEATURE_PUBLIC="install_feature init_feature"
 STELLA_API_VIRTUAL_PUBLIC=""
 
 STELLA_API_RETURN_FUNCTION="is_abs"

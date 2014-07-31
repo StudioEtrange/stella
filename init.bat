@@ -29,6 +29,6 @@ goto :end
 
 :end
 echo ** END **
-cd /D %_CURRENT_RUNNING_DIR%
+cd /D %_STELLA_CURRENT_RUNNING_DIR%
 @echo on
 @endlocal

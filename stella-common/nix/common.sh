@@ -55,6 +55,7 @@ function __rel_to_abs_path() {
 			echo "$_rel_path"
 			;;
 		*)
+			# TODO if "$_abs_root_path" == "" then _abs_root_path=$_STELLA_CURRENT_RUNNING_DIR ?
 			if [ "$_abs_root_path" == "" ]; then
 				# relative to current path
 				if [ -f "$_rel_path" ]; then
@@ -569,7 +570,7 @@ function __argparse(){
 	--HEADER--
 	ARGP_PROG=$PROGNAME
 	ARGP_DELETE=quiet verbose
-	ARGP_VERSION=$APP_NAME_FULL
+	ARGP_VERSION=$STELLA_APP_NAME
 	ARGP_OPTION_SEP=:
 	ARGP_SHORT=$SHORT_DESCRIPTION
 	ARGP_LONG_DESC=$LONG_DESCRIPTION"

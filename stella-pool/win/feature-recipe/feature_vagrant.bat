@@ -10,7 +10,7 @@ goto :eof
 	set "_VER=%~1"
 	set "_DEFAULT_VER=git"
 
-	if not exist %STELLA_APP_TOOL_ROOT%\vagrant mkdir %STELLA_APP_TOOL_ROOT%\vagrant
+	if not exist %STELLA_APP_FEATURE_ROOT%\vagrant mkdir %STELLA_APP_FEATURE_ROOT%\vagrant
 	if "%_VER%"=="" (
 		call :install_vagrant_%_DEFAULT_VER%
 	) else (
@@ -34,7 +34,7 @@ goto :eof
 :install_vagrant_git
 	set URL=https://github.com/mitchellh/vagrant.git
 	set VERSION=git
-	set "INSTALL_DIR=%STELLA_APP_TOOL_ROOT%\vagrant\%VERSION%"
+	set "INSTALL_DIR=%STELLA_APP_FEATURE_ROOT%\vagrant\%VERSION%"
 
 	echo ** Installing vagrant version %VERSION% in %INSTALL_DIR%
 	echo ** This version from git need RUBY 2.0 !!
@@ -70,14 +70,14 @@ goto :eof
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
-	if exist "%STELLA_APP_TOOL_ROOT%\vagrant\git\bin\vagrant" (
-		set "TEST_FEATURE=%STELLA_APP_TOOL_ROOT%\vagrant\git"
+	if exist "%STELLA_APP_FEATURE_ROOT%\vagrant\git\bin\vagrant" (
+		set "TEST_FEATURE=%STELLA_APP_FEATURE_ROOT%\vagrant\git"
 	)
 	if not "!TEST_FEATURE!"=="0" (
 		if %VERBOSE_MODE% GTR 0 (
 			echo ** EXTRA FEATURE Detected : vagrant unstable from git in !TEST_FEATURE!
 		)
-		set "VAGRANT_CMD=call %STELLA_TOOL_RECIPE%\feature_vagrant.bat :_call_vagrant_from_git"
+		set "VAGRANT_CMD=call %STELLA_FEATURE_RECIPE%\feature_vagrant.bat :_call_vagrant_from_git"
 		REM set "VAGRANT_CMD=set BUNDLE_GEMFILE!TEST_FEATURE!\Gemfile && bundle exec vagrant"
 		REM set "VAGRANT_CMD=ruby -C!TEST_FEATURE! bin\%VAGRANT_CMD%"
 		set "FEATURE_PATH=!TEST_FEATURE!"

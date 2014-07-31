@@ -1,14 +1,14 @@
 @echo off
 call %*
 goto :eof
-::--------------- MINIMAL DEFAULT TOOLS --------------------
+::--------------- MINIMAL DEFAULT FEATURES --------------------
 
 :wget
 	echo ** Install wget
-	if "%FORCE%"=="1" call %STELLA_COMMON%\common.bat :del_folder "%STELLA_APP_TOOL_ROOT%\wget"
-	if not exist "%STELLA_APP_TOOL_ROOT%\wget\bin\wget.exe" (
-		"%UZIP%" -o "%STELLA_POOL%\tool\wget-1.11.4-1-bin.zip" -d "%STELLA_APP_TOOL_ROOT%\wget"
-		"%UZIP%" -o "%STELLA_POOL%\tool\wget-1.11.4-1-dep.zip" -d "%STELLA_APP_TOOL_ROOT%\wget" 
+	if "%FORCE%"=="1" call %STELLA_COMMON%\common.bat :del_folder "%STELLA_APP_FEATURE_ROOT%\wget"
+	if not exist "%STELLA_APP_FEATURE_ROOT%\wget\bin\wget.exe" (
+		"%UZIP%" -o "%STELLA_POOL%\feature\wget-1.11.4-1-bin.zip" -d "%STELLA_APP_FEATURE_ROOT%\wget"
+		"%UZIP%" -o "%STELLA_POOL%\feature\wget-1.11.4-1-dep.zip" -d "%STELLA_APP_FEATURE_ROOT%\wget" 
 	) else (
 		echo ** Already installed
 	)
@@ -18,7 +18,7 @@ goto :eof
 :gnumake
 	echo ** Install gnumake
 	set VERSION=3.81
-	set INSTALL_DIR="%STELLA_APP_TOOL_ROOT%\make"
+	set INSTALL_DIR="%STELLA_APP_FEATURE_ROOT%\make"
 	if "%FORCE%"=="1" call %STELLA_COMMON%\common.bat :del_folder "%INSTALL_DIR%"
 	if not exist "%INSTALL_DIR%\bin\make.exe" (
 		set URL=http://downloads.sourceforge.net/project/gnuwin32/make/3.81/make-3.81-bin.zip
@@ -35,9 +35,9 @@ goto :eof
 
 :unzip
 	echo ** Install unzip
-	if "%FORCE%"=="1" call %STELLA_COMMON%\common.bat :del_folder "%STELLA_APP_TOOL_ROOT%\unzip"
-	if not exist "%STELLA_APP_TOOL_ROOT%\unzip\bin\unzip.exe" (
-		call %STELLA_COMMON%\common.bat :copy_folder_content_into "%STELLA_POOL%\tool\unzip-5.51-1-bin" "%STELLA_APP_TOOL_ROOT%\unzip\"
+	if "%FORCE%"=="1" call %STELLA_COMMON%\common.bat :del_folder "%STELLA_APP_FEATURE_ROOT%\unzip"
+	if not exist "%STELLA_APP_FEATURE_ROOT%\unzip\bin\unzip.exe" (
+		call %STELLA_COMMON%\common.bat :copy_folder_content_into "%STELLA_POOL%\feature\unzip-5.51-1-bin" "%STELLA_APP_FEATURE_ROOT%\unzip\"
 	) else (
 		echo ** Already installed
 	)
@@ -45,9 +45,9 @@ goto :eof
 
 :sevenzip
 	echo ** Install sevenzip
-	if "%FORCE%"=="1" call %STELLA_COMMON%\common.bat :del_folder "%STELLA_APP_TOOL_ROOT%\sevenzip"
-	if not exist "%STELLA_APP_TOOL_ROOT%\sevenzip\7z.exe" (
-		call %STELLA_COMMON%\common.bat :copy_folder_content_into "%STELLA_POOL%\tool\sevenzip" "%STELLA_APP_TOOL_ROOT%\sevenzip\"
+	if "%FORCE%"=="1" call %STELLA_COMMON%\common.bat :del_folder "%STELLA_APP_FEATURE_ROOT%\sevenzip"
+	if not exist "%STELLA_APP_FEATURE_ROOT%\sevenzip\7z.exe" (
+		call %STELLA_COMMON%\common.bat :copy_folder_content_into "%STELLA_POOL%\feature\sevenzip" "%STELLA_APP_FEATURE_ROOT%\sevenzip\"
 	) else (
 		echo ** Already installed
 	)
@@ -56,9 +56,9 @@ goto :eof
 
 :patch
 	echo ** Install gnu patch
-	if "%FORCE%"=="1" call %STELLA_COMMON%\common.bat :del_folder "%STELLA_APP_TOOL_ROOT%\patch"
-	if not exist "%STELLA_APP_TOOL_ROOT%\patch\bin\patch.exe" (
-		"%UZIP%" -o "%STELLA_POOL%\tool\patch-2.5.9-7-bin.zip" -d "%STELLA_APP_TOOL_ROOT%\patch"
+	if "%FORCE%"=="1" call %STELLA_COMMON%\common.bat :del_folder "%STELLA_APP_FEATURE_ROOT%\patch"
+	if not exist "%STELLA_APP_FEATURE_ROOT%\patch\bin\patch.exe" (
+		"%UZIP%" -o "%STELLA_POOL%\feature\patch-2.5.9-7-bin.zip" -d "%STELLA_APP_FEATURE_ROOT%\patch"
 	) else (
 		echo ** Already installed
 	)
@@ -67,7 +67,7 @@ goto:eof
 
 :: ------------------------ FEATURES MANAGEMENT-------------------------------
 :init_all_features
-	for %%F in (%TOOL_LIST%) do (
+	for %%F in (%__STELLA_FEATURE_LIST%) do (
 		call :init_feature %%F
 	)
 	echo ** Features initialized : %FEATURE_LIST_ENABLED%
@@ -78,13 +78,11 @@ goto :eof
 	set "_FEATURE=%~1"
 	set "_VAR=%~2"
 
-	call %STELLA_TOOL_RECIPE%\feature_%_FEATURE%.bat :list_%_FEATURE% %_VAR%
-
+	call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :list_%_FEATURE% %_VAR%
 goto :eof
 
 
 :: enable a feature 
-:: call :init_feature feat version
 :init_feature
 	set "_FEATURE=%~1"
 	set "_VER=%~2"
@@ -96,7 +94,7 @@ goto :eof
 	)
 	if "%_flag%"=="" (
 		set FEATURE_PATH=
-		call %STELLA_TOOL_RECIPE%\feature_%_FEATURE%.bat :feature_%_FEATURE% %_VER%
+		call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :feature_%_FEATURE% %_VER%
 		if not "!TEST_FEATURE!"=="0" (
 			set "FEATURE_LIST_ENABLED=!FEATURE_LIST_ENABLED! %_FEATURE%#%_VER%"
 			if not "!FEATURE_PATH!"=="" set "PATH=!FEATURE_PATH!;!PATH!"
@@ -119,7 +117,7 @@ goto :eof
 
 	if "%_flag%"=="" (
 		set FEATURE_PATH=
-		call %STELLA_TOOL_RECIPE%\feature_%_FEATURE%.bat :install_%_FEATURE% %_VER%
+		call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :install_%_FEATURE% %_VER%
 		if not "!TEST_FEATURE!"=="0" (
 			set "FEATURE_LIST_ENABLED=!FEATURE_LIST_ENABLED! %_FEATURE%#!FEATURE_VER!"
 			if not "!FEATURE_PATH!"=="" set "PATH=!FEATURE_PATH!;!PATH!"
@@ -134,7 +132,7 @@ goto :eof
 		set _VER=%f:*#=%
 		set "_FEATURE=%f:#="^&REM #%
 		set FEATURE_PATH=
-		call %STELLA_TOOL_RECIPE%\feature_%_FEATURE%.bat :feature_%_FEATURE% %_VER%
+		call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :feature_%_FEATURE% %_VER%
 		if not "!TEST_FEATURE!"=="0" (
 			if not "!FEATURE_PATH!"=="" set "PATH=!FEATURE_PATH!;!PATH!"
 		)

@@ -68,7 +68,7 @@ REM Bootstrap/auto install mode ------------------
 	set "_provided_path=%~1"
 	if "%IS_STELLA_LINKED%"=="TRUE" (
 		echo ** This app is already linked to a STELLA installation located in !STELLA_ROOT!
-		call !STELLA_ROOT!\tools.bat install default
+		call !STELLA_ROOT!\feature.bat install default
 		@echo off
 	) else (
 
@@ -101,7 +101,7 @@ REM Bootstrap/auto install mode ------------------
 		)
 		call !_stella_install_path!\init.bat
 		@echo off
-		call !_stella_install_path!\tools.bat install default
+		call !_stella_install_path!\feature.bat install default
 		@echo off
 	)
 goto :eof

@@ -10,7 +10,7 @@ function __install_cmake() {
 	local _VER=$1
 	local _DEFAULT_VER="2_8_12"
 
-	mkdir -p $STELLA_APP_TOOL_ROOT/cmake
+	mkdir -p $STELLA_APP_FEATURE_ROOT/cmake
 	if [ "$_VER" == "" ]; then
 		__install_cmake_$_DEFAULT_VER
 	else
@@ -41,8 +41,8 @@ function __install_cmake_2_8_12() {
 
 
 function __feature_cmake_2_8_12() {
-	FEATURE_TEST="$STELLA_APP_TOOL_ROOT/cmake/2_8_12/bin/cmake"
-	FEATURE_RESULT_PATH="$STELLA_APP_TOOL_ROOT/cmake/2_8_12"
+	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/cmake/2_8_12/bin/cmake"
+	FEATURE_RESULT_PATH="$STELLA_APP_FEATURE_ROOT/cmake/2_8_12"
 	FEATURE_RESULT_VER="2_8_12"
 	__feature_cmake_internal
 }
@@ -54,9 +54,9 @@ function __feature_cmake_2_8_12() {
 
 function __install_cmake_internal() {
 	
-	INSTALL_DIR="$STELLA_APP_TOOL_ROOT/cmake/$VER"
-	SRC_DIR="$STELLA_APP_TOOL_ROOT/cmake/$VER/cmake_$VER-src"
-	BUILD_DIR="$STELLA_APP_TOOL_ROOT/cmake/$VER/cmake_$VER-build"
+	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/cmake/$VER"
+	SRC_DIR="$STELLA_APP_FEATURE_ROOT/cmake/$VER/cmake_$VER-src"
+	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/cmake/$VER/cmake_$VER-build"
 
 
 	echo " ** Installing cmake version $VER in $INSTALL_DIR"
@@ -81,7 +81,8 @@ function __install_cmake_internal() {
 		chmod +x $SRC_DIR/bootstrap
 		$SRC_DIR/bootstrap --prefix="$INSTALL_DIR"
 		#cmake "$SRC_DIR" -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
-		make -j$BUILD_JOB 
+		#make -j$BUILD_JOB 
+		make
 		make install
 
 
@@ -107,9 +108,9 @@ function __feature_cmake_internal() {
 
 	if [ ! "$TEST_FEATURE" == "0" ]; then
 		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : cmake in $TEST_FEATURE"
-		CMAKE_CMD="$TEST_FEATURE/bin/$CMAKE_CMD"
-		CMAKE_CMD_VERBOSE="$TEST_FEATURE/bin/$CMAKE_CMD_VERBOSE"
-		CMAKE_CMD_VERBOSE_ULTRA="$TEST_FEATURE/bin/$CMAKE_CMD_VERBOSE_ULTRA"
+		#CMAKE_CMD="$TEST_FEATURE/bin/$CMAKE_CMD"
+		#CMAKE_CMD_VERBOSE="$TEST_FEATURE/bin/$CMAKE_CMD_VERBOSE"
+		#CMAKE_CMD_VERBOSE_ULTRA="$TEST_FEATURE/bin/$CMAKE_CMD_VERBOSE_ULTRA"
 		FEATURE_PATH="$TEST_FEATURE/bin"
 		FEATURE_VER="$FEATURE_RESULT_VER"
 	fi

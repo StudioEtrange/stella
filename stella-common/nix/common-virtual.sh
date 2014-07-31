@@ -1,129 +1,30 @@
 if [ ! "$_STELLA_COMMON_VIRTUAL_INCLUDED_" == "1" ]; then 
 _STELLA_COMMON_VIRTUAL_INCLUDED_=1
 
-function __list_distrib() {
-	echo "$DISTRIB_LIST"
-}
-
-function __list_env() {
-	"$VAGRANT_CMD" global-status
-}
-
-
-function __info_env() {
-	if [ "$ENVNAME" == "" ]; then
-		echo "** ERROR Please specify an env name"
-		return
-	fi
-
-	cd "$VIRTUAL_ENV_ROOT/$ENVNAME"
-	"$VAGRANT_CMD" status
-	"$VAGRANT_CMD" ssh-config
-}
-
-
-function __create_env() {
-	if [ "$ENVNAME" == "" ]; then
-		echo "** ERROR Please specify an env name"
-		return
-	fi
-
-	if [ "$VAGRANT_BOX_NAME" == "" ]; then
-		echo "** Error please select a distribution"
-		return
-	fi
-
-	if [ "$FORCE" == "1" ]; then
-		__destroy_env
-	fi
-
-	if [ -d "$VIRTUAL_ENV_ROOT/$ENVNAME" ]; then
-		echo "** Env $ENVNAME already exist"
-	else
-
-		# Re importing box into vagrant in case of
-		if [ -f "$STELLA_APP_CACHE_DIR/$VAGRANT_BOX_FILENAME" ]; then
-			__import_box_into_vagrant $VAGRANT_BOX_NAME "$STELLA_APP_CACHE_DIR/$VAGRANT_BOX_FILENAME"
-		fi
-
-		[ ! -d "$VIRTUAL_ENV_ROOT/$ENVNAME" ] && mkdir -p "$VIRTUAL_ENV_ROOT/$ENVNAME"
-		
-		cd "$VIRTUAL_ENV_ROOT/$ENVNAME"
-		"$VAGRANT_CMD" init "$VAGRANT_BOX_NAME"
-
-		echo "Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|" >> Vagrantfile
-		echo 'config.vm.synced_folder "../../../.", "/stella"' >> Vagrantfile
-		echo 'config.vm.provider "virtualbox" do |vb|' >> Vagrantfile
-		[ "$VMGUI" == "1" ] && echo 'vb.gui = true' >> Vagrantfile
-		[ ! "$VMGUI" == "1" ] && echo 'vb.gui = false' >> Vagrantfile
-		[ ! "$ENVMEM" == "" ] && echo 'vb.customize ["modifyvm", :id, "--memory", "'$ENVMEM'"]' >> Vagrantfile
-		[ ! "$ENVCPU" == "" ] && echo 'vb.customize ["modifyvm", :id, "--cpus", "'$ENVCPU'"]' >> Vagrantfile
-		echo "end" >> Vagrantfile
-		echo "end" >> Vagrantfile
-
-		echo "** Env $ENVNAME is initialized"
-
-	fi
-}
-
-
-function __run_env() {
-	if [ "$ENVNAME" == "" ]; then
-		echo "** ERROR Please specify an env name"
-		return
-	fi
-	if [ ! -d "$VIRTUAL_ENV_ROOT/$ENVNAME" ]; then
-		echo "** ERROR Env $ENVNAME does not exist"
-		return
-	fi
-	
-
-	cd "$VIRTUAL_ENV_ROOT/$ENVNAME"
-	"$VAGRANT_CMD" up --provider $VIRTUAL_DEFAULT_HYPERVISOR
-
-	echo "** Env $ENVNAME is running"
-	__info_env
-
-	echo "** Now you can CD into $VIRTUAL_ENV_ROOT/$ENVNAME"
-	echo "** and do vagrant ssh"
-	if [ "$LOGIN" == "1" ]; then
-		echo "** You should type 'vagrant ssh' in the new opened command line to get into your VM"
-	fi
-}
-
-
-
-function __destroy_env() {
-	if [ -d "$VIRTUAL_ENV_ROOT/$ENVNAME" ]; then
-		cd "$VIRTUAL_ENV_ROOT/$ENVNAME"
-		"$VAGRANT_CMD" destroy -f
-		cd "$VIRTUAL_ENV_ROOT"
-		__del_folder "$VIRTUAL_ENV_ROOT/$ENVNAME"
-		echo "** Env $ENVNAME is destroyed"
-	fi
-}
-
-
-function __stop_env() {
-	if [ "$ENVNAME" == "" ]; then
-		echo "** ERROR Please specify an env name"
-		return
-	fi
-	if [ ! -d "$VIRTUAL_ENV_ROOT/$ENVNAME" ]; then
-		echo "** ERROR Env $ENVNAME does not exist"
-		return
-	fi
-
-	cd "$VIRTUAL_ENV_ROOT/$ENVNAME"
-	"$VAGRANT_CMD" halt
-
-	echo " ** Env ENVNAME is stopped"
+function __virtual_init_folder() {
+	[ ! -d "$VIRTUAL_WORK_ROOT" ] && mkdir -p "$VIRTUAL_WORK_ROOT"
+	[ ! -d "$VIRTUAL_ENV_ROOT" ] && mkdir -p "$VIRTUAL_ENV_ROOT"
+	[ ! -d "$VIRTUAL_TEMPLATE_ROOT" ] && mkdir -p "$VIRTUAL_TEMPLATE_ROOT"	
 }
 
 
 function __set_matrix() {
 	local _distrib=$1
-	
+
+	PACKER_TEMPLATE=
+	PACKER_TEMPLATE_URI=
+	PACKER_TEMPLATE_URI_PROTOCOL=
+	PACKER_BUILDER=
+	PACKER_PREBUILD_CALLBACK=
+	PACKER_POSTBUILD_CALLBACK=
+	VAGRANT_BOX_NAME=
+	VAGRANT_BOX_FILENAME=
+	VAGRANT_BOX_URI=
+	VAGRANT_BOX_URI_PROTOCOL=
+	VAGRANT_BOX_OUTPUT_DIR=
+	VAGRANT_BOX_USERNAME=
+	VAGRANT_BOX_PASSWORD=
+
 	__get_key "$VIRTUAL_CONF_FILE" "$_distrib" "PACKER_TEMPLATE"
 	__get_key "$VIRTUAL_CONF_FILE" "$_distrib" "PACKER_TEMPLATE_URI"
 	__get_key "$VIRTUAL_CONF_FILE" "$_distrib" "PACKER_TEMPLATE_URI_PROTOCOL"
@@ -150,6 +51,176 @@ function __prebuilt_boot2docker() {
 	"$VAGRANT_CMD" destroy --force
 }
 
+
+# ------------------------------------ ADMINISTRATION OF ENV WITH VAGRANT -----------------------
+function __list_env() {
+	"$VAGRANT_CMD" global-status
+}
+
+
+function __info_env() {
+	local _env_id=$1
+	if [ "$_env_id" == "" ]; then
+		echo "** ERROR Please specify an env id"
+		return
+	fi
+	__virtual_init_folder
+
+	cd "$VIRTUAL_ENV_ROOT/$_env_id"
+	"$VAGRANT_CMD" status
+	"$VAGRANT_CMD" ssh-config
+}
+
+# ARG3 : option
+#	HEAD : hypervisor with gui ON (default OFF)
+#	MEM XXXX : size of memory in Mo
+#	CPU XX : nb of cpu
+function __create_env() {
+	local _env_id=$1
+	local _distrib_id=$2
+	local _opt=$3
+
+	local _opt_head=OFF
+	local _flag_mem=OFF
+	local _flag_cpu=OFF
+	local _mem=
+	local _cpu=
+	for o in $OPT; do 
+		if [ "$_flag_mem" == "ON" ]; then
+			_mem=$o
+			_flag_mem=OFF
+		fi
+		if [ "$_flag_cpu" == "ON" ]; then
+			_cpu=$o
+			_mem=$o
+		fi
+		[ "$o" == "HEAD" ] && _opt_head=ON
+		[ "$o" == "MEM" ] && _flag_mem=ON
+		[ "$o" == "CPU" ] && _flag_cpu=ON
+	done
+
+
+	if [ "$_env_id" == "" ]; then
+		echo "** ERROR Please specify an env id"
+		return
+	fi
+
+	__set_matrix $_distrib_id
+
+	if [ "$VAGRANT_BOX_NAME" == "" ]; then
+		echo "** Error please select a distribution id"
+		return
+	fi
+
+	__virtual_init_folder
+
+	if [ "$FORCE" == "1" ]; then
+		__destroy_env $_env_id
+	fi
+
+	if [ -d "$VIRTUAL_ENV_ROOT/$_env_id" ]; then
+		echo "** Env $_env_id already exist"
+	else
+
+		# Re importing box into vagrant in case of
+		if [ -f "$STELLA_APP_CACHE_DIR/$VAGRANT_BOX_FILENAME" ]; then
+			__import_box_into_vagrant $VAGRANT_BOX_NAME "$STELLA_APP_CACHE_DIR/$VAGRANT_BOX_FILENAME"
+		fi
+
+		[ ! -d "$VIRTUAL_ENV_ROOT/$_env_id" ] && mkdir -p "$VIRTUAL_ENV_ROOT/$_env_id"
+		
+		cd "$VIRTUAL_ENV_ROOT/$_env_id"
+		"$VAGRANT_CMD" init "$VAGRANT_BOX_NAME"
+
+		echo "Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|" >> Vagrantfile
+		echo 'config.vm.synced_folder "../../../.", "/stella"' >> Vagrantfile
+		echo 'config.vm.provider "virtualbox" do |vb|' >> Vagrantfile
+		[ "$_opt_head" == "ON" ] && echo 'vb.gui = true' >> Vagrantfile
+		[ "$_opt_head" == "OFF" ] && echo 'vb.gui = false' >> Vagrantfile
+		[ ! "$_mem" == "" ] && echo 'vb.customize ["modifyvm", :id, "--memory", "'$_mem'"]' >> Vagrantfile
+		[ ! "$_cpu" == "" ] && echo 'vb.customize ["modifyvm", :id, "--cpus", "'$_cpu'"]' >> Vagrantfile
+		echo "end" >> Vagrantfile
+		echo "end" >> Vagrantfile
+
+		echo "** Env $_env_id is initialized"
+
+	fi
+}
+
+
+function __run_env() {
+	local _env_id=$1
+	local _login_into=$2
+
+	if [ "$_env_id" == "" ]; then
+		echo "** ERROR Please specify an env id"
+		return
+	fi
+
+	__virtual_init_folder
+
+	if [ ! -d "$VIRTUAL_ENV_ROOT/$_env_id" ]; then
+		echo "** ERROR Env $_env_id does not exist"
+		return
+	fi
+	
+
+	cd "$VIRTUAL_ENV_ROOT/$_env_id"
+	"$VAGRANT_CMD" up --provider $VIRTUAL_DEFAULT_HYPERVISOR
+
+	echo "** Env $_env_id is running"
+	__info_env
+
+	echo "** Now you can CD into $VIRTUAL_ENV_ROOT/$_env_id"
+	echo "** and do vagrant ssh"
+	if [ "$_login_into" == "TRUE" ]; then
+		cd "$VIRTUAL_ENV_ROOT/$_env_id"
+		"$VAGRANT_CMD" ssh
+	fi
+}
+
+
+
+function __destroy_env() {
+	local _env_id=$1
+
+	if [ -d "$VIRTUAL_ENV_ROOT/$_env_id" ]; then
+		cd "$VIRTUAL_ENV_ROOT/$_env_id"
+		"$VAGRANT_CMD" destroy -f
+		cd "$VIRTUAL_ENV_ROOT"
+		__del_folder "$VIRTUAL_ENV_ROOT/$_env_id"
+		echo "** Env $_env_id is destroyed"
+	fi
+}
+
+
+function __stop_env() {
+	local _env_id=$1
+
+	if [ "$_env_id" == "" ]; then
+		echo "** ERROR Please specify an env id"
+		return
+	fi
+	__virtual_init_folder
+
+	if [ ! -d "$VIRTUAL_ENV_ROOT/$_env_id" ]; then
+		echo "** ERROR Env $_env_id does not exist"
+		return
+	fi
+
+	cd "$VIRTUAL_ENV_ROOT/$_env_id"
+	"$VAGRANT_CMD" halt
+
+	echo " ** Env $_env_id is stopped"
+}
+
+
+
+
+
+
+# ------------------------------------ ADMINISTRATION OF BOX WITH PACKER -----------------------
+
 function __import_box_into_vagrant() {
 	local _BOX_NAME=$1
 	local _BOX_FILEPATH="$2"
@@ -162,7 +233,15 @@ function __import_box_into_vagrant() {
 	fi
 }
 
+function __list_distrib() {
+	echo "$__STELLA_DISTRIB_LIST"
+}
+
 function __get_box() {
+	local _distrib_id=$1
+
+	__set_matrix $_distrib_id
+
 	if [ "$VAGRANT_BOX_URI" == "" ]; then
 		echo "** Error We do not have any URL for a prebuilt box corresponding to this distribution"
 		return
@@ -170,7 +249,7 @@ function __get_box() {
 	[ "$FORCE" ] && (
 		rm -f "$STELLA_APP_CACHE_DIR/$VAGRANT_BOX_FILENAME"
 	)
-	__get_ressource "$DISTRIB" "$VAGRANT_BOX_URI" "$VAGRANT_BOX_URI_PROTOCOL"
+	__get_ressource "$_distrib_id" "$VAGRANT_BOX_URI" "$VAGRANT_BOX_URI_PROTOCOL"
 	__import_box_into_vagrant $VAGRANT_BOX_NAME "$STELLA_APP_CACHE_DIR/$VAGRANT_BOX_FILENAME"
 }
 
@@ -179,11 +258,18 @@ function __list_box() {
 }
 
 function __create_box() {
+	local _distrib_id=$1
+
+	__set_matrix $_distrib_id
 	
+
+
 	if [ "$PACKER_TEMPLATE" == "" ]; then
 		echo "** Error please select a distribution"
 		return
 	fi
+
+	__virtual_init_folder
 
 	echo "** Packing a vagrant box for $VIRTUAL_DEFAULT_HYPERVISOR with Packer"
 		

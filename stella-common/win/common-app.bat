@@ -104,21 +104,24 @@ goto :eof
 	)
 goto :eof
 
+:: ARG 1 Return var
 :select_app
 	set "_app_path="
 
-	set "PROPERTIES="
+	set "_properties_file="
 
 	if "%_app_path%"=="" (
-		set "_app_path=%_CURRENT_RUNNING_DIR%"
+		set "_app_path=%_STELLA_CURRENT_RUNNING_DIR%"
 	)
 
 
 	if exist "%_app_path%\.stella" (
-		set "PROPERTIES=%_app_path%\.stella"
+		set "_properties_file=%_app_path%\.stella"
 		set "STELLA_APP_ROOT=%_app_path%"
 	)
 	
+	set "%~1=!_properties_file!"
+
 goto :eof
 
 :init_app
@@ -127,14 +130,14 @@ goto :eof
 	set "_workroot=%~3"
 	set "_cachedir=%~4"
 
-	call %STELLA_COMMON%\common.bat :rel_to_abs_path "_approot" "%_approot%" "%_CURRENT_RUNNING_DIR%"
+	call %STELLA_COMMON%\common.bat :rel_to_abs_path "_approot" "%_approot%" "%_STELLA_CURRENT_RUNNING_DIR%"
 	if not exist "%_approot%" mkdir "%_approot%"
 
 
 	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_STELLA_ROOT" "%STELLA_ROOT%" "%_approot%"
-	> "%_approot%\.stella-link.bat" ECHO(@set _STELLA_CURRENT_FILE_DIR=%%~dp0
-	>> "%_approot%\.stella-link.bat" ECHO(@set _STELLA_CURRENT_FILE_DIR=%%_STELLA_CURRENT_FILE_DIR:~0,-1%%
-	>> "%_approot%\.stella-link.bat" ECHO(@set STELLA_ROOT=%%_STELLA_CURRENT_FILE_DIR%%\%_STELLA_ROOT%
+	> "%_approot%\.stella-link.bat" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%~dp0
+	>> "%_approot%\.stella-link.bat" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%_STELLA_LINK_CURRENT_FILE_DIR:~0,-1%%
+	>> "%_approot%\.stella-link.bat" ECHO(@set STELLA_ROOT=%%_STELLA_LINK_CURRENT_FILE_DIR%%\%_STELLA_ROOT%
 
 	copy /y "%STELLA_POOL%\stella-template.bat" "%_approot%\stella.bat"
 
@@ -142,72 +145,116 @@ goto :eof
 
 	copy /y "%STELLA_ROOT%\example-app-properties.stella" "%_approot%\example-app-properties.stella"
 
-	set "PROPERTIES=%_approot%\.stella"
-	if exist "%PROPERTIES%" (
+	set "_STELLA_APP_PROPERTIES_FILE=%_approot%\.stella"
+	if exist "%_STELLA_APP_PROPERTIES_FILE%" (
 		echo ** Properties file already exists
 	) else (
-		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "APP_NAME" "%_app_name%"
-		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "APP_WORK_ROOT" "%_workroot%"
-		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "APP_CACHE_DIR" "%_cachedir%"
-		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "DATA_LIST" ""
-		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "ASSETS_LIST" ""
-		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "ENV_LIST" ""
-		call %STELLA_COMMON%\common.bat :add_key "%PROPERTIES%" "STELLA" "INFRA_LIST" ""
+		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_NAME" "%_app_name%"
+		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_WORK_ROOT" "%_workroot%"
+		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_CACHE_DIR" "%_cachedir%"
+		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "DATA_LIST" ""
+		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "ASSETS_LIST" ""
+		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "ENV_LIST" ""
+		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "INFRA_LIST" ""
 	)
 goto :eof
 
 
 :: extract properties
 :get_all_properties
+	set "_properties_file=%~1"
 
-	if not exist "%PROPERTIES%" (
+	if not exist "%_properties_file%" (
 		goto :eof
 	)
 
 	REM STELLA VARs
-	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "APP_NAME"
-	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "APP_WORK_ROOT" "PREFIX"
-	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "APP_CACHE_DIR" "PREFIX"
-	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "DATA_LIST" "PREFIX" "PREFIX"
-	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "ASSETS_LIST" "PREFIX"
-	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "ENV_LIST" "PREFIX"
-	call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "STELLA" "INFRA_LIST" "PREFIX"
+	call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "STELLA" "APP_NAME" "PREFIX"
+	call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "STELLA" "APP_WORK_ROOT" "PREFIX"
+	call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "STELLA" "APP_CACHE_DIR" "PREFIX"
+	call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "STELLA" "DATA_LIST" "PREFIX" "PREFIX"
+	call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "STELLA" "ASSETS_LIST" "PREFIX"
+	call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "STELLA" "ENV_LIST" "PREFIX"
+	call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "STELLA" "INFRA_LIST" "PREFIX"
+
+	call :get_data_properties "!STELLA_DATA_LIST!"
+	call :get_assets_properties "!STELLA_ASSETS_LIST!"
+	call :get_infra_properties "!STELLA_INFRA_LIST!"
+	call :get_env_properties "!STELLA_ENV_LIST!"
+
+goto :eof
+
+:get_data_properties
+	set "_properties_file=%~1"
+	set "_data_list=%~2"
+
+	if not exist "%_properties_file%" (
+		goto :eof
+	)
 
 	REM DATA
-	for %%A in (!STELLA_DATA_LIST!) do (
-		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" DATA_NAMESPACE "PREFIX"
-		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" DATA_ROOT "PREFIX"
-		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" DATA_OPTIONS "PREFIX"
-		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" DATA_NAME "PREFIX"
-		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" DATA_URI "PREFIX"
-		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" DATA_GET_PROTOCOL "PREFIX"
+	for %%A in (!_data_list!) do (
+		call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "%%A" DATA_NAMESPACE "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "%%A" DATA_ROOT "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "%%A" DATA_OPTIONS "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "%%A" DATA_NAME "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "%%A" DATA_URI "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "%%A" DATA_GET_PROTOCOL "PREFIX"
+	)
+goto :eof
+
+:get_assets_properties
+	set "_properties_file=%~1"
+	set "_assets_list=%~2"
+
+	if not exist "%_properties_file%" (
+		goto :eof
 	)
 
 	REM ASSETS
-	for %%A in (!STELLA_ASSETS_LIST!) do (
-		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" ASSETS_MAIN_PACKAGE "PREFIX"
-		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" ASSETS_OPTIONS "PREFIX"
-		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" ASSETS_NAME "PREFIX"
-		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" ASSETS_URI "PREFIX"
-		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" ASSETS_GET_PROTOCOL "PREFIX"
+	for %%A in (!_assets_list!) do (
+		call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "%%A" ASSETS_MAIN_PACKAGE "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "%%A" ASSETS_OPTIONS "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "%%A" ASSETS_NAME "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "%%A" ASSETS_URI "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "%%A" ASSETS_GET_PROTOCOL "PREFIX"
+	)
+goto :eof
+
+:get_infra_properties
+	set "_properties_file=%~1"
+	set "_infra_list=%~2"
+
+	if not exist "%_properties_file%" (
+		goto :eof
+	)
+
+	REM INFRA
+	for %%A in (!_infra_list!) do (
+		call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "%%A" INFRA_NAME "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "%%A" INFRA_DISTRIB "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "%%A" INFRA_CPU "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "%%A" INFRA_MEM "PREFIX"
+	)
+goto :eof
+
+:: Note : call get_infra_properties first
+:get_env_properties
+	set "_properties_file=%~1"
+	set "_env_list=%~2"
+
+	if not exist "%_properties_file%" (
+		goto :eof
 	)
 
 	REM ENV
-	for %%A in (!STELLA_ENV_LIST!) do (
-		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" ENV_NAME "PREFIX"
-		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" INFRA_ID "PREFIX"
-	)
-	
-	REM INFRA
-	for %%A in (!STELLA_INFRA_LIST!) do (
-		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" INFRA_NAME "PREFIX"
-		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" INFRA_DISTRIB "PREFIX"
-		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" INFRA_CPU "PREFIX"
-		call %STELLA_COMMON%\common.bat :get_key "%PROPERTIES%" "%%A" INFRA_MEM "PREFIX"
+	for %%A in (!_env_list!) do (
+		call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "%%A" ENV_NAME "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "%%A" INFRA_ID "PREFIX"
 	)
 
 	REM INFRA-ENV
-	for %%A in (!STELLA_ENV_LIST!) do (
+	for %%A in (!_env_list!) do (
 		set "_artefact_infra_id=!%%A_INFRA_ID!"
 		if not "!_artefact_infra_id!"=="current" (
 			set _artefact_distrib=!_artefact_infra_id!_INFRA_DISTRIB
@@ -253,9 +300,9 @@ goto :eof
 		if not "!_env_infra_id!"=="current" (
 			echo * Setting up env '!_env_name! [%%A]' with infra '[!_env_infra_id!]' - using !_env_cpu! cpu and !_env_mem! Mo - built with '!_env_distrib!', a !_env_os! operating system
 			
-			call %STELLA_ROOT%\virtual.bat get-box -distrib=!_env_distrib!
-			call %STELLA_ROOT%\virtual.bat create-box -distrib=!_env_distrib!
-			call %STELLA_ROOT%\virtual.bat create-env -distrib=!_env_distrib! -envname=%%A -envcpu=!_env_cpu! -envmem=!_env_mem!
+			call %STELLA_ROOT%\virtual.bat get-box !_env_distrib!
+			call %STELLA_ROOT%\virtual.bat create-box !_env_distrib!
+			call %STELLA_ROOT%\virtual.bat create-env "%%A#!_env_distrib!" -vcpu=!_env_cpu! -vmem=!_env_mem!
 			@echo off
 			echo * Now you can use your env using %STELLA_ROOT%\virtual.bat OR with Vagrant
 		) else (

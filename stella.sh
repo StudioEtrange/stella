@@ -10,17 +10,18 @@ function usage() {
 	echo "List of commands"
 	echo " o-- application management :"
 	echo " L     app init <application name> [--approot=<path>] [--workroot=<abs or relative path to approot>] [--cachedir=<abs or relative path to approot>]"
-	echo " L     app get-data get-assets update-data update-assets revert-data revert-assets <data id|assets id|all>"
+	echo " L     app get-data|get-assets|update-data|update-assets|revert-data|revert-assets <data id|assets id|all>"
 	echo " L     app setup-env <env id|all> : download, build, deploy and run virtual environment based on app properties"
-	echo " o-- tools management :"
-	echo " L     tools install default : install default tools"
-	echo " L     tools install <tool name#version> : install a tools. version is optionnal"
-	echo " L     tools list <all|tool name> : list all available tools OR available versions of a tool"
+	echo " o-- feature management :"
+	echo " L     feature install default : install minimal default feature for Stella"
+	echo " L     feature install <feature name> [--vers=<version>] : install a feature. Version is optional"
+	echo " L     feature list <all|feature name> : list all available feature OR available versions of a feature"
 	echo " o-- virtual management :"
-	echo " L     virtual create-env <env id#distrib id> : create a new environment from a generic box prebuilt with a specific distribution"
-	echo " L     virtual run-env stop-env destroy-env <env id> : manage environment"
-	echo " L     virtual create-box get-box destroy-box <distrib id> : manage generic boxes built with a specific distribution"
-	echo " L     virtual list <env|box|distrib> : list existing available environment, box and distribution"
+	echo " L     virtual create-env <env id#distrib id> [--head] [--vmem=xxxx] [--vcpu=xx] : create a new environment from a generic box prebuilt with a specific distribution"
+    echo " L     virtual run-env <env id> [--login] : manage environment"
+    echo " L     virtual stop-env|destroy-env <env id> : manage environment"
+    echo " L     virtual create-box|get-box <distrib id> : manage generic boxes built with a specific distribution"
+    echo " L     virtual list <env|box|distrib> : list existing available environment, box and distribution"
 	echo " o-- stella api :"
 	echo " L     api list all : list public functions of stella api"
 }
@@ -30,9 +31,9 @@ function usage() {
 
 # arguments
 PARAMETERS="
-DOMAIN=                          'domain'     		a           'app tools virtual api'         										   				Action domain.
-ACTION=                         'action'   					a           'init get-data get-assets update-data update-assets revert-data revert-assets setup-env install list create-env run-env stop-env destroy-env create-box get-box destroy-box'         	Action to compute.
-ID=							 ''								s 			'' 						Data or Assets or Env or Box ID.
+DOMAIN=                          'domain'     		a           'app feature virtual api'         										   				Action domain.
+ACTION=                         'action'   					a           'init get-data get-assets update-data update-assets revert-data revert-assets setup-env install list create-env run-env stop-env destroy-env create-box get-box'         	Action to compute.
+ID=							 ''								s 			'' 						Feature ID or Data or Assets or Env or Distrib ID.
 "
 OPTIONS="
 FORCE=''                       	'f'    		''            		b     		0     		'1'           			Force operation.
@@ -40,10 +41,11 @@ ARCH='x64'						'a'			''					a			0			'x86 x64'			Select architecture.
 APPROOT=''						'' 			'path'				s 			0			'' 						App path (default current)
 WORKROOT='' 					'' 			'path'				s 			0			''						Work app path (default equal to app path)
 CACHEDIR=''						'' 			'path'				s 			0			''						Cache folder path
-ENVCPU=''						''			''					i 			0		''						Nb CPU attributed to the virtual env.
-ENVMEM=''							''			''					i 			0		''						Memory attributed to the virtual env.
-VMGUI=''							''			''					b			0		'1'						Hyperviser head.
-LOGIN=''							'l'			''					b			0		'1'						Autologin in env.
+VCPU=''							''			''					i 			0		''						Nb CPU attributed to the virtual env.
+VMEM=''							''			''					i 			0		''						Memory attributed to the virtual env.
+HEAD=''							''			''					b			0		'1'						Active hyperviser head.
+LOGIN=''						'l'			''					b			0		'1'						Autologin in env.
+VERS=''							''			'version'			s 			0 		''						Feature version.
 "
 
 __argparse "$0" "$OPTIONS" "$PARAMETERS" "Lib Stella" "$(usage)" "" "$@"
@@ -57,7 +59,7 @@ if [ "$DOMAIN" == "app" ]; then
 	if [ "$ACTION" == "init" ]; then
 
 		if [ "$APPROOT" == "" ]; then
-			APPROOT=$_CURRENT_RUNNING_DIR
+			APPROOT=$_STELLA_CURRENT_RUNNING_DIR
 		fi
 		if [ "$WORKROOT" == "" ]; then
 			WORKROOT=.
@@ -69,10 +71,10 @@ if [ "$DOMAIN" == "app" ]; then
 		__init_app $ID $APPROOT $WORKROOT $CACHEDIR
 
 		cd $APPROOT
-		$STELLA_ROOT/tools.sh install default
+		$STELLA_ROOT/feature.sh install default
 	else
 
-		if [ ! -f "$PROPERTIES" ]; then
+		if [ ! -f "$_STELLA_APP_PROPERTIES_FILE" ]; then
 			echo "** ERROR properties file does not exist"
 			exit
 		fi
@@ -119,25 +121,18 @@ if [ "$DOMAIN" == "app" ]; then
 fi
 
 
-# --------------- TOOLS ----------------------------
-if [ "$DOMAIN" == "tools" ]; then
-	_tools_options="--arch=$ARCH"
+# --------------- FEATURE ----------------------------
+if [ "$DOMAIN" == "feature" ]; then
+	_feature_options=
 	if [ "$FORCE" == "1" ]; then
-		_tools_options="$_tools_options -f"
+		_feature_options="$_feature_options -f"
+	fi
+	if [ ! "$VERS" == "" ]; then
+		_feature_options="$_feature_options $VERS"
 	fi
 	
-	if [ "$ACTION" == "install" ]; then
-		VERS=
-		if [[ ${ID} =~ "#" ]]; then
-			VERS=${ID##*#}
-			ID=${ID%#*}
-		fi
-		$STELLA_ROOT/tools.sh install $ID --vers=$VERS $_tools_options
-	fi
+	$STELLA_ROOT/feature.sh $ACTION $ID $_feature_options
 
-	if [ "$ACTION" == "list" ]; then
-		$STELLA_ROOT/tools.sh list $ID $_tools_options
-	fi
 fi
 
 
@@ -156,67 +151,21 @@ if [ "$DOMAIN" == "virtual" ]; then
 	if [ "$FORCE" == "1" ]; then
 		_virtual_options="$_virtual_options -f"
 	fi
-	if [ "$VMGUI" == "1" ]; then
-		_virtual_options="$_virtual_options --vmgui"
+	if [ "$HEAD" == "1" ]; then
+		_virtual_options="$_virtual_options --head"
 	fi
 	if [ "$LOGIN" == "1" ]; then
 		_virtual_options="$_virtual_options -l"
 	fi
-	if [ ! "$ENVCPU" == "" ]; then
-		_virtual_options="$_virtual_options --envcpu=$ENVCPU"
+	if [ ! "$VCPU" == "" ]; then
+		_virtual_options="$_virtual_options --vcpu=$VCPU"
 	fi
-	if [ ! "$ENVMEM" == "" ]; then
-		_virtual_options="$_virtual_options --envmem=$ENVMEM"
-	fi
-
-	if [ "$ACTION" == "list" ]; then
-		if [ "$ID" == "env" ]; then
-			$STELLA_ROOT/virtual.sh list-env $_virtual_options
-		fi
-		if [ "$ID" == "box" ]; then
-			$STELLA_ROOT/virtual.sh list-box $_virtual_options
-		fi
-		if [ "$ID" == "distrib" ]; then
-			$STELLA_ROOT/virtual.sh list-distrib $_virtual_options
-		fi
+	if [ ! "$VMEM" == "" ]; then
+		_virtual_options="$_virtual_options --vmem=$VMEM"
 	fi
 
-	if [ "$ACTION" == "create-env" ]; then
-		DISTRIB=
-		if [[ ${ID} =~ "#" ]]; then
-			DISTRIB=${ID##*#}
-			ID=${ID%#*}
-		fi
-		$STELLA_ROOT/virtual.sh create-env --envname=$ID --distrib=$DISTRIB $_virtual_options
-	fi
-
-	if [ "$ACTION" == "run-env" ]; then
-		$STELLA_ROOT/virtual.sh run-env --envname=$ID $_virtual_options
-	fi
-
-	if [ "$ACTION" == "stop-env" ]; then
-		$STELLA_ROOT/virtual.sh stop-env --envname=$ID $_virtual_options
-	fi
-
-	if [ "$ACTION" == "destroy-env" ]; then
-		$STELLA_ROOT/virtual.sh destroy-env --envname=$ID $_virtual_options
-	fi
-
-	if [ "$ACTION" == "info-env" ]; then
-		$STELLA_ROOT/virtual.sh info-env --envname=$ID $_virtual_options
-	fi
-
-	if [ "$ACTION" == "create-box" ]; then
-		$STELLA_ROOT/virtual.sh create-box --distrib=$ID $_virtual_options
-	fi
-
-	if [ "$ACTION" == "get-box" ]; then
-		$STELLA_ROOT/virtual.sh get-box --distrib=$ID $_virtual_options
-	fi
-
-	if [ "$ACTION" == "destroy-box" ]; then
-		$STELLA_ROOT/virtual.sh destroy-box --distrib=$ID $_virtual_options
-	fi
+	$STELLA_ROOT/virtual.sh $ACTION $ID $_virtual_options
+	
 fi
 
 

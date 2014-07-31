@@ -10,17 +10,18 @@ _STELLA_COMMON_APP_INCLUDED_=1
 function __select_app() {
 	local _app_path=
 
-	PROPERTIES=
+	local _properties_file=
 
 	if [ "$_app_path" == "" ]; then
 		_app_path=$_STELLA_CURRENT_RUNNING_DIR
 	fi
 
 	if [ -f "$_app_path/.stella" ]; then
-		PROPERTIES="$_app_path/.stella"
+		_properties_file="$_app_path/.stella"
 		STELLA_APP_ROOT=$_app_path
 	fi
 	
+	echo $_properties_file
 
 }
 
@@ -30,7 +31,7 @@ function __init_app() {
 	local _workroot=$3
 	local _cachedir=$4
 
-	_approot=$(__rel_to_abs_path "$_approot" "$_CURRENT_RUNNING_DIR")
+	_approot=$(__rel_to_abs_path "$_approot" "$_STELLA_CURRENT_RUNNING_DIR")
 	mkdir -p $_approot
 
 	_stella_root=$(__abs_to_rel_path "$STELLA_ROOT" "$_approot")
@@ -46,69 +47,107 @@ function __init_app() {
 
 	cp -f "$STELLA_ROOT/example-app-properties.stella" "$_approot/example-app-properties.stella"
 
-	PROPERTIES="$_approot/.stella"
-	if [ -f "$PROPERTIES" ]; then
+	_STELLA_APP_PROPERTIES_FILE="$_approot/.stella"
+	if [ -f "$_STELLA_APP_PROPERTIES_FILE" ]; then
 		echo " ** Properties file already exist"
 	else
-		__add_key "$PROPERTIES" "STELLA" "APP_NAME" "$_app_name"
-		__add_key "$PROPERTIES" "STELLA" "APP_WORK_ROOT" "$_workroot"
-		__add_key "$PROPERTIES" "STELLA" "APP_CACHE_DIR" "$_cachedir"
-		__add_key "$PROPERTIES" "STELLA" "DATA_LIST"
-		__add_key "$PROPERTIES" "STELLA" "ASSETS_LIST"
-		__add_key "$PROPERTIES" "STELLA" "ENV_LIST"
-		__add_key "$PROPERTIES" "STELLA" "INFRA_LIST"
+		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_NAME" "$_app_name"
+		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_WORK_ROOT" "$_workroot"
+		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_CACHE_DIR" "$_cachedir"
+		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "DATA_LIST"
+		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "ASSETS_LIST"
+		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "ENV_LIST"
+		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "INFRA_LIST"
 	fi
 }
 
 # extract APP properties
 function __get_all_properties() {
+	local _properties_file=$1
 
-	if [ -f "$PROPERTIES" ]; then
-			
+	if [ -f "$_properties_file" ]; then
+
 		# STELLA VARs
-		__get_key "$PROPERTIES" "STELLA" "APP_NAME"
-		__get_key "$PROPERTIES" "STELLA" "APP_WORK_ROOT" "PREFIX"
-		__get_key "$PROPERTIES" "STELLA" "APP_CACHE_DIR" "PREFIX"
-		__get_key "$PROPERTIES" "STELLA" "DATA_LIST" "PREFIX"
-		__get_key "$PROPERTIES" "STELLA" "ASSETS_LIST" "PREFIX"
-		__get_key "$PROPERTIES" "STELLA" "ENV_LIST" "PREFIX"
-		__get_key "$PROPERTIES" "STELLA" "INFRA_LIST" "PREFIX"
+		__get_key "$_properties_file" "STELLA" "APP_NAME" "PREFIX"
+		__get_key "$_properties_file" "STELLA" "APP_WORK_ROOT" "PREFIX"
+		__get_key "$_properties_file" "STELLA" "APP_CACHE_DIR" "PREFIX"
+		__get_key "$_properties_file" "STELLA" "DATA_LIST" "PREFIX"
+		__get_key "$_properties_file" "STELLA" "ASSETS_LIST" "PREFIX"
+		__get_key "$_properties_file" "STELLA" "ENV_LIST" "PREFIX"
+		__get_key "$_properties_file" "STELLA" "INFRA_LIST" "PREFIX"
 
-		# DATA
-		for a in $STELLA_DATA_LIST; do
-			__get_key "$PROPERTIES" "$a" DATA_NAMESPACE "PREFIX"
-			__get_key "$PROPERTIES" "$a" DATA_ROOT "PREFIX"
-			__get_key "$PROPERTIES" "$a" DATA_OPTIONS "PREFIX"
-			__get_key "$PROPERTIES" "$a" DATA_NAME "PREFIX"
-			__get_key "$PROPERTIES" "$a" DATA_URI "PREFIX"
-			__get_key "$PROPERTIES" "$a" DATA_GET_PROTOCOL "PREFIX"
-		done
+		__get_data_properties "$_properties_file" "$STELLA_DATA_LIST"
+		__get_assets_properties "$_properties_file" "$STELLA_ASSETS_LIST"
+		__get_infra_properties "$_properties_file" "$STELLA_INFRA_LIST"
+		__get_env_properties "$_properties_file" "$STELLA_ENV_LIST"
+	fi
+}
+
+function __get_data_properties() {
+		local _properties_file=$1
+		local _list=$2
+
+		if [ -f "$_properties_file" ]; then
+
+			# DATA
+			for a in $_list; do
+				__get_key "$_properties_file" "$a" DATA_NAMESPACE "PREFIX"
+				__get_key "$_properties_file" "$a" DATA_ROOT "PREFIX"
+				__get_key "$_properties_file" "$a" DATA_OPTIONS "PREFIX"
+				__get_key "$_properties_file" "$a" DATA_NAME "PREFIX"
+				__get_key "$_properties_file" "$a" DATA_URI "PREFIX"
+				__get_key "$_properties_file" "$a" DATA_GET_PROTOCOL "PREFIX"
+			done
+		fi
+}
+
+function __get_assets_properties() {
+	local _properties_file=$1
+	local _list=$2
+
+	if [ -f "$_properties_file" ]; then
 
 		# ASSETS
-		for a in $STELLA_ASSETS_LIST; do
-			__get_key "$PROPERTIES" "$a" ASSETS_MAIN_PACKAGE "PREFIX"
-			__get_key "$PROPERTIES" "$a" ASSETS_OPTIONS "PREFIX"
-			__get_key "$PROPERTIES" "$a" ASSETS_NAME "PREFIX"
-			__get_key "$PROPERTIES" "$a" ASSETS_URI "PREFIX"
-			__get_key "$PROPERTIES" "$a" ASSETS_GET_PROTOCOL "PREFIX"
+		for a in $_list; do
+			__get_key "$_properties_file" "$a" ASSETS_MAIN_PACKAGE "PREFIX"
+			__get_key "$_properties_file" "$a" ASSETS_OPTIONS "PREFIX"
+			__get_key "$_properties_file" "$a" ASSETS_NAME "PREFIX"
+			__get_key "$_properties_file" "$a" ASSETS_URI "PREFIX"
+			__get_key "$_properties_file" "$a" ASSETS_GET_PROTOCOL "PREFIX"
 		done
+	fi
+}
 
-		# ENV
-		for a in $STELLA_ENV_LIST; do
-			__get_key "$PROPERTIES" "$a" ENV_NAME "PREFIX"
-			__get_key "$PROPERTIES" "$a" INFRA_ID "PREFIX"
-		done
-		
+function __get_infra_properties() {
+	local _properties_file=$1
+	local _list=$2
+
+	if [ -f "$_properties_file" ]; then
+
 		# INFRA
-		for a in $STELLA_INFRA_LIST; do
-			__get_key "$PROPERTIES" "$a" INFRA_NAME "PREFIX"
-			__get_key "$PROPERTIES" "$a" INFRA_DISTRIB "PREFIX"
-			__get_key "$PROPERTIES" "$a" INFRA_CPU "PREFIX"
-			__get_key "$PROPERTIES" "$a" INFRA_MEM "PREFIX"
+		for a in $_list; do
+			__get_key "$_properties_file" "$a" INFRA_NAME "PREFIX"
+			__get_key "$_properties_file" "$a" INFRA_DISTRIB "PREFIX"
+			__get_key "$_properties_file" "$a" INFRA_CPU "PREFIX"
+			__get_key "$_properties_file" "$a" INFRA_MEM "PREFIX"
+		done
+	fi
+}
+
+# NOTE : call __get_infra_properties first
+function __get_env_properties() {
+	local _properties_file=$1
+	local _list=$2
+
+	if [ -f "$_properties_file" ]; then
+		# ENV
+		for a in $_list; do
+			__get_key "$_properties_file" "$a" ENV_NAME "PREFIX"
+			__get_key "$_properties_file" "$a" INFRA_ID "PREFIX"
 		done
 
 		# INFRA-ENV
-		for a in $STELLA_ENV_LIST; do
+		for a in $_list; do
 			_artefact_infra_id="$a"_INFRA_ID
 			_artefact_infra_id=${!_artefact_infra_id}
 			# eval "$a"_INFRA_ID=$_artefact_infra_id
@@ -119,10 +158,10 @@ function __get_all_properties() {
 			else
 				_artefact_distrib="$_artefact_infra_id"_INFRA_DISTRIB
 				eval "$a"_DISTRIB=${!_artefact_distrib}
-				eval "$a"_OS='$(get_os_from_distro ${!_artefact_distrib})'
-				eval "$a"_PLATFORM='$(get_platform_from_os ${!_artefact_os})'
+				eval "$a"_OS='$(__get_os_from_distro ${!_artefact_distrib})'
+				eval "$a"_PLATFORM='$(__get_platform_from_os ${!_artefact_os})'
 				_artefact_platform="$a"_PLATFORM
-				eval "$a"_PLATFORM_SUFFIX='$(get_platform_suffix ${!_artefact_platform})'
+				eval "$a"_PLATFORM_SUFFIX='$(__get_platform_suffix ${!_artefact_platform})'
 				_artefact_cpu="$_artefact_infra_id"_INFRA_CPU
 				eval "$a"_CPU=${!_artefact_cpu}
 				_artefact_mem="$_artefact_infra_id"_INFRA_MEM
@@ -213,7 +252,7 @@ function __get_app_ressources() {
 		_prot=${!_prot}
 		_name="$a"_"$_mode"_NAME
 		_name=${!_name}
-		
+
 		if [ "$_name" == "" ]; then
 			echo "** Error : $a does not exist"
 		fi
@@ -272,9 +311,9 @@ function __setup_env() {
 		if [ ! "$_env_infra_id" == "current" ]; then
 			echo" * Setting up env '$_env_name [$a]' with infra '[$_env_infra_id]' - using $_env_cpu cpu and $_env_mem Mo - built with '$_env_distrib', a $_env_os operating system"
 
-			$STELLA_ROOT/virtual.sh get-box --distrib=$_env_distrib
-			$STELLA_ROOT/virtual.sh create-box --distrib=$_env_distrib
-			$STELLA_ROOT/virtual.sh create-env --distrib=$_env_distrib --envname=$a --envcpu=$_env_cpu --envmem=$_env_mem
+			$STELLA_ROOT/virtual.sh get-box $_env_distrib
+			$STELLA_ROOT/virtual.sh create-box $_env_distrib
+			$STELLA_ROOT/virtual.sh create-env $a#$_env_distrib --vcpu=$_env_cpu --vmem=$_env_mem
 
 			echo " * Now you can use your env using $STELLA_ROOT/virtual.sh OR with Vagrant"
 		else

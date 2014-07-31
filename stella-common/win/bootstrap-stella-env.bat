@@ -21,7 +21,7 @@ if not "%-internalcall%"=="1" (
 )
 
 :end
-cd /D %_CURRENT_RUNNING_DIR%
+cd /D %_STELLA_CURRENT_RUNNING_DIR%
 echo ** END **
 @echo on
 

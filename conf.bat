@@ -1,30 +1,30 @@
-set _CURRENT_FILE_DIR=%~dp0
-set _CURRENT_FILE_DIR=%_CURRENT_FILE_DIR:~0,-1%
-set _CURRENT_RUNNING_DIR=%cd%
+set _STELLA_CURRENT_FILE_DIR=%~dp0
+set _STELLA_CURRENT_FILE_DIR=%_STELLA_CURRENT_FILE_DIR:~0,-1%
+if "%_STELLA_CURRENT_RUNNING_DIR%"=="" set _STELLA_CURRENT_RUNNING_DIR=%cd%
 
 
 :: PATHS
-set STELLA_ROOT=%_CURRENT_FILE_DIR%
+set STELLA_ROOT=%_STELLA_CURRENT_FILE_DIR%
 set STELLA_COMMON=%STELLA_ROOT%\stella-common\win
 set STELLA_POOL=%STELLA_ROOT%\stella-pool\win
-set STELLA_TOOL_RECIPE=%STELLA_POOL%\tool-recipe
+set STELLA_FEATURE_RECIPE=%STELLA_POOL%\feature-recipe
 
 
 :: GATHER PLATFORM INFO
 call %STELLA_COMMON%\platform.bat :set_current_platform_info
 
 :: DEFAULT APP INFO -------------
-set STELLA_APP_ROOT=%_CURRENT_RUNNING_DIR%
-set STELLA_APP_WORK_ROOT=%_CURRENT_RUNNING_DIR%
+set STELLA_APP_ROOT=%_STELLA_CURRENT_RUNNING_DIR%
+set STELLA_APP_WORK_ROOT=%_STELLA_CURRENT_RUNNING_DIR%
 set STELLA_APP_CACHE_DIR=
-set APP_NAME=
+set STELLA_APP_NAME=
 
 :: GATHER APP INFO
-call %STELLA_COMMON%\common-app.bat :select_app
-call %STELLA_COMMON%\common-app.bat :get_all_properties
+call %STELLA_COMMON%\common-app.bat :select_app "_STELLA_APP_PROPERTIES_FILE"
+call %STELLA_COMMON%\common-app.bat :get_all_properties !_STELLA_APP_PROPERTIES_FILE!
 
 :: APP PATH
-call %STELLA_COMMON%\common.bat :rel_to_abs_path "STELLA_APP_ROOT" "%STELLA_APP_ROOT%" "%_CURRENT_RUNNING_DIR%"
+call %STELLA_COMMON%\common.bat :rel_to_abs_path "STELLA_APP_ROOT" "%STELLA_APP_ROOT%" "%_STELLA_CURRENT_RUNNING_DIR%"
 call %STELLA_COMMON%\common.bat :rel_to_abs_path "STELLA_APP_WORK_ROOT" "%STELLA_APP_WORK_ROOT%" "%STELLA_APP_ROOT%"
 
 if "%STELLA_APP_CACHE_DIR%"=="" (
@@ -33,16 +33,16 @@ if "%STELLA_APP_CACHE_DIR%"=="" (
 call %STELLA_COMMON%\common.bat :rel_to_abs_path "STELLA_APP_CACHE_DIR" "%STELLA_APP_CACHE_DIR%" "%STELLA_APP_ROOT%"
 
 set STELLA_APP_TEMP_DIR=%STELLA_APP_WORK_ROOT%\temp
-set STELLA_APP_TOOL_ROOT=%STELLA_APP_WORK_ROOT%\tool_%STELLA_CURRENT_PLATFORM_SUFFIX%\%STELLA_CURRENT_OS%
+set STELLA_APP_FEATURE_ROOT=%STELLA_APP_WORK_ROOT%\feature_%STELLA_CURRENT_PLATFORM_SUFFIX%\%STELLA_CURRENT_OS%
 set ASSETS_ROOT=%STELLA_APP_WORK_ROOT%\assets
 call %STELLA_COMMON%\common.bat :rel_to_abs_path "ASSETS_REPOSITORY" "..\assets_repository" "%STELLA_APP_WORK_ROOT%"
 
-:: DEFAULT TOOLS ---------------------------------------------
-set WGET="%STELLA_APP_ROOT%\wget\bin\wget.exe"
-set UZIP="%STELLA_APP_ROOT%\unzip\bin\unzip.exe"
-set U7ZIP="%STELLA_APP_ROOT%\sevenzip\7z.exe"
-set PATCH="%STELLA_APP_ROOT%\patch\bin\patch.exe"
-set GNUMAKE="%STELLA_APP_ROOT%\make\bin\make.exe"
+:: DEFAULT FEATURE ---------------------------------------------
+set WGET="%STELLA_APP_FEATURE_ROOT%\wget\bin\wget.exe"
+set UZIP="%STELLA_APP_FEATURE_ROOT%\unzip\bin\unzip.exe"
+set U7ZIP="%STELLA_APP_FEATURE_ROOT%\sevenzip\7z.exe"
+set PATCH="%STELLA_APP_FEATURE_ROOT%\patch\bin\patch.exe"
+set GNUMAKE="%STELLA_APP_FEATURE_ROOT%\make\bin\make.exe"
 
 
 :: OTHERS ---------------------------------------------
@@ -69,13 +69,13 @@ set VIRTUAL_DEFAULT_HYPERVISOR=virtualbox
 
 
 :: INTERNAL LIST ---------------------------------------------
-set "DISTRIB_LIST=ubuntu64 debian64 centos64 archlinux boot2docker"
-set "TOOL_LIST=ninja jom cmake packer perl ruby nasm python vagrant openssh"
+set "__STELLA_DISTRIB_LIST=ubuntu64 debian64 centos64 archlinux boot2docker"
+set "__STELLA_FEATURE_LIST=ninja jom cmake packer perl ruby nasm python vagrant openssh"
 
 :: API ---------------------------------------------
 set "STELLA_API_COMMON_PUBLIC=is_path_abs get_ressource download_uncompress del_folder"
 set "STELLA_API_APP_PUBLIC=get_data get_assets get_all_data get_all_assets update_data update_assets revert_data revert_assets"
-set "STELLA_API_TOOLS_PUBLIC=install_feature init_feature"
+set "STELLA_API_FEATURE_PUBLIC=install_feature init_feature"
 set "STELLA_API_VIRTUAL_PUBLIC="
 
 

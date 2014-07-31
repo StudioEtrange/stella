@@ -7,7 +7,7 @@ goto :eof
 
 :: COMMON ENV------------------------ 
 :init_stella_env
-	call %STELLA_COMMON%\common-tools.bat :init_all_features
+	call %STELLA_COMMON%\common-feature.bat :init_all_features
 goto :eof
 
 
@@ -71,7 +71,7 @@ REM %~dp0 get the fully qualified path of the 0th argument (which is the current
 		set %_result_var_rel_to_abs_path%=!_temp_path:~0,-1!
 	) else (
 		set "_abs_root_path=%~3"
-		if not defined _abs_root_path set "_abs_root_path=%_CURRENT_RUNNING_DIR%"
+		if not defined _abs_root_path set "_abs_root_path=%_STELLA_CURRENT_RUNNING_DIR%"
 		for /f "tokens=*" %%A in ("!_abs_root_path!.\%_rel_path%") do set "%_result_var_rel_to_abs_path%=%%~fA"
 	)
 	
@@ -94,7 +94,7 @@ REM http://www.dostips.com/DtCodeCmdLib.php#Function.MakeRelative
 	
 	REM Do not try to put code below in a IF statement
 	
-	if not defined _base_path set _base_path=%_CURRENT_RUNNING_DIR%
+	if not defined _base_path set _base_path=%_STELLA_CURRENT_RUNNING_DIR%
 	for /f "tokens=*" %%a in ("%_abs_path%") do set _abs_path=%%~fa
 	for /f "tokens=*" %%a in ("%_base_path%") do set _base_path=%%~fa
 	set _mat=&rem variable to store matching part of the name
@@ -143,8 +143,7 @@ goto :eof
 
 :: PROCESSUS TOOL--------------
 :fork
-	REM TODO APP NAME
-	set _TITLE=%APP_NAME_FULL% -- %~1
+	set _TITLE=%STELLA_APP_NAME% -- %~1
 	REM folder in will the terminal will stay after command is over
 	set _FOLDER=%~2
 	set _COMMAND=%~3
@@ -199,9 +198,8 @@ goto :eof
 
 :: set a new command line with STELLA var initialized
 :bootstrap_env
-	REM TODO APP NAME
 	REM Useless ?
-	set _TITLE=%APP_NAME_FULL% -- %~1
+	set _TITLE=%STELLA_APP_NAME% -- %~1
 	:: folder in wich the new bootstraped env will remain
 	set _FOLDER=%~2
 

@@ -12,7 +12,7 @@ function __install_perl() {
 	local _VER=$1
 	local _DEFAULT_VER="5_18_2"
 
-	mkdir -p $STELLA_APP_TOOL_ROOT/perl
+	mkdir -p $STELLA_APP_FEATURE_ROOT/perl
 
 	if [ "$_VER" == "" ]; then
 		__install_perl_$_DEFAULT_VER
@@ -42,8 +42,8 @@ function __install_perl_5_18_2() {
 
 
 function __feature_perl_5_18_2() {
-	FEATURE_TEST="STELLA_APP_TOOL_ROOT/perl/5_18_2/bin/perl"
-	FEATURE_RESULT_PATH="$STELLA_APP_TOOL_ROOT/perl/5_18_2"
+	FEATURE_TEST="STELLA_APP_FEATURE_ROOT/perl/5_18_2/bin/perl"
+	FEATURE_RESULT_PATH="$STELLA_APP_FEATURE_ROOT/perl/5_18_2"
 	FEATURE_RESULT_VER="5_18_2"
 	__feature_perl_internal
 }
@@ -52,8 +52,8 @@ function __feature_perl_5_18_2() {
 
 function __install_perl_internal() { 
 	
-	INSTALL_DIR="$STELLA_APP_TOOL_ROOT/perl/$VER"
-	SRC_DIR="$STELLA_APP_TOOL_ROOT/perl/$VER/code/perl-$VER-src"
+	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/perl/$VER"
+	SRC_DIR="$STELLA_APP_FEATURE_ROOT/perl/$VER/code/perl-$VER-src"
 	BUILD_DIR=
 
 	CONFIGURE_FLAG_PREFIX=
@@ -76,7 +76,8 @@ function __install_perl_internal() {
 	                  -Dpager="/usr/bin/less -isR"  \
 	                  -Duseshrplib
 
-		make -j$BUILD_JOB
+		#make -j$BUILD_JOB
+		make
 		make install
 
 		__feature_perl_$VER

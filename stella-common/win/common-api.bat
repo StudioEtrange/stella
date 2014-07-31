@@ -22,9 +22,9 @@ goto :eof
 		)
 	)
 
-	for %%F in (%STELLA_API_TOOLS_PUBLIC%) do (
+	for %%F in (%STELLA_API_FEATURE_PUBLIC%) do (
 		if "%%F"=="%FUNC_NAME%" (
-			call %STELLA_COMMON%\common-tools.bat :%FUNC_NAME% %*
+			call %STELLA_COMMON%\common-feature.bat :%FUNC_NAME% %*
 			goto :eof
 		)
 	)
@@ -43,5 +43,8 @@ goto :eof
 
 
 :api_list
-	set "%~1=[ COMMON-API : %STELLA_API_COMMON_PUBLIC% ] [ TOOLS-API : %STELLA_API_TOOLS_PUBLIC% ] [ APP-API : %STELLA_API_APP_PUBLIC% ] [ VIRTUAL-API : %STELLA_API_VIRTUAL_PUBLIC% ]"
+	set "%~1=[ COMMON-API : %STELLA_API_COMMON_PUBLIC% ] ^
+	[ FEATURE-API : %STELLA_API_FEATURE_PUBLIC% ] ^
+	[ APP-API : %STELLA_API_APP_PUBLIC% ] ^
+	[ VIRTUAL-API : %STELLA_API_VIRTUAL_PUBLIC% ]"
 goto :eof
