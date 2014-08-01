@@ -33,7 +33,7 @@ goto :eof
 
 :install_cmake_2_8_12
 	set URL=http://www.cmake.org/files/v2.8/cmake-2.8.12-win32-x86.zip
-	set VERSION=2.8.12
+	set VERSION=2_8_12
 	set FILE_NAME=cmake-2.8.12-win32-x86.zip
 	set "INSTALL_DIR=%STELLA_APP_FEATURE_ROOT%\cmake\%VERSION%-win32-x86"
 
