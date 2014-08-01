@@ -72,9 +72,9 @@ set "__STELLA_DISTRIB_LIST=ubuntu64 debian64 centos64 archlinux boot2docker"
 set "__STELLA_FEATURE_LIST=ninja jom cmake packer perl ruby nasm python vagrant openssh"
 
 :: API ---------------------------------------------
-set "STELLA_API_COMMON_PUBLIC=is_path_abs get_ressource download_uncompress del_folder copy_folder_content_into fork"
+set "STELLA_API_COMMON_PUBLIC=is_path_abs get_ressource download_uncompress del_folder copy_folder_content_into fork run_admin"
 set "STELLA_API_APP_PUBLIC=get_data get_assets get_all_data get_all_assets update_data update_assets revert_data revert_assets"
-set "STELLA_API_FEATURE_PUBLIC=install_feature init_feature"
+set "STELLA_API_FEATURE_PUBLIC=install_feature init_feature reinit_all_features"
 set "STELLA_API_VIRTUAL_PUBLIC="
 
 
