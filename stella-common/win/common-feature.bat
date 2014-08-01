@@ -70,7 +70,7 @@ goto:eof
 	for %%F in (%__STELLA_FEATURE_LIST%) do (
 		call :init_feature %%F
 	)
-	echo ** Features initialized : %FEATURE_LIST_ENABLED%
+	if not "%FEATURE_LIST_ENABLED%"=="" echo ** Features initialized : %FEATURE_LIST_ENABLED%
 goto :eof
 
 :: ARG2 return variable

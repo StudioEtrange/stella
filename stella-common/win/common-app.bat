@@ -178,10 +178,10 @@ goto :eof
 	call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "STELLA" "ENV_LIST" "PREFIX"
 	call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "STELLA" "INFRA_LIST" "PREFIX"
 
-	call :get_data_properties "!STELLA_DATA_LIST!"
-	call :get_assets_properties "!STELLA_ASSETS_LIST!"
-	call :get_infra_properties "!STELLA_INFRA_LIST!"
-	call :get_env_properties "!STELLA_ENV_LIST!"
+	call :get_data_properties "%_properties_file%" "!STELLA_DATA_LIST!"
+	call :get_assets_properties "%_properties_file%" "!STELLA_ASSETS_LIST!"
+	call :get_infra_properties "%_properties_file%" "!STELLA_INFRA_LIST!"
+	call :get_env_properties "%_properties_file%" "!STELLA_ENV_LIST!"
 
 goto :eof
 

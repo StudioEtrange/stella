@@ -37,11 +37,11 @@ set ASSETS_ROOT=%STELLA_APP_WORK_ROOT%\assets
 call %STELLA_COMMON%\common.bat :rel_to_abs_path "ASSETS_REPOSITORY" "..\assets_repository" "%STELLA_APP_WORK_ROOT%"
 
 :: DEFAULT FEATURE ---------------------------------------------
-set WGET="%STELLA_APP_FEATURE_ROOT%\wget\bin\wget.exe"
-set UZIP="%STELLA_APP_FEATURE_ROOT%\unzip\bin\unzip.exe"
-set U7ZIP="%STELLA_APP_FEATURE_ROOT%\sevenzip\7z.exe"
-set PATCH="%STELLA_APP_FEATURE_ROOT%\patch\bin\patch.exe"
-set GNUMAKE="%STELLA_APP_FEATURE_ROOT%\make\bin\make.exe"
+set "WGET=%STELLA_APP_FEATURE_ROOT%\wget\bin\wget.exe"
+set "UZIP=%STELLA_APP_FEATURE_ROOT%\unzip\bin\unzip.exe"
+set "U7ZIP=%STELLA_APP_FEATURE_ROOT%\sevenzip\7z.exe"
+set "PATCH=%STELLA_APP_FEATURE_ROOT%\patch\bin\patch.exe"
+set "GNUMAKE=%STELLA_APP_FEATURE_ROOT%\make\bin\make.exe"
 
 
 :: OTHERS ---------------------------------------------
@@ -72,7 +72,7 @@ set "__STELLA_DISTRIB_LIST=ubuntu64 debian64 centos64 archlinux boot2docker"
 set "__STELLA_FEATURE_LIST=ninja jom cmake packer perl ruby nasm python vagrant openssh"
 
 :: API ---------------------------------------------
-set "STELLA_API_COMMON_PUBLIC=is_path_abs get_ressource download_uncompress del_folder copy_folder_content_into"
+set "STELLA_API_COMMON_PUBLIC=is_path_abs get_ressource download_uncompress del_folder copy_folder_content_into fork"
 set "STELLA_API_APP_PUBLIC=get_data get_assets get_all_data get_all_assets update_data update_assets revert_data revert_assets"
 set "STELLA_API_FEATURE_PUBLIC=install_feature init_feature"
 set "STELLA_API_VIRTUAL_PUBLIC="

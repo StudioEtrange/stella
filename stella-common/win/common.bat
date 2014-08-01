@@ -143,6 +143,7 @@ goto :eof
 
 :: PROCESSUS TOOL--------------
 :fork
+
 	set _TITLE=%STELLA_APP_NAME% -- %~1
 	REM folder in will the terminal will stay after command is over
 	set _FOLDER=%~2
@@ -435,6 +436,7 @@ goto :eof
 
 	for %%A in ( %FILE_PATH% ) do set _FILENAME=%%~nxA
 	for %%B in ( %FILE_PATH% ) do set EXTENSION=%%~xB
+
 	if "%EXTENSION%"==".7z" (
 		echo ** Using 7zip : %U7ZIP%
 		set "USE7ZIP=TRUE"

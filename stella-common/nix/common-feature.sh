@@ -8,6 +8,7 @@ function __init_all_features() {
 	for a in $__STELLA_FEATURE_LIST; do
 		__init_feature $a
 	done
+	[ ! "$FEATURE_LIST_ENABLED" == "" ] && echo "** Features initialized : $FEATURE_LIST_ENABLED"
 }
 
 function __list_feature_version() {

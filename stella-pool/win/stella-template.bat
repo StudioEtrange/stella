@@ -101,8 +101,6 @@ REM Bootstrap/auto install mode ------------------
 		)
 		call !_stella_install_path!\init.bat
 		@echo off
-		call !_stella_install_path!\feature.bat install default
-		@echo off
 	)
 goto :eof
 
