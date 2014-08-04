@@ -82,7 +82,7 @@ export PACKER_STELLA_APP_CACHE_DIR="$STELLA_APP_CACHE_DIR"
 VIRTUAL_DEFAULT_HYPERVISOR=virtualbox
 
 # INTERNAL LIST---------------------------------------------
-__STELLA_DISTRIB_LIST="ubuntu64 debian64 centos64 archlinux boot2docker"
+__STELLA_DISTRIB_LIST="ubuntu64_13_10 debian64_7_5 centos64_6_5 archlinux boot2docker"
 __STELLA_FEATURE_LIST="wget ninja cmake packer autotools perl"
 
 # API ---------------------------------------------

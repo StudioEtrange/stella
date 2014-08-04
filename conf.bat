@@ -68,7 +68,7 @@ set VIRTUAL_DEFAULT_HYPERVISOR=virtualbox
 
 
 :: INTERNAL LIST ---------------------------------------------
-set "__STELLA_DISTRIB_LIST=ubuntu64 debian64 centos64 archlinux boot2docker"
+set "__STELLA_DISTRIB_LIST=ubuntu64_13_10 debian64_7_5 centos64_6_5 archlinux boot2docker"
 set "__STELLA_FEATURE_LIST=ninja jom cmake packer perl ruby nasm python vagrant openssh"
 
 :: API ---------------------------------------------
