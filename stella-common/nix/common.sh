@@ -557,7 +557,7 @@ function __ini_file() {
 
 # ARG COMMAND LINE MANAGEMENT---------------------------------------------------
 function __argparse(){
-	local PROGNAME="$1"
+	local PROGNAME=$(__get_filename_from_string "$1")
 	local OPTIONS="$2"
 	local PARAMETERS="$3"
 	local SHORT_DESCRIPTION="$4"
