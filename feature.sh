@@ -15,7 +15,7 @@ function usage() {
 }
 
 function __init_features() {
-	echo "** Initialize minimal features for Stella"
+	echo "** Initialize minimal features"
 	if [ ! -d "$STELLA_APP_FEATURE_ROOT" ]; then
 		mkdir -p "$STELLA_APP_FEATURE_ROOT"
 	fi

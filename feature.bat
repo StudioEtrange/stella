@@ -57,7 +57,7 @@ goto :end
 
 
 :init_features
-	echo ** Initialize minimal features for Stella
+	echo ** Initialize minimal features
 	if not exist "%STELLA_APP_FEATURE_ROOT%" mkdir "%STELLA_APP_FEATURE_ROOT%"
 	
 	call %STELLA_COMMON%\common-feature.bat :unzip

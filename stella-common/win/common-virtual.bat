@@ -131,8 +131,34 @@ REM	CPU XX : nb of cpu
 		if not exist "%VIRTUAL_ENV_ROOT%\%_env_id%" mkdir "%VIRTUAL_ENV_ROOT%\%_env_id%"
 		
 		cd /D  "%VIRTUAL_ENV_ROOT%\%_env_id%"
-		call :_create_vagrantfile %_env_id%
+		REM TODO call vagrant init ?
 		REM %VAGRANT_CMD% init %VAGRANT_BOX_NAME%
+		set "VAGRANT_FILEPATH=%VIRTUAL_ENV_ROOT%\%_env_id%\Vagrantfile"
+
+		> %VAGRANT_FILEPATH% echo(VAGRANTFILE_API_VERSION = "2"
+		>> %VAGRANT_FILEPATH% echo(Vagrant.configure(VAGRANTFILE_API_VERSION^) do ^|config^|
+		>> %VAGRANT_FILEPATH% echo(		config.vm.box = "%VAGRANT_BOX_NAME%"
+		>> %VAGRANT_FILEPATH% echo(		config.vm.synced_folder "%STELLA_ROOT:\=/%", "/home/vagrant/lib-stella" >> Vagrantfile
+		>> %VAGRANT_FILEPATH% echo(		config.vm.synced_folder "%STELLA_APP_ROOT:\=/%", "/home/vagrant/%STELLA_APP_NAME%" >> Vagrantfile
+		>> %VAGRANT_FILEPATH% echo(		config.vm.synced_folder "%STELLA_APP_CACHE_DIR:\=/%", "/home/vagrant/%STELLA_APP_NAME%-CACHE" >> Vagrantfile
+		>> %VAGRANT_FILEPATH% echo(		config.vm.synced_folder "%STELLA_APP_WORK_ROOT:\=/%", "/home/vagrant/%STELLA_APP_NAME%-WORK" >> Vagrantfile
+		>> %VAGRANT_FILEPATH% echo(		config.vm.provider :virtualbox do ^|vb^|
+		>> %VAGRANT_FILEPATH% echo(			vb.gui = %VM_HEADLESS%
+		>> %VAGRANT_FILEPATH% echo(			vb.name = "%_env_id%"
+		>> %VAGRANT_FILEPATH% echo(			vb.customize ["modifyvm", :id, "--memory", %ENV_MEM%]
+		REM >> %VAGRANT_FILEPATH% echo(			vb.customize ["modifyvm", :id, "--vram", 8]
+		>> %VAGRANT_FILEPATH% echo(			vb.customize ["modifyvm", :id, "--cpus", %ENV_CPU%]
+		REM >> %VAGRANT_FILEPATH% echo(			vb.customize ["modifyvm", :id, "--cpuexecutioncap", 100]
+		>> %VAGRANT_FILEPATH% echo(		end
+		>> %VAGRANT_FILEPATH% echo(		["vmware_fusion", "vmware_workstation"].each do ^|vmware^|
+		>> %VAGRANT_FILEPATH% echo(			config.vm.provider :vmware do ^|v^|
+		>> %VAGRANT_FILEPATH% echo(				v.gui = %VM_HEADLESS%
+		>> %VAGRANT_FILEPATH% echo(				v.vmx["memsize"] = %ENV_MEM%
+		>> %VAGRANT_FILEPATH% echo(				v.vmx["numvcpus"] = %ENV_CPU%
+		>> %VAGRANT_FILEPATH% echo(			end
+		>> %VAGRANT_FILEPATH% echo(		end
+		>> %VAGRANT_FILEPATH% echo(end
+
 
 		echo ** Env %_env_id% is initialized
 

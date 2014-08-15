@@ -33,10 +33,12 @@ function __init_app() {
 	local _workroot=$3
 	local _cachedir=$4
 
+	mkdir -p $_STELLA_CURRENT_RUNNING_DIR/$_approot
 	_approot=$(__rel_to_abs_path "$_approot" "$_STELLA_CURRENT_RUNNING_DIR")
-	mkdir -p $_approot
+	
 
 	_stella_root=$(__abs_to_rel_path "$STELLA_ROOT" "$_approot")
+
 	echo "_STELLA_LINK_CURRENT_FILE_DIR=\"\$( cd \"\$( dirname \"\${BASH_SOURCE[0]}\" )\" && pwd )\"" >$_approot/.stella-link.sh
 	echo "STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$_approot/.stella-link.sh
 	# echo "STELLA_ROOT=$_stella_root" >$_approot/.stella-link.sh

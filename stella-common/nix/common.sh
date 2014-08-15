@@ -58,14 +58,15 @@ function __rel_to_abs_path() {
 			# TODO if "$_abs_root_path" == "" then _abs_root_path=$_STELLA_CURRENT_RUNNING_DIR ?
 			if [ "$_abs_root_path" == "" ]; then
 				# relative to current path
-				if [ -f "$_rel_path" ]; then
+				# TODO if directory does not exist returned path is not real absolute (example : /tata/toto/../titi instead of /tata/titi)
+				if [ -d "$_rel_path" ]; then
 					echo "$(cd "$_rel_path" && pwd )"
 				else
 					echo "$_rel_path"
 				fi
 			else
 				# relative to a given absolute path
-				if [ -f "$_abs_root_path/$_rel_path" ]; then
+				if [ -d "$_abs_root_path/$_rel_path" ]; then
 					echo "$(cd "$_abs_root_path/$_rel_path" && pwd )"
 				else
 					echo "$_abs_root_path/$_rel_path"
@@ -107,7 +108,7 @@ function __abs_to_rel_path() {
 			# since we now have identified the common part,
 			# compute the non-common part
 			forward_part="${target#$common_part}"
-			
+	
 			if [[ -n $result ]] && [[ -n $forward_part ]]; then
 				result="$result$forward_part"
 			elif [[ -n $forward_part ]]; then
