@@ -18,7 +18,6 @@ call %STELLA_COMMON%\common.bat :init_stella_env
 
 call %STELLA_COMMON%\platform.bat :init_stella_by_os %STELLA_CURRENT_OS%
 
-call %STELLA_ROOT%\feature.bat install default
 
 goto :end
 

@@ -13,6 +13,5 @@ __init_stella_env
 
 __init_stella_by_os "$STELLA_CURRENT_OS"
 
-$STELLA_ROOT/feature.sh install default
 
 echo "** END **"

@@ -100,6 +100,7 @@ REM Bootstrap/auto install mode ------------------
 			> "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(set STELLA_ROOT=%_provided_path%
 		)
 		call !_stella_install_path!\init.bat
+		call !_stella_install_path!\feature.bat install default
 		@echo off
 	)
 goto :eof

@@ -69,6 +69,7 @@ function bootstrap() {
 			echo "PROVIDED_PATH=$ARG" >$STELLA_APP_ROOT/.stella-link.sh
 		fi
 		sudo $_STELLA_INSTALL_PATH/init.sh
+		$_STELLA_INSTALL_PATH/feature.sh install default
 	fi
 }
 
