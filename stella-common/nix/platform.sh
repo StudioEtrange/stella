@@ -2,8 +2,20 @@ if [ ! "$_STELLA_PLATFORM_INCLUDED_" == "1" ]; then
 _STELLA_PLATFORM_INCLUDED_=1
 
 
-# PLATFORM INFO ---------------------------
+# DISTRIB/OS/PLATFORM INFO ---------------------------
 
+# NOTE :
+# classification :
+# 	platform <--- os <---- distrib
+# 		example :
+#			linux <----- ubuntu <---- ubuntu 14.04
+#			linux <----- centos <---- centos 6
+#			windows <--- windows <---- windows 7
+# suffix platform :
+# 	each platform have a suffix
+#		example :
+#			windows <---> win
+#			linux <---> linux
 
 function __get_os_from_distro() {
 	local _os=$1
@@ -125,8 +137,9 @@ function __set_current_platform_info() {
 	fi
 }
 
-# INIT OS PACKAGES -------------
+# INIT STELLA -------------
 
+# by OS
 function __stella_env_ubuntu() {
 	echo " ** INFO : Needs sudouser rights" 
 	apt-get -y install mercurial unzip p7zip-full git wget
@@ -162,7 +175,7 @@ function __init_stella_by_os() {
 			__stella_env_macos
 			;;
 		*)
-			echo "unknown"
+			echo "OS unknown"
 			;;
 	esac	
 }
