@@ -517,9 +517,11 @@ function __ini_file() {
 	# Modify the line, if the flag is set
 	/^'$_KEY'=/ {
 		if (processing) {
-		   	if ( mode == "ADD" ) print "'$_KEY'="val;
-			skip = 1;
-			modified = 1;
+		   	if ( mode == "ADD" ) {
+		   		print "'$_KEY'="val;
+				skip = 1;
+				modified = 1;
+			}
 		}
 	}
 
