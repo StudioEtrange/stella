@@ -526,8 +526,10 @@ function __ini_file() {
 	# Clear the section flag (as were in a new section)
 	/^\[$/ {
 		if(processing && !added && !modified) {
-			if ( mode == "ADD" ) print "'$_KEY'="val
-			added = 1;
+			if ( mode == "ADD" ) { 
+				print "'$_KEY'="val
+				added = 1;
+			}
 		}
 		processing = 0;
 	}
