@@ -10,6 +10,8 @@ if not "%~1"==":include" if not "%~1"==":bootstrap" (
 REM Usage :
 REM stella.bat include
 REM		OR call stella :include
+REM stella.bat install [install path] --- path where to install STELLA the system. If not provided use .\lib-stella by default
+REM		OR call stella :bootstrap [install path]
 REM stella.bat bootstrap [install path] --- absolute or relative to app path where to install STELLA the system. If not provided, use setted value in link file (.-stella-link.bat) or in ..\lib-stella by default
 REM		OR call stella :bootstrap [install path]
 REM stella.bat ^<standard stella command^>
@@ -23,7 +25,7 @@ set STELLA_ROOT=
 
 set STELLA_APP_ROOT=%_STELLA_CURRENT_FILE_DIR%
 
-REM Check if APP is linked to STELLA -------------------------
+REM Check if APP/PROJECT in current dir is linked to STELLA -------------------------
 if exist "%STELLA_APP_ROOT%\.stella-link.bat" (
 	call %STELLA_APP_ROOT%\.stella-link.bat
 	if not "!STELLA_ROOT!"=="" (
@@ -61,13 +63,41 @@ if "%~1"=="bootstrap" (
 goto :eof
 
 
+REM install stella ------------------
+:install
+	set "_provided_path=%~1"
+
+	REM Try to determine install path of STELLA
+	if "%_provided_path%"=="" (
+		REM install STELLA into default path
+		call :___rel_to_abs_path "_stella_install_path" ".\lib-stella" "%_STELLA_CURRENT_FILE_DIR%"
+	) else (
+		REM install STELLA into ARG#2
+		call :___rel_to_abs_path "_stella_install_path" "%_provided_path%" "%_STELLA_CURRENT_FILE_DIR%"
+	)
+
+	if exist "!_stella_install_path!\stella.bat" (
+		REM STELLA already installed, update it
+		pushd
+		cd /D "!_stella_install_path!"
+		git pull
+		popd
+	) else (
+		git clone https://bitbucket.org/StudioEtrange/lib-stella.git "!_stella_install_path!"
+	)
+	
+	call !_stella_install_path!\init.bat
+	call !_stella_install_path!\feature.bat install default
+	@echo off
+goto :eof
 
 
-REM Bootstrap/auto install mode ------------------
+
+REM Bootstrap a stella app/project ------------------
 :bootstrap
 	set "_provided_path=%~1"
 	if "%IS_STELLA_LINKED%"=="TRUE" (
-		echo ** This app is already linked to a STELLA installation located in !STELLA_ROOT!
+		echo ** This app/project is already linked to a STELLA installation located in !STELLA_ROOT!
 		call !STELLA_ROOT!\feature.bat install default
 		@echo off
 	) else (

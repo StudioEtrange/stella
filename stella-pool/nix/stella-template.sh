@@ -1,7 +1,8 @@
 #!/bin/bash
 # Usage :
 # stella.sh include
-# stella.sh bootstrap [install path] --- absolute or relative to app path where to install STELLA the system. If not provided, use setted value in link file (.-stella-link.sh) or in ../lib-stella by default
+# stella.sh install [install path] --- Path where to install STELLA the system. If not provided use ./lib-stella by default
+# stella.sh bootstrap [install path] --- boostrap a project based on stella. Provide an absolute or relative to app path where to install STELLA the system. If not provided, use setted value in link file (.-stella-link.sh) or in ../lib-stella by default
 # stella.sh <standard stella command>
 
 _STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -37,10 +38,33 @@ function ___rel_to_abs_path() {
 	esac
 }
 
-# Bootstrap/auto install mode ------------------
+
+# Install stella ------------------
+function install() {
+	# Try to determine install path of STELLA
+	if [ "$PROVIDED_PATH" == "" ]; then
+		# install STELLA into default path
+		_STELLA_INSTALL_PATH=$(___rel_to_abs_path "./lib-stella" "$_STELLA_CURRENT_FILE_DIR")
+	else
+		# install STELLA into ARG#2
+		_STELLA_INSTALL_PATH=$(___rel_to_abs_path "$PROVIDED_PATH" "$_STELLA_CURRENT_FILE_DIR")
+	fi
+
+	if [ -f "$_STELLA_INSTALL_PATH/stella.sh" ]; then
+		# STELLA already installed, update it
+		(cd "$_STELLA_INSTALL_PATH" && git pull)
+	else
+		git clone https://bitbucket.org/StudioEtrange/lib-stella.git "$_STELLA_INSTALL_PATH"
+	fi
+	sudo $_STELLA_INSTALL_PATH/init.sh
+	$_STELLA_INSTALL_PATH/feature.sh install default
+}
+
+
+# Bootstrap a stella app/project ------------------
 function bootstrap() {
 	if [ "$IS_STELLA_LINKED" == "TRUE" ]; then
-		echo "** This app is already linked to a STELLA installation located in $STELLA_ROOT"
+		echo "** This app/project is already linked to a STELLA installation located in $STELLA_ROOT"
 		$STELLA_ROOT/feature.sh install default
 	else
 
@@ -63,7 +87,7 @@ function bootstrap() {
 				# STELLA already installed, update it
 				(cd "$_STELLA_INSTALL_PATH" && git pull)
 			else
-				# install STELLA into arg #2, and linked to the app
+				# install STELLA into arg #2
 				git clone https://bitbucket.org/StudioEtrange/lib-stella.git "$_STELLA_INSTALL_PATH"
 			fi
 			echo "PROVIDED_PATH=$ARG" >$STELLA_APP_ROOT/.stella-link.sh
@@ -92,7 +116,7 @@ STELLA_ROOT=
 
 STELLA_APP_ROOT=$_STELLA_CURRENT_FILE_DIR
 
-# Check if APP is linked to STELLA -------------------------
+# Check if APP/PROJECT in current dir is linked to STELLA -------------------------
 if [ -f "$STELLA_APP_ROOT/.stella-link.sh" ]; then
 	source "$STELLA_APP_ROOT/.stella-link.sh"
 	if [ ! "$STELLA_ROOT" == "" ]; then
@@ -111,6 +135,9 @@ case $ACTION in
 		;;
 	bootstrap)
 		bootstrap
+		;;
+	install)
+		install
 		;;
 	*)
 		# Standard mode
