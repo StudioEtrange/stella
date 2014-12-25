@@ -495,8 +495,14 @@ function __ini_file() {
 	local _FILE=$2
 	local _SECTION=$3
 	local _KEY=$4
-	local _VALUE=$5
+	if [ ! "$KEY" == "" ]; then
+		local _VALUE=$5
+	fi
 
+	# escape regexp special characters
+	# http://stackoverflow.com/questions/407523/escape-a-string-for-a-sed-replace-pattern
+	_SECTION_NAME=$_SECTION
+	_SECTION=$(echo $_SECTION | sed -e 's/[]\/$*.^|[]/\\&/g')
 
 	tp=$(mktmp)
 
@@ -515,10 +521,10 @@ function __ini_file() {
 	}
 		
 	# Modify the line, if the flag is set
-	/^'$_KEY'=/ {
+	/^'$_KEY' =/ {
 		if (processing) {
 		   	if ( mode == "ADD" ) {
-		   		print "'$_KEY'="val;
+		   		print "'$_KEY' = "val;
 				skip = 1;
 				modified = 1;
 			}
@@ -527,15 +533,16 @@ function __ini_file() {
 
 	# Clear the section flag
 	/^\[/ {
-		if( index($0,"['$_SECTION']") == 0 ) {
+		if( match($0,"^\['$_SECTION'\]") == 0 ) {
 			if(processing && !added && !modified) {
 				if ( mode == "ADD" ) {
-					print "'$_KEY'="val
+					print "'$_KEY' = "val
 					added = 1;
 				}
 			}
 			processing = 0;
 		}
+
 	}
 
 	# Output a line (that we didnt output above)
@@ -548,8 +555,8 @@ function __ini_file() {
 	}
 	END {
 		if(!added && !modified && mode == "ADD") {
-			if(!processing) print "['$_SECTION']"
-			print "'$_KEY'="val
+			if(!processing) print "['$_SECTION_NAME']"
+			if("'$_KEY'" != "") print "'$_KEY' = "val
 		}
 
 	}
