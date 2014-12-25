@@ -525,15 +525,17 @@ function __ini_file() {
 		}
 	}
 
-	# Clear the section flag (as were in a new section)
-	/^\[$/ {
-		if(processing && !added && !modified) {
-			if ( mode == "ADD" ) { 
-				print "'$_KEY'="val
-				added = 1;
+	# Clear the section flag
+	/^\[/ {
+		if( index($0,"['$_SECTION']") == 0 ) {
+			if(processing && !added && !modified) {
+				if ( mode == "ADD" ) {
+					print "'$_KEY'="val
+					added = 1;
+				}
 			}
+			processing = 0;
 		}
-		processing = 0;
 	}
 
 	# Output a line (that we didnt output above)
