@@ -524,8 +524,7 @@ function __ini_file() {
 	/^'$_KEY'=/ {
 		if (processing) {
 		   	if ( mode == "ADD" ) {
-		   		if ( val != "" ) print "'$_KEY'="val;
-		   		else print "'$_KEY'";
+		   		print "'$_KEY'="val;
 				skip = 1;
 				modified = 1;
 			}
@@ -537,8 +536,7 @@ function __ini_file() {
 		if( match($0,"^\['$_SECTION'\]") == 0 ) {
 			if(processing && !added && !modified) {
 				if ( mode == "ADD" ) {
-					if ( val != "" ) print "'$_KEY'="val;
-		   			else print "'$_KEY'";
+					print "'$_KEY'="val;
 					added = 1;
 				}
 			}
@@ -559,8 +557,7 @@ function __ini_file() {
 		if(!added && !modified && mode == "ADD") {
 			if(!processing) print "['$_SECTION_NAME']"
 			if("'$_KEY'" != "") {
-				if ( val != "" ) print "'$_KEY'="val;
-		   		else print "'$_KEY'";
+				print "'$_KEY'="val;
 		   	}
 		}
 
