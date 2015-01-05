@@ -521,10 +521,11 @@ function __ini_file() {
 	}
 		
 	# Modify the line, if the flag is set
-	/^'$_KEY' =/ {
+	/^'$_KEY'=/ {
 		if (processing) {
 		   	if ( mode == "ADD" ) {
-		   		print "'$_KEY' = "val;
+		   		if ( val != "" ) print "'$_KEY'="val;
+		   		else print "'$_KEY'";
 				skip = 1;
 				modified = 1;
 			}
@@ -536,7 +537,8 @@ function __ini_file() {
 		if( match($0,"^\['$_SECTION'\]") == 0 ) {
 			if(processing && !added && !modified) {
 				if ( mode == "ADD" ) {
-					print "'$_KEY' = "val
+					if ( val != "" ) print "'$_KEY'="val;
+		   			else print "'$_KEY'";
 					added = 1;
 				}
 			}
@@ -556,7 +558,10 @@ function __ini_file() {
 	END {
 		if(!added && !modified && mode == "ADD") {
 			if(!processing) print "['$_SECTION_NAME']"
-			if("'$_KEY'" != "") print "'$_KEY' = "val
+			if("'$_KEY'" != "") {
+				if ( val != "" ) print "'$_KEY'="val;
+		   		else print "'$_KEY'";
+		   	}
 		}
 
 	}
