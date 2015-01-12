@@ -18,6 +18,7 @@ set STELLA_APP_ROOT=%_STELLA_CURRENT_RUNNING_DIR%
 set STELLA_APP_WORK_ROOT=%_STELLA_CURRENT_RUNNING_DIR%
 set STELLA_APP_CACHE_DIR=
 set STELLA_APP_NAME=
+set STELLA_APP_PROPERTIES_FILENAME=stella.properties
 
 :: GATHER APP INFO
 call %STELLA_COMMON%\common-app.bat :select_app "_STELLA_APP_PROPERTIES_FILE"
@@ -47,6 +48,7 @@ set "GNUMAKE=%STELLA_APP_FEATURE_ROOT%\make\bin\make.exe"
 :: OTHERS ---------------------------------------------
 set FEATURE_LIST_ENABLED=
 set VERBOSE_MODE=0
+
 
 :: VIRTUALIZATION ----------------------
 set "VIRTUAL_WORK_ROOT=%STELLA_APP_WORK_ROOT%\virtual"

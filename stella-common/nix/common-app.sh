@@ -43,15 +43,15 @@ function __init_app() {
 	echo "STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$_approot/.stella-link.sh
 	# echo "STELLA_ROOT=$_stella_root" >$_approot/.stella-link.sh
 
-	cp -f "$STELLA_POOL/stella-template.sh" "$_approot/stella.sh"
+	cp -f "$STELLA_POOL/stella-run.sh" "$_approot/stella.sh"
 	chmod +x $_approot/stella.sh
 
-	cp -f "$STELLA_POOL/example-app.sh" "$_approot/example-app.sh"
-	chmod +x $_approot/example-app.sh
+	cp -f "$STELLA_POOL/sample-app.sh" "$_approot/sample-app.sh"
+	chmod +x $_approot/sample-app.sh
 
-	cp -f "$STELLA_ROOT/example-app-properties.stella" "$_approot/example-app-properties.stella"
+	cp -f "$STELLA_ROOT/stella-pool/sample-stella.properties" "$_approot/sample-stella.properties"
 
-	_STELLA_APP_PROPERTIES_FILE="$_approot/.stella"
+	_STELLA_APP_PROPERTIES_FILE="$_approot/$STELLA_APP_PROPERTIES_FILENAME"
 	if [ -f "$_STELLA_APP_PROPERTIES_FILE" ]; then
 		echo " ** Properties file already exist"
 	else

@@ -140,13 +140,13 @@ goto :eof
 	>> "%_approot%\.stella-link.bat" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%_STELLA_LINK_CURRENT_FILE_DIR:~0,-1%%
 	>> "%_approot%\.stella-link.bat" ECHO(@set STELLA_ROOT=%%_STELLA_LINK_CURRENT_FILE_DIR%%\%_STELLA_ROOT%
 
-	copy /y "%STELLA_POOL%\stella-template.bat" "%_approot%\stella.bat"
+	copy /y "%STELLA_POOL%\stella-run.bat" "%_approot%\stella.bat"
 
-	copy /y "%STELLA_POOL%\example-app.bat" "%_approot%\example-app.bat"
+	copy /y "%STELLA_POOL%\sample-app.bat" "%_approot%\sample-app.bat"
 
-	copy /y "%STELLA_ROOT%\example-app-properties.stella" "%_approot%\example-app-properties.stella"
+	copy /y "%STELLA_ROOT%\stella-pool\sample-stella.properties" "%_approot%\sample-stella.properties"
 
-	set "_STELLA_APP_PROPERTIES_FILE=%_approot%\.stella"
+	set "_STELLA_APP_PROPERTIES_FILE=%_approot%\%STELLA_APP_PROPERTIES_FILENAME%"
 	if exist "%_STELLA_APP_PROPERTIES_FILE%" (
 		echo ** Properties file already exists
 	) else (
