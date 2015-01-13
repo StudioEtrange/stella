@@ -25,74 +25,16 @@ call %STELLA_COMMON%\common.bat :init_stella_env
 
 REM --------------- APP ----------------------------
 if "%DOMAIN%"=="app" (
-
-	if "%ACTION%"=="init" (
-		
-		if "%-approot%"=="" (
-			set "-approot=%_STELLA_CURRENT_RUNNING_DIR%"
-		)
-		if "%-workroot%"=="" (
-			set "-workroot=."
-		)
-
-		if "%-cachedir%"=="" (
-			set "-cachedir=!-workroot!\cache"
-		)
-
-		call %STELLA_COMMON%\common-app :init_app "%id%" "!-approot!" "!-workroot!" "!-cachedir!"
-
-		cd /D "!-approot!"
-		call stella.bat feature install default
-
-		@echo off
-	)
-
-	if not "%ACTION%"=="init" (
-		if not exist "%_STELLA_APP_PROPERTIES_FILE%" (
-			echo ** ERROR properties file does not exist
-		)
-	)
-
-	if "%ACTION%"=="get-data" (
-		if "%id%"=="all" (
-			call %STELLA_COMMON%\common-app.bat :get_all_data
-		) else (
-			call %STELLA_COMMON%\common-app.bat :get_data "%id%"
-		)
-	)
+	set "_app_options="
+	if not "%-approot%"=="" set "_app_options=!_app_options! -approot=%-approot%"
+	if not "%-workroot%"=="" set "_app_options=!_app_options! -workroot=%-workroot%"
+	if not "%-cachedir%"=="" set "_app_options=!_app_options! -cachedir=%-cachedir%"
 	
-	if "%ACTION%"=="get-assets" (
-		if "%id%"=="all" (
-			call %STELLA_COMMON%\common-app.bat :get_all_assets		
-		) else (
-			call %STELLA_COMMON%\common-app.bat :get_assets "%id%"
-		)
-	)
-
-	if "%ACTION%"=="update-data" (
-		call %STELLA_COMMON%\common-app.bat :update_data "%id%"
-	)
+	if "%-f%"=="1" set "_app_options=!_app_options! -f"
 	
-	if "%ACTION%"=="update-assets" (
-		call %STELLA_COMMON%\common-app.bat :update_assets "%id%"
-	)
-
-	if "%ACTION%"=="revert-data" (
-		call %STELLA_COMMON%\common-app.bat :revert_data "%id%"
-	)
-	
-	if "%ACTION%"=="revert-assets" (
-		call %STELLA_COMMON%\common-app.bat :revert_assets "%id%"
-	)
-
-	
-	if "%ACTION%"=="setup-env" (
-		if "%id%"=="all" (
-			call %STELLA_COMMON%\common-app.bat :setup_all_env
-		) else (
-			call %STELLA_COMMON%\common-app.bat :setup_env "%id%"
-		)
-	)
+	call %STELLA_ROOT%\app.bat %ACTION% %id% !_app_options!
+	@echo off
+	goto :end
 
 )
 if "%DOMAIN%"=="app" goto :end

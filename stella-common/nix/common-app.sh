@@ -43,7 +43,7 @@ function __init_app() {
 	echo "STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$_approot/.stella-link.sh
 	# echo "STELLA_ROOT=$_stella_root" >$_approot/.stella-link.sh
 
-	cp -f "$STELLA_POOL/stella-run.sh" "$_approot/stella.sh"
+	cp -f "$STELLA_POOL/stella-bridge.sh" "$_approot/stella-bridge.sh"
 	chmod +x $_approot/stella.sh
 
 	cp -f "$STELLA_POOL/sample-app.sh" "$_approot/sample-app.sh"

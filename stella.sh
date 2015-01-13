@@ -55,70 +55,21 @@ __init_stella_env
 
 # --------------- APP ----------------------------
 if [ "$DOMAIN" == "app" ]; then
-
-	if [ "$ACTION" == "init" ]; then
-
-		if [ "$APPROOT" == "" ]; then
-			APPROOT=$_STELLA_CURRENT_RUNNING_DIR
-		fi
-		if [ "$WORKROOT" == "" ]; then
-			WORKROOT=.
-		fi
-		if [ "$CACHEDIR" == "" ]; then
-			CACHEDIR=$WORKROOT/cache
-		fi
-
-		__init_app $ID $APPROOT $WORKROOT $CACHEDIR
-
-		cd $APPROOT
-		#$STELLA_ROOT/feature.sh install default
-		./stella.sh feature install default
-	else
-
-		if [ ! -f "$_STELLA_APP_PROPERTIES_FILE" ]; then
-			echo "** ERROR properties file does not exist"
-			exit
-		fi
-
-		case $ACTION in
-		    get-data)
-				if [ "$ID" == "all" ]; then
-					__get_all_data
-				else
-					__get_data $ID
-				fi
-				;;
-			get-assets)
-				if [ "$ID" == "all" ]; then
-					__get_all_assets
-				else
-					__get_assets $ID
-				fi
-				;;
-			udpate-data)
-				__update_data $ID
-				;;
-			update-assets)
-				__update_assets $ID
-				;;
-			revert-data)
-				__revert_data $ID
-				;;
-			revert-assets)
-				__revert_assets $ID
-				;;
-			setup-env)
-				if [ "$ID" == "all" ]; then
-					__setup_all_env
-				else
-					__setup_env $ID
-				fi
-				;;
-			*)
-				echo "use option --help for help"
-				;;
-		esac
+	_app_options=
+	if [ "$FORCE" == "1" ]; then
+		_app_options="$_app_options -f"
 	fi
+	if [ ! "$APPROOT" == "" ]; then
+		_app_options="$_app_options --approot=$APPROOT"
+	fi
+	if [ ! "$WORKROOT" == "" ]; then
+		_app_options="$_app_options --workroot=$WORKROOT"
+	fi
+	if [ ! "$CACHEDIR" == "" ]; then
+		_app_options="$_app_options --cachedir=$CACHEDIR"
+	fi
+
+	$STELLA_ROOT/app.sh $ACTION $ID $_app_options
 fi
 
 

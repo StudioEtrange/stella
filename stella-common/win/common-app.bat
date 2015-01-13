@@ -140,7 +140,7 @@ goto :eof
 	>> "%_approot%\.stella-link.bat" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%_STELLA_LINK_CURRENT_FILE_DIR:~0,-1%%
 	>> "%_approot%\.stella-link.bat" ECHO(@set STELLA_ROOT=%%_STELLA_LINK_CURRENT_FILE_DIR%%\%_STELLA_ROOT%
 
-	copy /y "%STELLA_POOL%\stella-run.bat" "%_approot%\stella.bat"
+	copy /y "%STELLA_POOL%\stella-bridge.bat" "%_approot%\stella-bridge.bat"
 
 	copy /y "%STELLA_POOL%\sample-app.bat" "%_approot%\sample-app.bat"
 
