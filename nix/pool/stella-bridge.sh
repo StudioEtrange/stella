@@ -45,7 +45,7 @@ function standalone() {
 	# Try to determine install path of STELLA
 	if [ "$PROVIDED_PATH" == "" ]; then
 		# install STELLA into default path
-		_STELLA_INSTALL_PATH=$(___rel_to_abs_path "./lib-stella2" "$_STELLA_CURRENT_FILE_DIR")
+		_STELLA_INSTALL_PATH=$(___rel_to_abs_path "./lib-stella" "$_STELLA_CURRENT_FILE_DIR")
 	else
 		# install STELLA into ARG#2
 		_STELLA_INSTALL_PATH=$(___rel_to_abs_path "$PROVIDED_PATH" "$_STELLA_CURRENT_FILE_DIR")
@@ -55,7 +55,7 @@ function standalone() {
 		# STELLA already installed, update it
 		(cd "$_STELLA_INSTALL_PATH" && git pull)
 	else
-		git clone https://bitbucket.org/StudioEtrange/lib-stella2.git "$_STELLA_INSTALL_PATH"
+		git clone https://bitbucket.org/StudioEtrange/lib-stella.git "$_STELLA_INSTALL_PATH"
 	fi
 
 	source "$_STELLA_INSTALL_PATH/conf.sh"
@@ -90,10 +90,10 @@ function bootstrap() {
 				echo "STELLA_ROOT=$STELLA_ROOT" >$STELLA_APP_ROOT/.stella-link.sh
 			else
 				# install STELLA into default path, and link to the project
-				_STELLA_INSTALL_PATH=$(___rel_to_abs_path "./lib-stella2" "$STELLA_APP_ROOT")
-				echo "STELLA_ROOT=./lib-stella2" >$STELLA_APP_ROOT/.stella-link.sh
+				_STELLA_INSTALL_PATH=$(___rel_to_abs_path "./lib-stella" "$STELLA_APP_ROOT")
+				echo "STELLA_ROOT=./lib-stella" >$STELLA_APP_ROOT/.stella-link.sh
 			fi
-			git clone https://bitbucket.org/StudioEtrange/lib-stella2.git "$_STELLA_INSTALL_PATH"
+			git clone https://bitbucket.org/StudioEtrange/lib-stella.git "$_STELLA_INSTALL_PATH"
 		else
 			# install STELLA into ARG#2, and linked to the app
 			_STELLA_INSTALL_PATH=$(___rel_to_abs_path "$PROVIDED_PATH" "$STELLA_APP_ROOT")
@@ -102,7 +102,7 @@ function bootstrap() {
 				(cd "$_STELLA_INSTALL_PATH" && git pull)
 			else
 				# install STELLA into arg #2
-				git clone https://bitbucket.org/StudioEtrange/lib-stella2.git "$_STELLA_INSTALL_PATH"
+				git clone https://bitbucket.org/StudioEtrange/lib-stella.git "$_STELLA_INSTALL_PATH"
 			fi
 			echo "PROVIDED_PATH=$ARG" >$STELLA_APP_ROOT/.stella-link.sh
 		fi

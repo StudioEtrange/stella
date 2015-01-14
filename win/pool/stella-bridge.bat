@@ -83,7 +83,7 @@ REM install stella in standalone------------------
 	REM Try to determine install path of STELLA
 	if "%_provided_path%"=="" (
 		REM install STELLA into default path
-		call :___rel_to_abs_path "_stella_install_path" ".\lib-stella2" "%_STELLA_CURRENT_FILE_DIR%"
+		call :___rel_to_abs_path "_stella_install_path" ".\lib-stella" "%_STELLA_CURRENT_FILE_DIR%"
 	) else (
 		REM install STELLA into ARG#2
 		call :___rel_to_abs_path "_stella_install_path" "%_provided_path%" "%_STELLA_CURRENT_FILE_DIR%"
@@ -96,7 +96,7 @@ REM install stella in standalone------------------
 		git pull
 		popd
 	) else (
-		git clone https://bitbucket.org/StudioEtrange/lib-stella2.git "!_stella_install_path!"
+		git clone https://bitbucket.org/StudioEtrange/lib-stella.git "!_stella_install_path!"
 	)
 	
 	call "!_stella_install_path!\conf.bat"
@@ -130,10 +130,10 @@ REM Bootstrap a stella project ------------------
 				> "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(set STELLA_ROOT=!STELLA_ROOT!			
 			) else (
 				REM install STELLA into default path, and link it to the app
-				call :___rel_to_abs_path "_stella_install_path" ".\lib-stella2" "%STELLA_APP_ROOT%"
-				> "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(set STELLA_ROOT=.\lib-stella2
+				call :___rel_to_abs_path "_stella_install_path" ".\lib-stella" "%STELLA_APP_ROOT%"
+				> "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(set STELLA_ROOT=.\lib-stella
 			)
-			git clone https://bitbucket.org/StudioEtrange/lib-stella2.git "!_stella_install_path!"
+			git clone https://bitbucket.org/StudioEtrange/lib-stella.git "!_stella_install_path!"
 		) else (
 
 			REM install STELLA into ARG#2, and linked to the app
@@ -145,7 +145,7 @@ REM Bootstrap a stella project ------------------
 				git pull
 				popd
 			) else (
-				git clone https://bitbucket.org/StudioEtrange/lib-stella2.git "!_stella_install_path!"
+				git clone https://bitbucket.org/StudioEtrange/lib-stella.git "!_stella_install_path!"
 			)
 			> "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(set STELLA_ROOT=%_provided_path%
 		)
