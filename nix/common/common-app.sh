@@ -68,10 +68,6 @@ function __init_app() {
 	fi
 }
 
-function __git_ignore() {
-	echo "" >>$_approot/.stella-link.sh
-}
-
 # extract APP properties
 function __get_all_properties() {
 	local _properties_file=$1
