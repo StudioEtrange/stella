@@ -116,8 +116,8 @@ goto :eof
 	)
 
 
-	if exist "%_app_path%\.stella" (
-		set "_properties_file=%_app_path%\.stella"
+	if exist "%_app_path%\%STELLA_APP_PROPERTIES_FILENAME%" (
+		set "_properties_file=%_app_path%\%STELLA_APP_PROPERTIES_FILENAME%"
 		set "STELLA_APP_ROOT=%_app_path%"
 	)
 	

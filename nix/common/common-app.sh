@@ -18,8 +18,8 @@ function __select_app() {
 		_app_path=$_STELLA_CURRENT_RUNNING_DIR
 	fi
 
-	if [ -f "$_app_path/.stella" ]; then
-		_properties_file="$_app_path/.stella"
+	if [ -f "$_app_path/$STELLA_APP_PROPERTIES_FILENAME" ]; then
+		_properties_file="$_app_path/$STELLA_APP_PROPERTIES_FILENAME"
 		STELLA_APP_ROOT=$_app_path
 	fi
 	
@@ -66,6 +66,10 @@ function __init_app() {
 		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "ENV_LIST"
 		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "INFRA_LIST"
 	fi
+}
+
+function __git_ignore() {
+	echo "" >>$_approot/.stella-link.sh
 }
 
 # extract APP properties
