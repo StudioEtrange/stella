@@ -1,7 +1,7 @@
 #!/bin/bash
 _STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 _STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
-source $_STELLA_CURRENT_FILE_DIR/conf.sh
+source $_STELLA_CURRENT_FILE_DIR/../../conf.sh
 
 
 function usage() {
@@ -14,8 +14,8 @@ function usage() {
 	echo " L     <all|feature name> : list all available features OR available versions of a feature"
 }
 
-function __init_features() {
-	echo "** Initialize minimal features"
+function __features_requirement() {
+	echo "** Install required features"
 	if [ ! -d "$STELLA_APP_FEATURE_ROOT" ]; then
 		mkdir -p "$STELLA_APP_FEATURE_ROOT"
 	fi
@@ -48,7 +48,7 @@ case $ACTION in
     install)
 		case $ID in
 			default)
-				__init_features
+				__features_requirement
 				;;
 
 			*)

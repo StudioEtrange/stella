@@ -71,7 +71,8 @@ function __install_ninja_internal() {
 		#prerequites python
 
 		cd "$INSTALL_DIR"
-		python ./bootstrap.py
+		#python ./bootstrap.py
+		python ./configure.py --bootstrap
 
 		__feature_ninja_$VER
 		if [ ! "$TEST_FEATURE" == "0" ]; then

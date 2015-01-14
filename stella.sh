@@ -69,7 +69,7 @@ if [ "$DOMAIN" == "app" ]; then
 		_app_options="$_app_options --cachedir=$CACHEDIR"
 	fi
 
-	$STELLA_ROOT/app.sh $ACTION $ID $_app_options
+	$STELLA_BIN/app.sh $ACTION $ID $_app_options
 fi
 
 
@@ -83,7 +83,7 @@ if [ "$DOMAIN" == "feature" ]; then
 		_feature_options="$_feature_options $VERS"
 	fi
 	
-	$STELLA_ROOT/feature.sh $ACTION $ID $_feature_options
+	$STELLA_BIN/feature.sh $ACTION $ID $_feature_options
 
 fi
 
@@ -116,7 +116,7 @@ if [ "$DOMAIN" == "virtual" ]; then
 		_virtual_options="$_virtual_options --vmem=$VMEM"
 	fi
 
-	$STELLA_ROOT/virtual.sh $ACTION $ID $_virtual_options
+	$STELLA_BIN/virtual.sh $ACTION $ID $_virtual_options
 	
 fi
 

@@ -160,10 +160,10 @@ function __stella_env_debian() {
 
 
 
-function __init_stella_by_os() {
+function __stella_system_requirement_by_os() {
 	local _os=$1
 
-	echo "** Initializing Stella for $_os"
+	echo "** Install Stella system requirements for $_os"
 	case $_os in
 		ubuntu)
 			__stella_env_ubuntu

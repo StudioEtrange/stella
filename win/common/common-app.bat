@@ -144,7 +144,7 @@ goto :eof
 
 	copy /y "%STELLA_POOL%\sample-app.bat" "%_approot%\sample-app.bat"
 
-	copy /y "%STELLA_ROOT%\stella-pool\sample-stella.properties" "%_approot%\sample-stella.properties"
+	copy /y "%STELLA_POOL%\sample-stella.properties" "%_approot%\sample-stella.properties"
 
 	set "_STELLA_APP_PROPERTIES_FILE=%_approot%\%STELLA_APP_PROPERTIES_FILENAME%"
 	if exist "%_STELLA_APP_PROPERTIES_FILE%" (
@@ -301,11 +301,11 @@ goto :eof
 		if not "!_env_infra_id!"=="current" (
 			echo * Setting up env '!_env_name! [%%A]' with infra '[!_env_infra_id!]' - using !_env_cpu! cpu and !_env_mem! Mo - built with '!_env_distrib!', a !_env_os! operating system
 			
-			call %STELLA_ROOT%\virtual.bat get-box !_env_distrib!
-			call %STELLA_ROOT%\virtual.bat create-box !_env_distrib!
-			call %STELLA_ROOT%\virtual.bat create-env "%%A#!_env_distrib!" -vcpu=!_env_cpu! -vmem=!_env_mem!
+			call %STELLA_BIN%\virtual.bat get-box !_env_distrib!
+			call %STELLA_BIN%\virtual.bat create-box !_env_distrib!
+			call %STELLA_BIN%\virtual.bat create-env "%%A#!_env_distrib!" -vcpu=!_env_cpu! -vmem=!_env_mem!
 			@echo off
-			echo * Now you can use your env using %STELLA_ROOT%\virtual.bat OR with Vagrant
+			echo * Now you can use your env using %STELLA_BIN%\virtual.bat OR with Vagrant
 		) else (
 			echo * Env '!_env_name! [%%A]' is the default current system
 		)

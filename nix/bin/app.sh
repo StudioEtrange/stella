@@ -1,7 +1,7 @@
 #!/bin/bash
 _STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 _STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
-source $_STELLA_CURRENT_FILE_DIR/conf.sh
+source $_STELLA_CURRENT_FILE_DIR/../../conf.sh
 
 function usage() {
     echo "USAGE :"
@@ -51,9 +51,8 @@ if [ "$ACTION" == "init" ]; then
 
     __init_app $ID $APPROOT $WORKROOT $CACHEDIR
 
-    cd $APPROOT
-    #$STELLA_ROOT/feature.sh install default
-    ./stella.sh feature install default
+    #cd $APPROOT
+    #./stella-bridge.sh feature install default
 else
 
     if [ ! -f "$_STELLA_APP_PROPERTIES_FILE" ]; then

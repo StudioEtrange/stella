@@ -33,9 +33,12 @@ function __init_app() {
 	local _workroot=$3
 	local _cachedir=$4
 
-	mkdir -p $_STELLA_CURRENT_RUNNING_DIR/$_approot
-	_approot=$(__rel_to_abs_path "$_approot" "$_STELLA_CURRENT_RUNNING_DIR")
-	
+	if [ "$(__is_abs "$_approot")" == "FALSE" ]; then
+		mkdir -p $_STELLA_CURRENT_RUNNING_DIR/$_approot
+		_approot=$(__rel_to_abs_path "$_approot" "$_STELLA_CURRENT_RUNNING_DIR")
+	else
+		mkdir -p $_approot
+	fi
 
 	_stella_root=$(__abs_to_rel_path "$STELLA_ROOT" "$_approot")
 
@@ -44,12 +47,12 @@ function __init_app() {
 	# echo "STELLA_ROOT=$_stella_root" >$_approot/.stella-link.sh
 
 	cp -f "$STELLA_POOL/stella-bridge.sh" "$_approot/stella-bridge.sh"
-	chmod +x $_approot/stella.sh
+	chmod +x $_approot/stella-bridge.sh
 
 	cp -f "$STELLA_POOL/sample-app.sh" "$_approot/sample-app.sh"
 	chmod +x $_approot/sample-app.sh
 
-	cp -f "$STELLA_ROOT/stella-pool/sample-stella.properties" "$_approot/sample-stella.properties"
+	cp -f "$STELLA_POOL/sample-stella.properties" "$_approot/sample-stella.properties"
 
 	_STELLA_APP_PROPERTIES_FILE="$_approot/$STELLA_APP_PROPERTIES_FILENAME"
 	if [ -f "$_STELLA_APP_PROPERTIES_FILE" ]; then
@@ -315,11 +318,11 @@ function __setup_env() {
 		if [ ! "$_env_infra_id" == "current" ]; then
 			echo" * Setting up env '$_env_name [$a]' with infra '[$_env_infra_id]' - using $_env_cpu cpu and $_env_mem Mo - built with '$_env_distrib', a $_env_os operating system"
 
-			$STELLA_ROOT/virtual.sh get-box $_env_distrib
-			$STELLA_ROOT/virtual.sh create-box $_env_distrib
-			$STELLA_ROOT/virtual.sh create-env $a#$_env_distrib --vcpu=$_env_cpu --vmem=$_env_mem
+			$STELLA_BIN/virtual.sh get-box $_env_distrib
+			$STELLA_BIN/virtual.sh create-box $_env_distrib
+			$STELLA_BIN/virtual.sh create-env $a#$_env_distrib --vcpu=$_env_cpu --vmem=$_env_mem
 
-			echo " * Now you can use your env using $STELLA_ROOT/virtual.sh OR with Vagrant"
+			echo " * Now you can use your env using $STELLA_BIN/virtual.sh OR with Vagrant"
 		else
 			echo "* Env '$_env_name [$a]' is the default current system"
 		fi

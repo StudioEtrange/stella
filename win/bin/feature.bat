@@ -3,7 +3,7 @@
 echo ***************************************************************
 echo ** EXECUTING : %~n0
 
-call %~dp0\conf.bat
+call %~dp0\..\..\conf.bat
 
 :: arguments
 set "params=action:"install list" id:"default all %__STELLA_FEATURE_LIST%""
@@ -20,11 +20,11 @@ call %STELLA_COMMON%\common.bat :init_stella_env
 if "%action%"=="install" (
 
 	if "%id%"=="default" (
-		call :init_features
+		call :features_requirement
 	) else (
 		call %STELLA_COMMON%\common-feature.bat :install_feature %id% %-vers%
 	)
-	goto :end	
+	goto :end
 )
 
 
@@ -48,7 +48,7 @@ goto :usage
    	echo ----------------
 	echo List of commands
    	echo	* feature management :
-	echo 		%~n0 install default : install minimal default feature for Stella
+	echo 		%~n0 install default : install required features for Stella
 	echo 		%~n0 install ^<feature name^> [-vers=^<version^>] : install a feature. version is optional
 	echo 		%~n0 list ^<all^|feature name^>: list all available feature OR available version of a feature
 	echo 		%~n0 list all: list available features
@@ -56,8 +56,8 @@ goto :end
 
 
 
-:init_features
-	echo ** Initialize minimal features
+:features_requirement
+	echo ** Install required features
 	if not exist "%STELLA_APP_FEATURE_ROOT%" mkdir "%STELLA_APP_FEATURE_ROOT%"
 	
 	call %STELLA_COMMON%\common-feature.bat :unzip

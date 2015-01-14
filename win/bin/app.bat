@@ -2,7 +2,7 @@
 @echo off
 echo ***************************************************************
 echo ** EXECUTING : %~n0
-call %~dp0\conf.bat
+call %~dp0\..\..\conf.bat
 
 
 :: arguments
@@ -34,16 +34,18 @@ if "%ACTION%"=="init" (
 
 	call %STELLA_COMMON%\common-app :init_app "%id%" "!-approot!" "!-workroot!" "!-cachedir!"
 
-	cd /D "!-approot!"
-	call stella.bat feature install default
+	REM cd /D "!-approot!"
+	REM call stella-bridge.bat feature install default
 
 	@echo off
+	goto :end
 )
 
 if not "%ACTION%"=="init" (
 	if not exist "%_STELLA_APP_PROPERTIES_FILE%" (
 		echo ** ERROR properties file does not exist
 	)
+	goto :end
 )
 
 if "%ACTION%"=="get-data" (
@@ -52,6 +54,7 @@ if "%ACTION%"=="get-data" (
 	) else (
 		call %STELLA_COMMON%\common-app.bat :get_data "%id%"
 	)
+	goto :end
 )
 
 if "%ACTION%"=="get-assets" (
@@ -60,22 +63,27 @@ if "%ACTION%"=="get-assets" (
 	) else (
 		call %STELLA_COMMON%\common-app.bat :get_assets "%id%"
 	)
+	goto :end
 )
 
 if "%ACTION%"=="update-data" (
 	call %STELLA_COMMON%\common-app.bat :update_data "%id%"
+	goto :end
 )
 
 if "%ACTION%"=="update-assets" (
 	call %STELLA_COMMON%\common-app.bat :update_assets "%id%"
+	goto :end
 )
 
 if "%ACTION%"=="revert-data" (
 	call %STELLA_COMMON%\common-app.bat :revert_data "%id%"
+	goto :end
 )
 
 if "%ACTION%"=="revert-assets" (
 	call %STELLA_COMMON%\common-app.bat :revert_assets "%id%"
+	goto :end
 )
 
 
@@ -85,6 +93,7 @@ if "%ACTION%"=="setup-env" (
 	) else (
 		call %STELLA_COMMON%\common-app.bat :setup_env "%id%"
 	)
+	goto :end
 )
 
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 _CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-source $_CURRENT_FILE_DIR/stella.sh include
+source $_CURRENT_FILE_DIR/stella-bridge.sh include
 
 # ARGUMENTS -----------------------------------------------------------------------------------
 PARAMETERS="

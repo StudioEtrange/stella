@@ -103,10 +103,10 @@ goto :eof
 
 :: INIT OS PACKAGES --------------
 
-:init_stella_by_os
+:__stella_system_requirement_by_os
 	set _os=%~1
 	
-	echo ** Initializing Stella for %_os%
+	echo ** Installing Stella system requirements for %_os%
 goto :eof
 
 

@@ -12,3 +12,5 @@ As a library or tools collection inside your project
 
 	cd your_project
 	curl http://stella.sh | sh install <your_project/stella>
+
+

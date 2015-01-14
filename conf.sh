@@ -8,8 +8,9 @@ fi
 
 # STELLA PATHS ---------------------------------------------
 STELLA_ROOT="$_STELLA_CURRENT_FILE_DIR"
-STELLA_COMMON="$STELLA_ROOT/stella-common/nix"
-STELLA_POOL="$STELLA_ROOT/stella-pool/nix"
+STELLA_COMMON="$STELLA_ROOT/nix/common"
+STELLA_POOL="$STELLA_ROOT/nix/pool"
+STELLA_BIN="$STELLA_ROOT/nix/bin"
 STELLA_FEATURE_RECIPE="$STELLA_POOL/feature-recipe"
 
 # STELLA INCLUDE ---------------------------------------------
@@ -69,7 +70,7 @@ VIRTUAL_WORK_ROOT="$STELLA_APP_WORK_ROOT/virtual"
 VIRTUAL_TEMPLATE_ROOT="$VIRTUAL_WORK_ROOT/template"
 VIRTUAL_ENV_ROOT="$VIRTUAL_WORK_ROOT/env"
 
-VIRTUAL_INTERNAL_ROOT="$STELLA_ROOT/stella-virtual"
+VIRTUAL_INTERNAL_ROOT="$STELLA_ROOT/common/virtual"
 VIRTUAL_INTERNAL_TEMPLATE_ROOT="$VIRTUAL_INTERNAL_ROOT/template"
 VIRTUAL_CONF_FILE="$VIRTUAL_INTERNAL_ROOT/virtual.ini"
 
@@ -87,7 +88,7 @@ __STELLA_DISTRIB_LIST="ubuntu64_13_10 debian64_7_5 centos64_6_5 archlinux boot2d
 __STELLA_FEATURE_LIST="wget ninja cmake packer autotools perl"
 
 # API ---------------------------------------------
-STELLA_API_COMMON_PUBLIC="is_abs argparse get_ressource download_uncompress copy_folder_content_into del_folder get_key"
+STELLA_API_COMMON_PUBLIC="is_abs argparse get_ressource download_uncompress copy_folder_content_into del_folder get_key add_key del_key"
 STELLA_API_APP_PUBLIC="get_data get_assets get_all_data get_all_assets update_data update_assets revert_data revert_assets get_env_properties setup_env"
 STELLA_API_FEATURE_PUBLIC="install_feature init_feature"
 STELLA_API_VIRTUAL_PUBLIC=""

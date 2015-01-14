@@ -3,33 +3,33 @@
 echo ***************************************************************
 echo ** EXECUTING : %~n0
 
-call %~dp0\conf.bat
-
+call %~dp0\stella-bridge.bat :include
 
 :: arguments
-set "params="
-set "options="
+set "params=param1:"param1 param2""
+set "options=-f: -opt1:"#default_val val1 val2 val3""
+
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
 if "%ARGOPT_FLAG_HELP%"=="1" goto :usage
 
-:: setting env
-call %STELLA_COMMON%\common.bat :init_stella_env
-
-call %STELLA_COMMON%\platform.bat :init_stella_by_os %STELLA_CURRENT_OS%
 
 
-goto :end
+echo PARAM1 = %param1%
+echo OPT1 = %-opt1%
+echo F Flag = %-f%
+
+
+call %STELLA_API%is_path_abs "VAR1" "c:\lib"
+echo %VAR1%
+
+goto :eof
 
 :usage
-   echo USAGE :
-   echo %~n0 %ARGOPT_HELP_SYNTAX%
-goto :end
+	echo USAGE :
+	echo %~n0 %ARGOPT_HELP_SYNTAX%
+goto :eof
 
 
-
-:end
-echo ** END **
-cd /D %_STELLA_CURRENT_RUNNING_DIR%
 @echo on
 @endlocal

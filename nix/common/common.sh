@@ -512,7 +512,6 @@ function __ini_file() {
 		processing = 0;
 		skip = 0;
 		modified = 0;
-		added = 0;
 	}
 
 	# Entering the section, set the flag
@@ -531,19 +530,6 @@ function __ini_file() {
 		}
 	}
 
-	# Clear the section flag
-	/^\[/ {
-		if( match($0,"^\['$_SECTION'\]") == 0 ) {
-			if(processing && !added && !modified) {
-				if ( mode == "ADD" ) {
-					print "'$_KEY'="val;
-					added = 1;
-				}
-			}
-			processing = 0;
-		}
-
-	}
 
 	# Output a line (that we didnt output above)
 	/.*/ {
@@ -554,7 +540,7 @@ function __ini_file() {
 			print $0;
 	}
 	END {
-		if(!added && !modified && mode == "ADD") {
+		if(!modified && mode == "ADD") {
 			if(!processing) print "['$_SECTION_NAME']"
 			if("'$_KEY'" != "") {
 				print "'$_KEY'="val;

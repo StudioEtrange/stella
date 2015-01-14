@@ -6,7 +6,7 @@ echo ** Requirement : Vagrant 1.6 from http://www.vagrantup.com/
 echo ** Recommanded : vagrant-vbguest plugin https://github.com/dotless-de/vagrant-vbguest http://kvz.io/blog/2013/01/16/vagrant-tip-keep-virtualbox-guest-additions-in-sync/
 echo 					vagrant plugin install vagrant-vbguest
 echo ** Requirement : Virtualbox 4.3.12 from https://www.virtualbox.org/
-call %~dp0\conf.bat
+call %~dp0\..\..\conf.bat
 
 
 :: docker installation on windows : http://docs.docker.io/en/latest/installation/windows/

@@ -32,7 +32,7 @@ if "%DOMAIN%"=="app" (
 	
 	if "%-f%"=="1" set "_app_options=!_app_options! -f"
 	
-	call %STELLA_ROOT%\app.bat %ACTION% %id% !_app_options!
+	call %STELLA_BIN%\app.bat %ACTION% %id% !_app_options!
 	@echo off
 	goto :end
 
@@ -60,7 +60,7 @@ if "%DOMAIN%"=="feature" (
 	if "%-f%"=="1" set "_feature_options=%_feature_options% -f"
 	if not "%-vers%"=="1" set "_feature_options=%_feature_options% -vers=%-vers%"
 	
-	call %STELLA_ROOT%\feature.bat %ACTION% %id% %_feature_options%
+	call %STELLA_BIN%\feature.bat %ACTION% %id% %_feature_options%
 	@echo off
 	goto :end
 	
@@ -78,7 +78,7 @@ if "%DOMAIN%"=="virtual" (
 
 	if "%-f%"=="1" set "_virtual_options=!_virtual_options! -f"
 	
-	call %STELLA_ROOT%\virtual.bat %ACTION% %id% !_virtual_options!
+	call %STELLA_BIN%\virtual.bat %ACTION% %id% !_virtual_options!
 	@echo off
 	goto :end
 )
