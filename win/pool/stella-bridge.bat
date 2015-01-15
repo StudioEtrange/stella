@@ -118,7 +118,8 @@ REM Bootstrap a stella project ------------------
 
 	if "%IS_STELLA_LINKED%"=="TRUE" (
 		echo ** This app/project is  linked to a STELLA installation located in !STELLA_ROOT!
-		call !STELLA_ROOT!\win\bin\feature.bat install default
+		REM call "!STELLA_ROOT!\conf.bat"
+		REM call !STELLA_BIN!\feature.bat install default
 		@echo off
 	) else (
 

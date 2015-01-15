@@ -79,7 +79,8 @@ function standalone() {
 function bootstrap() {
 	if [ "$IS_STELLA_LINKED" == "TRUE" ]; then
 		echo "** This app/project is linked to a STELLA installation located in $STELLA_ROOT"
-		$STELLA_ROOT/nix/bin/feature.sh install default
+		#source "$STELLA_ROOT/conf.sh"
+		#$STELLA_BIN/feature.sh install default
 	else
 
 		# Try to determine install path of STELLA
