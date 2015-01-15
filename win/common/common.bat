@@ -659,6 +659,7 @@ goto :eof
 :: ARG2 path to repository
 :: https://vcversioner.readthedocs.org/en/latest/
 :: TODO : should work only if at least one tag exist ?
+:: TODO : should have problem when merge exist ? : http://www.xerxesb.com/2010/git-describe-and-the-tale-of-the-wrong-commits/
 :git_project_version
 	set "_result_var_git_project_version=%~1"
 	set "_path=%~2"
@@ -680,7 +681,7 @@ goto :eof
 	)
 
 	if "%_opt_version_short%"=="ON" (
-		for /f %%m in ('git --git-dir "%_path%/.git" tag') do (
+		for /f %%m in ('git --git-dir "%_path%/.git" describe --tags --abbrev=0') do (
 			set "_version=%%m"
 		)
 	)

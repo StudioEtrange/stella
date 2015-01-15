@@ -487,6 +487,7 @@ function __mercurial_project_version() {
 
 # https://vcversioner.readthedocs.org/en/latest/
 # TODO : should work only if at least one tag exist ?
+# TODO : should have problem when merge exist ? : http://www.xerxesb.com/2010/git-describe-and-the-tale-of-the-wrong-commits/
 function __git_project_version() {
 	local _PATH=$1
 	local _OPT=$2
@@ -503,7 +504,7 @@ function __git_project_version() {
 			echo "$(git --git-dir "$_PATH/.git" describe --tags --long)"
 		fi
 		if [ "$_opt_version_short" == "ON" ]; then
-			echo "$(git --git-dir "$_PATH/.git" tag)"
+			echo "$(git --git-dir "$_PATH/.git" describe --tags --abbrev=O)"
 		fi
 	fi
 }
