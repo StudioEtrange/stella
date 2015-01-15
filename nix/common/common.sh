@@ -443,6 +443,30 @@ function __sevenzip-strip() (
     rm -Rf "$temp"
 )
 
+# SCM ---------------------------------------------
+# TODO : should work only if at least one tag exist ?
+function __mercurial_project_version() {
+	local _PATH=$1
+	local _OPT=$2
+
+	_opt_version_short=OFF
+	_opt_version_long=OFF
+	for o in $_OPT; do
+		[ "$o" == "SHORT" ] && _opt_version_short=ON
+		[ "$o" == "LONG" ] && _opt_version_long=ON
+	done
+
+	if [[ -n `which hg 2> /dev/null` ]]; then
+		if [ "$_opt_version_long" == "ON" ]; then
+			#echo "$(cd "$SCRIPT_ROOT" && hg parent --template "v{latesttag}-rev{latesttagdistance} ({node|short})")"
+			echo "$(cd "$SCRIPT_ROOT" && hg log -r . --template "v{latesttag}-rev{latesttagdistance} ({node|short})")"
+		fi
+		if [ "$_opt_version_short" == "ON" ]; then
+			#echo "$(cd "$SCRIPT_ROOT" && hg parent --template "v{latesttag}")"
+			echo "$(cd "$SCRIPT_ROOT" && hg log -r . --template "v{latesttag}")"
+		fi
+	fi
+}
 
 # INI FILE MANAGEMENT---------------------------------------------------
 function __get_key() {
