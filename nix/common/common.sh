@@ -444,6 +444,7 @@ function __sevenzip-strip() (
 )
 
 # SCM ---------------------------------------------
+# https://vcversioner.readthedocs.org/en/latest/
 # TODO : should work only if at least one tag exist ?
 function __mercurial_project_version() {
 	local _PATH=$1
@@ -458,15 +459,37 @@ function __mercurial_project_version() {
 
 	if [[ -n `which hg 2> /dev/null` ]]; then
 		if [ "$_opt_version_long" == "ON" ]; then
-			#echo "$(cd "$SCRIPT_ROOT" && hg parent --template "v{latesttag}-rev{latesttagdistance} ({node|short})")"
-			echo "$(cd "$SCRIPT_ROOT" && hg log -r . --template "v{latesttag}-rev{latesttagdistance} ({node|short})")"
+			echo "$(hg log -R "$_PATH" -r . --template "{latesttag}-{latesttagdistance}-{node|short}")"
 		fi
 		if [ "$_opt_version_short" == "ON" ]; then
-			#echo "$(cd "$SCRIPT_ROOT" && hg parent --template "v{latesttag}")"
-			echo "$(cd "$SCRIPT_ROOT" && hg log -r . --template "v{latesttag}")"
+			echo "$(hg log -R "$_PATH" -r . --template "v{latesttag}")"
 		fi
 	fi
 }
+
+# https://vcversioner.readthedocs.org/en/latest/
+# TODO : should work only if at least one tag exist ?
+function __git_project_version() {
+	local _PATH=$1
+	local _OPT=$2
+
+	_opt_version_short=OFF
+	_opt_version_long=OFF
+	for o in $_OPT; do
+		[ "$o" == "SHORT" ] && _opt_version_short=ON
+		[ "$o" == "LONG" ] && _opt_version_long=ON
+	done
+
+	if [[ -n `which hg 2> /dev/null` ]]; then
+		if [ "$_opt_version_long" == "ON" ]; then
+			echo "$(git --git-dir "$_PATH/.git" describe --tags --long)"
+		fi
+		if [ "$_opt_version_short" == "ON" ]; then
+			echo "$(git --git-dir "$_PATH/.git" describe --tags)"
+		fi
+	fi
+}
+
 
 # INI FILE MANAGEMENT---------------------------------------------------
 function __get_key() {

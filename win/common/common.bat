@@ -617,6 +617,77 @@ goto :eof
 	del /q /s /f "%FLAG_FILE%" >nul
 goto :eof
 
+:: SCM -------------------------------------
+
+
+:: ARG1 is the name of the return variable
+:: ARG2 path to repository
+:: https://vcversioner.readthedocs.org/en/latest/
+:: TODO : should work only if at least one tag exist ?
+:mercurial_project_version
+	set "_result_var_mercurial_project_version=%~1"
+	set "_path=%~2"
+	set "_OPT=%~4"
+
+	set "_version="
+
+	set _opt_version_short=OFF
+	set _opt_version_long=OFF
+	for %%O in (%_OPT%) do (
+		if "%%O"=="LONG" set _opt_version_long=ON
+		if "%%O"=="SHORT" set _opt_version_short=ON
+	)
+
+	if "%_opt_version_long%"=="ON" (
+		for /f %%m in ('hg log -R "%_path%" -r . --template "{latesttag}-{latesttagdistance}-{node|short}"') do (
+			set "_version=%%m"
+		)
+	)
+
+	if "%_opt_version_short%"=="ON" (
+		for /f %%m in ('hg log -R "%_path%" -r . --template "{latesttag}"') do (
+			set "_version=%%m"
+		)
+	)
+
+
+	set "%_result_var_mercurial_project_version%=!_version!"
+goto :eof
+
+:: ARG1 is the name of the return variable
+:: ARG2 path to repository
+:: https://vcversioner.readthedocs.org/en/latest/
+:: TODO : should work only if at least one tag exist ?
+:git_project_version
+	set "_result_var_git_project_version=%~1"
+	set "_path=%~2"
+	set "_OPT=%~4"
+
+	set "_version="
+
+	set _opt_version_short=OFF
+	set _opt_version_long=OFF
+	for %%O in (%_OPT%) do (
+		if "%%O"=="LONG" set _opt_version_long=ON
+		if "%%O"=="SHORT" set _opt_version_short=ON
+	)
+
+	if "%_opt_version_long%"=="ON" (
+		for /f %%m in ('git --git-dir "%_path%/.git" describe --tags --long') do (
+			set "_version=%%m"
+		)
+	)
+
+	if "%_opt_version_short%"=="ON" (
+		for /f %%m in ('git --git-dir "%_path%/.git" describe --tags') do (
+			set "_version=%%m"
+		)
+	)
+
+
+	set "%_result_var_git_project_version%=!_version!"
+goto :eof
+
 
 :: VARIOUS ---------------------------------------
 :: check if a "findstr windows regexp" can be found in a string
