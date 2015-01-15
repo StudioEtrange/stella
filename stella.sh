@@ -10,7 +10,7 @@ function usage() {
 	echo "List of commands"
 	echo " o-- application management :"
 	echo " L     app init <application name> [--approot=<path>] [--workroot=<abs or relative path to approot>] [--cachedir=<abs or relative path to approot>]"
-	echo " L     app get-data|get-assets|update-data|update-assets|revert-data|revert-assets <data id|assets id|all>"
+	echo " L     app get-data|get-assets|update-data|update-assets|revert-data|revert-assets|get-features <data id|assets id|all>"
 	echo " L     app setup-env <env id|all> : download, build, deploy and run virtual environment based on app properties"
 	echo " o-- feature management :"
 	echo " L     feature install default : install minimal default feature for Stella"

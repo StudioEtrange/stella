@@ -39,6 +39,16 @@ function __init_feature() {
 	fi
 }
 
+function __install_feature_list() {
+	local _list=$1
+
+	for f in $_list; do
+		_VER=${f##*#}
+		_FEATURE=${f%#*}
+		__install_feature $_FEATURE $_VER
+	done
+}
+
 function __install_feature() {
 	local _FEATURE=$1
 	local _VER=$2
@@ -57,6 +67,7 @@ function __install_feature() {
 			if [ ! "$FEATURE_PATH" == "" ]; then
 				PATH="$FEATURE_PATH:$PATH"
 			fi
+			__add_app_feature
 		fi
 	fi
 }

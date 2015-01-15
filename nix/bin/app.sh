@@ -20,7 +20,7 @@ function usage() {
 
 # MAIN ------------------------
 PARAMETERS="
-ACTION=                         'action'                    a           'init get-data get-assets update-data update-assets revert-data revert-assets setup-env'            Action to compute.
+ACTION=                         'action'                    a           'init get-data get-assets update-data update-assets revert-data revert-assets setup-env get-features'            Action to compute.
 ID=                          ''                             s           ''                      Data or Assets or Env ID or Application name.
 "
 OPTIONS="
@@ -66,6 +66,13 @@ else
                 __get_all_data
             else
                 __get_data $ID
+            fi
+            ;;
+        get-features)
+            if [ "$ID" == "all" ]; then
+                __get_features
+            else
+                echo " ** use all as ID : get-features all"
             fi
             ;;
         get-assets)

@@ -27,6 +27,7 @@ function __select_app() {
 
 }
 
+
 function __init_app() {
 	local _app_name=$1
 	local _approot=$2
@@ -65,6 +66,7 @@ function __init_app() {
 		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "ASSETS_LIST"
 		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "ENV_LIST"
 		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "INFRA_LIST"
+		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST"
 	fi
 }
 
@@ -82,6 +84,7 @@ function __get_all_properties() {
 		__get_key "$_properties_file" "STELLA" "ASSETS_LIST" "PREFIX"
 		__get_key "$_properties_file" "STELLA" "ENV_LIST" "PREFIX"
 		__get_key "$_properties_file" "STELLA" "INFRA_LIST" "PREFIX"
+		__get_key "$_properties_file" "STELLA" "APP_FEATURE_LIST" "PREFIX"
 
 		__get_data_properties "$_properties_file" "$STELLA_DATA_LIST"
 		__get_assets_properties "$_properties_file" "$STELLA_ASSETS_LIST"
@@ -178,6 +181,18 @@ function __get_env_properties() {
 	fi
 }
 
+
+
+function __add_app_feature() {
+
+	if [ -f "$_STELLA_APP_PROPERTIES_FILE" ]; then
+		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" "$FEATURE_LIST_ENABLED"
+	fi
+}
+
+function __get_features() {
+	__install_feature_list "$STELLA_APP_FEATURE_LIST"
+}
 
 function __get_data() {
 	local _list_id=$1
