@@ -2,12 +2,42 @@ if [ ! "$_AUTOTOOLS_INCLUDED_" == "1" ]; then
 _AUTOTOOLS_INCLUDED_=1
 
 function __list_autotools() {
-	echo "N/A"
+	echo "pack"
+}
+
+
+function __default_autotools() {
+	echo "pack"
 }
 
 function __install_autotools() {
+	local _VER=$1
+	local _DEFAULT_VER="$(__default_autotools)"
+
 	[ "$FORCE" ] && rm -Rf "$STELLA_APP_FEATURE_ROOT/autotools"
 	[ ! -d "$STELLA_APP_FEATURE_ROOT/autotools" ] && mkdir -p "$STELLA_APP_FEATURE_ROOT/autotools"
+	
+	if [ "$_VER" == "" ]; then
+		__install_autotools_$_DEFAULT_VER
+	else
+		__install_autotools_$_VER
+	fi
+}
+
+
+function __feature_autotools() {
+	local _VER=$1
+	local _DEFAULT_VER="$(__default_autotools)"
+
+	if [ "$_VER" == "" ]; then
+		__feature_autotools_$_DEFAULT_VER
+	else
+		__feature_autotools_$_VER
+	fi
+}
+
+
+function __install_autotools_pack() {
 	# order is important
 	# see http://petio.org/tools.html
 	__install_m4_1_4_17
@@ -16,7 +46,7 @@ function __install_autotools() {
 	__install_libtool_2_4_2
 	__feature_autotools
 }
-function __feature_autotools() {
+function __feature_autotools_pack() {
 	TEST_FEATURE=0
 	FEATURE_PATH=
 	FEATURE_VER=
@@ -24,8 +54,11 @@ function __feature_autotools() {
 		TEST_FEATURE="$STELLA_APP_FEATURE_ROOT/autotools/bin"
 		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : autotools in $TEST_FEATURE"
 		FEATURE_PATH="$TEST_FEATURE"
+		FEATURE_VER=pack
 	fi
 }
+
+# ---------------------------------------
 
 function __install_autoconf_2_69() {
 	URL=http://ftp.gnu.org/gnu/autoconf/autoconf-2.69.tar.gz

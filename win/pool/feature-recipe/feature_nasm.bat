@@ -6,13 +6,17 @@ goto :eof
 	set "%~1=2_11"
 goto :eof
 
+:default_nasm
+	set "%~1=2_11"
+goto :eof
+
 :install_nasm
 	set "_VER=%~1"
-	set "_DEFAULT_VER=2_11"
+	call :default_nasm "_DEFAULT_VER"
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\nasm mkdir %STELLA_APP_FEATURE_ROOT%\nasm
 	if "%_VER%"=="" (
-		call :install_nasm_%_DEFAULT_VER%
+		call :install_nasm_!_DEFAULT_VER!
 	) else (
 		call :install_nasm_%_VER%
 	)
@@ -20,10 +24,10 @@ goto :eof
 
 :feature_nasm
 	set "_VER=%~1"
-	set "_DEFAULT_VER=2_11"
+	call :default_nasm "_DEFAULT_VER"
 
 	if "%_VER%"=="" (
-		call :feature_nasm_%_DEFAULT_VER%
+		call :feature_nasm_!_DEFAULT_VER!
 	) else (
 		call :feature_nasm_%_VER%
 	)

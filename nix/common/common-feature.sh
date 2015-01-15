@@ -21,14 +21,17 @@ function __init_feature() {
 	local _FEATURE=$1
 	local _VER=$2
 
+	source $STELLA_FEATURE_RECIPE/feature_$_FEATURE.sh
+	if [ "$_VER" == "" ]; then
+		_VER="$(__default_$_FEATURE)"
+	fi
+
 	_flag=0
 	for a in $FEATURE_LIST_ENABLED; do
-		# TODO what if _VER is null ?
 		[ "$_FEATURE#$_VER" == "$a" ] && _flag=1
 	done
 	if [ "$_flag" == "0" ]; then
 		FEATURE_PATH=
-		source $STELLA_FEATURE_RECIPE/feature_$_FEATURE.sh
 		__feature_"$_FEATURE" $_VER
 		if [ ! "$TEST_FEATURE" == "0" ]; then
 			FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $_FEATURE#$FEATURE_VER"
@@ -41,10 +44,16 @@ function __init_feature() {
 
 function __install_feature_list() {
 	local _list=$1
+	local _char="#"
 
 	for f in $_list; do
-		_VER=${f##*#}
-		_FEATURE=${f%#*}
+		if [ -z "${f##*$_char*}" ]; then
+			_VER=${f##*#}
+			_FEATURE=${f%#*}
+		else
+			_VER=
+			_FEATURE=$f
+		fi
 		__install_feature $_FEATURE $_VER
 	done
 }
@@ -53,14 +62,18 @@ function __install_feature() {
 	local _FEATURE=$1
 	local _VER=$2
 
+	source $STELLA_FEATURE_RECIPE/feature_$_FEATURE.sh
+
+	if [ "$_VER" == "" ]; then
+		_VER="$(__default_$_FEATURE)"
+	fi
+
 	_flag=0
 	for a in $FEATURE_LIST_ENABLED; do 
-		# TODO what if _VER is null ?
 		[ "$_FEATURE#$_VER" == "$a" ] && _flag=1
 	done
 	if [ "$_flag" == "0" ]; then
 		FEATURE_PATH=
-		source $STELLA_FEATURE_RECIPE/feature_$_FEATURE.sh
 		__install_"$_FEATURE" $_VER
 		if [ ! "$TEST_FEATURE" == "0" ]; then
 			FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $_FEATURE#$FEATURE_VER"
@@ -69,6 +82,8 @@ function __install_feature() {
 			fi
 			__add_app_feature
 		fi
+	else
+		echo "** Feature $_FEATURE#$_VER already installed"
 	fi
 }
 
@@ -95,7 +110,7 @@ function __reinit_all_features() {
 
 
 #FEATURES FOR CROSS COMPILING------------------------------------
-
+# TODO : migrate to separate recipe (or erase?)
 function __texinfo() {
 	URL=http://ftp.gnu.org/gnu/texinfo/texinfo-5.1.tar.xz
 	VER=5.1

@@ -7,10 +7,14 @@ function __list_perl() {
 	echo "5_18_2"
 }
 
+function __default_perl() {
+	echo "5_18_2"
+}
+
 
 function __install_perl() {
 	local _VER=$1
-	local _DEFAULT_VER="5_18_2"
+	local _DEFAULT_VER="$(__default_perl)"
 
 	mkdir -p $STELLA_APP_FEATURE_ROOT/perl
 
@@ -22,7 +26,7 @@ function __install_perl() {
 }
 function __feature_perl() {
 	local _VER=$1
-	local _DEFAULT_VER="5_18_2"
+	local _DEFAULT_VER="$(__default_perl)"
 
 	if [ "$_VER" == "" ]; then
 		__feature_perl_$_DEFAULT_VER

@@ -10,6 +10,7 @@ function usage() {
     echo " o-- application management :"
     echo " L     init <application name> [--approot=<path>] [--workroot=<abs or relative path to approot>] [--cachedir=<abs or relative path to approot>]"
     echo " L     get-data|get-assets|update-data|update-assets|revert-data|revert-assets <data id|assets id|all>"
+    echo " L     get-features all"
     echo " L     setup-env <env id|all> : download, build, deploy and run virtual environment based on app properties"
     
 
@@ -72,7 +73,7 @@ else
             if [ "$ID" == "all" ]; then
                 __get_features
             else
-                echo " ** use all as ID : get-features all"
+                usage
             fi
             ;;
         get-assets)

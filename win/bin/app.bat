@@ -6,7 +6,7 @@ call %~dp0\..\..\conf.bat
 
 
 :: arguments
-set "params=action:"init get-data get-assets update-data update-assets revert-data revert-assets setup-env" id:"_ANY_""
+set "params=action:"init get-data get-assets update-data update-assets revert-data revert-assets setup-env get-features" id:"_ANY_""
 set "options=-f: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_"
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
@@ -44,8 +44,8 @@ if "%ACTION%"=="init" (
 if not "%ACTION%"=="init" (
 	if not exist "%_STELLA_APP_PROPERTIES_FILE%" (
 		echo ** ERROR properties file does not exist
+		goto :end
 	)
-	goto :end
 )
 
 if "%ACTION%"=="get-data" (
@@ -53,6 +53,15 @@ if "%ACTION%"=="get-data" (
 		call %STELLA_COMMON%\common-app.bat :get_all_data
 	) else (
 		call %STELLA_COMMON%\common-app.bat :get_data "%id%"
+	)
+	goto :end
+)
+
+if "%ACTION%"=="get-features" (
+	if "%id%"=="all" (
+		call %STELLA_COMMON%\common-app.bat :get_features
+	) else (
+		goto :usage
 	)
 	goto :end
 )
@@ -110,6 +119,7 @@ REM ------------------------------------ INTERNAL FUNCTIONS --------------------
 	echo	* application management :
 	echo 		%~n0 init ^<application name^> [-approot=^<path^>] [-workroot=^<path^>] [-cachedir=^<path^>]
 	echo 		%~n0 get-data^|get-assets^|update-data^|update-assets^|revert-data^|revert-assets ^<data id^|assets id^|all^>
+	echo 		%~n0 get-features all
 	echo 		%~n0 setup-env ^<env id^|all^> : download, build, deploy and run virtual environment based on app properties
 goto :end
 

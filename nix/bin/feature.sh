@@ -9,18 +9,10 @@ function usage() {
 	echo "----------------"
 	echo "List of commands"
 	echo " o-- Feature management :"
-	echo " L     install default : install minimal default features for Stella"
+	echo " L     install required : install minimal required features for Stella"
 	echo " L     install <feature name> --vers=<version> : install a feature. Version is optional"
 	echo " L     <all|feature name> : list all available features OR available versions of a feature"
 }
-
-function __features_requirement() {
-	echo "** Install required features"
-	if [ ! -d "$STELLA_APP_FEATURE_ROOT" ]; then
-		mkdir -p "$STELLA_APP_FEATURE_ROOT"
-	fi
-}
-
 
 
 
@@ -28,7 +20,7 @@ function __features_requirement() {
 # MAIN ------------------------
 PARAMETERS="
 ACTION=											'action' 			a						'install list'					Action to compute. 'install' install feature specified by name argument.
-ID= 											''					a 						'$__STELLA_FEATURE_LIST default all' 	Select feature to install. 'Autotools' means autoconf, automake, libtool, m4. Use 'default' to initialize minimal features for Stella. Use 'list' to list available features. 
+ID= 											''					a 						'$__STELLA_FEATURE_LIST required all' 	Select feature to install. 'Autotools' means autoconf, automake, libtool, m4. Use 'required' to install required features for Stella. Use 'list' to list available features. 
 "
 OPTIONS="
 FORCE=''                       	'f'    		''            		b     		0     		'1'           			Force operation.
@@ -47,8 +39,8 @@ __init_stella_env
 case $ACTION in
     install)
 		case $ID in
-			default)
-				__features_requirement
+			required)
+				__stella_features_requirement_by_os $STELLA_CURRENT_OS
 				;;
 
 			*)
@@ -59,7 +51,7 @@ case $ACTION in
 	list)
 		case $ID in
 			all)
-				echo "default all $__STELLA_FEATURE_LIST"
+				echo "required all $__STELLA_FEATURE_LIST"
 				;;
 			*)
 				echo $(__list_feature_version $ID)

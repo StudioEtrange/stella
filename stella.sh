@@ -10,10 +10,11 @@ function usage() {
 	echo "List of commands"
 	echo " o-- application management :"
 	echo " L     app init <application name> [--approot=<path>] [--workroot=<abs or relative path to approot>] [--cachedir=<abs or relative path to approot>]"
-	echo " L     app get-data|get-assets|update-data|update-assets|revert-data|revert-assets|get-features <data id|assets id|all>"
+	echo " L     app get-data|get-assets|update-data|update-assets|revert-data|revert-assets <data id|assets id|all>"
+	echo " L     app get-features all"
 	echo " L     app setup-env <env id|all> : download, build, deploy and run virtual environment based on app properties"
 	echo " o-- feature management :"
-	echo " L     feature install default : install minimal default feature for Stella"
+	echo " L     feature install required : install required features for Stella"
 	echo " L     feature install <feature name> [--vers=<version>] : install a feature. Version is optional"
 	echo " L     feature list <all|feature name> : list all available feature OR available versions of a feature"
 	echo " o-- virtual management :"
@@ -32,7 +33,7 @@ function usage() {
 # arguments
 PARAMETERS="
 DOMAIN=                          'domain'     		a           'app feature virtual api'         										   				Action domain.
-ACTION=                         'action'   					a           'init get-data get-assets update-data update-assets revert-data revert-assets setup-env install list create-env run-env stop-env destroy-env create-box get-box'         	Action to compute.
+ACTION=                         'action'   					a           'init get-data get-assets update-data update-assets revert-data revert-assets get-features setup-env install list create-env run-env stop-env destroy-env create-box get-box'         	Action to compute.
 ID=							 ''								s 			'' 						Feature ID or Data or Assets or Env or Distrib ID.
 "
 OPTIONS="
@@ -51,7 +52,7 @@ VERS=''							''			'version'			s 			0 		''						Feature version.
 __argparse "$0" "$OPTIONS" "$PARAMETERS" "Lib Stella" "$(usage)" "" "$@"
 
 # common initializations
-__init_stella_env
+#__init_stella_env
 
 # --------------- APP ----------------------------
 if [ "$DOMAIN" == "app" ]; then

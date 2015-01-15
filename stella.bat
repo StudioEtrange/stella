@@ -8,7 +8,7 @@ call %~dp0\conf.bat
 
 
 :: arguments
-set "params=domain:"app feature virtual api" action:"init get-data get-assets update-data update-assets revert-data revert-assets setup-env install list create-env run-env stop-env destroy-env info-env create-box get-box" id:"_ANY_""
+set "params=domain:"app feature virtual api" action:"init get-data get-assets update-data update-assets revert-data revert-assets get-features setup-env install list create-env run-env stop-env destroy-env info-env create-box get-box" id:"_ANY_""
 set "options=-f: -arch:"#x64 x86" -vcpu:_ANY_ -vmem:_ANY_ -head: -login: -vers:_ANY_ -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_"
 
 call %STELLA_COMMON%\argopt.bat :argopt %*
@@ -19,7 +19,7 @@ set ARCH=%-arch%
 set FORCE=%-f%
 
 :: setting env
-call %STELLA_COMMON%\common.bat :init_stella_env
+:: call %STELLA_COMMON%\common.bat :init_stella_env
 
 
 
@@ -94,9 +94,10 @@ if "%DOMAIN%"=="virtual" goto :end
 	echo 	* application management :
 	echo 		%~n0 app init ^<application name^> [-approot=^<path^>] [-workroot=^<path^>] [-cachedir=^<path^>]
 	echo 		%~n0 app get-data^|get-assets^|update-data^|update-assets^|revert-data^|revert-assets ^<data id^|assets id^|all^>
+	echo 		%~n0 app get-features all
 	echo 		%~n0 app setup-env ^<env id^|all^> : download, build, deploy and run virtual environment based on app properties
 	echo	* feature management :
-	echo 		%~n0 feature install default : install minimal default features for Stella
+	echo 		%~n0 feature install required : install required features for Stella
 	echo 		%~n0 feature install ^<feature name^> [-vers=^<version^>] : install a features. version is optional
 	echo 		%~n0 feature list ^<all^|feature name^>: list all available features OR available version of a feature
 	echo 		%~n0 feature list all: list available features

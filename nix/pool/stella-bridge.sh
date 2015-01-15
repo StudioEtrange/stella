@@ -65,7 +65,7 @@ function standalone() {
 	    case $yn in
 	        Yes )
 				__stella_system_requirement_by_os $STELLA_CURRENT_OS
-				$STELLA_BIN/feature.sh install default
+				$STELLA_BIN/feature.sh install required
 				break;;
 	        No ) break;;
 	    esac
@@ -79,8 +79,34 @@ function standalone() {
 function bootstrap() {
 	if [ "$IS_STELLA_LINKED" == "TRUE" ]; then
 		echo "** This app/project is linked to a STELLA installation located in $STELLA_ROOT"
-		#source "$STELLA_ROOT/conf.sh"
-		#$STELLA_BIN/feature.sh install default
+		
+		source "$STELLA_ROOT/conf.sh"
+		echo "Do you wish to auto-install system requirements for stella ?"
+		select yn in "Yes" "No"; do
+		    case $yn in
+		        Yes )
+					__stella_system_requirement_by_os $STELLA_CURRENT_OS
+					$STELLA_BIN/feature.sh install required
+					break;;
+		        No ) break;;
+		    esac
+		done
+
+		echo "Do you wish to generate samples and propertie files for your project ?"
+		select yn in "Yes" "No"; do
+		    case $yn in
+		        Yes )
+					_project_name=$(basename $_STELLA_CURRENT_RUNNING_DIR)
+					read -p "What is your project name ? [$_project_name]" _temp_project_name
+					if [ ! "$_temp_project_name" == "" ]; then
+						_project_name=$_temp_project_name
+					fi
+					$STELLA_BIN/app.sh init $_project_name
+					break;;
+		        No ) break;;
+		    esac
+		done
+
 	else
 
 		# Try to determine install path of STELLA
@@ -115,7 +141,7 @@ function bootstrap() {
 		    case $yn in
 		        Yes )
 					__stella_system_requirement_by_os $STELLA_CURRENT_OS
-					$STELLA_BIN/feature.sh install default
+					$STELLA_BIN/feature.sh install required
 					break;;
 		        No ) break;;
 		    esac

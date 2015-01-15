@@ -6,9 +6,15 @@ goto :eof
 	set "%~1=git"
 goto :eof
 
+:default_vagrant
+	set "%~1=git"
+goto :eof
+
+
+
 :install_vagrant
 	set "_VER=%~1"
-	set "_DEFAULT_VER=git"
+	call :default_vagrant "_DEFAULT_VER"
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\vagrant mkdir %STELLA_APP_FEATURE_ROOT%\vagrant
 	if "%_VER%"=="" (
@@ -20,7 +26,7 @@ goto :eof
 
 :feature_vagrant
 	set "_VER=%~1"
-	set "_DEFAULT_VER=git"
+	call :default_vagrant "_DEFAULT_VER"
 
 	if "%_VER%"=="" (
 		call :feature_vagrant_%_DEFAULT_VER%

@@ -38,12 +38,12 @@ set STELLA_APP_FEATURE_ROOT=%STELLA_APP_WORK_ROOT%\feature_%STELLA_CURRENT_PLATF
 set ASSETS_ROOT=%STELLA_APP_WORK_ROOT%\assets
 call %STELLA_COMMON%\common.bat :rel_to_abs_path "ASSETS_REPOSITORY" "..\assets_repository" "%STELLA_APP_WORK_ROOT%"
 
-:: DEFAULT FEATURE ---------------------------------------------
-set "WGET=%STELLA_APP_FEATURE_ROOT%\wget\bin\wget.exe"
-set "UZIP=%STELLA_APP_FEATURE_ROOT%\unzip\bin\unzip.exe"
-set "U7ZIP=%STELLA_APP_FEATURE_ROOT%\sevenzip\7z.exe"
-set "PATCH=%STELLA_APP_FEATURE_ROOT%\patch\bin\patch.exe"
-set "GNUMAKE=%STELLA_APP_FEATURE_ROOT%\make\bin\make.exe"
+:: REQUIRED FEATURES ---------------------------------------------
+set "WGET=%STELLA_APP_FEATURE_ROOT%\wget\1_11_4\bin\wget.exe"
+set "UZIP=%STELLA_APP_FEATURE_ROOT%\unzip\5_51_1\bin\unzip.exe"
+set "U7ZIP=%STELLA_APP_FEATURE_ROOT%\sevenzip\9_20\7z.exe"
+set "PATCH=%STELLA_APP_FEATURE_ROOT%\patch\2_5_9\bin\patch.exe"
+set "GNUMAKE=%STELLA_APP_FEATURE_ROOT%\make\3_81\bin\make.exe"
 
 
 :: OTHERS ---------------------------------------------
@@ -72,7 +72,7 @@ set VIRTUAL_DEFAULT_HYPERVISOR=virtualbox
 
 :: INTERNAL LIST ---------------------------------------------
 set "__STELLA_DISTRIB_LIST=ubuntu64_13_10 debian64_7_5 centos64_6_5 archlinux boot2docker"
-set "__STELLA_FEATURE_LIST=ninja jom cmake packer perl ruby nasm python vagrant openssh"
+set "__STELLA_FEATURE_LIST=ninja jom cmake packer perl ruby nasm python vagrant openssh wget unzip sevenzip patch gnumake"
 
 :: API ---------------------------------------------
 set "STELLA_API_COMMON_PUBLIC=is_path_abs get_ressource download_uncompress del_folder copy_folder_content_into fork run_admin mercurial_project_version git_project_version"

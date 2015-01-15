@@ -5,6 +5,16 @@ goto :eof
 
 REM APP RESSOURCES & ENV MANAGEMENT ---------------
 
+:add_app_feature
+	if exist "%_STELLA_APP_PROPERTIES_FILE%" (
+		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_FEATURE_LIST" "%FEATURE_LIST_ENABLED%"
+	)
+goto :eof
+
+:get_features
+	call %STELLA_COMMON%\common-feature.bat :install_feature_list "!STELLA_APP_FEATURE_LIST!"
+goto :eof
+
 :get_data
 	call :_get_app_ressources "DATA" "GET" "%~1"
 goto :eof
@@ -157,6 +167,7 @@ goto :eof
 		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "ASSETS_LIST" ""
 		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "ENV_LIST" ""
 		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "INFRA_LIST" ""
+		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_FEATURE_LIST" ""
 	)
 goto :eof
 
@@ -177,6 +188,7 @@ goto :eof
 	call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "STELLA" "ASSETS_LIST" "PREFIX"
 	call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "STELLA" "ENV_LIST" "PREFIX"
 	call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "STELLA" "INFRA_LIST" "PREFIX"
+	call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "STELLA" "APP_FEATURE_LIST" "PREFIX"
 
 	call :get_data_properties "%_properties_file%" "!STELLA_DATA_LIST!"
 	call :get_assets_properties "%_properties_file%" "!STELLA_ASSETS_LIST!"

@@ -6,13 +6,18 @@ goto :eof
 	set "%~1=2_8_12"
 goto :eof
 
+:default_cmake
+	set "%~1=2_8_12"
+goto :eof
+
+
 :install_cmake
 	set "_VER=%~1"
-	set "_DEFAULT_VER=2_8_12"
+	call :default_cmake "_DEFAULT_VER"
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\cmake mkdir %STELLA_APP_FEATURE_ROOT%\cmake
 	if "%_VER%"=="" (
-		call :install_cmake_%_DEFAULT_VER%
+		call :install_cmake_!_DEFAULT_VER!
 	) else (
 		call :install_cmake_%_VER%
 	)
@@ -20,10 +25,10 @@ goto :eof
 
 :feature_cmake
 	set "_VER=%~1"
-	set "_DEFAULT_VER=2_8_12"
+	call :default_cmake "_DEFAULT_VER"
 
 	if "%_VER%"=="" (
-		call :feature_cmake_%_DEFAULT_VER%
+		call :feature_cmake_!_DEFAULT_VER!
 	) else (
 		call :feature_cmake_%_VER%
 	)

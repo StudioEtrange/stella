@@ -180,4 +180,26 @@ function __stella_system_requirement_by_os() {
 	esac	
 }
 
+
+
+function __stella_features_requirement_by_os() {
+	local _os=$1
+	echo "** Install required features for $_os"
+	case $_os in
+		ubuntu)
+			;;
+		debian)
+			;;
+		macos)
+			# TODO getopt ? instead of macport ?
+			;;
+		*)
+			echo "OS unknown"
+			;;
+	esac	
+}
+
+
+
+
 fi

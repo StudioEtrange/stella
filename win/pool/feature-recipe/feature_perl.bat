@@ -6,13 +6,17 @@ goto :eof
 	set "%~1=5_18_2"
 goto :eof
 
+:default_perl
+	set "%~1=5_18_2"
+goto :eof
+
 :install_perl
 	set "_VER=%~1"
-	set "_DEFAULT_VER=5_18_2"
+	call :default_perl "_DEFAULT_VER"
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\perl mkdir %STELLA_APP_FEATURE_ROOT%\perl
 	if "%_VER%"=="" (
-		call :install_perl_%_DEFAULT_VER%
+		call :install_perl_!_DEFAULT_VER!
 	) else (
 		call :install_perl_%_VER%
 	)
@@ -20,10 +24,10 @@ goto :eof
 
 :feature_perl
 	set "_VER=%~1"
-	set "_DEFAULT_VER=5_18_2"
-
+	call :default_perl "_DEFAULT_VER"
+	
 	if "%_VER%"=="" (
-		call :feature_perl_%_DEFAULT_VER%
+		call :feature_perl_!_DEFAULT_VER!
 	) else (
 		call :feature_perl_%_VER%
 	)

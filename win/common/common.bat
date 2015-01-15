@@ -696,6 +696,7 @@ goto :eof
 :: first argument is the regexp
 :: second argument is the string
 :: NOTE : read result var with !_match_exp!
+:: TODO implement variant without regexp see http://stackoverflow.com/a/7006016
 :match_exp
 	set _win_regexp=%~1
 	set _string=%~2

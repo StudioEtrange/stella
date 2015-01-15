@@ -6,9 +6,14 @@ goto :eof
 	set "%~1=last_release"
 goto :eof
 
+:default_ninja
+	set "%~1=last_release"
+goto :eof
+
+
 :install_ninja
 	set "_VER=%~1"
-	set "_DEFAULT_VER=last_release"
+	call :default_ninja "_DEFAULT_VER"
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\ninja mkdir %STELLA_APP_FEATURE_ROOT%\ninja
 
@@ -21,10 +26,10 @@ goto :eof
 
 :feature_ninja
 	set "_VER=%~1"
-	set "_DEFAULT_VER=last_release"
+	call :default_ninja "_DEFAULT_VER"
 
 	if "%_VER%"=="" (
-		call :feature_ninja_%_DEFAULT_VER%
+		call :feature_ninja_!_DEFAULT_VER!
 	) else (
 		call :feature_ninja_%_VER%
 	)
@@ -52,7 +57,8 @@ goto :eof
 	if "!TEST_FEATURE!"=="0" (
 		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "DEST_ERASE STRIP"
 		cd /D "%INSTALL_DIR%"
-		python bootstrap.py
+		REM python bootstrap.py
+		python ./configure.py --bootstrap
 
 		call :feature_ninja_last_release
 		if not "!TEST_FEATURE!"=="0" (

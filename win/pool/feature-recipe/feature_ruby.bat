@@ -6,13 +6,17 @@ goto :eof
 	set "%~1=2_0_0_x64 2_0_0_x86 1_9_3"
 goto :eof
 
+:default_ruby
+	set "%~1=2_0_0_x64"
+goto :eof
+
 :install_ruby
 	set "_VER=%~1"
-	set "_DEFAULT_VER=2_0_0_x64"
+	call :default_ruby "_DEFAULT_VER"
 
 	REM if not exist %STELLA_APP_FEATURE_ROOT%\ruby mkdir %STELLA_APP_FEATURE_ROOT%\ruby
 	if "%_VER%"=="" (
-		call :install_ruby_%_DEFAULT_VER%
+		call :install_ruby_!_DEFAULT_VER!
 	) else (
 		call :install_ruby_%_VER%
 	)
@@ -20,10 +24,10 @@ goto :eof
 
 :feature_ruby
 	set "_VER=%~1"
-	set "_DEFAULT_VER=2_0_0_x64"
+	call :default_ruby "_DEFAULT_VER"
 
 	if "%_VER%"=="" (
-		call :feature_ruby_%_DEFAULT_VER%
+		call :feature_ruby_!_DEFAULT_VER!
 	) else (
 		call :feature_ruby_%_VER%
 	)

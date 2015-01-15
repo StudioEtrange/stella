@@ -6,13 +6,18 @@ goto :eof
 	set "%~1=6_6"
 goto :eof
 
+
+:default_openssh
+	set "%~1=6_6"
+goto :eof
+
 :install_openssh
 	set "_VER=%~1"
-	set "_DEFAULT_VER=6_6"
+	call :default_openssh "_DEFAULT_VER"
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\openssh mkdir %STELLA_APP_FEATURE_ROOT%\openssh
 	if "%_VER%"=="" (
-		call :install_openssh_%_DEFAULT_VER%
+		call :install_openssh_!_DEFAULT_VER!
 	) else (
 		call :install_openssh_%_VER%
 	)
@@ -20,10 +25,10 @@ goto :eof
 
 :feature_openssh
 	set "_VER=%~1"
-	set "_DEFAULT_VER=6_6"
-
+	call :default_openssh "_DEFAULT_VER"
+	
 	if "%_VER%"=="" (
-		call :feature_openssh_%_DEFAULT_VER%
+		call :feature_openssh_!_DEFAULT_VER!
 	) else (
 		call :feature_openssh_%_VER%
 	)

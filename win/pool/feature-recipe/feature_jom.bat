@@ -6,13 +6,17 @@ goto :eof
 	set "%~1=1_0_13"
 goto :eof
 
+:default_jom
+	set "%~1=1_0_13"
+goto :eof
+
 :install_jom
 	set "_VER=%~1"
-	set "_DEFAULT_VER=1_0_13"
-echo herreeee
+	call :default_jom "_DEFAULT_VER"
+
 	if not exist %STELLA_APP_FEATURE_ROOT%\jom mkdir %STELLA_APP_FEATURE_ROOT%\jom
 	if "%_VER%"=="" (
-		call :install_jom_%_DEFAULT_VER%
+		call :install_jom_!_DEFAULT_VER!
 	) else (
 		call :install_jom_%_VER%
 	)
@@ -20,10 +24,10 @@ goto :eof
 
 :feature_jom
 	set "_VER=%~1"
-	set "_DEFAULT_VER=1_0_13"
+	call :default_jom "_DEFAULT_VER"
 
 	if "%_VER%"=="" (
-		call :feature_jom_%_DEFAULT_VER%
+		call :feature_jom_!_DEFAULT_VER!
 	) else (
 		call :feature_jom_%_VER%
 	)

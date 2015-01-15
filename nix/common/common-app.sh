@@ -23,7 +23,7 @@ function __select_app() {
 		STELLA_APP_ROOT=$_app_path
 	fi
 	
-	echo $_properties_file
+	echo "$_properties_file"
 
 }
 
@@ -184,9 +184,8 @@ function __get_env_properties() {
 
 
 function __add_app_feature() {
-
 	if [ -f "$_STELLA_APP_PROPERTIES_FILE" ]; then
-		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" "$FEATURE_LIST_ENABLED"
+		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" "$(echo $FEATURE_LIST_ENABLED | sed -e 's/^ *//' -e 's/ *$//')"
 	fi
 }
 

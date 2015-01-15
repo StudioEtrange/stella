@@ -6,13 +6,18 @@ goto :eof
 	set "%~1=2_7_6"
 goto :eof
 
+:default_python
+	set "%~1=2_7_6"
+goto :eof
+
+
 :install_python
 	set "_VER=%~1"
-	set "_DEFAULT_VER=2_7_6"
+	call :default_python "_DEFAULT_VER="
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\python mkdir %STELLA_APP_FEATURE_ROOT%\python
 	if "%_VER%"=="" (
-		call :install_python_%_DEFAULT_VER%
+		call :install_python_!_DEFAULT_VER!
 	) else (
 		call :install_python_%_VER%
 	)
@@ -20,10 +25,10 @@ goto :eof
 
 :feature_python
 	set "_VER=%~1"
-	set "_DEFAULT_VER=2_7_6"
-
+	call :default_python "_DEFAULT_VER="
+	
 	if "%_VER%"=="" (
-		call :feature_python_%_DEFAULT_VER%
+		call :feature_python_!_DEFAULT_VER!
 	) else (
 		call :feature_python_%_VER%
 	)

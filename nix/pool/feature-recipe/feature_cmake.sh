@@ -6,9 +6,13 @@ function __list_cmake() {
 	echo "2_8_12"
 }
 
+function __default_cmake() {
+	echo "2_8_12"
+}
+
 function __install_cmake() {
 	local _VER=$1
-	local _DEFAULT_VER="2_8_12"
+	local _DEFAULT_VER="$(__default_cmake)"
 
 	mkdir -p $STELLA_APP_FEATURE_ROOT/cmake
 	if [ "$_VER" == "" ]; then
@@ -19,7 +23,7 @@ function __install_cmake() {
 }
 function __feature_cmake() {
 	local _VER=$1
-	local _DEFAULT_VER="2_8_12"
+	local _DEFAULT_VER="$(__default_cmake)"
 
 	if [ "$_VER" == "" ]; then
 		__feature_cmake_$_DEFAULT_VER

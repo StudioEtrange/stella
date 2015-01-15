@@ -6,13 +6,18 @@ goto :eof
 	set "%~1=0_6_0_x64 0_6_0_x86"
 goto :eof
 
+:default_packer
+	set "%~1=0_6_0_x64"
+goto :eof
+
+
 :install_packer
 	set "_VER=%~1"
-	set "_DEFAULT_VER=0_6_0_x64"
+	call :default_packer "_DEFAULT_VER"
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\packer mkdir %STELLA_APP_FEATURE_ROOT%\packer
 	if "%_VER%"=="" (
-		call :install_packer_%_DEFAULT_VER%
+		call :install_packer_!_DEFAULT_VER!
 	) else (
 		call :install_packer_%_VER%
 	)
@@ -20,10 +25,10 @@ goto :eof
 
 :feature_packer
 	set "_VER=%~1"
-	set "_DEFAULT_VER=0_6_0_x64"
+	call :default_packer "_DEFAULT_VER"
 
 	if "%_VER%"=="" (
-		call :feature_packer_%_DEFAULT_VER%
+		call :feature_packer_!_DEFAULT_VER!
 	) else (
 		call :feature_packer_%_VER%
 	)

@@ -35,7 +35,7 @@ STELLA_APP_NAME=
 STELLA_APP_PROPERTIES_FILENAME="stella.properties"
 
 # GATHER CURRENT APP INFO ---------------------------------------------
-_STELLA_APP_PROPERTIES_FILE=$(__select_app)
+_STELLA_APP_PROPERTIES_FILE="$(__select_app)"
 __get_all_properties $_STELLA_APP_PROPERTIES_FILE
 
 # APP PATH ---------------------------------------------
@@ -95,7 +95,6 @@ STELLA_API_VIRTUAL_PUBLIC=""
 
 STELLA_API_RETURN_FUNCTION="is_abs mercurial_project_version git_project_version"
 STELLA_API=__api_proxy
-
 
 
 fi

@@ -6,10 +6,13 @@ function __list_packer() {
 	echo "0_6_0_x64 0_6_0_x86"
 }
 
+function __default_packer() {
+	echo "0_6_0_x64"
+}
 
 function __install_packer() {
 	local _VER=$1
-	local _DEFAULT_VER="0_6_0_x64"
+	local _DEFAULT_VER="$(__default_packer)"
 
 	mkdir -p $STELLA_APP_FEATURE_ROOT/packer
 	if [ "$_VER" == "" ]; then
@@ -20,7 +23,7 @@ function __install_packer() {
 }
 function __feature_packer() {
 	local _VER=$1
-	local _DEFAULT_VER="0_6_0_x64"
+	local _DEFAULT_VER="$(__default_packer)"
 
 	if [ "$_VER" == "" ]; then
 		__feature_packer_$_DEFAULT_VER

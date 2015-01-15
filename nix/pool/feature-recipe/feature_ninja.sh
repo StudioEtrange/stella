@@ -7,9 +7,13 @@ function __list_ninja() {
 	echo "last_release"
 }
 
+function __default_ninja() {
+	echo "last_release"
+}
+
 function __install_ninja() {
 	local _VER=$1
-	local _DEFAULT_VER="last_release"
+	local _DEFAULT_VER="$(__default_ninja)"
 
 	mkdir -p $STELLA_APP_FEATURE_ROOT/ninja
 
@@ -21,7 +25,7 @@ function __install_ninja() {
 }
 function __feature_ninja() {
 	local _VER=$1
-	local _DEFAULT_VER="last_release"
+	local _DEFAULT_VER="$(__default_ninja)"
 
 	if [ "$_VER" == "" ]; then
 		__feature_ninja_$_DEFAULT_VER

@@ -106,7 +106,20 @@ goto :eof
 :__stella_system_requirement_by_os
 	set _os=%~1
 	
-	echo ** Installing Stella system requirements for %_os%
+	echo ** Install Stella system requirements for %_os%
 goto :eof
 
+
+
+:__stella_features_requirement_by_os
+	set _os=%~1
+
+	echo ** Install required features for %_os%
+	
+	call %STELLA_COMMON%\common-feature.bat :install_feature unzip 5_51_1
+	call %STELLA_COMMON%\common-feature.bat :install_feature wget 1_11_4
+	call %STELLA_COMMON%\common-feature.bat :install_feature sevenzip 9_20
+	call %STELLA_COMMON%\common-feature.bat :install_feature patch 2_5_9
+	call %STELLA_COMMON%\common-feature.bat :install_feature gnumake 3_81
+goto :eof
 

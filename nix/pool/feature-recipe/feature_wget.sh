@@ -6,9 +6,13 @@ function __list_wget() {
 	echo "1_15"
 }
 
+function __default_wget() {
+	echo "1_15"
+}
+
 function __install_wget() {
 	local _VER=$1
-	local _DEFAULT_VER="1_15"
+	local _DEFAULT_VER="$(__default_wget)"
 
 	mkdir -p $STELLA_APP_FEATURE_ROOT/wget
 
@@ -20,7 +24,7 @@ function __install_wget() {
 }
 function __feature_wget() {
 	local _VER=$1
-	local _DEFAULT_VER="1_15"
+	local _DEFAULT_VER="$(__default_wget)"
 
 	if [ "$_VER" == "" ]; then
 		__feature_wget_$_DEFAULT_VER
