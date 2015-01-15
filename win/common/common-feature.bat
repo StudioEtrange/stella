@@ -50,8 +50,8 @@ goto :eof
 		set item=%%F
 
 		if not "x!item:#=!"=="x!item!" (
-			set _VER=%item:*#=%
-			set "_FEAT=%item:#="^&REM #%
+			set _VER=!item:*#=!
+			set "_FEAT=!item:#="^&REM #!
 		) else (
 			set _VER=
 			set _FEAT=!item!
