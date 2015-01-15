@@ -46,7 +46,7 @@ goto :eof
 	)
 	if "!TEST_FEATURE!"=="0" (
 
-		call %STELLA_COMMON%\common.bat :uncompress "%STELLA_POOL%\feature\patch-2.5.9-7-bin.zip" "%INSTALL_DIR%"
+		call %STELLA_COMMON%\common.bat :uncompress "%STELLA_FEATURE_REPOSITORY%\patch-2.5.9-7-bin.zip" "%INSTALL_DIR%"
 
 		call :feature_patch_2_5_9
 		if not "!TEST_FEATURE!"=="0" (

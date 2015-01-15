@@ -12,6 +12,7 @@ STELLA_COMMON="$STELLA_ROOT/nix/common"
 STELLA_POOL="$STELLA_ROOT/nix/pool"
 STELLA_BIN="$STELLA_ROOT/nix/bin"
 STELLA_FEATURE_RECIPE="$STELLA_POOL/feature-recipe"
+STELLA_FEATURE_REPOSITORY="$STELLA_FEATURE_RECIPE/feature-repository"
 
 # STELLA INCLUDE ---------------------------------------------
 
@@ -54,7 +55,7 @@ ASSETS_REPOSITORY=$(__rel_to_abs_path "../assets_repository" "$STELLA_APP_WORK_R
 
 # DEFAULT FEATURE ---------------------------------------------
 # TODO replace command with these variables
-#WGET="wget" # for macos see STELLA_APP_FEATURE_ROOT/wget
+#WGET="wget" # TODO for macos see STELLA_APP_FEATURE_ROOT/wget (=> useless because already replaced by curl in common.sh)
 #WGET=$STELLA_APP_FEATURE_ROOT/wget
 #UZIP="unzip"
 #U7ZIP="7z"
@@ -88,7 +89,7 @@ __STELLA_DISTRIB_LIST="ubuntu64_13_10 debian64_7_5 centos64_6_5 archlinux boot2d
 __STELLA_FEATURE_LIST="wget ninja cmake packer autotools perl"
 
 # API ---------------------------------------------
-STELLA_API_COMMON_PUBLIC="is_abs argparse get_ressource download_uncompress copy_folder_content_into del_folder get_key add_key del_key mercurial_project_version git_project_version"
+STELLA_API_COMMON_PUBLIC="is_abs argparse get_ressource download_uncompress copy_folder_content_into del_folder get_key add_key del_key mercurial_project_version git_project_version get_stella_version"
 STELLA_API_APP_PUBLIC="get_data get_assets get_all_data get_all_assets update_data update_assets revert_data revert_assets get_env_properties setup_env"
 STELLA_API_FEATURE_PUBLIC="install_feature init_feature"
 STELLA_API_VIRTUAL_PUBLIC=""

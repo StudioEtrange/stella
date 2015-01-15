@@ -46,7 +46,7 @@ goto :eof
 	)
 	if "!TEST_FEATURE!"=="0" (
 
-		call %STELLA_COMMON%\common.bat :copy_folder_content_into "%STELLA_POOL%\feature\sevenzip" "%INSTALL_DIR%"
+		call %STELLA_COMMON%\common.bat :copy_folder_content_into "%STELLA_FEATURE_REPOSITORY%\sevenzip" "%INSTALL_DIR%"
 
 		call :feature_sevenzip_9_20
 		if not "!TEST_FEATURE!"=="0" (

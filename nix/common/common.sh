@@ -6,6 +6,24 @@ set +h
 
 
 # VARIOUS-----------------------------
+function __get_stella_version() {
+	local OPT="$1"
+	
+	# option
+	# 	"LONG" long version
+	# 	"SHORT" short
+
+	if [ "$OPT" == "" ]; then
+		OPT=SHORT
+	fi
+
+	if [ -f "$STELLA_ROOT/VERSION" ]; then
+		cat "$STELLA_ROOT/VERSION"
+	else
+		echo $(__git_project_version "$STELLA_ROOT" "$OPT")
+	fi
+}
+
 
 # path = ${foo%/*}
 # To get: /tmp/my.dir (like dirname)
@@ -480,12 +498,12 @@ function __git_project_version() {
 		[ "$o" == "LONG" ] && _opt_version_long=ON
 	done
 
-	if [[ -n `which hg 2> /dev/null` ]]; then
+	if [[ -n `which git 2> /dev/null` ]]; then
 		if [ "$_opt_version_long" == "ON" ]; then
 			echo "$(git --git-dir "$_PATH/.git" describe --tags --long)"
 		fi
 		if [ "$_opt_version_short" == "ON" ]; then
-			echo "$(git --git-dir "$_PATH/.git" describe --tags)"
+			echo "$(git --git-dir "$_PATH/.git" tag)"
 		fi
 	fi
 }

@@ -46,7 +46,7 @@ goto :eof
 	)
 	if "!TEST_FEATURE!"=="0" (
 
-		call %STELLA_COMMON%\common.bat :copy_folder_content_into "%STELLA_POOL%\feature\unzip-5.51-1-bin" "%INSTALL_DIR%"
+		call %STELLA_COMMON%\common.bat :copy_folder_content_into "%STELLA_FEATURE_REPOSITORY%\unzip-5.51-1-bin" "%INSTALL_DIR%"
 		
 		call :feature_unzip_5_51_1
 		if not "!TEST_FEATURE!"=="0" (

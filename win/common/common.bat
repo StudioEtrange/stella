@@ -561,6 +561,7 @@ goto :eof
 
 
 REM FLAG MANAGEMENT---------------------------------------------------
+REM TODO : deprecated ?
 :add_flag
 	REM do not refactor this code with parenthesis or try to remove loop : PB with ) and with "
 	set "FLAG_FILE=%~1"
@@ -627,7 +628,7 @@ goto :eof
 :mercurial_project_version
 	set "_result_var_mercurial_project_version=%~1"
 	set "_path=%~2"
-	set "_OPT=%~4"
+	set "_OPT=%~3"
 
 	set "_version="
 
@@ -661,7 +662,7 @@ goto :eof
 :git_project_version
 	set "_result_var_git_project_version=%~1"
 	set "_path=%~2"
-	set "_OPT=%~4"
+	set "_OPT=%~3"
 
 	set "_version="
 
@@ -679,7 +680,7 @@ goto :eof
 	)
 
 	if "%_opt_version_short%"=="ON" (
-		for /f %%m in ('git --git-dir "%_path%/.git" describe --tags') do (
+		for /f %%m in ('git --git-dir "%_path%/.git" tag') do (
 			set "_version=%%m"
 		)
 	)
@@ -690,6 +691,27 @@ goto :eof
 
 
 :: VARIOUS ---------------------------------------
+:get_stella_version
+	set "_result_var_get_stella_version=%~1"
+	set "_path=%~2"
+	set "_OPT=%~4"
+	
+	
+	REM option
+	REM 	"LONG" long version
+	REM 	"SHORT" short version
+
+	if "%_OPT%"=="" set _OPT=SHORT
+
+	if exist "%STELLA_ROOT%\VERSION" (
+		cat "$STELLA_ROOT/VERSION"
+	) else (
+		call :__git_project_version "%_result_var_get_stella_version%" "%_OPT%"
+	)
+goto :eof
+
+
+
 :: check if a "findstr windows regexp" can be found in a string
 :: by setting 
 ::		_match_exp with TRUE or FALSE
