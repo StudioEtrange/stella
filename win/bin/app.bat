@@ -7,7 +7,7 @@ call %~dp0\..\..\conf.bat
 
 :: arguments
 set "params=action:"init get-data get-assets update-data update-assets revert-data revert-assets setup-env get-features" id:"_ANY_""
-set "options=-f: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_"
+set "options=-f: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_ -samples:"
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
 if "%ARGOPT_FLAG_HELP%"=="1" goto :usage
@@ -33,6 +33,9 @@ if "%ACTION%"=="init" (
 	)
 
 	call %STELLA_COMMON%\common-app :init_app "%id%" "!-approot!" "!-workroot!" "!-cachedir!"
+	if "%-samples%"=="1" (
+		call %STELLA_COMMON%\common-app :create_app_samples "!-approot!"
+	)
 
 	REM cd /D "!-approot!"
 	REM call stella-bridge.bat feature install default
@@ -117,7 +120,7 @@ REM ------------------------------------ INTERNAL FUNCTIONS --------------------
 	echo ----------------
 	echo List of commands
 	echo	* application management :
-	echo 		%~n0 init ^<application name^> [-approot=^<path^>] [-workroot=^<path^>] [-cachedir=^<path^>]
+	echo 		%~n0 init ^<application name^> [-approot=^<path^>] [-workroot=^<path^>] [-cachedir=^<path^>] [-samples]
 	echo 		%~n0 get-data^|get-assets^|update-data^|update-assets^|revert-data^|revert-assets ^<data id^|assets id^|all^>
 	echo 		%~n0 get-features all
 	echo 		%~n0 setup-env ^<env id^|all^> : download, build, deploy and run virtual environment based on app properties

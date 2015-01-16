@@ -39,27 +39,21 @@ function ___rel_to_abs_path() {
 	esac
 }
 
+function __get_stella() {
+	local _ver=$1
+	local _path=$2
 
-# Install stella in standalone ------------------
-function standalone() {
-	# Try to determine install path of STELLA
-	if [ "$PROVIDED_PATH" == "" ]; then
-		# install STELLA into default path
-		_STELLA_INSTALL_PATH=$(___rel_to_abs_path "./lib-stella" "$_STELLA_CURRENT_FILE_DIR")
+	if [ "$_ver" == "git" ]; then
+		git clone https://bitbucket.org/StudioEtrange/lib-stella.git "$_path"
 	else
-		# install STELLA into ARG#2
-		_STELLA_INSTALL_PATH=$(___rel_to_abs_path "$PROVIDED_PATH" "$_STELLA_CURRENT_FILE_DIR")
+		curl -L -o "$_path"/$stella-nix-"$_ver".gz.sh http://studio-etrange.org/stella/stella-nix-"$_ver".gz.sh
+		chmod +x "$_path"/$stella-nix-"$_ver".gz.sh
+		./"$_path"/$stella-nix-"$_ver".gz.sh
+		rm -f "$_path"/$stella-nix-"$_ver".gz.sh
 	fi
+}
 
-	if [ -f "$_STELLA_INSTALL_PATH/stella.sh" ]; then
-		# STELLA already installed, update it
-		(cd "$_STELLA_INSTALL_PATH" && git pull)
-	else
-		git clone https://bitbucket.org/StudioEtrange/lib-stella.git "$_STELLA_INSTALL_PATH"
-	fi
-
-	source "$_STELLA_INSTALL_PATH/conf.sh"
-	
+function __ask_install_system_requirements() {
 	echo "Do you wish to auto-install system requirements for stella ?"
 	select yn in "Yes" "No"; do
 	    case $yn in
@@ -70,8 +64,58 @@ function standalone() {
 	        No ) break;;
 	    esac
 	done
+}
+
+function __ask_init_app() {
+		echo "Do you wish to init your stella app (create properties files, link app to stella...) ?"
+		select yn in "Yes" "No"; do
+		    case $yn in
+		        Yes )
+					_project_name=$(basename $_STELLA_CURRENT_RUNNING_DIR)
+					read -p "What is your project name ? [$_project_name]" _temp_project_name
+					if [ ! "$_temp_project_name" == "" ]; then
+						_project_name=$_temp_project_name
+					fi
+
+					echo "Do you wish to generate a sample app for your project ?"
+					select sample in "Yes" "No"; do
+						case $sample in
+							Yes )
+								$STELLA_BIN/app.sh init $_project_name --samples
+								break;;
+							No )
+								$STELLA_BIN/app.sh init $_project_name
+								break;;
+						esac
+					done
+					break;;
+
+		        No ) break;;
+		    esac
+		done
+}
+
+# Install stella in standalone ------------------
+function standalone() {
+	# Try to determine install path of STELLA
+	if [ "$PROVIDED_PATH" == "" ]; then
+		# install STELLA into default path
+		_STELLA_INSTALL_PATH=$(___rel_to_abs_path "./lib-stella" "$_STELLA_CURRENT_RUNNING_DIR")
+	else
+		# install STELLA into ARG#2
+		_STELLA_INSTALL_PATH=$(___rel_to_abs_path "$PROVIDED_PATH" "$_STELLA_CURRENT_RUNNING_DIR")
+	fi
+
+	if [ -f "$_STELLA_INSTALL_PATH/stella.sh" ]; then
+		# STELLA already installed, update it
+		(cd "$_STELLA_INSTALL_PATH" && git pull)
+	else
+		__get_stella "git" "$_STELLA_INSTALL_PATH"
+	fi
+
+	source "$_STELLA_INSTALL_PATH/conf.sh"
 	
-	
+	__ask_install_system_requirements
 }
 
 
@@ -81,32 +125,9 @@ function bootstrap() {
 		echo "** This app/project is linked to a STELLA installation located in $STELLA_ROOT"
 		
 		source "$STELLA_ROOT/conf.sh"
-		echo "Do you wish to auto-install system requirements for stella ?"
-		select yn in "Yes" "No"; do
-		    case $yn in
-		        Yes )
-					__stella_system_requirement_by_os $STELLA_CURRENT_OS
-					$STELLA_BIN/feature.sh install required
-					break;;
-		        No ) break;;
-		    esac
-		done
-
-		echo "Do you wish to generate samples and propertie files for your project ?"
-		select yn in "Yes" "No"; do
-		    case $yn in
-		        Yes )
-					_project_name=$(basename $_STELLA_CURRENT_RUNNING_DIR)
-					read -p "What is your project name ? [$_project_name]" _temp_project_name
-					if [ ! "$_temp_project_name" == "" ]; then
-						_project_name=$_temp_project_name
-					fi
-					$STELLA_BIN/app.sh init $_project_name
-					break;;
-		        No ) break;;
-		    esac
-		done
-
+		
+		__ask_install_system_requirements
+		__ask_init_app
 	else
 
 		# Try to determine install path of STELLA
@@ -114,13 +135,13 @@ function bootstrap() {
 			if [ ! "$STELLA_ROOT" == "" ]; then
 				# install STELLA into STELLA_ROOT, and re-link it to the project
 				_STELLA_INSTALL_PATH=$(___rel_to_abs_path "$STELLA_ROOT" "$STELLA_APP_ROOT")
-				echo "STELLA_ROOT=$STELLA_ROOT" >$STELLA_APP_ROOT/.stella-link.sh
+				#echo "STELLA_ROOT=$STELLA_ROOT" >$STELLA_APP_ROOT/.stella-link.sh
 			else
 				# install STELLA into default path, and link to the project
 				_STELLA_INSTALL_PATH=$(___rel_to_abs_path "./lib-stella" "$STELLA_APP_ROOT")
-				echo "STELLA_ROOT=./lib-stella" >$STELLA_APP_ROOT/.stella-link.sh
+				#echo "STELLA_ROOT=./lib-stella" >$STELLA_APP_ROOT/.stella-link.sh
 			fi
-			git clone https://bitbucket.org/StudioEtrange/lib-stella.git "$_STELLA_INSTALL_PATH"
+			__get_stella "git" "$_STELLA_INSTALL_PATH"
 		else
 			# install STELLA into ARG#2, and linked to the app
 			_STELLA_INSTALL_PATH=$(___rel_to_abs_path "$PROVIDED_PATH" "$STELLA_APP_ROOT")
@@ -129,41 +150,15 @@ function bootstrap() {
 				(cd "$_STELLA_INSTALL_PATH" && git pull)
 			else
 				# install STELLA into arg #2
-				git clone https://bitbucket.org/StudioEtrange/lib-stella.git "$_STELLA_INSTALL_PATH"
+				__get_stella "git" "$_STELLA_INSTALL_PATH"
 			fi
-			echo "PROVIDED_PATH=$ARG" >$STELLA_APP_ROOT/.stella-link.sh
 		fi
 		
 		source "$_STELLA_INSTALL_PATH/conf.sh"
 
-		echo "Do you wish to auto-install system requirements for stella ?"
-		select yn in "Yes" "No"; do
-		    case $yn in
-		        Yes )
-					__stella_system_requirement_by_os $STELLA_CURRENT_OS
-					$STELLA_BIN/feature.sh install required
-					break;;
-		        No ) break;;
-		    esac
-		done
+		__ask_install_system_requirements
+		__ask_init_app
 
-		echo "Do you wish to generate samples and propertie files for your project ?"
-		select yn in "Yes" "No"; do
-		    case $yn in
-		        Yes )
-					_project_name=$(basename $_STELLA_CURRENT_RUNNING_DIR)
-					read -p "What is your project name ? [$_project_name]" _temp_project_name
-					if [ ! "$_temp_project_name" == "" ]; then
-						_project_name=$_temp_project_name
-					fi
-					$STELLA_BIN/app.sh init $_project_name
-					break;;
-		        No ) break;;
-		    esac
-		done
-		
-
-		
 	fi
 }
 

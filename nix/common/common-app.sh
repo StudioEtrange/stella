@@ -28,6 +28,15 @@ function __select_app() {
 }
 
 
+function __create_app_samples() {
+	local _approot=$1
+
+	cp -f "$STELLA_POOL/sample-app.sh" "$_approot/sample-app.sh"
+	chmod +x $_approot/sample-app.sh
+
+	cp -f "$STELLA_POOL/sample-stella.properties" "$_approot/sample-stella.properties"
+}
+
 function __init_app() {
 	local _app_name=$1
 	local _approot=$2
@@ -49,11 +58,6 @@ function __init_app() {
 
 	cp -f "$STELLA_POOL/stella-bridge.sh" "$_approot/stella-bridge.sh"
 	chmod +x $_approot/stella-bridge.sh
-
-	cp -f "$STELLA_POOL/sample-app.sh" "$_approot/sample-app.sh"
-	chmod +x $_approot/sample-app.sh
-
-	cp -f "$STELLA_POOL/sample-stella.properties" "$_approot/sample-stella.properties"
 
 	_STELLA_APP_PROPERTIES_FILE="$_approot/$STELLA_APP_PROPERTIES_FILENAME"
 	if [ -f "$_STELLA_APP_PROPERTIES_FILE" ]; then

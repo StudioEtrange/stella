@@ -75,6 +75,39 @@ if "%~1"=="bootstrap" (
 
 goto :eof
 
+:get_stella
+	set "_ver=%~1"
+	set "_path=%~2"
+
+goto :eof
+
+:ask_install_system_requirements
+	set /p input="Do you wish to auto-install system requirements for stella ? [Y/n] "
+	if not "%input%"=="n" (
+		call !STELLA_COMMON!\platform.bat :__stella_system_requirement_by_os !STELLA_CURRENT_OS!
+		call !STELLA_BIN!\feature.bat install required
+		@echo off
+	)
+goto :eof
+
+:ask_init_app
+	set /p input="Do you wish to init your stella app (create properties files, link app to stella...) ? [Y/n] "
+		if not "%input%"=="n" (
+			for /D %%I IN ("%_STELLA_CURRENT_RUNNING_DIR%") do set _project_name=%%~nxI
+			set /p input="What is your project name ? [!_project_name!] "
+			if not "!input!"=="" (
+				set "_project_name=!input!"
+			)
+
+			set /p input2="Do you wish to generate a sample app for your project ? [y/N] "
+			if not "%input2%"=="y" (
+				call !STELLA_BIN!\app.bat init "!_project_name!"
+			) else (
+				call !STELLA_BIN!\app.bat init "!_project_name!" -samples
+			)
+			@echo off
+		)
+goto :eof
 
 REM install stella in standalone------------------
 :standalone
@@ -83,10 +116,10 @@ REM install stella in standalone------------------
 	REM Try to determine install path of STELLA
 	if "%_provided_path%"=="" (
 		REM install STELLA into default path
-		call :___rel_to_abs_path "_stella_install_path" ".\lib-stella" "%_STELLA_CURRENT_FILE_DIR%"
+		call :___rel_to_abs_path "_stella_install_path" ".\lib-stella" "%_STELLA_CURRENT_RUNNING_DIR%"
 	) else (
 		REM install STELLA into ARG#2
-		call :___rel_to_abs_path "_stella_install_path" "%_provided_path%" "%_STELLA_CURRENT_FILE_DIR%"
+		call :___rel_to_abs_path "_stella_install_path" "%_provided_path%" "%_STELLA_CURRENT_RUNNING_DIR%"
 	)
 
 	if exist "!_stella_install_path!\stella.bat" (
@@ -100,13 +133,9 @@ REM install stella in standalone------------------
 	)
 	
 	call "!_stella_install_path!\conf.bat"
-		
-	set /p input="Do you wish to auto-install system requirements for stella ? [Y/n] "
-	if not "%input%"=="n" (
-		call !STELLA_COMMON!\platform.bat :__stella_system_requirement_by_os !STELLA_CURRENT_OS!
-		call !STELLA_BIN!\feature.bat install required
-		@echo off
-	)
+	
+	call :ask_install_system_requirements
+	
 	@echo off
 goto :eof
 
@@ -121,22 +150,8 @@ REM Bootstrap a stella project ------------------
 		
 		call "!STELLA_ROOT!\conf.bat"
 
-		set /p input="Do you wish to auto-install system requirements for stella ? [Y/n] "
-		if not "%input%"=="n" (
-			call !STELLA_COMMON!\platform.bat :__stella_system_requirement_by_os !STELLA_CURRENT_OS!
-			call !STELLA_BIN!\feature.bat install required
-			@echo off
-		)
-		set /p input="Do you wish to generate samples and propertie files for your project ? [Y/n] "
-		if not "%input%"=="n" (
-			for /D %%I IN ("%_STELLA_CURRENT_RUNNING_DIR%") do set _project_name=%%~nxI
-			set /p input="What is your project name ? [!_project_name!] "
-			if not "!input!"=="" (
-				set "_project_name=!input!"
-			)
-			call !STELLA_BIN!\app.bat init "!_project_name!"
-			@echo off
-		)
+		call :ask_install_system_requirements
+		call :ask_init_app
 		@echo off
 
 	) else (
@@ -146,19 +161,17 @@ REM Bootstrap a stella project ------------------
 			if not "!STELLA_ROOT!"=="" (
 				REM install STELLA into STELLA_ROOT, and re-link it to the app
 				call :___rel_to_abs_path "_stella_install_path" "!STELLA_ROOT!" "%STELLA_APP_ROOT%"
-				REM > "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(set STELLA_ROOT=!STELLA_ROOT!
-				> "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%~dp0
-				>> "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%_STELLA_LINK_CURRENT_FILE_DIR:~0,-1%%
-				>> "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(@set STELLA_ROOT=%%_STELLA_LINK_CURRENT_FILE_DIR%%\%_STELLA_ROOT%
-
-
+				
+				REM > "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%~dp0
+				REM >> "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%_STELLA_LINK_CURRENT_FILE_DIR:~0,-1%%
+				REM >> "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(@set STELLA_ROOT=%%_STELLA_LINK_CURRENT_FILE_DIR%%\%_STELLA_ROOT%
 			) else (
 				REM install STELLA into default path, and link it to the app
 				call :___rel_to_abs_path "_stella_install_path" ".\lib-stella" "%STELLA_APP_ROOT%"
-				REM > "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(set STELLA_ROOT=.\lib-stella
-				> "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%~dp0
-				>> "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%_STELLA_LINK_CURRENT_FILE_DIR:~0,-1%%
-				>> "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(@set STELLA_ROOT=%%_STELLA_LINK_CURRENT_FILE_DIR%%\lib-stella
+				
+				REM > "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%~dp0
+				REM >> "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%_STELLA_LINK_CURRENT_FILE_DIR:~0,-1%%
+				REM >> "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(@set STELLA_ROOT=%%_STELLA_LINK_CURRENT_FILE_DIR%%\lib-stella
 			)
 			git clone https://bitbucket.org/StudioEtrange/lib-stella.git "!_stella_install_path!"
 		) else (
@@ -174,27 +187,13 @@ REM Bootstrap a stella project ------------------
 			) else (
 				git clone https://bitbucket.org/StudioEtrange/lib-stella.git "!_stella_install_path!"
 			)
-			> "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(set STELLA_ROOT=%_provided_path%
+			REM > "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(set STELLA_ROOT=%_provided_path%
 		)
 		
 		call "!_stella_install_path!\conf.bat"
 		
-		set /p input="Do you wish to auto-install system requirements for stella ? [Y/n] "
-		if not "%input%"=="n" (
-			call !STELLA_COMMON!\platform.bat :__stella_system_requirement_by_os !STELLA_CURRENT_OS!
-			call !STELLA_BIN!\feature.bat install required
-			@echo off
-		)
-		set /p input="Do you wish to generate samples and propertie files for your project ? [Y/n] "
-		if not "%input%"=="n" (
-			for /D %%I IN ("%_STELLA_CURRENT_RUNNING_DIR%") do set _project_name=%%~nxI
-			set /p input="What is your project name ? [!_project_name!] "
-			if not "!input!"=="" (
-				set "_project_name=!input!"
-			)
-			call !STELLA_BIN!\app.bat init "!_project_name!"
-			@echo off
-		)
+		call :ask_install_system_requirements
+		call :ask_init_app
 		@echo off
 	)
 goto :eof

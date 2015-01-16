@@ -1,2 +1,0 @@
-_STELLA_LINK_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-STELLA_ROOT=$_STELLA_LINK_CURRENT_FILE_DIR/../..

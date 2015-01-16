@@ -135,6 +135,15 @@ goto :eof
 
 goto :eof
 
+
+:create_app_samples
+	set "_approot=%~1"
+
+	copy /y "%STELLA_POOL%\sample-app.bat" "%_approot%\sample-app.bat"
+	copy /y "%STELLA_POOL%\sample-stella.properties" "%_approot%\sample-stella.properties"
+
+goto :eof
+
 :init_app
 	set "_app_name=%~1"
 	set "_approot=%~2"
@@ -151,10 +160,6 @@ goto :eof
 	>> "%_approot%\.stella-link.bat" ECHO(@set STELLA_ROOT=%%_STELLA_LINK_CURRENT_FILE_DIR%%\%_STELLA_ROOT%
 
 	copy /y "%STELLA_POOL%\stella-bridge.bat" "%_approot%\stella-bridge.bat"
-
-	copy /y "%STELLA_POOL%\sample-app.bat" "%_approot%\sample-app.bat"
-
-	copy /y "%STELLA_POOL%\sample-stella.properties" "%_approot%\sample-stella.properties"
 
 	set "_STELLA_APP_PROPERTIES_FILE=%_approot%\%STELLA_APP_PROPERTIES_FILENAME%"
 	if exist "%_STELLA_APP_PROPERTIES_FILE%" (

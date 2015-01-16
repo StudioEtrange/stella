@@ -8,7 +8,7 @@ function usage() {
     echo "----------------"
     echo "List of commands"
     echo " o-- application management :"
-    echo " L     init <application name> [--approot=<path>] [--workroot=<abs or relative path to approot>] [--cachedir=<abs or relative path to approot>]"
+    echo " L     init <application name> [--approot=<path>] [--workroot=<abs or relative path to approot>] [--cachedir=<abs or relative path to approot>] [--samples]"
     echo " L     get-data|get-assets|update-data|update-assets|revert-data|revert-assets <data id|assets id|all>"
     echo " L     get-features all"
     echo " L     setup-env <env id|all> : download, build, deploy and run virtual environment based on app properties"
@@ -29,6 +29,7 @@ FORCE=''							'f'			''					b			0		'1'						Force.
 APPROOT=''                      ''          'path'              s           0           ''                      App path (default current)
 WORKROOT=''                     ''          'path'              s           0           ''                      Work app path (default equal to app path)
 CACHEDIR=''                     ''          'path'              s           0           ''                      Cache folder path
+SAMPLES=''                      ''         ''                  b           0       '1'                     Generate app samples.
 "
 
 
@@ -51,6 +52,7 @@ if [ "$ACTION" == "init" ]; then
     fi
 
     __init_app $ID $APPROOT $WORKROOT $CACHEDIR
+    [ "$SAMPLES" ] && __create_app_samples $APPROOT
 
     #cd $APPROOT
     #./stella-bridge.sh feature install default

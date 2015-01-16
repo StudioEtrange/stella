@@ -9,7 +9,7 @@ function usage() {
 	echo "----------------"
 	echo "List of commands"
 	echo " o-- application management :"
-	echo " L     app init <application name> [--approot=<path>] [--workroot=<abs or relative path to approot>] [--cachedir=<abs or relative path to approot>]"
+	echo " L     app init <application name> [--approot=<path>] [--workroot=<abs or relative path to approot>] [--cachedir=<abs or relative path to approot>] [--samples]"
 	echo " L     app get-data|get-assets|update-data|update-assets|revert-data|revert-assets <data id|assets id|all>"
 	echo " L     app get-features all"
 	echo " L     app setup-env <env id|all> : download, build, deploy and run virtual environment based on app properties"
@@ -47,6 +47,7 @@ VMEM=''							''			''					i 			0		''						Memory attributed to the virtual env.
 HEAD=''							''			''					b			0		'1'						Active hyperviser head.
 LOGIN=''						'l'			''					b			0		'1'						Autologin in env.
 VERS=''							''			'version'			s 			0 		''						Feature version.
+SAMPLES=''                      ''         ''                  b           0       '1'                     Generate app samples.
 "
 
 __argparse "$0" "$OPTIONS" "$PARAMETERS" "Lib Stella" "$(usage)" "" "$@"

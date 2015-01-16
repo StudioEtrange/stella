@@ -1,13 +1,13 @@
 if [ ! "$_STELLA_CONF_INCLUDED_" == "1" ]; then
 _STELLA_CONF_INCLUDED_=1
 
-_STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+_STELLA_CONF_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 if [ "$_STELLA_CURRENT_RUNNING_DIR" == "" ]; then
 	_STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
 fi
 
 # STELLA PATHS ---------------------------------------------
-STELLA_ROOT="$_STELLA_CURRENT_FILE_DIR"
+STELLA_ROOT="$_STELLA_CONF_CURRENT_FILE_DIR"
 STELLA_COMMON="$STELLA_ROOT/nix/common"
 STELLA_POOL="$STELLA_ROOT/nix/pool"
 STELLA_BIN="$STELLA_ROOT/nix/bin"

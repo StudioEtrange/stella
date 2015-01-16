@@ -9,7 +9,7 @@ call %~dp0\conf.bat
 
 :: arguments
 set "params=domain:"app feature virtual api" action:"init get-data get-assets update-data update-assets revert-data revert-assets get-features setup-env install list create-env run-env stop-env destroy-env info-env create-box get-box" id:"_ANY_""
-set "options=-f: -arch:"#x64 x86" -vcpu:_ANY_ -vmem:_ANY_ -head: -login: -vers:_ANY_ -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_"
+set "options=-f: -arch:"#x64 x86" -vcpu:_ANY_ -vmem:_ANY_ -head: -login: -vers:_ANY_ -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_ -samples:"
 
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
@@ -30,6 +30,8 @@ if "%DOMAIN%"=="app" (
 	if not "%-workroot%"=="" set "_app_options=!_app_options! -workroot=%-workroot%"
 	if not "%-cachedir%"=="" set "_app_options=!_app_options! -cachedir=%-cachedir%"
 	
+
+	if "%-samples%"=="1" set "_app_options=!_app_options! -samples"
 	if "%-f%"=="1" set "_app_options=!_app_options! -f"
 	
 	call %STELLA_BIN%\app.bat %ACTION% %id% !_app_options!
@@ -92,7 +94,7 @@ if "%DOMAIN%"=="virtual" goto :end
 	echo ----------------
 	echo List of commands
 	echo 	* application management :
-	echo 		%~n0 app init ^<application name^> [-approot=^<path^>] [-workroot=^<path^>] [-cachedir=^<path^>]
+	echo 		%~n0 app init ^<application name^> [-approot=^<path^>] [-workroot=^<path^>] [-cachedir=^<path^>] [-samples]
 	echo 		%~n0 app get-data^|get-assets^|update-data^|update-assets^|revert-data^|revert-assets ^<data id^|assets id^|all^>
 	echo 		%~n0 app get-features all
 	echo 		%~n0 app setup-env ^<env id^|all^> : download, build, deploy and run virtual environment based on app properties
