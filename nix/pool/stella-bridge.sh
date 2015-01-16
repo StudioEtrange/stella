@@ -135,11 +135,9 @@ function bootstrap() {
 			if [ ! "$STELLA_ROOT" == "" ]; then
 				# install STELLA into STELLA_ROOT, and re-link it to the project
 				_STELLA_INSTALL_PATH=$(___rel_to_abs_path "$STELLA_ROOT" "$STELLA_APP_ROOT")
-				#echo "STELLA_ROOT=$STELLA_ROOT" >$STELLA_APP_ROOT/.stella-link.sh
 			else
 				# install STELLA into default path, and link to the project
 				_STELLA_INSTALL_PATH=$(___rel_to_abs_path "./lib-stella" "$STELLA_APP_ROOT")
-				#echo "STELLA_ROOT=./lib-stella" >$STELLA_APP_ROOT/.stella-link.sh
 			fi
 			__get_stella "git" "$_STELLA_INSTALL_PATH"
 		else

@@ -100,10 +100,10 @@ goto :eof
 			)
 
 			set /p input2="Do you wish to generate a sample app for your project ? [y/N] "
-			if not "%input2%"=="y" (
-				call !STELLA_BIN!\app.bat init "!_project_name!"
+			if "%input2%"=="y" (
+				call !STELLA_BIN!\app.bat init "!_project_name!"  -samples
 			) else (
-				call !STELLA_BIN!\app.bat init "!_project_name!" -samples
+				call !STELLA_BIN!\app.bat init "!_project_name!"
 			)
 			@echo off
 		)
