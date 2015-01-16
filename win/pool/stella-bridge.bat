@@ -161,17 +161,9 @@ REM Bootstrap a stella project ------------------
 			if not "!STELLA_ROOT!"=="" (
 				REM install STELLA into STELLA_ROOT, and re-link it to the app
 				call :___rel_to_abs_path "_stella_install_path" "!STELLA_ROOT!" "%STELLA_APP_ROOT%"
-				
-				REM > "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%~dp0
-				REM >> "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%_STELLA_LINK_CURRENT_FILE_DIR:~0,-1%%
-				REM >> "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(@set STELLA_ROOT=%%_STELLA_LINK_CURRENT_FILE_DIR%%\%_STELLA_ROOT%
 			) else (
 				REM install STELLA into default path, and link it to the app
 				call :___rel_to_abs_path "_stella_install_path" ".\lib-stella" "%STELLA_APP_ROOT%"
-				
-				REM > "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%~dp0
-				REM >> "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%_STELLA_LINK_CURRENT_FILE_DIR:~0,-1%%
-				REM >> "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(@set STELLA_ROOT=%%_STELLA_LINK_CURRENT_FILE_DIR%%\lib-stella
 			)
 			git clone https://bitbucket.org/StudioEtrange/lib-stella.git "!_stella_install_path!"
 		) else (
@@ -187,7 +179,6 @@ REM Bootstrap a stella project ------------------
 			) else (
 				git clone https://bitbucket.org/StudioEtrange/lib-stella.git "!_stella_install_path!"
 			)
-			REM > "%STELLA_APP_ROOT%\.stella-link.bat" ECHO(set STELLA_ROOT=%_provided_path%
 		)
 		
 		call "!_stella_install_path!\conf.bat"
