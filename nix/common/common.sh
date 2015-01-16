@@ -504,7 +504,7 @@ function __git_project_version() {
 			echo "$(git --git-dir "$_PATH/.git" describe --tags --long)"
 		fi
 		if [ "$_opt_version_short" == "ON" ]; then
-			echo "$(git --git-dir "$_PATH/.git" describe --tags --abbrev=O)"
+			echo "$(git --git-dir "$_PATH/.git" describe --tags --abbrev=0)"
 		fi
 	fi
 }
