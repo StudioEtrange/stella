@@ -26,7 +26,7 @@ function do_release() {
 		[ "$o" == "UPLOAD" ] && _opt_upload=ON
 	done
 
-	version=$(__get_stella_version)
+	version=$(__get_stella_version "LONG")
 	echo $version > "$STELLA_ROOT/VERSION"
 
 	case $_platform in
