@@ -330,6 +330,51 @@ function __download_uncompress() {
 	__uncompress "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$UNZIP_DIR" "$OPT"
 }
 
+function __compress() {
+	local _mode=$1
+	local _target=$2
+	local _output_archive=$3
+
+	local _tar_flag
+
+	case $_mode in
+		TARGZ )
+			_tar_flag=-z
+			;;
+		TARBZ )
+			_tar_flag=-j
+			;;
+		TARXZ )
+			_tar_flag=-J
+			;;
+		TARLZMA )
+			_tar_flag=--lzma
+			;;
+	esac
+
+	case $_mode in
+		7Z)
+			if [ -d "$_target" ]: then
+				cd "$_target/.."
+				7z a -t7z "$_output_archive" "$(basename $_target)"
+			fi
+			if [ -f "$_target" ]: then
+				cd "$(dirname $_target)"
+				7z a -t7z "$_output_archive" "$(basename $_target)"
+			fi
+			;;
+		ZIP)
+			# TODO
+			;;
+		TAR*)
+				[ -d "$_target" ] && tar -c -v -z -f "$_output_archive" -C "$_target/.." "$(basename $_target)"
+				[ -f "$_target" ] && tar -c -v -z -f "$_output_archive" -C "$(dirname $_target)" "$(basename $_target)"
+			;;
+	esac
+	
+
+}
+
 function __uncompress() {
 	local FILE_PATH
 	local UNZIP_DIR

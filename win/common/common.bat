@@ -470,6 +470,9 @@ goto :eof
 	)
 goto :eof
 
+REM TODO : review alternatives
+REM - use curl embedded binary
+REM - use powershell in batch http://stackoverflow.com/a/20476904
 :download
 	set URL=%~1
 	set FILE_NAME=%~2

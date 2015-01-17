@@ -78,6 +78,17 @@ goto :eof
 :get_stella
 	set "_ver=%~1"
 	set "_path=%~2"
+	
+
+	if "%_ver"=="git" (
+		git clone https://bitbucket.org/StudioEtrange/lib-stella.git "%_path%"
+	) else (
+		pushd
+		cd /d %_path%
+		powershell -Command "(New-Object Net.WebClient).DownloadFile('http://studio-etrange.org/stella/stella-win-"%_ver%".zip.exe', 'stella-win-"%_ver%".zip.exe')"
+		popd
+		REM rm -f "$_path"/$stella-nix-"$_ver".gz.sh
+	)
 
 goto :eof
 

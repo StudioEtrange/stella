@@ -33,7 +33,7 @@ function do_release() {
 		win)
 			release_filename="stella-win-$version.gz"	
 			;;
-		nix)
+		linux|macos)
 			release_filename="stella-nix-$version.gz"
 			;;
 		all)
@@ -41,9 +41,9 @@ function do_release() {
 			;;
 	esac
 
-	pack "$_platform" "$release_filename" "$_opt"
+	[ "$_opt_auto_extract" == "ON" ] && release_filename="$release_filename.run"
 
-	[ "$_opt_auto_extract" == "ON" ] && release_filename="$release_filename.sh"
+	pack "$_platform" "$release_filename" "$_opt"
 
 	upload "$_STELLA_CURRENT_FILE_DIR/output/$release_filename"
 }
@@ -54,46 +54,33 @@ function pack() {
 	local _release_filename=$2
 	local _opt="$3"
 
-	local result_file
-
 	local _opt_auto_extract=OFF # make a self uncompress archive
 	for o in $_opt; do 
 		[ "$o" == "AUTO_EXTRACT" ] && _opt_auto_extract=ON
 	done
 
-	echo "#!/bin/bash" > "$_STELLA_CURRENT_FILE_DIR/output/header"
-	echo "ARCHIVE=\`awk '/^__ARCHIVE_BELOW__/ {print NR + 1; exit 0; }' \$0\`" >> "$_STELLA_CURRENT_FILE_DIR/output/header"
-	echo "tail -n+\$ARCHIVE \$0 | tar xzv -C ." >> "$_STELLA_CURRENT_FILE_DIR/output/header"
-	echo "exit 0" >> "$_STELLA_CURRENT_FILE_DIR/output/header"
-	echo "__ARCHIVE_BELOW__" >> "$_STELLA_CURRENT_FILE_DIR/output/header"
-
 	case $_platform in
 		win)
-			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./nix/" --exclude "./admin/" --exclude "*.sh" \
-		-f "$_STELLA_CURRENT_FILE_DIR/output/$_release_filename" -C "$STELLA_ROOT" .
-
-			[ "$_opt_auto_extract" == "ON" ]  && cat "$_STELLA_CURRENT_FILE_DIR/output/header" "$_STELLA_CURRENT_FILE_DIR/output/$_release_filename" > "$_STELLA_CURRENT_FILE_DIR/output/$_release_filename".sh
+			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./nix/" --exclude "./test/" --exclude "./admin/" --exclude "*.sh" \
+		-f "$_STELLA_CURRENT_FILE_DIR/output/$_release_filename" -C "$STELLA_ROOT/.."  "$(basename $STELLA_ROOT)"
 		;;
 
-		nix)
-			result_file="stella-nix-$version.gz"
-			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./win/" --exclude "./admin/" --exclude "*.bat" \
-		-f "$_STELLA_CURRENT_FILE_DIR/output/$_release_filename" -C "$STELLA_ROOT" .
-
-			[ "$_opt_auto_extract" == "ON" ]  && cat "$_STELLA_CURRENT_FILE_DIR/output/header" "$_STELLA_CURRENT_FILE_DIR/output/$_release_filename" > "$_STELLA_CURRENT_FILE_DIR/output/$_release_filename".sh
+		linux|macos)
+			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./win/" --exclude "./test/" --exclude "./admin/" --exclude "*.bat" \
+		-f "$_STELLA_CURRENT_FILE_DIR/output/$_release_filename" -C "$STELLA_ROOT/.."  "$(basename $STELLA_ROOT)"
 		;;
 
 		all)
-			result_file="stella-all-$version.gz"
-			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./admin/" \
-		-f "$_STELLA_CURRENT_FILE_DIR/output/$_release_filename" -C "$STELLA_ROOT" .
-
-			[ "$_opt_auto_extract" == "ON" ]  && cat "$_STELLA_CURRENT_FILE_DIR/output/header" "$_STELLA_CURRENT_FILE_DIR/output/$_release_filename" > "$_STELLA_CURRENT_FILE_DIR/output/$_release_filename".sh
+			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./test/" --exclude "./admin/" \
+		-f "$_STELLA_CURRENT_FILE_DIR/output/$_release_filename" -C "$STELLA_ROOT/.."  "$(basename $STELLA_ROOT)"
 		;;
 	esac
 	
-	rm -Rf "$_STELLA_CURRENT_FILE_DIR/output/header"
-	chmod +x $_STELLA_CURRENT_FILE_DIR/output/*.sh 2>/dev/null
+	if [ "$_opt_auto_extract" == "ON" ]; then
+		mv "$_STELLA_CURRENT_FILE_DIR/output/$_release_filename" "$_STELLA_CURRENT_FILE_DIR/output/$_release_filename".tmp
+		__make_targz_sfx_shell "$_STELLA_CURRENT_FILE_DIR/output/$_release_filename".tmp "$_STELLA_CURRENT_FILE_DIR/output/$_release_filename" "TARGZ"
+		rm -Rf "$_STELLA_CURRENT_FILE_DIR/output/$_release_filename".tmp
+	fi
 
 }
 
@@ -108,7 +95,7 @@ PARAMETERS="
 ACTION=						'action' 			a						'do'					Action.
 "
 OPTIONS="
-PLATFORM='all'				''			''					'a'			0			'win nix'			Target platform.
+PLATFORM='all'				''			''					'a'			0			'win linux macos all'			Target platform.
 "
 
 __argparse "$0" "$OPTIONS" "$PARAMETERS" "Release management" "$(usage)" "" "$@"
