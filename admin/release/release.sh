@@ -97,6 +97,7 @@ function upload_ftp() {
 
 
 function push_repository() {
+	# TODO : delete ftp respository first
 	cd $STELLA_ADMIN
 	for f in respository/* repository/**/*; do
 		[ -f "$f" ] && upload_ftp "$f" "$(dirname $f)"
