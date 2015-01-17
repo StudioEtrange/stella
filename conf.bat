@@ -10,6 +10,8 @@ set STELLA_POOL=%STELLA_ROOT%\win\pool
 set STELLA_BIN=%STELLA_ROOT%\win\bin
 set STELLA_FEATURE_RECIPE=%STELLA_POOL%\feature-recipe
 set STELLA_FEATURE_REPOSITORY=%STELLA_POOL%\feature-repository
+set STELLA_TEST=%STELLA_ROOT%\test
+set STELLA_ADMIN=%STELLA_ROOT%\admin
 
 :: GATHER PLATFORM INFO
 call %STELLA_COMMON%\platform.bat :set_current_platform_info

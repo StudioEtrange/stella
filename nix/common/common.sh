@@ -354,13 +354,15 @@ function __compress() {
 
 	case $_mode in
 		7Z)
-			if [ -d "$_target" ]: then
+			if [ -d "$_target" ]; then
 				cd "$_target/.."
-				7z a -t7z "$_output_archive" "$(basename $_target)"
+				7z a -t7z "$_output_archive".7z "$(basename $_target)"
+				mv "$_output_archive".7z "$_output_archive"
 			fi
-			if [ -f "$_target" ]: then
+			if [ -f "$_target" ]; then
 				cd "$(dirname $_target)"
 				7z a -t7z "$_output_archive" "$(basename $_target)"
+				mv "$_output_archive".7z "$_output_archive"
 			fi
 			;;
 		ZIP)

@@ -13,7 +13,7 @@ function usage() {
 }
 
 
-function do_release() {
+function release_from_local() {
 	local _platform=$1
 	local _opt="$2"
 
@@ -45,7 +45,9 @@ function do_release() {
 
 	pack "$_platform" "$release_filename" "$_opt"
 
-	upload "$_STELLA_CURRENT_FILE_DIR/output/$release_filename"
+	upload_ftp "$_STELLA_CURRENT_FILE_DIR/output/$release_filename" "dist"
+
+	rm -f "$STELLA_ROOT/VERSION"
 }
 
 
@@ -84,15 +86,26 @@ function pack() {
 
 }
 
-function upload() {
+function upload_ftp() {
 	local _file=$1
-	curl --ftp-create-dirs --netrc-file $_STELLA_CURRENT_FILE_DIR/credentials -T $_file ftp://ftp.cluster014.ovh.net/www/stella/
+	local _ftp_path=$2/
+
+	curl --ftp-create-dirs --netrc-file $_STELLA_CURRENT_FILE_DIR/credentials -T $_file ftp://ftp.cluster014.ovh.net/stella/$_ftp_path
 }
 
 
+
+
+function push_repository() {
+	cd $STELLA_ADMIN
+	for f in respository/* repository/**/*; do
+		[ -f "$f" ] && upload_ftp "$f" "$(dirname $f)"
+	done
+}
+
 # ARGUMENTS -----------------------------------------------------------------------------------
 PARAMETERS="
-ACTION=						'action' 			a						'do'					Action.
+ACTION=						'action' 			a						'local repository'					Action.
 "
 OPTIONS="
 PLATFORM='all'				''			''					'a'			0			'win linux macos all'			Target platform.
@@ -111,8 +124,11 @@ mkdir -p $_STELLA_CURRENT_FILE_DIR/output
 
 
 case $ACTION in
-    do)
-		do_release $PLATFORM AUTO_EXTRACT
+    local)
+		release_from_local $PLATFORM AUTO_EXTRACT
+		;;
+	repository)
+		push_repository
 		;;
 	*)
 		echo "use option --help for help"

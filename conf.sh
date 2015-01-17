@@ -14,6 +14,7 @@ STELLA_BIN="$STELLA_ROOT/nix/bin"
 STELLA_FEATURE_RECIPE="$STELLA_POOL/feature-recipe"
 STELLA_FEATURE_REPOSITORY="$STELLA_FEATURE_RECIPE/feature-repository"
 STELLA_TEST="$STELLA_ROOT/test"
+STELLA_ADMIN="$STELLA_ROOT/admin"
 
 # STELLA INCLUDE ---------------------------------------------
 

@@ -33,20 +33,36 @@ function __make_sevenzip_sfx_bin() {
 	fi
 	
 	if [ "$_opt_target_is_sevenzip" == "OFF" ]; then
-		__compress "7Z" "$_target" "$tp_gz"
+		__compress "7Z" "$_target" "$tp_7z"
 	fi
 
 
+	local extractor_binary
 	case $_platform in
 		win)
-			$tp_header
-			cat "$extractor_binary" installer.7z > installer.exe
+			__download "http://studio-etrange.org/repository/sfx_for_7z/7z9.20Win32Con.sfx" "_AUTO_"
+			extractor_binary="$STELLA_APP_CACHE_DIR/7z9.20Win32Con.sfx"
 			;;
 		linux)
+			__download "http://studio-etrange.org/repository/sfx_for_7z/7z9.20LinuxI386Con.sfx" "_AUTO_"
+			extractor_binary="$STELLA_APP_CACHE_DIR/7z9.20LinuxI386Con.sfx"
 			;;
 		macos)
+			__download "http://studio-etrange.org/repository/sfx_for_7z/7z9.20Macosx10.6I386.sfx"  "_AUTO_"
+			extractor_binary="$STELLA_APP_CACHE_DIR/7z9.20Macosx10.6I386.sfx"
 			;;
 	esac
+
+	cat "$extractor_binary" "$tp_7z" > "$_output_sfx"
+
+	[ "$_opt_target_is_sevenzip" == "OFF" ] && rm -Rf "$tp_7z"
+
+	case $_platform in
+		linux|macos)
+			chmod +x $_output_sfx 2>/dev/null
+			;;
+	esac
+
 }
 
 # NOTE : SFX for linux
@@ -78,14 +94,8 @@ function __make_targz_sfx_shell() {
 	echo "exit 0" >> "$tp_header"
 	echo "__ARCHIVE_BELOW__" >> "$tp_header"
 
-	# if [ "$_opt_target_is_targz" == "OFF" ]; then
-	# 	[ -d "$_target" ] && tar -c -v -z -f "$tp_gz" -C "$_target/.." "$(basename $_target)"
-	# 	[ -f "$_target" ] && tar -c -v -z -f "$tp_gz" -C "$(dirname $_target)" "$(basename $_target)"
-	# fi
-
 	if [ "$_opt_target_is_targz" == "OFF" ]; then
 		__compress "TARGZ" "$_target" "$tp_gz"
-
 	fi
 
 	cat "$tp_header" "$tp_gz" > "$_output_sfx"
