@@ -62,86 +62,164 @@ function __is_abs() {
 	esac
 }
 
+
+# NOTE by default path is determined giving by the current running directory
 function __rel_to_abs_path() {
 	local _rel_path=$1
 	local _abs_root_path=$2
+	local result
+
+	if [ "$_abs_root_path" == "" ]; then
+		_abs_root_path=$_STELLA_CURRENT_RUNNING_DIR
+	fi
 
 
-	case $_rel_path in
-		/*)
-			# path is already absolute
-			echo "$_rel_path"
-			;;
-		*)
-			# TODO if "$_abs_root_path" == "" then _abs_root_path=$_STELLA_CURRENT_RUNNING_DIR ?
-			if [ "$_abs_root_path" == "" ]; then
-				# relative to current path
+	if [ "$(__is_abs $_abs_root_path)" == "FALSE" ]; then
+		result="$_rel_path"
+	else
+
+		case $_rel_path in
+			/*)
+				# path is already absolute
+				echo "$_rel_path"
+				;;
+			*)
 				# TODO if directory does not exist returned path is not real absolute (example : /tata/toto/../titi instead of /tata/titi)
-				if [ -d "$_rel_path" ]; then
-					echo "$(cd "$_rel_path" && pwd )"
-				else
-					echo "$_rel_path"
-				fi
-			else
 				# relative to a given absolute path
 				if [ -d "$_abs_root_path/$_rel_path" ]; then
-					echo "$(cd "$_abs_root_path/$_rel_path" && pwd )"
+					result="$(cd "$_abs_root_path/$_rel_path" && pwd )"
 				else
-					echo "$_abs_root_path/$_rel_path"
+					#result="$_abs_root_path/$_rel_path"
+					# NOTE using this method if directory does not exist returned path is not real absolute (example : /tata/toto/../titi instead of /tata/titi)
+
+					[ "$STELLA_CURRENT_PLATFORM" == "macos" ] && result=$(__rel_to_abs_path_alternative_1 "$_rel_path" "$_abs_root_path")
+					[ "$STELLA_CURRENT_PLATFORM" == "nix" ] && result=$(__rel_to_abs_path_alternative_2 "$_rel_path" "$_abs_root_path")
 				fi
-			fi
-			;;
-	esac
+				;;
+		esac
+	fi
+	echo $result | tr -s '/'
 }
 
+# NOTE : http://stackoverflow.com/a/21951256
+# NOTE : pure BASH : do not use readlink or cd or pwd command BUT do not follow symlink
+function __rel_to_abs_path_alternative_1(){
+		local _rel_path=$1
+		local _abs_root_path=$2
 
+	  local thePath=$_abs_root_path/$_rel_path
+	  # if [[ ! "$1" =~ ^/ ]];then
+	  #   thePath="$PWD/$1"
+	  # else
+	  #   thePath="$1"
+	  # fi
+	  echo "$thePath"|(
+	  IFS=/
+	  read -a parr
+	  declare -a outp
+	  for i in "${parr[@]}";do
+	    case "$i" in
+	    ''|.) continue ;;
+	    ..)
+	      len=${#outp[@]}
+	      if ((len==0));then
+	        continue
+	      else
+	        unset outp[$((len-1))] 
+	      fi
+	      ;;
+	    *)
+	      len=${#outp[@]}
+	      outp[$len]="$i"
+	      ;;
+	    esac
+	  done
+	  echo /"${outp[*]}"
+	)
+}
+
+# NOTE : http://stackoverflow.com/a/13599997
+# NOTE : use basename/dirname/readlink : follow symlink
+function __rel_to_abs_path_alternative_2(){
+	local _rel_path=$1
+	local _abs_root_path=$2
+
+	local F="$_abs_root_path/$_rel_path"
+	# NOTE readlink -f do not exist on macos
+	[ "$STELLA_CURRENT_PLATFORM" == "nix" ] && echo "$(dirname $(readlink -e $F))/$(basename $F)"
+	[ "$STELLA_CURRENT_PLATFORM" == "macos" ] && echo "$(dirname $F)/$(basename $F)"
+}
+
+# How to go from _abs_path_root (ARG2) to _abs_path_to_translate (ARG1)
+# example :
+#	ARG1 /path1
+#	ARG2 /path1/path2
+# result ..
+# cd /path1/path2/.. is equivalent to /path1
+# NOTE by default relative to current running directory
 function __abs_to_rel_path() {
-	
-	local target="$1"
-	local _abs_path="$2"
-	local common_part=$_abs_path # for now
+	local _abs_path_to_translate="$1"/
+	local _abs_path_root="$2"
 
 	local result=""
 
-	case $_abs_path in
-		/*)
-			while [[ "${target#$common_part}" == "${target}" ]]; do
-				# no match, means that candidate common part is not correct
-				# go up one level (reduce common part)
-				common_part="$(dirname $common_part)"
-				# and record that we went back
-				if [[ -z $result ]]; then
-					result=".."
-				else
-					result="../$result"
+	if [ "$_abs_path_root" == "" ]; then
+		_abs_path_root=$_STELLA_CURRENT_RUNNING_DIR
+	fi
+
+	local common_part="$_abs_path_root"/ # for now
+
+	if [ "$(__is_abs $_abs_path_to_translate)" == "FALSE" ]; then
+		result="$_abs_path_to_translate"
+	else
+
+		case $_abs_path_root in
+			/*)
+				while [[ "${_abs_path_to_translate#$common_part}" == "${_abs_path_to_translate}" ]]; do
+					# no match, means that candidate common part is not correct
+					# go up one level (reduce common part)
+					common_part="$(dirname $common_part)"
+
+					# and record that we went back
+					if [[ -z $result ]]; then
+						result=".."
+					else
+						result="../$result"
+					fi
+					
+				done
+
+				if [[ $common_part == "/" ]]; then
+					# special case for root (no common path)
+					result="$result/"
 				fi
 				
-			done
 
-			if [[ $common_part == "/" ]]; then
-				# special case for root (no common path)
-				result="$result/"
-			fi
+				# since we now have identified the common part,
+				# compute the non-common part
+				forward_part="${_abs_path_to_translate#$common_part}"
+				if [[ -n $result ]] && [[ -n $forward_part ]]; then
+					result="$result$forward_part"
+				elif [[ -n $forward_part ]]; then
+					result="${forward_part}"
+					
+				else
+					if [[ ! -n $result ]] && [[ $common_part == "$_abs_path_to_translate" ]]; then
+						result="."
+					fi
+				fi
+				;;
 
-			# since we now have identified the common part,
-			# compute the non-common part
-			forward_part="${target#$common_part}"
-	
-			if [[ -n $result ]] && [[ -n $forward_part ]]; then
-				result="$result$forward_part"
-			elif [[ -n $forward_part ]]; then
-				result="${forward_part:1}"
-			else
-				do_nothing=1
-			fi
-			return_value=$result
-			echo "$return_value"
-			;;
+			*)
+				result="$_abs_path_to_translate"
+				;;
+		esac
+	fi
 
-		*)
-			echo "$_abs_path"
-			;;
-	esac
+	if [ "${result:(-1)}" == "/" ]; then
+		result=${result%?}
+	fi
+	echo "$result"
 
 }
 

@@ -36,7 +36,7 @@ call %STELLA_COMMON%\common-app.bat :get_all_properties !_STELLA_APP_PROPERTIES_
 call %STELLA_COMMON%\common.bat :rel_to_abs_path "STELLA_APP_ROOT" "%STELLA_APP_ROOT%" "%_STELLA_CURRENT_RUNNING_DIR%"
 
 if "%STELLA_APP_WORK_ROOT%"=="" (
-	set STELLA_APP_WORK_ROOT=.
+	set STELLA_APP_WORK_ROOT=%STELLA_APP_ROOT%
 )
 call %STELLA_COMMON%\common.bat :rel_to_abs_path "STELLA_APP_WORK_ROOT" "%STELLA_APP_WORK_ROOT%" "%STELLA_APP_ROOT%"
 

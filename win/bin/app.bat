@@ -22,14 +22,14 @@ call %STELLA_COMMON%\common.bat :init_stella_env
 if "%ACTION%"=="init" (
 		
 	if "%-approot%"=="" (
-		set "-approot=%STELLA_APP_ROOT%"
+		set "-approot=%_STELLA_CURRENT_RUNNING_DIR%"
 	)
 	if "%-workroot%"=="" (
-		set "-workroot=%STELLA_APP_WORK_ROOT%"
+		set "-workroot=%-approot%"
 	)
 
 	if "%-cachedir%"=="" (
-		set "-cachedir=%STELLA_APP_CACHE_DIR%"
+		set "-cachedir=%-workroot%\cache"
 	)
 
 	call %STELLA_COMMON%\common-app :init_app "%id%" "!-approot!" "!-workroot!" "!-cachedir!"

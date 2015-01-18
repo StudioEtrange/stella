@@ -1,6 +1,8 @@
 #!/bin/bash
 _STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-_STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
+# if [ "$_STELLA_CURRENT_RUNNING_DIR" == "" ]; then
+#     _STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
+# fi
 source $_STELLA_CURRENT_FILE_DIR/../../conf.sh
 
 function usage() {

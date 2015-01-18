@@ -54,7 +54,7 @@ goto :eof
 
 :: Convert relative to absolute path
 :: ARG1 is the name of the return variable
-:: ARG2 is the path to Convert
+:: ARG2 is the relative path to convert
 :: ARG3 is optional - This is the absolute path from which the path is relative - By default we take current directory
 REM http://stackoverflow.com/questions/1645843/resolve-absolute-path-from-relative-path-and-or-file-name
 REM %~f1 get the fully qualified path of your first argument but this gives a path according to the current working directory
@@ -81,7 +81,7 @@ goto :eof
 
 :: Convert absolute to relative path
 :: ARG1 is the name of the return variable
-:: ARG2 is the path to Convert
+:: ARG2 iis the absolute path to convert
 :: ARG3 is optional - This is the absolute path from which the path will be relative - By default we take current directory
 REM http://www.dostips.com/DtCodeCmdLib.php#Function.MakeRelative
 :abs_to_rel_path
@@ -92,7 +92,7 @@ REM http://www.dostips.com/DtCodeCmdLib.php#Function.MakeRelative
 
 	call :is_path_abs "IS_ABS" "%_abs_path%"
 	
-	REM Do not try to put code below in a IF statement
+	REM REFACTOR WARNING Do not try to put code below in a IF statement
 	
 	if not defined _base_path set _base_path=%_STELLA_CURRENT_RUNNING_DIR%
 	for /f "tokens=*" %%a in ("%_abs_path%") do set _abs_path=%%~fa

@@ -43,12 +43,22 @@ function __init_app() {
 	local _workroot=$3
 	local _cachedir=$4
 
+
 	if [ "$(__is_abs "$_approot")" == "FALSE" ]; then
 		mkdir -p $_STELLA_CURRENT_RUNNING_DIR/$_approot
 		_approot=$(__rel_to_abs_path "$_approot" "$_STELLA_CURRENT_RUNNING_DIR")
 	else
 		mkdir -p $_approot
 	fi
+
+
+    [ "$_workroot" == "" ] && _workroot=$_approot    
+  	[ "$_cachedir" == "" ] && _cachedir=$_workroot/cache
+
+
+	[ "$(__is_abs "$_workroot")" == "FALSE" ] && _workroot=$(__rel_to_abs_path "$_workroot" "$_approot")
+	[ "$(__is_abs "$_cachedir")" == "FALSE" ] && _cachedir=$(__rel_to_abs_path "$_cachedir" "$_approot")
+	[ "$(__is_abs "$_stella_root")" == "FALSE" ] && _stella_root=$(__rel_to_abs_path "$STELLA_ROOT" "$_approot")
 
 	_workroot=$(__abs_to_rel_path "$_workroot" "$_approot")
 	_cachedir=$(__abs_to_rel_path "$_cachedir" "$_approot")
@@ -60,7 +70,7 @@ function __init_app() {
 
 	cat $_approot/stella-link.sh.temp $STELLA_POOL/sample-stella-link.sh > $_approot/stella-link.sh
 	chmod +x $_approot/stella-link.sh
-	#rm -f $_approot/stella-link.sh.temp
+	rm -f $_approot/stella-link.sh.temp
 
 	_STELLA_APP_PROPERTIES_FILE="$_approot/$STELLA_APP_PROPERTIES_FILENAME"
 	if [ -f "$_STELLA_APP_PROPERTIES_FILE" ]; then
@@ -384,11 +394,11 @@ function __ask_init_app() {
 						case $sample in
 							Yes )
 								# using default values for app paths (because we didnt ask them)
-								__init_app $_project_name $STELLA_APP_ROOT $STELLA_APP_WORK_ROOT $STELLA_APP_CACHE_DIR
-								__create_app_samples $STELLA_APP_ROOT
+								__init_app $_project_name $_STELLA_CURRENT_RUNNING_DIR
+								__create_app_samples $_STELLA_CURRENT_RUNNING_DIR
 								break;;
 							No )
-								__init_app $_project_name $STELLA_APP_ROOT $STELLA_APP_WORK_ROOT $STELLA_APP_CACHE_DIR
+								__init_app $_project_name $_STELLA_CURRENT_RUNNING_DIR
 								break;;
 						esac
 					done

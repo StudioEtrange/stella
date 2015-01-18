@@ -154,6 +154,26 @@ goto :eof
 	if not exist "%_approot%" mkdir "%_approot%"
 
 
+	if "$_workroot" == "" (
+    	set _workroot=%_approot%
+    )
+  	if "%_cachedir%" == "" (
+  		set _cachedir=$_workroot%/cache
+  	)
+
+	call :is_path_abs "IS_ABS" "%_workroot%"
+	if "%IS_ABS%"=="FALSE" (
+		call %STELLA_COMMON%\common.bat :rel_to_abs_path "_workroot" "%_workroot%" "%_approot%"
+	)
+	call :is_path_abs "IS_ABS" "%_cachedir%"
+	if "%IS_ABS%"=="FALSE" (
+		call %STELLA_COMMON%\common.bat :rel_to_abs_path "_cachedir" "%_cachedir%" "%_approot%"
+	)
+	call :is_path_abs "IS_ABS" "%STELLA_ROOT%"
+	if "%IS_ABS%"=="FALSE" (
+		call %STELLA_COMMON%\common.bat :rel_to_abs_path "_stella_root" "%STELLA_ROOT%" "%_approot%"
+	)
+
 	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_workroot" "%_workroot%" "%_approot%"
 	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_cachedir" "%_cachedir%" "%_approot%"
 	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_stella_root" "%STELLA_ROOT%" "%_approot%"
@@ -165,7 +185,7 @@ goto :eof
 
 	copy /b "%_approot%\stella-link.bat.temp"+"%STELLA_POOL%\sample-stella-link.bat" "%_approot%\stella-link.bat"
 
-	REM del /f /q /s "%_approot%\stella-link.bat.temp" >nul
+	 del /f /q /s "%_approot%\stella-link.bat.temp" >nul
 
 	set "_STELLA_APP_PROPERTIES_FILE=%_approot%\%STELLA_APP_PROPERTIES_FILENAME%"
 	if exist "%_STELLA_APP_PROPERTIES_FILE%" (
@@ -358,10 +378,11 @@ goto :eof
 			set /p input="Do you wish to generate a sample app for your project ? [y/N] "
 			if "!input!"=="y" (
 				REM using default values for app paths (because we didnt ask them)
-				call :init_app "%id%" "!STELLA_APP_ROOT!" "!STELLA_APP_WORK_ROOT!" "!STELLA_APP_CACHE_DIR!"
-				call :create_app_samples "!STELLA_APP_ROOT!"
+				call :init_app "!_project_name!" "!_STELLA_CURRENT_RUNNING_DIR!"
+
+				call :create_app_samples "!_STELLA_CURRENT_RUNNING_DIR!"
 			) else (
-				call :init_app "%id%" "!STELLA_APP_ROOT!" "!STELLA_APP_WORK_ROOT!" "!STELLA_APP_CACHE_DIR!"
+				call :init_app "!_project_name!" "!_STELLA_CURRENT_RUNNING_DIR!"
 			)
 			@echo off
 		)

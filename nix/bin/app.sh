@@ -1,6 +1,8 @@
 #!/bin/bash
 _STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-_STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
+# if [ "$_STELLA_CURRENT_RUNNING_DIR" == "" ]; then
+#     _STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
+# fi
 source $_STELLA_CURRENT_FILE_DIR/../../conf.sh
 
 function usage() {
@@ -42,13 +44,13 @@ __init_stella_env
 if [ "$ACTION" == "init" ]; then
 
     if [ "$APPROOT" == "" ]; then
-        APPROOT=$STELLA_APP_ROOT
+        APPROOT=$_STELLA_CURRENT_RUNNING_DIR
     fi
     if [ "$WORKROOT" == "" ]; then
-        WORKROOT=$STELLA_APP_CACHE_DIR
+        WORKROOT=$APPROOT
     fi
     if [ "$CACHEDIR" == "" ]; then
-        CACHEDIR=$STELLA_APP_WORK_ROOT
+        CACHEDIR=$WORKROOT/cache
     fi
 
     __init_app $ID $APPROOT $WORKROOT $CACHEDIR

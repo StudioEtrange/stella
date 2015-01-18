@@ -5,7 +5,7 @@ _STELLA_CONF_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 if [ "$_STELLA_CURRENT_RUNNING_DIR" == "" ]; then
 	_STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
 fi
-
+echo AAA $_STELLA_CURRENT_RUNNING_DIR
 # STELLA PATHS ---------------------------------------------
 STELLA_ROOT="$_STELLA_CONF_CURRENT_FILE_DIR"
 STELLA_COMMON="$STELLA_ROOT/nix/common"
@@ -48,7 +48,7 @@ __get_all_properties $_STELLA_APP_PROPERTIES_FILE
 # APP PATH ---------------------------------------------
 STELLA_APP_ROOT=$(__rel_to_abs_path "$STELLA_APP_ROOT" "$_STELLA_CURRENT_RUNNING_DIR")
 
-[ "$STELLA_APP_WORK_ROOT" == "" ] && STELLA_APP_WORK_ROOT=.
+[ "$STELLA_APP_WORK_ROOT" == "" ] && STELLA_APP_WORK_ROOT=$STELLA_APP_ROOT
 STELLA_APP_WORK_ROOT=$(__rel_to_abs_path "$STELLA_APP_WORK_ROOT" "$STELLA_APP_ROOT")
 
 [ "$STELLA_APP_CACHE_DIR" == "" ] && STELLA_APP_CACHE_DIR="$STELLA_APP_WORK_ROOT/cache"
@@ -58,6 +58,7 @@ STELLA_APP_TEMP_DIR="$STELLA_APP_WORK_ROOT/temp"
 STELLA_APP_FEATURE_ROOT="$STELLA_APP_WORK_ROOT/feature_$STELLA_CURRENT_PLATFORM_SUFFIX/$STELLA_CURRENT_OS"
 ASSETS_ROOT="$STELLA_APP_WORK_ROOT/assets"
 ASSETS_REPOSITORY=$(__rel_to_abs_path "../assets_repository" "$STELLA_APP_WORK_ROOT")
+
 
 
 # DEFAULT FEATURE ---------------------------------------------
