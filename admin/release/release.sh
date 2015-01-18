@@ -9,7 +9,8 @@ function usage() {
 	echo "----------------"
 	echo "List of commands"
 	echo " o-- Release management :"
-	echo " L     do --platform=<win|nix|all> : pack and push a release"
+	echo " L     local --platform=<win|nix|all> : pack and push a release from local source code"
+	echo " L     repository : push all repository items on distant web repository"
 }
 
 
@@ -96,10 +97,16 @@ function upload_ftp() {
 
 
 
+
 function push_repository() {
 	# TODO : delete ftp respository first
 	cd $STELLA_ADMIN
-	for f in respository/* repository/**/*; do
+	_recurse_push_repository repository
+}
+
+function _recurse_push_repository() {
+	for f in  "$1"/*; do
+		[ -d "$f" ] && _recurse_push_repository "$f"
 		[ -f "$f" ] && upload_ftp "$f" "$(dirname $f)"
 	done
 }
