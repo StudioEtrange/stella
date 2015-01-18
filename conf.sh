@@ -3,8 +3,13 @@ _STELLA_CONF_INCLUDED_=1
 
 _STELLA_CONF_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 if [ "$_STELLA_CURRENT_RUNNING_DIR" == "" ]; then
-	_STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
+	#_STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
+	_STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "." )" && pwd )"
 fi
+
+for I in $(seq 0 $(expr ${#BASH_SOURCE[@]} - 1) ); do
+        echo BASH_SOURCE\[$I\] ${BASH_SOURCE[$I]}
+done
 
 # STELLA PATHS ---------------------------------------------
 STELLA_ROOT="$_STELLA_CONF_CURRENT_FILE_DIR"

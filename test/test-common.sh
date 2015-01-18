@@ -7,8 +7,6 @@ source $_CURRENT_FILE_DIR/stella-link.sh include
 source $_CURRENT_FILE_DIR/test-lib.sh
 
 
-
-
 function test__abs_to_rel_path_1() {
 
 	result=OK
