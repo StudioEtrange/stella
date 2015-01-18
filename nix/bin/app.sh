@@ -42,20 +42,18 @@ __init_stella_env
 if [ "$ACTION" == "init" ]; then
 
     if [ "$APPROOT" == "" ]; then
-        APPROOT=$_STELLA_CURRENT_RUNNING_DIR
+        APPROOT=$STELLA_APP_ROOT
     fi
     if [ "$WORKROOT" == "" ]; then
-        WORKROOT=.
+        WORKROOT=$STELLA_APP_CACHE_DIR
     fi
     if [ "$CACHEDIR" == "" ]; then
-        CACHEDIR=$WORKROOT/cache
+        CACHEDIR=$STELLA_APP_WORK_ROOT
     fi
 
     __init_app $ID $APPROOT $WORKROOT $CACHEDIR
     [ "$SAMPLES" ] && __create_app_samples $APPROOT
 
-    #cd $APPROOT
-    #./stella-bridge.sh feature install default
 else
 
     if [ ! -f "$_STELLA_APP_PROPERTIES_FILE" ]; then

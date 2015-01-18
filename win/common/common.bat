@@ -447,7 +447,7 @@ goto :eof
 
 	if "!_opt_strip!"=="OFF" (
 		if "%USE7ZIP%"=="FALSE" "%UZIP%" -o "%FILE_PATH%" -d "%UNZIP_DIR%"
-		if "%USE7ZIP%"=="TRUE" "%U7ZIP%" x "%FILE_PATH%" -y -o"%UNZIP_DIR%"
+		if "%USE7ZIP%"=="TRUE" "%7ZIP%" x "%FILE_PATH%" -y -o"%UNZIP_DIR%"
 	) else (
 		echo ** Stripping first folder
 		if exist "%STELLA_APP_TEMP_DIR%\%_FILENAME%" (
@@ -455,7 +455,7 @@ goto :eof
 		)
 		mkdir "%STELLA_APP_TEMP_DIR%\%_FILENAME%"
 		if "%USE7ZIP%"=="FALSE" "%UZIP%" -o "%FILE_PATH%" -d "%STELLA_APP_TEMP_DIR%\%_FILENAME%"
-		if "%USE7ZIP%"=="TRUE" "%U7ZIP%" x "%FILE_PATH%" -y -o"%STELLA_APP_TEMP_DIR%\%_FILENAME%"
+		if "%USE7ZIP%"=="TRUE" "%7ZIP%" x "%FILE_PATH%" -y -o"%STELLA_APP_TEMP_DIR%\%_FILENAME%"
 		
 		cd /D "%STELLA_APP_TEMP_DIR%\%_FILENAME%"
 		for /D %%i in (*) do (

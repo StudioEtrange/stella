@@ -128,7 +128,7 @@ goto :eof
 
 	if exist "%_app_path%\%STELLA_APP_PROPERTIES_FILENAME%" (
 		set "_properties_file=%_app_path%\%STELLA_APP_PROPERTIES_FILENAME%"
-		set "STELLA_APP_ROOT=%_app_path%"
+		REM set "STELLA_APP_ROOT=%_app_path%"
 	)
 	
 	set "%~1=!_properties_file!"
@@ -154,12 +154,18 @@ goto :eof
 	if not exist "%_approot%" mkdir "%_approot%"
 
 
-	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_STELLA_ROOT" "%STELLA_ROOT%" "%_approot%"
-	> "%_approot%\.stella-link.bat" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%~dp0
-	>> "%_approot%\.stella-link.bat" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%_STELLA_LINK_CURRENT_FILE_DIR:~0,-1%%
-	>> "%_approot%\.stella-link.bat" ECHO(@set STELLA_ROOT=%%_STELLA_LINK_CURRENT_FILE_DIR%%\%_STELLA_ROOT%
+	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_workroot" "%_workroot%" "%_approot%"
+	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_cachedir" "%_cachedir%" "%_approot%"
+	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_stella_root" "%STELLA_ROOT%" "%_approot%"
 
-	copy /y "%STELLA_POOL%\stella-bridge.bat" "%_approot%\stella-bridge.bat"
+	> "%_approot%\stella-link.bat.temp" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%~dp0
+	>> "%_approot%\stella-link.bat.temp" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%_STELLA_LINK_CURRENT_FILE_DIR:~0,-1%%
+	>> "%_approot%\stella-link.bat.temp" ECHO(@set STELLA_ROOT=%%_STELLA_LINK_CURRENT_FILE_DIR%%\%_stella_root%
+	>> "%_approot%\stella-link.bat.temp" ECHO(@set STELLA_APP_ROOT=%%_STELLA_LINK_CURRENT_FILE_DIR%%
+
+	copy /b "%_approot%\stella-link.bat.temp"+"%STELLA_POOL%\sample-stella-link.bat" "%_approot%\stella-link.bat"
+
+	REM del /f /q /s "%_approot%\stella-link.bat.temp" >nul
 
 	set "_STELLA_APP_PROPERTIES_FILE=%_approot%\%STELLA_APP_PROPERTIES_FILENAME%"
 	if exist "%_STELLA_APP_PROPERTIES_FILE%" (
@@ -326,4 +332,38 @@ goto :eof
 		) else (
 			echo * Env '!_env_name! [%%A]' is the default current system
 		)
-	)	
+	)
+goto :eof
+
+
+
+:ask_install_system_requirements
+	set /p input="Do you wish to auto-install system requirements for stella ? [Y/n] "
+	if not "%input%"=="n" (
+		call !STELLA_COMMON!\platform.bat :__stella_system_requirement_by_os !STELLA_CURRENT_OS!
+		call %STELLA_COMMON%\platform.bat :__stella_features_requirement_by_os %STELLA_CURRENT_OS%
+		@echo off
+	)
+goto :eof
+
+:ask_init_app
+	set /p input="Do you wish to init your stella app (create properties files, link app to stella...) ? [Y/n] "
+		if not "%input%"=="n" (
+			for /D %%I IN ("%_STELLA_CURRENT_RUNNING_DIR%") do set _project_name=%%~nxI
+			set /p input="What is your project name ? [!_project_name!] "
+			if not "!input!"=="" (
+				set "_project_name=!input!"
+			)
+
+			set /p input="Do you wish to generate a sample app for your project ? [y/N] "
+			if "!input!"=="y" (
+				REM using default values for app paths (because we didnt ask them)
+				call :init_app "%id%" "!STELLA_APP_ROOT!" "!STELLA_APP_WORK_ROOT!" "!STELLA_APP_CACHE_DIR!"
+				call :create_app_samples "!STELLA_APP_ROOT!"
+			) else (
+				call :init_app "%id%" "!STELLA_APP_ROOT!" "!STELLA_APP_WORK_ROOT!" "!STELLA_APP_CACHE_DIR!"
+			)
+			@echo off
+		)
+goto :eof
+

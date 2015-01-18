@@ -46,8 +46,8 @@ goto :eof
 		call %STELLA_COMMON%\common.bat :del_folder "%INSTALL_DIR%"
 	)
 	if "!TEST_FEATURE!"=="0" (	
-		call %STELLA_COMMON%\common.bat :uncompress "%STELLA_FEATURE_REPOSITORY%\wget-1.11.4-1-bin.zip" "%INSTALL_DIR%"
-		call %STELLA_COMMON%\common.bat :uncompress "%STELLA_FEATURE_REPOSITORY%\wget-1.11.4-1-dep.zip" "%INSTALL_DIR%"
+		call %STELLA_COMMON%\common.bat :uncompress "%STELLA_FEATURE_REPOSITORY_LOCAL%\wget-1.11.4-1-bin.zip" "%INSTALL_DIR%"
+		call %STELLA_COMMON%\common.bat :uncompress "%STELLA_FEATURE_REPOSITORY_LOCAL%\wget-1.11.4-1-dep.zip" "%INSTALL_DIR%"
 		
 		call :feature_wget_1_11_4
 		if not "!TEST_FEATURE!"=="0" (

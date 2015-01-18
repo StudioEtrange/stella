@@ -34,6 +34,8 @@ goto :eof
 goto :eof
 
 :install_sevenzip_9_20
+	set URL=http://www.7-zip.org/a/7za920.zip
+	set FILE_NAME=7za920.zip
 	set VERSION=9_20
 	set INSTALL_DIR="%STELLA_APP_FEATURE_ROOT%\sevenzip\%VERSION%"
 	
@@ -45,9 +47,9 @@ goto :eof
 		call %STELLA_COMMON%\common.bat :del_folder "%INSTALL_DIR%"
 	)
 	if "!TEST_FEATURE!"=="0" (
-
-		call %STELLA_COMMON%\common.bat :copy_folder_content_into "%STELLA_FEATURE_REPOSITORY%\sevenzip" "%INSTALL_DIR%"
-
+		
+		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "DEST_ERASE"
+		
 		call :feature_sevenzip_9_20
 		if not "!TEST_FEATURE!"=="0" (
 			cd /D "!TEST_FEATURE!"
@@ -64,7 +66,7 @@ goto :eof
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
-	if exist "%STELLA_APP_FEATURE_ROOT%\sevenzip\9_20\7z.exe" (
+	if exist "%STELLA_APP_FEATURE_ROOT%\sevenzip\9_20\7za.exe" (
 		set "TEST_FEATURE=%STELLA_APP_FEATURE_ROOT%\sevenzip\9_20"
 	)
 	if not "!TEST_FEATURE!"=="0" (

@@ -12,9 +12,14 @@ STELLA_COMMON="$STELLA_ROOT/nix/common"
 STELLA_POOL="$STELLA_ROOT/nix/pool"
 STELLA_BIN="$STELLA_ROOT/nix/bin"
 STELLA_FEATURE_RECIPE="$STELLA_POOL/feature-recipe"
-STELLA_FEATURE_REPOSITORY="$STELLA_FEATURE_RECIPE/feature-repository"
+STELLA_FEATURE_REPOSITORY_LOCAL="$STELLA_FEATURE_RECIPE/feature-repository"
 STELLA_TEST="$STELLA_ROOT/test"
 STELLA_ADMIN="$STELLA_ROOT/admin"
+
+# URL PATHS ---------------------------------------------
+STELLA_URL="http://studio-etrange.org/"
+STELLA_FEATURE_REPOSITORY="$STELLA_URL/repository/feature_repository"
+STELLA_DIST="STELLA_URL/dist"
 
 # STELLA INCLUDE ---------------------------------------------
 
@@ -31,23 +36,22 @@ source $STELLA_COMMON/make-sfx.sh
 # GATHER PLATFORM INFO ---------------------------------------------
 __set_current_platform_info
 
-# DEFAULT APP INFO -------------
-STELLA_APP_ROOT="$_STELLA_CURRENT_RUNNING_DIR"
-STELLA_APP_WORK_ROOT="$_STELLA_CURRENT_RUNNING_DIR"
-STELLA_APP_CACHE_DIR=
-STELLA_APP_NAME=
-STELLA_APP_PROPERTIES_FILENAME="stella.properties"
-
 # GATHER CURRENT APP INFO ---------------------------------------------
-_STELLA_APP_PROPERTIES_FILE="$(__select_app)"
+STELLA_APP_PROPERTIES_FILENAME="stella.properties"
+STELLA_APP_NAME=
+
+[ "$STELLA_APP_ROOT" == "" ] && STELLA_APP_ROOT="$_STELLA_CURRENT_RUNNING_DIR"
+
+_STELLA_APP_PROPERTIES_FILE="$(__select_app $STELLA_APP_ROOT)"
 __get_all_properties $_STELLA_APP_PROPERTIES_FILE
 
 # APP PATH ---------------------------------------------
 STELLA_APP_ROOT=$(__rel_to_abs_path "$STELLA_APP_ROOT" "$_STELLA_CURRENT_RUNNING_DIR")
+
+[ "$STELLA_APP_WORK_ROOT" == "" ] && STELLA_APP_WORK_ROOT=.
 STELLA_APP_WORK_ROOT=$(__rel_to_abs_path "$STELLA_APP_WORK_ROOT" "$STELLA_APP_ROOT")
-if [ "$STELLA_APP_CACHE_DIR" == "" ]; then
-	STELLA_APP_CACHE_DIR="$STELLA_APP_WORK_ROOT/cache"
-fi
+
+[ "$STELLA_APP_CACHE_DIR" == "" ] && STELLA_APP_CACHE_DIR="$STELLA_APP_WORK_ROOT/cache"
 STELLA_APP_CACHE_DIR=$(__rel_to_abs_path "$STELLA_APP_CACHE_DIR" "$STELLA_APP_ROOT")
 
 STELLA_APP_TEMP_DIR="$STELLA_APP_WORK_ROOT/temp"
@@ -61,7 +65,7 @@ ASSETS_REPOSITORY=$(__rel_to_abs_path "../assets_repository" "$STELLA_APP_WORK_R
 #WGET="wget" # TODO for macos see STELLA_APP_FEATURE_ROOT/wget (=> useless because already replaced by curl in common.sh)
 #WGET=$STELLA_APP_FEATURE_ROOT/wget
 #UZIP="unzip"
-#U7ZIP="7z"
+#7ZIP="7z"
 #PATCH="patch"
 #GNUMAKE="make"
 

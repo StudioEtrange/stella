@@ -9,41 +9,54 @@ set STELLA_COMMON=%STELLA_ROOT%\win\common
 set STELLA_POOL=%STELLA_ROOT%\win\pool
 set STELLA_BIN=%STELLA_ROOT%\win\bin
 set STELLA_FEATURE_RECIPE=%STELLA_POOL%\feature-recipe
-set STELLA_FEATURE_REPOSITORY=%STELLA_POOL%\feature-repository
+set STELLA_FEATURE_REPOSITORY_LOCAL=%STELLA_POOL%\feature-repository
 set STELLA_TEST=%STELLA_ROOT%\test
 set STELLA_ADMIN=%STELLA_ROOT%\admin
 
-:: GATHER PLATFORM INFO
+:: URL
+set STELLA_URL=http://studio-etrange.org/
+set STELLA_FEATURE_REPOSITORY=%STELLA_URL%/repository/feature_repository
+set STELLA_DIST=%STELLA_URL%/dist
+
+:: GATHER PLATFORM INFO  -------------
 call %STELLA_COMMON%\platform.bat :set_current_platform_info
 
-:: DEFAULT APP INFO -------------
-set STELLA_APP_ROOT=%_STELLA_CURRENT_RUNNING_DIR%
-set STELLA_APP_WORK_ROOT=%_STELLA_CURRENT_RUNNING_DIR%
-set STELLA_APP_CACHE_DIR=
-set STELLA_APP_NAME=
+:: GATHER CURRENT APP INFO  -------------
 set STELLA_APP_PROPERTIES_FILENAME=stella.properties
+set STELLA_APP_NAME=
 
-:: GATHER APP INFO
+if "%STELLA_APP_ROOT%"=="" (
+	set STELLA_APP_ROOT=%_STELLA_CURRENT_RUNNING_DIR%
+)
+
 call %STELLA_COMMON%\common-app.bat :select_app "_STELLA_APP_PROPERTIES_FILE"
 call %STELLA_COMMON%\common-app.bat :get_all_properties !_STELLA_APP_PROPERTIES_FILE!
 
 :: APP PATH
 call %STELLA_COMMON%\common.bat :rel_to_abs_path "STELLA_APP_ROOT" "%STELLA_APP_ROOT%" "%_STELLA_CURRENT_RUNNING_DIR%"
+
+if "%STELLA_APP_WORK_ROOT%"=="" (
+	set STELLA_APP_WORK_ROOT=.
+)
 call %STELLA_COMMON%\common.bat :rel_to_abs_path "STELLA_APP_WORK_ROOT" "%STELLA_APP_WORK_ROOT%" "%STELLA_APP_ROOT%"
+
 if "%STELLA_APP_CACHE_DIR%"=="" (
-	set STELLA_APP_CACHE_DIR=%STELLA_APP_WORK_ROOT%\cache
+	set STELLA_APP_WORK_ROOT=%STELLA_APP_WORK_ROOT%\cache
 )
 call %STELLA_COMMON%\common.bat :rel_to_abs_path "STELLA_APP_CACHE_DIR" "%STELLA_APP_CACHE_DIR%" "%STELLA_APP_ROOT%"
+
 
 set STELLA_APP_TEMP_DIR=%STELLA_APP_WORK_ROOT%\temp
 set STELLA_APP_FEATURE_ROOT=%STELLA_APP_WORK_ROOT%\feature_%STELLA_CURRENT_PLATFORM_SUFFIX%\%STELLA_CURRENT_OS%
 set ASSETS_ROOT=%STELLA_APP_WORK_ROOT%\assets
 call %STELLA_COMMON%\common.bat :rel_to_abs_path "ASSETS_REPOSITORY" "..\assets_repository" "%STELLA_APP_WORK_ROOT%"
 
+
+
 :: REQUIRED FEATURES ---------------------------------------------
 set "WGET=%STELLA_APP_FEATURE_ROOT%\wget\1_11_4\bin\wget.exe"
 set "UZIP=%STELLA_APP_FEATURE_ROOT%\unzip\5_51_1\bin\unzip.exe"
-set "U7ZIP=%STELLA_APP_FEATURE_ROOT%\sevenzip\9_20\7z.exe"
+set "7ZIP=%STELLA_APP_FEATURE_ROOT%\sevenzip\9_20\7za.exe"
 set "PATCH=%STELLA_APP_FEATURE_ROOT%\patch\2_5_9\bin\patch.exe"
 set "GNUMAKE=%STELLA_APP_FEATURE_ROOT%\make\3_81\bin\make.exe"
 

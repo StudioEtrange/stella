@@ -20,7 +20,7 @@ function __select_app() {
 
 	if [ -f "$_app_path/$STELLA_APP_PROPERTIES_FILENAME" ]; then
 		_properties_file="$_app_path/$STELLA_APP_PROPERTIES_FILENAME"
-		STELLA_APP_ROOT=$_app_path
+		#STELLA_APP_ROOT=$_app_path
 	fi
 	
 	echo "$_properties_file"
@@ -50,14 +50,17 @@ function __init_app() {
 		mkdir -p $_approot
 	fi
 
+	_workroot=$(__abs_to_rel_path "$_workroot" "$_approot")
+	_cachedir=$(__abs_to_rel_path "$_cachedir" "$_approot")
 	_stella_root=$(__abs_to_rel_path "$STELLA_ROOT" "$_approot")
 
-	echo "_STELLA_LINK_CURRENT_FILE_DIR=\"\$( cd \"\$( dirname \"\${BASH_SOURCE[0]}\" )\" && pwd )\"" >$_approot/.stella-link.sh
-	echo "STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$_approot/.stella-link.sh
-	# echo "STELLA_ROOT=$_stella_root" >$_approot/.stella-link.sh
+	echo "_STELLA_LINK_CURRENT_FILE_DIR=\"\$( cd \"\$( dirname \"\${BASH_SOURCE[0]}\" )\" && pwd )\"" >$_approot/stella-link.sh.temp
+	echo "STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$_approot/stella-link.sh.temp
+	echo "STELLA_APP_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR" >>$_approot/stella-link.sh.temp
 
-	cp -f "$STELLA_POOL/stella-bridge.sh" "$_approot/stella-bridge.sh"
-	chmod +x $_approot/stella-bridge.sh
+	cat $_approot/stella-link.sh.temp $STELLA_POOL/sample-stella-link.sh > $_approot/stella-link.sh
+	chmod +x $_approot/stella-link.sh
+	#rm -f $_approot/stella-link.sh.temp
 
 	_STELLA_APP_PROPERTIES_FILE="$_approot/$STELLA_APP_PROPERTIES_FILENAME"
 	if [ -f "$_STELLA_APP_PROPERTIES_FILE" ]; then
@@ -347,6 +350,53 @@ function __setup_env() {
 	done
 
 	
+}
+
+
+
+
+function __ask_install_system_requirements() {
+	echo "Do you wish to auto-install system requirements for stella ?"
+	select yn in "Yes" "No"; do
+	    case $yn in
+	        Yes )
+				__stella_system_requirement_by_os $STELLA_CURRENT_OS
+				__stella_features_requirement_by_os $STELLA_CURRENT_OS
+				break;;
+	        No ) break;;
+	    esac
+	done
+}
+
+function __ask_init_app() {
+		echo "Do you wish to init your stella app (create properties files, link app to stella...) ?"
+		select yn in "Yes" "No"; do
+		    case $yn in
+		        Yes )
+					_project_name=$(basename $_STELLA_CURRENT_RUNNING_DIR)
+					read -p "What is your project name ? [$_project_name]" _temp_project_name
+					if [ ! "$_temp_project_name" == "" ]; then
+						_project_name=$_temp_project_name
+					fi
+
+					echo "Do you wish to generate a sample app for your project ?"
+					select sample in "Yes" "No"; do
+						case $sample in
+							Yes )
+								# using default values for app paths (because we didnt ask them)
+								__init_app $_project_name $STELLA_APP_ROOT $STELLA_APP_WORK_ROOT $STELLA_APP_CACHE_DIR
+								__create_app_samples $STELLA_APP_ROOT
+								break;;
+							No )
+								__init_app $_project_name $STELLA_APP_ROOT $STELLA_APP_WORK_ROOT $STELLA_APP_CACHE_DIR
+								break;;
+						esac
+					done
+					break;;
+
+		        No ) break;;
+		    esac
+		done
 }
 
 

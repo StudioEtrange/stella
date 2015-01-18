@@ -45,7 +45,7 @@ function release_from_local() {
 
 	pack "$_platform" "$release_filename" "$_opt"
 
-	upload_ftp "$_STELLA_CURRENT_FILE_DIR/output/$release_filename" "dist"
+	upload_ftp "$STELLA_APP_WORK_ROOT/output/$release_filename" "dist"
 
 	rm -f "$STELLA_ROOT/VERSION"
 }
@@ -64,24 +64,24 @@ function pack() {
 	case $_platform in
 		win)
 			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./nix/" --exclude "./test/" --exclude "./admin/" --exclude "*.sh" \
-		-f "$_STELLA_CURRENT_FILE_DIR/output/$_release_filename" -C "$STELLA_ROOT/.."  "$(basename $STELLA_ROOT)"
+		-f "$STELLA_APP_WORK_ROOT/output/$_release_filename" -C "$STELLA_ROOT/.."  "$(basename $STELLA_ROOT)"
 		;;
 
 		linux|macos)
 			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./win/" --exclude "./test/" --exclude "./admin/" --exclude "*.bat" \
-		-f "$_STELLA_CURRENT_FILE_DIR/output/$_release_filename" -C "$STELLA_ROOT/.."  "$(basename $STELLA_ROOT)"
+		-f "$STELLA_APP_WORK_ROOT/output/$_release_filename" -C "$STELLA_ROOT/.."  "$(basename $STELLA_ROOT)"
 		;;
 
 		all)
 			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./test/" --exclude "./admin/" \
-		-f "$_STELLA_CURRENT_FILE_DIR/output/$_release_filename" -C "$STELLA_ROOT/.."  "$(basename $STELLA_ROOT)"
+		-f "$STELLA_APP_WORK_ROOT/output/$_release_filename" -C "$STELLA_ROOT/.."  "$(basename $STELLA_ROOT)"
 		;;
 	esac
 	
 	if [ "$_opt_auto_extract" == "ON" ]; then
-		mv "$_STELLA_CURRENT_FILE_DIR/output/$_release_filename" "$_STELLA_CURRENT_FILE_DIR/output/$_release_filename".tmp
-		__make_targz_sfx_shell "$_STELLA_CURRENT_FILE_DIR/output/$_release_filename".tmp "$_STELLA_CURRENT_FILE_DIR/output/$_release_filename" "TARGZ"
-		rm -Rf "$_STELLA_CURRENT_FILE_DIR/output/$_release_filename".tmp
+		mv "$STELLA_APP_WORK_ROOT/output/$_release_filename" "$STELLA_APP_WORK_ROOT/output/$_release_filename".tmp
+		__make_targz_sfx_shell "$STELLA_APP_WORK_ROOT/output/$_release_filename".tmp "$STELLA_APP_WORK_ROOT/output/$_release_filename" "TARGZ"
+		rm -Rf "$STELLA_APP_WORK_ROOT/output/$_release_filename".tmp
 	fi
 
 }
@@ -119,8 +119,8 @@ __init_stella_env
 
 # MAIN -----------------------------------------------------------------------------------
 
-rm -Rf $_STELLA_CURRENT_FILE_DIR/output
-mkdir -p $_STELLA_CURRENT_FILE_DIR/output
+rm -Rf $STELLA_APP_WORK_ROOT/output
+mkdir -p $STELLA_APP_WORK_ROOT/output
 
 
 

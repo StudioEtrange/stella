@@ -3,7 +3,7 @@
 echo ***************************************************************
 echo ** EXECUTING : %~n0
 
-call %~dp0\stella-bridge.bat :include
+call %~dp0\stella-link.bat :include
 
 :: arguments
 set "params=param1:"param1 param2""

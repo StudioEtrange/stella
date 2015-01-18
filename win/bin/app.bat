@@ -22,23 +22,20 @@ call %STELLA_COMMON%\common.bat :init_stella_env
 if "%ACTION%"=="init" (
 		
 	if "%-approot%"=="" (
-		set "-approot=%_STELLA_CURRENT_RUNNING_DIR%"
+		set "-approot=%STELLA_APP_ROOT%"
 	)
 	if "%-workroot%"=="" (
-		set "-workroot=."
+		set "-workroot=%STELLA_APP_WORK_ROOT%"
 	)
 
 	if "%-cachedir%"=="" (
-		set "-cachedir=!-workroot!\cache"
+		set "-cachedir=%STELLA_APP_CACHE_DIR%"
 	)
 
 	call %STELLA_COMMON%\common-app :init_app "%id%" "!-approot!" "!-workroot!" "!-cachedir!"
 	if "%-samples%"=="1" (
 		call %STELLA_COMMON%\common-app :create_app_samples "!-approot!"
 	)
-
-	REM cd /D "!-approot!"
-	REM call stella-bridge.bat feature install default
 
 	@echo off
 	goto :end

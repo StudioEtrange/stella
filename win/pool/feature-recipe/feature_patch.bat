@@ -34,6 +34,8 @@ goto :eof
 goto :eof
 
 :install_patch_2_5_9
+	set URL=%STELLA_FEATURE_REPOSITORY%/win/patch/patch-2.5.9-7-bin.zip
+	set FILE_NAME=patch-2.5.9-7-bin.zip
 	set VERSION=2_5_9
 	set INSTALL_DIR="%STELLA_APP_FEATURE_ROOT%\patch\%VERSION%"
 	
@@ -46,7 +48,7 @@ goto :eof
 	)
 	if "!TEST_FEATURE!"=="0" (
 
-		call %STELLA_COMMON%\common.bat :uncompress "%STELLA_FEATURE_REPOSITORY%\patch-2.5.9-7-bin.zip" "%INSTALL_DIR%"
+		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "DEST_ERASE"
 
 		call :feature_patch_2_5_9
 		if not "!TEST_FEATURE!"=="0" (
