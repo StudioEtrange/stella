@@ -167,7 +167,9 @@ function __abs_to_rel_path() {
 		_abs_path_root=$_STELLA_CURRENT_RUNNING_DIR
 	fi
 
-	local common_part="$_abs_path_root"/ # for now
+	_abs_path_root="$_abs_path_root"/
+	
+	local common_part="$_abs_path_root" # for now
 
 	if [ "$(__is_abs $_abs_path_to_translate)" == "FALSE" ]; then
 		result="$_abs_path_to_translate"

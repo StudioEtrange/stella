@@ -47,10 +47,10 @@ function __get_stella() {
 	if [ "$_ver" == "git" ]; then
 		git clone https://bitbucket.org/StudioEtrange/lib-stella.git "$_path"
 	else
-		curl -L -o "$_path"/$stella-nix-"$_ver".gz.sh http://studio-etrange.org/stella-nix-"$_ver".gz.sh
-		chmod +x "$_path"/$stella-nix-"$_ver".gz.sh
-		./"$_path"/$stella-nix-"$_ver".gz.sh
-		rm -f "$_path"/$stella-nix-"$_ver".gz.sh
+		curl -L -o "$_path"/$stella-nix-"$_ver".gz.sh http://studio-etrange.org/dist/stella-nix-"$_ver".gz.run
+		chmod +x "$_path"/$stella-nix-"$_ver".gz.run
+		./"$_path"/$stella-nix-"$_ver".gz.run
+		rm -f "$_path"/$stella-nix-"$_ver".gz.run
 	fi
 }
 
@@ -82,7 +82,7 @@ function bootstrap() {
 	[ "$PROVIDED_PATH" == "" ] && PROVIDED_PATH=$_STELLA_CURRENT_RUNNING_DIR/lib-stella
 
 
-	# Check if APP/PROJECT in current dir is linked to STELLA -------------------------
+	# Check if APP/PROJECT in current dir is linked to STELLA
 	if [ -f "$_STELLA_CURRENT_RUNNING_DIR/stella-link.sh" ]; then
 		IS_STELLA_LINK_FILE="TRUE"
 		source "$_STELLA_CURRENT_RUNNING_DIR/stella-link.sh"
