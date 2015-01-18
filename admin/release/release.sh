@@ -1,7 +1,7 @@
 #!/bin/bash
-_STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-_STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
-source $_STELLA_CURRENT_FILE_DIR/../../conf.sh
+_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
+source $_CURRENT_FILE_DIR/stella-link.sh include
 
 
 function usage() {
@@ -90,7 +90,7 @@ function upload_ftp() {
 	local _file=$1
 	local _ftp_path=$2/
 
-	curl --ftp-create-dirs --netrc-file $_STELLA_CURRENT_FILE_DIR/credentials -T $_file ftp://ftp.cluster014.ovh.net/stella/$_ftp_path
+	curl --ftp-create-dirs --netrc-file $_CURRENT_FILE_DIR/credentials -T $_file ftp://ftp.cluster014.ovh.net/stella/$_ftp_path
 }
 
 
