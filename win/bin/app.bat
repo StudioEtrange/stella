@@ -25,11 +25,11 @@ if "%ACTION%"=="init" (
 		set "-approot=%_STELLA_CURRENT_RUNNING_DIR%"
 	)
 	if "%-workroot%"=="" (
-		set "-workroot=%-approot%"
+		set "-workroot=!-approot!"
 	)
 
 	if "%-cachedir%"=="" (
-		set "-cachedir=%-workroot%\cache"
+		set "-cachedir=!-workroot!\cache"
 	)
 
 	call %STELLA_COMMON%\common-app :init_app "%id%" "!-approot!" "!-workroot!" "!-cachedir!"

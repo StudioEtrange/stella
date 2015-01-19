@@ -150,50 +150,50 @@ goto :eof
 	set "_workroot=%~3"
 	set "_cachedir=%~4"
 
-	call %STELLA_COMMON%\common.bat :rel_to_abs_path "_approot" "%_approot%" "%_STELLA_CURRENT_RUNNING_DIR%"
-	if not exist "%_approot%" mkdir "%_approot%"
+	call %STELLA_COMMON%\common.bat :rel_to_abs_path "_approot" "!_approot!" "%_STELLA_CURRENT_RUNNING_DIR%"
+	if not exist "!_approot!" mkdir "!_approot!"
 
 
-	if "$_workroot" == "" (
-    	set _workroot=%_approot%
+	if "!_workroot!" == "" (
+    	set _workroot=!_approot!
     )
-  	if "%_cachedir%" == "" (
-  		set _cachedir=$_workroot%/cache
+  	if "!_cachedir!" == "" (
+  		set _cachedir=!_workroot!\cache
   	)
 
-	call :is_path_abs "IS_ABS" "%_workroot%"
+	call %STELLA_COMMON%\common.bat :is_path_abs "IS_ABS" "!_workroot!"
 	if "%IS_ABS%"=="FALSE" (
-		call %STELLA_COMMON%\common.bat :rel_to_abs_path "_workroot" "%_workroot%" "%_approot%"
+		call %STELLA_COMMON%\common.bat :rel_to_abs_path "_workroot" "!_workroot!" "!_approot!"
 	)
-	call :is_path_abs "IS_ABS" "%_cachedir%"
+	call %STELLA_COMMON%\common.bat :is_path_abs "IS_ABS" "!_cachedir!"
 	if "%IS_ABS%"=="FALSE" (
-		call %STELLA_COMMON%\common.bat :rel_to_abs_path "_cachedir" "%_cachedir%" "%_approot%"
+		call %STELLA_COMMON%\common.bat :rel_to_abs_path "_cachedir" "!_cachedir!" "!_approot!"
 	)
-	call :is_path_abs "IS_ABS" "%STELLA_ROOT%"
+	call %STELLA_COMMON%\common.bat :is_path_abs "IS_ABS" "%STELLA_ROOT%"
 	if "%IS_ABS%"=="FALSE" (
-		call %STELLA_COMMON%\common.bat :rel_to_abs_path "_stella_root" "%STELLA_ROOT%" "%_approot%"
+		call %STELLA_COMMON%\common.bat :rel_to_abs_path "_stella_root" "%STELLA_ROOT%" "!_approot!"
 	)
 
-	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_workroot" "%_workroot%" "%_approot%"
-	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_cachedir" "%_cachedir%" "%_approot%"
-	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_stella_root" "%STELLA_ROOT%" "%_approot%"
+	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_workroot" "!_workroot!" "!_approot!"
+	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_cachedir" "!_cachedir!" "!_approot!"
+	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_stella_root" "%STELLA_ROOT%" "!_approot!"
 
-	> "%_approot%\stella-link.bat.temp" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%~dp0
-	>> "%_approot%\stella-link.bat.temp" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%_STELLA_LINK_CURRENT_FILE_DIR:~0,-1%%
-	>> "%_approot%\stella-link.bat.temp" ECHO(@set STELLA_ROOT=%%_STELLA_LINK_CURRENT_FILE_DIR%%\%_stella_root%
-	>> "%_approot%\stella-link.bat.temp" ECHO(@set STELLA_APP_ROOT=%%_STELLA_LINK_CURRENT_FILE_DIR%%
+	> "!_approot!\stella-link.bat.temp" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%~dp0
+	>> "!_approot!\stella-link.bat.temp" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%_STELLA_LINK_CURRENT_FILE_DIR:~0,-1%%
+	>> "!_approot!\stella-link.bat.temp" ECHO(@set STELLA_ROOT=%%_STELLA_LINK_CURRENT_FILE_DIR%%\!_stella_root!
+	>> "!_approot!\stella-link.bat.temp" ECHO(@set STELLA_APP_ROOT=%%_STELLA_LINK_CURRENT_FILE_DIR%%
 
-	copy /b "%_approot%\stella-link.bat.temp"+"%STELLA_POOL%\sample-stella-link.bat" "%_approot%\stella-link.bat"
+	copy /b "!_approot!\stella-link.bat.temp"+"%STELLA_POOL%\sample-stella-link.bat" "!_approot!\stella-link.bat"
 
-	 del /f /q /s "%_approot%\stella-link.bat.temp" >nul
+	 del /f /q /s "!_approot!\stella-link.bat.temp" >nul
 
-	set "_STELLA_APP_PROPERTIES_FILE=%_approot%\%STELLA_APP_PROPERTIES_FILENAME%"
+	set "_STELLA_APP_PROPERTIES_FILE=!_approot!\%STELLA_APP_PROPERTIES_FILENAME%"
 	if exist "%_STELLA_APP_PROPERTIES_FILE%" (
 		echo ** Properties file already exists
 	) else (
-		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_NAME" "%_app_name%"
-		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_WORK_ROOT" "%_workroot%"
-		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_CACHE_DIR" "%_cachedir%"
+		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_NAME" "!_app_name!"
+		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_WORK_ROOT" "!_workroot!"
+		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_CACHE_DIR" "!_cachedir!"
 		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "DATA_LIST" ""
 		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "ASSETS_LIST" ""
 		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "ENV_LIST" ""

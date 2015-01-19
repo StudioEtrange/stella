@@ -90,25 +90,41 @@ REM http://www.dostips.com/DtCodeCmdLib.php#Function.MakeRelative
 	if defined %2 set _abs_path=!%~2!
 	set _base_path=%~3
 
+	REM adding \ may this function working either arg1 is a folder or a file path
+	set _abs_path=%_abs_path%\
+	set _base_path=%_base_path%\
+
 	call :is_path_abs "IS_ABS" "%_abs_path%"
-	
-	REM REFACTOR WARNING Do not try to put code below in a IF statement
-	
+	if "%IS_ABS%"=="FALSE" set %_result_var_abs_to_rel_path%=%~2&& goto :eof
+
+	set _mat=
+	set _upp=
+	set _tmp=
+	set _sub=
+
 	if not defined _base_path set _base_path=%_STELLA_CURRENT_RUNNING_DIR%
 	for /f "tokens=*" %%a in ("%_abs_path%") do set _abs_path=%%~fa
 	for /f "tokens=*" %%a in ("%_base_path%") do set _base_path=%%~fa
-	set _mat=&rem variable to store matching part of the name
-	set _upp=&rem variable to reference a parent
+	REM set _mat=&rem variable to store matching part of the name
+	REM set _upp=&rem variable to reference a parent
 	for /f "tokens=*" %%a in ('echo.%_base_path:\=^&echo.%') do (
 	    set _sub=!_sub!%%a\
 	    call set _tmp=%%_abs_path:!_sub!=%%
 	    if "!_tmp!" NEQ "!_abs_path!" (set _mat=!_sub!)ELSE (set _upp=!_upp!..\)
 	)
 	set _abs_path=%_upp%!_abs_path:%_mat%=!
+
+
+	if "%_abs_path%"=="" ( 
+		set _abs_path=.
+	) else (
+		set _abs_path=!_abs_path:~0,-1!
+	)
+
 	set %_result_var_abs_to_rel_path%=%_abs_path%
 
 
-	if "%IS_ABS%"=="FALSE" set %_result_var_abs_to_rel_path%=%~2
+	
 goto :eof
 
 :: MEASURE TOOL------------

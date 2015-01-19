@@ -1,11 +1,6 @@
-REM @set _STELLA_LINK_CURRENT_FILE_DIR=%~dp0
-REM @set _STELLA_LINK_CURRENT_FILE_DIR=%_STELLA_LINK_CURRENT_FILE_DIR:~0,-1%
-REM @set STELLA_ROOT=%_STELLA_LINK_CURRENT_FILE_DIR%\..\lib-stella
-REM @set STELLA_APP_ROOT=%_STELLA_LINK_CURRENT_FILE_DIR%
-
-if "%_STELLA_CURRENT_RUNNING_DIR%"=="" set _STELLA_CURRENT_RUNNING_DIR=%cd%
-
 @echo off
+REM if "%_STELLA_CURRENT_RUNNING_DIR%"=="" set _STELLA_CURRENT_RUNNING_DIR=%cd%
+
 if not "%~1"==":include" (
 	@setlocal enableExtensions enableDelayedExpansion
 ) else (
