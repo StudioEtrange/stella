@@ -54,13 +54,14 @@ goto :eof
 REM install stella in standalone------------------
 :standalone
 	if "%PROVIDED_PATH%"=="" (
-		set "%PROVIDED_PATH%=%_STELLA_CURRENT_RUNNING_DIR%\lib-stella"
+		set "PROVIDED_PATH=%_STELLA_CURRENT_RUNNING_DIR%\lib-stella"
 	)
 
 	call :___rel_to_abs_path "_stella_install_path" "%PROVIDED_PATH%" "%_STELLA_CURRENT_RUNNING_DIR%"
 
 	REM TODO call get_stella
-	git clone https://bitbucket.org/StudioEtrange/lib-stella.git "!_stella_install_path!"
+	call :get_stella "git" "!_stella_install_path!"
+	REM git clone https://bitbucket.org/StudioEtrange/lib-stella.git "!_stella_install_path!"
 	
 	call "!_stella_install_path!\conf.bat"
 	call %STELLA_COMMON%\common-app.bat :ask_install_system_requirements
@@ -76,7 +77,7 @@ REM Bootstrap a stella project ------------------
 	set STELLA_ROOT=
 
 	if "%PROVIDED_PATH%"=="" (
-		set "%PROVIDED_PATH%=%_STELLA_CURRENT_RUNNING_DIR%\lib-stella"
+		set "PROVIDED_PATH=%_STELLA_CURRENT_RUNNING_DIR%\lib-stella"
 	)
 
 	REM Check if PROJECT in current dir is linked to STELLA -------------------------
@@ -105,7 +106,8 @@ REM Bootstrap a stella project ------------------
 		)
 
 		REM TODO call get_stella
-		git clone https://bitbucket.org/StudioEtrange/lib-stella.git "!_stella_install_path!"
+		REM call :get_stella "git" "!_stella_install_path!"
+		REM git clone https://bitbucket.org/StudioEtrange/lib-stella.git "!_stella_install_path!"
 	
 		call "!_stella_install_path!\conf.bat"
 	)	
@@ -122,12 +124,12 @@ REM Various functions ------------------
 	set "_path=%~2"
 	
 
-	if "%_ver"=="git" (
+	if "%_ver%"=="git" (
 		git clone https://bitbucket.org/StudioEtrange/lib-stella.git "%_path%"
 	) else (
 		pushd
 		cd /d %_path%
-		powershell -Command "(New-Object Net.WebClient).DownloadFile('http://studio-etrange.org/stella/stella-win-"%_ver%".zip.exe', 'stella-win-"%_ver%".zip.exe')"
+		powershell -Command "(New-Object Net.WebClient).DownloadFile('http://studio-etrange.org/stella/stella-win-"%_ver%".7z.exe', 'stella-win-"%_ver%".zip.exe')"
 		popd
 	)
 

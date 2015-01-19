@@ -1,5 +1,4 @@
 @echo off
-REM if "%_STELLA_CURRENT_RUNNING_DIR%"=="" set _STELLA_CURRENT_RUNNING_DIR=%cd%
 
 if not "%~1"==":include" (
 	@setlocal enableExtensions enableDelayedExpansion
