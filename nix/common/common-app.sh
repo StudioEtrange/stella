@@ -201,8 +201,31 @@ function __get_env_properties() {
 
 
 function __add_app_feature() {
+	local _FEATURE=$1
+	local _VER=$2
+	local _APP_FEATURE_LIST=
+
 	if [ -f "$_STELLA_APP_PROPERTIES_FILE" ]; then
-		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" "$(echo $FEATURE_LIST_ENABLED | sed -e 's/^ *//' -e 's/ *$//')"
+
+		for f in $STELLA_APP_FEATURE_LIST; do
+			if [ -z "${f##*$_char*}" ]; then
+				_V=${f##*#}
+				_F=${f%#*}
+			else
+				_V=
+				_F=$f
+			fi
+			
+			if [ "$_FEATURE" == "$_F" ]; then
+				[ "$_VER" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_FEATURE"
+				[ ! "$_VER" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_FEATURE#$_VER"
+			else
+				_APP_FEATURE_LIST="$_APP_FEATURE_LIST $f"
+			fi
+		done
+
+		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" "$(echo $_APP_FEATURE_LIST | sed -e 's/^ *//' -e 's/ *$//')"
+		#__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" "$(echo $FEATURE_LIST_ENABLED | sed -e 's/^ *//' -e 's/ *$//')"
 	fi
 }
 

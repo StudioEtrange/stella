@@ -64,6 +64,8 @@ function __install_feature() {
 
 	source $STELLA_FEATURE_RECIPE/feature_$_FEATURE.sh
 
+	__add_app_feature $1 $2
+
 	if [ "$_VER" == "" ]; then
 		_VER="$(__default_$_FEATURE)"
 	fi
@@ -72,6 +74,9 @@ function __install_feature() {
 	for a in $FEATURE_LIST_ENABLED; do 
 		[ "$_FEATURE#$_VER" == "$a" ] && _flag=1
 	done
+
+	
+	
 	if [ "$_flag" == "0" ]; then
 		FEATURE_PATH=
 		__install_"$_FEATURE" $_VER
@@ -80,7 +85,6 @@ function __install_feature() {
 			if [ ! "$FEATURE_PATH" == "" ]; then
 				PATH="$FEATURE_PATH:$PATH"
 			fi
-			__add_app_feature
 		fi
 	else
 		echo "** Feature $_FEATURE#$_VER already installed"

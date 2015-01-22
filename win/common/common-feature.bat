@@ -65,6 +65,8 @@ goto :eof
 	set "_FEATURE=%~1"
 	set "_VER=%~2"
 
+	call %STELLA_COMMON%\common-app.bat :add_app_feature %_FEATURE% %_VER%
+
 	if "%_VER%"=="" (
 		call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :default_%_FEATURE% "_VER"
 	)
@@ -73,6 +75,8 @@ goto :eof
 	for %%A in (%FEATURE_LIST_ENABLED%) do (
 		if "%%A"=="%_FEATURE%#!_VER!" set _flag=1
 	)
+	
+	
 
 	if "%_flag%"=="" (
 		set FEATURE_PATH=
@@ -80,7 +84,6 @@ goto :eof
 		if not "!TEST_FEATURE!"=="0" (
 			set "FEATURE_LIST_ENABLED=!FEATURE_LIST_ENABLED! %_FEATURE%#!FEATURE_VER!"
 			if not "!FEATURE_PATH!"=="" set "PATH=!FEATURE_PATH!;!PATH!"
-			call %STELLA_COMMON%\common-app.bat :add_app_feature
 		)
 	) else (
 		echo ** Feature %_FEATURE%#!_VER! already installed

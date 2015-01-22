@@ -6,8 +6,35 @@ goto :eof
 REM APP RESSOURCES & ENV MANAGEMENT ---------------
 
 :add_app_feature
+	set "_feature=%~1"
+	set "_version=%~2"
+	set "_app_feature_list="
+
 	if exist "%_STELLA_APP_PROPERTIES_FILE%" (
-		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_FEATURE_LIST" "%FEATURE_LIST_ENABLED%"
+
+		for %%F in (!STELLA_APP_FEATURE_LIST!) do (		
+			set item=%%F
+
+			if not "x!item:#=!"=="x!item!" (
+				set _VER=!item:*#=!
+				set "_FEAT=!item:#="^&REM #!
+			) else (
+				set _VER=
+				set _FEAT=!item!
+			)
+			
+			if "!_FEAT!"=="%_feature%" (
+				if "!_VER!"=="" (
+					set "_app_feature_list=!_app_feature_list! !_FEAT!"
+				) else (
+					set "_app_feature_list=!_app_feature_list! !_FEAT!#!_VER!"
+				)
+			) else (
+				set "_app_feature_list=!_app_feature_list! %%F"
+			)
+		)
+
+		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_FEATURE_LIST" "!_app_feature_list!"
 	)
 goto :eof
 

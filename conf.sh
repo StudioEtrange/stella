@@ -103,7 +103,7 @@ __STELLA_FEATURE_LIST="wget ninja cmake packer autotools perl"
 
 # API ---------------------------------------------
 STELLA_API_COMMON_PUBLIC="is_abs argparse get_ressource download_uncompress copy_folder_content_into del_folder get_key add_key del_key mercurial_project_version git_project_version get_stella_version make_sevenzip_sfx_bin make_targz_sfx_shell compress"
-STELLA_API_APP_PUBLIC="get_data get_assets get_all_data get_all_assets update_data update_assets revert_data revert_assets get_env_properties setup_env"
+STELLA_API_APP_PUBLIC="get_data get_assets get_all_data get_all_assets update_data update_assets revert_data revert_assets get_env_properties setup_env get_features"
 STELLA_API_FEATURE_PUBLIC="install_feature init_feature"
 STELLA_API_VIRTUAL_PUBLIC=""
 
