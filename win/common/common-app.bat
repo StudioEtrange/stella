@@ -12,26 +12,37 @@ REM APP RESSOURCES & ENV MANAGEMENT ---------------
 
 	if exist "%_STELLA_APP_PROPERTIES_FILE%" (
 
-		for %%F in (!STELLA_APP_FEATURE_LIST!) do (		
-			set item=%%F
+		if "!STELLA_APP_FEATURE_LIST!"=="" (
+		
+			if "!_VER!"=="" (
+				set "_app_feature_list=!_app_feature_list! !_FEAT!"
+			) else (
+				set "_app_feature_list=!_app_feature_list! !_FEAT!#!_VER!"
+			)
 
-			if not "x!item:#=!"=="x!item!" (
-				set _VER=!item:*#=!
-				set "_FEAT=!item:#="^&REM #!
-			) else (
-				set _VER=
-				set _FEAT=!item!
-			)
-			
-			if "!_FEAT!"=="%_feature%" (
-				if "!_VER!"=="" (
-					set "_app_feature_list=!_app_feature_list! !_FEAT!"
+		) else (
+			for %%F in (!STELLA_APP_FEATURE_LIST!) do (		
+				set item=%%F
+
+				if not "x!item:#=!"=="x!item!" (
+					set _VER=!item:*#=!
+					set "_FEAT=!item:#="^&REM #!
 				) else (
-					set "_app_feature_list=!_app_feature_list! !_FEAT!#!_VER!"
+					set _VER=
+					set _FEAT=!item!
 				)
-			) else (
-				set "_app_feature_list=!_app_feature_list! %%F"
+				
+				if "!_FEAT!"=="%_feature%" (
+					if "!_VER!"=="" (
+						set "_app_feature_list=!_app_feature_list! !_FEAT!"
+					) else (
+						set "_app_feature_list=!_app_feature_list! !_FEAT!#!_VER!"
+					)
+				) else (
+					set "_app_feature_list=!_app_feature_list! %%F"
+				)
 			)
+
 		)
 
 		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_FEATURE_LIST" "!_app_feature_list!"

@@ -207,22 +207,27 @@ function __add_app_feature() {
 
 	if [ -f "$_STELLA_APP_PROPERTIES_FILE" ]; then
 
-		for f in $STELLA_APP_FEATURE_LIST; do
-			if [ -z "${f##*$_char*}" ]; then
-				_V=${f##*#}
-				_F=${f%#*}
-			else
-				_V=
-				_F=$f
-			fi
-			
-			if [ "$_FEATURE" == "$_F" ]; then
-				[ "$_VER" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_FEATURE"
-				[ ! "$_VER" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_FEATURE#$_VER"
-			else
-				_APP_FEATURE_LIST="$_APP_FEATURE_LIST $f"
-			fi
-		done
+		if [ "$STELLA_APP_FEATURE_LIST" == "" ]; then
+			[ "$_VER" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_FEATURE"
+			[ ! "$_VER" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_FEATURE#$_VER"
+		else
+			for f in $STELLA_APP_FEATURE_LIST; do
+				if [ -z "${f##*$_char*}" ]; then
+					_V=${f##*#}
+					_F=${f%#*}
+				else
+					_V=
+					_F=$f
+				fi
+				
+				if [ "$_FEATURE" == "$_F" ]; then
+					[ "$_VER" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_FEATURE"
+					[ ! "$_VER" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_FEATURE#$_VER"
+				else
+					_APP_FEATURE_LIST="$_APP_FEATURE_LIST $f"
+				fi
+			done
+		fi
 
 		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" "$(echo $_APP_FEATURE_LIST | sed -e 's/^ *//' -e 's/ *$//')"
 		#__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" "$(echo $FEATURE_LIST_ENABLED | sed -e 's/^ *//' -e 's/ *$//')"
