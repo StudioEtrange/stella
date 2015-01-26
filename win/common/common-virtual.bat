@@ -296,7 +296,7 @@ goto :eof
 		goto :eof
 	)
 	if "%FORCE%"=="1" (
-		del /f /q /s "%STELLA_APP_CACHE_DIR%\%VAGRANT_BOX_FILENAME%"
+		del /f /q "%STELLA_APP_CACHE_DIR%\%VAGRANT_BOX_FILENAME%"
 	)
 	call %STELLA_COMMON%\common.bat :get_ressource "%_distrib_id%" "%VAGRANT_BOX_URI%" "%VAGRANT_BOX_URI_PROTOCOL%" "%STELLA_APP_CACHE_DIR%"
 	call :_import_box_into_vagrant %VAGRANT_BOX_NAME% "%STELLA_APP_CACHE_DIR%\%VAGRANT_BOX_FILENAME%"
@@ -320,7 +320,7 @@ goto :eof
 	echo ** Packing a vagrant box for %VIRTUAL_DEFAULT_HYPERVISOR% with Packer
 		
 	if "%FORCE%"=="1" (
-		del /f /q /s "%STELLA_APP_CACHE_DIR%\%VAGRANT_BOX_FILENAME%"
+		del /f /q "%STELLA_APP_CACHE_DIR%\%VAGRANT_BOX_FILENAME%"
 	)
 
 	if not "%PACKER_TEMPLATE_URI_PROTOCOL%"=="_INTERNAL_" (
@@ -350,7 +350,7 @@ goto :eof
 
 		call %STELLA_COMMON%\common.bat :copy_folder_content_into "%VAGRANT_BOX_OUTPUT_DIR%" "%STELLA_APP_CACHE_DIR%" "*.box"
 		xcopy /q /y /e /i "%VAGRANT_BOX_OUTPUT_DIR%\*.box" "%STELLA_APP_CACHE_DIR%\"
-		del /f /q /s "%VAGRANT_BOX_OUTPUT_DIR%\*.box"
+		del /f /q "%VAGRANT_BOX_OUTPUT_DIR%\*.box"
 
 		if exist "%STELLA_APP_CACHE_DIR%\%VAGRANT_BOX_FILENAME%" (
 			echo ** Box created

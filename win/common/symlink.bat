@@ -81,5 +81,5 @@ REM Addon from StudioEtrange
 goto :eof
 
 :delete_link_file
-    del /q %~1
+    del /f /q %~1
 goto :eof

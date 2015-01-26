@@ -20,7 +20,7 @@ goto :eof
 	if exist %~1 (
 		echo ** Deleting %~1 folder
 		call :timecount_start timecount_id
-		del /f/s/q %~1 >nul
+		del /f/q %~1 >nul
 		rmdir /s/q %~1 >nul
 		call :timecount_stop !timecount_id!
 		echo ** Folder deleted in !RCS_TIMECOUNT_ELAPSED!
@@ -517,7 +517,7 @@ REM - use powershell in batch http://stackoverflow.com/a/20476904
 	echo ** Download %FILE_NAME% from %URL% into cache
 	
 	REM if "%FORCE%"=="1" (
-	REM	del /q /s "%STELLA_APP_CACHE_DIR%\%FILE_NAME%"
+	REM	del /q /f "%STELLA_APP_CACHE_DIR%\%FILE_NAME%"
 	REM )
 
 	if not exist "%STELLA_APP_CACHE_DIR%\%FILE_NAME%" (
@@ -606,7 +606,7 @@ goto :eof
 	set "FLAG_NAME=%~2"
 	set "FLAGS_FILE_TEMP=%FLAG_FILE%.temp"
 	
-	if exist "%FLAG_FILE%.temp" del /f /q /s "%FLAG_FILE%".temp >nul
+	if exist "%FLAG_FILE%.temp" del /f /q "%FLAG_FILE%".temp >nul
 
 	if exist "%FLAG_FILE%" (
 		for /f "tokens=1,2 delims==" %%K in ( %FLAG_FILE% ) do (
@@ -617,7 +617,7 @@ goto :eof
 	   		)
 		)
 	   	for %%Z in ( %FLAG_FILE% ) do set _filename=%%~nxZ
-		if exist "%FLAG_FILE%" del /f /q /s "%FLAG_FILE%" >nul
+		if exist "%FLAG_FILE%" del /f /q "%FLAG_FILE%" >nul
 		rename "%FLAGS_FILE_TEMP%" "!_filename!"
 	)
 goto :eof
@@ -637,7 +637,7 @@ goto :eof
 
 :reset_all_flag
 	set "FLAG_FILE=%~1"
-	del /q /s /f "%FLAG_FILE%" >nul
+	del /q /f "%FLAG_FILE%" >nul
 goto :eof
 
 :: SCM -------------------------------------
