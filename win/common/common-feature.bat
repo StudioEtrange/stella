@@ -64,13 +64,22 @@ goto :eof
 :install_feature
 	set "_FEATURE=%~1"
 	set "_VER=%~2"
+	set "_OPT=%~5"
+
+	set _opt_hidden_feature=OFF
+	for %%O in (%_OPT%) do (
+		if "%%O"=="HIDDEN" set _opt_hidden_feature=ON
+	)
+
 
 	if "%_FEATURE%"=="required" (
 		call %STELLA_COMMON%\platform.bat :__stella_features_requirement_by_os %STELLA_CURRENT_OS%
 		goto :eof
 	)
 
-	call %STELLA_COMMON%\common-app.bat :add_app_feature %_FEATURE% %_VER%
+	if "%_opt_hidden_feature%"=="OFF" (
+		call %STELLA_COMMON%\common-app.bat :add_app_feature %_FEATURE% %_VER%
+	)
 
 	if "%_VER%"=="" (
 		call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :default_%_FEATURE% "_VER"

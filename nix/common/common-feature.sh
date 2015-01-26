@@ -61,13 +61,22 @@ function __install_feature_list() {
 function __install_feature() {
 	local _FEATURE=$1
 	local _VER=$2
+	local _OPT="$3"
+
+	local _opt_hidden_feature=OFF
+	for o in $_OPT; do 
+		[ "$o" == "HIDDEN" ] && _opt_hidden_feature=ON
+	done
+
+
 
 	if [ "$_FEATURE" == "required" ]; then
 		__stella_features_requirement_by_os $STELLA_CURRENT_OS
 	else
-		source $STELLA_FEATURE_RECIPE/feature_$_FEATURE.sh
 
-		__add_app_feature $1 $2
+		[ "$_opt_hidden_feature" == "OFF" ] && __add_app_feature $1 $2
+
+		source $STELLA_FEATURE_RECIPE/feature_$_FEATURE.sh
 
 		if [ "$_VER" == "" ]; then
 			_VER="$(__default_$_FEATURE)"

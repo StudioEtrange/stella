@@ -167,7 +167,7 @@ goto :eof
 	REM folder in will the terminal will stay after command is over
 	set _FOLDER=%~2
 	set _COMMAND=%~3
-	set _OPT=%~4
+	set "_OPT=%~4"
 	
 	REM OPTIONS
 	REM WAIT : the launcher script will wait until the forked terminal is finished

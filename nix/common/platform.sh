@@ -187,6 +187,7 @@ function __stella_features_requirement_by_os() {
 	echo "** Install required features for $_os"
 	case $_os in
 		ubuntu)
+			# __install_feature "test" "Z" "HIDDEN"
 			;;
 		debian)
 			;;
