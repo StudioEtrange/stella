@@ -3,7 +3,7 @@ call %*
 goto :eof
 ::--------------------------------------------------------
 ::-- argopt
-::-- by Studio/Etrange (NoMorgan nomorgan@gmail.com)
+::-- by StudioEtrange (NoMorgan nomorgan@gmail.com)
 ::--------------------------------------------------------
 
 :: PARAMETERS

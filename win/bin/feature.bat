@@ -18,12 +18,7 @@ set FORCE=%-f%
 call %STELLA_COMMON%\common.bat :init_stella_env
 
 if "%action%"=="install" (
-
-	if "%id%"=="required" (
-		call %STELLA_COMMON%\platform.bat :__stella_features_requirement_by_os %STELLA_CURRENT_OS%
-	) else (
-		call %STELLA_COMMON%\common-feature.bat :install_feature %id% %-vers%
-	)
+	call %STELLA_COMMON%\common-feature.bat :install_feature %id% %-vers%
 	goto :end
 )
 

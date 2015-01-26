@@ -11,6 +11,9 @@ goto :eof
 goto :eof
 
 
+:argparse
+	call %STELLA_COMMON%\argopt.bat :argopt %*
+goto :eof
 
 :: FILES TOOL ---------------------------------------
 :del_folder

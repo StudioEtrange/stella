@@ -62,32 +62,36 @@ function __install_feature() {
 	local _FEATURE=$1
 	local _VER=$2
 
-	source $STELLA_FEATURE_RECIPE/feature_$_FEATURE.sh
-
-	__add_app_feature $1 $2
-
-	if [ "$_VER" == "" ]; then
-		_VER="$(__default_$_FEATURE)"
-	fi
-
-	_flag=0
-	for a in $FEATURE_LIST_ENABLED; do 
-		[ "$_FEATURE#$_VER" == "$a" ] && _flag=1
-	done
-
-	
-	
-	if [ "$_flag" == "0" ]; then
-		FEATURE_PATH=
-		__install_"$_FEATURE" $_VER
-		if [ ! "$TEST_FEATURE" == "0" ]; then
-			FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $_FEATURE#$FEATURE_VER"
-			if [ ! "$FEATURE_PATH" == "" ]; then
-				PATH="$FEATURE_PATH:$PATH"
-			fi
-		fi
+	if [ "$_FEATURE" == "required" ]; then
+		__stella_features_requirement_by_os $STELLA_CURRENT_OS
 	else
-		echo "** Feature $_FEATURE#$_VER already installed"
+		source $STELLA_FEATURE_RECIPE/feature_$_FEATURE.sh
+
+		__add_app_feature $1 $2
+
+		if [ "$_VER" == "" ]; then
+			_VER="$(__default_$_FEATURE)"
+		fi
+
+		_flag=0
+		for a in $FEATURE_LIST_ENABLED; do 
+			[ "$_FEATURE#$_VER" == "$a" ] && _flag=1
+		done
+
+		
+		
+		if [ "$_flag" == "0" ]; then
+			FEATURE_PATH=
+			__install_"$_FEATURE" $_VER
+			if [ ! "$TEST_FEATURE" == "0" ]; then
+				FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $_FEATURE#$FEATURE_VER"
+				if [ ! "$FEATURE_PATH" == "" ]; then
+					PATH="$FEATURE_PATH:$PATH"
+				fi
+			fi
+		else
+			echo "** Feature $_FEATURE#$_VER already installed"
+		fi
 	fi
 }
 

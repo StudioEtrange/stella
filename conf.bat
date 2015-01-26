@@ -90,7 +90,7 @@ set "__STELLA_DISTRIB_LIST=ubuntu64_13_10 debian64_7_5 centos64_6_5 archlinux bo
 set "__STELLA_FEATURE_LIST=ninja jom cmake packer perl ruby nasm python vagrant openssh wget unzip sevenzip patch gnumake"
 
 :: API ---------------------------------------------
-set "STELLA_API_COMMON_PUBLIC=is_path_abs get_ressource download_uncompress del_folder copy_folder_content_into fork run_admin mercurial_project_version git_project_version"
+set "STELLA_API_COMMON_PUBLIC=argparse is_path_abs get_ressource download_uncompress del_folder copy_folder_content_into fork run_admin mercurial_project_version git_project_version"
 set "STELLA_API_APP_PUBLIC=get_data get_assets get_all_data get_all_assets update_data update_assets revert_data revert_assets"
 set "STELLA_API_FEATURE_PUBLIC=install_feature init_feature reinit_all_features"
 set "STELLA_API_VIRTUAL_PUBLIC="

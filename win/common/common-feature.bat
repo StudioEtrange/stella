@@ -65,6 +65,11 @@ goto :eof
 	set "_FEATURE=%~1"
 	set "_VER=%~2"
 
+	if "%_FEATURE%"=="required" (
+		call %STELLA_COMMON%\platform.bat :__stella_features_requirement_by_os %STELLA_CURRENT_OS%
+		goto :eof
+	)
+
 	call %STELLA_COMMON%\common-app.bat :add_app_feature %_FEATURE% %_VER%
 
 	if "%_VER%"=="" (
