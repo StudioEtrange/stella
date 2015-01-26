@@ -24,11 +24,11 @@ REM Usage :
 
 REM stella-bridge.bat standalone [install path]
 REM	call stella-bridge.bat :standalone [install path]
-REM			--- path where to install STELLA the system. If not provided use .\lib-stella by default
+REM			--- path where to install STELLA the system. If not provided use .\stella by default
 
 REM stella-bridge.bat bootstrap [install path]
 REM	call stella-bridge.bat :bootstrap [install path]
-REM  		--- absolute or relative to app path where to install STELLA the system. If not provided, use setted value in link file (.-stella-link.bat) or in .\lib-stella by default
+REM  		--- absolute or relative to app path where to install STELLA the system. If not provided, use setted value in link file (.-stella-link.bat) or in .\stella by default
 REM		 		after installing stella, it will set the project for use stella (if not already done)
 
 
@@ -54,14 +54,12 @@ goto :eof
 REM install stella in standalone------------------
 :standalone
 	if "%PROVIDED_PATH%"=="" (
-		set "PROVIDED_PATH=%_STELLA_CURRENT_RUNNING_DIR%\lib-stella"
+		set "PROVIDED_PATH=%_STELLA_CURRENT_RUNNING_DIR%\stella"
 	)
 
 	call :___rel_to_abs_path "_stella_install_path" "%PROVIDED_PATH%" "%_STELLA_CURRENT_RUNNING_DIR%"
 
-	REM TODO call get_stella
 	call :get_stella "git" "!_stella_install_path!"
-	REM git clone https://bitbucket.org/StudioEtrange/lib-stella.git "!_stella_install_path!"
 	
 	call "!_stella_install_path!\conf.bat"
 	call %STELLA_COMMON%\common-app.bat :ask_install_system_requirements
@@ -77,7 +75,7 @@ REM Bootstrap a stella project ------------------
 	set STELLA_ROOT=
 
 	if "%PROVIDED_PATH%"=="" (
-		set "PROVIDED_PATH=%_STELLA_CURRENT_RUNNING_DIR%\lib-stella"
+		set "PROVIDED_PATH=%_STELLA_CURRENT_RUNNING_DIR%\stella"
 	)
 
 	REM Check if PROJECT in current dir is linked to STELLA -------------------------
@@ -105,9 +103,7 @@ REM Bootstrap a stella project ------------------
 			call :___rel_to_abs_path "_stella_install_path" "%PROVIDED_PATH%" "%_STELLA_CURRENT_RUNNING_DIR%"
 		)
 
-		REM TODO call get_stella
-		REM call :get_stella "git" "!_stella_install_path!"
-		REM git clone https://bitbucket.org/StudioEtrange/lib-stella.git "!_stella_install_path!"
+		call :get_stella "git" "!_stella_install_path!"
 	
 		call "!_stella_install_path!\conf.bat"
 	)	
@@ -125,7 +121,7 @@ REM Various functions ------------------
 	
 
 	if "%_ver%"=="git" (
-		git clone https://bitbucket.org/StudioEtrange/lib-stella.git "%_path%"
+		git clone https://github.com/StudioEtrange/stella "%_path%"
 	) else (
 		pushd
 		cd /d %_path%

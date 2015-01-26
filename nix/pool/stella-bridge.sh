@@ -1,7 +1,7 @@
 #!/bin/bash
 # Usage :
-# stella-bridge.sh standalone [install path] --- Path where to install STELLA the system. If not provided use ./lib-stella by default
-# stella-bridge.sh bootstrap [install path] --- boostrap a project based on stella. Provide an absolute or relative to app path where to install STELLA the system. If not provided, use setted value in link file (.-stella-link.sh) or in ./lib-stella by default
+# stella-bridge.sh standalone [install path] --- Path where to install STELLA the system. If not provided use ./stella by default
+# stella-bridge.sh bootstrap [install path] --- boostrap a project based on stella. Provide an absolute or relative to app path where to install STELLA the system. If not provided, use setted value in link file (.-stella-link.sh) or in ./tella by default
 #										after installing stella, it will set the project for use stella (if not already done)
 
 
@@ -45,7 +45,7 @@ function __get_stella() {
 	local _path=$2
 
 	if [ "$_ver" == "git" ]; then
-		git clone https://bitbucket.org/StudioEtrange/lib-stella.git "$_path"
+		git clone https://github.com/StudioEtrange/stella "$_path"
 	else
 		curl -L -o "$_path"/$stella-nix-"$_ver".gz.sh http://studio-etrange.org/dist/stella-nix-"$_ver".gz.run
 		chmod +x "$_path"/$stella-nix-"$_ver".gz.run
@@ -58,7 +58,7 @@ function __get_stella() {
 # Install stella in standalone ------------------
 function standalone() {
 	
-	[ "$PROVIDED_PATH" == "" ] && PROVIDED_PATH=$_STELLA_CURRENT_RUNNING_DIR/lib-stella	
+	[ "$PROVIDED_PATH" == "" ] && PROVIDED_PATH=$_STELLA_CURRENT_RUNNING_DIR/stella	
 
 	_STELLA_INSTALL_PATH=$(___rel_to_abs_path "$PROVIDED_PATH" "$_STELLA_CURRENT_RUNNING_DIR")
 
@@ -79,7 +79,7 @@ function bootstrap() {
 	IS_STELLA_LINKED="FALSE"
 	STELLA_ROOT=
 
-	[ "$PROVIDED_PATH" == "" ] && PROVIDED_PATH=$_STELLA_CURRENT_RUNNING_DIR/lib-stella
+	[ "$PROVIDED_PATH" == "" ] && PROVIDED_PATH=$_STELLA_CURRENT_RUNNING_DIR/stella
 
 
 	# Check if APP/PROJECT in current dir is linked to STELLA
