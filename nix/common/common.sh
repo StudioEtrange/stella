@@ -93,7 +93,7 @@ function __rel_to_abs_path() {
 					# NOTE using this method if directory does not exist returned path is not real absolute (example : /tata/toto/../titi instead of /tata/titi)
 
 					[ "$STELLA_CURRENT_PLATFORM" == "macos" ] && result=$(__rel_to_abs_path_alternative_1 "$_rel_path" "$_abs_root_path")
-					[ "$STELLA_CURRENT_PLATFORM" == "nix" ] && result=$(__rel_to_abs_path_alternative_2 "$_rel_path" "$_abs_root_path")
+					[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && result=$(__rel_to_abs_path_alternative_2 "$_rel_path" "$_abs_root_path")
 				fi
 				;;
 		esac
@@ -146,7 +146,7 @@ function __rel_to_abs_path_alternative_2(){
 
 	local F="$_abs_root_path/$_rel_path"
 	# NOTE readlink -f do not exist on macos
-	[ "$STELLA_CURRENT_PLATFORM" == "nix" ] && echo "$(dirname $(readlink -e $F))/$(basename $F)"
+	[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && echo "$(dirname $(readlink -e $F))/$(basename $F)"
 	[ "$STELLA_CURRENT_PLATFORM" == "macos" ] && echo "$(dirname $F)/$(basename $F)"
 }
 
