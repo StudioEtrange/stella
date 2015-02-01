@@ -54,9 +54,8 @@ goto :eof
 		
 		call :feature_cmake_2_8_12
 		if not "!TEST_FEATURE!"=="0" (
-			cd /D "!TEST_FEATURE!\bin"
 			echo ** CMake installed
-			cmake -version
+			!FEATURE_ROOT!\bin\cmake -version
 		) else (
 			echo ** ERROR
 		)
@@ -67,21 +66,17 @@ goto :eof
 
 :feature_cmake_2_8_12
 	set TEST_FEATURE=0
+	set FEATURE_ROOT=
 	set FEATURE_PATH=
 	set FEATURE_VER=
 	if exist "%STELLA_APP_FEATURE_ROOT%\cmake\2_8_12-win32-x86\bin\cmake.exe" (
-		set "TEST_FEATURE=%STELLA_APP_FEATURE_ROOT%\cmake\2_8_12-win32-x86"
-	)
-
-	if not "!TEST_FEATURE!"=="0" (
-		if %VERBOSE_MODE% GTR 0 (
-			echo ** EXTRA FEATURE Detected : cmake in !TEST_FEATURE!
-		)
-		REM set "CMAKE_CMD=!TEST_FEATURE!\bin\%CMAKE_CMD%"
-		REM set "CMAKE_CMD_VERBOSE=!TEST_FEATURE!\bin\%CMAKE_CMD_VERBOSE%"
-		REM set "CMAKE_CMD_VERBOSE_ULTRA=!TEST_FEATURE!\bin\%CMAKE_CMD_VERBOSE_ULSSA%"
-		set "FEATURE_PATH=!TEST_FEATURE!\bin"
+		set "TEST_FEATURE=1"
+		set "FEATURE_ROOT=%STELLA_APP_FEATURE_ROOT%\cmake\2_8_12-win32-x86"
+		set "FEATURE_PATH=!FEATURE_ROOT!\bin"
 		set FEATURE_VER=2_8_12
+		if %VERBOSE_MODE% GTR 0 (
+			echo ** EXTRA FEATURE Detected : cmake in !FEATURE_ROOT!
+		)
 	)
 goto :eof
 

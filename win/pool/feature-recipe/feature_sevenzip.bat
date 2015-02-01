@@ -52,7 +52,6 @@ goto :eof
 		
 		call :feature_sevenzip_9_20
 		if not "!TEST_FEATURE!"=="0" (
-			cd /D "!TEST_FEATURE!"
 			echo sevenzip installed
 		) else (
 			echo ** ERROR
@@ -66,14 +65,14 @@ goto :eof
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
+	set FEATURE_ROOT=
 	if exist "%STELLA_APP_FEATURE_ROOT%\sevenzip\9_20\7za.exe" (
-		set "TEST_FEATURE=%STELLA_APP_FEATURE_ROOT%\sevenzip\9_20"
-	)
-	if not "!TEST_FEATURE!"=="0" (
-		if %VERBOSE_MODE% GTR 0 (
-			echo ** EXTRA FEATURE Detected : sevenzip in !TEST_FEATURE!
-		)
-		set "FEATURE_PATH=!TEST_FEATURE!"
+		set "TEST_FEATURE=1"
+		set "FEATURE_ROOT=%STELLA_APP_FEATURE_ROOT%\sevenzip\9_20"
+		set "FEATURE_PATH=!FEATURE_ROOT!"
 		set FEATURE_VER=9_20
+		if %VERBOSE_MODE% GTR 0 (
+			echo ** EXTRA FEATURE Detected : sevenzip in !FEATURE_ROOT!
+		)
 	)
 goto :eof

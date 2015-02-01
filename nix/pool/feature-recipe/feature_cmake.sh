@@ -46,7 +46,8 @@ function __install_cmake_2_8_12() {
 
 function __feature_cmake_2_8_12() {
 	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/cmake/2_8_12/bin/cmake"
-	FEATURE_RESULT_PATH="$STELLA_APP_FEATURE_ROOT/cmake/2_8_12"
+	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/cmake/2_8_12"
+	FEATURE_RESULT_PATH="$FEATURE_RESULT_PATH/bin"
 	FEATURE_RESULT_VER="2_8_12"
 	__feature_cmake_internal
 }
@@ -93,7 +94,7 @@ function __install_cmake_internal() {
 		__feature_cmake_$VER
 		if [ ! "$TEST_FEATURE" == "0" ]; then
 			echo " ** CMake installed"
-			"$TEST_FEATURE/bin/cmake" --version
+			"$FEATURE_ROOT/bin/cmake" --version
 		else
 			echo "** ERROR"
 		fi
@@ -104,18 +105,14 @@ function __install_cmake_internal() {
 }
 function __feature_cmake_internal() {
 	TEST_FEATURE=0
+	FEATURE_ROOT=
 	FEATURE_PATH=
 	FEATURE_VER=
 	if [ -f "$FEATURE_TEST" ]; then
-		TEST_FEATURE="$FEATURE_RESULT_PATH"
-	fi
-
-	if [ ! "$TEST_FEATURE" == "0" ]; then
-		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : cmake in $TEST_FEATURE"
-		#CMAKE_CMD="$TEST_FEATURE/bin/$CMAKE_CMD"
-		#CMAKE_CMD_VERBOSE="$TEST_FEATURE/bin/$CMAKE_CMD_VERBOSE"
-		#CMAKE_CMD_VERBOSE_ULTRA="$TEST_FEATURE/bin/$CMAKE_CMD_VERBOSE_ULTRA"
-		FEATURE_PATH="$TEST_FEATURE/bin"
+		TEST_FEATURE=1
+		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : cmake in $FEATURE_RESULT_ROOT"
+		FEATURE_PATH="$FEATURE_RESULT_PATH"
+		FEATURE_ROOT="$FEATURE_RESULT_ROOT"
 		FEATURE_VER="$FEATURE_RESULT_VER"
 	fi
 }

@@ -62,7 +62,8 @@ function __install_packer_0_6_0_x86() {
 
 function __feature_packer_0_6_0_x64() {
 	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/packer/0_6_0_x64/packer"
-	FEATURE_RESULT_PATH="$STELLA_APP_FEATURE_ROOT/packer/0_6_0_x64"
+	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/packer/0_6_0_x64"
+	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT"
 	FEATURE_RESULT_VER="0_6_0_x64"
 	__feature_packer_internal
 }
@@ -70,7 +71,8 @@ function __feature_packer_0_6_0_x64() {
 
 function __feature_packer_0_6_0_x86() {
 	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/packer/0_6_0_x86/packer"
-	FEATURE_RESULT_PATH="$STELLA_APP_FEATURE_ROOT/packer/0_6_0_x86"
+	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/packer/0_6_0_x86"
+	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT"
 	FEATURE_RESULT_VER="0_6_0_x86"
 	__feature_packer_internal
 }
@@ -96,7 +98,7 @@ function __install_packer_internal() {
 			cd $INSTALL_DIR
 			chmod +x *
 			echo " ** Packer installed"
-			"$TEST_FEATURE/packer" --version
+			"$FEATURE_ROOT/packer" --version
 		else
 			echo "** ERROR"
 		fi
@@ -108,16 +110,14 @@ function __install_packer_internal() {
 
 function __feature_packer_internal() {
 	TEST_FEATURE=0
+	FEATURE_ROOT=
 	FEATURE_PATH=
 	FEATURE_VER=
 	if [ -f "$FEATURE_TEST" ]; then
-		TEST_FEATURE="$FEATURE_RESULT_PATH"
-	fi
-
-	if [ ! "$TEST_FEATURE" == "0" ]; then
-		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : packer in $TEST_FEATURE"
-		#PACKER_CMD="$TEST_FEATURE/./$PACKER_CMD"
-		FEATURE_PATH="$TEST_FEATURE"
+		TEST_FEATURE=1
+		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : packer in $FEATURE_RESULT_ROOT"
+		FEATURE_PATH="$FEATURE_RESULT_PATH"
+		FEATURE_ROOT="$FEATURE_RESULT_ROOT"
 		FEATURE_VER="$FEATURE_RESULT_VER"
 	fi
 }

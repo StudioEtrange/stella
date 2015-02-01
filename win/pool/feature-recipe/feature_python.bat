@@ -63,9 +63,8 @@ goto :eof
 
 		call :feature_python_2_7_6
 		if not "!TEST_FEATURE!"=="0" (
-			cd /D "!TEST_FEATURE!"
 			echo Python installed
-			python.exe --version
+			!FEATURE_ROOT!\python.exe --version
 		) else (
 			echo ** ERROR
 		)
@@ -78,15 +77,15 @@ goto :eof
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
+	set FEATURE_ROOT=
 	if exist "%STELLA_APP_FEATURE_ROOT%\python\2_7_6\python.exe" (
-		set "TEST_FEATURE=%STELLA_APP_FEATURE_ROOT%\python\2_7_6"
-	)
-	if not "!TEST_FEATURE!"=="0" (
-		if %VERBOSE_MODE% GTR 0 (
-			echo ** EXTRA FEATURE Detected : Python in !TEST_FEATURE!
-		)
-		set "FEATURE_PATH=!TEST_FEATURE!"
+		set "TEST_FEATURE=1"
+		set "FEATURE_ROOT=%STELLA_APP_FEATURE_ROOT%\python\2_7_6"
+		set "FEATURE_PATH=!FEATURE_ROOT!"
 		set FEATURE_VER=2_7_6
+		if %VERBOSE_MODE% GTR 0 (
+			echo ** EXTRA FEATURE Detected : python in !FEATURE_ROOT!
+		)
 	)
 goto :eof
 

@@ -51,7 +51,6 @@ goto :eof
 		
 		call :feature_wget_1_11_4
 		if not "!TEST_FEATURE!"=="0" (
-			cd /D "!TEST_FEATURE!"
 			echo wget installed
 		) else (
 			echo ** ERROR
@@ -65,15 +64,15 @@ goto :eof
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
+	set FEATURE_ROOT=
 	if exist "%STELLA_APP_FEATURE_ROOT%\wget\1_11_4\bin\wget.exe" (
-		set "TEST_FEATURE=%STELLA_APP_FEATURE_ROOT%\wget\1_11_4"
-	)
-	if not "!TEST_FEATURE!"=="0" (
-		if %VERBOSE_MODE% GTR 0 (
-			echo ** EXTRA FEATURE Detected : wget in !TEST_FEATURE!
-		)
-		set "FEATURE_PATH=!TEST_FEATURE!"
+		set "TEST_FEATURE=1"
+		set "FEATURE_ROOT=%STELLA_APP_FEATURE_ROOT%\wget\1_11_4"
+		set "FEATURE_PATH=!FEATURE_ROOT!\bin"
 		set FEATURE_VER=1_11_4
+		if %VERBOSE_MODE% GTR 0 (
+			echo ** EXTRA FEATURE Detected : wget in !FEATURE_ROOT!
+		)
 	)
 goto :eof
 

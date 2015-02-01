@@ -61,7 +61,7 @@ goto :eof
 		
 		call :feature_vagrant_git
 		if not "!TEST_FEATURE!"=="0" (
-			cd /D "!TEST_FEATURE!"
+			cd /D "!FEATURE_ROOT!"
 			echo Vagrant installed
 			bundle exec vagrant -v
 		) else (
@@ -76,19 +76,16 @@ goto :eof
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
+	set FEATURE_ROOT=
 	if exist "%STELLA_APP_FEATURE_ROOT%\vagrant\git\bin\vagrant" (
-		set "TEST_FEATURE=%STELLA_APP_FEATURE_ROOT%\vagrant\git"
-	)
-	if not "!TEST_FEATURE!"=="0" (
-		if %VERBOSE_MODE% GTR 0 (
-			echo ** EXTRA FEATURE Detected : vagrant unstable from git in !TEST_FEATURE!
-		)
-		set "VAGRANT_CMD=call %STELLA_FEATURE_RECIPE%\feature_vagrant.bat :_call_vagrant_from_git"
-		REM set "VAGRANT_CMD=set BUNDLE_GEMFILE!TEST_FEATURE!\Gemfile && bundle exec vagrant"
-		REM set "VAGRANT_CMD=ruby -C!TEST_FEATURE! bin\%VAGRANT_CMD%"
-		set "FEATURE_PATH=!TEST_FEATURE!"
+		set "TEST_FEATURE=1"
+		set "FEATURE_ROOT=%STELLA_APP_FEATURE_ROOT%\vagrant\git"
+		set "FEATURE_PATH=!FEATURE_ROOT!\bin"
 		set FEATURE_VER=git
-	)
+		if %VERBOSE_MODE% GTR 0 (
+			echo ** EXTRA FEATURE Detected : vagrant unstable from git in !FEATURE_ROOT!
+		)
+	)	
 goto :eof
 
 :_call_vagrant_from_git

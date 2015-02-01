@@ -25,7 +25,9 @@ goto :eof
 	set "_VER=%~2"
 
 	if "%_VER%"=="" (
-		call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :default_%_FEATURE% "_VER"
+		set "_V="
+		call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :default_%_FEATURE% "_V"
+		set "_VER=!_V!"
 	)
 
 	set _flag=
@@ -110,10 +112,12 @@ goto :eof
 :reinit_all_features
 	for %%F in (%FEATURE_LIST_ENABLED%) do (
 		set item=%%F
-		set _VER=%item:*#=%
-		set "_FEAT=%item:#="^&REM #%
+
+		set _VER=!item:*#=!
+		set "_FEAT=!item:#="^&REM #!
+
 		set FEATURE_PATH=
-		call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :feature_!_FEAT! !_VER!
+		call %STELLA_FEATURE_RECIPE%\feature_!_FEAT!.bat :feature_!_FEAT! !_VER!
 		if not "!TEST_FEATURE!"=="0" (
 			if not "!FEATURE_PATH!"=="" set "PATH=!FEATURE_PATH!;!PATH!"
 		)

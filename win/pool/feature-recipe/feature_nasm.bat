@@ -54,9 +54,8 @@ goto :eof
 		
 		call :feature_nasm_2_11
 		if not "!TEST_FEATURE!"=="0" (
-			cd /D "!TEST_FEATURE!"
 			echo NASM installed
-			nasm -version
+			!FEATURE_ROOT!\nasm -version
 		) else (
 			echo ** ERROR
 		)
@@ -69,15 +68,15 @@ goto :eof
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
+	set FEATURE_ROOT=
 	if exist "%STELLA_APP_FEATURE_ROOT%\nasm\2_11\nasm.exe" (
-		set "TEST_FEATURE=%STELLA_APP_FEATURE_ROOT%\nasm\2_11"
-	)
-	if not "!TEST_FEATURE!"=="0" (
-		if %VERBOSE_MODE% GTR 0 (
-			echo ** EXTRA FEATURE Detected : NASM in !TEST_FEATURE!
-		)
-		set "FEATURE_PATH=!TEST_FEATURE!"
+		set "TEST_FEATURE=1"
+		set "FEATURE_ROOT=%STELLA_APP_FEATURE_ROOT%\nasm\2_11"
+		set "FEATURE_PATH=!FEATURE_ROOT!"
 		set FEATURE_VER=2_11
+		if %VERBOSE_MODE% GTR 0 (
+			echo ** EXTRA FEATURE Detected : NASM in !FEATURE_ROOT!
+		)
 	)
 goto :eof
 

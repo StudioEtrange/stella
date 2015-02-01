@@ -62,9 +62,8 @@ goto :eof
 
 		call :feature_ninja_last_release
 		if not "!TEST_FEATURE!"=="0" (
-			cd /D "!TEST_FEATURE!"
 			echo ** Ninja installed
-			ninja --version
+			!FEATURE_ROOT!\ninja --version
 		) else (
 			echo ** ERROR
 		)
@@ -76,19 +75,15 @@ goto :eof
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
+	set FEATURE_ROOT=
 	if exist "%STELLA_APP_FEATURE_ROOT%\ninja\last_release\ninja.exe" (
-		set "TEST_FEATURE=%STELLA_APP_FEATURE_ROOT%\ninja\last_release"
-	)
-
-	if not "!TEST_FEATURE!"=="0" (
-		if %VERBOSE_MODE% GTR 0 (
-			echo ** EXTRA FEATURE Detected : ninja in !TEST_FEATURE!
-		)
-		REM set "NINJA_MAKE_CMD=!TEST_FEATURE!\%NINJA_MAKE_CMD%"
-		REM set "NINJA_MAKE_CMD_VERBOSE=!TEST_FEATURE!\%NINJA_MAKE_CMD_VERBOSE%"
-		REM set "NINJA_MAKE_CMD_VERBOSE_ULTRA=!TEST_FEATURE!\%NINJA_MAKE_CMD_VERBOSE_ULSSA%"
-		set "FEATURE_PATH=!TEST_FEATURE!"
+		set "TEST_FEATURE=1"
+		set "FEATURE_ROOT=%STELLA_APP_FEATURE_ROOT%\ninja\last_release"
+		set "FEATURE_PATH=!FEATURE_ROOT!"
 		set FEATURE_VER=last_release
+		if %VERBOSE_MODE% GTR 0 (
+			echo ** EXTRA FEATURE Detected : ninja in !FEATURE_ROOT!
+		)
 	)
 goto :eof
 

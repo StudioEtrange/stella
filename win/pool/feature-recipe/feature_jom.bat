@@ -53,9 +53,8 @@ goto :eof
 
 		call :feature_jom_1_0_13
 		if not "!TEST_FEATURE!"=="0" (
-			cd /D "!TEST_FEATURE!"
 			echo Jom installed
-			jom -version
+			!FEATURE_ROOT!\jom -version
 		) else (
 			echo ** ERROR
 		)
@@ -68,19 +67,15 @@ goto :eof
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
+	set FEATURE_ROOT=
 	if exist "%STELLA_APP_FEATURE_ROOT%\jom\1_0_13\jom.exe" (
-		set "TEST_FEATURE=%STELLA_APP_FEATURE_ROOT%\jom\1_0_13"
-	)
-
-	if not "!TEST_FEATURE!"=="0" (
-		if %VERBOSE_MODE% GTR 0 (
-			echo ** EXTRA FEATURE Detected : jom in !TEST_FEATURE!
-		)
-		REM set "JOM_MAKE_CMD=!TEST_FEATURE!\%JOM_MAKE_CMD%"
-		REM set "JOM_MAKE_CMD_VERBOSE=!TEST_FEATURE!\%JOM_MAKE_CMD_VERBOSE%"
-		REM set "JOM_MAKE_CMD_VERBOSE_ULSSA=!TEST_FEATURE!\%JOM_MAKE_CMD_VERBOSE_ULSSA%"
-		set "FEATURE_PATH=!TEST_FEATURE!"
+		set "TEST_FEATURE=1"
+		set "FEATURE_ROOT=%STELLA_APP_FEATURE_ROOT%\jom\1_0_13"
+		set "FEATURE_PATH=!FEATURE_ROOT!"
 		set FEATURE_VER=1_0_13
+		if %VERBOSE_MODE% GTR 0 (
+			echo ** EXTRA FEATURE Detected : jom in !FEATURE_ROOT!
+		)
 	)
 goto :eof
 

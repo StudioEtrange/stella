@@ -46,7 +46,8 @@ function __install_ninja_last_release() {
 
 function __feature_ninja_last_release() {
 	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/ninja/last_release/ninja"
-	FEATURE_RESULT_PATH="$STELLA_APP_FEATURE_ROOT/ninja/last_release"
+	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/ninja/last_release"
+	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT"
 	FEATURE_RESULT_VER="last_release"
 	__feature_ninja_internal
 }
@@ -81,7 +82,7 @@ function __install_ninja_internal() {
 		__feature_ninja_$VER
 		if [ ! "$TEST_FEATURE" == "0" ]; then
 			echo " ** Ninja installed"
-			"$TEST_FEATURE/ninja" --version
+			"$FEATURE_ROOT/ninja" --version
 		else
 			echo "** ERROR"
 		fi
@@ -92,18 +93,14 @@ function __install_ninja_internal() {
 
 function __feature_ninja_internal() {
 	TEST_FEATURE=0
-	FEATURE_VER=
+	FEATURE_ROOT=
 	FEATURE_PATH=
+	FEATURE_VER=
 	if [ -f "$FEATURE_TEST" ]; then
-		TEST_FEATURE="$FEATURE_RESULT_PATH"
-	fi
-
-	if [ ! "$TEST_FEATURE" == "0" ]; then
-		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : ninja in $TEST_FEATURE"
-		#NINJA_MAKE_CMD="$TEST_FEATURE/./$NINJA_MAKE_CMD"
-		#NINJA_MAKE_CMD_VERBOSE="$TEST_FEATURE/./$NINJA_MAKE_CMD_VERBOSE"
-		#NINJA_MAKE_CMD_VERBOSE_ULTRA="$TEST_FEATURE/./$NINJA_MAKE_CMD_VERBOSE_ULTRA"
-		FEATURE_PATH="$TEST_FEATURE"
+		TEST_FEATURE=1
+		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : ninja in $FEATURE_RESULT_ROOT"
+		FEATURE_PATH="$FEATURE_RESULT_PATH"
+		FEATURE_ROOT="$FEATURE_RESULT_ROOT"
 		FEATURE_VER="$FEATURE_RESULT_VER"
 	fi
 }

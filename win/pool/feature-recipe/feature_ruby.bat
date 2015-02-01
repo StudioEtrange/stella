@@ -62,21 +62,24 @@ goto :eof
 
 :feature_ruby_2_0_0_x64
 	set "FEATURE_TEST=%STELLA_APP_FEATURE_ROOT%\ruby\2_0_0_x64\ruby-2.0.0-p451-mingw32\bin\ruby.exe"
-	set "FEATURE_RESULT_PATH=%STELLA_APP_FEATURE_ROOT%\ruby\2_0_0_x64\ruby-2.0.0-p451-mingw32"
+	set "FEATURE_RESULT_ROOT=%STELLA_APP_FEATURE_ROOT%\ruby\2_0_0_x64\ruby-2.0.0-p451-mingw32"
+	set "FEATURE_RESULT_PATH=!FEATURE_RESULT_ROOT!\bin"
 	set "FEATURE_RESULT_VER=2_0_0_x64"
 	call :feature_ruby_internal
 goto :eof
 
 :feature_ruby_2_0_0_x86
 	set "FEATURE_TEST=%STELLA_APP_FEATURE_ROOT%\ruby\2_0_0_x86\ruby-2.0.0-p451-mingw32\bin\ruby.exe"
-	set "FEATURE_RESULT_PATH=%STELLA_APP_FEATURE_ROOT%\ruby\2_0_0_x86\ruby-2.0.0-p451-mingw32"
+	set "FEATURE_RESULT_ROOT=%STELLA_APP_FEATURE_ROOT%\ruby\2_0_0_x86\ruby-2.0.0-p451-mingw32"
+	set "FEATURE_RESULT_PATH=!FEATURE_RESULT_ROOT!\bin"
 	set "FEATURE_RESULT_VER=2_0_0_x86"
 	call :feature_ruby_internal
 goto :eof
 
 :feature_ruby_1_9_3
 	set "FEATURE_TEST=%STELLA_APP_FEATURE_ROOT%\ruby\1_9_3\ruby-1.9.3-p545-i386-mingw32\bin\ruby.exe"
-	set "FEATURE_RESULT_PATH=%STELLA_APP_FEATURE_ROOT%\ruby\1_9_3\ruby-1.9.3-p545-i386-mingw32"
+	set "FEATURE_RESULT_ROOT=%STELLA_APP_FEATURE_ROOT%\ruby\1_9_3\ruby-1.9.3-p545-i386-mingw32"
+	set "FEATURE_RESULT_PATH=!FEATURE_RESULT_ROOT!\bin"
 	set "FEATURE_RESULT_VER=1_9_3"
 	call :feature_ruby_internal
 goto :eof
@@ -106,21 +109,24 @@ goto :eof
 :feature_rubydevkit_4_7_2_x64
 	set "FEATURE_RESULT_VER=4_7_2_x64"
 	set "FEATURE_TEST=%STELLA_APP_FEATURE_ROOT%\rubydevkit\!FEATURE_RESULT_VER!\devkitvars.bat"
-	set "FEATURE_RESULT_PATH=%STELLA_APP_FEATURE_ROOT%\rubydevkit\!FEATURE_RESULT_VER!"
+	set "FEATURE_RESULT_ROOT=%STELLA_APP_FEATURE_ROOT%\rubydevkit\!FEATURE_RESULT_VER!"
+	set "FEATURE_RESULT_PATH=!FEATURE_RESULT_ROOT!\bin;!FEATURE_RESULT_ROOT!\mingw\bin"
 	call :feature_rubydevkit_internal
 goto :eof
 
 :feature_rubydevkit_4_7_2_x86
 	set "FEATURE_RESULT_VER=4_7_2_x86"
 	set "FEATURE_TEST=%STELLA_APP_FEATURE_ROOT%\rubydevkit\!FEATURE_RESULT_VER!\devkitvars.bat"
-	set "FEATURE_RESULT_PATH=%STELLA_APP_FEATURE_ROOT%\rubydevkit\!FEATURE_RESULT_VER!"
+	set "FEATURE_RESULT_ROOT=%STELLA_APP_FEATURE_ROOT%\rubydevkit\!FEATURE_RESULT_VER!"
+	set "FEATURE_RESULT_PATH=!FEATURE_RESULT_ROOT!\bin;!FEATURE_RESULT_ROOT!\mingw\bin"
 	call :feature_rubydevkit_internal
 goto :eof
 
 :feature_rubydevkit_4_5_2
 	set "FEATURE_RESULT_VER=4_5_2"
 	set "FEATURE_TEST=%STELLA_APP_FEATURE_ROOT%\rubydevkit\!FEATURE_RESULT_VER!\devkitvars.bat"
-	set "FEATURE_RESULT_PATH=%STELLA_APP_FEATURE_ROOT%\rubydevkit\!FEATURE_RESULT_VER!"
+	set "FEATURE_RESULT_ROOT=%STELLA_APP_FEATURE_ROOT%\rubydevkit\!FEATURE_RESULT_VER!"
+	set "FEATURE_RESULT_PATH=!FEATURE_RESULT_ROOT!\bin;!FEATURE_RESULT_ROOT!\mingw\bin"
 	call :feature_rubydevkit_internal
 goto :eof
 
@@ -141,9 +147,8 @@ REM --------------------------------------------------------------
 		
 		call :feature_ruby_!VERSION!
 		if not "!TEST_FEATURE!"=="0" (
-			cd /D "!TEST_FEATURE!\bin"
 			echo Ruby installed
-			ruby --version
+			!FEATURE_ROOT!\bin\ruby --version
 		) else (
 			echo ** ERROR
 		)
@@ -156,16 +161,16 @@ goto :eof
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
+	set FEATURE_ROOT=
 	if exist "!FEATURE_TEST!" (
-		set "TEST_FEATURE=!FEATURE_RESULT_PATH!"
-	)
-	if not "!TEST_FEATURE!"=="0" (
+		set "TEST_FEATURE=1"
+		set "FEATURE_ROOT=!FEATURE_RESULT_ROOT!"
+		set "FEATURE_PATH=!FEATURE_RESULT_PATH!"
+		set "FEATURE_VER=!FEATURE_RESULT_VER!"
 		if %VERBOSE_MODE% GTR 0 (
-			echo ** EXTRA FEATURE Detected : Ruby in !TEST_FEATURE!
+			echo ** EXTRA FEATURE Detected : Ruby in !FEATURE_ROOT!
 		)
-		set "FEATURE_PATH=!TEST_FEATURE!\bin"
 		set TERM=dumb
-		set FEATURE_VER=!FEATURE_RESULT_VER!
 	)
 goto :eof
 
@@ -205,17 +210,18 @@ goto :eof
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
+	set FEATURE_ROOT=
 	if exist "!FEATURE_TEST!" (
-		set "TEST_FEATURE=!FEATURE_RESULT_PATH!"
-	)
-	if not "!TEST_FEATURE!"=="0" (
+		set "TEST_FEATURE=1"
+		set "FEATURE_ROOT=!FEATURE_RESULT_ROOT!"
+		set "FEATURE_PATH=!FEATURE_RESULT_PATH!"
+		set "FEATURE_VER=!FEATURE_RESULT_VER!"
 		if %VERBOSE_MODE% GTR 0 (
-			echo ** EXTRA FEATURE Detected : Ruby DevKit in !TEST_FEATURE!
+			echo ** EXTRA FEATURE Detected : Ruby DevKit in !FEATURE_ROOT!
 		)
-		SET "RI_DEVKIT=!TEST_FEATURE!\"
-		set "FEATURE_PATH=!TEST_FEATURE!\bin;!TEST_FEATURE!\mingw\bin"
-		set FEATURE_VER=!FEATURE_RESULT_VER!
+		SET "RI_DEVKIT=!FEATURE_ROOT!\"
 	)
+
 goto :eof
 
 

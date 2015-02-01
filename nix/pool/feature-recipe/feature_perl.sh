@@ -47,7 +47,8 @@ function __install_perl_5_18_2() {
 
 function __feature_perl_5_18_2() {
 	FEATURE_TEST="STELLA_APP_FEATURE_ROOT/perl/5_18_2/bin/perl"
-	FEATURE_RESULT_PATH="$STELLA_APP_FEATURE_ROOT/perl/5_18_2"
+	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/perl/5_18_2"
+	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
 	FEATURE_RESULT_VER="5_18_2"
 	__feature_perl_internal
 }
@@ -87,7 +88,7 @@ function __install_perl_internal() {
 		__feature_perl_$VER
 		if [ ! "$TEST_FEATURE" == "0" ]; then
 			echo " ** Perl installed"
-			"$TEST_FEATURE/bin/perl" --version
+			"$FEATURE_ROOT/bin/perl" --version
 		else
 			echo "** ERROR"
 		fi
@@ -98,15 +99,14 @@ function __install_perl_internal() {
 }
 function __feature_perl_internal() {
 	TEST_FEATURE=0
+	FEATURE_ROOT=
 	FEATURE_PATH=
 	FEATURE_VER=
 	if [ -f "$FEATURE_TEST" ]; then
-		TEST_FEATURE="$FEATURE_RESULT_PATH"
-	fi
-
-	if [ ! "$TEST_FEATURE" == "0" ]; then
-		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : perl in $TEST_FEATURE"
-		FEATURE_PATH="$TEST_FEATURE/bin"
+		TEST_FEATURE=1
+		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : perl in $FEATURE_RESULT_ROOT"
+		FEATURE_PATH="$FEATURE_RESULT_PATH"
+		FEATURE_ROOT="$FEATURE_RESULT_ROOT"
 		FEATURE_VER="$FEATURE_RESULT_VER"
 	fi
 

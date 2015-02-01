@@ -60,9 +60,8 @@ goto :eof
 		
 		call :feature_perl_5_18_2
 		if not "!TEST_FEATURE!"=="0" (
-			cd /D "!TEST_FEATURE!\perl\bin"
 			echo Perl installed
-			perl --version
+			!FEATURE_ROOT!\perl\bin\perl --version
 		) else (
 			echo ** ERROR
 		)
@@ -75,16 +74,15 @@ goto :eof
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
+	set FEATURE_ROOT=
 	if exist "%STELLA_APP_FEATURE_ROOT%\perl\strawberry-perl-5.18.2.1\perl\bin\perl.exe" (
-		set "TEST_FEATURE=%STELLA_APP_FEATURE_ROOT%\perl\strawberry-perl-5.18.2.1"
-	)
-
-	if not "!TEST_FEATURE!"=="0" (
-		if %VERBOSE_MODE% GTR 0 (
-			echo ** EXTRA FEATURE Detected : perl in !TEST_FEATURE!
-		)
-		set "FEATURE_PATH=!TEST_FEATURE!\perl\site\bin;!TEST_FEATURE!\perl\bin;!TEST_FEATURE!\c\bin"
-		set TERM=dumb
+		set "TEST_FEATURE=1"
+		set "FEATURE_ROOT=%STELLA_APP_FEATURE_ROOT%\perl\strawberry-perl-5.18.2.1"
+		set "FEATURE_PATH=!FEATURE_ROOT!\perl\bin;!FEATURE_ROOT!\perl\site\bin;!FEATURE_ROOT!\c\bin"
 		set FEATURE_VER=5_18_2
+		if %VERBOSE_MODE% GTR 0 (
+			echo ** EXTRA FEATURE Detected : perl in !FEATURE_ROOT!
+		)
+		set TERM=dumb
 	)
 goto :eof

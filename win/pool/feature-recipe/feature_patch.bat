@@ -39,20 +39,41 @@ goto :eof
 	set VERSION=2_5_9
 	set INSTALL_DIR="%STELLA_APP_FEATURE_ROOT%\patch\%VERSION%"
 	
-	echo ** Installing patch version %VERSION% in %INSTALL_DIR%
+	
+goto :eof
 
-	call :feature_patch_2_5_9
+:install_patch_2_5_9
+	set URL=%STELLA_FEATURE_REPOSITORY%/win/patch/patch-2.5.9-7-bin.zip
+	set FILE_NAME=patch-2.5.9-7-bin.zip
+	set VERSION=2_5_9
+	call :install_patch_internal
+goto :eof
+
+
+:feature_patch_2_5_9
+	set "FEATURE_TEST=%STELLA_APP_FEATURE_ROOT%\patch\2_5_9\bin\patch.exe"
+	set "FEATURE_RESULT_ROOT=%STELLA_APP_FEATURE_ROOT%\patch\2_5_9%"
+	set "FEATURE_RESULT_PATH=!FEATURE_RESULT_ROOT!\bin"
+	set "FEATURE_RESULT_VER=2_5_9"
+	call :feature_patch_internal
+goto :eof
+
+
+REM --------------------------------------------------------------
+:install_patch_internal
+	set "INSTALL_DIR=%STELLA_APP_FEATURE_ROOT%\packer\%VERSION%"
+
+	echo ** Installing patch version %VERSION% in %INSTALL_DIR%
+	call :feature_patch_%VERSION%
 	if "%FORCE%"=="1" ( 
 		set TEST_FEATURE=0
 		call %STELLA_COMMON%\common.bat :del_folder "%INSTALL_DIR%"
 	)
 	if "!TEST_FEATURE!"=="0" (
-
 		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "DEST_ERASE"
-
-		call :feature_patch_2_5_9
+		
+		call :feature_packer_%VERSION%
 		if not "!TEST_FEATURE!"=="0" (
-			cd /D "!TEST_FEATURE!"
 			echo patch installed
 		) else (
 			echo ** ERROR
@@ -62,18 +83,18 @@ goto :eof
 	)
 goto :eof
 
-:feature_patch_2_5_9
+:feature_patch_internal
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
-	if exist "%STELLA_APP_FEATURE_ROOT%\patch\2_5_9\bin\patch.exe" (
-		set "TEST_FEATURE=%STELLA_APP_FEATURE_ROOT%\patch\2_5_9"
-	)
-	if not "!TEST_FEATURE!"=="0" (
+	set FEATURE_ROOT=
+	if exist "!FEATURE_TEST!" (
+		set "TEST_FEATURE=1"
+		set "FEATURE_ROOT=!FEATURE_RESULT_ROOT!"
+		set "FEATURE_PATH=!FEATURE_RESULT_PATH!"
+		set "FEATURE_VER=!FEATURE_RESULT_VER!"
 		if %VERBOSE_MODE% GTR 0 (
-			echo ** EXTRA FEATURE Detected : patch in !TEST_FEATURE!
+			echo ** EXTRA FEATURE Detected : patch in !FEATURE_ROOT!
 		)
-		set "FEATURE_PATH=!TEST_FEATURE!"
-		set FEATURE_VER=2_5_9
 	)
 goto :eof

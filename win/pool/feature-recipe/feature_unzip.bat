@@ -64,14 +64,14 @@ goto :eof
 	set TEST_FEATURE=0
 	set FEATURE_PATH=
 	set FEATURE_VER=
+	set FEATURE_ROOT=
 	if exist "%STELLA_APP_FEATURE_ROOT%\unzip\5_51_1\bin\unzip.exe" (
-		set "TEST_FEATURE=%STELLA_APP_FEATURE_ROOT%\unzip\5_51_1"
-	)
-	if not "!TEST_FEATURE!"=="0" (
-		if %VERBOSE_MODE% GTR 0 (
-			echo ** EXTRA FEATURE Detected : unzip in !TEST_FEATURE!
-		)
-		set "FEATURE_PATH=!TEST_FEATURE!"
+		set "TEST_FEATURE=1"
+		set "FEATURE_ROOT=%STELLA_APP_FEATURE_ROOT%\unzip\5_51_1"
+		set "FEATURE_PATH=!FEATURE_ROOT!\bin"
 		set FEATURE_VER=5_51_1
+		if %VERBOSE_MODE% GTR 0 (
+			echo ** EXTRA FEATURE Detected : unzip in !FEATURE_ROOT!
+		)
 	)
 goto :eof

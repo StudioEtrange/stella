@@ -54,6 +54,7 @@ call %STELLA_COMMON%\common.bat :rel_to_abs_path "ASSETS_REPOSITORY" "..\assets_
 
 
 :: REQUIRED FEATURES ---------------------------------------------
+REM TODO useless ?
 set "WGET=%STELLA_APP_FEATURE_ROOT%\wget\1_11_4\bin\wget.exe"
 set "UZIP=%STELLA_APP_FEATURE_ROOT%\unzip\5_51_1\bin\unzip.exe"
 set "7ZIP=%STELLA_APP_FEATURE_ROOT%\sevenzip\9_20\7za.exe"
