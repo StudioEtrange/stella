@@ -11,13 +11,11 @@ REM APP RESSOURCES & ENV MANAGEMENT ---------------
 	set "_app_feature_list="
 
 	if exist "%_STELLA_APP_PROPERTIES_FILE%" (
-
 		if "!STELLA_APP_FEATURE_LIST!"=="" (
-		
-			if "!_VER!"=="" (
-				set "_app_feature_list=!_app_feature_list! !_FEAT!"
+			if "!_version!"=="" (
+				set "_app_feature_list=!_app_feature_list! !_feature!"
 			) else (
-				set "_app_feature_list=!_app_feature_list! !_FEAT!#!_VER!"
+				set "_app_feature_list=!_app_feature_list! !_feature!#!_version!"
 			)
 
 		) else (
@@ -32,19 +30,19 @@ REM APP RESSOURCES & ENV MANAGEMENT ---------------
 					set _FEAT=!item!
 				)
 				
-				if "!_FEAT!"=="%_feature%" (
-					if "!_VER!"=="" (
+				REM if we found feature in feature list replace version with the new one
+				if "!_FEAT!"=="!_feature!" (
+					if "!_version!"=="" (
 						set "_app_feature_list=!_app_feature_list! !_FEAT!"
 					) else (
-						set "_app_feature_list=!_app_feature_list! !_FEAT!#!_VER!"
+						set "_app_feature_list=!_app_feature_list! !_FEAT!#!_version!"
 					)
 				) else (
-					set "_app_feature_list=!_app_feature_list! %%F"
+					set "_app_feature_list=!_app_feature_list! !item!"
 				)
 			)
 
 		)
-
 		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_FEATURE_LIST" "!_app_feature_list!"
 	)
 goto :eof

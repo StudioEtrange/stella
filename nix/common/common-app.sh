@@ -220,6 +220,7 @@ function __add_app_feature() {
 					_F=$f
 				fi
 				
+				# if we found feature in feature list replace version with the new one
 				if [ "$_FEATURE" == "$_F" ]; then
 					[ "$_VER" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_FEATURE"
 					[ ! "$_VER" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_FEATURE#$_VER"
