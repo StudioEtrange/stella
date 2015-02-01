@@ -64,7 +64,7 @@ goto :eof
 :install_feature
 	set "_FEATURE=%~1"
 	set "_VER=%~2"
-	set "_OPT=%~5"
+	set "_OPT=%~3"
 
 	set _opt_hidden_feature=OFF
 	for %%O in (%_OPT%) do (

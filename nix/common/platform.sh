@@ -192,7 +192,7 @@ function __stella_features_requirement_by_os() {
 		debian)
 			;;
 		macos)
-			# TODO getopt ? instead of macport ?
+			# TODO feature getopt ? instead of macport ?
 			;;
 		*)
 			echo "OS unknown"

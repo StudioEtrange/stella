@@ -5,7 +5,7 @@
 #										after installing stella, it will set the project for use stella (if not already done)
 
 
-_STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+#_STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 if [ "$_STELLA_CURRENT_RUNNING_DIR" == "" ]; then
      _STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "." )" && pwd )"
 fi
