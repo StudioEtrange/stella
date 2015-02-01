@@ -31,15 +31,16 @@ REM APP RESSOURCES & ENV MANAGEMENT ---------------
 				)
 				
 				REM if we found feature in feature list replace version with the new one
-				if "!_FEAT!"=="!_feature!" (
-					if "!_version!"=="" (
-						set "_app_feature_list=!_app_feature_list! !_FEAT!"
-					) else (
-						set "_app_feature_list=!_app_feature_list! !_FEAT!#!_version!"
-					)
-				) else (
+				if not "!_FEAT!"=="!_feature!" (
 					set "_app_feature_list=!_app_feature_list! !item!"
 				)
+			)
+
+			REM This is a new feature
+			if "!_version!"=="" (
+				set "_app_feature_list=!_app_feature_list! !_feature!"
+			) else (
+				set "_app_feature_list=!_app_feature_list! !_feature!#!_version!"
 			)
 
 		)

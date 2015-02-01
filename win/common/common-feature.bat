@@ -78,11 +78,13 @@ goto :eof
 	)
 
 	if "%_opt_hidden_feature%"=="OFF" (
-		call %STELLA_COMMON%\common-app.bat :add_app_feature %_FEATURE% %_VER%
+		call %STELLA_COMMON%\common-app.bat :add_app_feature !_FEATURE! !_VER!
 	)
 
-	if "%_VER%"=="" (
-		call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :default_%_FEATURE% "_VER"
+	if "!_VER!"=="" (
+		set _V=
+		call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :default_%_FEATURE% "_V"
+		set _VER=!_V!
 	)
 
 	set _flag=

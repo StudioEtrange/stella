@@ -221,13 +221,14 @@ function __add_app_feature() {
 				fi
 				
 				# if we found feature in feature list replace version with the new one
-				if [ "$_FEATURE" == "$_F" ]; then
-					[ "$_VER" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_FEATURE"
-					[ ! "$_VER" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_FEATURE#$_VER"
-				else
+				if [ ! "$_FEATURE" == "$_F" ]; then
 					_APP_FEATURE_LIST="$_APP_FEATURE_LIST $f"
 				fi
 			done
+
+			# This is a new feature
+			[ "$_VER" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_FEATURE"
+			[ ! "$_VER" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_FEATURE#$_VER"
 		fi
 
 		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" "$(echo $_APP_FEATURE_LIST | sed -e 's/^ *//' -e 's/ *$//')"

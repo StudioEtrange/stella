@@ -57,8 +57,8 @@ goto :eof
 	if "!TEST_FEATURE!"=="0" (
 		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "DEST_ERASE STRIP"
 		cd /D "%INSTALL_DIR%"
-		REM python bootstrap.py
-		python ./configure.py --bootstrap
+		python bootstrap.py
+		REM python ./configure.py --bootstrap
 
 		call :feature_ninja_last_release
 		if not "!TEST_FEATURE!"=="0" (

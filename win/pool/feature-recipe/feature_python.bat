@@ -59,7 +59,7 @@ goto :eof
 		cd /D %STELLA_APP_CACHE_DIR%
 
 		echo ** Launch MSIEXEC with TARGETDIR=%INSTALL_DIR%
-		msiexec /qb /i %FILE_NAME% TARGETDIR="%INSTALL_DIR%\"
+		msiexec /qn /a %FILE_NAME% TARGETDIR="%INSTALL_DIR%\"
 
 		call :feature_python_2_7_6
 		if not "!TEST_FEATURE!"=="0" (

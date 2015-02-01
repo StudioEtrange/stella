@@ -58,11 +58,11 @@ if "%DOMAIN%"=="api" goto :end
 
 REM --------------- FEATURE ----------------------------
 if "%DOMAIN%"=="feature" (
-	set "_feature_options=-arch=%ARCH%"
-	if "%-f%"=="1" set "_feature_options=%_feature_options% -f"
-	if not "%-vers%"=="1" set "_feature_options=%_feature_options% -vers=%-vers%"
+	set "_feature_options="
+	if "%-f%"=="1" set "_feature_options=!_feature_options! -f"
+	if not "%-vers%"=="" set "_feature_options=!_feature_options! -vers=%-vers%"
 	
-	call %STELLA_BIN%\feature.bat %ACTION% %id% %_feature_options%
+	call %STELLA_BIN%\feature.bat %ACTION% %id% !_feature_options!
 	@echo off
 	goto :end
 	
