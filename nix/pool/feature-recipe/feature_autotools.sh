@@ -71,15 +71,15 @@ function __install_autoconf_2_69() {
 	VER=2.69
 	FILE_NAME=autoconf-2.69.tar.gz
 	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/autotools"
-	SRC_DIR="$STELLA_APP_FEATURE_ROOT/autotools/code/autoconf-$VER-src"
-	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/autotools/code/autoconf-$VER-build"
+	SRC_DIR="$STELLA_APP_FEATURE_ROOT/autoconf-$VER-src"
+	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/autoconf-$VER-build"
 
 	echo " ** NEED : perl 5.6"
 	# TODO prerequites
 	__init_feature "perl"
 
-	CONFIGURE_FLAG_PREFIX=
-	CONFIGURE_FLAG_POSTFIX="--docdir=$INSTALL_DIR/share/doc/automake-1.14"
+	AUTO_INSTALL_FLAG_PREFIX=
+	AUTO_INSTALL_FLAG_POSTFIX="--docdir=$INSTALL_DIR/share/doc/automake-1.14"
 
 	__feature_autoconf_2_69
 	[ "$FORCE" ] && TEST_FEATURE=0
@@ -107,11 +107,11 @@ function __install_automake_1_14() {
 	VER=1.14
 	FILE_NAME=automake-1.14.tar.gz
 	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/autotools"
-	SRC_DIR="$STELLA_APP_FEATURE_ROOT/autotools/code/automake-$VER-src"
-	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/autotools/code/automake-$VER-build"
+	SRC_DIR="$STELLA_APP_FEATURE_ROOT/automake-$VER-src"
+	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/automake-$VER-build"
 
-	CONFIGURE_FLAG_PREFIX=
-	CONFIGURE_FLAG_POSTFIX="--docdir=$INSTALL_DIR/share/doc/automake-1.14"
+	AUTO_INSTALL_FLAG_PREFIX=
+	AUTO_INSTALL_FLAG_POSTFIX="--docdir=$INSTALL_DIR/share/doc/automake-1.14"
 
 	__feature_automake_1_14
 	[ "$FORCE" ] && TEST_FEATURE=0
@@ -139,11 +139,11 @@ function __install_libtool_2_4_2() {
 	VER=2.4.2
 	FILE_NAME=libtool-2.4.2.tar.gz
 	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/autotools"
-	SRC_DIR="$STELLA_APP_FEATURE_ROOT/autotools/code/libtool-$VER-src"
-	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/autotools/code/libtool-$VER-build"
+	SRC_DIR="$STELLA_APP_FEATURE_ROOT/libtool-$VER-src"
+	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/libtool-$VER-build"
 
-	CONFIGURE_FLAG_PREFIX=
-	CONFIGURE_FLAG_POSTFIX=
+	AUTO_INSTALL_FLAG_PREFIX=
+	AUTO_INSTALL_FLAG_POSTFIX=
 
 	feature_libtool_2_4_2
 	[ "$FORCE" ] && TEST_FEATURE=0
@@ -171,11 +171,11 @@ function __install_m4_1_4_17() {
 	VER=1.4.17
 	FILE_NAME=m4-1.4.17.tar.gz
 	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/autotools"
-	SRC_DIR="$STELLA_APP_FEATURE_ROOT/autotools/code/m4-$VER-src"
-	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/autotools/code/m4-$VER-build"
+	SRC_DIR="$STELLA_APP_FEATURE_ROOT/m4-$VER-src"
+	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/m4-$VER-build"
 
-	CONFIGURE_FLAG_PREFIX=
-	CONFIGURE_FLAG_POSTFIX=
+	AUTO_INSTALL_FLAG_PREFIX=
+	AUTO_INSTALL_FLAG_POSTFIX=
 
 	__feature_m4_1_4_17
 	[ "$FORCE" ] && TEST_FEATURE=0

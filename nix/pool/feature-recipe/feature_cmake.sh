@@ -77,10 +77,12 @@ function __install_cmake_internal() {
 
 		__download_uncompress "$URL" "$FILE_NAME" "$SRC_DIR" "DEST_ERASE STRIP"
 
-		rm -Rf "$BUILD_DIR"
+		__del_folder "$INSTALL_DIR"
 		mkdir -p "$INSTALL_DIR"
-		rm -Rf "$BUILD_DIR"
+
+		__del_folder "$BUILD_DIR"
 		mkdir -p "$BUILD_DIR"
+
 		cd "$BUILD_DIR"
 
 		chmod +x $SRC_DIR/bootstrap

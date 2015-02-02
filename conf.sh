@@ -99,7 +99,7 @@ VIRTUAL_DEFAULT_HYPERVISOR=virtualbox
 
 # INTERNAL LIST---------------------------------------------
 __STELLA_DISTRIB_LIST="ubuntu64_13_10 debian64_7_5 centos64_6_5 archlinux boot2docker"
-__STELLA_FEATURE_LIST="wget ninja cmake packer autotools perl"
+__STELLA_FEATURE_LIST="wget ninja cmake packer autotools perl gettext getopt"
 
 # API ---------------------------------------------
 STELLA_API_COMMON_PUBLIC="is_abs argparse get_filename_from_string \

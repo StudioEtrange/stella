@@ -94,9 +94,14 @@ goto :eof
 		if "%%A"=="%_FEATURE%#!_VER!" set _flag=1
 	)
 	
+	if "%FORCE%"=="1" (
+		if "!_flag!"=="1" (
+			call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :install_%_FEATURE% !_VER!
+		)
+	)
 	
 
-	if "%_flag%"=="" (
+	if "!_flag!"=="" (
 		set FEATURE_PATH=
 		call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :install_%_FEATURE% !_VER!
 		if not "!TEST_FEATURE!"=="0" (
@@ -104,7 +109,9 @@ goto :eof
 			if not "!FEATURE_PATH!"=="" set "PATH=!FEATURE_PATH!;!PATH!"
 		)
 	) else (
-		echo ** Feature %_FEATURE%#!_VER! already installed
+		if not "%FORCE%"=="1" (
+			echo ** Feature %_FEATURE%#!_VER! already installed
+		)
 	)
 goto :eof
 

@@ -61,8 +61,8 @@ function __install_perl_internal() {
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/perl/$VER/code/perl-$VER-src"
 	BUILD_DIR=
 
-	CONFIGURE_FLAG_PREFIX=
-	CONFIGURE_FLAG_POSTFIX=
+	AUTO_INSTALL_FLAG_PREFIX=
+	AUTO_INSTALL_FLAG_POSTFIX=
 
 	__feature_perl_$VER
 	if [ "$FORCE" ]; then
@@ -72,7 +72,7 @@ function __install_perl_internal() {
 	if [ "$TEST_FEATURE" == "0" ]; then
 		__download_uncompress "$URL" "$FILE_NAME" "$SRC_DIR" "DEST_ERASE STRIP"
 
-		rm -Rf "$BUILD_DIR"
+		__del_folder $INSTALL_DIR
 		mkdir -p "$INSTALL_DIR"
 		cd "$SRC_DIR"
 

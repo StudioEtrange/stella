@@ -56,20 +56,20 @@ function __feature_wget_1_15() {
 function __install_wget_internal() {
 	
 	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/wget/$VER"
-	SRC_DIR="$STELLA_APP_FEATURE_ROOT/wget/$VER/code/wget-$VER-src"
-	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/wget/$VER/code/wget-$VER-build"
+	SRC_DIR="$STELLA_APP_FEATURE_ROOT/wget/wget-$VER-src"
+	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/wget/wget-$VER-build"
 
 
-	CONFIGURE_FLAG_PREFIX=
-	CONFIGURE_FLAG_POSTFIX="--with-ssl=openssl"
+	AUTO_INSTALL_FLAG_PREFIX=
+	AUTO_INSTALL_FLAG_POSTFIX="--with-ssl=openssl"
 
 	feature_wget_$VER
 	if [ "$FORCE" ]; then
 		TEST_FEATURE=0
-		__del_folder $INSTALL_DIR
+		__del_folder "$INSTALL_DIR"
 	fi
 	if [ "$TEST_FEATURE" == "0" ]; then
-		__auto_install "configure" "wget" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
+		__auto_install "configure" "wget" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "DEST_ERASE STRIP"
 	else
 		echo " ** Already installed"
 	fi

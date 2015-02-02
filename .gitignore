@@ -1,2 +1,4 @@
 .DS_Store
 VERSION
+cache
+feature_*

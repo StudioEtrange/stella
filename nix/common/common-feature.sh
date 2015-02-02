@@ -83,12 +83,18 @@ function __install_feature() {
 		fi
 
 		_flag=0
+
 		for a in $FEATURE_LIST_ENABLED; do 
 			[ "$_FEATURE#$_VER" == "$a" ] && _flag=1
 		done
 
 		
-		
+		if [ "$FORCE" == "1" ]; then
+			if [ "$_flag" == "1" ]; then
+				__install_"$_FEATURE" $_VER
+			fi
+		fi
+
 		if [ "$_flag" == "0" ]; then
 			FEATURE_PATH=
 			__install_"$_FEATURE" $_VER
@@ -99,7 +105,7 @@ function __install_feature() {
 				fi
 			fi
 		else
-			echo "** Feature $_FEATURE#$_VER already installed"
+			[ ! "$FORCE" == "1" ] && echo "** Feature $_FEATURE#$_VER already installed"
 		fi
 	fi
 }
@@ -133,11 +139,11 @@ function __texinfo() {
 	VER=5.1
 	FILE_NAME=texinfo-5.1.tar.xz
 	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools"
-	SRC_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools/code/texinfo-$VER-src"
-	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools/code/texinfo-$VER-build"
+	SRC_DIR="$STELLA_APP_FEATURE_ROOT/texinfo-$VER-src"
+	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/texinfo-$VER-build"
 
-	CONFIGURE_FLAG_PREFIX=
-	CONFIGURE_FLAG_POSTFIX=
+	AUTO_INSTALL_FLAG_PREFIX=
+	AUTO_INSTALL_FLAG_POSTFIX=
 
 	
 	__auto_install "configure" "texinfo" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
@@ -151,11 +157,11 @@ function __bc() {
 	VER=1.06.95
 	FILE_NAME=bc-1.06.95.tar.bz2
 	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools"	
-	SRC_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools/code/bc-$VER-src"
-	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools/code/bc-$VER-build"
+	SRC_DIR="$STELLA_APP_FEATURE_ROOT/bc-$VER-src"
+	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/bc-$VER-build"
 
-	CONFIGURE_FLAG_PREFIX=
-	CONFIGURE_FLAG_POSTFIX=
+	AUTO_INSTALL_FLAG_PREFIX=
+	AUTO_INSTALL_FLAG_POSTFIX=
 	
 	__auto_install "configure" "bc" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
 }
@@ -165,11 +171,11 @@ function __file5() {
 	VER=5.15
 	FILE_NAME=file-5.15.tar.gz
 	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools"
-	SRC_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools/code/file-$VER-src"
-	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools/code/file-$VER-build"
+	SRC_DIR="$STELLA_APP_FEATURE_ROOT/file-$VER-src"
+	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/file-$VER-build"
 
-	CONFIGURE_FLAG_PREFIX=
-	CONFIGURE_FLAG_POSTFIX="--disable-static"
+	AUTO_INSTALL_FLAG_PREFIX=
+	AUTO_INSTALL_FLAG_POSTFIX="--disable-static"
 
 	__auto_install "configure" "file" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
 
@@ -181,11 +187,11 @@ function __m4() {
 	VER=1.4.17
 	FILE_NAME=m4-1.4.17.tar.gz
 	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools"	
-	SRC_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools/code/m4-$VER-src"
-	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools/code/m4-$VER-build"
+	SRC_DIR="$STELLA_APP_FEATURE_ROOT/m4-$VER-src"
+	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/m4-$VER-build"
 
-	CONFIGURE_FLAG_PREFIX=
-	CONFIGURE_FLAG_POSTFIX=
+	AUTO_INSTALL_FLAG_PREFIX=
+	AUTO_INSTALL_FLAG_POSTFIX=
 
 	__auto_install "configure" "m4" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
 }
@@ -196,11 +202,11 @@ function __binutils() {
 	VER=2.23.2
 	FILE_NAME=binutils-2.23.2.tar.bz2
 	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools"
-	SRC_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools/code/binutils-$VER-src"
-	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools/code/binutils-$VER-build"
+	SRC_DIR="$STELLA_APP_FEATURE_ROOT/binutils-$VER-src"
+	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/binutils-$VER-build"
 
-	CONFIGURE_FLAG_PREFIX="AR=ar AS=as"
-	CONFIGURE_FLAG_POSTFIX="--host=$CROSS_HOST --target=$CROSS_TARGET \
+	AUTO_INSTALL_FLAG_PREFIX="AR=ar AS=as"
+	AUTO_INSTALL_FLAG_POSTFIX="--host=$CROSS_HOST --target=$CROSS_TARGET \
   	--with-sysroot=${CLFS} --with-lib-path=/tools/lib --disable-nls \
   	--disable-static --enable-64-bit-bfd"
 
@@ -227,45 +233,40 @@ function __auto_build_install_configure() {
 	AUTO_INSTALL_DIR="$3"
 	OPT="$4"
 
-	local _opt_dest_erase
-	_opt_dest_erase=OFF # erase installation dir before install (default : FALSE)
+	local _opt_without_configure=
 	for o in $OPT; do 
-		[ "$o" == "DEST_ERASE" ] && _opt_dest_erase=ON
+		[ "$o" == "WITHOUT_CONFIGURE" ] && _opt_without_configure=ON
 	done
-
-
-	[ "$_opt_dest_erase" == "ON" ] && rm -Rf "$AUTO_INSTALL_DIR"
-	mkdir -p "$AUTO_INSTALL_DIR"
 	
+	#[ "$STELLA_CURRENT_PLATFORM" == "macos" ] && AUTO_INSTALL_FLAG_POSTFIX="$AUTO_INSTALL_FLAG_POSTFIX -Wl,rpath,@loader_path/"
 
-	# useless cause rm -Rf "$BUILD_DIR"
-	#if [ ! "$NOCONFIG" ]; then
-	#	if [ -d "$AUTO_BUILD_DIR" ]; then
-	#		make distclean # useless cause rm -Rf "$BUILD_DIR"
-	#		make clean # useless rm -Rf "$BUILD_DIR"
-	#	fi
-	#fi
-
-	[ ! "$NOCONFIG" ] && rm -Rf "$AUTO_BUILD_DIR"
 	mkdir -p "$AUTO_BUILD_DIR"
-
 	cd "$AUTO_BUILD_DIR"
-
-	if [ ! "$NOCONFIG" ]; then
+	
+	if [ ! "$_opt_without_configure" == "ON" ]; then
 		chmod +x "$AUTO_SOURCE_DIR/configure"
-		if [ "$CONFIGURE_FLAG_PREFIX" == "" ]; then
-			"$AUTO_SOURCE_DIR/configure" --prefix="$AUTO_INSTALL_DIR" $CONFIGURE_FLAG_POSTFIX
+		if [ "$AUTO_INSTALL_FLAG_PREFIX" == "" ]; then
+			"$AUTO_SOURCE_DIR/configure" --prefix="$AUTO_INSTALL_DIR" $AUTO_INSTALL_FLAG_POSTFIX
 		else
-			$CONFIGURE_FLAG_PREFIX "$AUTO_SOURCE_DIR/configure" --prefix="$AUTO_INSTALL_DIR" $CONFIGURE_FLAG_POSTFIX
+			$AUTO_INSTALL_FLAG_PREFIX "$AUTO_SOURCE_DIR/configure" --prefix="$AUTO_INSTALL_DIR" $AUTO_INSTALL_FLAG_POSTFIX
+		fi
+
+		make
+		make install
+	else
+		$AUTO_SOURCE_DIR/make
+		if [ "$AUTO_INSTALL_FLAG_PREFIX" == "" ]; then
+			"$AUTO_SOURCE_DIR/make" prefix=$AUTO_INSTALL_DIR $AUTO_INSTALL_FLAG_POSTFIX install
+		else
+			$AUTO_INSTALL_FLAG_PREFIX "$AUTO_SOURCE_DIR/make" prefix=$AUTO_INSTALL_DIR $AUTO_INSTALL_FLAG_POSTFIX install
 		fi
 	fi
-
-	if [ ! "$NOBUILD" ]; then
-		make -j$BUILD_JOB
-		make install
-	fi
-
+	
+	#[ "$STELLA_CURRENT_PLATFORM" == "macos" ] && __fix_all_dynamiclib_install_name_macos $AUTO_INSTALL_DIR
 }
+
+
+
 
 function __auto_install() {
 	local MODE
@@ -276,9 +277,8 @@ function __auto_install() {
 	local BUILD_DIR
 	local INSTALL_DIR
 	local OPT
-	local _opt_dest_erase
-	local _opt_strip
-	local DEST_ERASE
+
+	
 
 	MODE="$1"
 	NAME="$2"
@@ -289,30 +289,47 @@ function __auto_install() {
 	INSTALL_DIR="$7"
 	OPT="$8"
 
-
-	_opt_dest_erase=OFF # erase installation dir before install (default : FALSE)
-	_opt_strip=OFF # delete first folder in archive  (default : FALSE)
+	# erase installation dir before install (default : FALSE)
+	local _opt_dest_erase=
+	# delete first folder in archive  (default : FALSE)
+	local _opt_strip=
+	# keep source code after build (default : FALSE)
+	local _opt_source_keep=
+	# keep build dir after build (default : FALSE)
+	local _opt_build_keep=
 	for o in $OPT; do 
 		[ "$o" == "DEST_ERASE" ] && _opt_dest_erase=ON
 		[ "$o" == "STRIP" ] && _opt_strip=ON
+		[ "$o" == "SOURCE_KEEP" ] && _opt_source_keep=ON
+		[ "$o" == "BUILD_KEEP" ] && _opt_build_keep=ON
 	done
 
+	
 
 	echo " ** Installing $NAME in $INSTALL_DIR"
 
-	__download_uncompress "$URL" "$FILE_NAME" "$SOURCE_DIR" "$OPT"
+	[ "$_opt_dest_erase" == "ON" ] && rm -Rf "$AUTO_INSTALL_DIR"
+	mkdir -p "$AUTO_INSTALL_DIR"
+
+	local STRIP=
+	[ "$_opt_strip" == "ON" ] && STRIP=STRIP
+	__download_uncompress "$URL" "$FILE_NAME" "$SOURCE_DIR" "$STRIP"
 	
-	DEST_ERASE=
-	[ "$_opt_dest_erase" == "ON" ] && DEST_ERASE=DEST_ERASE
 	
 	case $MODE in
 		cmake)
 				echo "TODO"
 				;;
 		configure)
-				__auto_build_install_configure "$SOURCE_DIR" "$BUILD_DIR" "$INSTALL_DIR" "$DEST_ERASE" 
+				__auto_build_install_configure "$SOURCE_DIR" "$BUILD_DIR" "$INSTALL_DIR" 
+				;;
+		make)
+				__auto_build_install_configure "$SOURCE_DIR" "$BUILD_DIR" "$INSTALL_DIR" "WITHOUT_CONFIGURE"
 				;;
 	esac
+
+	[ ! "$_opt_source_keep" == "ON" ] && rm -Rf "$SOURCE_DIR"
+	[ ! "$_opt_build_keep" == "ON" ] && rm -Rf "$BUILD_DIR"
 
 	echo " ** Done"
 

@@ -145,9 +145,10 @@ function __rel_to_abs_path_alternative_2(){
 	local _abs_root_path=$2
 
 	local F="$_abs_root_path/$_rel_path"
-	# NOTE readlink -f do not exist on macos
-	[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && echo "$(dirname $(readlink -e $F))/$(basename $F)"
-	[ "$STELLA_CURRENT_PLATFORM" == "macos" ] && echo "$(dirname $F)/$(basename $F)"
+
+	#echo "$(dirname $(readlink -e $F))/$(basename $F)"
+	echo "$(readlink -m $F)"
+	
 }
 
 # How to go from _abs_path_root (ARG2) to _abs_path_to_translate (ARG1)
