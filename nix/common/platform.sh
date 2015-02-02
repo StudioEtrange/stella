@@ -220,7 +220,7 @@ function __stella_env_macos() {
 	fi
 
 	echo " ** Install system requirements with brew"
-	brew install getopt
+	brew install gnu-getopt
 	brew install p7zip
 }
 

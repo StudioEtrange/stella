@@ -123,7 +123,7 @@ function bootstrap() {
 		__ask_install_requirements
 	fi
 
-	if [ "IS_STELLA_LINK_FILE" == "FALSE" ]; then
+	if [ "$IS_STELLA_LINK_FILE" == "FALSE" ]; then
 		__ask_init_app
 	fi
 
