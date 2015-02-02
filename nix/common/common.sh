@@ -778,6 +778,8 @@ function __argparse(){
 	$PARAMETERS
 	"
 
+	
+	#GETOPT_CMD is an env variable we can choose a getopt command instead of default getopt
 
 	
 	# Debug mode
@@ -786,7 +788,7 @@ function __argparse(){
 	#export ARGP_HELP_FMT="rmargin=$(tput cols)"
 	#echo $ARGP
 	exec 4>&1 # fd4 is now a copy of fd1 ie stdout
-	RES=$( echo "$ARGP" | $STELLA_COMMON/argp.sh $COMMAND_LINE 3>&1 1>&4 || echo exit $? ) 
+	RES=$( echo "$ARGP" | GETOPT_CMD=$GETOPT_CMD $STELLA_COMMON/argp.sh $COMMAND_LINE 3>&1 1>&4 || echo exit $? ) 
 	exec 4>&-
 
 	# $@ now contains not parsed argument, options and identified parameters have been processed and removed:

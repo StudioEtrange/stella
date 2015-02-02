@@ -12,9 +12,16 @@ if not "%~1"==":include" (
 )
 
 
-if not "%~1"==":include" (
+if not "%~1"==":include" if not "%~1"=="bootstrap" (
 		call !STELLA_ROOT!\stella.bat %*
 		@echo off
+)
+
+if "%~1"=="bootstrap" (
+	cd /D "!_STELLA_LINK_CURRENT_FILE_DIR!"
+	powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/StudioEtrange/stella/master/win/pool/stella-bridge.bat', 'stella-bridge.bat')"
+	stella-bridge.bat bootstrap
+	del /q stella-bridge.bat
 )
 
 goto :eof

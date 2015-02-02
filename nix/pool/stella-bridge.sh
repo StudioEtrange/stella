@@ -79,6 +79,8 @@ function bootstrap() {
 	IS_STELLA_LINKED="FALSE"
 	STELLA_ROOT=
 
+	IS_STELLA_JUST_INSTALLED="FALSE"
+
 	[ "$PROVIDED_PATH" == "" ] && PROVIDED_PATH=$_STELLA_CURRENT_RUNNING_DIR/stella
 
 
@@ -109,14 +111,21 @@ function bootstrap() {
 
 		if [ ! -f "$_STELLA_INSTALL_PATH/stella.sh" ]; then
 			__get_stella "git" "$_STELLA_INSTALL_PATH"
+			IS_STELLA_JUST_INSTALLED="TRUE"
+
 		fi
 		
 		source "$_STELLA_INSTALL_PATH/conf.sh"
 
 	fi
 
-	__ask_install_system_requirements
-	__ask_init_app
+	if [ "$IS_STELLA_JUST_INSTALLED" == "TRUE" ]; then
+		__ask_install_requirements
+	fi
+
+	if [ "IS_STELLA_LINK_FILE" == "FALSE" ]; then
+		__ask_init_app
+	fi
 
 }
 

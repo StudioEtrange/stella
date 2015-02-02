@@ -73,6 +73,7 @@ REM Bootstrap a stella project ------------------
 	set IS_STELLA_LINK_FILE=FALSE
 	set IS_STELLA_LINKED=FALSE
 	set STELLA_ROOT=
+	set IS_STELLA_JUST_INSTALLED=FALSE
 
 	if "%PROVIDED_PATH%"=="" (
 		set "PROVIDED_PATH=%_STELLA_CURRENT_RUNNING_DIR%\stella"
@@ -103,13 +104,21 @@ REM Bootstrap a stella project ------------------
 			call :___rel_to_abs_path "_stella_install_path" "%PROVIDED_PATH%" "%_STELLA_CURRENT_RUNNING_DIR%"
 		)
 
-		call :get_stella "git" "!_stella_install_path!"
+		if not exist "!_stella_install_path!\stella.bat" (
+			call :get_stella "git" "!_stella_install_path!"
+			set IS_STELLA_JUST_INSTALLED=TRUE
+		)
 	
 		call "!_stella_install_path!\conf.bat"
 	)	
-		
-	call %STELLA_COMMON%\common-app.bat :ask_install_system_requirements
-	call %STELLA_COMMON%\common-app.bat :ask_init_app
+	
+	if "!IS_STELLA_JUST_INSTALLED!"=="TRUE" (
+		call %STELLA_COMMON%\common-app.bat :ask_install_requirements
+	)
+	if "!IS_STELLA_LINK_FILE!"=="FALSE" (
+		call %STELLA_COMMON%\common-app.bat :ask_init_app
+	)
+
 
 goto :eof
 

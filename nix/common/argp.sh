@@ -227,6 +227,9 @@ Also, a hidden option '--print-xml' prints out the XML equivalent of the argp in
 If POSIXLY_CORRECT is set, then option parsing will end on the first
 non-option argument (eg like ssh(1)).
 
+GETOPT_CMD is an env variable we can choose a getopt command instead of default getopt
+
+
 ###############################################################################
 
 
@@ -1358,11 +1361,11 @@ call_getopt() {
         [[ -n "$SHORT_OPTIONS$SHORT_OPTIONS_ARG" ]] && SHORT_ARGS="-o $STOP_EARLY$SHORT_OPTIONS$SHORT_OPTIONS_ARG"
         [[ -n "$LONG_OPTIONS" ]] && LONG_ARGS="--long $LONG_OPTIONS"
         [[ -n "$LONG_OPTIONS_ARG" ]] && LONG_ARGS="$LONG_ARGS --long $LONG_OPTIONS_ARG"
-        [[ "$ARGP_DEBUG" ]] && echo "call_getopt: set -- \$(getopt $SHORT_ARGS $LONG_ARGS -n $ARGP_PROG -- $@)" >&2
-        TEMP=$(getopt $SHORT_ARGS $LONG_ARGS -n "$ARGP_PROG" -- "$@") || abend $? "getopt failure"
+        [[ "$ARGP_DEBUG" ]] && echo "call_getopt: set -- \$($GETOPT_CMD $SHORT_ARGS $LONG_ARGS -n $ARGP_PROG -- $@)" >&2
+        TEMP=$($GETOPT_CMD $SHORT_ARGS $LONG_ARGS -n "$ARGP_PROG" -- "$@") || abend $? "$GETOPT_CMD failure"
     else
-        [[ "$ARGP_DEBUG" ]] && echo "call_getopt: set -- \$(getopt $SHORT_OPTIONS$SHORT_OPTIONS_ARG $@)" >&2
-        TEMP=$(getopt $SHORT_OPTIONS$SHORT_OPTIONS_ARG "$@") || abend $? "getopt failure"
+        [[ "$ARGP_DEBUG" ]] && echo "call_getopt: set -- \$($GETOPT_CMD $SHORT_OPTIONS$SHORT_OPTIONS_ARG $@)" >&2
+        TEMP=$($GETOPT_CMD $SHORT_OPTIONS$SHORT_OPTIONS_ARG "$@") || abend $? "$GETOPT_CMD failure"
     fi
     
     eval set -- "$TEMP"
@@ -1399,6 +1402,9 @@ initialise() {
     STOP_ON_FIRST_NON_OPT=${POSIXLY_CORRECT:-}
     unset POSIXLY_CORRECT
 
+    # by setting this env variable we can choose a getopt command
+    [[ "$GETOPT_CMD" == "" ]] && GETOPT_CMD=getopt
+
     ARGP_PARAM_LIST=""
     LONG_DESC=
     ARGP_OPTION_LIST=""
@@ -1406,7 +1412,7 @@ initialise() {
     GARGP_LONG_GETOPT=""
     # decide if this getopt supports long options:
     { 
-        getopt --test &>/dev/null; ARGP_STAT=$? 
+        $GETOPT_CMD --test &>/dev/null; ARGP_STAT=$? 
     } || : 
     [[ $ARGP_STAT -eq 4 ]] && GARGP_LONG_GETOPT="GARGP_LONG_GETOPT_yes"
 

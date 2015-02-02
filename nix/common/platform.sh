@@ -115,6 +115,14 @@ function __set_current_platform_info() {
 
 	
 	
+	__override_platform_command
+
+
+
+}
+
+
+function __override_platform_command() {
 	#http://unix.stackexchange.com/questions/30091/fix-or-alternative-for-mktemp-in-os-x
 	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
 		function mktmp() {
@@ -135,6 +143,14 @@ function __set_current_platform_info() {
 	    	echo "$tempdir"
 		}
 	fi
+
+	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
+		GETOPT_CMD="$(brew --prefix)/opt/gnu-getopt/bin/getopt"
+	else
+		GETOPT_CMD=getopt
+	fi
+
+
 }
 
 
@@ -191,8 +207,21 @@ function __stella_env_ubuntu() {
 }
 
 function __stella_env_macos() {
-	echo " ** INFO : Needs sudouser rights and macport installed"
-	port install getopt p7zip
+	
+	echo " ** Check Homebrew"
+	if which brew 2> /dev/null; then
+    	local _brewLocation=`which brew`
+    	local _appLocation=`brew --prefix`
+    	echo "Homebrew is installed in $_brewLocation"
+    	echo "Homebrew apps are run from $_appLocation"
+	else
+   		echo "** Can't find Homebrew, so install it"
+   		ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+	fi
+
+	echo " ** Install system requirements with brew"
+	brew install getopt
+	brew install p7zip
 }
 
 function __stella_env_debian() {

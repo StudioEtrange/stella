@@ -395,8 +395,8 @@ function __setup_env() {
 
 
 
-function __ask_install_system_requirements() {
-	echo "Do you wish to auto-install system requirements for stella ?"
+function __ask_install_requirements() {
+	echo "Do you wish to auto-install requirements for stella ?"
 	select yn in "Yes" "No"; do
 	    case $yn in
 	        Yes )
