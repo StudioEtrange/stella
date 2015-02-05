@@ -64,7 +64,8 @@ function __init_app() {
 	_cachedir=$(__abs_to_rel_path "$_cachedir" "$_approot")
 	_stella_root=$(__abs_to_rel_path "$STELLA_ROOT" "$_approot")
 
-	echo "_STELLA_LINK_CURRENT_FILE_DIR=\"\$( cd \"\$( dirname \"\${BASH_SOURCE[0]}\" )\" && pwd )\"" >$_approot/stella-link.sh.temp
+	echo "#!/bin/bash" >$_approot/stella-link.sh.temp
+	echo "_STELLA_LINK_CURRENT_FILE_DIR=\"\$( cd \"\$( dirname \"\${BASH_SOURCE[0]}\" )\" && pwd )\"" >>$_approot/stella-link.sh.temp
 	echo "STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$_approot/stella-link.sh.temp
 	echo "STELLA_APP_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR" >>$_approot/stella-link.sh.temp
 
@@ -396,7 +397,7 @@ function __setup_env() {
 
 
 function __ask_install_requirements() {
-	echo "Do you wish to auto-install requirements for stella ?"
+	echo "Do you wish to auto-install requirements for stella (may ask for sudo password)?"
 	select yn in "Yes" "No"; do
 	    case $yn in
 	        Yes )

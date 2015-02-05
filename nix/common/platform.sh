@@ -202,8 +202,8 @@ function __fix_all_dynamiclib_install_name_macos() {
 # by OS
 function __stella_env_ubuntu() {
 	echo " ** INFO : Needs sudouser rights" 
-	apt-get -y install mercurial unzip p7zip-full git wget
-	apt-get -y install bison util-linux build-essential gcc-multilib g++-multilib g++ pkg-config
+	sudo apt-get -y install mercurial unzip p7zip-full git wget
+	sudo apt-get -y install bison util-linux build-essential gcc-multilib g++-multilib g++ pkg-config
 }
 
 function __stella_env_macos() {
@@ -226,8 +226,8 @@ function __stella_env_macos() {
 
 function __stella_env_debian() {
 	echo " ** INFO : Needs sudouser rights" 
-	apt-get -y install mercurial unzip p7zip-full git wget
-	apt-get -y install bison util-linux build-essential gcc-multilib g++-multilib g++ pkg-config
+	sudo apt-get -y install mercurial unzip p7zip-full git wget
+	sudo apt-get -y install bison util-linux build-essential gcc-multilib g++-multilib g++ pkg-config
 }
 
 

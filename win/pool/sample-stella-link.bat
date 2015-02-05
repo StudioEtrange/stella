@@ -1,4 +1,5 @@
 
+@echo off
 
 if not exist %STELLA_ROOT%\stella.bat (
 	echo "** WARNING Stella is missing"
