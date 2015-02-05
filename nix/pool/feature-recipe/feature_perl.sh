@@ -72,8 +72,6 @@ function __install_perl_internal() {
 	if [ "$TEST_FEATURE" == "0" ]; then
 		__download_uncompress "$URL" "$FILE_NAME" "$SRC_DIR" "DEST_ERASE STRIP"
 
-		__del_folder $INSTALL_DIR
-		mkdir -p "$INSTALL_DIR"
 		cd "$SRC_DIR"
 
 		sh "$SRC_DIR/Configure" -des -Dprefix=$INSTALL_DIR \
