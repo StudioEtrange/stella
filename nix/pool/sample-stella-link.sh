@@ -9,8 +9,9 @@ case $ACTION in
 
 	bootstrap)
 		cd "$_STELLA_LINK_CURRENT_FILE_DIR"
-		curl -sSL https://raw.githubusercontent.com/StudioEtrange/stella/master/nix/pool/stella-bridge.sh -O stella-bridge.sh
-		stella-bridge.sh bootstrap
+		curl -sSL https://raw.githubusercontent.com/StudioEtrange/stella/master/nix/pool/stella-bridge.sh -o stella-bridge.sh
+		chmod +x stella-bridge.sh
+		./stella-bridge.sh bootstrap
 		rm -f stella-bridge.sh
 		;;
 	*) 
