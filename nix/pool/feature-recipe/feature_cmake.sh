@@ -3,11 +3,11 @@ _CMAKE_INCLUDED_=1
 
 
 function __list_cmake() {
-	echo "2_8_12"
+	echo "3_1_2 2_8_12"
 }
 
 function __default_cmake() {
-	echo "2_8_12"
+	echo "3_1_2 2_8_12"
 }
 
 function __install_cmake() {
@@ -52,6 +52,23 @@ function __feature_cmake_2_8_12() {
 	__feature_cmake_internal
 }
 
+function __install_cmake_3_1_2() {
+	URL=http://www.cmake.org/files/v3.1/cmake-3.1.2.tar.gz
+	VER=3_1_2
+	FILE_NAME=cmake-3.1.2.tar.gz
+	#echo " ** NEED : cURL-7.32.0, libarchive-3.1.2 and expat-2.1.0"
+	__install_cmake_internal
+}
+
+
+function __feature_cmake_3_1_2() {
+	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/cmake/3_1_2/bin/cmake"
+	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/cmake/3_1_2"
+	FEATURE_RESULT_PATH="$FEATURE_RESULT_PATH/bin"
+	FEATURE_RESULT_VER="3_1_2"
+	__feature_cmake_internal
+}
+
 
 # --------------------------------------
 
@@ -65,8 +82,7 @@ function __install_cmake_internal() {
 
 
 	echo " ** Installing cmake version $VER in $INSTALL_DIR"
-	#TODO
-	#prerequires Recommended cURL-7.32.0, libarchive-3.1.2 and expat-2.1.0
+	
 
 	__feature_cmake_$VER
 	if [ "$FORCE" ]; then
