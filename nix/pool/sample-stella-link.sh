@@ -14,6 +14,8 @@ case $ACTION in
 		./stella-bridge.sh bootstrap
 		rm -f stella-bridge.sh
 		;;
+	nothing)
+		;;
 	*) 
 		$STELLA_ROOT/stella.sh $*
 		;;

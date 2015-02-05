@@ -87,7 +87,7 @@ function bootstrap() {
 	# Check if APP/PROJECT in current dir is linked to STELLA
 	if [ -f "$_STELLA_CURRENT_RUNNING_DIR/stella-link.sh" ]; then
 		IS_STELLA_LINK_FILE="TRUE"
-		source "$_STELLA_CURRENT_RUNNING_DIR/stella-link.sh"
+		source "$_STELLA_CURRENT_RUNNING_DIR/stella-link.sh" nothing
 		if [ ! "$STELLA_ROOT" == "" ]; then
 			if [ -f "$STELLA_ROOT/stella.sh" ]; then
 				IS_STELLA_LINKED="TRUE"
