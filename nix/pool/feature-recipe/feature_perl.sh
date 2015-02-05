@@ -46,7 +46,7 @@ function __install_perl_5_18_2() {
 
 
 function __feature_perl_5_18_2() {
-	FEATURE_TEST="STELLA_APP_FEATURE_ROOT/perl/5_18_2/bin/perl"
+	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/perl/5_18_2/bin/perl"
 	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/perl/5_18_2"
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
 	FEATURE_RESULT_VER="5_18_2"
