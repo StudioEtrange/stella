@@ -82,7 +82,7 @@ REM Bootstrap a stella project ------------------
 	REM Check if PROJECT in current dir is linked to STELLA -------------------------
 	if exist "%_STELLA_CURRENT_RUNNING_DIR%\stella-link.bat" (
 		set IS_STELLA_LINK_FILE=TRUE
-		call %_STELLA_CURRENT_RUNNING_DIR%\stella-link.bat
+		call %_STELLA_CURRENT_RUNNING_DIR%\stella-link.bat :nothing
 		if not "!STELLA_ROOT!"=="" (
 			if exist "!STELLA_ROOT!\stella.bat" (
 				set IS_STELLA_LINKED=TRUE

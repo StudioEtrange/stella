@@ -4,7 +4,7 @@ if not exist %STELLA_ROOT%\stella.bat (
 	echo "** WARNING Stella is missing"
 )
 
-if not "%~1"==":include" (
+if not "%~1"==":include" if not "%~1"==":nothing" (
 	@setlocal enableExtensions enableDelayedExpansion
 ) else (
 	call %*
@@ -12,7 +12,7 @@ if not "%~1"==":include" (
 )
 
 
-if not "%~1"==":include" if not "%~1"=="bootstrap" (
+if not "%~1"==":include" if not "%~1"=="bootstrap" if not "%~1"==":nothing" (
 		call !STELLA_ROOT!\stella.bat %*
 		@echo off
 )
@@ -31,9 +31,11 @@ goto :eof
 	call !STELLA_COMMON!\common.bat :init_stella_env
 goto :eof
 
+:nothing
+goto :eof
 
 
 @echo on
-if not "%~1"==":include" (
+if not "%~1"==":include" if not "%~1"==":nothing" (
 	@endlocal
 )
