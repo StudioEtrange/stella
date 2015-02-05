@@ -66,6 +66,9 @@ function __feature_packer_0_6_0_x64() {
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT"
 	FEATURE_RESULT_VER="0_6_0_x64"
 	__feature_packer_internal
+	FEATURE_RESULT_PATH=
+	FEATURE_RESULT_ROOT=
+	FEATURE_RESULT_VER=
 }
 
 
@@ -75,6 +78,10 @@ function __feature_packer_0_6_0_x86() {
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT"
 	FEATURE_RESULT_VER="0_6_0_x86"
 	__feature_packer_internal
+	FEATURE_TEST=
+	FEATURE_RESULT_PATH=
+	FEATURE_RESULT_ROOT=
+	FEATURE_RESULT_VER=
 }
 
 

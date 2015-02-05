@@ -95,7 +95,10 @@ function __feature_autoconf_2_69() {
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
 	FEATURE_RESULT_VER="2_69"
 	__feature_autotools_internal autoconf
-
+	FEATURE_RESULT_PATH=
+	FEATURE_RESULT_ROOT=
+	FEATURE_RESULT_VER=
+	
 	[ "$TEST_FEATURE" == "1" ] && $FEATURE_RESULT_ROOT/bin/autoconf --version | sed -ne "1,1p"
 }
 
@@ -127,6 +130,9 @@ function __feature_automake_1_14() {
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
 	FEATURE_RESULT_VER="1_14"
 	__feature_autotools_internal automake
+	FEATURE_RESULT_PATH=
+	FEATURE_RESULT_ROOT=
+	FEATURE_RESULT_VER=
 
 	[ "$TEST_FEATURE" == "1" ] && $FEATURE_RESULT_ROOT/bin/automake --version | sed -ne "1,1p"
 }
@@ -159,6 +165,9 @@ function __feature_libtool_2_4_2() {
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
 	FEATURE_RESULT_VER="2_4_2"
 	__feature_autotools_internal libtool
+	FEATURE_RESULT_PATH=
+	FEATURE_RESULT_ROOT=
+	FEATURE_RESULT_VER=
 
 	[ "$TEST_FEATURE" == "1" ] && $FEATURE_RESULT_ROOT/bin/libtool --version | sed -ne "1,1p"
 }
@@ -191,6 +200,9 @@ function __feature_m4_1_4_17() {
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
 	FEATURE_RESULT_VER="1_4_17"
 	__feature_autotools_internal m4
+	FEATURE_RESULT_PATH=
+	FEATURE_RESULT_ROOT=
+	FEATURE_RESULT_VER=
 
 	[ "$TEST_FEATURE" == "1" ] && $FEATURE_RESULT_ROOT/bin/m4 --version | sed -ne "1,1p"
 }

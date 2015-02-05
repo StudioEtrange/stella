@@ -7,7 +7,7 @@ function __list_cmake() {
 }
 
 function __default_cmake() {
-	echo "3_1_2 2_8_12"
+	echo "2_8_12"
 }
 
 function __install_cmake() {
@@ -67,6 +67,10 @@ function __feature_cmake_3_1_2() {
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_PATH/bin"
 	FEATURE_RESULT_VER="3_1_2"
 	__feature_cmake_internal
+	FEATURE_TEST=
+	FEATURE_RESULT_PATH=
+	FEATURE_RESULT_ROOT=
+	FEATURE_RESULT_VER=
 }
 
 
@@ -110,6 +114,10 @@ function __install_cmake_internal() {
 		if [ ! "$TEST_FEATURE" == "0" ]; then
 			echo " ** CMake installed"
 			"$FEATURE_ROOT/bin/cmake" --version
+
+			__del_folder "$BUILD_DIR"
+			__del_folder "$SRC_DIR"
+
 		else
 			echo "** ERROR"
 		fi

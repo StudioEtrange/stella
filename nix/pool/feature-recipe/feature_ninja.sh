@@ -50,6 +50,10 @@ function __feature_ninja_last_release() {
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT"
 	FEATURE_RESULT_VER="last_release"
 	__feature_ninja_internal
+	FEATURE_TEST=
+	FEATURE_RESULT_PATH=
+	FEATURE_RESULT_ROOT=
+	FEATURE_RESULT_VER=
 }
 
 

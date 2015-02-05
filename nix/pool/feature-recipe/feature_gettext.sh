@@ -48,6 +48,10 @@ function __feature_gettext_0_19_4() {
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
 	FEATURE_RESULT_VER="0_19_4"
 	__feature_gettext_internal
+	FEATURE_TEST=
+	FEATURE_RESULT_PATH=
+	FEATURE_RESULT_ROOT=
+	FEATURE_RESULT_VER=
 }
 
 

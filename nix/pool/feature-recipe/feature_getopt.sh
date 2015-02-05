@@ -51,6 +51,10 @@ function __feature_getopt_1_1_5() {
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
 	FEATURE_RESULT_VER="1_1_5"
 	__feature_getopt_internal
+	FEATURE_TEST=
+	FEATURE_RESULT_PATH=
+	FEATURE_RESULT_ROOT=
+	FEATURE_RESULT_VER=
 }
 
 

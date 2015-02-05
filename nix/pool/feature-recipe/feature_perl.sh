@@ -51,6 +51,10 @@ function __feature_perl_5_18_2() {
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
 	FEATURE_RESULT_VER="5_18_2"
 	__feature_perl_internal
+	FEATURE_TEST=
+	FEATURE_RESULT_PATH=
+	FEATURE_RESULT_ROOT=
+	FEATURE_RESULT_VER=
 }
 
 # --------------------------------------
@@ -58,7 +62,7 @@ function __feature_perl_5_18_2() {
 function __install_perl_internal() { 
 	
 	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/perl/$VER"
-	SRC_DIR="$STELLA_APP_FEATURE_ROOT/perl/$VER/code/perl-$VER-src"
+	SRC_DIR="$STELLA_APP_FEATURE_ROOT/perl/$VER/perl-$VER-src"
 	BUILD_DIR=
 
 	AUTO_INSTALL_FLAG_PREFIX=
@@ -87,6 +91,8 @@ function __install_perl_internal() {
 		if [ ! "$TEST_FEATURE" == "0" ]; then
 			echo " ** Perl installed"
 			"$FEATURE_ROOT/bin/perl" --version
+
+			__del_folder $SRC_DIR
 		else
 			echo "** ERROR"
 		fi
