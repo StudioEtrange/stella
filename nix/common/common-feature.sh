@@ -308,6 +308,8 @@ function __auto_install() {
 
 	echo " ** Installing $NAME in $INSTALL_DIR"
 
+	pushd
+	
 	[ "$_opt_dest_erase" == "ON" ] && rm -Rf "$INSTALL_DIR"
 	mkdir -p "$INSTALL_DIR"
 
@@ -328,7 +330,7 @@ function __auto_install() {
 				;;
 	esac
 
-	cd "$INSTALL_DIR"
+	popd
 
 	[ ! "$_opt_source_keep" == "ON" ] && rm -Rf "$SOURCE_DIR"
 	[ ! "$_opt_build_keep" == "ON" ] && rm -Rf "$BUILD_DIR"
