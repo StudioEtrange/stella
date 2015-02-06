@@ -72,7 +72,7 @@ function __install_wget_internal() {
 	AUTO_INSTALL_FLAG_PREFIX=
 	AUTO_INSTALL_FLAG_POSTFIX="--with-ssl=openssl"
 
-	feature_wget_$VER
+	__feature_wget_$VER
 	if [ "$FORCE" ]; then
 		TEST_FEATURE=0
 		__del_folder "$INSTALL_DIR"

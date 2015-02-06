@@ -5,6 +5,7 @@ call %~dp0\..\conf.bat
 
 call :test_abs_to_rel_path
 
+call :test_trim
 
 goto :eof
 
@@ -39,9 +40,16 @@ call %STELLA_COMMON%\common.bat :abs_to_rel_path "result" "c:\path1" "c:\path1"
 echo  %result% && if not "%result%"=="." echo ERROR
 
 
-
-
-
 goto :eof
+
+
+:test_trim
+	call %STELLA_COMMON%\common.bat :trim "result" test test
+	echo  %result% && if not "%result%"=="test test" echo ERROR
+
+	call %STELLA_COMMON%\common.bat :trim "result" " test test "
+	echo  %result% && if not "%result%"=="test test" echo ERROR
+
+goto:eof
 
 @echo on

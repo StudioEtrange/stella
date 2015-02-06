@@ -57,7 +57,17 @@ function test__rel_to_abs_path_1() {
 
 }
 
+
+function test__trim() {
+	result=OK
+
+	r=$(__trim "test test") && echo $r  && [ "$r" == "test test" ] && result=OK || result=ERROR
+	[ ! "$result" == "ERROR" ] && r=$(__trim " test .. test ") && echo $r && [ "$r" == "test .. test" ] && result=OK || result=ERROR
+
+	log "test__trim" "$result" "test __trim"
+}
+
 test__abs_to_rel_path_1
 test__rel_to_abs_path_1
-
+test__trim
 

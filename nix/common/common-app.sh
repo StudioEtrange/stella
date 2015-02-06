@@ -206,12 +206,15 @@ function __add_app_feature() {
 	local _VER=$2
 	local _APP_FEATURE_LIST=
 
+	local _flag=0
+
 	if [ -f "$_STELLA_APP_PROPERTIES_FILE" ]; then
 
 		if [ "$STELLA_APP_FEATURE_LIST" == "" ]; then
 			[ "$_VER" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_FEATURE"
 			[ ! "$_VER" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_FEATURE#$_VER"
 		else
+			local _char=#
 			for f in $STELLA_APP_FEATURE_LIST; do
 				if [ -z "${f##*$_char*}" ]; then
 					_V=${f##*#}
@@ -220,20 +223,29 @@ function __add_app_feature() {
 					_V=
 					_F=$f
 				fi
-				
+
 				# if we found feature in feature list replace version with the new one
-				if [ ! "$_FEATURE" == "$_F" ]; then
-					_APP_FEATURE_LIST="$_APP_FEATURE_LIST $f"
+				if [ "$_FEATURE" == "$_F" ]; then
+					[ "$_VER" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_F"
+					[ ! "$_VER" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_F#$_VER"
+					_flag=1
+				else
+					[ "$_V" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_F"
+					[ ! "$_V" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_F#$_V"
 				fi
 			done
 
 			# This is a new feature
-			[ "$_VER" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_FEATURE"
-			[ ! "$_VER" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_FEATURE#$_VER"
+			if [ "$_flag" == "0" ]; then
+				[ "$_VER" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_FEATURE"
+				[ ! "$_VER" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_FEATURE#$_VER"
+			fi
 		fi
 
-		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" "$(echo $_APP_FEATURE_LIST | sed -e 's/^ *//' -e 's/ *$//')"
-		#__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" "$(echo $FEATURE_LIST_ENABLED | sed -e 's/^ *//' -e 's/ *$//')"
+		_APP_FEATURE_LIST=$(echo $_APP_FEATURE_LIST | sed -e 's/^ *//' -e 's/ *$//')
+		STELLA_APP_FEATURE_LIST=$(echo $STELLA_APP_FEATURE_LIST | sed -e 's/^ *//' -e 's/ *$//')
+
+		[ ! "$STELLA_APP_FEATURE_LIST" == "$_APP_FEATURE_LIST" ] && __add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" "$_APP_FEATURE_LIST"
 	fi
 }
 

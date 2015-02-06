@@ -6,16 +6,17 @@ goto :eof
 REM APP RESSOURCES & ENV MANAGEMENT ---------------
 
 :add_app_feature
-	set "_feature=%~1"
-	set "_version=%~2"
+	set "_FEATURE=%~1"
+	set "_VER=%~2"
 	set "_app_feature_list="
 
+	set _flag=0
 	if exist "%_STELLA_APP_PROPERTIES_FILE%" (
 		if "!STELLA_APP_FEATURE_LIST!"=="" (
-			if "!_version!"=="" (
-				set "_app_feature_list=!_app_feature_list! !_feature!"
+			if "!_VER!"=="" (
+				set "_app_feature_list=!_app_feature_list! !_FEATURE!"
 			) else (
-				set "_app_feature_list=!_app_feature_list! !_feature!#!_version!"
+				set "_app_feature_list=!_app_feature_list! !_FEATURE!#!_VER!"
 			)
 
 		) else (
@@ -23,28 +24,46 @@ REM APP RESSOURCES & ENV MANAGEMENT ---------------
 				set item=%%F
 
 				if not "x!item:#=!"=="x!item!" (
-					set _VER=!item:*#=!
-					set "_FEAT=!item:#="^&REM #!
+					set _V=!item:*#=!
+					set "_F=!item:#="^&REM #!
 				) else (
-					set _VER=
-					set _FEAT=!item!
+					set _V=
+					set _F=!item!
 				)
 				
 				REM if we found feature in feature list replace version with the new one
-				if not "!_FEAT!"=="!_feature!" (
-					set "_app_feature_list=!_app_feature_list! !item!"
+				if "!_FEATURE!"=="!_F!" (
+					if "!_VER!"=="" (
+						set "_app_feature_list=!_app_feature_list! !_F!"
+					) else (
+						set "_app_feature_list=!_app_feature_list! !_F!#!_VER!"
+					)
+					set _flag=1
+				) else (
+					if "!_V!"=="" (
+						set "_app_feature_list=!_app_feature_list! !_F!"
+					) else (
+						set "_app_feature_list=!_app_feature_list! !_F!#!_V!"
+					)
 				)
 			)
 
 			REM This is a new feature
-			if "!_version!"=="" (
-				set "_app_feature_list=!_app_feature_list! !_feature!"
-			) else (
-				set "_app_feature_list=!_app_feature_list! !_feature!#!_version!"
+			if "!_flag!"=="0" (
+				if "!_VER!"=="" (
+					set "_app_feature_list=!_app_feature_list! !_FEATURE!"
+				) else (
+					set "_app_feature_list=!_app_feature_list! !_FEATURE!#!_VER!"
+				)
 			)
-
 		)
-		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_FEATURE_LIST" "!_app_feature_list!"
+
+		call %STELLA_COMMON%\common.bat :trim "_app_feature_list" !_app_feature_list!
+		call %STELLA_COMMON%\common.bat :trim "STELLA_APP_FEATURE_LIST" !STELLA_APP_FEATURE_LIST!
+
+		if not "!STELLA_APP_FEATURE_LIST!"=="!_app_feature_list!" (
+			call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_FEATURE_LIST" "!_app_feature_list!"
+		)
 	)
 goto :eof
 

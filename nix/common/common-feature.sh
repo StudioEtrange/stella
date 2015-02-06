@@ -91,7 +91,7 @@ function __install_feature() {
 		__stella_features_requirement_by_os $STELLA_CURRENT_OS
 	else
 
-		[ "$_opt_hidden_feature" == "OFF" ] && __add_app_feature $1 $2
+		[ "$_opt_hidden_feature" == "OFF" ] && __add_app_feature $_FEATURE $_VER
 
 		source $STELLA_FEATURE_RECIPE/feature_$_FEATURE.sh
 
@@ -130,6 +130,7 @@ function __install_feature() {
 function __reinit_all_features() {
 	local _VER=
 	local _FEATURE=
+
 	for f in $FEATURE_LIST_ENABLED; do
 		_VER=${f##*#}
 		_FEATURE=${f%#*}
@@ -255,8 +256,7 @@ function __auto_build_install_configure() {
 		[ "$o" == "WITHOUT_CONFIGURE" ] && _opt_without_configure=ON
 	done
 	
-	#[ "$STELLA_CURRENT_PLATFORM" == "macos" ] && AUTO_INSTALL_FLAG_POSTFIX="$AUTO_INSTALL_FLAG_POSTFIX -Wl,rpath,@loader_path/"
-
+	
 	mkdir -p "$AUTO_BUILD_DIR"
 	cd "$AUTO_BUILD_DIR"
 	
@@ -279,7 +279,6 @@ function __auto_build_install_configure() {
 		fi
 	fi
 	
-	#[ "$STELLA_CURRENT_PLATFORM" == "macos" ] && __fix_all_dynamiclib_install_name_macos $AUTO_INSTALL_DIR
 }
 
 

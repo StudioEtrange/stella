@@ -5,7 +5,6 @@ goto :eof
 ::-- Functions
 ::--------------------------------------------------------
 
-:: COMMON ENV------------------------ 
 :init_stella_env
 	call %STELLA_COMMON%\common-feature.bat :init_installed_features
 goto :eof
@@ -13,6 +12,12 @@ goto :eof
 
 :argparse
 	call %STELLA_COMMON%\argopt.bat :argopt %*
+goto :eof
+
+REM ARG1 will receive result string passed as ARG2
+:trim
+	set _args=%*
+	for /f "tokens=1*" %%a in ("!_args!") do set %1=%%b
 goto :eof
 
 :: FILES TOOL ---------------------------------------

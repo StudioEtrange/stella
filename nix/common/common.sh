@@ -6,6 +6,10 @@ set +h
 
 
 # VARIOUS-----------------------------
+function __trim() {
+	echo $(echo "$1" | sed -e 's/^ *//' -e 's/ *$//')
+}
+
 function __get_stella_version() {
 	local OPT="$1"
 	
