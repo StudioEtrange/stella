@@ -4,10 +4,12 @@ _STELLA_COMMON_FEATURE_INCLUDED_=1
 
 # --------------- FEATURES MANAGEMENT ----------------------------
 
-function __init_all_features() {
+function __init_installed_features() {
 	for a in $__STELLA_FEATURE_LIST; do
 		__init_feature $a
 	done
+
+
 	[ ! "$FEATURE_LIST_ENABLED" == "" ] && echo "** Features initialized : $FEATURE_LIST_ENABLED"
 }
 

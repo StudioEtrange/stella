@@ -95,7 +95,7 @@ set "STELLA_API_COMMON_PUBLIC=argparse is_path_abs get_ressource download_uncomp
 set "STELLA_API_APP_PUBLIC=get_data get_assets get_all_data get_all_assets update_data update_assets revert_data revert_assets"
 set "STELLA_API_FEATURE_PUBLIC=install_feature init_feature reinit_all_features"
 set "STELLA_API_VIRTUAL_PUBLIC="
-
+set "STELLA_API_BUILD_PUBLIC="
 
 set "STELLA_API=%STELLA_COMMON%\common-api.bat :api_proxy+"
 

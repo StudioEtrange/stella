@@ -35,6 +35,7 @@ source $STELLA_COMMON/common.sh
 source $STELLA_COMMON/common-feature.sh
 source $STELLA_COMMON/common-app.sh
 source $STELLA_COMMON/common-virtual.sh
+source $STELLA_COMMON/common-build.sh
 source $STELLA_COMMON/common-api.sh
 source $STELLA_COMMON/make-sfx.sh
 
@@ -109,6 +110,7 @@ make_sevenzip_sfx_bin make_targz_sfx_shell compress"
 STELLA_API_APP_PUBLIC="get_data get_assets get_all_data get_all_assets update_data update_assets revert_data revert_assets get_env_properties setup_env get_features"
 STELLA_API_FEATURE_PUBLIC="install_feature init_feature"
 STELLA_API_VIRTUAL_PUBLIC=""
+STELLA_API_BUILD_PUBLIC="fix_rpath_macos fix_linked_lib_macos fix_dynamiclib_install_name_macos fix_dynamiclib_install_name_macos_by_rootname fix_dynamiclib_install_name_macos_by_folder"
 
 STELLA_API_RETURN_FUNCTION="is_abs mercurial_project_version git_project_version"
 STELLA_API=__api_proxy

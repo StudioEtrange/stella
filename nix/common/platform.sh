@@ -154,49 +154,6 @@ function __override_platform_command() {
 }
 
 
-# MACOS specific build : install_name, rpath, loader_path, executable_path ---------------------------
-
-# we dont use this for feature, because feature are installed inside stella app and do not need rpath or loader path
-function __fix_dynamiclib_rpath_macos() {
-	echo "TODO"
-	# use install_name_tool to add "@loader_path/" as rpath (and maybe "." too)
-
-}
-
-function __fix_dynamiclib_install_name_macos() {
-	local _lib=$1
-
-	if [ -f "$_lib" ]; then
-		_original_install_name=$(otool -l $_lib | grep -E "LC_ID_DYLIB" -A2 | grep name | tr -s ' ' | cut -d ' ' -f 3)
-
-		case $_original_install_name in
-			@rpath*)
-			;;
-
-			*)
-				_new_install_name=@rpath/$(__get_filename_from_string $_original_install_name)
-				install_name_tool -id "$_new_install_name" $_lib
-			;;
-
-		esac
-	fi
-
-}
-
-
-function __fix_all_dynamiclib_install_name_macos() {
-	for f in  "$1"/*; do
-		[ -d "$f" ] && __fix_all_dynamiclib_install_name_macos "$f"
-		if [ -f "$f" ]; then
-			case $f in
-				*.dylib) __fix_dynamiclib_install_name_macos "$f"
-				;;
-			esac
-		fi
-	done
-}
-
-
 # INIT STELLA -------------
 
 # by OS
