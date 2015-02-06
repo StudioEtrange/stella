@@ -41,10 +41,13 @@ function __install_autotools_pack() {
 	# order is important
 	# see http://petio.org/tools.html
 	__install_m4_1_4_17
+	__init_feature autotools m4_1_4_17
 	__install_autoconf_2_69
+	__init_feature autotools autoconf_2_69
 	__install_automake_1_14
+	__init_feature autotools automake_1_14
 	__install_libtool_2_4_2
-	__feature_autotools_pack
+	__init_feature autotools libtool_2_4_2
 }
 function __feature_autotools_pack() {
 	TEST_FEATURE=0
@@ -98,7 +101,7 @@ function __feature_autoconf_2_69() {
 	FEATURE_RESULT_PATH=
 	FEATURE_RESULT_ROOT=
 	FEATURE_RESULT_VER=
-	
+
 	[ "$TEST_FEATURE" == "1" ] && $FEATURE_RESULT_ROOT/bin/autoconf --version | sed -ne "1,1p"
 }
 
