@@ -7,7 +7,7 @@ goto :eof
 
 :: COMMON ENV------------------------ 
 :init_stella_env
-	call %STELLA_COMMON%\common-feature.bat :init_all_features
+	call %STELLA_COMMON%\common-feature.bat :init_installed_features
 goto :eof
 
 

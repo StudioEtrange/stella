@@ -229,7 +229,7 @@ function __abs_to_rel_path() {
 
 
 function __init_stella_env() {
-	__init_all_features
+	__init_installed_features
 }
 
 

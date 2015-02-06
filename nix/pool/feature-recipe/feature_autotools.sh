@@ -16,20 +16,33 @@ function __install_autotools() {
 	[ "$_VER" == "" ] && _VER="$(__default_autotools)"
 
 	[ "$FORCE" ] && rm -Rf "$STELLA_APP_FEATURE_ROOT/autotools/$_VER"
-	[ ! -d "$STELLA_APP_FEATURE_ROOT/autotools/$_VER" ] && mkdir -p "$STELLA_APP_FEATURE_ROOT/autotools/$_VER"
+	mkdir -p "$STELLA_APP_FEATURE_ROOT/autotools/$_VER"
 
-	__install_autotools_$_VER
+
+	# check for version
+	for v in $(__list_autotools); do
+		[ "$v" == "$_VER" ] && __install_autotools_$_VER
+	done
+	
 	
 }
 
 
 function __feature_autotools() {
 	local _VER=$1
-	[ "$_VER" == "" ] && _VER="$(__default_autotools)"
-
-	__feature_autotools_$_VER
+	
+	if [ "$_VER" == "" ]; then
+		__feature_autotools_$(__default_autotools)
+	else
+		# check for version
+		for v in $(__list_autotools); do
+			[ "$v" == "$_VER" ] && __feature_autotools_$_VER
+		done
+	fi
+	
 	
 }
+
 
 
 function __install_autotools_pack() {

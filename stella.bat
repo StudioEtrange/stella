@@ -96,13 +96,12 @@ if "%DOMAIN%"=="virtual" goto :end
 	echo 	* application management :
 	echo 		%~n0 app init ^<application name^> [-approot=^<path^>] [-workroot=^<path^>] [-cachedir=^<path^>] [-samples]
 	echo 		%~n0 app get-data^|get-assets^|update-data^|update-assets^|revert-data^|revert-assets ^<data id^|assets id^|all^>
-	echo 		%~n0 app get-features all
+	echo 		%~n0 app get-features all : install all features defined in app properties file
 	echo 		%~n0 app setup-env ^<env id^|all^> : download, build, deploy and run virtual environment based on app properties
 	echo	* feature management :
 	echo 		%~n0 feature install required : install required features for Stella
 	echo 		%~n0 feature install ^<feature name^> [-vers=^<version^>] : install a features. version is optional
-	echo 		%~n0 feature list ^<all^|feature name^>: list all available features OR available version of a feature
-	echo 		%~n0 feature list all: list available features
+	echo 		%~n0 feature list ^<all^|feature name^|active^>: list all available features OR available version of a feature OR current active features
 	echo	* virtual management :
 	echo 		%~n0 virtual create-env ^<env id#distrib id^> [-head] [-vmem=xxxx] [-vcpu=xx] : create a new environment from a generic box prebuilt with a specific distribution
 	echo		%~n0 virtual run-env ^<env id^> [-login] : manage environment

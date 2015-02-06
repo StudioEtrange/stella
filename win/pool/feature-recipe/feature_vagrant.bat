@@ -20,7 +20,12 @@ goto :eof
 	if "%_VER%"=="" (
 		call :install_vagrant_%_DEFAULT_VER%
 	) else (
-		call :install_vagrant_%_VER%
+		call :list_vagrant "_list_ver"
+		for %%v in (!_list_ver!) do (
+			if "%%v"=="%_VER%" (
+				call :install_vagrant_%_VER%
+			)
+		)
 	)
 goto :eof
 
@@ -31,7 +36,12 @@ goto :eof
 	if "%_VER%"=="" (
 		call :feature_vagrant_%_DEFAULT_VER%
 	) else (
-		call :feature_vagrant_%_VER%
+		call :list_vagrant "_list_ver"
+		for %%v in (!_list_ver!) do (
+			if "%%v"=="%_VER%" (
+				call :feature_vagrant_%_VER%
+			)
+		)
 	)
 goto :eof
 

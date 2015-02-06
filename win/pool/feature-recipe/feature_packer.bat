@@ -19,7 +19,12 @@ goto :eof
 	if "%_VER%"=="" (
 		call :install_packer_!_DEFAULT_VER!
 	) else (
-		call :install_packer_%_VER%
+		call :list_packer "_list_ver"
+		for %%v in (!_list_ver!) do (
+			if "%%v"=="%_VER%" (
+				call :install_packer_%_VER%
+			)
+		)
 	)
 goto :eof
 
@@ -30,7 +35,12 @@ goto :eof
 	if "%_VER%"=="" (
 		call :feature_packer_!_DEFAULT_VER!
 	) else (
-		call :feature_packer_%_VER%
+		call :list_packer "_list_ver"
+		for %%v in (!_list_ver!) do (
+			if "%%v"=="%_VER%" (
+				call :feature_packer_%_VER%
+			)
+		)
 	)
 goto :eof
 

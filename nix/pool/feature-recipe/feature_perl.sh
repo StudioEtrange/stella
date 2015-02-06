@@ -14,17 +14,30 @@ function __default_perl() {
 
 function __install_perl() {
 	local _VER=$1
-	[ "$_VER" == "" ] && _VER="$(__default_perl)"
 
 	mkdir -p $STELLA_APP_FEATURE_ROOT/perl
-	__install_perl_$_VER
+
+	if [ "$_VER" == "" ]; then
+		__install_perl_$(__default_perl)
+	else
+		# check for version
+		for v in $(__list_perl); do
+			[ "$v" == "$_VER" ] && __install_perl_$_VER
+		done
+	fi
+
 }
 function __feature_perl() {
 	local _VER=$1
-	[ "$_VER" == "" ] && _VER="$(__default_perl)"
-	
-	__feature_perl_$_VER
-	
+
+	if [ "$_VER" == "" ]; then
+		__feature_perl_$(__default_perl)
+	else
+		# check for version
+		for v in $(__list_perl); do
+			[ "$v" == "$_VER" ] && __feature_perl_$_VER
+		done
+	fi
 }
 
 

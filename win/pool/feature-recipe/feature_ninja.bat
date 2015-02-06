@@ -20,7 +20,12 @@ goto :eof
 	if "%_VER%"=="" (
 		call :install_ninja_%_DEFAULT_VER%
 	) else (
-		call :install_ninja_%_VER%
+		call :list_ninja "_list_ver"
+		for %%v in (!_list_ver!) do (
+			if "%%v"=="%_VER%" (
+				call :install_ninja_%_VER%
+			)
+		)
 	)
 goto :eof
 
@@ -31,7 +36,12 @@ goto :eof
 	if "%_VER%"=="" (
 		call :feature_ninja_!_DEFAULT_VER!
 	) else (
-		call :feature_ninja_%_VER%
+		call :list_ninja "_list_ver"
+		for %%v in (!_list_ver!) do (
+			if "%%v"=="%_VER%" (
+				call :feature_ninja_%_VER%
+			)
+		)
 	)
 goto :eof
 

@@ -18,7 +18,12 @@ goto :eof
 	if "%_VER%"=="" (
 		call :install_jom_!_DEFAULT_VER!
 	) else (
-		call :install_jom_%_VER%
+		call :list_jom "_list_ver"
+		for %%v in (!_list_ver!) do (
+			if "%%v"=="%_VER%" (
+				call :install_jom_%_VER%
+			)
+		)
 	)
 goto :eof
 
@@ -29,7 +34,12 @@ goto :eof
 	if "%_VER%"=="" (
 		call :feature_jom_!_DEFAULT_VER!
 	) else (
-		call :feature_jom_%_VER%
+		call :list_jom "_list_ver"
+		for %%v in (!_list_ver!) do (
+			if "%%v"=="%_VER%" (
+				call :feature_jom_%_VER%
+			)
+		)
 	)
 goto :eof
 

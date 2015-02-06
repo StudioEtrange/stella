@@ -4,11 +4,26 @@ _STELLA_COMMON_FEATURE_INCLUDED_=1
 
 # --------------- FEATURES MANAGEMENT ----------------------------
 
-function __init_installed_features() {
-	for a in $__STELLA_FEATURE_LIST; do
-		__init_feature $a
-	done
+function __list_active_features() {
+	echo "$FEATURE_LIST_ENABLED"
+}
 
+function __init_installed_features() {
+	local _flag
+	for f in  "$STELLA_APP_FEATURE_ROOT"/*; do
+		if [ -d "$f" ]; then
+			_flag=0
+			# check for official feature
+			for a in $__STELLA_FEATURE_LIST; do
+				if [ "$a" == "$(__get_filename_from_string $f)" ]; then
+					# for each detected version
+					for v in  "$f"/*; do
+						[ -d "$v" ] && __init_feature $(__get_filename_from_string $f) $(__get_filename_from_string $v)
+					done
+				fi
+			done
+		fi
+	done
 
 	[ ! "$FEATURE_LIST_ENABLED" == "" ] && echo "** Features initialized : $FEATURE_LIST_ENABLED"
 }
@@ -35,7 +50,7 @@ function __init_feature() {
 	if [ "$_flag" == "0" ]; then
 		FEATURE_PATH=
 		__feature_"$_FEATURE" $_VER
-		if [ ! "$TEST_FEATURE" == "0" ]; then
+		if [ "$TEST_FEATURE" == "1" ]; then
 			FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $_FEATURE#$FEATURE_VER"
 			if [ ! "$FEATURE_PATH" == "" ]; then
 				PATH="$FEATURE_PATH:$PATH"
@@ -100,7 +115,7 @@ function __install_feature() {
 		if [ "$_flag" == "0" ]; then
 			FEATURE_PATH=
 			__install_"$_FEATURE" $_VER
-			if [ ! "$TEST_FEATURE" == "0" ]; then
+			if [ "$TEST_FEATURE" == "1" ]; then
 				FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $_FEATURE#$FEATURE_VER"
 				if [ ! "$FEATURE_PATH" == "" ]; then
 					PATH="$FEATURE_PATH:$PATH"
@@ -121,7 +136,7 @@ function __reinit_all_features() {
 		FEATURE_PATH=
 		source $STELLA_FEATURE_RECIPE/feature_$_FEATURE.sh
 		__feature_"$_FEATURE" $_VER
-		if [ ! "$TEST_FEATURE" == "0" ]; then
+		if [ "$TEST_FEATURE" == "1" ]; then
 			if [ ! "$FEATURE_PATH" == "" ]; then 
 				PATH="$FEATURE_PATH:$PATH"
 			fi

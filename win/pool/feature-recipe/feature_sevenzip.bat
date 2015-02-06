@@ -18,7 +18,12 @@ goto :eof
 	if "%_VER%"=="" (
 		call :install_sevenzip_!_DEFAULT_VER!
 	) else (
-		call :install_sevenzip_%_VER%
+		call :list_sevenzip "_list_ver"
+		for %%v in (!_list_ver!) do (
+			if "%%v"=="%_VER%" (
+				call :install_sevenzip_%_VER%
+			)
+		)
 	)
 goto :eof
 
@@ -29,7 +34,12 @@ goto :eof
 	if "%_VER%"=="" (
 		call :feature_sevenzip_!_DEFAULT_VER!
 	) else (
-		call :feature_sevenzip_%_VER%
+		call :list_sevenzip "_list_ver"
+		for %%v in (!_list_ver!) do (
+			if "%%v"=="%_VER%" (
+				call :feature_sevenzip_%_VER%
+			)
+		)
 	)
 goto :eof
 

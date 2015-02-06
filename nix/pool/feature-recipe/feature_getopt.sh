@@ -15,15 +15,29 @@ function __default_getopt() {
 
 function __install_getopt() {
 	local _VER=$1
-	[ "$_VER" == "" ] && _VER="$(__default_getopt)"
 
 	mkdir -p $STELLA_APP_FEATURE_ROOT/getopt
-	__install_getopt_$_VER
+
+	if [ "$_VER" == "" ]; then
+		__install_getopt_$(__default_getopt)
+	else
+		# check for version
+		for v in $(__list_getopt); do
+			[ "$v" == "$_VER" ] && __install_getopt_$_VER
+		done
+	fi
 }
 function __feature_getopt() {
 	local _VER=$1
-	[ "$_VER" == "" ] && _VER="$(__default_getopt)"
-	__feature_getopt_$_VER
+
+	if [ "$_VER" == "" ]; then
+		__feature_getopt_$(__default_getopt)
+	else
+		# check for version
+		for v in $(__list_getopt); do
+			[ "$v" == "$_VER" ] && __feature_getopt_$_VER
+		done
+	fi
 }
 
 # --------------------------------------

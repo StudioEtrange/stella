@@ -3,10 +3,21 @@ call %*
 goto :eof
 
 :: ------------------------ FEATURES MANAGEMENT-------------------------------
-:init_all_features
-	for %%F in (%__STELLA_FEATURE_LIST%) do (
-		call :init_feature %%F
+:init_installed_features
+
+	for /D %%A in ( %STELLA_APP_FEATURE_ROOT%\* ) do (
+		set "_folder=%%~nxA"
+		REM check for version
+		for %%F in (%__STELLA_FEATURE_LIST%) do (
+			if "%%F"=="!_folder!" ( 
+				REM for each detected version
+				for /D %%V in (%%F\*) do (
+					call :init_feature !_folder! %%V
+				)
+			)
+		)
 	)
+
 	if not "%FEATURE_LIST_ENABLED%"=="" echo ** Features initialized : %FEATURE_LIST_ENABLED%
 goto :eof
 
@@ -18,6 +29,10 @@ goto :eof
 	call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :list_%_FEATURE% %_VAR%
 goto :eof
 
+:: ARG1 return variable
+:list_active_features
+	set "%~1=!FEATURE_LIST_ENABLED!"
+goto :eof
 
 :: enable a feature 
 :init_feature
@@ -37,7 +52,7 @@ goto :eof
 	if "%_flag%"=="" (
 		set FEATURE_PATH=
 		call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :feature_%_FEATURE% !_VER!
-		if not "!TEST_FEATURE!"=="0" (
+		if "!TEST_FEATURE!"=="1" (
 			set "FEATURE_LIST_ENABLED=!FEATURE_LIST_ENABLED! %_FEATURE%#!FEATURE_VER!"
 			if not "!FEATURE_PATH!"=="" set "PATH=!FEATURE_PATH!;!PATH!"
 		)
@@ -104,7 +119,7 @@ goto :eof
 	if "!_flag!"=="" (
 		set FEATURE_PATH=
 		call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :install_%_FEATURE% !_VER!
-		if not "!TEST_FEATURE!"=="0" (
+		if "!TEST_FEATURE!"=="1" (
 			set "FEATURE_LIST_ENABLED=!FEATURE_LIST_ENABLED! %_FEATURE%#!FEATURE_VER!"
 			if not "!FEATURE_PATH!"=="" set "PATH=!FEATURE_PATH!;!PATH!"
 		)
@@ -125,7 +140,7 @@ goto :eof
 
 		set FEATURE_PATH=
 		call %STELLA_FEATURE_RECIPE%\feature_!_FEAT!.bat :feature_!_FEAT! !_VER!
-		if not "!TEST_FEATURE!"=="0" (
+		if "!TEST_FEATURE!"=="1" (
 			if not "!FEATURE_PATH!"=="" set "PATH=!FEATURE_PATH!;!PATH!"
 		)
 	)

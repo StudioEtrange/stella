@@ -10,7 +10,7 @@ function usage() {
 	echo " o-- Feature management :"
 	echo " L     install required : install minimal required features for Stella"
 	echo " L     install <feature name> --vers=<version> : install a feature. Version is optional"
-	echo " L     <all|feature name> : list all available features OR available versions of a feature"
+	echo " L     list <all|feature name|active> : list all available features OR available versions of a feature OR current active features"
 }
 
 
@@ -19,7 +19,7 @@ function usage() {
 # MAIN ------------------------
 PARAMETERS="
 ACTION=											'action' 			a						'install list'					Action to compute. 'install' install feature specified by name argument.
-ID= 											''					a 						'$__STELLA_FEATURE_LIST required all' 	Select feature to install. 'Autotools' means autoconf, automake, libtool, m4. Use 'required' to install required features for Stella. Use 'list' to list available features. 
+ID= 											''					a 						'$__STELLA_FEATURE_LIST required all active' 	Select feature to install. 'Autotools' means autoconf, automake, libtool, m4. Use 'required' to install required features for Stella. Use 'list' to list available features. 
 "
 OPTIONS="
 FORCE=''                       	'f'    		''            		b     		0     		'1'           			Force operation.
@@ -51,6 +51,9 @@ case $ACTION in
 		case $ID in
 			all)
 				echo "required all $__STELLA_FEATURE_LIST"
+				;;
+			active)
+				echo $(__list_active_features)
 				;;
 			*)
 				echo $(__list_feature_version $ID)
