@@ -14,26 +14,16 @@ function __default_getopt() {
 }
 
 function __install_getopt() {
-		local _VER=$1
-		local _DEFAULT_VER="$(__default_getopt)"
+	local _VER=$1
+	[ "$_VER" == "" ] && _VER="$(__default_getopt)"
 
-		mkdir -p $STELLA_APP_FEATURE_ROOT/getopt
-
-		if [ "$_VER" == "" ]; then
-			__install_getopt_$_DEFAULT_VER
-		else
-			__install_getopt_$_VER
-		fi
+	mkdir -p $STELLA_APP_FEATURE_ROOT/getopt
+	__install_getopt_$_VER
 }
 function __feature_getopt() {
 	local _VER=$1
-	local _DEFAULT_VER="$(__default_getopt)"
-
-	if [ "$_VER" == "" ]; then
-		__feature_getopt_$_DEFAULT_VER
-	else
-		__feature_getopt_$_VER
-	fi
+	[ "$_VER" == "" ] && _VER="$(__default_getopt)"
+	__feature_getopt_$_VER
 }
 
 # --------------------------------------

@@ -308,8 +308,8 @@ function __auto_install() {
 
 	echo " ** Installing $NAME in $INSTALL_DIR"
 
-	[ "$_opt_dest_erase" == "ON" ] && rm -Rf "$AUTO_INSTALL_DIR"
-	mkdir -p "$AUTO_INSTALL_DIR"
+	[ "$_opt_dest_erase" == "ON" ] && rm -Rf "$INSTALL_DIR"
+	mkdir -p "$INSTALL_DIR"
 
 	local STRIP=
 	[ "$_opt_strip" == "ON" ] && STRIP=STRIP

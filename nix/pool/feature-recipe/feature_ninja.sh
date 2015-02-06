@@ -13,25 +13,17 @@ function __default_ninja() {
 
 function __install_ninja() {
 	local _VER=$1
-	local _DEFAULT_VER="$(__default_ninja)"
+	[ "$_VER" == "" ] && _VER="$(__default_ninja)"
 
 	mkdir -p $STELLA_APP_FEATURE_ROOT/ninja
-
-	if [ "$_VER" == "" ]; then
-		__install_ninja_$_DEFAULT_VER
-	else
-		__install_ninja_$_VER
-	fi
+	__install_ninja_$_VER
+	
 }
 function __feature_ninja() {
 	local _VER=$1
-	local _DEFAULT_VER="$(__default_ninja)"
+	[ "$_VER" == "" ] && _VER="$(__default_ninja)"
 
-	if [ "$_VER" == "" ]; then
-		__feature_ninja_$_DEFAULT_VER
-	else
-		__feature_ninja_$_VER
-	fi
+	__feature_ninja_$_VER
 }
 
 

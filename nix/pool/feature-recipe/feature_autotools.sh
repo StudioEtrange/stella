@@ -12,28 +12,23 @@ function __default_autotools() {
 
 function __install_autotools() {
 	local _VER=$1
-	local _DEFAULT_VER="$(__default_autotools)"
 
-	[ "$FORCE" ] && rm -Rf "$STELLA_APP_FEATURE_ROOT/autotools"
-	[ ! -d "$STELLA_APP_FEATURE_ROOT/autotools" ] && mkdir -p "$STELLA_APP_FEATURE_ROOT/autotools"
+	[ "$_VER" == "" ] && _VER="$(__default_autotools)"
+
+	[ "$FORCE" ] && rm -Rf "$STELLA_APP_FEATURE_ROOT/autotools/$_VER"
+	[ ! -d "$STELLA_APP_FEATURE_ROOT/autotools/$_VER" ] && mkdir -p "$STELLA_APP_FEATURE_ROOT/autotools/$_VER"
+
+	__install_autotools_$_VER
 	
-	if [ "$_VER" == "" ]; then
-		__install_autotools_$_DEFAULT_VER
-	else
-		__install_autotools_$_VER
-	fi
 }
 
 
 function __feature_autotools() {
 	local _VER=$1
-	local _DEFAULT_VER="$(__default_autotools)"
+	[ "$_VER" == "" ] && _VER="$(__default_autotools)"
 
-	if [ "$_VER" == "" ]; then
-		__feature_autotools_$_DEFAULT_VER
-	else
-		__feature_autotools_$_VER
-	fi
+	__feature_autotools_$_VER
+	
 }
 
 
@@ -68,7 +63,7 @@ function __feature_autotools_pack() {
 	if [ "$_flag" == "1" ]; then
 		TEST_FEATURE=1
 		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : autotools in $FEATURE_RESULT_ROOT"
-		FEATURE_ROOT="$STELLA_APP_FEATURE_ROOT/autotools"
+		FEATURE_ROOT="$STELLA_APP_FEATURE_ROOT/autotools/pack"
 		FEATURE_PATH="$FEATURE_ROOT/bin"
 		FEATURE_VER=pack
 	else
@@ -87,7 +82,7 @@ function __install_autotools_autoconf_2_69() {
 	URL=http://ftp.gnu.org/gnu/autoconf/autoconf-2.69.tar.gz
 	VER=2.69
 	FILE_NAME=autoconf-2.69.tar.gz
-	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/autotools"
+	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/autotools/pack"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/autoconf-$VER-src"
 	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/autoconf-$VER-build"
 
@@ -107,8 +102,8 @@ function __install_autotools_autoconf_2_69() {
 	fi
 }
 function __feature_autotools_autoconf_2_69() {
-	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/autotools/bin/autoconf"
-	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/autotools"
+	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/autotools/pack/bin/autoconf"
+	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/autotools/pack"
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
 	FEATURE_RESULT_VER="2_69"
 	__feature_autotools_internal autoconf
@@ -127,7 +122,7 @@ function __install_autotools_automake_1_14() {
 	URL=http://ftp.gnu.org/gnu/automake/automake-1.14.tar.gz
 	VER=1.14
 	FILE_NAME=automake-1.14.tar.gz
-	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/autotools"
+	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/autotools/pack"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/automake-$VER-src"
 	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/automake-$VER-build"
 
@@ -143,8 +138,8 @@ function __install_autotools_automake_1_14() {
 	fi
 }
 function __feature_autotools_automake_1_14() {
-	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/autotools/bin/automake"
-	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/autotools"
+	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/autotools/pack/bin/automake"
+	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/autotools/pack"
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
 	FEATURE_RESULT_VER="1_14"
 	__feature_autotools_internal automake
@@ -162,7 +157,7 @@ function __install_autotools_libtool_2_4_2() {
 	URL=http://ftp.gnu.org/gnu/libtool/libtool-2.4.2.tar.gz
 	VER=2.4.2
 	FILE_NAME=libtool-2.4.2.tar.gz
-	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/autotools"
+	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/autotools/pack"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/libtool-$VER-src"
 	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/libtool-$VER-build"
 
@@ -178,8 +173,8 @@ function __install_autotools_libtool_2_4_2() {
 	fi
 }
 function __feature_autotools_libtool_2_4_2() {
-	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/autotools/bin/libtool"
-	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/autotools"
+	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/autotools/pack/bin/libtool"
+	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/autotools/pack"
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
 	FEATURE_RESULT_VER="2_4_2"
 	__feature_autotools_internal libtool
@@ -198,7 +193,7 @@ function __install_autotools_m4_1_4_17() {
 	URL=http://ftp.gnu.org/gnu/m4/m4-1.4.17.tar.gz
 	VER=1.4.17
 	FILE_NAME=m4-1.4.17.tar.gz
-	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/autotools"
+	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/autotools/pack"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/m4-$VER-src"
 	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/m4-$VER-build"
 
@@ -214,8 +209,8 @@ function __install_autotools_m4_1_4_17() {
 	fi
 }
 function __feature_autotools_m4_1_4_17() {
-	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/autotools/bin/m4"
-	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/autotools"
+	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/autotools/pack/bin/m4"
+	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/autotools/pack"
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
 	FEATURE_RESULT_VER="1_4_17"
 	__feature_autotools_internal m4

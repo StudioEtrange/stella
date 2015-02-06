@@ -7,7 +7,7 @@ goto :eof
 goto :eof
 
 :default_cmake
-	set "%~1=3_1_2 2_8_12"
+	set "%~1=2_8_12"
 goto :eof
 
 

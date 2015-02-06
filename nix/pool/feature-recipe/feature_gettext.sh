@@ -12,25 +12,16 @@ function __default_gettext() {
 
 function __install_gettext() {
 		local _VER=$1
-		local _DEFAULT_VER="$(__default_gettext)"
+		[ "$_VER" == "" ] && _VER="$(__default_gettext)"
 
 		mkdir -p $STELLA_APP_FEATURE_ROOT/gettext
-
-		if [ "$_VER" == "" ]; then
-			__install_gettext_$_DEFAULT_VER
-		else
-			__install_gettext_$_VER
-		fi
+		__install_gettext_$_VER
 }
 function __feature_gettext() {
 	local _VER=$1
-	local _DEFAULT_VER="$(__default_gettext)"
+	[ "$_VER" == "" ] && _VER="$(__default_gettext)"
 
-	if [ "$_VER" == "" ]; then
-		__feature_gettext_$_DEFAULT_VER
-	else
-		__feature_gettext_$_VER
-	fi
+	__feature_gettext_$_VER
 }
 
 # --------------------------------------

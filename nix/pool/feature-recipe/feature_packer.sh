@@ -12,24 +12,17 @@ function __default_packer() {
 
 function __install_packer() {
 	local _VER=$1
-	local _DEFAULT_VER="$(__default_packer)"
+	[ "$_VER" == "" ] && _VER="$(__default_packer)"
 
 	mkdir -p $STELLA_APP_FEATURE_ROOT/packer
-	if [ "$_VER" == "" ]; then
-		__install_packer_$_DEFAULT_VER
-	else
-		__install_packer_$_VER
-	fi
+	__install_packer_$_VER
+
 }
 function __feature_packer() {
 	local _VER=$1
-	local _DEFAULT_VER="$(__default_packer)"
+	[ "$_VER" == "" ] && _VER="$(__default_packer)"
 
-	if [ "$_VER" == "" ]; then
-		__feature_packer_$_DEFAULT_VER
-	else
-		__feature_packer_$_VER
-	fi
+	__feature_packer_$_VER
 }
 
 # -----------------------------------------

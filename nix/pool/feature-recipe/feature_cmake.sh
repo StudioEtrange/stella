@@ -12,24 +12,17 @@ function __default_cmake() {
 
 function __install_cmake() {
 	local _VER=$1
-	local _DEFAULT_VER="$(__default_cmake)"
+	[ "$_VER" == "" ] && _VER="$(__default_cmake)"
 
 	mkdir -p $STELLA_APP_FEATURE_ROOT/cmake
-	if [ "$_VER" == "" ]; then
-		__install_cmake_$_DEFAULT_VER
-	else
-		__install_cmake_$_VER
-	fi
+	__install_cmake_$_VER
+	
 }
 function __feature_cmake() {
 	local _VER=$1
-	local _DEFAULT_VER="$(__default_cmake)"
+	[ "$_VER" == "" ] && _VER="$(__default_cmake)"
 
-	if [ "$_VER" == "" ]; then
-		__feature_cmake_$_DEFAULT_VER
-	else
-		__feature_cmake_$_VER
-	fi
+	__feature_cmake_$_VER
 }
 
 
