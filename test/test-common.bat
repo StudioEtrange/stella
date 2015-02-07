@@ -3,12 +3,36 @@
 
 call %~dp0\..\conf.bat
 
-call :test_abs_to_rel_path
-
 call :test_trim
 
 goto :eof
 
+call :test_is_path_abs
+
+call :test_abs_to_rel_path
+
+
+goto :eof
+
+
+:test_is_path_abs
+
+call %STELLA_COMMON%\common.bat :is_path_abs "result" "path1\path2\"
+echo  %result% && if not "%result%"=="FALSE" echo ERROR
+
+call %STELLA_COMMON%\common.bat :is_path_abs "result" ".\path1\path2\"
+echo  %result% && if not "%result%"=="FALSE" echo ERROR
+
+call %STELLA_COMMON%\common.bat :is_path_abs "result" "c:\path1\path2"
+echo  %result% && if not "%result%"=="TRUE" echo ERROR
+
+call %STELLA_COMMON%\common.bat :is_path_abs "result" "\path1\path2"
+echo  %result% && if not "%result%"=="FALSE" echo ERROR
+
+call %STELLA_COMMON%\common.bat :is_path_abs "result" "\\path1\path2"
+echo  %result% && if not "%result%"=="TRUE" echo ERROR
+
+goto :eof
 
 
 :test_abs_to_rel_path
@@ -44,11 +68,11 @@ goto :eof
 
 
 :test_trim
-	call %STELLA_COMMON%\common.bat :trim "result" test test
-	echo  %result% && if not "%result%"=="test test" echo ERROR
+	call %STELLA_COMMON%\common.bat :trim "result" "test     test"
+	echo X!result!X && if not "!result!"=="test     test" echo ERROR
 
-	call %STELLA_COMMON%\common.bat :trim "result" " test test "
-	echo  %result% && if not "%result%"=="test test" echo ERROR
+	call %STELLA_COMMON%\common.bat :trim "result" "  test     test  "
+	echo X!result!X && if not "!result!"=="test     test" echo ERROR
 
 goto:eof
 

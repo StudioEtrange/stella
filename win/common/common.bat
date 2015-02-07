@@ -16,8 +16,21 @@ goto :eof
 
 REM ARG1 will receive result string passed as ARG2
 :trim
-	set _args=%*
-	for /f "tokens=1*" %%a in ("!_args!") do set %1=%%b
+	set _var=%~1
+	set "_string=%~2"
+
+	REM leading spaces
+	for /f "tokens=*" %%a in ("!_string!") do set "_string=%%a"
+
+	REM trailing spaces
+	for /l %%a in (1,1,1000) do (
+		if "!_string:~-1!"==" " ( 
+			set _string=!_string:~0,-1!
+		) else (
+			set %_var%=!_string!
+			goto :eof
+		)
+	)
 goto :eof
 
 :: FILES TOOL ---------------------------------------
@@ -49,15 +62,39 @@ goto :eof
 
 
 :: Test if a path is absolute
+:: NOTE : Too slow
+:: ARG1 is the name of the return variable - TRUE if path is absolute, FALSE if path is not absolute
+:: ARG2 path to test
+REM http://stackoverflow.com/questions/141344/how-to-check-if-directory-exists-in-path
+:is_path_abs_alternative
+	set "_result_var_is_path_abs=%~1"
+	set "_test_path=%~2"
+echo("%_test_path%"|findstr /i /r /c:^"^^\"[a-zA-Z]:[\\/][^\\/]" ^
+                           /c:^"^^\"[\\][\\]" >nul ^
+  && set "%_result_var_is_path_abs%=TRUE" || set "%_result_var_is_path_abs%=FALSE"
+goto :eof
+
+:: Test if a path is absolute
 :: ARG1 is the name of the return variable - TRUE if path is absolute, FALSE if path is not absolute
 :: ARG2 path to test
 REM http://stackoverflow.com/questions/141344/how-to-check-if-directory-exists-in-path
 :is_path_abs
 	set "_result_var_is_path_abs=%~1"
 	set "_test_path=%~2"
-echo("%_test_path%"|findstr /i /r /c:^"^^\"[a-zA-Z]:[\\/][^\\/]" ^
-                           /c:^"^^\"[\\][\\]" >nul ^
-  && set "%_result_var_is_path_abs%=TRUE" || set "%_result_var_is_path_abs%=FALSE"
+
+	set "%_result_var_is_path_abs%=FALSE"
+
+	
+	if "!_test_path:~1,1!"==":" (
+		set "%_result_var_is_path_abs%=TRUE"
+		goto :eof
+	)
+	
+	if "!_test_path:~0,2!"=="\\" (
+		set "%_result_var_is_path_abs%=TRUE"
+		goto :eof
+	)
+	
 goto :eof
 
 :: Convert relative to absolute path
@@ -584,65 +621,6 @@ goto :eof
 	) else (
 		>nul call %STELLA_COMMON%\ini.bat /d "%_KEY%" /s "%_SECTION%" "%_FILE%"
 	)
-goto :eof
-
-
-REM FLAG MANAGEMENT---------------------------------------------------
-REM TODO : deprecated ?
-:add_flag
-	REM do not refactor this code with parenthesis or try to remove loop : PB with ) and with "
-	set "FLAG_FILE=%~1"
-	set "FLAG_NAME=%~2"
-	shift
-	shift
-	set "FLAG_VALUE=%~1"
-	:_loop
-		shift
-		if "%~1" neq "" set "FLAG_VALUE=!FLAG_VALUE! %~1"
-		if "%~1" neq "" goto :_loop
-	REM do not refactor this code with parenthesis
-	if exist "%FLAG_FILE%" call :del_flag "%FLAG_FILE%" "%FLAG_NAME%"
-	if exist "%FLAG_FILE%" >> %FLAG_FILE% echo(%FLAG_NAME%=%FLAG_VALUE%
-	if not exist "%FLAG_FILE%" > %FLAG_FILE% echo(%FLAG_NAME%=%FLAG_VALUE%
-goto :eof
-
-:del_flag
-	set "FLAG_FILE=%~1"
-	set "FLAG_NAME=%~2"
-	set "FLAGS_FILE_TEMP=%FLAG_FILE%.temp"
-	
-	if exist "%FLAG_FILE%.temp" del /f /q "%FLAG_FILE%".temp >nul
-
-	if exist "%FLAG_FILE%" (
-		for /f "tokens=1,2 delims==" %%K in ( %FLAG_FILE% ) do (
-			if "%%K"=="" (
-				>> %FLAGS_FILE_TEMP% echo(%%K
-			) else (
-	   			if not "%%K"=="%FLAG_NAME%" >> %FLAGS_FILE_TEMP% echo(%%K=%%L
-	   		)
-		)
-	   	for %%Z in ( %FLAG_FILE% ) do set _filename=%%~nxZ
-		if exist "%FLAG_FILE%" del /f /q "%FLAG_FILE%" >nul
-		rename "%FLAGS_FILE_TEMP%" "!_filename!"
-	)
-goto :eof
-
-:get_flag
-	set "FLAG_FILE=%~1"
-	set "FLAG_NAME=%~2"
-
-	if exist "%FLAG_FILE%" (
-		FOR /F "tokens=1,2 delims==" %%K IN (%FLAG_FILE%) do (
-	   		if "%%K"=="%FLAG_NAME%" (
-	   			set "%%K=%%L"
-	   		)
-	   	)
-	)
-goto :eof
-
-:reset_all_flag
-	set "FLAG_FILE=%~1"
-	del /q /f "%FLAG_FILE%" >nul
 goto :eof
 
 :: SCM -------------------------------------
