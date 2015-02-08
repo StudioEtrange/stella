@@ -1,3 +1,4 @@
+REM TODO : enabled local ?
 if "!__STELLA_CONFIGURED__!"=="TRUE" goto :eof
 
 set _STELLA_CONF_CURRENT_FILE_DIR=%~dp0

@@ -15,6 +15,8 @@ goto :eof
 goto :eof
 
 REM ARG1 will receive result string passed as ARG2
+rem 	set "_s= test1 test2 test3 "
+rem		call %STELLA_COMMON%\common.bat :trim "result" "!_s!"
 :trim
 	set _var=%~1
 	set "_string=%~2"
@@ -23,6 +25,7 @@ REM ARG1 will receive result string passed as ARG2
 	for /f "tokens=*" %%a in ("!_string!") do set "_string=%%a"
 
 	REM trailing spaces
+	REM TODO : replace 1000 by len of string
 	for /l %%a in (1,1,1000) do (
 		if "!_string:~-1!"==" " ( 
 			set _string=!_string:~0,-1!

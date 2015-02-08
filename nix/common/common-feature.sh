@@ -91,38 +91,45 @@ function __install_feature() {
 		__stella_features_requirement_by_os $STELLA_CURRENT_OS
 	else
 
-		[ "$_opt_hidden_feature" == "OFF" ] && __add_app_feature $_FEATURE $_VER
-
-		source $STELLA_FEATURE_RECIPE/feature_$_FEATURE.sh
-
-		if [ "$_VER" == "" ]; then
-			_VER="$(__default_$_FEATURE)"
-		fi
-
 		_flag=0
-
-		for a in $FEATURE_LIST_ENABLED; do 
-			[ "$_FEATURE#$_VER" == "$a" ] && _flag=1
+		# check for official feature
+		for a in $__STELLA_FEATURE_LIST; do
+			[ "$a" == "$_FEATURE)" ] && _flag=1
 		done
-
 		
-		if [ "$FORCE" == "1" ]; then
-			if [ "$_flag" == "1" ]; then
-				__install_"$_FEATURE" $_VER
-			fi
-		fi
+		if [ "$_flag" == "1" ]; then
+			[ "$_opt_hidden_feature" == "OFF" ] && __add_app_feature $_FEATURE $_VER
 
-		if [ "$_flag" == "0" ]; then
-			FEATURE_PATH=
-			__install_"$_FEATURE" $_VER
-			if [ "$TEST_FEATURE" == "1" ]; then
-				FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $_FEATURE#$FEATURE_VER"
-				if [ ! "$FEATURE_PATH" == "" ]; then
-					PATH="$FEATURE_PATH:$PATH"
+			source $STELLA_FEATURE_RECIPE/feature_$_FEATURE.sh
+
+			if [ "$_VER" == "" ]; then
+				_VER="$(__default_$_FEATURE)"
+			fi
+
+			_flag=0
+			for a in $FEATURE_LIST_ENABLED; do 
+				[ "$_FEATURE#$_VER" == "$a" ] && _flag=1
+			done
+
+			
+			if [ "$FORCE" == "1" ]; then
+				if [ "$_flag" == "1" ]; then
+					__install_"$_FEATURE" $_VER
 				fi
 			fi
-		else
-			[ ! "$FORCE" == "1" ] && echo "** Feature $_FEATURE#$_VER already installed"
+
+			if [ "$_flag" == "0" ]; then
+				FEATURE_PATH=
+				__install_"$_FEATURE" $_VER
+				if [ "$TEST_FEATURE" == "1" ]; then
+					FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $_FEATURE#$FEATURE_VER"
+					if [ ! "$FEATURE_PATH" == "" ]; then
+						PATH="$FEATURE_PATH:$PATH"
+					fi
+				fi
+			else
+				[ ! "$FORCE" == "1" ] && echo "** Feature $_FEATURE#$_VER already installed"
+			fi
 		fi
 	fi
 }

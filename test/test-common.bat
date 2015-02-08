@@ -4,13 +4,13 @@
 call %~dp0\..\conf.bat
 
 call :test_trim
-
+goto :eof
 call :test_is_path_abs
 
 call :test_abs_to_rel_path
 
 
-goto :eof
+
 
 
 :test_is_path_abs
@@ -71,6 +71,17 @@ goto :eof
 
 	call %STELLA_COMMON%\common.bat :trim "result" "  test     test  "
 	echo X!result!X && if not "!result!"=="test     test" echo ERROR
+
+	set "_t= test1 test2 test3 "
+	call %STELLA_COMMON%\common.bat :trim "result" "!_t!"
+	echo X!result!X && if not "!result!"=="test1 test2 test3" echo ERROR
+
+	set _t=" test1 test2 test3 "
+	call %STELLA_COMMON%\common.bat :trim "result" !_t!
+	echo X!result!X && if not "!result!"=="test1 test2 test3" echo ERROR
+
+	call %STELLA_COMMON%\common.bat :trim "result" test1 test2 test3
+	echo X!result!X && if not "!result!"=="test1" echo ERROR
 
 goto:eof
 

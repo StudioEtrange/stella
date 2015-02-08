@@ -94,6 +94,19 @@ goto :eof
 		goto :eof
 	)
 
+	REM check for official feature
+	set _flag=
+	for %%F in (%__STELLA_FEATURE_LIST%) do (
+		if "%%F"=="!_FEATURE!" ( 
+			set _flag=1
+		)
+	)
+	if "!_flag!"=="" (
+		echo ** Error : unknown feature
+		goto :eof
+	)
+
+
 	if "%_opt_hidden_feature%"=="OFF" (
 		call %STELLA_COMMON%\common-app.bat :add_app_feature !_FEATURE! !_VER!
 	)

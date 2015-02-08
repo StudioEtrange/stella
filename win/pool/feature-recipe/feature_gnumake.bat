@@ -12,10 +12,11 @@ goto :eof
 
 :install_gnumake
 	set "_VER=%~1"
-	call :default_gnumake "_DEFAULT_VER"
+
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\gnumake mkdir %STELLA_APP_FEATURE_ROOT%\gnumake
 	if "%_VER%"=="" (
+		call :default_gnumake "_DEFAULT_VER"
 		call :install_gnumake_!_DEFAULT_VER!
 	) else (
 		call :list_gnumake "_list_ver"
@@ -29,9 +30,10 @@ goto :eof
 
 :feature_gnumake
 	set "_VER=%~1"
-	call :default_gnumake "_DEFAULT_VER"
+	
 
 	if "%_VER%"=="" (
+		call :default_gnumake "_DEFAULT_VER"
 		call :feature_gnumake_!_DEFAULT_VER!
 	) else (
 		call :list_gnumake "_list_ver"
