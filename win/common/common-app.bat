@@ -57,14 +57,10 @@ REM APP RESSOURCES & ENV MANAGEMENT ---------------
 				)
 			)
 		)
-echo A!STELLA_APP_FEATURE_LIST!
-echo A1!_app_feature_list!
+
 		call %STELLA_COMMON%\common.bat :trim "_app_feature_list" "!_app_feature_list!"
 		call %STELLA_COMMON%\common.bat :trim "STELLA_APP_FEATURE_LIST" "!STELLA_APP_FEATURE_LIST!"
-echo A!STELLA_APP_FEATURE_LIST!
-echo A1!_app_feature_list!
-REM echo B!toto!
-REM echo B1!titi!
+
 		if not "!STELLA_APP_FEATURE_LIST!"=="!_app_feature_list!" (
 			call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_FEATURE_LIST" "!_app_feature_list!"
 		)
