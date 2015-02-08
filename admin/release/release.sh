@@ -91,11 +91,28 @@ function upload_ftp() {
 	local _file=$1
 	local _ftp_path=$2/
 
-	curl --ftp-create-dirs --netrc-file $_CURRENT_FILE_DIR/credentials -T $_file ftp://ftp.cluster014.ovh.net/stella/$_ftp_path
+	curl --ftp-create-dirs --netrc-file $HOME/stella_credentials -T $_file ftp://ftp.cluster014.ovh.net/stella/$_ftp_path
 }
 
 
+function pack_goconfig-cli() {
+	# Need Go
+	GOPATH="$STELLA_APP_WORK_ROOT/go"
+	__del_folder "$GOPATH"
 
+	GOPATH="$GOPATH" go get github.com/tools/godep
+	GOPATH="$GOPATH" go get github.com/StudioEtrange/goconfig-cli
+	cd "$GOPATH"/src/github.com/StudioEtrange/goconfig-cli
+	GOPATH="$GOPATH" "$GOPATH"/bin/godep restore
+
+	GOPATH="$GOPATH" go get github.com/laher/goxc
+	GOPATH="$GOPATH" "$GOPATH"/bin/goxc -tasks-=package
+
+	rm -f "$STELLA_ADMIN/repository/feature_repository/win/goconfig-cli/goconfig-cli*"
+	cp "$GOPATH"/bin/goconfig-cli-xc/snapshot/windows_386/goconfig-cli.exe "$STELLA_ADMIN"/repository/feature_repository/win/goconfig-cli/
+
+	upx "$STELLA_ADMIN"/repository/feature_repository/win/goconfig-cli/goconfig-cli.exe
+}
 
 
 function push_repository() {
@@ -136,6 +153,7 @@ case $ACTION in
 		release_from_local $PLATFORM AUTO_EXTRACT
 		;;
 	repository)
+		pack_goconfig-cli
 		push_repository
 		;;
 	*)
