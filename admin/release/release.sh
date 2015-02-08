@@ -34,7 +34,7 @@ function release_from_local() {
 		win)
 			release_filename="stella-win-$version.gz"	
 			;;
-		linux|macos)
+		nix)
 			release_filename="stella-nix-$version.gz"
 			;;
 		all)
@@ -68,7 +68,7 @@ function pack() {
 		-f "$STELLA_APP_WORK_ROOT/output/$_release_filename" -C "$STELLA_ROOT/.."  "$(basename $STELLA_ROOT)"
 		;;
 
-		linux|macos)
+		nix)
 			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./win/" --exclude "./test/" --exclude "./admin/" --exclude "*.bat" \
 		-f "$STELLA_APP_WORK_ROOT/output/$_release_filename" -C "$STELLA_ROOT/.."  "$(basename $STELLA_ROOT)"
 		;;
@@ -133,7 +133,7 @@ PARAMETERS="
 ACTION=						'action' 			a						'local repository'					Action.
 "
 OPTIONS="
-PLATFORM='all'				''			''					'a'			0			'win linux macos all'			Target platform.
+PLATFORM='all'				''			''					'a'			0			'win nix all'			Target platform.
 "
 
 __argparse "$0" "$OPTIONS" "$PARAMETERS" "Release management" "$(usage)" "" "$@"
