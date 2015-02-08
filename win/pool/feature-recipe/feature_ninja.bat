@@ -13,11 +13,12 @@ goto :eof
 
 :install_ninja
 	set "_VER=%~1"
-	call :default_ninja "_DEFAULT_VER"
+	
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\ninja mkdir %STELLA_APP_FEATURE_ROOT%\ninja
 
 	if "%_VER%"=="" (
+		call :default_ninja "_DEFAULT_VER"
 		call :install_ninja_%_DEFAULT_VER%
 	) else (
 		call :list_ninja "_list_ver"
@@ -31,9 +32,10 @@ goto :eof
 
 :feature_ninja
 	set "_VER=%~1"
-	call :default_ninja "_DEFAULT_VER"
+	
 
 	if "%_VER%"=="" (
+		call :default_ninja "_DEFAULT_VER"
 		call :feature_ninja_!_DEFAULT_VER!
 	) else (
 		call :list_ninja "_list_ver"
@@ -71,7 +73,7 @@ goto :eof
 		REM python ./configure.py --bootstrap
 
 		call :feature_ninja_last_release
-		if not "!TEST_FEATURE!"=="0" (
+		if "!TEST_FEATURE!"=="1" (
 			echo ** Ninja installed
 			!FEATURE_ROOT!\ninja --version
 		) else (

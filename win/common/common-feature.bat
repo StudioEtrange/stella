@@ -7,18 +7,19 @@ goto :eof
 
 	for /D %%A in ( %STELLA_APP_FEATURE_ROOT%\* ) do (
 		set "_folder=%%~nxA"
-		REM check for version
+		REM check for official feature
 		for %%F in (%__STELLA_FEATURE_LIST%) do (
 			if "%%F"=="!_folder!" ( 
 				REM for each detected version
-				for /D %%V in (%%F\*) do (
-					call :init_feature !_folder! %%V
+				for /D %%V in ( %STELLA_APP_FEATURE_ROOT%\%%F\* ) do (
+					set "_ver=%%~nxV"
+					call :init_feature !_folder! !_ver!
 				)
 			)
 		)
 	)
 
-	if not "%FEATURE_LIST_ENABLED%"=="" echo ** Features initialized : %FEATURE_LIST_ENABLED%
+	if not "!FEATURE_LIST_ENABLED!"=="" echo ** Features initialized : !FEATURE_LIST_ENABLED!
 goto :eof
 
 :: ARG2 return variable
@@ -46,11 +47,10 @@ goto :eof
 	)
 
 	set _flag=
-	for %%A in (%FEATURE_LIST_ENABLED%) do (
+	for %%A in (!FEATURE_LIST_ENABLED!) do (
 		if "%%A"=="%_FEATURE%#!_VER!" set _flag=1
 	)
 	if "%_flag%"=="" (
-		set FEATURE_PATH=
 		call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :feature_%_FEATURE% !_VER!
 		if "!TEST_FEATURE!"=="1" (
 			set "FEATURE_LIST_ENABLED=!FEATURE_LIST_ENABLED! %_FEATURE%#!FEATURE_VER!"
@@ -105,7 +105,7 @@ goto :eof
 	)
 
 	set _flag=
-	for %%A in (%FEATURE_LIST_ENABLED%) do (
+	for %%A in (!FEATURE_LIST_ENABLED!) do (
 		if "%%A"=="%_FEATURE%#!_VER!" set _flag=1
 	)
 	
@@ -132,7 +132,7 @@ goto :eof
 
 :: reinit all feature previously enabled
 :reinit_all_features
-	for %%F in (%FEATURE_LIST_ENABLED%) do (
+	for %%F in (!FEATURE_LIST_ENABLED!) do (
 		set item=%%F
 
 		set _VER=!item:*#=!

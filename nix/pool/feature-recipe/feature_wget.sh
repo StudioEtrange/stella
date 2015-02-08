@@ -23,8 +23,8 @@ function __install_wget() {
 			[ "$v" == "$_VER" ] && __install_wget_$_VER
 		done
 	fi
-
 }
+
 function __feature_wget() {
 	local _VER=$1
 

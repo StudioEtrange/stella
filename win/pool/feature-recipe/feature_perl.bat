@@ -12,10 +12,11 @@ goto :eof
 
 :install_perl
 	set "_VER=%~1"
-	call :default_perl "_DEFAULT_VER"
+	
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\perl mkdir %STELLA_APP_FEATURE_ROOT%\perl
 	if "%_VER%"=="" (
+		call :default_perl "_DEFAULT_VER"
 		call :install_perl_!_DEFAULT_VER!
 	) else (
 		call :list_perl "_list_ver"
@@ -29,9 +30,10 @@ goto :eof
 
 :feature_perl
 	set "_VER=%~1"
-	call :default_perl "_DEFAULT_VER"
+	
 	
 	if "%_VER%"=="" (
+		call :default_perl "_DEFAULT_VER"
 		call :feature_perl_!_DEFAULT_VER!
 	) else (
 		call :list_perl "_list_ver"
@@ -69,7 +71,7 @@ goto :eof
 		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "DEST_ERASE"
 		
 		call :feature_perl_5_18_2
-		if not "!TEST_FEATURE!"=="0" (
+		if "!TEST_FEATURE!"=="1" (
 			echo Perl installed
 			!FEATURE_ROOT!\perl\bin\perl --version
 		) else (

@@ -14,10 +14,11 @@ goto :eof
 
 :install_vagrant
 	set "_VER=%~1"
-	call :default_vagrant "_DEFAULT_VER"
+
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\vagrant mkdir %STELLA_APP_FEATURE_ROOT%\vagrant
 	if "%_VER%"=="" (
+		call :default_vagrant "_DEFAULT_VER"
 		call :install_vagrant_%_DEFAULT_VER%
 	) else (
 		call :list_vagrant "_list_ver"
@@ -31,9 +32,9 @@ goto :eof
 
 :feature_vagrant
 	set "_VER=%~1"
-	call :default_vagrant "_DEFAULT_VER"
 
 	if "%_VER%"=="" (
+		call :default_vagrant "_DEFAULT_VER"
 		call :feature_vagrant_%_DEFAULT_VER%
 	) else (
 		call :list_vagrant "_list_ver"
@@ -70,10 +71,9 @@ goto :eof
 		bundle install
 		
 		call :feature_vagrant_git
-		if not "!TEST_FEATURE!"=="0" (
-			cd /D "!FEATURE_ROOT!"
+		if "!TEST_FEATURE!"=="1" (
 			echo Vagrant installed
-			bundle exec vagrant -v
+			!FEATURE_ROOT!\bin\bundle exec vagrant -v
 		) else (
 			echo ** ERROR
 		)

@@ -12,10 +12,11 @@ goto :eof
 
 :install_nasm
 	set "_VER=%~1"
-	call :default_nasm "_DEFAULT_VER"
+	
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\nasm mkdir %STELLA_APP_FEATURE_ROOT%\nasm
 	if "%_VER%"=="" (
+		call :default_nasm "_DEFAULT_VER"
 		call :install_nasm_!_DEFAULT_VER!
 	) else (
 		call :list_nasm "_list_ver"
@@ -29,9 +30,10 @@ goto :eof
 
 :feature_nasm
 	set "_VER=%~1"
-	call :default_nasm "_DEFAULT_VER"
+	
 
 	if "%_VER%"=="" (
+		call :default_nasm "_DEFAULT_VER"
 		call :feature_nasm_!_DEFAULT_VER!
 	) else (
 		call :list_nasm "_list_ver"
@@ -63,7 +65,7 @@ goto :eof
 		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "DEST_ERASE STRIP"
 		
 		call :feature_nasm_2_11
-		if not "!TEST_FEATURE!"=="0" (
+		if "!TEST_FEATURE!"=="1" (
 			echo NASM installed
 			!FEATURE_ROOT!\nasm -version
 		) else (

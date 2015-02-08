@@ -12,10 +12,11 @@ goto :eof
 
 :install_jom
 	set "_VER=%~1"
-	call :default_jom "_DEFAULT_VER"
+	
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\jom mkdir %STELLA_APP_FEATURE_ROOT%\jom
 	if "%_VER%"=="" (
+		call :default_jom "_DEFAULT_VER"
 		call :install_jom_!_DEFAULT_VER!
 	) else (
 		call :list_jom "_list_ver"
@@ -29,9 +30,10 @@ goto :eof
 
 :feature_jom
 	set "_VER=%~1"
-	call :default_jom "_DEFAULT_VER"
+	
 
 	if "%_VER%"=="" (
+		call :default_jom "_DEFAULT_VER"
 		call :feature_jom_!_DEFAULT_VER!
 	) else (
 		call :list_jom "_list_ver"
@@ -62,7 +64,7 @@ goto :eof
 		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "DEST_ERASE"
 
 		call :feature_jom_1_0_13
-		if not "!TEST_FEATURE!"=="0" (
+		if "!TEST_FEATURE!"=="1" (
 			echo Jom installed
 			!FEATURE_ROOT!\jom -version
 		) else (

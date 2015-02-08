@@ -13,10 +13,11 @@ goto :eof
 
 :install_python
 	set "_VER=%~1"
-	call :default_python "_DEFAULT_VER="
+	
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\python mkdir %STELLA_APP_FEATURE_ROOT%\python
 	if "%_VER%"=="" (
+		call :default_python "_DEFAULT_VER"
 		call :install_python_!_DEFAULT_VER!
 	) else (
 		call :list_python "_list_ver"
@@ -30,9 +31,10 @@ goto :eof
 
 :feature_python
 	set "_VER=%~1"
-	call :default_python "_DEFAULT_VER="
+	
 	
 	if "%_VER%"=="" (
+		call :default_python "_DEFAULT_VER"
 		call :feature_python_!_DEFAULT_VER!
 	) else (
 		call :list_python "_list_ver"
@@ -72,7 +74,7 @@ goto :eof
 		msiexec /qn /a %FILE_NAME% TARGETDIR="%INSTALL_DIR%\"
 
 		call :feature_python_2_7_6
-		if not "!TEST_FEATURE!"=="0" (
+		if "!TEST_FEATURE!"=="1" (
 			echo Python installed
 			!FEATURE_ROOT!\python.exe --version
 		) else (

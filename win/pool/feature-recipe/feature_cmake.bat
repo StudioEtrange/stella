@@ -30,9 +30,10 @@ goto :eof
 
 :feature_cmake
 	set "_VER=%~1"
-	call :default_cmake "_DEFAULT_VER"
+	
 
 	if "%_VER%"=="" (
+		call :default_cmake "_DEFAULT_VER"
 		call :feature_cmake_!_DEFAULT_VER!
 	) else (
 		call :list_cmake "_list_ver"
@@ -111,7 +112,7 @@ goto :eof
 		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "DEST_ERASE STRIP"
 		
 		call :feature_cmake_3_1_2
-		if not "!TEST_FEATURE!"=="0" (
+		if "!TEST_FEATURE!"=="1" (
 			echo ** CMake installed
 			!FEATURE_ROOT!\bin\cmake -version
 		) else (

@@ -48,7 +48,6 @@ function __install_cmake_2_8_12() {
 	__install_cmake_internal
 }
 
-
 function __feature_cmake_2_8_12() {
 	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/cmake/2_8_12/bin/cmake"
 	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/cmake/2_8_12"

@@ -66,7 +66,7 @@ goto :eof
 
 
 		call :feature_gnumake_3_81
-		if not "!TEST_FEATURE!"=="0" (
+		if "!TEST_FEATURE!"=="1" (
 			echo gnumake installed
 		) else (
 			echo ** ERROR

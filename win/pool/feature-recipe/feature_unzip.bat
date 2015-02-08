@@ -12,10 +12,11 @@ goto :eof
 
 :install_unzip
 	set "_VER=%~1"
-	call :default_unzip "_DEFAULT_VER"
+
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\unzip mkdir %STELLA_APP_FEATURE_ROOT%\unzip
 	if "%_VER%"=="" (
+		call :default_unzip "_DEFAULT_VER"
 		call :install_unzip_!_DEFAULT_VER!
 	) else (
 		call :list_unzip "_list_ver"
@@ -29,9 +30,10 @@ goto :eof
 
 :feature_unzip
 	set "_VER=%~1"
-	call :default_unzip "_DEFAULT_VER"
+
 
 	if "%_VER%"=="" (
+		call :default_unzip "_DEFAULT_VER"
 		call :feature_unzip_!_DEFAULT_VER!
 	) else (
 		call :list_unzip "_list_ver"
@@ -59,8 +61,7 @@ goto :eof
 		call %STELLA_COMMON%\common.bat :copy_folder_content_into "%STELLA_FEATURE_REPOSITORY_LOCAL%\unzip-5.51-1-bin" "%INSTALL_DIR%"
 		
 		call :feature_unzip_5_51_1
-		if not "!TEST_FEATURE!"=="0" (
-			cd /D "!TEST_FEATURE!"
+		if "!TEST_FEATURE!"=="1" (
 			echo unzip installed
 		) else (
 			echo ** ERROR

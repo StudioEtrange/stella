@@ -37,11 +37,11 @@ goto :eof
 :del_folder
 	if exist %~1 (
 		echo ** Deleting %~1 folder
-		call :timecount_start timecount_id
+		REM call :timecount_start timecount_id
 		del /f/q %~1 >nul
 		rmdir /s/q %~1 >nul
-		call :timecount_stop !timecount_id!
-		echo ** Folder deleted in !RCS_TIMECOUNT_ELAPSED!
+		REM call :timecount_stop !timecount_id!
+		REM echo ** Folder deleted in !STELLA_TIMECOUNT_ELAPSED!
 
 		REM takeown /f %~1 /r /d y >nul
 		REM icacls %~1 /reset /t >nul
@@ -173,12 +173,20 @@ REM http://www.dostips.com/DtCodeCmdLib.php#Function.MakeRelative
 goto :eof
 
 :: MEASURE TOOL------------
+:: example
+:: call :timecount_start timecount_id
+::		do something
+:: call :timecount_stop !timecount_id!
+:: echo ** time elapsed : !STELLA_TIMECOUNT_ELAPSED!
 :timecount_start
-	set %~1=%RANDOM%%RANDOM%
-	set "_stella_timecount_start_!%~1!=%time%"
+	set _id=%~1
+	set _rand=%RANDOM%%RANDOM%
+	set "_stella_timecount_start_!_rand!=%time%"
+	set %_id%=!_rand!
 goto :eof
 
 :timecount_stop
+	set _id=%~1
 	set _end_time=%time%
 	set _start_time=!_stella_timecount_start_%~1!
 
@@ -577,6 +585,51 @@ REM - use powershell in batch http://stackoverflow.com/a/20476904
 goto :eof
 
 REM INI FILE MANAGEMENT---------------------------------------------------
+REM alternative with powershell for reading only : https://gallery.technet.microsoft.com/scriptcenter/ea40c1ef-c856-434b-b8fb-ebd7a76e8d91
+REM not implemented
+
+
+REM alternative go : http://godoc.org/github.com/Unknwon/goconfig OR http://godoc.org/github.com/robfig/config
+:add_key_2
+	set "_FILE=%~1"
+	set "_SECTION=%~2"
+	set "_KEY=%~3"
+	set "_VAL=%~4"
+	
+	if not exist "%_FILE%" > "%_FILE%" echo(
+	>nul goconfig-cli addkey "%_FILE%" "%_SECTION%" "%_KEY%" "%_VAL%"
+goto :eof
+
+:get_key_2
+	set "_FILE=%~1"
+	set "_SECTION=%~2"
+	set "_KEY=%~3"
+	set "_OPT=%~4"
+
+	set _opt_section_prefix=OFF
+	for %%O in (%_OPT%) do (
+		if "%%O"=="PREFIX" set _opt_section_prefix=ON
+	)
+
+
+	if "%_opt_section_prefix%"=="ON" (
+		for /f "delims=" %%I in ('goconfig-cli "%_FILE%" getkey "%_SECTION%" "%_KEY%"') do set "%_SECTION%_%_KEY%=%%I"
+	) else (
+		for /f "delims=" %%I in ('goconfig-cli "%_FILE%" getkey "%_SECTION%" "%_KEY%"') do set "%_KEY%=%%I"
+	)
+goto :eof
+
+
+:del_key_2
+	set "_FILE=%~1"
+	set "_SECTION=%~2"
+	set "_KEY=%~3"
+
+	>nul goconfig-cli delkey "%_FILE%" "%_SECTION%" "%_KEY%"
+goto :eof
+
+
+REM alternative with bash and jscript (ini.bat) : http://stackoverflow.com/questions/2866117/read-ini-from-windows-batch-file
 :add_key
 	set "_FILE=%~1"
 	set "_SECTION=%~2"
@@ -723,8 +776,9 @@ goto :eof
 ::		_match_exp with TRUE or FALSE
 :: first argument is the regexp
 :: second argument is the string
+:: NOTE : very slow
 :: NOTE : read result var with !_match_exp!
-:: TODO implement variant without regexp see http://stackoverflow.com/a/7006016
+:: TODO implement variant without regexp in another function see http://stackoverflow.com/a/7006016
 :match_exp
 	set _win_regexp=%~1
 	set _string=%~2

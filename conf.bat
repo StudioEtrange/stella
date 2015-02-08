@@ -1,3 +1,5 @@
+if "!__STELLA_CONFIGURED__!"=="TRUE" goto :eof
+
 set _STELLA_CONF_CURRENT_FILE_DIR=%~dp0
 set _STELLA_CONF_CURRENT_FILE_DIR=%_STELLA_CONF_CURRENT_FILE_DIR:~0,-1%
 if "%_STELLA_CURRENT_RUNNING_DIR%"=="" set _STELLA_CURRENT_RUNNING_DIR=%cd%
@@ -88,7 +90,7 @@ set VIRTUAL_DEFAULT_HYPERVISOR=virtualbox
 
 :: INTERNAL LIST ---------------------------------------------
 set "__STELLA_DISTRIB_LIST=ubuntu64_13_10 debian64_7_5 centos64_6_5 archlinux boot2docker"
-set "__STELLA_FEATURE_LIST=ninja jom cmake packer perl ruby nasm python vagrant openssh wget unzip sevenzip patch gnumake"
+set "__STELLA_FEATURE_LIST=goconfig-cli ninja jom cmake packer perl ruby nasm python vagrant openssh wget unzip sevenzip patch gnumake"
 
 :: API ---------------------------------------------
 set "STELLA_API_COMMON_PUBLIC=trim argparse is_path_abs get_ressource download_uncompress del_folder copy_folder_content_into fork run_admin mercurial_project_version git_project_version"
@@ -99,3 +101,5 @@ set "STELLA_API_BUILD_PUBLIC="
 
 set "STELLA_API=%STELLA_COMMON%\common-api.bat :api_proxy+"
 
+
+set "__STELLA_CONFIGURED__=TRUE"

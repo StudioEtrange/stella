@@ -12,10 +12,11 @@ goto :eof
 
 :install_wget
 	set "_VER=%~1"
-	call :default_wget "_DEFAULT_VER"
+
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\wget mkdir %STELLA_APP_FEATURE_ROOT%\wget
 	if "%_VER%"=="" (
+		call :default_wget "_DEFAULT_VER"
 		call :install_wget_!_DEFAULT_VER!
 	) else (
 		call :list_wget "_list_ver"
@@ -29,9 +30,10 @@ goto :eof
 
 :feature_wget
 	set "_VER=%~1"
-	call :default_wget "_DEFAULT_VER"
+
 
 	if "%_VER%"=="" (
+		call :default_wget "_DEFAULT_VER"
 		call :feature_wget_!_DEFAULT_VER!
 	) else (
 		call :list_wget "_list_ver"
@@ -60,7 +62,7 @@ goto :eof
 		call %STELLA_COMMON%\common.bat :uncompress "%STELLA_FEATURE_REPOSITORY_LOCAL%\wget-1.11.4-1-dep.zip" "%INSTALL_DIR%"
 		
 		call :feature_wget_1_11_4
-		if not "!TEST_FEATURE!"=="0" (
+		if "!TEST_FEATURE!"=="1" (
 			echo wget installed
 		) else (
 			echo ** ERROR

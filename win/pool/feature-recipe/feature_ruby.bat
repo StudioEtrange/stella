@@ -11,11 +11,11 @@ goto :eof
 goto :eof
 
 :install_ruby
-	set "_VER=%~1"
-	call :default_ruby "_DEFAULT_VER"
+	set "_VER=%~1"	
 
 	REM if not exist %STELLA_APP_FEATURE_ROOT%\ruby mkdir %STELLA_APP_FEATURE_ROOT%\ruby
 	if "%_VER%"=="" (
+		call :default_ruby "_DEFAULT_VER"
 		call :install_ruby_!_DEFAULT_VER!
 	) else (
 		call :list_ruby "_list_ver"
@@ -29,9 +29,9 @@ goto :eof
 
 :feature_ruby
 	set "_VER=%~1"
-	call :default_ruby "_DEFAULT_VER"
 
 	if "%_VER%"=="" (
+		call :default_ruby "_DEFAULT_VER"
 		call :feature_ruby_!_DEFAULT_VER!
 	) else (
 		call :list_ruby "_list_ver"
@@ -156,7 +156,7 @@ REM --------------------------------------------------------------
 		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%"
 		
 		call :feature_ruby_!VERSION!
-		if not "!TEST_FEATURE!"=="0" (
+		if "!TEST_FEATURE!"=="1" (
 			echo Ruby installed
 			!FEATURE_ROOT!\bin\ruby --version
 		) else (
@@ -206,7 +206,7 @@ REM --------------------------------------------------------------
 		%FILE_NAME% -y -o"%INSTALL_DIR%"
 
 		call :feature_rubydevkit_!VERSION!
-		if not "!TEST_FEATURE!"=="0" (
+		if "!TEST_FEATURE!"=="1" (
 			echo Ruby DevKit for Ruby2 installed
 		) else (
 			echo ** ERROR

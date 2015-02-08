@@ -13,10 +13,11 @@ goto :eof
 
 :install_openssh
 	set "_VER=%~1"
-	call :default_openssh "_DEFAULT_VER"
+	
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\openssh mkdir %STELLA_APP_FEATURE_ROOT%\openssh
 	if "%_VER%"=="" (
+		call :default_openssh "_DEFAULT_VER"
 		call :install_openssh_!_DEFAULT_VER!
 	) else (
 		call :list_openssh "_list_ver"
@@ -30,9 +31,10 @@ goto :eof
 
 :feature_openssh
 	set "_VER=%~1"
-	call :default_openssh "_DEFAULT_VER"
+	
 	
 	if "%_VER%"=="" (
+		call :default_openssh "_DEFAULT_VER"
 		call :feature_openssh_!_DEFAULT_VER!
 	) else (
 		call :list_openssh "_list_ver"
@@ -62,7 +64,7 @@ goto :eof
 		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "DEST_ERASE STRIP"
 		
 		call :feature_openssh_6_6
-		if not "!TEST_FEATURE!"=="0" (
+		if "!TEST_FEATURE!"=="1" (
 			echo openssh installed
 		) else (
 			echo ** ERROR

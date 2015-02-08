@@ -12,10 +12,11 @@ goto :eof
 
 :install_sevenzip
 	set "_VER=%~1"
-	call :default_sevenzip "_DEFAULT_VER"
+	
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\sevenzip mkdir %STELLA_APP_FEATURE_ROOT%\sevenzip
 	if "%_VER%"=="" (
+		call :default_sevenzip "_DEFAULT_VER"
 		call :install_sevenzip_!_DEFAULT_VER!
 	) else (
 		call :list_sevenzip "_list_ver"
@@ -29,9 +30,10 @@ goto :eof
 
 :feature_sevenzip
 	set "_VER=%~1"
-	call :default_sevenzip "_DEFAULT_VER"
+
 
 	if "%_VER%"=="" (
+		call :default_sevenzip "_DEFAULT_VER"
 		call :feature_sevenzip_!_DEFAULT_VER!
 	) else (
 		call :list_sevenzip "_list_ver"
@@ -61,7 +63,7 @@ goto :eof
 		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "DEST_ERASE"
 		
 		call :feature_sevenzip_9_20
-		if not "!TEST_FEATURE!"=="0" (
+		if "!TEST_FEATURE!"=="1" (
 			echo sevenzip installed
 		) else (
 			echo ** ERROR

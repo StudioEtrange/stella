@@ -13,10 +13,11 @@ goto :eof
 
 :install_packer
 	set "_VER=%~1"
-	call :default_packer "_DEFAULT_VER"
+	
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\packer mkdir %STELLA_APP_FEATURE_ROOT%\packer
 	if "%_VER%"=="" (
+		call :default_packer "_DEFAULT_VER"
 		call :install_packer_!_DEFAULT_VER!
 	) else (
 		call :list_packer "_list_ver"
@@ -30,9 +31,9 @@ goto :eof
 
 :feature_packer
 	set "_VER=%~1"
-	call :default_packer "_DEFAULT_VER"
 
 	if "%_VER%"=="" (
+		call :default_packer "_DEFAULT_VER"
 		call :feature_packer_!_DEFAULT_VER!
 	) else (
 		call :list_packer "_list_ver"
@@ -91,7 +92,7 @@ REM --------------------------------------------------------------
 		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "DEST_ERASE"
 		
 		call :feature_packer_%VERSION%
-		if not "!TEST_FEATURE!"=="0" (
+		if "!TEST_FEATURE!"=="1" (
 			echo Packer installed
 			!FEATURE_ROOT!\packer --version
 		) else (
