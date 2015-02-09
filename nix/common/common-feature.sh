@@ -94,7 +94,7 @@ function __install_feature() {
 		_flag=0
 		# check for official feature
 		for a in $__STELLA_FEATURE_LIST; do
-			[ "$a" == "$_FEATURE)" ] && _flag=1
+			[ "$a" == "$_FEATURE" ] && _flag=1
 		done
 		
 		if [ "$_flag" == "1" ]; then
