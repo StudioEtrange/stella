@@ -135,7 +135,7 @@ function __install_feature() {
 			fi
 
 			_flag=0
-			if [ ! "$FORCE" == "1" ]
+			if [ ! "$FORCE" == "1" ]; then
 				for a in $FEATURE_LIST_ENABLED; do 
 					[ "$_FEATURE#$_VER" == "$a" ] && _flag=1
 				done
