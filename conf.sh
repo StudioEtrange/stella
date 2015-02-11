@@ -65,16 +65,8 @@ STELLA_APP_FEATURE_ROOT="$STELLA_APP_WORK_ROOT/feature_$STELLA_CURRENT_PLATFORM_
 ASSETS_ROOT="$STELLA_APP_WORK_ROOT/assets"
 ASSETS_REPOSITORY=$(__rel_to_abs_path "../assets_repository" "$STELLA_APP_WORK_ROOT")
 
+STELLA_INTERNAL_FEATURE_ROOT=$STELLA_ROOT/feature_$STELLA_CURRENT_PLATFORM_SUFFIX/$STELLA_CURRENT_OS
 
-
-# DEFAULT FEATURE ---------------------------------------------
-# TODO replace command with these variables
-#WGET="wget" # TODO for macos see STELLA_APP_FEATURE_ROOT/wget (=> useless because already replaced by curl in common.sh)
-#WGET=$STELLA_APP_FEATURE_ROOT/wget
-#UZIP="unzip"
-#7ZIP="7z"
-#PATCH="patch"
-#GNUMAKE="make"
 
 # OTHERS ---------------------------------------------
 FEATURE_LIST_ENABLED=
@@ -108,7 +100,7 @@ get_ressource download_uncompress copy_folder_content_into del_folder \
 get_key add_key del_key mercurial_project_version git_project_version get_stella_version \
 make_sevenzip_sfx_bin make_targz_sfx_shell compress trim"
 STELLA_API_APP_PUBLIC="get_data get_assets get_all_data get_all_assets update_data update_assets revert_data revert_assets get_env_properties setup_env get_features"
-STELLA_API_FEATURE_PUBLIC="install_feature init_feature list_active_features"
+STELLA_API_FEATURE_PUBLIC="install_feature init_feature list_active_features reinit_installed_features"
 STELLA_API_VIRTUAL_PUBLIC=""
 STELLA_API_BUILD_PUBLIC="fix_rpath_macos fix_linked_lib_macos fix_dynamiclib_install_name_macos fix_dynamiclib_install_name_macos_by_rootname fix_dynamiclib_install_name_macos_by_folder"
 #STELLA_API_RETURN_FUNCTION=

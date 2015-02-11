@@ -13,10 +13,11 @@ goto :eof
 
 :install_cmake
 	set "_VER=%~1"
-	call :default_cmake "_DEFAULT_VER"
+	
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\cmake mkdir %STELLA_APP_FEATURE_ROOT%\cmake
 	if "%_VER%"=="" (
+		call :default_cmake "_DEFAULT_VER"
 		call :install_cmake_!_DEFAULT_VER!
 	) else (
 		call :list_cmake "_list_ver"

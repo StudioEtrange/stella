@@ -29,10 +29,10 @@ if "%action%"=="list" (
 	) else (
 		if "%id%"=="active" (
 			call %STELLA_COMMON%\common-feature.bat :list_active_features _TMP
-			echo !_TMP!
+			if not "!_TMP!"=="" echo !_TMP!
 		) else (
 			call %STELLA_COMMON%\common-feature.bat :list_feature_version %id% _TMP
-			echo !_TMP!
+			if not "!_TMP!"=="" echo !_TMP!
 		)
 	)
 	goto :end

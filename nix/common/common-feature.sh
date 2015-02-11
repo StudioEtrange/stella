@@ -25,6 +25,28 @@ function __init_installed_features() {
 		fi
 	done
 
+	if [ ! "$STELLA_APP_FEATURE_ROOT" == "STELLA_INTERNAL_FEATURE_ROOT" ]; then
+		# internal feature are not prioritary over app feature
+		_save_app_feature_root=$STELLA_APP_FEATURE_ROOT
+		STELLA_APP_FEATURE_ROOT=$STELLA_INTERNAL_FEATURE_ROOT
+		for f in  "$STELLA_INTERNAL_FEATURE_ROOT"/*; do
+			if [ -d "$f" ]; then
+				_flag=0
+				# check for official feature
+				for a in $__STELLA_FEATURE_LIST; do
+					if [ "$a" == "$(__get_filename_from_string $f)" ]; then
+						# for each detected version
+						for v in  "$f"/*; do
+							[ -d "$v" ] && __init_feature $(__get_filename_from_string $f) $(__get_filename_from_string $v)
+						done
+					fi
+				done
+			fi
+		done
+		STELLA_APP_FEATURE_ROOT=$_save_app_feature_root
+	fi
+
+
 	[ ! "$FEATURE_LIST_ENABLED" == "" ] && echo "** Features initialized : $FEATURE_LIST_ENABLED"
 }
 
@@ -85,7 +107,7 @@ function __install_feature() {
 		[ "$o" == "HIDDEN" ] && _opt_hidden_feature=ON
 	done
 
-
+	local _save_app_feature_root=
 
 	if [ "$_FEATURE" == "required" ]; then
 		__stella_features_requirement_by_os $STELLA_CURRENT_OS
@@ -98,7 +120,13 @@ function __install_feature() {
 		done
 		
 		if [ "$_flag" == "1" ]; then
-			[ "$_opt_hidden_feature" == "OFF" ] && __add_app_feature $_FEATURE $_VER
+			if [ "$_opt_hidden_feature" == "ON" ]; then
+				_save_app_feature_root=$STELLA_APP_FEATURE_ROOT
+				STELLA_APP_FEATURE_ROOT=$STELLA_INTERNAL_FEATURE_ROOT
+			else
+				__add_app_feature $_FEATURE $_VER
+			fi
+
 
 			source $STELLA_FEATURE_RECIPE/feature_$_FEATURE.sh
 
@@ -107,20 +135,17 @@ function __install_feature() {
 			fi
 
 			_flag=0
-			for a in $FEATURE_LIST_ENABLED; do 
-				[ "$_FEATURE#$_VER" == "$a" ] && _flag=1
-			done
-
-			
-			if [ "$FORCE" == "1" ]; then
-				if [ "$_flag" == "1" ]; then
-					__install_"$_FEATURE" $_VER
-				fi
+			if [ ! "$FORCE" == "1" ]
+				for a in $FEATURE_LIST_ENABLED; do 
+					[ "$_FEATURE#$_VER" == "$a" ] && _flag=1
+				done
 			fi
-
+			
 			if [ "$_flag" == "0" ]; then
 				FEATURE_PATH=
+
 				__install_"$_FEATURE" $_VER
+				__feature_"$_FEATURE" $_VER
 				if [ "$TEST_FEATURE" == "1" ]; then
 					FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $_FEATURE#$FEATURE_VER"
 					if [ ! "$FEATURE_PATH" == "" ]; then
@@ -128,28 +153,19 @@ function __install_feature() {
 					fi
 				fi
 			else
-				[ ! "$FORCE" == "1" ] && echo "** Feature $_FEATURE#$_VER already installed"
+				echo "** Feature $_FEATURE#$_VER already installed"
+			fi
+
+			if [ "$_opt_hidden_feature" == "ON" ]; then
+				STELLA_APP_FEATURE_ROOT=$_save_app_feature_root
 			fi
 		fi
 	fi
 }
 
-function __reinit_all_features() {
-	local _VER=
-	local _FEATURE=
-
-	for f in $FEATURE_LIST_ENABLED; do
-		_VER=${f##*#}
-		_FEATURE=${f%#*}
-		FEATURE_PATH=
-		source $STELLA_FEATURE_RECIPE/feature_$_FEATURE.sh
-		__feature_"$_FEATURE" $_VER
-		if [ "$TEST_FEATURE" == "1" ]; then
-			if [ ! "$FEATURE_PATH" == "" ]; then 
-				PATH="$FEATURE_PATH:$PATH"
-			fi
-		fi
-	done
+function __reinit_installed_features() {
+	FEATURE_LIST_ENABLED=
+	__init_installed_features
 }
 
 

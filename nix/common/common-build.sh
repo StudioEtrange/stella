@@ -1,7 +1,7 @@
 if [ ! "$_STELLA_COMMON_BUILD_INCLUDED_" == "1" ]; then 
 _STELLA_COMMON_BUILD_INCLUDED_=1
 
-
+# NOTE : homebrew flag setting system : https://github.com/Homebrew/homebrew/blob/master/Library/Homebrew/extend/ENV/super.rb
 
 # MACOS specific build : install_name, rpath, loader_path, executable_path ---------------------------
 # fix rpath value

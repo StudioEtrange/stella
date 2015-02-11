@@ -19,6 +19,27 @@ goto :eof
 		)
 	)
 
+	REM init internal required features
+	if not "%STELLA_INTERNAL_FEATURE_ROOT%"=="%STELLA_APP_FEATURE_ROOT%" (
+		set "_save_app_feature_root=!STELLA_APP_FEATURE_ROOT!"
+		set "STELLA_APP_FEATURE_ROOT=!STELLA_INTERNAL_FEATURE_ROOT!"
+		for /D %%A in ( %STELLA_INTERNAL_FEATURE_ROOT%\* ) do (
+			set "_folder=%%~nxA"
+			REM check for official feature
+			for %%F in (%__STELLA_FEATURE_LIST%) do (
+				if "%%F"=="!_folder!" (
+					REM for each detected version
+					for /D %%V in ( %STELLA_INTERNAL_FEATURE_ROOT%\%%F\* ) do (
+						set "_ver=%%~nxV"
+						call :init_feature !_folder! !_ver!
+					)
+				)
+			)
+		)
+		set "STELLA_APP_FEATURE_ROOT=!_save_app_feature_root!"
+	)
+
+
 	if not "!FEATURE_LIST_ENABLED!"=="" echo ** Features initialized : !FEATURE_LIST_ENABLED!
 goto :eof
 
@@ -83,7 +104,7 @@ goto :eof
 	set "_VER=%~2"
 	set "_OPT=%~3"
 
-	set _opt_hidden_feature=OFF
+	set _opt_required_feature=OFF
 	for %%O in (%_OPT%) do (
 		if "%%O"=="HIDDEN" set _opt_hidden_feature=ON
 	)
@@ -107,7 +128,10 @@ goto :eof
 	)
 
 
-	if "%_opt_hidden_feature%"=="OFF" (
+	if "%_opt_hidden_feature%"=="ON" (
+		set "_save_app_feature_root=!STELLA_APP_FEATURE_ROOT!"
+		set "STELLA_APP_FEATURE_ROOT=!STELLA_INTERNAL_FEATURE_ROOT!"	
+	) else (
 		call %STELLA_COMMON%\common-app.bat :add_app_feature !_FEATURE! !_VER!
 	)
 
@@ -118,13 +142,9 @@ goto :eof
 	)
 
 	set _flag=
-	for %%A in (!FEATURE_LIST_ENABLED!) do (
-		if "%%A"=="%_FEATURE%#!_VER!" set _flag=1
-	)
-	
-	if "%FORCE%"=="1" (
-		if "!_flag!"=="1" (
-			call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :install_%_FEATURE% !_VER!
+	if not "%FORCE%"=="1" (
+		for %%A in (!FEATURE_LIST_ENABLED!) do (
+			if "%%A"=="%_FEATURE%#!_VER!" set _flag=1
 		)
 	)
 	
@@ -132,31 +152,25 @@ goto :eof
 	if "!_flag!"=="" (
 		set FEATURE_PATH=
 		call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :install_%_FEATURE% !_VER!
+		call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :feature_%_FEATURE% !_VER!
 		if "!TEST_FEATURE!"=="1" (
 			set "FEATURE_LIST_ENABLED=!FEATURE_LIST_ENABLED! %_FEATURE%#!FEATURE_VER!"
 			if not "!FEATURE_PATH!"=="" set "PATH=!FEATURE_PATH!;!PATH!"
 		)
 	) else (
-		if not "%FORCE%"=="1" (
-			echo ** Feature %_FEATURE%#!_VER! already installed
-		)
+		echo ** Feature %_FEATURE%#!_VER! already installed
 	)
+
+	if "%_opt_hidden_feature%"=="ON" (
+		set "STELLA_APP_FEATURE_ROOT=!_save_app_feature_root!"	
+	)
+
 goto :eof
 
 :: reinit all feature previously enabled
-:reinit_all_features
-	for %%F in (!FEATURE_LIST_ENABLED!) do (
-		set item=%%F
-
-		set _VER=!item:*#=!
-		set "_FEAT=!item:#="^&REM #!
-
-		set FEATURE_PATH=
-		call %STELLA_FEATURE_RECIPE%\feature_!_FEAT!.bat :feature_!_FEAT! !_VER!
-		if "!TEST_FEATURE!"=="1" (
-			if not "!FEATURE_PATH!"=="" set "PATH=!FEATURE_PATH!;!PATH!"
-		)
-	)
+:reinit_installed_features
+	set FEATURE_LIST_ENABLED=
+	call :init_installed_features
 goto :eof
 
 

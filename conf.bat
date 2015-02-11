@@ -54,15 +54,15 @@ set STELLA_APP_FEATURE_ROOT=%STELLA_APP_WORK_ROOT%\feature_%STELLA_CURRENT_PLATF
 set ASSETS_ROOT=%STELLA_APP_WORK_ROOT%\assets
 call %STELLA_COMMON%\common.bat :rel_to_abs_path "ASSETS_REPOSITORY" "..\assets_repository" "%STELLA_APP_WORK_ROOT%"
 
+set STELLA_INTERNAL_FEATURE_ROOT=%STELLA_ROOT%\feature_%STELLA_CURRENT_PLATFORM_SUFFIX%\%STELLA_CURRENT_OS%
 
 
 :: REQUIRED FEATURES ---------------------------------------------
-REM TODO useless ?
-set "WGET=%STELLA_APP_FEATURE_ROOT%\wget\1_11_4\bin\wget.exe"
-set "UZIP=%STELLA_APP_FEATURE_ROOT%\unzip\5_51_1\bin\unzip.exe"
-set "7ZIP=%STELLA_APP_FEATURE_ROOT%\sevenzip\9_20\7za.exe"
-set "PATCH=%STELLA_APP_FEATURE_ROOT%\patch\2_5_9\bin\patch.exe"
-set "GNUMAKE=%STELLA_APP_FEATURE_ROOT%\make\3_81\bin\make.exe"
+set "WGET=%STELLA_INTERNAL_FEATURE_ROOT%\wget\1_11_4\bin\wget.exe"
+set "UZIP=%STELLA_INTERNAL_FEATURE_ROOT%\unzip\5_51_1\bin\unzip.exe"
+set "7ZIP=%STELLA_INTERNAL_FEATURE_ROOT%\sevenzip\9_20\7za.exe"
+::set "PATCH=%STELLA_INTERNAL_FEATURE_ROOT%\patch\2_5_9\bin\patch.exe"
+::set "GNUMAKE=%STELLA_INTERNAL_FEATURE_ROOT%\make\3_81\bin\make.exe"
 
 
 :: OTHERS ---------------------------------------------
@@ -96,7 +96,7 @@ set "__STELLA_FEATURE_LIST=goconfig-cli ninja jom cmake packer perl ruby nasm py
 :: API ---------------------------------------------
 set "STELLA_API_COMMON_PUBLIC=trim argparse is_path_abs get_ressource download_uncompress del_folder copy_folder_content_into fork run_admin mercurial_project_version git_project_version"
 set "STELLA_API_APP_PUBLIC=get_data get_assets get_all_data get_all_assets update_data update_assets revert_data revert_assets"
-set "STELLA_API_FEATURE_PUBLIC=install_feature init_feature reinit_all_features list_active_features"
+set "STELLA_API_FEATURE_PUBLIC=install_feature init_feature reinit_installed_features list_active_features"
 set "STELLA_API_VIRTUAL_PUBLIC="
 set "STELLA_API_BUILD_PUBLIC="
 
