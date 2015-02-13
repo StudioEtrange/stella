@@ -99,7 +99,7 @@ function __install_upx_internal() {
 		fi
 
 		__feature_upx_$VER
-		if [ ! "$TEST_FEATURE" == "0" ]; then
+		if [ "$TEST_FEATURE" == "1" ]; then
 			echo " ** upx installed"
 			"$FEATURE_PATH"/upx -V
 			__del_folder "$SRC_DIR"

@@ -93,7 +93,7 @@ function __install_perl_internal() {
 		make install
 
 		__feature_perl_$VER
-		if [ ! "$TEST_FEATURE" == "0" ]; then
+		if [ "$TEST_FEATURE" == "1" ]; then
 			echo " ** Perl installed"
 			"$FEATURE_ROOT/bin/perl" --version
 

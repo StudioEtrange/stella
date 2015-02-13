@@ -43,6 +43,20 @@ goto :eof
 	if not "!FEATURE_LIST_ENABLED!"=="" echo ** Features initialized : !FEATURE_LIST_ENABLED!
 goto :eof
 
+:info_feature
+	set "_FEATURE=%~1"
+	set "_VER=%~2"
+
+	if "%_VER%"=="" (
+		set "_V="
+		call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :default_%_FEATURE% "_V"
+		set "_VER=!_V!"
+	)
+
+	call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :feature_%_FEATURE% !_VER!
+goto :eof
+
+
 :: ARG2 return variable
 :list_feature_version
 	set "_FEATURE=%~1"

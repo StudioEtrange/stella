@@ -66,7 +66,7 @@ function __install_gettext_internal() {
 	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/gettext/$VER"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/gettext/gettext-$VER-src"
 	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/gettext/gettext-$VER-build"
-
+# TODO what is this ?
 export LDFLAGS="$RCS_STATIC_LINK_FLAGS $RCS_DYNAMIC_LINK_FLAGS" 
 	AUTO_INSTALL_FLAG_PREFIX=
 	AUTO_INSTALL_FLAG_POSTFIX="--disable-dependency-tracking \

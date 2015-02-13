@@ -1,5 +1,5 @@
-if [ ! "$_getopt_INCLUDED_" == "1" ]; then 
-_getopt_INCLUDED_=1
+if [ ! "$_GETOPT_INCLUDED_" == "1" ]; then 
+_GETOPT_INCLUDED_=1
 
 #TODO not finished
 # https://github.com/Homebrew/homebrew/blob/master/Library/Formula/getopt.rb

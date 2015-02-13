@@ -115,7 +115,7 @@ function __install_cmake_internal() {
 
 
 		__feature_cmake_$VER
-		if [ ! "$TEST_FEATURE" == "0" ]; then
+		if [ "$TEST_FEATURE" == "1" ]; then
 			echo " ** CMake installed"
 			"$FEATURE_ROOT/bin/cmake" --version
 

@@ -89,7 +89,7 @@ function __install_ninja_internal() {
 		python ./configure.py --bootstrap
 
 		__feature_ninja_$VER
-		if [ ! "$TEST_FEATURE" == "0" ]; then
+		if [ "$TEST_FEATURE" == "1" ]; then
 			echo " ** Ninja installed"
 			"$FEATURE_ROOT/ninja" --version
 		else

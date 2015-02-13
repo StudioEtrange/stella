@@ -8,6 +8,19 @@ function __list_active_features() {
 	echo "$FEATURE_LIST_ENABLED"
 }
 
+function __info_feature() {
+	local _FEATURE=$1
+	local _VER=$2
+
+	source $STELLA_FEATURE_RECIPE/feature_$_FEATURE.sh
+	if [ "$_VER" == "" ]; then
+		_VER="$(__default_$_FEATURE)"
+	fi
+
+	__feature_$_FEATURE $_VER
+
+}
+
 function __init_installed_features() {
 	local _flag
 	for f in  "$STELLA_APP_FEATURE_ROOT"/*; do

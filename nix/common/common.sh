@@ -343,6 +343,7 @@ function __get_ressource() {
 				# the flag file will be setted only if we pass the option MERGE
 				[ "$_opt_revert" == "ON" ] && echo "REVERT Not supported with HTTP protocol"
 				[ "$_opt_update" == "ON" ] && echo "UPDATE Not supported with HTTP protocol"
+				echo F"$FINAL_DESTINATION"
 				[ "$_opt_get" == "ON" ] && __download "$URI" "_AUTO_" "$FINAL_DESTINATION"
 				[ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;

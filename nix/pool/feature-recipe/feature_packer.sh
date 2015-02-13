@@ -107,7 +107,7 @@ function __install_packer_internal() {
 		__download_uncompress "$URL" "$FILE_NAME" "$INSTALL_DIR" "DEST_ERASE STRIP"
 		
 		__feature_packer_$VER
-		if [ ! "$TEST_FEATURE" == "0" ]; then
+		if [ "$TEST_FEATURE" == "1" ]; then
 			cd $INSTALL_DIR
 			chmod +x *
 			echo " ** Packer installed"

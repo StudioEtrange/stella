@@ -224,11 +224,10 @@ function __add_app_feature() {
 					_F=$f
 				fi
 
-				# if we found feature in feature list replace version with the new one
-				if [ "$_FEATURE" == "$_F" ]; then
+				if [ "$_FEATURE"#"$_VER" == "$_F"#"$_V" ]; then
 					[ "$_VER" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_F"
 					[ ! "$_VER" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_F#$_VER"
-					_flag=1
+					_flag=1	
 				else
 					[ "$_V" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_F"
 					[ ! "$_V" == "" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_F#$_V"
@@ -255,7 +254,7 @@ function __get_features() {
 
 function __get_data() {
 	local _list_id=$1
-	
+
 	__get_app_ressources "DATA" "GET" "$_list_id"
 
 }
@@ -296,11 +295,12 @@ function __revert_assets() {
 }
 
 function __get_all_data() {
-	__get_data $STELLA_DATA_LIST
+
+	__get_data "$STELLA_DATA_LIST"
 }
 
 function __get_all_assets() {
-	__get_assets $STELLA_ASSETS_LIST
+	__get_assets "$STELLA_ASSETS_LIST"
 }
 
 # ARG1 ressource mode is DATA or ASSET
