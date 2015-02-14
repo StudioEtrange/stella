@@ -13,6 +13,10 @@ goto :eof
 :install_goconfig-cli
 	set "_VER=%~1"
 
+	set TEST_FEATURE=0
+	set FEATURE_ROOT=
+	set FEATURE_PATH=
+	set FEATURE_VER=
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\goconfig-cli mkdir %STELLA_APP_FEATURE_ROOT%\goconfig-cli
 	if "%_VER%"=="" (
@@ -31,6 +35,10 @@ goto :eof
 :feature_goconfig-cli
 	set "_VER=%~1"
 	
+	set TEST_FEATURE=0
+	set FEATURE_ROOT=
+	set FEATURE_PATH=
+	set FEATURE_VER=
 
 	if "%_VER%"=="" (
 		call :default_goconfig-cli "_DEFAULT_VER"
@@ -89,9 +97,7 @@ goto :eof
 
 :feature_goconfig-cli_internal
 	set TEST_FEATURE=0
-	set FEATURE_PATH=
-	set FEATURE_VER=
-	set FEATURE_ROOT=
+	
 	if exist "!FEATURE_TEST!" (
 		set "TEST_FEATURE=1"
 		set "FEATURE_ROOT=!FEATURE_RESULT_ROOT!"

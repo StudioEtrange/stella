@@ -12,7 +12,11 @@ goto :eof
 
 :install_patch
 	set "_VER=%~1"
-	
+
+	set TEST_FEATURE=0
+	set FEATURE_ROOT=
+	set FEATURE_PATH=
+	set FEATURE_VER=	
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\patch mkdir %STELLA_APP_FEATURE_ROOT%\patch
 	if "%_VER%"=="" (
@@ -30,6 +34,11 @@ goto :eof
 
 :feature_patch
 	set "_VER=%~1"
+
+	set TEST_FEATURE=0
+	set FEATURE_ROOT=
+	set FEATURE_PATH=
+	set FEATURE_VER=
 
 	if "%_VER%"=="" (
 		call :default_patch "_DEFAULT_VER"
@@ -88,9 +97,7 @@ goto :eof
 
 :feature_patch_internal
 	set TEST_FEATURE=0
-	set FEATURE_PATH=
-	set FEATURE_VER=
-	set FEATURE_ROOT=
+	
 	if exist "!FEATURE_TEST!" (
 		set "TEST_FEATURE=1"
 		set "FEATURE_ROOT=!FEATURE_RESULT_ROOT!"

@@ -13,6 +13,11 @@ function __default_elasticsearch() {
 function __install_elasticsearch() {
 	local _VER=$1
 
+	TEST_FEATURE=0
+	FEATURE_PATH=
+	FEATURE_ROOT=
+	FEATURE_VER=
+
 	mkdir -p $STELLA_APP_FEATURE_ROOT/elasticsearch
 	if [ "$_VER" == "" ]; then
 		__install_elasticsearch_$(__default_elasticsearch)
@@ -26,6 +31,11 @@ function __install_elasticsearch() {
 }
 function __feature_elasticsearch() {
 	local _VER=$1
+
+	TEST_FEATURE=0
+	FEATURE_PATH=
+	FEATURE_ROOT=
+	FEATURE_VER=
 
 	if [ "$_VER" == "" ]; then
 		__feature_elasticsearch_$(__default_elasticsearch)
@@ -97,9 +107,7 @@ function __install_elasticsearch_internal() {
 }
 function __feature_elasticsearch_internal() {
 	TEST_FEATURE=0
-	FEATURE_ROOT=
-	FEATURE_PATH=
-	FEATURE_VER=
+	
 	if [ -f "$FEATURE_TEST" ]; then
 		TEST_FEATURE=1
 		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : elasticsearch in $FEATURE_RESULT_ROOT"

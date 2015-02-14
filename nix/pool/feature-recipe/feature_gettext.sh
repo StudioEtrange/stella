@@ -11,21 +11,31 @@ function __default_gettext() {
 }
 
 function __install_gettext() {
-		local _VER=$1
+	local _VER=$1
 
-		mkdir -p $STELLA_APP_FEATURE_ROOT/gettext
+	TEST_FEATURE=0
+	FEATURE_PATH=
+	FEATURE_ROOT=
+	FEATURE_VER=
 
-		if [ "$_VER" == "" ]; then
-			__install_gettext_$(__default_gettext)
-		else
-			# check for version
-			for v in $(__list_gettext); do
-				[ "$v" == "$_VER" ] && __install_gettext_$_VER
-			done
-		fi
+	mkdir -p $STELLA_APP_FEATURE_ROOT/gettext
+
+	if [ "$_VER" == "" ]; then
+		__install_gettext_$(__default_gettext)
+	else
+		# check for version
+		for v in $(__list_gettext); do
+			[ "$v" == "$_VER" ] && __install_gettext_$_VER
+		done
+	fi
 }
 function __feature_gettext() {
 	local _VER=$1
+
+	TEST_FEATURE=0
+	FEATURE_PATH=
+	FEATURE_ROOT=
+	FEATURE_VER=
 
 	if [ "$_VER" == "" ]; then
 		__feature_gettext_$(__default_gettext)
@@ -52,10 +62,6 @@ function __feature_gettext_0_19_4() {
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
 	FEATURE_RESULT_VER="0_19_4"
 	__feature_gettext_internal
-	FEATURE_TEST=
-	FEATURE_RESULT_PATH=
-	FEATURE_RESULT_ROOT=
-	FEATURE_RESULT_VER=
 }
 
 
@@ -96,9 +102,7 @@ export LDFLAGS="$RCS_STATIC_LINK_FLAGS $RCS_DYNAMIC_LINK_FLAGS"
 }
 function __feature_gettext_internal() {
 	TEST_FEATURE=0
-	FEATURE_ROOT=
-	FEATURE_PATH=
-	FEATURE_VER=
+	
 	if [ -f "$FEATURE_TEST" ]; then
 		TEST_FEATURE=1
 		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : gettext in $FEATURE_RESULT_ROOT"

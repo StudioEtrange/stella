@@ -17,6 +17,7 @@ function __info_feature() {
 		_VER="$(__default_$_FEATURE)"
 	fi
 
+	TEST_FEATURE=0
 	__feature_$_FEATURE $_VER
 
 }
@@ -83,7 +84,7 @@ function __init_feature() {
 		[ "$_FEATURE#$_VER" == "$a" ] && _flag=1
 	done
 	if [ "$_flag" == "0" ]; then
-		FEATURE_PATH=
+		TEST_FEATURE=0
 		__feature_"$_FEATURE" $_VER
 		if [ "$TEST_FEATURE" == "1" ]; then
 			FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $_FEATURE#$FEATURE_VER"
@@ -155,8 +156,7 @@ function __install_feature() {
 			fi
 			
 			if [ "$_flag" == "0" ]; then
-				FEATURE_PATH=
-
+				TEST_FEATURE=0
 				__install_"$_FEATURE" $_VER
 				__feature_"$_FEATURE" $_VER
 				if [ "$TEST_FEATURE" == "1" ]; then

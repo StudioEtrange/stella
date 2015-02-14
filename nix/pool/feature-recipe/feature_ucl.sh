@@ -53,10 +53,6 @@ function __feature_ucl_1_03() {
 	FEATURE_RESULT_PATH="$STELLA_APP_FEATURE_ROOT/ucl/1_03/lib"
 	FEATURE_RESULT_VER="1_03"
 	__feature_ucl_internal
-	FEATURE_TEST=
-	FEATURE_RESULT_PATH=
-	FEATURE_RESULT_ROOT=
-	FEATURE_RESULT_VER=
 }
 
 
@@ -85,9 +81,7 @@ function __install_ucl_internal() {
 }
 function __feature_ucl_internal() {
 	TEST_FEATURE=0
-	FEATURE_ROOT=
-	FEATURE_PATH=
-	FEATURE_VER=
+	
 	if [ -f "$FEATURE_TEST" ]; then
 		TEST_FEATURE=1
 		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : ucl in $FEATURE_RESULT_ROOT"

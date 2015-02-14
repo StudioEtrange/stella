@@ -13,6 +13,11 @@ function __default_kibana() {
 function __install_kibana() {
 	local _VER=$1
 
+	TEST_FEATURE=0
+	FEATURE_PATH=
+	FEATURE_ROOT=
+	FEATURE_VER=
+
 	mkdir -p $STELLA_APP_FEATURE_ROOT/kibana
 	if [ "$_VER" == "" ]; then
 		__install_kibana_$(__default_kibana)
@@ -26,6 +31,11 @@ function __install_kibana() {
 }
 function __feature_kibana() {
 	local _VER=$1
+
+	TEST_FEATURE=0
+	FEATURE_PATH=
+	FEATURE_ROOT=
+	FEATURE_VER=
 
 	if [ "$_VER" == "" ]; then
 		__feature_kibana_$(__default_kibana)
@@ -112,10 +122,7 @@ function __install_kibana_internal() {
 }
 function __feature_kibana_internal() {
 	TEST_FEATURE=0
-	FEATURE_ROOT=
-	FEATURE_PATH=
-	FEATURE_VER=
-
+	
 	if [ -f "$FEATURE_TEST" ]; then
 		TEST_FEATURE=1
 		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : kibana in $FEATURE_RESULT_ROOT"

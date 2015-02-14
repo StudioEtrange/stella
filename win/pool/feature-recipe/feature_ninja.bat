@@ -14,6 +14,10 @@ goto :eof
 :install_ninja
 	set "_VER=%~1"
 	
+	set TEST_FEATURE=0
+	set FEATURE_ROOT=
+	set FEATURE_PATH=
+	set FEATURE_VER=
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\ninja mkdir %STELLA_APP_FEATURE_ROOT%\ninja
 
@@ -32,7 +36,11 @@ goto :eof
 
 :feature_ninja
 	set "_VER=%~1"
-	
+
+	set TEST_FEATURE=0
+	set FEATURE_ROOT=
+	set FEATURE_PATH=
+	set FEATURE_VER=
 
 	if "%_VER%"=="" (
 		call :default_ninja "_DEFAULT_VER"
@@ -83,11 +91,10 @@ goto :eof
 		echo ** Already installed
 	)
 goto :eof
+
 :feature_ninja_last_release
 	set TEST_FEATURE=0
-	set FEATURE_PATH=
-	set FEATURE_VER=
-	set FEATURE_ROOT=
+
 	if exist "%STELLA_APP_FEATURE_ROOT%\ninja\last_release\ninja.exe" (
 		set "TEST_FEATURE=1"
 		set "FEATURE_ROOT=%STELLA_APP_FEATURE_ROOT%\ninja\last_release"

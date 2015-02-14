@@ -13,6 +13,10 @@ goto :eof
 :install_jom
 	set "_VER=%~1"
 	
+	set TEST_FEATURE=0
+	set FEATURE_ROOT=
+	set FEATURE_PATH=
+	set FEATURE_VER=
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\jom mkdir %STELLA_APP_FEATURE_ROOT%\jom
 	if "%_VER%"=="" (
@@ -31,6 +35,10 @@ goto :eof
 :feature_jom
 	set "_VER=%~1"
 	
+	set TEST_FEATURE=0
+	set FEATURE_ROOT=
+	set FEATURE_PATH=
+	set FEATURE_VER=
 
 	if "%_VER%"=="" (
 		call :default_jom "_DEFAULT_VER"
@@ -77,9 +85,7 @@ goto :eof
 
 :feature_jom_1_0_13
 	set TEST_FEATURE=0
-	set FEATURE_PATH=
-	set FEATURE_VER=
-	set FEATURE_ROOT=
+	
 	if exist "%STELLA_APP_FEATURE_ROOT%\jom\1_0_13\jom.exe" (
 		set "TEST_FEATURE=1"
 		set "FEATURE_ROOT=%STELLA_APP_FEATURE_ROOT%\jom\1_0_13"

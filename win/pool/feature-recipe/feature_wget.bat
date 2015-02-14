@@ -13,6 +13,10 @@ goto :eof
 :install_wget
 	set "_VER=%~1"
 
+	set TEST_FEATURE=0
+	set FEATURE_ROOT=
+	set FEATURE_PATH=
+	set FEATURE_VER=
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\wget mkdir %STELLA_APP_FEATURE_ROOT%\wget
 	if "%_VER%"=="" (
@@ -31,6 +35,10 @@ goto :eof
 :feature_wget
 	set "_VER=%~1"
 
+	set TEST_FEATURE=0
+	set FEATURE_ROOT=
+	set FEATURE_PATH=
+	set FEATURE_VER=
 
 	if "%_VER%"=="" (
 		call :default_wget "_DEFAULT_VER"
@@ -74,9 +82,7 @@ goto :eof
 
 :feature_wget_1_11_4
 	set TEST_FEATURE=0
-	set FEATURE_PATH=
-	set FEATURE_VER=
-	set FEATURE_ROOT=
+	
 	if exist "%STELLA_APP_FEATURE_ROOT%\wget\1_11_4\bin\wget.exe" (
 		set "TEST_FEATURE=1"
 		set "FEATURE_ROOT=%STELLA_APP_FEATURE_ROOT%\wget\1_11_4"

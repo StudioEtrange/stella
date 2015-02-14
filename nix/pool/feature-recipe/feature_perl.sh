@@ -15,6 +15,11 @@ function __default_perl() {
 function __install_perl() {
 	local _VER=$1
 
+	TEST_FEATURE=0
+	FEATURE_PATH=
+	FEATURE_ROOT=
+	FEATURE_VER=
+
 	mkdir -p $STELLA_APP_FEATURE_ROOT/perl
 
 	if [ "$_VER" == "" ]; then
@@ -29,6 +34,11 @@ function __install_perl() {
 }
 function __feature_perl() {
 	local _VER=$1
+
+	TEST_FEATURE=0
+	FEATURE_PATH=
+	FEATURE_ROOT=
+	FEATURE_VER=
 
 	if [ "$_VER" == "" ]; then
 		__feature_perl_$(__default_perl)
@@ -56,10 +66,6 @@ function __feature_perl_5_18_2() {
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
 	FEATURE_RESULT_VER="5_18_2"
 	__feature_perl_internal
-	FEATURE_TEST=
-	FEATURE_RESULT_PATH=
-	FEATURE_RESULT_ROOT=
-	FEATURE_RESULT_VER=
 }
 
 # --------------------------------------
@@ -108,9 +114,7 @@ function __install_perl_internal() {
 }
 function __feature_perl_internal() {
 	TEST_FEATURE=0
-	FEATURE_ROOT=
-	FEATURE_PATH=
-	FEATURE_VER=
+	
 	if [ -f "$FEATURE_TEST" ]; then
 		TEST_FEATURE=1
 		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : perl in $FEATURE_RESULT_ROOT"

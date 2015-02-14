@@ -13,6 +13,11 @@ function __default_wget() {
 function __install_wget() {
 	local _VER=$1
 
+	TEST_FEATURE=0
+	FEATURE_PATH=
+	FEATURE_ROOT=
+	FEATURE_VER=
+
 	mkdir -p $STELLA_APP_FEATURE_ROOT/wget
 
 	if [ "$_VER" == "" ]; then
@@ -27,6 +32,11 @@ function __install_wget() {
 
 function __feature_wget() {
 	local _VER=$1
+
+	TEST_FEATURE=0
+	FEATURE_PATH=
+	FEATURE_ROOT=
+	FEATURE_VER=
 
 	if [ "$_VER" == "" ]; then
 		__feature_wget_$(__default_wget)
@@ -53,10 +63,6 @@ function __feature_wget_1_15() {
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
 	FEATURE_RESULT_VER="1_15"
 	__feature_wget_internal
-	FEATURE_TEST=
-	FEATURE_RESULT_PATH=
-	FEATURE_RESULT_ROOT=
-	FEATURE_RESULT_VER=
 }
 
 
@@ -83,11 +89,10 @@ function __install_wget_internal() {
 		echo " ** Already installed"
 	fi
 }
+
 function __feature_wget_internal() {
 	TEST_FEATURE=0
-	FEATURE_ROOT=
-	FEATURE_PATH=
-	FEATURE_VER=
+	
 	if [ -f "$FEATURE_TEST" ]; then
 		TEST_FEATURE=1
 		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : wget in $FEATURE_RESULT_ROOT"

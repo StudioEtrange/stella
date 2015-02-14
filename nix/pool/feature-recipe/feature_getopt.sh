@@ -16,6 +16,11 @@ function __default_getopt() {
 function __install_getopt() {
 	local _VER=$1
 
+	TEST_FEATURE=0
+	FEATURE_PATH=
+	FEATURE_ROOT=
+	FEATURE_VER=
+
 	mkdir -p $STELLA_APP_FEATURE_ROOT/getopt
 
 	if [ "$_VER" == "" ]; then
@@ -29,6 +34,11 @@ function __install_getopt() {
 }
 function __feature_getopt() {
 	local _VER=$1
+
+	TEST_FEATURE=0
+	FEATURE_PATH=
+	FEATURE_ROOT=
+	FEATURE_VER=
 
 	if [ "$_VER" == "" ]; then
 		__feature_getopt_$(__default_getopt)
@@ -55,10 +65,6 @@ function __feature_getopt_1_1_5() {
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
 	FEATURE_RESULT_VER="1_1_5"
 	__feature_getopt_internal
-	FEATURE_TEST=
-	FEATURE_RESULT_PATH=
-	FEATURE_RESULT_ROOT=
-	FEATURE_RESULT_VER=
 }
 
 
@@ -86,9 +92,7 @@ function __install_getopt_internal() {
 }
 function __feature_getopt_internal() {
 	TEST_FEATURE=0
-	FEATURE_ROOT=
-	FEATURE_PATH=
-	FEATURE_VER=
+	
 	if [ -f "$FEATURE_TEST" ]; then
 		TEST_FEATURE=1
 		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : getopt in $FEATURE_RESULT_ROOT"

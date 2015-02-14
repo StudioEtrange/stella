@@ -13,6 +13,11 @@ function __default_upx() {
 function __install_upx() {
 	local _VER=$1
 
+	TEST_FEATURE=0
+	FEATURE_PATH=
+	FEATURE_ROOT=
+	FEATURE_VER=
+
 	mkdir -p $STELLA_APP_FEATURE_ROOT/upx
 
 	if [ "$_VER" == "" ]; then
@@ -27,6 +32,11 @@ function __install_upx() {
 }
 function __feature_upx() {
 	local _VER=$1
+
+	TEST_FEATURE=0
+	FEATURE_PATH=
+	FEATURE_ROOT=
+	FEATURE_VER=
 
 	if [ "$_VER" == "" ]; then
 		__feature_upx_$(__default_upx)
@@ -53,10 +63,6 @@ function __feature_upx_3_91() {
 	FEATURE_RESULT_PATH="$STELLA_APP_FEATURE_ROOT/upx/3_91/bin"
 	FEATURE_RESULT_VER="3_91"
 	__feature_upx_internal
-	FEATURE_TEST=
-	FEATURE_RESULT_PATH=
-	FEATURE_RESULT_ROOT=
-	FEATURE_RESULT_VER=
 }
 
 
@@ -115,9 +121,7 @@ function __install_upx_internal() {
 }
 function __feature_upx_internal() {
 	TEST_FEATURE=0
-	FEATURE_ROOT=
-	FEATURE_PATH=
-	FEATURE_VER=
+	
 	if [ -f "$FEATURE_TEST" ]; then
 		TEST_FEATURE=1
 		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : upx in $FEATURE_RESULT_ROOT"

@@ -13,6 +13,10 @@ goto :eof
 :install_sevenzip
 	set "_VER=%~1"
 	
+	set TEST_FEATURE=0
+	set FEATURE_ROOT=
+	set FEATURE_PATH=
+	set FEATURE_VER=
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\sevenzip mkdir %STELLA_APP_FEATURE_ROOT%\sevenzip
 	if "%_VER%"=="" (
@@ -31,6 +35,10 @@ goto :eof
 :feature_sevenzip
 	set "_VER=%~1"
 
+	set TEST_FEATURE=0
+	set FEATURE_ROOT=
+	set FEATURE_PATH=
+	set FEATURE_VER=
 
 	if "%_VER%"=="" (
 		call :default_sevenzip "_DEFAULT_VER"
@@ -75,9 +83,7 @@ goto :eof
 
 :feature_sevenzip_9_20
 	set TEST_FEATURE=0
-	set FEATURE_PATH=
-	set FEATURE_VER=
-	set FEATURE_ROOT=
+
 	if exist "%STELLA_APP_FEATURE_ROOT%\sevenzip\9_20\7za.exe" (
 		set "TEST_FEATURE=1"
 		set "FEATURE_ROOT=%STELLA_APP_FEATURE_ROOT%\sevenzip\9_20"

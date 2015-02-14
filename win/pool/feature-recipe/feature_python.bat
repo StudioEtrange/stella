@@ -14,6 +14,10 @@ goto :eof
 :install_python
 	set "_VER=%~1"
 	
+	set TEST_FEATURE=0
+	set FEATURE_ROOT=
+	set FEATURE_PATH=
+	set FEATURE_VER=
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\python mkdir %STELLA_APP_FEATURE_ROOT%\python
 	if "%_VER%"=="" (
@@ -32,6 +36,10 @@ goto :eof
 :feature_python
 	set "_VER=%~1"
 	
+	set TEST_FEATURE=0
+	set FEATURE_ROOT=
+	set FEATURE_PATH=
+	set FEATURE_VER=
 	
 	if "%_VER%"=="" (
 		call :default_python "_DEFAULT_VER"
@@ -87,9 +95,7 @@ goto :eof
 
 :feature_python_2_7_6
 	set TEST_FEATURE=0
-	set FEATURE_PATH=
-	set FEATURE_VER=
-	set FEATURE_ROOT=
+	
 	if exist "%STELLA_APP_FEATURE_ROOT%\python\2_7_6\python.exe" (
 		set "TEST_FEATURE=1"
 		set "FEATURE_ROOT=%STELLA_APP_FEATURE_ROOT%\python\2_7_6"

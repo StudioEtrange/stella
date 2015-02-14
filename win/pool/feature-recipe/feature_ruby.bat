@@ -13,6 +13,11 @@ goto :eof
 :install_ruby
 	set "_VER=%~1"	
 
+	set TEST_FEATURE=0
+	set FEATURE_ROOT=
+	set FEATURE_PATH=
+	set FEATURE_VER=
+
 	REM if not exist %STELLA_APP_FEATURE_ROOT%\ruby mkdir %STELLA_APP_FEATURE_ROOT%\ruby
 	if "%_VER%"=="" (
 		call :default_ruby "_DEFAULT_VER"
@@ -29,6 +34,11 @@ goto :eof
 
 :feature_ruby
 	set "_VER=%~1"
+
+	set TEST_FEATURE=0
+	set FEATURE_ROOT=
+	set FEATURE_PATH=
+	set FEATURE_VER=
 
 	if "%_VER%"=="" (
 		call :default_ruby "_DEFAULT_VER"
@@ -169,9 +179,7 @@ goto :eof
 
 :feature_ruby_internal
 	set TEST_FEATURE=0
-	set FEATURE_PATH=
-	set FEATURE_VER=
-	set FEATURE_ROOT=
+
 	if exist "!FEATURE_TEST!" (
 		set "TEST_FEATURE=1"
 		set "FEATURE_ROOT=!FEATURE_RESULT_ROOT!"
@@ -218,9 +226,7 @@ goto :eof
 
 :feature_rubydevkit_internal
 	set TEST_FEATURE=0
-	set FEATURE_PATH=
-	set FEATURE_VER=
-	set FEATURE_ROOT=
+
 	if exist "!FEATURE_TEST!" (
 		set "TEST_FEATURE=1"
 		set "FEATURE_ROOT=!FEATURE_RESULT_ROOT!"

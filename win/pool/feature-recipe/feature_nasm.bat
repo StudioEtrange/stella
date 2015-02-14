@@ -13,6 +13,10 @@ goto :eof
 :install_nasm
 	set "_VER=%~1"
 	
+	set TEST_FEATURE=0
+	set FEATURE_ROOT=
+	set FEATURE_PATH=
+	set FEATURE_VER=
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\nasm mkdir %STELLA_APP_FEATURE_ROOT%\nasm
 	if "%_VER%"=="" (
@@ -30,7 +34,11 @@ goto :eof
 
 :feature_nasm
 	set "_VER=%~1"
-	
+
+	set TEST_FEATURE=0
+	set FEATURE_ROOT=
+	set FEATURE_PATH=
+	set FEATURE_VER=	
 
 	if "%_VER%"=="" (
 		call :default_nasm "_DEFAULT_VER"
@@ -78,9 +86,7 @@ goto :eof
 
 :feature_nasm_2_11
 	set TEST_FEATURE=0
-	set FEATURE_PATH=
-	set FEATURE_VER=
-	set FEATURE_ROOT=
+	
 	if exist "%STELLA_APP_FEATURE_ROOT%\nasm\2_11\nasm.exe" (
 		set "TEST_FEATURE=1"
 		set "FEATURE_ROOT=%STELLA_APP_FEATURE_ROOT%\nasm\2_11"

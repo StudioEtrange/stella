@@ -52,7 +52,7 @@ goto :eof
 		call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :default_%_FEATURE% "_V"
 		set "_VER=!_V!"
 	)
-
+	set TEST_FEATURE=0
 	call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :feature_%_FEATURE% !_VER!
 goto :eof
 
@@ -62,6 +62,7 @@ goto :eof
 	set "_FEATURE=%~1"
 	set "_VAR=%~2"
 
+	set "%_VAR%="
 	call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :list_%_FEATURE% %_VAR%
 goto :eof
 
@@ -86,6 +87,7 @@ goto :eof
 		if "%%A"=="%_FEATURE%#!_VER!" set _flag=1
 	)
 	if "%_flag%"=="" (
+		set TEST_FEATURE=0
 		call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :feature_%_FEATURE% !_VER!
 		if "!TEST_FEATURE!"=="1" (
 			set "FEATURE_LIST_ENABLED=!FEATURE_LIST_ENABLED! %_FEATURE%#!FEATURE_VER!"
@@ -164,7 +166,7 @@ goto :eof
 	
 
 	if "!_flag!"=="" (
-		set FEATURE_PATH=
+		set TEST_FEATURE=0
 		call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :install_%_FEATURE% !_VER!
 		call %STELLA_FEATURE_RECIPE%\feature_%_FEATURE%.bat :feature_%_FEATURE% !_VER!
 		if "!TEST_FEATURE!"=="1" (

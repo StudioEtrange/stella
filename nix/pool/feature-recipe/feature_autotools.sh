@@ -13,6 +13,11 @@ function __default_autotools() {
 function __install_autotools() {
 	local _VER=$1
 
+	TEST_FEATURE=0
+	FEATURE_PATH=
+	FEATURE_ROOT=
+	FEATURE_VER=
+
 	[ "$_VER" == "" ] && _VER="$(__default_autotools)"
 
 	[ "$FORCE" ] && rm -Rf "$STELLA_APP_FEATURE_ROOT/autotools/$_VER"
@@ -30,7 +35,12 @@ function __install_autotools() {
 
 function __feature_autotools() {
 	local _VER=$1
-	
+
+	TEST_FEATURE=0
+	FEATURE_PATH=
+	FEATURE_ROOT=
+	FEATURE_VER=
+
 	if [ "$_VER" == "" ]; then
 		__feature_autotools_$(__default_autotools)
 	else
@@ -58,18 +68,18 @@ function __install_autotools_pack() {
 	__init_feature autotools libtool_2_4_2
 }
 function __feature_autotools_pack() {
-	TEST_FEATURE=0
-	FEATURE_PATH=
-	FEATURE_VER=
-
 	local _flag=1
 
+	TEST_FEATURE=0
 	__feature_autotools_m4_1_4_17
 	[ "$TEST_FEATURE" == "0" ] && _flag=0
+	TEST_FEATURE=0
 	__feature_autotools_autoconf_2_69
 	[ "$TEST_FEATURE" == "0" ] && _flag=0
+	TEST_FEATURE=0
 	__feature_autotools_automake_1_14
 	[ "$TEST_FEATURE" == "0" ] && _flag=0
+	TEST_FEATURE=0
 	__feature_autotools_libtool_2_4_2
 	[ "$TEST_FEATURE" == "0" ] && _flag=0
 
@@ -81,6 +91,7 @@ function __feature_autotools_pack() {
 		FEATURE_VER=pack
 	else
 		TEST_FEATURE=0
+		FEATURE_ROOT=
 		FEATURE_PATH=
 		FEATURE_VER=
 	fi
@@ -120,12 +131,7 @@ function __feature_autotools_autoconf_2_69() {
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
 	FEATURE_RESULT_VER="2_69"
 	__feature_autotools_internal autoconf
-	[ "$TEST_FEATURE" == "1" ] && $FEATURE_RESULT_ROOT/bin/autoconf --version | sed -ne "1,1p"
-	FEATURE_RESULT_PATH=
-	FEATURE_RESULT_ROOT=
-	FEATURE_RESULT_VER=
-
-	
+	[ "$TEST_FEATURE" == "1" ] && $FEATURE_RESULT_ROOT/bin/autoconf --version | sed -ne "1,1p"	
 }
 
 
@@ -157,10 +163,6 @@ function __feature_autotools_automake_1_14() {
 	FEATURE_RESULT_VER="1_14"
 	__feature_autotools_internal automake
 	[ "$TEST_FEATURE" == "1" ] && $FEATURE_RESULT_ROOT/bin/automake --version | sed -ne "1,1p"
-	FEATURE_RESULT_PATH=
-	FEATURE_RESULT_ROOT=
-	FEATURE_RESULT_VER=
-
 }
 
 
@@ -192,11 +194,6 @@ function __feature_autotools_libtool_2_4_2() {
 	FEATURE_RESULT_VER="2_4_2"
 	__feature_autotools_internal libtool
 	[ "$TEST_FEATURE" == "1" ] && $FEATURE_RESULT_ROOT/bin/libtool --version | sed -ne "1,1p"
-	FEATURE_RESULT_PATH=
-	FEATURE_RESULT_ROOT=
-	FEATURE_RESULT_VER=
-
-	
 }
 
 
@@ -227,12 +224,7 @@ function __feature_autotools_m4_1_4_17() {
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
 	FEATURE_RESULT_VER="1_4_17"
 	__feature_autotools_internal m4
-	[ "$TEST_FEATURE" == "1" ] && $FEATURE_RESULT_ROOT/bin/m4 --version | sed -ne "1,1p"
-	FEATURE_RESULT_PATH=
-	FEATURE_RESULT_ROOT=
-	FEATURE_RESULT_VER=
-
-	
+	[ "$TEST_FEATURE" == "1" ] && $FEATURE_RESULT_ROOT/bin/m4 --version | sed -ne "1,1p"	
 }
 
 

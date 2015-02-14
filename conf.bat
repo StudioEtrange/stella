@@ -95,7 +95,7 @@ set "__STELLA_FEATURE_LIST=goconfig-cli ninja jom cmake packer perl ruby nasm py
 
 :: API ---------------------------------------------
 set "STELLA_API_COMMON_PUBLIC=trim argparse is_path_abs get_ressource download_uncompress del_folder copy_folder_content_into fork run_admin mercurial_project_version git_project_version"
-set "STELLA_API_APP_PUBLIC=get_data get_assets get_all_data get_all_assets update_data update_assets revert_data revert_assets"
+set "STELLA_API_APP_PUBLIC=get_data get_assets get_all_data get_all_assets update_data update_assets revert_data revert_assets get_features"
 set "STELLA_API_FEATURE_PUBLIC=info_feature install_feature init_feature reinit_installed_features list_active_features"
 set "STELLA_API_VIRTUAL_PUBLIC="
 set "STELLA_API_BUILD_PUBLIC="

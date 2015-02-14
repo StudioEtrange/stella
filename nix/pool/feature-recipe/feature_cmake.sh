@@ -13,6 +13,12 @@ function __default_cmake() {
 function __install_cmake() {
 	local _VER=$1
 
+	TEST_FEATURE=0
+	FEATURE_PATH=
+	FEATURE_ROOT=
+	FEATURE_VER=
+
+
 	mkdir -p $STELLA_APP_FEATURE_ROOT/cmake
 	if [ "$_VER" == "" ]; then
 		__install_cmake_$(__default_cmake)
@@ -26,6 +32,11 @@ function __install_cmake() {
 }
 function __feature_cmake() {
 	local _VER=$1
+
+	TEST_FEATURE=0
+	FEATURE_PATH=
+	FEATURE_ROOT=
+	FEATURE_VER=
 
 	if [ "$_VER" == "" ]; then
 		__feature_cmake_$(__default_cmake)
@@ -71,10 +82,7 @@ function __feature_cmake_3_1_2() {
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_PATH/bin"
 	FEATURE_RESULT_VER="3_1_2"
 	__feature_cmake_internal
-	FEATURE_TEST=
-	FEATURE_RESULT_PATH=
-	FEATURE_RESULT_ROOT=
-	FEATURE_RESULT_VER=
+
 }
 
 
@@ -132,9 +140,7 @@ function __install_cmake_internal() {
 }
 function __feature_cmake_internal() {
 	TEST_FEATURE=0
-	FEATURE_ROOT=
-	FEATURE_PATH=
-	FEATURE_VER=
+	
 	if [ -f "$FEATURE_TEST" ]; then
 		TEST_FEATURE=1
 		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : cmake in $FEATURE_RESULT_ROOT"

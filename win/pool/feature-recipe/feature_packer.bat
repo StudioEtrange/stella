@@ -13,7 +13,11 @@ goto :eof
 
 :install_packer
 	set "_VER=%~1"
-	
+
+	set TEST_FEATURE=0
+	set FEATURE_ROOT=
+	set FEATURE_PATH=
+	set FEATURE_VER=
 
 	if not exist %STELLA_APP_FEATURE_ROOT%\packer mkdir %STELLA_APP_FEATURE_ROOT%\packer
 	if "%_VER%"=="" (
@@ -31,6 +35,11 @@ goto :eof
 
 :feature_packer
 	set "_VER=%~1"
+
+	set TEST_FEATURE=0
+	set FEATURE_ROOT=
+	set FEATURE_PATH=
+	set FEATURE_VER=
 
 	if "%_VER%"=="" (
 		call :default_packer "_DEFAULT_VER"
@@ -105,9 +114,7 @@ goto :eof
 
 :feature_packer_internal
 	set TEST_FEATURE=0
-	set FEATURE_PATH=
-	set FEATURE_VER=
-	set FEATURE_ROOT=
+	
 	if exist "!FEATURE_TEST!" (
 		set "TEST_FEATURE=1"
 		set "FEATURE_ROOT=!FEATURE_RESULT_ROOT!"
