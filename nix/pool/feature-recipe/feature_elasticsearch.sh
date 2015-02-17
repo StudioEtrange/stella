@@ -3,11 +3,11 @@ _ELASTICSEARCH_INCLUDED_=1
 
 
 function __list_elasticsearch() {
-	echo "1_4_2"
+	echo "1_4_2 1_4_3"
 }
 
 function __default_elasticsearch() {
-	echo "1_4_2"
+	echo "1_4_3"
 }
 
 function __install_elasticsearch() {
@@ -66,6 +66,23 @@ function __feature_elasticsearch_1_4_2() {
 	FEATURE_RESULT_VER="1_4_2"
 	__feature_elasticsearch_internal
 }
+
+function __install_elasticsearch_1_4_3() {
+	URL=https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.4.3.tar.gz
+	VER=1_4_3
+	FILE_NAME=elasticsearch-1.4.3.tar.gz
+	__install_elasticsearch_internal
+
+	# NEED JDK 7 >= 7.60
+}
+function __feature_elasticsearch_1_4_3() {
+	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/elasticsearch/1_4_3/bin/elasticsearch"
+	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/elasticsearch/1_4_3"
+	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
+	FEATURE_RESULT_VER="1_4_3"
+	__feature_elasticsearch_internal
+}
+
 
 
 # --------------------------------------

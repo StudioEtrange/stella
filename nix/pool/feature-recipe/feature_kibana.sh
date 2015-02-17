@@ -3,11 +3,11 @@ _KIBANA_INCLUDED_=1
 
 
 function __list_kibana() {
-	echo "3_1_2 4_0_0_b3"
+	echo "3_1_2 4_0_0_b3 4_0_0_rc1"
 }
 
 function __default_kibana() {
-	echo "4_0_0_b3"
+	echo "3_1_2"
 }
 
 function __install_kibana() {
@@ -83,6 +83,32 @@ function __feature_kibana_4_0_0_b3() {
 	FEATURE_RESULT_VER="4_0_0_b3"
 	__feature_kibana_internal
 }
+
+function __install_kibana_4_0_0_rc1() {
+	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then 
+		URL=https://download.elasticsearch.org/kibana/kibana/kibana-4.0.0-rc1-darwin-x64.tar.gz
+		FILE_NAME=kibana-4.0.0-rc1-darwin-x64.tar.gz
+	fi
+
+	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+		URL=https://download.elasticsearch.org/kibana/kibana/kibana-4.0.0-rc1-linux-x64.tar.gz
+		FILE_NAME=kibana-4.0.0-rc1-linux-x64.tar.gz
+	fi
+	VER=4_0_0_rc1
+	
+	__install_kibana_internal
+
+	# NEED Elasticsearch
+}
+
+function __feature_kibana_4_0_0_rc1() {
+	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/kibana/4_0_0_rc1/bin/kibana"
+	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/kibana/4_0_0_rc1"
+	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
+	FEATURE_RESULT_VER="4_0_0_rc1"
+	__feature_kibana_internal
+}
+
 
 # --------------------------------------
 
