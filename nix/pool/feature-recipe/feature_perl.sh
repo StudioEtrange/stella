@@ -73,7 +73,7 @@ function __feature_perl_5_18_2() {
 function __install_perl_internal() { 
 	
 	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/perl/$VER"
-	SRC_DIR="$STELLA_APP_FEATURE_ROOT/perl/$VER/perl-$VER-src"
+	SRC_DIR="$STELLA_APP_FEATURE_ROOT/perl/perl-$VER-src"
 	BUILD_DIR=
 
 	AUTO_INSTALL_FLAG_PREFIX=
@@ -96,6 +96,8 @@ function __install_perl_internal() {
 
 		#make -j$BUILD_JOB
 		make
+		# test are too long
+		# make test
 		make install
 
 		__feature_perl_$VER

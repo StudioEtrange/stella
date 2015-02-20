@@ -3,11 +3,11 @@ call %*
 goto :eof
 
 :list_packer
-	set "%~1=0_6_0_x64 0_6_0_x86"
+	set "%~1=0_6_0_x64 0_6_0_x86 0_7_5_x64 0_7_5_x86"
 goto :eof
 
 :default_packer
-	set "%~1=0_6_0_x64"
+	set "%~1=0_7_5_x64"
 goto :eof
 
 
@@ -61,14 +61,6 @@ REM --------------------------------------------------------------
 	set VERSION=0_6_0_x64
 	call :install_packer_internal
 goto :eof
-
-:install_packer_0_6_0_x86
-	set URL=https://dl.bintray.com/mitchellh/packer/0.6.0_windows_386.zip
-	set FILE_NAME=0.6.0_windows_386.zip
-	set VERSION=0_6_0_x86
-	call :install_packer_internal
-goto :eof
-
 :feature_packer_0_6_0_x64
 	set "FEATURE_TEST=%STELLA_APP_FEATURE_ROOT%\packer\0_6_0_x64\packer.exe"
 	set "FEATURE_RESULT_ROOT=%STELLA_APP_FEATURE_ROOT%\packer\0_6_0_x64"
@@ -77,6 +69,13 @@ goto :eof
 	call :feature_packer_internal
 goto :eof
 
+
+:install_packer_0_6_0_x86
+	set URL=https://dl.bintray.com/mitchellh/packer/0.6.0_windows_386.zip
+	set FILE_NAME=0.6.0_windows_386.zip
+	set VERSION=0_6_0_x86
+	call :install_packer_internal
+goto :eof
 :feature_packer_0_6_0_x86
 	set "FEATURE_TEST=%STELLA_APP_FEATURE_ROOT%\packer\0_6_0_x86\packer.exe"
 	set "FEATURE_RESULT_ROOT=%STELLA_APP_FEATURE_ROOT%\packer\0_6_0_x86"
@@ -85,6 +84,36 @@ goto :eof
 	call :feature_packer_internal
 goto :eof
 
+
+
+
+:install_packer_0_7_5_x64
+	set URL=https://dl.bintray.com/mitchellh/packer/0.7.5_windows_amd64.zip
+	set FILE_NAME=0.7.5_windows_amd64.zip
+	set VERSION=0_7_5_x64
+	call :install_packer_internal
+goto :eof
+:feature_packer_0_7_5_x64
+	set "FEATURE_TEST=%STELLA_APP_FEATURE_ROOT%\packer\0_7_5_x64\packer.exe"
+	set "FEATURE_RESULT_ROOT=%STELLA_APP_FEATURE_ROOT%\packer\0_7_5_x64"
+	set "FEATURE_RESULT_PATH=!FEATURE_RESULT_ROOT!"
+	set "FEATURE_RESULT_VER=0_7_5_x64"
+	call :feature_packer_internal
+goto :eof
+
+:install_packer_0_7_5_x86
+	set URL=https://dl.bintray.com/mitchellh/packer/0.7.5_windows_386.zip
+	set FILE_NAME=0.7.5_windows_386.zip
+	set VERSION=0_7_5_x86
+	call :install_packer_internal
+goto :eof
+:feature_packer_0_7_5_x86
+	set "FEATURE_TEST=%STELLA_APP_FEATURE_ROOT%\packer\0_7_5_x86\packer.exe"
+	set "FEATURE_RESULT_ROOT=%STELLA_APP_FEATURE_ROOT%\packer\0_7_5_x86"
+	set "FEATURE_RESULT_PATH=!FEATURE_RESULT_ROOT!"
+	set "FEATURE_RESULT_VER=0_7_5_x86"
+	call :feature_packer_internal
+goto :eof
 
 
 REM --------------------------------------------------------------

@@ -5,6 +5,8 @@ goto :eof
 
 REM APP RESSOURCES & ENV MANAGEMENT ---------------
 
+REM Arg 1 is feature_name[:os_restriction]
+REM Arg 2 is an optionnal version number
 :add_app_feature
 	set "_FEATURE=%~1"
 	set "_VER=%~2"
@@ -57,6 +59,9 @@ REM APP RESSOURCES & ENV MANAGEMENT ---------------
 				)
 			)
 		)
+
+		
+
 
 		call %STELLA_COMMON%\common.bat :trim "_app_feature_list" "!_app_feature_list!"
 		call %STELLA_COMMON%\common.bat :trim "STELLA_APP_FEATURE_LIST" "!STELLA_APP_FEATURE_LIST!"

@@ -784,7 +784,7 @@ function __argparse(){
 	"
 
 	
-	#GETOPT_CMD is an env variable we can choose a getopt command instead of default getopt
+	#GETOPT_CMD is an env variable we can choose a getopt command instead of default "getopt"
 
 	
 	# Debug mode

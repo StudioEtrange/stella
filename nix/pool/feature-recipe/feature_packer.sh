@@ -3,11 +3,11 @@ _PACKER_INCLUDED_=1
 
  
 function __list_packer() {
-	echo "0_6_0_x64 0_6_0_x86"
+	echo "0_6_0_x64 0_6_0_x86 0_7_5_x64 0_7_5_x86"
 }
 
 function __default_packer() {
-	echo "0_6_0_x64"
+	echo "0_7_5_x64"
 }
 
 function __install_packer() {
@@ -54,7 +54,8 @@ function __install_packer_0_6_0_x64() {
 	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
 		URL=https://dl.bintray.com/mitchellh/packer/0.6.0_darwin_amd64.zip
 		FILE_NAME=0.6.0_darwin_amd64.zip
-	else
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
 		URL=https://dl.bintray.com/mitchellh/packer/0.6.0_linux_amd64.zip
 		FILE_NAME=0.6.0_linux_amd64.zip
 	fi
@@ -62,20 +63,6 @@ function __install_packer_0_6_0_x64() {
 	VER=0_6_0_x64
 	__install_packer_internal
 }
-function __install_packer_0_6_0_x86() {
-	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
-		URL=https://dl.bintray.com/mitchellh/packer/0.6.0_darwin_386.zip
-		FILE_NAME=0.6.0_darwin_386.zip
-	else
-		URL=https://dl.bintray.com/mitchellh/packer/0.6.0_linux_386.zip
-		FILE_NAME=0.6.0_linux_386.zip
-	fi
-
-	VER=0_6_0_x86
-	__install_packer_internal
-}
-
-
 function __feature_packer_0_6_0_x64() {
 	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/packer/0_6_0_x64/packer"
 	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/packer/0_6_0_x64"
@@ -85,11 +72,78 @@ function __feature_packer_0_6_0_x64() {
 }
 
 
+
+function __install_packer_0_6_0_x86() {
+	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
+		URL=https://dl.bintray.com/mitchellh/packer/0.6.0_darwin_386.zip
+		FILE_NAME=0.6.0_darwin_386.zip
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+		URL=https://dl.bintray.com/mitchellh/packer/0.6.0_linux_386.zip
+		FILE_NAME=0.6.0_linux_386.zip
+	fi
+
+	VER=0_6_0_x86
+	__install_packer_internal
+}
 function __feature_packer_0_6_0_x86() {
 	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/packer/0_6_0_x86/packer"
 	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/packer/0_6_0_x86"
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT"
 	FEATURE_RESULT_VER="0_6_0_x86"
+	__feature_packer_internal
+}
+
+
+
+
+
+
+
+
+
+
+function __install_packer_0_7_5_x64() {
+	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
+		URL=https://dl.bintray.com/mitchellh/packer/0.7.5_darwin_amd64.zip
+		FILE_NAME=0.7.5_darwin_amd64.zip
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+		URL=https://dl.bintray.com/mitchellh/packer/0.7.5_linux_amd64.zip
+		FILE_NAME=0.7.5_linux_amd64.zip
+	fi
+
+	VER=0_7_5_x64
+	__install_packer_internal
+}
+function __feature_packer_0_7_5_x64() {
+	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/packer/0_7_5_x64/packer"
+	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/packer/0_7_5_x64"
+	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT"
+	FEATURE_RESULT_VER="0_7_5_x64"
+	__feature_packer_internal
+}
+
+
+
+function __install_packer_0_7_5_x86() {
+	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
+		URL=https://dl.bintray.com/mitchellh/packer/0.7.5_darwin_386.zip
+		FILE_NAME=0.7.5_darwin_386.zip
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+		URL=https://dl.bintray.com/mitchellh/packer/0.7.5_linux_386.zip
+		FILE_NAME=0.7.5_linux_386.zip
+	fi
+
+	VER=0_7_5_x86
+	__install_packer_internal
+}
+function __feature_packer_0_7_5_x86() {
+	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/packer/0_7_5_x86/packer"
+	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/packer/0_7_5_x86"
+	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT"
+	FEATURE_RESULT_VER="0_7_5_x86"
 	__feature_packer_internal
 }
 

@@ -24,7 +24,7 @@ function __install_autotools() {
 	mkdir -p "$STELLA_APP_FEATURE_ROOT/autotools/$_VER"
 
 
-	# check for version
+	# check for official supported version
 	for v in $(__list_autotools); do
 		[ "$v" == "$_VER" ] && __install_autotools_$_VER
 	done
@@ -44,10 +44,8 @@ function __feature_autotools() {
 	if [ "$_VER" == "" ]; then
 		__feature_autotools_$(__default_autotools)
 	else
-		# check for version
-		for v in $(__list_autotools); do
-			[ "$v" == "$_VER" ] && __feature_autotools_$_VER
-		done
+		# do not check for official supported version !
+		__feature_autotools_$_VER
 	fi
 	
 	
@@ -68,22 +66,21 @@ function __install_autotools_pack() {
 	__init_feature autotools libtool_2_4_2
 }
 function __feature_autotools_pack() {
-	local _flag=1
+	local _tmp=1
 
 	TEST_FEATURE=0
-	__feature_autotools_m4_1_4_17
-	[ "$TEST_FEATURE" == "0" ] && _flag=0
+	__init_feature autotools m4_1_4_17
+	[ "$TEST_FEATURE" == "0" ] && _tmp=0
 	TEST_FEATURE=0
-	__feature_autotools_autoconf_2_69
-	[ "$TEST_FEATURE" == "0" ] && _flag=0
+	__init_feature autotools autoconf_2_69
+	[ "$TEST_FEATURE" == "0" ] && _tmp=0
 	TEST_FEATURE=0
-	__feature_autotools_automake_1_14
-	[ "$TEST_FEATURE" == "0" ] && _flag=0
+	__init_feature autotools automake_1_14
+	[ "$TEST_FEATURE" == "0" ] && _tmp=0
 	TEST_FEATURE=0
-	__feature_autotools_libtool_2_4_2
-	[ "$TEST_FEATURE" == "0" ] && _flag=0
-
-	if [ "$_flag" == "1" ]; then
+	__init_feature autotools libtool_2_4_2
+	[ "$TEST_FEATURE" == "0" ] && _tmp=0
+	if [ "$_tmp" == "1" ]; then
 		TEST_FEATURE=1
 		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : autotools in $FEATURE_RESULT_ROOT"
 		FEATURE_ROOT="$STELLA_APP_FEATURE_ROOT/autotools/pack"
@@ -129,9 +126,9 @@ function __feature_autotools_autoconf_2_69() {
 	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/autotools/pack/bin/autoconf"
 	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/autotools/pack"
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
-	FEATURE_RESULT_VER="2_69"
+	FEATURE_RESULT_VER="autoconf_2_69"
 	__feature_autotools_internal autoconf
-	[ "$TEST_FEATURE" == "1" ] && $FEATURE_RESULT_ROOT/bin/autoconf --version | sed -ne "1,1p"	
+	#[ "$TEST_FEATURE" == "1" ] && $FEATURE_RESULT_ROOT/bin/autoconf --version | sed -ne "1,1p"	
 }
 
 
@@ -160,9 +157,9 @@ function __feature_autotools_automake_1_14() {
 	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/autotools/pack/bin/automake"
 	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/autotools/pack"
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
-	FEATURE_RESULT_VER="1_14"
+	FEATURE_RESULT_VER="automake_1_14"
 	__feature_autotools_internal automake
-	[ "$TEST_FEATURE" == "1" ] && $FEATURE_RESULT_ROOT/bin/automake --version | sed -ne "1,1p"
+	#[ "$TEST_FEATURE" == "1" ] && $FEATURE_RESULT_ROOT/bin/automake --version | sed -ne "1,1p"
 }
 
 
@@ -191,9 +188,9 @@ function __feature_autotools_libtool_2_4_2() {
 	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/autotools/pack/bin/libtool"
 	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/autotools/pack"
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
-	FEATURE_RESULT_VER="2_4_2"
+	FEATURE_RESULT_VER="libtool_2_4_2"
 	__feature_autotools_internal libtool
-	[ "$TEST_FEATURE" == "1" ] && $FEATURE_RESULT_ROOT/bin/libtool --version | sed -ne "1,1p"
+	#[ "$TEST_FEATURE" == "1" ] && $FEATURE_RESULT_ROOT/bin/libtool --version | sed -ne "1,1p"
 }
 
 
@@ -222,9 +219,9 @@ function __feature_autotools_m4_1_4_17() {
 	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/autotools/pack/bin/m4"
 	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/autotools/pack"
 	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
-	FEATURE_RESULT_VER="1_4_17"
+	FEATURE_RESULT_VER="m4_1_4_17"
 	__feature_autotools_internal m4
-	[ "$TEST_FEATURE" == "1" ] && $FEATURE_RESULT_ROOT/bin/m4 --version | sed -ne "1,1p"	
+	#[ "$TEST_FEATURE" == "1" ] && $FEATURE_RESULT_ROOT/bin/m4 --version | sed -ne "1,1p"	
 }
 
 

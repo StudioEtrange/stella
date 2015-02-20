@@ -93,8 +93,8 @@ function __feature_cmake_3_1_2() {
 function __install_cmake_internal() {
 	
 	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/cmake/$VER"
-	SRC_DIR="$STELLA_APP_FEATURE_ROOT/cmake/$VER/cmake_$VER-src"
-	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/cmake/$VER/cmake_$VER-build"
+	SRC_DIR="$STELLA_APP_FEATURE_ROOT/cmake/cmake_$VER-src"
+	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/cmake/cmake_$VER-build"
 
 
 	echo " ** Installing cmake version $VER in $INSTALL_DIR"

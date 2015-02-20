@@ -69,11 +69,12 @@ function __feature_gettext_0_19_4() {
 # https://github.com/Homebrew/homebrew/blob/master/Library/Formula/gettext.rb
 function __install_gettext_internal() {
 	
+	# out of tree build do not work
 	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/gettext/$VER"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/gettext/gettext-$VER-src"
-	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/gettext/gettext-$VER-build"
-# TODO what is this ?
-export LDFLAGS="$RCS_STATIC_LINK_FLAGS $RCS_DYNAMIC_LINK_FLAGS" 
+	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/gettext/gettext-$VER-src"
+
+
 	AUTO_INSTALL_FLAG_PREFIX=
 	AUTO_INSTALL_FLAG_POSTFIX="--disable-dependency-tracking \
                           --disable-silent-rules \

@@ -115,6 +115,8 @@ goto :eof
 
 goto :eof
 
+REM Arg 1 is feature_name[:os_restriction]
+REM Arg 2 is an optionnal version number
 :install_feature
 	set "_FEATURE=%~1"
 	set "_VER=%~2"
@@ -131,6 +133,17 @@ goto :eof
 		goto :eof
 	)
 
+
+	if not "x!_FEATURE:^:=!"=="x!_FEATURE!" (
+		set _OS=!_FEATURE:*^:=!
+		set "_FEATURE=!item:^:="^&REM :!
+	) else (
+		set _OS=
+	)
+
+
+
+
 	REM check for official feature
 	set _flag=
 	for %%F in (%__STELLA_FEATURE_LIST%) do (
@@ -144,11 +157,19 @@ goto :eof
 	)
 
 
+	if not "%_opt_hidden_feature%"=="ON" (
+		if not "!_OS!"=="" (
+			call %STELLA_COMMON%\common-app.bat :add_app_feature !_FEATURE!:!_OS! !_VER!
+		) else (
+			call %STELLA_COMMON%\common-app.bat :add_app_feature !_FEATURE! !_VER!
+		)
+	)
+
+	if not "!_OS!"=="" if not "!_OS!"=="!STELLA_CURRENT_OS!" goto :eof
+
 	if "%_opt_hidden_feature%"=="ON" (
 		set "_save_app_feature_root=!STELLA_APP_FEATURE_ROOT!"
 		set "STELLA_APP_FEATURE_ROOT=!STELLA_INTERNAL_FEATURE_ROOT!"	
-	) else (
-		call %STELLA_COMMON%\common-app.bat :add_app_feature !_FEATURE! !_VER!
 	)
 
 	if "!_VER!"=="" (
@@ -164,6 +185,7 @@ goto :eof
 		)
 	)
 	
+
 
 	if "!_flag!"=="" (
 		set TEST_FEATURE=0

@@ -282,6 +282,7 @@ debug_args() {
 
 abend() {
     STAT=$1; shift
+    default_usage
     echo "$ARGP_PROG: $@" | fmt -w $GARGP_RMARGIN >&2
     echo "exit $STAT;" >&3
     exit $STAT

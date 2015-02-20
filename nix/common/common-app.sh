@@ -200,7 +200,8 @@ function __get_env_properties() {
 }
 
 
-
+# Arg 1 is feature_name[:os_restriction]
+# Arg 2 is an optionnal version number
 function __add_app_feature() {
 	local _FEATURE=$1
 	local _VER=$2
@@ -217,8 +218,8 @@ function __add_app_feature() {
 			local _char=#
 			for f in $STELLA_APP_FEATURE_LIST; do
 				if [ -z "${f##*$_char*}" ]; then
-					_V=${f##*#}
-					_F=${f%#*}
+					_V=${f##*$_char}
+					_F=${f%$_char*}
 				else
 					_V=
 					_F=$f

@@ -9,7 +9,7 @@ function usage() {
 	echo "List of commands"
 	echo " o-- Feature management :"
 	echo " L     install required : install minimal required features for Stella"
-	echo " L     install <feature name> --vers=<version> : install a feature. Version is optional"
+	echo " L     install <feature name> [--vers=<version>] [--restrict=<os>] : install a feature. Version is optional. You can restrict the feature to a specific OS"
 	echo " L     list <all|feature name|active> : list all available features OR available versions of a feature OR current active features"
 }
 
@@ -24,6 +24,7 @@ ID= 											''					a 						'$__STELLA_FEATURE_LIST required all active' 	Sele
 OPTIONS="
 FORCE=''                       	'f'    		''            		b     		0     		'1'           			Force operation.
 VERS=''							''			'version'			s 			0 		''						Feature version.
+RESTRICT=''						'r'			'os'					s 			0 		''						Restrict feature to a specific OS
 "
 
 __argparse "$0" "$OPTIONS" "$PARAMETERS" "Stella feature management" "$(usage)" "" "$@"
@@ -43,7 +44,8 @@ case $ACTION in
 				;;
 
 			*)
-				__install_feature $ID $VERS
+				[ "$RESTRICT" == "" ] && __install_feature $ID $VERS
+				[ ! "$RESTRICT" == "" ] && __install_feature $ID:$RESTRICT $VERS
 				;;
 		esac
 		;;

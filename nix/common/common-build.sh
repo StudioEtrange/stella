@@ -82,4 +82,130 @@ function __fix_dynamiclib_install_name_macos_by_folder() {
 }
 
 
+
+
+
+
+
+#INTERNAL FUNCTION---------------------------------------------------
+function __auto_build_install_configure() {
+	local AUTO_SOURCE_DIR
+	local AUTO_BUILD_DIR
+	local AUTO_INSTALL_DIR
+	local OPT
+
+	AUTO_SOURCE_DIR="$1"
+	AUTO_BUILD_DIR="$2"
+	AUTO_INSTALL_DIR="$3"
+	OPT="$4"
+
+	local _opt_without_configure=
+	for o in $OPT; do 
+		[ "$o" == "WITHOUT_CONFIGURE" ] && _opt_without_configure=ON
+	done
+	
+	
+	mkdir -p "$AUTO_BUILD_DIR"
+	cd "$AUTO_BUILD_DIR"
+	
+	if [ ! "$_opt_without_configure" == "ON" ]; then
+		chmod +x "$AUTO_SOURCE_DIR/configure"
+		if [ "$AUTO_INSTALL_FLAG_PREFIX" == "" ]; then
+			"$AUTO_SOURCE_DIR/configure" --prefix="$AUTO_INSTALL_DIR" $AUTO_INSTALL_FLAG_POSTFIX
+		else
+			$AUTO_INSTALL_FLAG_PREFIX "$AUTO_SOURCE_DIR/configure" --prefix="$AUTO_INSTALL_DIR" $AUTO_INSTALL_FLAG_POSTFIX
+		fi
+
+		make
+		make install
+	else
+		$AUTO_SOURCE_DIR/make
+		if [ "$AUTO_INSTALL_FLAG_PREFIX" == "" ]; then
+			"$AUTO_SOURCE_DIR/make" prefix=$AUTO_INSTALL_DIR $AUTO_INSTALL_FLAG_POSTFIX install
+		else
+			$AUTO_INSTALL_FLAG_PREFIX "$AUTO_SOURCE_DIR/make" prefix=$AUTO_INSTALL_DIR $AUTO_INSTALL_FLAG_POSTFIX install
+		fi
+	fi
+	
+}
+
+
+
+#---------------------------
+function __auto_install() {
+	local MODE
+	local NAME
+	local FILE_NAME
+	local URL
+	local SOURCE_DIR
+	local BUILD_DIR
+	local INSTALL_DIR
+	local OPT
+
+	
+
+	MODE="$1"
+	NAME="$2"
+	FILE_NAME="$3"
+	URL="$4"
+	SOURCE_DIR="$5"
+	BUILD_DIR="$6"
+	INSTALL_DIR="$7"
+	OPT="$8"
+
+	# erase installation dir before install (default : FALSE)
+	local _opt_dest_erase=
+	# delete first folder in archive  (default : FALSE)
+	local _opt_strip=
+	# keep source code after build (default : FALSE)
+	local _opt_source_keep=
+	# keep build dir after build (default : FALSE)
+	local _opt_build_keep=
+	for o in $OPT; do 
+		[ "$o" == "DEST_ERASE" ] && _opt_dest_erase=ON
+		[ "$o" == "STRIP" ] && _opt_strip=ON
+		[ "$o" == "SOURCE_KEEP" ] && _opt_source_keep=ON
+		[ "$o" == "BUILD_KEEP" ] && _opt_build_keep=ON
+	done
+
+	
+
+	echo " ** Installing $NAME in $INSTALL_DIR"
+
+	#local _store_dir="$(cd "$( dirname "." )" && pwd)"
+
+	[ "$_opt_dest_erase" == "ON" ] && rm -Rf "$INSTALL_DIR"
+	mkdir -p "$INSTALL_DIR"
+
+	local STRIP=
+	[ "$_opt_strip" == "ON" ] && STRIP=STRIP
+	__download_uncompress "$URL" "$FILE_NAME" "$SOURCE_DIR" "$STRIP"
+	
+	
+	case $MODE in
+		cmake)
+				echo "TODO"
+				;;
+		configure)
+				__auto_build_install_configure "$SOURCE_DIR" "$BUILD_DIR" "$INSTALL_DIR" 
+				;;
+		make)
+				__auto_build_install_configure "$SOURCE_DIR" "$BUILD_DIR" "$INSTALL_DIR" "WITHOUT_CONFIGURE"
+				;;
+	esac
+
+	#cd $_store_dir
+
+	[ ! "$_opt_source_keep" == "ON" ] && rm -Rf "$SOURCE_DIR"
+	[ ! "$_opt_build_keep" == "ON" ] && rm -Rf "$BUILD_DIR"
+
+	
+
+	echo " ** Done"
+
+}
+
+
+
+
 fi
