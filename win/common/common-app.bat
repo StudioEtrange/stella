@@ -147,10 +147,8 @@ goto :eof
 
 
 			set _merge=
-			set _strip=
 			for %%O in (!_opt!) do (
 				if "%%O"=="MERGE" set _merge=MERGE
-				if "%%O"=="STRIP" set _strip=STRIP
 			)
 
 			echo * !_operation! !_name! [%%A] ressources
@@ -160,7 +158,7 @@ goto :eof
 			)
 
 
-			call %STELLA_COMMON%\common.bat :get_ressource "%_mode% : !_name! [!_namespace!]" "!_uri!" "!_prot!" "!_artefact_dest!\!_namespace!" "!_merge! !_strip! !_operation!"
+			call %STELLA_COMMON%\common.bat :get_ressource "%_mode% : !_name! [!_namespace!]" "!_uri!" "!_prot!" "!_artefact_dest!\!_namespace!" "!_opt! !_operation!"
 			if "!_merge!"=="MERGE" (
 				echo * !_name! merged into !_namespace!
 			)
@@ -215,10 +213,10 @@ goto :eof
 
 
 	if "!_workroot!" == "" (
-    	set _workroot=!_approot!
+    	set _workroot=!_approot!\workspace
     )
   	if "!_cachedir!" == "" (
-  		set _cachedir=!_workroot!\cache
+  		set _cachedir=!_approot!\cache
   	)
 
 	call %STELLA_COMMON%\common.bat :is_path_abs "IS_ABS" "!_workroot!"

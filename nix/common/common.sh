@@ -269,6 +269,7 @@ function __get_ressource() {
 	# 	"STRIP" for remove root folder and copy content of root folder in FINAL_DESTINATION
 	# 	"UPDATE" pull and update ressource (only for HG or GIT)
 	# 	"REVERT" complete revert of the ressource (only for HG or GIT)
+	# 	"FORCE_NAME" force name of downloaded file
 
 	# TODO : remove illegal characters in NAME. NAME is used in flag file name when merging
 
@@ -277,13 +278,20 @@ function __get_ressource() {
 	local _opt_get=ON
 	local _opt_update=OFF
 	local _opt_revert=OFF
+	local _opt_force_name=OFF
+	local _download_filename=_AUTO_
 	for o in $OPT; do 
-		[ "$o" == "MERGE" ] && _opt_merge=ON
-		[ "$o" == "STRIP" ] && _opt_strip=ON
-		if [ "$o" == "UPDATE" ]; then _opt_update=ON;  _opt_revert=OFF;  _opt_get=OFF; fi
-		if [ "$o" == "REVERT" ]; then _opt_revert=ON;  _opt_update=OFF;  _opt_get=OFF; fi
+		if [ "$_opt_force_name" == "OFF" ]; then
+			[ "$o" == "MERGE" ] && _opt_merge=ON
+			[ "$o" == "STRIP" ] && _opt_strip=ON
+			[ "$o" == "FORCE_NAME" ] && _opt_force_name=ON
+			if [ "$o" == "UPDATE" ]; then _opt_update=ON;  _opt_revert=OFF;  _opt_get=OFF; fi
+			if [ "$o" == "REVERT" ]; then _opt_revert=ON;  _opt_update=OFF;  _opt_get=OFF; fi
+		else
+			_download_filename=$o
+			_opt_force_name=OFF
+		fi
 	done
-
 
 	[ "$_opt_revert" == "ON" ] && echo " ** Reverting ressource :"
 	[ "$_opt_update" == "ON" ] && echo " ** Updating ressource :"
@@ -292,90 +300,100 @@ function __get_ressource() {
 
 	[ "$FORCE" ] && rm -Rf $FINAL_DESTINATION
 
-	# check if ressource already grabbed or merged
-	_FLAG=1
-	if [ "$_opt_merge" == "ON" ]; then
-		if [ -f "$FINAL_DESTINATION/._MERGED_$NAME" ]; then
-			if [ "$_opt_get" == "ON" ]; then
-				_FLAG=0
-				echo " ** Ressource already merged"
-			fi
-		else 
-			if [ ! "$_opt_get" == "ON" ]; then
-				_FLAG=0
-				echo "** Ressource does not exist"
-			fi
-		fi
-	else	
-		if [ -d "$FINAL_DESTINATION" ]; then
-			if [ "$_opt_get" == "ON" ]; then
-				_FLAG=0
-				echo " ** Ressource already grabbed"
-			fi
-		else
-			if [ ! "$_opt_get" == "ON" ]; then
-				_FLAG=0
-				echo "** Ressource does not exist"
-			fi
-		fi
+	
 
-	fi
-
-	# strip root folde mode
+	# strip root folder mode
 	_STRIP=
 	[ "$_opt_strip" == "ON" ] && _STRIP=STRIP
 	
+	_FLAG=1
+	case $PROTOCOL in
+		HTTP_ZIP|FILE_ZIP)
+			[ "$_opt_revert" == "ON" ] && echo "REVERT Not supported with this protocol" && _FLAG=0
+			[ "$_opt_update" == "ON" ] && echo "UPDATE Not supported with this protocol" && _FLAG=0
+			if [ -d "$FINAL_DESTINATION" ]; then
+				if [ "$_opt_get" == "ON" ]; then
+					if [ "$_opt_merge" == "ON" ]; then
+						if [ -f "$FINAL_DESTINATION/._MERGED_$NAME" ]; then
+							echo " ** Ressource already merged"
+							_FLAG=0
+						fi
+					fi
+					if [ "$_opt_strip" == "ON" ]; then
+						echo " ** Ressource already stripped"
+						_FLAG=0
+					fi
+				fi		
+			fi
+			;;
+		HTTP|FILE)
+			[ "$_opt_strip" == "ON" ] && echo "STRIP option not in use"
+			[ "$_opt_revert" == "ON" ] && echo "REVERT Not supported with this protocol" && _FLAG=0
+			[ "$_opt_update" == "ON" ] && echo "UPDATE Not supported with this protocol" && _FLAG=0
+			
+			if [ -d "$FINAL_DESTINATION" ]; then
+				if [ "$_opt_get" == "ON" ]; then
+					if [ "$_opt_merge" == "ON" ]; then
+						if [ -f "$FINAL_DESTINATION/._MERGED_$NAME" ]; then
+							echo " ** Ressource already merged"
+							_FLAG=0
+						fi
+					fi
+				fi		
+			fi
+			;;
+		HG|GIT)
+			[ "$_opt_strip" == "ON" ] && echo "STRIP option not in use"
+			if [ -d "$FINAL_DESTINATION" ]; then
+				if [ "$_opt_get" == "ON" ]; then
+					echo " ** Ressource already exist"
+					_FLAG=0
+					if [ "$_opt_merge" == "ON" ]; then
+						if [ -f "$FINAL_DESTINATION/._MERGED_$NAME" ]; then
+							echo " ** Ressource already merged"
+							_FLAG=0
+						fi
+					fi
+				fi	
+			else
+				[ "$_opt_revert" == "ON" ] && echo " ** Ressource does not exist" && _FLAG=0
+				[ "$_opt_update" == "ON" ] && echo " ** Ressource does not exist" && _FLAG=0
+			fi
+			;;
+	esac
+
+
 	if [ "$_FLAG" == "1" ]; then
 		[ ! -d $FINAL_DESTINATION ] && mkdir -p $FINAL_DESTINATION
 
 		case $PROTOCOL in
 			HTTP_ZIP)
-				echo "MERGE : $_opt_merge"
-				echo "STRIP : $_opt_strip"
-				[ "$_opt_revert" == "ON" ] && echo "REVERT Not supported with HTTP_ZIP protocol"
-				[ "$_opt_update" == "ON" ] && echo "UPDATE Not supported with HTTP_ZIP protocol"
-				[ "$_opt_get" == "ON" ] && __download_uncompress "$URI" "_AUTO_" "$FINAL_DESTINATION" "$_STRIP"
+				[ "$_opt_get" == "ON" ] && __download_uncompress "$URI" "$_download_filename" "$FINAL_DESTINATION" "$_STRIP"
 				[ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
 			HTTP)
-				echo "MERGE : $_opt_merge"
 				# HTTP protocol use always merge by default : because it never erase destination folder
 				# the flag file will be setted only if we pass the option MERGE
-				[ "$_opt_revert" == "ON" ] && echo "REVERT Not supported with HTTP protocol"
-				[ "$_opt_update" == "ON" ] && echo "UPDATE Not supported with HTTP protocol"
-				echo F"$FINAL_DESTINATION"
-				[ "$_opt_get" == "ON" ] && __download "$URI" "_AUTO_" "$FINAL_DESTINATION"
+				[ "$_opt_get" == "ON" ] && __download "$URI" "$_download_filename" "$FINAL_DESTINATION"
 				[ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
 			HG)
-				echo "MERGE : $_opt_merge"
-				[ "$_opt_strip" == "ON" ] && echo "STRIP Not supported with HG protocol"
 				if [ "$_opt_revert" == "ON" ]; then cd "$FINAL_DESTINATION"; hg revert --all -C; fi
 				if [ "$_opt_update" == "ON" ]; then cd "$FINAL_DESTINATION"; hg pull; hg update; fi
 				[ "$_opt_get" == "ON" ] && hg clone $URI "$FINAL_DESTINATION"
 				[ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
 			GIT)
-				echo "MERGE : $_opt_merge"
-				[ "$_opt_strip" == "ON" ] && echo "STRIP Not supported with GIT protocol"
 				if [ "$_opt_revert" == "ON" ]; then cd "$FINAL_DESTINATION"; git reset --hard; fi
 				if [ "$_opt_update" == "ON" ]; then cd "$FINAL_DESTINATION"; git pull; fi
 				[ "$_opt_get" == "ON" ] && git clone $URI "$FINAL_DESTINATION"
 				[ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
 			FILE)
-				echo "MERGE : $_opt_merge"
-				[ "$_opt_strip" == "ON" ] && echo "STRIP Not supported with FILE protocol"
-				[ "$_opt_revert" == "ON" ] && echo "REVERT Not supported with FILE protocol"
-				[ "$_opt_update" == "ON" ] && echo "UPDATE Not supported with FILE protocol"
 				[ "$_opt_get" == "ON" ] && __copy_folder_content_into "$URI" "$FINAL_DESTINATION"
 				[ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
 			FILE_ZIP)
-				echo "MERGE : $_opt_merge"
-				echo "STRIP : $_opt_strip"
-				[ "$_opt_revert" == "ON" ] && echo "REVERT Not supported with FILE_ZIP protocol"
-				[ "$_opt_update" == "ON" ] && echo "UPDATE Not supported with FILE_ZIP protocol"
 				__uncompress "$URI" "$FINAL_DESTINATION%" "$_STRIP"
 				[ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
@@ -391,19 +409,13 @@ function __download_uncompress() {
 	local FILE_NAME
 	local UNZIP_DIR
 	local OPT
-
+	# DEST_ERASE delete destination folder
+	# STRIP delete first folder in archive
 
 	URL="$1"
 	FILE_NAME="$2"
 	UNZIP_DIR="$3"
 	OPT="$4"
-	
-	local _opt_dest_erase=OFF # delete destination folder (default : FALSE)
-	local _opt_strip=OFF # delete first folder in archive  (default : FALSE)
-	for o in $OPT; do 
-		[ "$o" == "DEST_ERASE" ] && _opt_dest_erase=ON
-		[ "$o" == "STRIP" ] && _opt_strip=ON
-	done
 	
 	
 	if [ "$FILE_NAME" == "_AUTO_" ]; then
@@ -542,7 +554,7 @@ function __download() {
 
 	if [ ! -f "$STELLA_APP_CACHE_DIR/$FILE_NAME" ]; then
 		if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
-			curl -L -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL"
+			curl -kSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL"
 		else
 			wget "$URL" -O "$STELLA_APP_CACHE_DIR/$FILE_NAME" --no-check-certificate
 		fi

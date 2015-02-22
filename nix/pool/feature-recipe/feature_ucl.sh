@@ -75,6 +75,14 @@ function __install_ucl_internal() {
 	fi
 	if [ "$TEST_FEATURE" == "0" ]; then
 		__auto_install "configure" "ucl" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "DEST_ERASE STRIP"
+
+		__feature_ucl_$VER
+		if [ "$TEST_FEATURE" == "1" ]; then
+			echo " ** ucl installed"
+		else
+			echo "** ERROR"
+		fi
+
 	else
 		echo " ** Already installed"
 	fi

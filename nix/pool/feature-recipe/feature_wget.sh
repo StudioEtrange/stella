@@ -85,6 +85,15 @@ function __install_wget_internal() {
 	fi
 	if [ "$TEST_FEATURE" == "0" ]; then
 		__auto_install "configure" "wget" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "DEST_ERASE STRIP"
+
+		__feature_wget_$VER
+		if [ "$TEST_FEATURE" == "1" ]; then
+			echo " ** wget installed"
+		else
+			echo "** ERROR"
+		fi
+
+
 	else
 		echo " ** Already installed"
 	fi

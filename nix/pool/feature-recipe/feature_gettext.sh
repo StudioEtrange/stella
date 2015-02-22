@@ -90,20 +90,28 @@ function __install_gettext_internal() {
                           --without-cvs\
                           --without-xz"
 
-	feature_gettext_$VER
+	__feature_gettext_$VER
 	if [ "$FORCE" ]; then
 		TEST_FEATURE=0
 		__del_folder "$INSTALL_DIR"
 	fi
 	if [ "$TEST_FEATURE" == "0" ]; then
 		__auto_install "configure" "gettext" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "DEST_ERASE STRIP"
+
+
+		__feature_gettext_$VER
+		if [ "$TEST_FEATURE" == "1" ]; then
+			echo " ** gettext installed"
+		else
+			echo "** ERROR"
+		fi
+
 	else
 		echo " ** Already installed"
 	fi
 }
 function __feature_gettext_internal() {
 	TEST_FEATURE=0
-	
 	if [ -f "$FEATURE_TEST" ]; then
 		TEST_FEATURE=1
 		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : gettext in $FEATURE_RESULT_ROOT"

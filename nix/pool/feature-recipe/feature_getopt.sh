@@ -79,13 +79,22 @@ function __install_getopt_internal() {
 	AUTO_INSTALL_FLAG_PREFIX=
 	AUTO_INSTALL_FLAG_POSTFIX="MANDIR=man"
 
-	feature_getopt_$VER
+	__feature_getopt_$VER
 	if [ "$FORCE" ]; then
 		TEST_FEATURE=0
 		__del_folder "$INSTALL_DIR"
 	fi
 	if [ "$TEST_FEATURE" == "0" ]; then
 		__auto_install "make" "getopt" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "DEST_ERASE STRIP"
+
+
+		__feature_getopt_$VER
+		if [ "$TEST_FEATURE" == "1" ]; then
+			echo " ** getopt installed"
+		else
+			echo "** ERROR"
+		fi
+
 	else
 		echo " ** Already installed"
 	fi

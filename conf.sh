@@ -92,7 +92,7 @@ VIRTUAL_DEFAULT_HYPERVISOR=virtualbox
 
 # INTERNAL LIST---------------------------------------------
 __STELLA_DISTRIB_LIST="ubuntu64_13_10 debian64_7_5 centos64_6_5 archlinux boot2docker"
-__STELLA_FEATURE_LIST="wget ninja cmake packer autotools perl gettext getopt ucl upx elasticsearch kibana"
+__STELLA_FEATURE_LIST="wget ninja cmake packer autotools perl gettext getopt ucl upx elasticsearch kibana nginx ngrok go pcre"
 
 # API ---------------------------------------------
 STELLA_API_COMMON_PUBLIC="is_abs argparse get_filename_from_string \
@@ -100,7 +100,7 @@ get_ressource download_uncompress copy_folder_content_into del_folder \
 get_key add_key del_key mercurial_project_version git_project_version get_stella_version \
 make_sevenzip_sfx_bin make_targz_sfx_shell compress trim"
 STELLA_API_APP_PUBLIC="info_feature get_data get_assets get_all_data get_all_assets update_data update_assets revert_data revert_assets get_env_properties setup_env get_features"
-STELLA_API_FEATURE_PUBLIC="install_feature init_feature list_active_features reinit_installed_features"
+STELLA_API_FEATURE_PUBLIC="install_feature init_feature list_active_features reinit_installed_features info_feature"
 STELLA_API_VIRTUAL_PUBLIC=""
 STELLA_API_BUILD_PUBLIC="fix_rpath_macos fix_linked_lib_macos fix_dynamiclib_install_name_macos fix_dynamiclib_install_name_macos_by_rootname fix_dynamiclib_install_name_macos_by_folder"
 #STELLA_API_RETURN_FUNCTION=

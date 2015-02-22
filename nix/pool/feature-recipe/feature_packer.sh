@@ -53,11 +53,11 @@ function __feature_packer() {
 function __install_packer_0_6_0_x64() {
 	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
 		URL=https://dl.bintray.com/mitchellh/packer/0.6.0_darwin_amd64.zip
-		FILE_NAME=0.6.0_darwin_amd64.zip
+		FILE_NAME=packer_0.6.0_darwin_amd64.zip
 	fi
 	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
 		URL=https://dl.bintray.com/mitchellh/packer/0.6.0_linux_amd64.zip
-		FILE_NAME=0.6.0_linux_amd64.zip
+		FILE_NAME=packer_0.6.0_linux_amd64.zip
 	fi
 
 	VER=0_6_0_x64
@@ -76,11 +76,11 @@ function __feature_packer_0_6_0_x64() {
 function __install_packer_0_6_0_x86() {
 	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
 		URL=https://dl.bintray.com/mitchellh/packer/0.6.0_darwin_386.zip
-		FILE_NAME=0.6.0_darwin_386.zip
+		FILE_NAME=packer_0.6.0_darwin_386.zip
 	fi
 	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
 		URL=https://dl.bintray.com/mitchellh/packer/0.6.0_linux_386.zip
-		FILE_NAME=0.6.0_linux_386.zip
+		FILE_NAME=packer_0.6.0_linux_386.zip
 	fi
 
 	VER=0_6_0_x86
@@ -106,11 +106,11 @@ function __feature_packer_0_6_0_x86() {
 function __install_packer_0_7_5_x64() {
 	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
 		URL=https://dl.bintray.com/mitchellh/packer/0.7.5_darwin_amd64.zip
-		FILE_NAME=0.7.5_darwin_amd64.zip
+		FILE_NAME=packer_0.7.5_darwin_amd64.zip
 	fi
 	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
 		URL=https://dl.bintray.com/mitchellh/packer/0.7.5_linux_amd64.zip
-		FILE_NAME=0.7.5_linux_amd64.zip
+		FILE_NAME=packer_0.7.5_linux_amd64.zip
 	fi
 
 	VER=0_7_5_x64
@@ -129,11 +129,11 @@ function __feature_packer_0_7_5_x64() {
 function __install_packer_0_7_5_x86() {
 	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
 		URL=https://dl.bintray.com/mitchellh/packer/0.7.5_darwin_386.zip
-		FILE_NAME=0.7.5_darwin_386.zip
+		FILE_NAME=packer_0.7.5_darwin_386.zip
 	fi
 	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
 		URL=https://dl.bintray.com/mitchellh/packer/0.7.5_linux_386.zip
-		FILE_NAME=0.7.5_linux_386.zip
+		FILE_NAME=packer_0.7.5_linux_386.zip
 	fi
 
 	VER=0_7_5_x86
@@ -157,7 +157,7 @@ function __install_packer_internal() {
 	__feature_packer_$VER
 	if [ "$FORCE" ]; then
 		TEST_FEATURE=0
-		del_folder $INSTALL_DIR
+		__del_folder $INSTALL_DIR
 	fi
 	if [ "$TEST_FEATURE" == "0" ]; then
 

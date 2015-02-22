@@ -87,8 +87,11 @@ function __install_upx_internal() {
 		__download_uncompress "$URL" "$FILE_NAME" "$SRC_DIR" "DEST_ERASE STRIP"
 
 		# depend on ucl
-		source $STELLA_FEATURE_RECIPE/feature_ucl.sh
-		__feature_ucl_1_03
+		__info_feature ucl
+		if [ "$TEST_FEATURE" == "0" ]; then
+			echo " ** ERROR : depend on lib ucl"
+			return
+		fi
 		export UPX_UCLDIR="$FEATURE_ROOT"
 		ln -fs $FEATURE_ROOT/lib/libucl.a $FEATURE_ROOT/libucl.a
 

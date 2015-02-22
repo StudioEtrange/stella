@@ -52,8 +52,8 @@ function __init_app() {
 	fi
 
 
-    [ "$_workroot" == "" ] && _workroot=$_approot    
-  	[ "$_cachedir" == "" ] && _cachedir=$_workroot/cache
+    [ "$_workroot" == "" ] && _workroot=$_approot/workspace    
+  	[ "$_cachedir" == "" ] && _cachedir=$_approot/cache
 
 
 	[ "$(__is_abs "$_workroot")" == "FALSE" ] && _workroot=$(__rel_to_abs_path "$_workroot" "$_approot")
@@ -340,10 +340,8 @@ function __get_app_ressources() {
 		fi
 
 		_merge=
-		_strip=
 		for o in $_opt; do 
 			[ "$o" == "MERGE" ] && _merge=MERGE
-			[ "$o" == "STRIP" ] && _strip=STRIP
 		done
 
 
@@ -354,7 +352,7 @@ function __get_app_ressources() {
 		fi
 
 		
-		__get_ressource "$_mode : $_name [$_artefact_namespace]" "$_uri" "$_prot" "$_artefact_dest/$_artefact_namespace" "$_merge $_strip $_operation"
+		__get_ressource "$_mode : $_name [$_artefact_namespace]" "$_uri" "$_prot" "$_artefact_dest/$_artefact_namespace" "$_opt $_operation"
 		if [ "$_merge" == "MERGE" ]; then echo "* $_name merged into $_artefact_namespace"; fi
 		if [ "$_artefact_link" == "1" ]; then
 			if [ "$FORCE" == "1" ]; then rm -f "$_artefact_link_target/$_artefact_namespace"; fi
