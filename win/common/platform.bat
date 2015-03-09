@@ -165,11 +165,9 @@ goto :eof
 
 	echo ** Install required features for %_os%
 	
-	call %STELLA_COMMON%\common-feature.bat :install_feature unzip 5_51_1 "HIDDEN"
-	call %STELLA_COMMON%\common-feature.bat :install_feature wget 1_11_4 "HIDDEN"
-	call %STELLA_COMMON%\common-feature.bat :install_feature sevenzip 9_20 "HIDDEN"
-	call %STELLA_COMMON%\common-feature.bat :install_feature goconfig-cli snapshot "HIDDEN"
-	::call %STELLA_COMMON%\common-feature.bat :install_feature patch 2_5_9 "HIDDEN"
-	::call %STELLA_COMMON%\common-feature.bat :install_feature gnumake 3_81 "HIDDEN"
+	call %STELLA_COMMON%\common-feature.bat :feature_install unzip#5_51_1 "HIDDEN INTERNAL"
+	call %STELLA_COMMON%\common-feature.bat :feature_install wget#1_11_4 "HIDDEN INTERNAL"
+	call %STELLA_COMMON%\common-feature.bat :feature_install sevenzip#9_20 "HIDDEN INTERNAL"
+	call %STELLA_COMMON%\common-feature.bat :feature_install goconfig-cli#snapshot "HIDDEN INTERNAL"
 goto :eof
 

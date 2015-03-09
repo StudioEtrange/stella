@@ -6,6 +6,7 @@ set +h
 
 
 # VARIOUS-----------------------------
+# trim whitespace
 function __trim() {
 	echo $(echo "$1" | sed -e 's/^ *//' -e 's/ *$//')
 }
@@ -233,7 +234,7 @@ function __abs_to_rel_path() {
 
 
 function __init_stella_env() {
-	__init_installed_features
+	__feature_init_installed
 }
 
 
@@ -662,22 +663,24 @@ function __get_key() {
 	local _KEY=$3
 	local _OPT=$4
 
-	# TODO : bug when reading windows end line
-	# key will be prefixed with the section name
 	_opt_section_prefix=OFF
 	for o in $_OPT; do
 		[ "$o" == "PREFIX" ] && _opt_section_prefix=ON
 	done
 
+	# trim whitespace
+	_SECTION=$(__trim "$_SECTION")
 
+	local _win_endline=$'s/\r//g'
 	local _exp1="/\[$_SECTION\]/,/\[.*\]/p"
 	local _exp2="/$_KEY=/{print \$2}"
 
 	if [ "$_opt_section_prefix" == "ON" ]; then
-		eval "$_SECTION"_"$_KEY"='$(sed -n "$_exp1" "$_FILE" | awk -F= "$_exp2")'
+		eval "$_SECTION"_"$_KEY"='$(sed -n -e "$_win_endline" -e "$_exp1" "$_FILE" | awk -F= "$_exp2" )'
 	else
-		eval $_KEY='$(sed -n "$_exp1" "$_FILE" | awk -F= "$_exp2")'
+		eval $_KEY='$(sed -n -e "$_win_endline" -e "$_exp1" "$_FILE" | awk -F= "$_exp2" )'
 	fi
+	
 }
 
 function __del_key() {
@@ -768,6 +771,11 @@ function __ini_file() {
 
 
 # ARG COMMAND LINE MANAGEMENT---------------------------------------------------
+# TODO : MacOS alternative in go of getopt or brew gnu-getopt?
+#		https://github.com/droundy/goopt
+#		https://code.google.com/p/opts-go/
+#		https://godoc.org/code.google.com/p/getopt
+#		https://github.com/kesselborn/go-getopt
 function __argparse(){
 	local PROGNAME=$(__get_filename_from_string "$1")
 	local OPTIONS="$2"

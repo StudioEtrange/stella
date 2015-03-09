@@ -1,114 +1,60 @@
 if [ ! "$_GETOPT_INCLUDED_" == "1" ]; then 
 _GETOPT_INCLUDED_=1
 
-#TODO not finished
-# https://github.com/Homebrew/homebrew/blob/master/Library/Formula/getopt.rb
+#https://github.com/Homebrew/homebrew/blob/master/Library/Formula/gnu-getopt.rb
 # TODO : patch makefile with macport recipe ?
 
-function __list_getopt() {
-	echo "1_1_5"
+function feature_getopt() {
+
+	FEAT_NAME=getopt
+	FEAT_LIST_SCHEMA="1_1_6/source"
+	FEAT_DEFAULT_VERSION=1_1_6
+	FEAT_DEFAULT_ARCH=
+	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function __default_getopt() {
-	echo "1_1_5"
-}
+function feature_getopt_1_1_6() {
 
-function __install_getopt() {
-	local _VER=$1
+	FEAT_VERSION=1_1_6
 
-	TEST_FEATURE=0
-	FEATURE_PATH=
-	FEATURE_ROOT=
-	FEATURE_VER=
+	FEAT_SOURCE_URL=http://frodo.looijaard.name/system/files/software/getopt/getopt-1.1.6.tar.gz
+	FEAT_SOURCE_URL_FILENAME=getopt-1.1.6.tar.gz
+	FEAT_SOURCE_CALLBACK=feature_getopt_1_1_6_patch
+	FEAT_BINARY_URL=
+	FEAT_BINARY_URL_FILENAME=
+	FEAT_BINARY_CALLBACK=
 
-	mkdir -p $STELLA_APP_FEATURE_ROOT/getopt
+	FEAT_DEPENDENCIES=
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/getopt
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 
-	if [ "$_VER" == "" ]; then
-		__install_getopt_$(__default_getopt)
-	else
-		# check for version
-		for v in $(__list_getopt); do
-			[ "$v" == "$_VER" ] && __install_getopt_$_VER
-		done
-	fi
-}
-function __feature_getopt() {
-	local _VER=$1
-
-	TEST_FEATURE=0
-	FEATURE_PATH=
-	FEATURE_ROOT=
-	FEATURE_VER=
-
-	if [ "$_VER" == "" ]; then
-		__feature_getopt_$(__default_getopt)
-	else
-		# check for version
-		for v in $(__list_getopt); do
-			[ "$v" == "$_VER" ] && __feature_getopt_$_VER
-		done
-	fi
-}
-
-# --------------------------------------
-function __install_getopt_1_1_5() {
-	URL=http://frodo.looijaard.name/system/files/software/getopt/getopt-1.1.5.tar.gz
-	VER=1_1_5
-	FILE_NAME=getopt-1.1.5.tar.gz
-	__install_getopt_internal
+	FEAT_BUNDLE_LIST=
 }
 
 
-function __feature_getopt_1_1_5() {
-	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/getopt/1_1_5/bin/getopt"
-	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/getopt/1_1_5"
-	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
-	FEATURE_RESULT_VER="1_1_5"
-	__feature_getopt_internal
+function feature_getopt_1_1_6_patch() {
+	# https://github.com/Homebrew/homebrew/blob/master/Library/Formula/gnu-getopt.rb
+
+	feature_info gettext
+	sed -i .bak 's,^\(CPPFLAGS=.*\),\1 '"-I$FEAT_INSTALL_ROOT/include"',' $SRC_DIR/Makefile
+	sed -i .bak 's,^\(LDFLAGS=.*\),\1 '"-L$FEAT_INSTALL_ROOT/lib -lintl"',' $SRC_DIR/Makefile
 }
 
+function feature_getopt_install_source() {
+	INSTALL_DIR="$FEAT_INSTALL_ROOT"
+	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
+	BUILD_DIR=
 
-# --------------------------------------
-function __install_getopt_internal() {
+
+	__download_uncompress "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_FILENAME" "$SRC_DIR" "DEST_ERASE STRIP"
+
+	__feature_apply_source_callback
 	
-	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/getopt/$VER"
-	SRC_DIR="$STELLA_APP_FEATURE_ROOT/getopt/getopt-$VER-src"
-	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/getopt/getopt-$VER-build"
-
-
-	AUTO_INSTALL_FLAG_PREFIX=
-	AUTO_INSTALL_FLAG_POSTFIX="MANDIR=man"
-
-	__feature_getopt_$VER
-	if [ "$FORCE" ]; then
-		TEST_FEATURE=0
-		__del_folder "$INSTALL_DIR"
-	fi
-	if [ "$TEST_FEATURE" == "0" ]; then
-		__auto_install "make" "getopt" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "DEST_ERASE STRIP"
-
-
-		__feature_getopt_$VER
-		if [ "$TEST_FEATURE" == "1" ]; then
-			echo " ** getopt installed"
-		else
-			echo "** ERROR"
-		fi
-
-	else
-		echo " ** Already installed"
-	fi
+	cd "$SRC_DIR"
+	make
+	make prefix="$INSTALL_DIR" mandir=man install && __del_folder $SRC_DIR
 }
-function __feature_getopt_internal() {
-	TEST_FEATURE=0
-	
-	if [ -f "$FEATURE_TEST" ]; then
-		TEST_FEATURE=1
-		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : getopt in $FEATURE_RESULT_ROOT"
-		FEATURE_PATH="$FEATURE_RESULT_PATH"
-		FEATURE_ROOT="$FEATURE_RESULT_ROOT"
-		FEATURE_VER="$FEATURE_RESULT_VER"
-	fi
-}
+
+
 
 fi

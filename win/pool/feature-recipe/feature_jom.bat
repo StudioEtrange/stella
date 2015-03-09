@@ -2,100 +2,42 @@
 call %*
 goto :eof
 
-:list_jom
-	set "%~1=1_0_13"
-goto :eof
 
-:default_jom
-	set "%~1=1_0_13"
-goto :eof
-
-:install_jom
-	set "_VER=%~1"
-	
-	set TEST_FEATURE=0
-	set FEATURE_ROOT=
-	set FEATURE_PATH=
-	set FEATURE_VER=
-
-	if not exist %STELLA_APP_FEATURE_ROOT%\jom mkdir %STELLA_APP_FEATURE_ROOT%\jom
-	if "%_VER%"=="" (
-		call :default_jom "_DEFAULT_VER"
-		call :install_jom_!_DEFAULT_VER!
-	) else (
-		call :list_jom "_list_ver"
-		for %%v in (!_list_ver!) do (
-			if "%%v"=="%_VER%" (
-				call :install_jom_%_VER%
-			)
-		)
-	)
-goto :eof
 
 :feature_jom
-	set "_VER=%~1"
-	
-	set TEST_FEATURE=0
-	set FEATURE_ROOT=
-	set FEATURE_PATH=
-	set FEATURE_VER=
-
-	if "%_VER%"=="" (
-		call :default_jom "_DEFAULT_VER"
-		call :feature_jom_!_DEFAULT_VER!
-	) else (
-		call :list_jom "_list_ver"
-		for %%v in (!_list_ver!) do (
-			if "%%v"=="%_VER%" (
-				call :feature_jom_%_VER%
-			)
-		)
-	)
+	set "FEAT_NAME=jom"
+	set "FEAT_LIST_SCHEMA=1_0_13/binary"
+	set "FEAT_DEFAULT_VERSION=1_0_13"
+	set "FEAT_DEFAULT_ARCH="
+	set "FEAT_DEFAULT_FLAVOUR=binary"
 goto :eof
 
-
-
-:install_jom_1_0_13
-	set URL=http://download.qt-project.org/official_releases/jom/jom_1_0_13.zip
-	set VERSION=1.0.13
-	set FILE_NAME=jom_1_0_13.zip
-	set "INSTALL_DIR=%STELLA_APP_FEATURE_ROOT%\jom\1_0_13"
-
-	echo ** Installing jom version %VERSION% in %INSTALL_DIR%
-
-	call :feature_jom_1_0_13
-	if "%FORCE%"=="1" ( 
-		set TEST_FEATURE=0
-		call %STELLA_COMMON%\common.bat :del_folder "%INSTALL_DIR%"
-	)
-	if "!TEST_FEATURE!"=="0" (
-		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "DEST_ERASE"
-
-		call :feature_jom_1_0_13
-		if "!TEST_FEATURE!"=="1" (
-			echo Jom installed
-			!FEATURE_ROOT!\jom -version
-		) else (
-			echo ** ERROR
-		)
-	) else (
-		echo ** Already installed
-	)
-goto :eof
 
 :feature_jom_1_0_13
-	set TEST_FEATURE=0
-	
-	if exist "%STELLA_APP_FEATURE_ROOT%\jom\1_0_13\jom.exe" (
-		set "TEST_FEATURE=1"
-		set "FEATURE_ROOT=%STELLA_APP_FEATURE_ROOT%\jom\1_0_13"
-		set "FEATURE_PATH=!FEATURE_ROOT!"
-		set FEATURE_VER=1_0_13
-		if %VERBOSE_MODE% GTR 0 (
-			echo ** EXTRA FEATURE Detected : jom in !FEATURE_ROOT!
-		)
-	)
+	set "FEAT_VERSION=1_0_13"
+
+	set FEAT_SOURCE_URL=
+	set FEAT_SOURCE_URL_FILENAME=
+	set FEAT_SOURCE_PATCH_CALLBACK=
+	set "FEAT_BINARY_URL=http://download.qt-project.org/official_releases/jom/jom_1_0_13.zip"
+	set "FEAT_BINARY_URL_FILENAME=jom_1_0_13.zip"
+	set FEAT_BINARY_CALLBACK=
+
+	set FEAT_DEPENDENCIES=
+	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\jom.exe"
+	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!"
+
+	set FEAT_BUNDLE_LIST=
 goto :eof
 
+
+:feature_jom_install_binary
+	set "INSTALL_DIR=!FEAT_INSTALL_ROOT!"
+	set SRC_DIR=
+	set BUILD_DIR=
+
+	call %STELLA_COMMON%\common.bat :download_uncompress "%FEAT_BINARY_URL%" "%FEAT_BINARY_URL_FILENAME%" "%INSTALL_DIR%" "DEST_ERASE STRIP"
+		
+goto :eof
 
 

@@ -73,8 +73,7 @@ goto :eof
 	if "!TEST_FEATURE!"=="0" (
 		git clone https://github.com/mitchellh/vagrant.git "%INSTALL_DIR%"
 
-		REM TODO
-		REM call %STELLA_COMMON%\common.bat :init_features "feature_ruby2 feature_rdevkit2"
+		REM TODO need ruby need redevkit2
 		
 		cd /D "%INSTALL_DIR%"
 		bundle install

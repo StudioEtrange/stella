@@ -1,7 +1,6 @@
 @setlocal enableExtensions enableDelayedExpansion
 @echo off
-echo ***************************************************************
-echo ** EXECUTING : %~n0
+
 call %~dp0\..\..\conf.bat
 
 

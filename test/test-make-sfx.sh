@@ -3,7 +3,7 @@ _CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 _CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
 source $_CURRENT_FILE_DIR/stella-link.sh include
 
-source $_CURRENT_FILE_DIR/test-lib.sh
+source $_CURRENT_FILE_DIR/lib.sh
 
 function test__make_targz_sfx_shell_1() {
 	rm -Rf "$STELLA_APP_WORK_ROOT/output"

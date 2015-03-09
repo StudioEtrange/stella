@@ -119,11 +119,10 @@ function __auto_build_install_configure() {
 		make
 		make install
 	else
-		$AUTO_SOURCE_DIR/make
 		if [ "$AUTO_INSTALL_FLAG_PREFIX" == "" ]; then
-			"$AUTO_SOURCE_DIR/make" prefix=$AUTO_INSTALL_DIR $AUTO_INSTALL_FLAG_POSTFIX install
+			make -C "$AUTO_SOURCE_DIR" prefix=$AUTO_INSTALL_DIR $AUTO_INSTALL_FLAG_POSTFIX install
 		else
-			$AUTO_INSTALL_FLAG_PREFIX "$AUTO_SOURCE_DIR/make" prefix=$AUTO_INSTALL_DIR $AUTO_INSTALL_FLAG_POSTFIX install
+			$AUTO_INSTALL_FLAG_PREFIX make -C "$AUTO_SOURCE_DIR" prefix=$AUTO_INSTALL_DIR $AUTO_INSTALL_FLAG_POSTFIX install
 		fi
 	fi
 	
@@ -170,7 +169,7 @@ function __auto_install() {
 
 	
 
-	echo " ** Installing $NAME in $INSTALL_DIR"
+	echo " ** Auto-installing $NAME in $INSTALL_DIR"
 
 	#local _store_dir="$(cd "$( dirname "." )" && pwd)"
 

@@ -5,58 +5,39 @@ goto :eof
 
 REM APP RESSOURCES & ENV MANAGEMENT ---------------
 
-REM Arg 1 is feature_name[:os_restriction]
-REM Arg 2 is an optionnal version number
 :add_app_feature
-	set "_FEATURE=%~1"
-	set "_VER=%~2"
+	set "_SCHEMA=%~1"
 	set "_app_feature_list="
 
-	set _flag=0
+	call %STELLA_COMMON%\common-feature.bat :translate_schema "!_SCHEMA!" "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR"  "TR_FEATURE_OS_RESTRICTION"
+				
+	set _flag_add_app_feature=0
 	if exist "%_STELLA_APP_PROPERTIES_FILE%" (
 		if "!STELLA_APP_FEATURE_LIST!"=="" (
-			if "!_VER!"=="" (
-				set "_app_feature_list=!_app_feature_list! !_FEATURE!"
-			) else (
-				set "_app_feature_list=!_app_feature_list! !_FEATURE!#!_VER!"
-			)
-
+			set "_app_feature_list=!_app_feature_list! !_SCHEMA!"
 		) else (
 			for %%F in (!STELLA_APP_FEATURE_LIST!) do (		
-				set item=%%F
+				
+				call %STELLA_COMMON%\common-feature.bat :translate_schema "%%F" "_TR_FEATURE_NAME" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR"  "_TR_FEATURE_OS_RESTRICTION"
 
-				if not "x!item:#=!"=="x!item!" (
-					set _V=!item:*#=!
-					set "_F=!item:#="^&REM #!
-				) else (
-					set _V=
-					set _F=!item!
-				)
-				
-				
-				if "!_FEATURE!#!_VER!"=="!_F!#!_V!" (
-					if "!_VER!"=="" (
-							set "_app_feature_list=!_app_feature_list! !_F!"
-					) else (
-						set "_app_feature_list=!_app_feature_list! !_F!#!_VER!"
-					)
-					set _flag=1
-				) else (
-					if "!_V!"=="" (
-						set "_app_feature_list=!_app_feature_list! !_F!"
-					) else (
-						set "_app_feature_list=!_app_feature_list! !_F!#!_V!"
+
+				if "%_TR_FEATURE_OS_RESTRICTION%"=="%TR_FEATURE_OS_RESTRICTION%" (
+					if "%_TR_FEATURE_VER%"=="%TR_FEATURE_VER%" (
+						if "%_TR_FEATURE_NAME%"=="%TR_FEATURE_NAME%" (
+							if "%_TR_FEATURE_ARCH%"=="%TR_FEATURE_ARCH%" (
+								if "%_TR_FEATURE_FLAVOUR%"=="%TR_FEATURE_FLAVOUR%" (
+									set _flag_add_app_feature=1
+								)
+							)
+						)
 					)
 				)
+				set "_app_feature_list=!_app_feature_list! %%F"
 			)
 
 			REM This is a new feature
-			if "!_flag!"=="0" (
-				if "!_VER!"=="" (
-					set "_app_feature_list=!_app_feature_list! !_FEATURE!"
-				) else (
-					set "_app_feature_list=!_app_feature_list! !_FEATURE!#!_VER!"
-				)
+			if "!_flag_add_app_feature!"=="0" (
+				set "_app_feature_list=!_app_feature_list! !_SCHEMA!"
 			)
 		)
 
@@ -68,6 +49,8 @@ REM Arg 2 is an optionnal version number
 
 		if not "!STELLA_APP_FEATURE_LIST!"=="!_app_feature_list!" (
 			call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_FEATURE_LIST" "!_app_feature_list!"
+			REM refresh value
+			set "STELLA_APP_FEATURE_LIST=!_app_feature_list!"
 		)
 	)
 goto :eof

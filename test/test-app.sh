@@ -4,7 +4,7 @@ _CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
 source $_CURRENT_FILE_DIR/stella-link.sh include
 
 
-source $_CURRENT_FILE_DIR/test-lib.sh
+source $_CURRENT_FILE_DIR/lib.sh
 
 
 

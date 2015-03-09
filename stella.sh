@@ -13,7 +13,7 @@ function usage() {
 	echo " L     app setup-env <env id|all> : download, build, deploy and run virtual environment based on app properties"
 	echo " o-- feature management :"
 	echo " L     feature install required : install required features for Stella"
-	echo " L     feature install <feature name> [--vers=<version>] [--restrict=<os>] : install a feature. Version is optional"
+	echo " L     feature install <feature schema|required>: install a feature. schema = feature_name[#version][@arch][/binary|source][:os_restriction]"
 	echo " L     feature list <all|feature name|active> : list all available feature OR available versions of a feature OR current active features"
 	echo " o-- virtual management :"
 	echo " L     virtual create-env <env id#distrib id> [--head] [--vmem=xxxx] [--vcpu=xx] : create a new environment from a generic box prebuilt with a specific distribution"
@@ -44,9 +44,7 @@ VCPU=''							''			''					i 			0		''						Nb CPU attributed to the virtual env.
 VMEM=''							''			''					i 			0		''						Memory attributed to the virtual env.
 HEAD=''							''			''					b			0		'1'						Active hyperviser head.
 LOGIN=''						'l'			''					b			0		'1'						Autologin in env.
-VERS=''							''			'version'			s 			0 		''						Feature version.
 SAMPLES=''                      ''         ''                  b           0       '1'                     Generate app samples.
-RESTRICT=''						'r'			'os'					s 			0 		''						Restrict feature to a specific OS
 "
 
 __argparse "$0" "$OPTIONS" "$PARAMETERS" "Lib Stella" "$(usage)" "" "$@"
@@ -81,13 +79,6 @@ if [ "$DOMAIN" == "feature" ]; then
 	if [ "$FORCE" == "1" ]; then
 		_feature_options="$_feature_options -f"
 	fi
-	if [ ! "$VERS" == "" ]; then
-		_feature_options="$_feature_options --vers=$VERS"
-	fi
-	if [ ! "$RESTRICT" == "" ]; then
-		_feature_options="$_feature_options --restrict=$RESTRICT"
-	fi
-	
 	$STELLA_BIN/feature.sh $ACTION $ID $_feature_options
 
 fi

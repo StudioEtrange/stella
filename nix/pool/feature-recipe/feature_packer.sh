@@ -1,194 +1,100 @@
 if [ ! "$_PACKER_INCLUDED_" == "1" ]; then 
 _PACKER_INCLUDED_=1
 
- 
-function __list_packer() {
-	echo "0_6_0_x64 0_6_0_x86 0_7_5_x64 0_7_5_x86"
+
+
+
+function feature_packer() {
+
+	FEAT_NAME=packer
+	FEAT_LIST_SCHEMA="0_6_0@x64/binary 0_6_0@x86/binary 0_7_5@x64/binary 0_7_5@x86/binary"
+	FEAT_DEFAULT_VERSION=0_7_5
+	FEAT_DEFAULT_ARCH=x64
+	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
-function __default_packer() {
-	echo "0_7_5_x64"
-}
+function feature_packer_0_6_0() {
+	FEAT_VERSION=0_6_0
 
-function __install_packer() {
-	local _VER=$1
-
-	TEST_FEATURE=0
-	FEATURE_PATH=
-	FEATURE_ROOT=
-	FEATURE_VER=
-
-	mkdir -p $STELLA_APP_FEATURE_ROOT/packer
-
-	if [ "$_VER" == "" ]; then
-		__install_packer_$(__default_packer)
-	else
-		# check for version
-		for v in $(__list_packer); do
-			[ "$v" == "$_VER" ] && __install_packer_$_VER
-		done
-	fi
-
-}
-function __feature_packer() {
-	local _VER=$1
-
-	TEST_FEATURE=0
-	FEATURE_PATH=
-	FEATURE_ROOT=
-	FEATURE_VER=
-
-	if [ "$_VER" == "" ]; then
-		__feature_packer_$(__default_packer)
-	else
-		# check for version
-		for v in $(__list_packer); do
-			[ "$v" == "$_VER" ] && __feature_packer_$_VER
-		done
-	fi
-}
-
-# -----------------------------------------
-
-function __install_packer_0_6_0_x64() {
+	FEAT_SOURCE_URL=
+	FEAT_SOURCE_URL_FILENAME=
+	FEAT_SOURCE_CALLBACK=
+	
 	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
-		URL=https://dl.bintray.com/mitchellh/packer/0.6.0_darwin_amd64.zip
-		FILE_NAME=packer_0.6.0_darwin_amd64.zip
+		FEAT_BINARY_URL_x64=https://dl.bintray.com/mitchellh/packer/0.6.0_darwin_amd64.zip
+		FEAT_BINARY_URL_FILENAME_x64=packer_0.6.0_darwin_amd64.zip
+
+		FEAT_BINARY_URL_x86="https://dl.bintray.com/mitchellh/packer/0.6.0_darwin_386.zip"
+		FEAT_BINARY_URL_FILENAME_x86="packer_0.6.0_darwin_386.zip"
+
 	fi
 	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-		URL=https://dl.bintray.com/mitchellh/packer/0.6.0_linux_amd64.zip
-		FILE_NAME=packer_0.6.0_linux_amd64.zip
+		FEAT_BINARY_URL_x64=https://dl.bintray.com/mitchellh/packer/0.6.0_linux_amd64.zip
+		FEAT_BINARY_URL_FILENAME_x64=packer_0.6.0_linux_amd64.zip
+
+		FEAT_BINARY_URL_x86=https://dl.bintray.com/mitchellh/packer/0.6.0_linux_386.zip
+		FEAT_BINARY_URL_FILENAME_x64=packer_0.6.0_linux_386.zip
 	fi
+	FEAT_BINARY_CALLBACK=
 
-	VER=0_6_0_x64
-	__install_packer_internal
-}
-function __feature_packer_0_6_0_x64() {
-	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/packer/0_6_0_x64/packer"
-	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/packer/0_6_0_x64"
-	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT"
-	FEATURE_RESULT_VER="0_6_0_x64"
-	__feature_packer_internal
+	FEAT_DEPENDENCIES=
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/packer
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
+
+	FEAT_BUNDLE_LIST=
 }
 
 
+function feature_packer_0_7_5() {
+	FEAT_VERSION=0_7_5
 
-function __install_packer_0_6_0_x86() {
+	FEAT_SOURCE_URL=
+	FEAT_SOURCE_URL_FILENAME=
+	FEAT_SOURCE_CALLBACK=
+	
 	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
-		URL=https://dl.bintray.com/mitchellh/packer/0.6.0_darwin_386.zip
-		FILE_NAME=packer_0.6.0_darwin_386.zip
+		FEAT_BINARY_URL_x64=https://dl.bintray.com/mitchellh/packer/packer_0.7.5_darwin_amd64.zip
+		FEAT_BINARY_URL_FILENAME_x64=packer_0.7.5_darwin_amd64.zip
+
+		FEAT_BINARY_URL_x86=https://dl.bintray.com/mitchellh/packer/packer_0.7.5_darwin_386.zip
+		FEAT_BINARY_URL_FILENAME_x86=packer_0.7.5_darwin_386.zip
+
 	fi
 	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-		URL=https://dl.bintray.com/mitchellh/packer/0.6.0_linux_386.zip
-		FILE_NAME=packer_0.6.0_linux_386.zip
+		FEAT_BINARY_URL_x64=https://dl.bintray.com/mitchellh/packer/packer_0.7.5_linux_amd64.zip
+		FEAT_BINARY_URL_FILENAME_x64=packer_0.7.5_linux_amd64.zip
+
+		FEAT_BINARY_URL_x86=https://dl.bintray.com/mitchellh/packer/packer_0.7.5_linux_386.zip
+		FEAT_BINARY_URL_FILENAME_x86=packer_0.7.5_linux_386.zip
 	fi
 
-	VER=0_6_0_x86
-	__install_packer_internal
-}
-function __feature_packer_0_6_0_x86() {
-	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/packer/0_6_0_x86/packer"
-	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/packer/0_6_0_x86"
-	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT"
-	FEATURE_RESULT_VER="0_6_0_x86"
-	__feature_packer_internal
-}
+	FEAT_DEPENDENCIES=
 
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/packer
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
 
-
-
-
-
-
-
-
-
-function __install_packer_0_7_5_x64() {
-	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
-		URL=https://dl.bintray.com/mitchellh/packer/0.7.5_darwin_amd64.zip
-		FILE_NAME=packer_0.7.5_darwin_amd64.zip
-	fi
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-		URL=https://dl.bintray.com/mitchellh/packer/0.7.5_linux_amd64.zip
-		FILE_NAME=packer_0.7.5_linux_amd64.zip
-	fi
-
-	VER=0_7_5_x64
-	__install_packer_internal
-}
-function __feature_packer_0_7_5_x64() {
-	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/packer/0_7_5_x64/packer"
-	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/packer/0_7_5_x64"
-	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT"
-	FEATURE_RESULT_VER="0_7_5_x64"
-	__feature_packer_internal
-}
-
-
-
-function __install_packer_0_7_5_x86() {
-	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
-		URL=https://dl.bintray.com/mitchellh/packer/0.7.5_darwin_386.zip
-		FILE_NAME=packer_0.7.5_darwin_386.zip
-	fi
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-		URL=https://dl.bintray.com/mitchellh/packer/0.7.5_linux_386.zip
-		FILE_NAME=packer_0.7.5_linux_386.zip
-	fi
-
-	VER=0_7_5_x86
-	__install_packer_internal
-}
-function __feature_packer_0_7_5_x86() {
-	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/packer/0_7_5_x86/packer"
-	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/packer/0_7_5_x86"
-	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT"
-	FEATURE_RESULT_VER="0_7_5_x86"
-	__feature_packer_internal
+	FEAT_BUNDLE_LIST=
 }
 
 
 # -----------------------------------------
-function __install_packer_internal() {
-	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/packer/$VER"
+function feature_packer_install_binary() {
 	
-	echo " ** Installing packer version $VER in $INSTALL_DIR"
-	
-	__feature_packer_$VER
-	if [ "$FORCE" ]; then
-		TEST_FEATURE=0
-		__del_folder $INSTALL_DIR
-	fi
-	if [ "$TEST_FEATURE" == "0" ]; then
+	INSTALL_DIR="$FEAT_INSTALL_ROOT"
+	SRC_DIR=
+	BUILD_DIR=
 
-		__download_uncompress "$URL" "$FILE_NAME" "$INSTALL_DIR" "DEST_ERASE STRIP"
+	__download_uncompress "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_FILENAME" "$INSTALL_DIR" "DEST_ERASE STRIP"
 		
-		__feature_packer_$VER
-		if [ "$TEST_FEATURE" == "1" ]; then
-			cd $INSTALL_DIR
-			chmod +x *
-			echo " ** Packer installed"
-			"$FEATURE_ROOT/packer" --version
-		else
-			echo "** ERROR"
-		fi
-	else
-		echo " ** Already installed"
+	if [ -d "$INSTALL_DIR" ]; then
+		cd $INSTALL_DIR
+		chmod +x *
 	fi
-}
-
-
-function __feature_packer_internal() {
-	TEST_FEATURE=0
 	
-	if [ -f "$FEATURE_TEST" ]; then
-		TEST_FEATURE=1
-		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : packer in $FEATURE_RESULT_ROOT"
-		FEATURE_PATH="$FEATURE_RESULT_PATH"
-		FEATURE_ROOT="$FEATURE_RESULT_ROOT"
-		FEATURE_VER="$FEATURE_RESULT_VER"
-	fi
 }
+
+
 
 
 fi

@@ -1,7 +1,5 @@
 @setlocal enableExtensions enableDelayedExpansion
 @echo off
-echo ***************************************************************
-echo ** EXECUTING : %~n0
 
 call %~dp0\conf.bat
 
@@ -9,7 +7,7 @@ call %~dp0\conf.bat
 
 :: arguments
 set "params=domain:"app feature virtual api" action:"init get-data get-assets update-data update-assets revert-data revert-assets get-features setup-env install list create-env run-env stop-env destroy-env info-env create-box get-box" id:"_ANY_""
-set "options=-f: -arch:"#x64 x86" -vcpu:_ANY_ -vmem:_ANY_ -head: -login: -vers:_ANY_ -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_ -samples:"
+set "options=-f: -arch:"#x64 x86" -vcpu:_ANY_ -vmem:_ANY_ -head: -login: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_ -samples:"
 
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
@@ -60,7 +58,6 @@ REM --------------- FEATURE ----------------------------
 if "%DOMAIN%"=="feature" (
 	set "_feature_options="
 	if "%-f%"=="1" set "_feature_options=!_feature_options! -f"
-	if not "%-vers%"=="" set "_feature_options=!_feature_options! -vers=%-vers%"
 	
 	call %STELLA_BIN%\feature.bat %ACTION% %id% !_feature_options!
 	@echo off
@@ -100,7 +97,7 @@ if "%DOMAIN%"=="virtual" goto :end
 	echo 		%~n0 app setup-env ^<env id^|all^> : download, build, deploy and run virtual environment based on app properties
 	echo	* feature management :
 	echo 		%~n0 feature install required : install required features for Stella
-	echo 		%~n0 feature install ^<feature name^> [-vers=^<version^>] : install a features. version is optional
+	echo 		%~n0 feature install ^<feature name^> : install a features. schema = feature_name[#version][@arch][/binary|source][:os_restriction]
 	echo 		%~n0 feature list ^<all^|feature name^|active^>: list all available features OR available version of a feature OR current active features
 	echo	* virtual management :
 	echo 		%~n0 virtual create-env ^<env id#distrib id^> [-head] [-vmem=xxxx] [-vcpu=xx] : create a new environment from a generic box prebuilt with a specific distribution

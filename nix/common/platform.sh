@@ -217,7 +217,6 @@ function __stella_features_requirement_by_os() {
 	echo "** Install required features for $_os"
 	case $_os in
 		ubuntu)
-			# __install_feature "test" "Z" "HIDDEN"
 			;;
 		debian)
 			;;
@@ -230,6 +229,35 @@ function __stella_features_requirement_by_os() {
 	esac	
 }
 
+#TODO
+# from https://github.com/darkoperator/MSF-Installer/blob/master/msf_install.sh
+function check_dependencies_osx
+{
+    # Get a list of all the packages installed on the system
+    PKGS=`pkgutil --pkgs`
+    print_status "Verifying that Development Tools and Java are installed:"
+    if [[ $PKGS =~ 'com.apple.pkg.JavaForMacOSX' || $PKGS =~ com.oracle.jdk* ]] ; then
+        print_good "Java is installed."
+    else
+        print_error "Java is not installed on this system."
+        print_error "Run the command java in Terminal and install Java"
+        exit 1
+    fi
+
+    if [[ $PKGS =~ com.apple.pkg.XcodeMAS ]] ; then
+        print_good "Xcode is installed."
+    else
+        print_error "Xcode is not installed on this system. Install from the Apple AppStore."
+        exit 1
+    fi
+
+    if [[ $PKGS =~ com.apple.pkg.DeveloperToolsCLI || $PKGS =~ com.apple.pkg.CLTools_Executables ]] ; then
+        print_good "Command Line Development Tools is intalled."
+    else
+        print_error "Command Line Development Tools is not installed on this system."
+        exit 1
+    fi
+}
 
 
 

@@ -1,13 +1,11 @@
 @setlocal enableExtensions enableDelayedExpansion
 @echo off
-echo ***************************************************************
-echo ** EXECUTING : %~n0
 
 call %~dp0\..\..\conf.bat
 
 :: arguments
-set "params=action:"install list" id:"required all active %__STELLA_FEATURE_LIST%""
-set "options=-f: -vers:_ANY_"
+set "params=action:"install list" id:"_ANY_""
+set "options=-f:"
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
 if "%ARGOPT_FLAG_HELP%"=="1" goto :usage
@@ -18,7 +16,7 @@ set FORCE=%-f%
 call %STELLA_COMMON%\common.bat :init_stella_env
 
 if "%action%"=="install" (
-	call %STELLA_COMMON%\common-feature.bat :install_feature %id% %-vers%
+	call %STELLA_COMMON%\common-feature.bat :feature_install %id%
 	goto :end
 )
 
@@ -49,7 +47,7 @@ goto :usage
 	echo List of commands
    	echo	* feature management :
 	echo 		%~n0 install required : install required features for Stella
-	echo 		%~n0 install ^<feature name^> [-vers=^<version^>] : install a feature. version is optional
+	echo 		%~n0 install ^<feature schema^> : install a feature. schema = feature_name[#version][@arch][/binary|source][:os_restriction]
 	echo 		%~n0 list ^<all^|feature name^|active^>: list all available feature OR available version of a feature OR current active features
 goto :end
 

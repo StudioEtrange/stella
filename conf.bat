@@ -60,7 +60,7 @@ set STELLA_INTERNAL_FEATURE_ROOT=%STELLA_ROOT%\feature_%STELLA_CURRENT_PLATFORM_
 :: REQUIRED FEATURES ---------------------------------------------
 set "WGET=%STELLA_INTERNAL_FEATURE_ROOT%\wget\1_11_4\bin\wget.exe"
 set "UZIP=%STELLA_INTERNAL_FEATURE_ROOT%\unzip\5_51_1\bin\unzip.exe"
-set "7ZIP=%STELLA_INTERNAL_FEATURE_ROOT%\sevenzip\9_20\7za.exe"
+set "SEVENZIP=%STELLA_INTERNAL_FEATURE_ROOT%\sevenzip\9_20\7za.exe"
 ::set "PATCH=%STELLA_INTERNAL_FEATURE_ROOT%\patch\2_5_9\bin\patch.exe"
 ::set "GNUMAKE=%STELLA_INTERNAL_FEATURE_ROOT%\make\3_81\bin\make.exe"
 
@@ -91,7 +91,7 @@ set VIRTUAL_DEFAULT_HYPERVISOR=virtualbox
 
 :: INTERNAL LIST ---------------------------------------------
 set "__STELLA_DISTRIB_LIST=ubuntu64_13_10 debian64_7_5 centos64_6_5 archlinux boot2docker"
-set "__STELLA_FEATURE_LIST=goconfig-cli ninja jom cmake packer perl ruby nasm python vagrant openssh wget unzip sevenzip patch gnumake"
+set "__STELLA_FEATURE_LIST=conemu goconfig-cli ninja jom cmake packer perl ruby nasm python vagrant openssh wget unzip sevenzip patch gnumake"
 
 :: API ---------------------------------------------
 set "STELLA_API_COMMON_PUBLIC=trim argparse is_path_abs get_ressource download_uncompress del_folder copy_folder_content_into fork run_admin mercurial_project_version git_project_version"

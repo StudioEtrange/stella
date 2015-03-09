@@ -1,78 +1,42 @@
 if [ ! "$_GETTEXT_INCLUDED_" == "1" ]; then 
 _GETTEXT_INCLUDED_=1
 
-
-function __list_gettext() {
-	echo "0_19_4"
-}
-
-function __default_gettext() {
-	echo "0_19_4"
-}
-
-function __install_gettext() {
-	local _VER=$1
-
-	TEST_FEATURE=0
-	FEATURE_PATH=
-	FEATURE_ROOT=
-	FEATURE_VER=
-
-	mkdir -p $STELLA_APP_FEATURE_ROOT/gettext
-
-	if [ "$_VER" == "" ]; then
-		__install_gettext_$(__default_gettext)
-	else
-		# check for version
-		for v in $(__list_gettext); do
-			[ "$v" == "$_VER" ] && __install_gettext_$_VER
-		done
-	fi
-}
-function __feature_gettext() {
-	local _VER=$1
-
-	TEST_FEATURE=0
-	FEATURE_PATH=
-	FEATURE_ROOT=
-	FEATURE_VER=
-
-	if [ "$_VER" == "" ]; then
-		__feature_gettext_$(__default_gettext)
-	else
-		# check for version
-		for v in $(__list_gettext); do
-			[ "$v" == "$_VER" ] && __feature_gettext_$_VER
-		done
-	fi
-}
-
-# --------------------------------------
-function __install_gettext_0_19_4() {
-	URL=http://ftpmirror.gnu.org/gettext/gettext-0.19.4.tar.xz
-	VER=0_19_4
-	FILE_NAME=gettext-0.19.4.tar.xz
-	__install_gettext_internal
-}
-
-
-function __feature_gettext_0_19_4() {
-	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/gettext/0_19_4/bin/gettext"
-	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/gettext/0_19_4"
-	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
-	FEATURE_RESULT_VER="0_19_4"
-	__feature_gettext_internal
-}
-
-
-# --------------------------------------
 # https://github.com/Homebrew/homebrew/blob/master/Library/Formula/gettext.rb
-function __install_gettext_internal() {
+
+function feature_gettext() {
+
+	FEAT_NAME=gettext
+	FEAT_LIST_SCHEMA="0_19_4/source"
+	FEAT_DEFAULT_VERSION=0_19_4
+	FEAT_DEFAULT_ARCH=
+	FEAT_DEFAULT_FLAVOUR="source"
+}
+
+function feature_gettext_0_19_4() {
+
+	FEAT_VERSION=last_release
+
+	FEAT_SOURCE_URL=http://ftpmirror.gnu.org/gettext/gettext-0.19.4.tar.xz
+	FEAT_SOURCE_URL_FILENAME=gettext-0.19.4.tar.xz
+	FEAT_SOURCE_CALLBACK=
+	FEAT_BINARY_URL=
+	FEAT_BINARY_URL_FILENAME=
+	FEAT_BINARY_CALLBACK=
+
+	FEAT_DEPENDENCIES=
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/gettext
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+
+	FEAT_BUNDLE_LIST=
+}
+
+
+function feature_gettext_install_source() {
 	
 	# out of tree build do not work
-	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/gettext/$VER"
-	SRC_DIR="$STELLA_APP_FEATURE_ROOT/gettext/gettext-$VER-src"
-	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/gettext/gettext-$VER-src"
+	INSTALL_DIR="$FEAT_INSTALL_ROOT"
+	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
+	BUILD_DIR="$SRC_DIR"
 
 
 	AUTO_INSTALL_FLAG_PREFIX=
@@ -90,35 +54,9 @@ function __install_gettext_internal() {
                           --without-cvs\
                           --without-xz"
 
-	__feature_gettext_$VER
-	if [ "$FORCE" ]; then
-		TEST_FEATURE=0
-		__del_folder "$INSTALL_DIR"
-	fi
-	if [ "$TEST_FEATURE" == "0" ]; then
-		__auto_install "configure" "gettext" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "DEST_ERASE STRIP"
 
+	__auto_install "configure" "gettext" "$FEAT_SOURCE_URL_FILENAME" "$FEAT_SOURCE_URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "DEST_ERASE STRIP"
 
-		__feature_gettext_$VER
-		if [ "$TEST_FEATURE" == "1" ]; then
-			echo " ** gettext installed"
-		else
-			echo "** ERROR"
-		fi
-
-	else
-		echo " ** Already installed"
-	fi
-}
-function __feature_gettext_internal() {
-	TEST_FEATURE=0
-	if [ -f "$FEATURE_TEST" ]; then
-		TEST_FEATURE=1
-		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : gettext in $FEATURE_RESULT_ROOT"
-		FEATURE_PATH="$FEATURE_RESULT_PATH"
-		FEATURE_ROOT="$FEATURE_RESULT_ROOT"
-		FEATURE_VER="$FEATURE_RESULT_VER"
-	fi
 }
 
 fi

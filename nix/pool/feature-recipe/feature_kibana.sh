@@ -2,144 +2,75 @@ if [ ! "$_KIBANA_INCLUDED_" == "1" ]; then
 _KIBANA_INCLUDED_=1
 
 
-function __list_kibana() {
-	echo "3_1_2 4_0_0"
+
+function feature_kibana() {
+	FEAT_NAME=kibana
+	FEAT_LIST_SCHEMA="3_1_2/source 4_0_0/binary"
+	FEAT_DEFAULT_VERSION=4_0_0
+	FEAT_DEFAULT_ARCH=
+	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
-function __default_kibana() {
-	echo "3_1_2"
-}
 
-function __install_kibana() {
-	local _VER=$1
+function feature_kibana_3_1_2() {
+	FEAT_VERSION=3_1_2
 
-	TEST_FEATURE=0
-	FEATURE_PATH=
-	FEATURE_ROOT=
-	FEATURE_VER=
-
-	mkdir -p $STELLA_APP_FEATURE_ROOT/kibana
-	if [ "$_VER" == "" ]; then
-		__install_kibana_$(__default_kibana)
-	else
-		# check for version
-		for v in $(__list_kibana); do
-			[ "$v" == "$_VER" ] && __install_kibana_$_VER
-		done
-	fi
+	FEAT_SOURCE_URL=https://download.kibana.org/kibana/kibana/kibana-3.1.2.tar.gz
+	FEAT_SOURCE_URL_FILENAME=kibana-3.1.2.tar.gz
+	FEAT_SOURCE_CALLBACK=
+	FEAT_BINARY_URL=
+	FEAT_BINARY_URL_FILENAME=
+	FEAT_BINARY_CALLBACK=
 	
-}
-function __feature_kibana() {
-	local _VER=$1
+	FEAT_DEPENDENCIES=
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/config.js
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
 
-	TEST_FEATURE=0
-	FEATURE_PATH=
-	FEATURE_ROOT=
-	FEATURE_VER=
-
-	if [ "$_VER" == "" ]; then
-		__feature_kibana_$(__default_kibana)
-	else
-		# check for version
-		for v in $(__list_kibana); do
-			[ "$v" == "$_VER" ] && __feature_kibana_$_VER
-		done
-	fi
+	FEAT_BUNDLE_LIST=
 }
 
 
+function feature_kibana_4_0_0() {
+	FEAT_VERSION=4_0_0
 
-# --------------------------------------
-function __install_kibana_3_1_2() {
-	URL=https://download.elasticsearch.org/kibana/kibana/kibana-3.1.2.tar.gz
-	VER=3_1_2
-	FILE_NAME=kibana-3.1.2.tar.gz
-	__install_kibana_internal
-
-	# NEED Elasticsearch
-}
-
-function __feature_kibana_3_1_2() {
-	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/kibana/3_1_2/config.js"
-	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/kibana/3_1_2"
-	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT"
-	FEATURE_RESULT_VER="3_1_2"
-	__feature_kibana_internal
-}
-
-
-function __install_kibana_4_0_0() {
+	FEAT_SOURCE_URL=
+	FEAT_SOURCE_URL_FILENAME=
+	FEAT_SOURCE_CALLBACK=
 	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then 
-		URL=https://download.elasticsearch.org/kibana/kibana/kibana-4.0.0-darwin-x64.tar.gz
-		FILE_NAME=kibana-4.0.0-darwin-x64.tar.gz
+		FEAT_BINARY_URL=https://download.kibana.org/kibana/kibana/kibana-4.0.0-darwin-x64.tar.gz
+		FEAT_BINARY_URL_FILENAME=kibana-4.0.0-darwin-x64.tar.gz
 	fi
 
 	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-		URL=https://download.elasticsearch.org/kibana/kibana/kibana-4.0.0-linux-x64.tar.gz
-		FILE_NAME=kibana-4.0.0-linux-x64.tar.gz
+		FEAT_BINARY_URL=https://download.kibana.org/kibana/kibana/kibana-4.0.0-linux-x64.tar.gz
+		FEAT_BINARY_URL_FILENAME=kibana-4.0.0-linux-x64.tar.gz
 	fi
-	VER=4_0_0
-	
-	__install_kibana_internal
 
-	# NEED Elasticsearch
-}
+	FEAT_DEPENDENCIES=
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/kibana
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 
-function __feature_kibana_4_0_0() {
-	FEATURE_TEST="$STELLA_APP_FEATURE_ROOT/kibana/4_0_0/bin/kibana"
-	FEATURE_RESULT_ROOT="$STELLA_APP_FEATURE_ROOT/kibana/4_0_0"
-	FEATURE_RESULT_PATH="$FEATURE_RESULT_ROOT/bin"
-	FEATURE_RESULT_VER="4_0_0"
-	__feature_kibana_internal
+	FEAT_BUNDLE_LIST=
 }
 
 
-# --------------------------------------
-
-
-
-function __install_kibana_internal() {
-	
-	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/kibana/$VER"
+function feature_kibana_install_binary() {
+	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR=
 	BUILD_DIR=
 
-
-	echo " ** Installing kibana version $VER in $INSTALL_DIR"
-	
-
-	__feature_kibana_$VER
-	if [ "$FORCE" ]; then
-		TEST_FEATURE=0
-		__del_folder $INSTALL_DIR
-	fi
-	if [ "$TEST_FEATURE" == "0" ]; then
-
-
-		__download_uncompress "$URL" "$FILE_NAME" "$INSTALL_DIR" "DEST_ERASE STRIP"
-
-
-		__feature_kibana_$VER
-		if [ "$TEST_FEATURE" == "1" ]; then
-			echo " ** kibana installed"
-		else
-			echo "** ERROR"
-		fi
-	else
-		echo " ** Already installed"
-	fi
+	__download_uncompress "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_FILENAME" "$INSTALL_DIR" "DEST_ERASE STRIP"
 
 }
-function __feature_kibana_internal() {
-	TEST_FEATURE=0
-	
-	if [ -f "$FEATURE_TEST" ]; then
-		TEST_FEATURE=1
-		[ "$VERBOSE_MODE" == "0" ] || echo " ** EXTRA FEATURE Detected : kibana in $FEATURE_RESULT_ROOT"
-		FEATURE_PATH="$FEATURE_RESULT_PATH"
-		FEATURE_ROOT="$FEATURE_RESULT_ROOT"
-		FEATURE_VER="$FEATURE_RESULT_VER"
-	fi
+
+function feature_kibana_install_source() {
+	INSTALL_DIR="$FEAT_INSTALL_ROOT"
+	SRC_DIR=
+	BUILD_DIR=
+
+	__download_uncompress "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_FILENAME" "$INSTALL_DIR" "DEST_ERASE STRIP"
+
 }
+
 
 fi

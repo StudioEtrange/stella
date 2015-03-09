@@ -1,16 +1,16 @@
 @setlocal enableExtensions enableDelayedExpansion
 @echo off
 
-call %~dp0\..\conf.bat
+call %~dp0\stella-link.bat :include
 
 call :test_trim
-goto :eof
+
 call :test_is_path_abs
 
 call :test_abs_to_rel_path
 
 
-
+goto :eof
 
 
 :test_is_path_abs

@@ -1,7 +1,6 @@
 @setlocal enableExtensions enableDelayedExpansion
 @echo off
-echo ***************************************************************
-echo ** EXECUTING : %~n0
+
 echo ** Requirement : Vagrant 1.6 from http://www.vagrantup.com/
 echo ** Recommanded : vagrant-vbguest plugin https://github.com/dotless-de/vagrant-vbguest http://kvz.io/blog/2013/01/16/vagrant-tip-keep-virtualbox-guest-additions-in-sync/
 echo 					vagrant plugin install vagrant-vbguest

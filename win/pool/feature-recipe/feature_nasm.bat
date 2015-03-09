@@ -2,99 +2,41 @@
 call %*
 goto :eof
 
-:list_nasm
-	set "%~1=2_11"
-goto :eof
-
-:default_nasm
-	set "%~1=2_11"
-goto :eof
-
-:install_nasm
-	set "_VER=%~1"
-	
-	set TEST_FEATURE=0
-	set FEATURE_ROOT=
-	set FEATURE_PATH=
-	set FEATURE_VER=
-
-	if not exist %STELLA_APP_FEATURE_ROOT%\nasm mkdir %STELLA_APP_FEATURE_ROOT%\nasm
-	if "%_VER%"=="" (
-		call :default_nasm "_DEFAULT_VER"
-		call :install_nasm_!_DEFAULT_VER!
-	) else (
-		call :list_nasm "_list_ver"
-		for %%v in (!_list_ver!) do (
-			if "%%v"=="%_VER%" (
-				call :install_nasm_%_VER%
-			)
-		)
-	)
-goto :eof
 
 :feature_nasm
-	set "_VER=%~1"
-
-	set TEST_FEATURE=0
-	set FEATURE_ROOT=
-	set FEATURE_PATH=
-	set FEATURE_VER=	
-
-	if "%_VER%"=="" (
-		call :default_nasm "_DEFAULT_VER"
-		call :feature_nasm_!_DEFAULT_VER!
-	) else (
-		call :list_nasm "_list_ver"
-		for %%v in (!_list_ver!) do (
-			if "%%v"=="%_VER%" (
-				call :feature_nasm_%_VER%
-			)
-		)
-	)
+	set "FEAT_NAME=nasm"
+	set "FEAT_LIST_SCHEMA=2_11/binary"
+	set "FEAT_DEFAULT_VERSION=2_11"
+	set "FEAT_DEFAULT_ARCH="
+	set "FEAT_DEFAULT_FLAVOUR=binary"
 goto :eof
 
-
-
-
-:install_nasm_2_11
-	set URL=http://www.nasm.us/pub/nasm/releasebuilds/2.11/win32/nasm-2.11-win32.zip
-	set FILE_NAME=nasm-2.11-win32.zip
-	set VERSION=2_11
-	set INSTALL_DIR="%STELLA_APP_FEATURE_ROOT%\nasm\%VERSION%"
-	
-	echo ** Installing NASM version %VERSION% in %INSTALL_DIR%
-
-	call :feature_nasm_2_11
-	if "%FORCE%"=="1" ( 
-		set TEST_FEATURE=0
-		call %STELLA_COMMON%\common.bat :del_folder "%INSTALL_DIR%"
-	)
-	if "!TEST_FEATURE!"=="0" (	
-		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "DEST_ERASE STRIP"
-		
-		call :feature_nasm_2_11
-		if "!TEST_FEATURE!"=="1" (
-			echo NASM installed
-			!FEATURE_ROOT!\nasm -version
-		) else (
-			echo ** ERROR
-		)
-	) else (
-		echo ** Already installed
-	)
-goto :eof
 
 :feature_nasm_2_11
-	set TEST_FEATURE=0
-	
-	if exist "%STELLA_APP_FEATURE_ROOT%\nasm\2_11\nasm.exe" (
-		set "TEST_FEATURE=1"
-		set "FEATURE_ROOT=%STELLA_APP_FEATURE_ROOT%\nasm\2_11"
-		set "FEATURE_PATH=!FEATURE_ROOT!"
-		set FEATURE_VER=2_11
-		if %VERBOSE_MODE% GTR 0 (
-			echo ** EXTRA FEATURE Detected : NASM in !FEATURE_ROOT!
-		)
-	)
+	set "FEAT_VERSION=2_11"
+
+	set FEAT_SOURCE_URL=
+	set FEAT_SOURCE_URL_FILENAME=
+	set FEAT_SOURCE_PATCH_CALLBACK=
+	set "FEAT_BINARY_URL=http://www.nasm.us/pub/nasm/releasebuilds/2.11/win32/nasm-2.11-win32.zip"
+	set "FEAT_BINARY_URL_FILENAME=nasm-2.11-win32.zip"
+	set FEAT_BINARY_CALLBACK=
+
+	set FEAT_DEPENDENCIES=
+	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\nasm.exe"
+	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!"
+
+	set FEAT_BUNDLE_LIST=
 goto :eof
+
+
+:feature_nasm_install_binary
+	set "INSTALL_DIR=!FEAT_INSTALL_ROOT!"
+	set SRC_DIR=
+	set BUILD_DIR=
+
+	call %STELLA_COMMON%\common.bat :download_uncompress "%FEAT_BINARY_URL%" "%FEAT_BINARY_URL_FILENAME%" "%INSTALL_DIR%" "DEST_ERASE STRIP"
+		
+goto :eof
+
 

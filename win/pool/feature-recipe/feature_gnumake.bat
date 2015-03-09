@@ -2,100 +2,41 @@
 call %*
 goto :eof
 
-:list_gnumake
-	set "%~1=3_81"
-goto :eof
 
-:default_gnumake
-	set "%~1=3_81"
-goto :eof
-
-:install_gnumake
-	set "_VER=%~1"
-
-	set TEST_FEATURE=0
-	set FEATURE_ROOT=
-	set FEATURE_PATH=
-	set FEATURE_VER=
-
-	if not exist %STELLA_APP_FEATURE_ROOT%\gnumake mkdir %STELLA_APP_FEATURE_ROOT%\gnumake
-	if "%_VER%"=="" (
-		call :default_gnumake "_DEFAULT_VER"
-		call :install_gnumake_!_DEFAULT_VER!
-	) else (
-		call :list_gnumake "_list_ver"
-		for %%v in (!_list_ver!) do (
-			if "%%v"=="%_VER%" (
-				call :install_gnumake_%_VER%
-			)
-		)
-	)
-goto :eof
 
 :feature_gnumake
-	set "_VER=%~1"
-
-	set TEST_FEATURE=0
-	set FEATURE_ROOT=
-	set FEATURE_PATH=
-	set FEATURE_VER=	
-
-	if "%_VER%"=="" (
-		call :default_gnumake "_DEFAULT_VER"
-		call :feature_gnumake_!_DEFAULT_VER!
-	) else (
-		call :list_gnumake "_list_ver"
-		for %%v in (!_list_ver!) do (
-			if "%%v"=="%_VER%" (
-				call :feature_gnumake_%_VER%
-			)
-		)
-	)
+	set "FEAT_NAME=gnumake"
+	set "FEAT_LIST_SCHEMA=3_81/binary"
+	set "FEAT_DEFAULT_VERSION=3_81"
+	set "FEAT_DEFAULT_ARCH="
+	set "FEAT_DEFAULT_FLAVOUR=binary"
 goto :eof
 
-:install_gnumake_3_81
-	set VERSION=3_81
-	set INSTALL_DIR="%STELLA_APP_FEATURE_ROOT%\gnumake\%VERSION%"
-	
-	echo ** Installing gnumake version %VERSION% in %INSTALL_DIR%
-
-	call :feature_gnumake_3_81
-	if "%FORCE%"=="1" ( 
-		set TEST_FEATURE=0
-		call %STELLA_COMMON%\common.bat :del_folder "%INSTALL_DIR%"
-	)
-	if "!TEST_FEATURE!"=="0" (
-
-		set URL=http://downloads.sourceforge.net/project/gnuwin32/make/3.81/make-3.81-bin.zip
-		set FILE_NAME=make-3.81-bin.zip
-		call %STELLA_COMMON%\common.bat :download_uncompress "!URL!" "!FILE_NAME!" "%INSTALL_DIR%"
-		
-		set URL=http://sourceforge.net/projects/gnuwin32/files/make/3.81/make-3.81-dep.zip
-		set FILE_NAME=make-3.81-dep.zip
-		call %STELLA_COMMON%\common.bat :download_uncompress "!URL!" "!FILE_NAME!" "%INSTALL_DIR%"
-
-
-		call :feature_gnumake_3_81
-		if "!TEST_FEATURE!"=="1" (
-			echo gnumake installed
-		) else (
-			echo ** ERROR
-		)
-	) else (
-		echo ** Already installed
-	)
-goto :eof
 
 :feature_gnumake_3_81
-	set TEST_FEATURE=0
-	
-	if exist "%STELLA_APP_FEATURE_ROOT%\gnumake\3_81\bin\make.exe" (
-		set "TEST_FEATURE=1"
-		set "FEATURE_ROOT=%STELLA_APP_FEATURE_ROOT%\gnumake\3_81"
-		set "FEATURE_PATH=!FEATURE_ROOT!\bin"
-		set FEATURE_VER=3_81
-		if %VERBOSE_MODE% GTR 0 (
-			echo ** EXTRA FEATURE Detected : gnumake in !FEATURE_ROOT!
-		)
-	)
+	set "FEAT_VERSION=3_81"
+
+	set FEAT_SOURCE_URL=
+	set FEAT_SOURCE_URL_FILENAME=
+	set FEAT_SOURCE_PATCH_CALLBACK=
+	set "FEAT_BINARY_URL=http://downloads.sourceforge.net/project/gnuwin32/make/3.81/make-3.81-bin.zip http://sourceforge.net/projects/gnuwin32/files/make/3.81/make-3.81-dep.zip"
+	set "FEAT_BINARY_URL_FILENAME=_AUTO_"
+	set FEAT_BINARY_CALLBACK=
+
+	set FEAT_DEPENDENCIES=
+	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\make.exe"
+	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\bin"
+
+	set FEAT_BUNDLE_LIST=
+goto :eof
+
+
+:feature_gnumake_install_binary
+	set "INSTALL_DIR=!FEAT_INSTALL_ROOT!"
+	set SRC_DIR=
+	set BUILD_DIR=
+
+	for %%i in (!FEAT_BINARY_URL!) do (
+		call %STELLA_COMMON%\common.bat :download_uncompress "%FEAT_BINARY_URL%" "_AUTO_" "%INSTALL_DIR%" "DEST_ERASE STRIP"
+	)	
 goto :eof

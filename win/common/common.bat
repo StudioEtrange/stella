@@ -6,7 +6,7 @@ goto :eof
 ::--------------------------------------------------------
 
 :init_stella_env
-	call %STELLA_COMMON%\common-feature.bat :init_installed_features
+	call %STELLA_COMMON%\common-feature.bat :feature_init_installed
 goto :eof
 
 
@@ -41,8 +41,8 @@ goto :eof
 	if exist %~1 (
 		echo ** Deleting %~1 folder
 		REM call :timecount_start timecount_id
-		del /f/q %~1 >nul
-		rmdir /s/q %~1 >nul
+		del /f/q %~1 >nul 2>&1
+		rmdir /s/q %~1 >nul 2>&1
 		REM call :timecount_stop !timecount_id!
 		REM echo ** Folder deleted in !STELLA_TIMECOUNT_ELAPSED!
 
@@ -555,7 +555,7 @@ goto :eof
 	for %%B in ( %FILE_PATH% ) do set EXTENSION=%%~xB
 
 	if "%EXTENSION%"==".7z" (
-		echo ** Using 7zip : %U7ZIP%
+		echo ** Using 7zip : %SEVENZIP%
 		set "USE7ZIP=TRUE"
 	) else (
 		echo ** Using unzip : %UZIP%
@@ -564,15 +564,19 @@ goto :eof
 
 	if "!_opt_strip!"=="OFF" (
 		if "%USE7ZIP%"=="FALSE" "%UZIP%" -o "%FILE_PATH%" -d "%UNZIP_DIR%"
-		if "%USE7ZIP%"=="TRUE" "%7ZIP%" x "%FILE_PATH%" -y -o"%UNZIP_DIR%"
+		if "%USE7ZIP%"=="TRUE" "%SEVENZIP%" x "%FILE_PATH%" -y -o"%UNZIP_DIR%"
 	) else (
 		echo ** Stripping first folder
 		if exist "%STELLA_APP_TEMP_DIR%\%_FILENAME%" (
 			rmdir /q /s "%STELLA_APP_TEMP_DIR%\%_FILENAME%"
 		)
 		mkdir "%STELLA_APP_TEMP_DIR%\%_FILENAME%"
-		if "%USE7ZIP%"=="FALSE" "%UZIP%" -o "%FILE_PATH%" -d "%STELLA_APP_TEMP_DIR%\%_FILENAME%"
-		if "%USE7ZIP%"=="TRUE" "%7ZIP%" x "%FILE_PATH%" -y -o"%STELLA_APP_TEMP_DIR%\%_FILENAME%"
+		if "%USE7ZIP%"=="FALSE" (
+			"%UZIP%" -o "%FILE_PATH%" -d "%STELLA_APP_TEMP_DIR%\%_FILENAME%"
+		)
+		if "%USE7ZIP%"=="TRUE" (
+			"%SEVENZIP%" x "%FILE_PATH%" -y -o"%STELLA_APP_TEMP_DIR%\%_FILENAME%"
+		)
 		
 		cd /D "%STELLA_APP_TEMP_DIR%\%_FILENAME%"
 		for /D %%i in (*) do (

@@ -2,105 +2,43 @@
 call %*
 goto :eof
 
-:list_perl
-	set "%~1=5_18_2"
-goto :eof
-
-:default_perl
-	set "%~1=5_18_2"
-goto :eof
-
-:install_perl
-	set "_VER=%~1"
-
-	set TEST_FEATURE=0
-	set FEATURE_ROOT=
-	set FEATURE_PATH=
-	set FEATURE_VER=
-
-	if not exist %STELLA_APP_FEATURE_ROOT%\perl mkdir %STELLA_APP_FEATURE_ROOT%\perl
-	if "%_VER%"=="" (
-		call :default_perl "_DEFAULT_VER"
-		call :install_perl_!_DEFAULT_VER!
-	) else (
-		call :list_perl "_list_ver"
-		for %%v in (!_list_ver!) do (
-			if "%%v"=="%_VER%" (
-				call :install_perl_%_VER%
-			)
-		)
-	)
-goto :eof
-
 :feature_perl
-	set "_VER=%~1"
-	
-	set TEST_FEATURE=0
-	set FEATURE_ROOT=
-	set FEATURE_PATH=
-	set FEATURE_VER=
-
-	if "%_VER%"=="" (
-		call :default_perl "_DEFAULT_VER"
-		call :feature_perl_!_DEFAULT_VER!
-	) else (
-		call :list_perl "_list_ver"
-		for %%v in (!_list_ver!) do (
-			if "%%v"=="%_VER%" (
-				call :feature_perl_%_VER%
-			)
-		)
-	)
+	set "FEAT_NAME=perl"
+	set "FEAT_LIST_SCHEMA=5_18_2@x64/binary 5_18_2@x86/binary"
+	set "FEAT_DEFAULT_VERSION=5_18_2"
+	set "FEAT_DEFAULT_ARCH=x64"
+	set "FEAT_DEFAULT_FLAVOUR=binary"
 goto :eof
 
-
-
-:install_perl_5_18_2
-	:: Note: choose a directory name without spaces and non us-ascii characters
-	if "%ARCH%"=="x64" (
-		set URL=http://strawberryperl.com/download/5.18.2.1/strawberry-perl-5.18.2.1-64bit-portable.zip
-		set FILE_NAME=strawberry-perl-5.18.2.1-64bit-portable.zip
-	)
-	if "%ARCH%"=="x86" (
-		set URL=http://strawberryperl.com/download/5.18.2.1/strawberry-perl-5.18.2.1-32bit-portable.zip
-		set FILE_NAME=strawberry-perl-5.18.2.1-32bit-portable.zip
-	)
-	set VERSION=5_18_2
-	set "INSTALL_DIR=%STELLA_APP_FEATURE_ROOT%\perl\%VERSION%"
-
-	echo ** Installing strawberry perl portable edition version 5.18.2.1 in %INSTALL_DIR%
-
-	call :feature_perl_5_18_2
-	if "%FORCE%"=="1" ( 
-		set TEST_FEATURE=0
-		call %STELLA_COMMON%\common.bat :del_folder "%INSTALL_DIR%"
-	)
-	if "!TEST_FEATURE!"=="0" (
-		call %STELLA_COMMON%\common.bat :download_uncompress "%URL%" "%FILE_NAME%" "%INSTALL_DIR%" "DEST_ERASE"
-		
-		call :feature_perl_5_18_2
-		if "!TEST_FEATURE!"=="1" (
-			echo Perl installed
-			!FEATURE_ROOT!\perl\bin\perl --version
-		) else (
-			echo ** ERROR
-		)
-	) else (
-		echo ** Already installed
-	)
-goto :eof
 
 :feature_perl_5_18_2
-	set TEST_FEATURE=0
-	
-	if exist "%STELLA_APP_FEATURE_ROOT%\perl\5_18_2\perl\bin\perl.exe" (
-		set "TEST_FEATURE=1"
-		set "FEATURE_ROOT=%STELLA_APP_FEATURE_ROOT%\perl\5_18_2"
-		set "FEATURE_PATH=!FEATURE_ROOT!\perl\bin;!FEATURE_ROOT!\perl\site\bin;!FEATURE_ROOT!\c\bin"
-		set FEATURE_VER=5_18_2
-		if %VERBOSE_MODE% GTR 0 (
-			echo ** EXTRA FEATURE Detected : perl in !FEATURE_ROOT!
-		)
-		set TERM=dumb
-	)
+	set "FEAT_VERSION=5_18_2"
+
+	set FEAT_SOURCE_URL=
+	set FEAT_SOURCE_URL_FILENAME=
+	set FEAT_SOURCE_PATCH_CALLBACK=
+	set "FEAT_BINARY_URL_x86=http://strawberryperl.com/download/5.18.2.1/strawberry-perl-5.18.2.1-32bit-portable.zip"
+	set "FEAT_BINARY_URL_FILENAME_x86=strawberry-perl-5.18.2.1-32bit-portable.zip"
+	set "FEAT_BINARY_URL_x64=http://strawberryperl.com/download/5.18.2.1/strawberry-perl-5.18.2.1-64bit-portable.zip"
+	set "FEAT_BINARY_URL_FILENAME_x64=strawberry-perl-5.18.2.1-64bit-portable.zip"
+	set FEAT_BINARY_CALLBACK=
+
+	set FEAT_DEPENDENCIES=
+	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\perl\bin\perl.exe"
+	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\perl\bin;!FEAT_INSTALL_ROOT!\perl\site\bin;!FEAT_INSTALL_ROOT!\c\bin"
+
+	set FEAT_BUNDLE_LIST=
 goto :eof
+
+
+:feature_perl_install_binary
+	set "INSTALL_DIR=!FEAT_INSTALL_ROOT!"
+	set SRC_DIR=
+	set BUILD_DIR=
+
+	echo ** Installing strawberry perl portable edition version 
+
+	call %STELLA_COMMON%\common.bat :download_uncompress "%FEAT_BINARY_URL%" "%FEAT_BINARY_URL_FILENAME%" "%INSTALL_DIR%" "DEST_ERASE STRIP"
+		
+goto :eof
+
