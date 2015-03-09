@@ -47,6 +47,7 @@ function __get_stella() {
 	if [ "$_ver" == "git" ]; then
 		git clone https://github.com/StudioEtrange/stella "$_path"
 	else
+		mkdir -p "$_path" 
 		curl -L -o "$_path"/$stella-nix-"$_ver".gz.sh http://studio-etrange.org/dist/stella-nix-"$_ver".gz.run
 		chmod +x "$_path"/$stella-nix-"$_ver".gz.run
 		./"$_path"/$stella-nix-"$_ver".gz.run

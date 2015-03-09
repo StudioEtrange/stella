@@ -133,6 +133,7 @@ REM Various functions ------------------
 		git clone https://github.com/StudioEtrange/stella "%_path%"
 	) else (
 		pushd
+		if not exist %_path% mkdir %_path%
 		cd /d %_path%
 		powershell -Command "(New-Object Net.WebClient).DownloadFile('http://studio-etrange.org/stella/stella-win-"%_ver%".7z.exe', 'stella-win-"%_ver%".zip.exe')"
 		popd

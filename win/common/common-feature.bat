@@ -176,7 +176,7 @@ goto :eof
 				echo ** Feature !_SCHEMA! is installed
 				call :feature_init "!FEAT_SCHEMA_SELECTED!" !_OPT!
 			) else (
-				echo ** Error while installing feature !_SCHEMA!
+				echo ** Error while installing feature !FEAT_SCHEMA_SELECTED!
 			)
 
 		) else (
@@ -268,6 +268,7 @@ goto :eof
 
 :internal_feature_context
 	set "_SCHEMA=%~1"
+	set "_ORIGINAL_SCHEMA=%~1"
 
 	set "FEAT_ARCH="
 	
@@ -330,6 +331,8 @@ goto :eof
 			set "FEAT_BINARY_URL_FILENAME=!%_tmp%!"
 		)
 	)
+
+	set "_SCHEMA=%_ORIGINAL_SCHEMA%"
 
 goto :eof
 

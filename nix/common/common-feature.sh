@@ -178,7 +178,7 @@ function __feature_install() {
 					echo "** Feature $_SCHEMA is installed"
 					__feature_init "$FEAT_SCHEMA_SELECTED" $_OPT
 				else
-					echo "** Error while installing feature $_SCHEMA"
+					echo "** Error while installing feature $FEAT_SCHEMA_SELECTED"
 				fi
 				
 			else
