@@ -2,111 +2,41 @@
 call %*
 goto :eof
 
-:list_vagrant
-	set "%~1=git"
-goto :eof
 
-:default_vagrant
-	set "%~1=git"
-goto :eof
-
-
-
-:install_vagrant
-	set "_VER=%~1"
-
-	set TEST_FEATURE=0
-	set FEATURE_ROOT=
-	set FEATURE_PATH=
-	set FEATURE_VER=
-
-	if not exist %STELLA_APP_FEATURE_ROOT%\vagrant mkdir %STELLA_APP_FEATURE_ROOT%\vagrant
-	if "%_VER%"=="" (
-		call :default_vagrant "_DEFAULT_VER"
-		call :install_vagrant_%_DEFAULT_VER%
-	) else (
-		call :list_vagrant "_list_ver"
-		for %%v in (!_list_ver!) do (
-			if "%%v"=="%_VER%" (
-				call :install_vagrant_%_VER%
-			)
-		)
-	)
-goto :eof
 
 :feature_vagrant
-	set "_VER=%~1"
-
-	set TEST_FEATURE=0
-	set FEATURE_ROOT=
-	set FEATURE_PATH=
-	set FEATURE_VER=
-
-	if "%_VER%"=="" (
-		call :default_vagrant "_DEFAULT_VER"
-		call :feature_vagrant_%_DEFAULT_VER%
-	) else (
-		call :list_vagrant "_list_ver"
-		for %%v in (!_list_ver!) do (
-			if "%%v"=="%_VER%" (
-				call :feature_vagrant_%_VER%
-			)
-		)
-	)
+	set "FEAT_NAME=vagrant"
+	set "FEAT_LIST_SCHEMA=git/source"
+	set "FEAT_DEFAULT_VERSION=git"
+	set "FEAT_DEFAULT_ARCH="
+	set "FEAT_DEFAULT_FLAVOUR=source"
 goto :eof
 
-
-
-:install_vagrant_git
-	set URL=https://github.com/mitchellh/vagrant.git
-	set VERSION=git
-	set "INSTALL_DIR=%STELLA_APP_FEATURE_ROOT%\vagrant\%VERSION%"
-
-	echo ** Installing vagrant version %VERSION% in %INSTALL_DIR%
-	echo ** This version from git need RUBY 2.0 !!
-
-	call :feature_vagrant_git
-	if "%FORCE%"=="1" ( 
-		set TEST_FEATURE=0
-		call %STELLA_COMMON%\common.bat :del_folder "%INSTALL_DIR%"
-	)
-	if "!TEST_FEATURE!"=="0" (
-		git clone https://github.com/mitchellh/vagrant.git "%INSTALL_DIR%"
-
-		REM TODO need ruby need redevkit2
-		
-		cd /D "%INSTALL_DIR%"
-		bundle install
-		
-		call :feature_vagrant_git
-		if "!TEST_FEATURE!"=="1" (
-			echo Vagrant installed
-			!FEATURE_ROOT!\bin\bundle exec vagrant -v
-		) else (
-			echo ** ERROR
-		)
-	) else (
-		echo ** Already installed
-	)
-goto :eof
 
 :feature_vagrant_git
-	set TEST_FEATURE=0
+	set "FEAT_VERSION=git"
 
-	if exist "%STELLA_APP_FEATURE_ROOT%\vagrant\git\bin\vagrant" (
-		set "TEST_FEATURE=1"
-		set "FEATURE_ROOT=%STELLA_APP_FEATURE_ROOT%\vagrant\git"
-		set "FEATURE_PATH=!FEATURE_ROOT!\bin"
-		set FEATURE_VER=git
-		if %VERBOSE_MODE% GTR 0 (
-			echo ** EXTRA FEATURE Detected : vagrant unstable from git in !FEATURE_ROOT!
-		)
-	)	
+	set "FEAT_SOURCE_URL=https://github.com/mitchellh/vagrant/archive/master.zip"
+	set "FEAT_SOURCE_URL_FILENAME=vagrant-git-master.zip"
+	set FEAT_SOURCE_PATCH_CALLBACK=
+	set FEAT_BINARY_URL=
+	set FEAT_BINARY_URL_FILENAME=
+	set FEAT_BINARY_CALLBACK=
+
+	REM TODO need ruby need redevkit2
+	set FEAT_DEPENDENCIES=
+	set "FEAT_INSTALL_ROOT=!FEAT_INSTALL_ROOT!\bin\vagrant"
+	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\vagrant"
+	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\bin"
+
+	set FEAT_BUNDLE_LIST=
 goto :eof
 
+
+
 :_call_vagrant_from_git
-	call :feature_vagrant_git
-	set "BUNDLE_GEMFILE=!TEST_FEATURE!\Gemfile"
+	call %STELLA_COMMON%\common-feature.bat :feature_info vagrant#git/source
+	set "BUNDLE_GEMFILE=!FEAT_INSTALL_ROOT!\Gemfile"
 	call bundle exec vagrant %*
 	set BUNDLE_GEMFILE=
 goto :eof

@@ -39,14 +39,14 @@ function feature_go_install_source() {
 	AUTO_INSTALL_FLAG_POSTFIX=
 
 
-	__download_uncompress "$URL" "$FILE_NAME" "$INSTALL_DIR" "DEST_ERASE STRIP"
+	__download_uncompress "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_FILENAME" "$INSTALL_DIR" "DEST_ERASE STRIP"
 	
 	
 	# GOOS and GOARCH are selected xith the current system
 	#GOOS
 	#GOARCH=amd64 or 386 or arm
 
-	cd "$SRC_DIR"
+	cd "$INSTALL_DIR"
 	cd src
 
 	# line below include tests which are too slow

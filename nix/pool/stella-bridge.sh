@@ -5,6 +5,10 @@
 #										after installing stella, it will set the project for use stella (if not already done)
 
 
+__STELLA_URL="http://stella.sh"
+__STELLA_DIST_URL="$__STELLA_URL/dist"
+
+
 #_STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 if [ "$_STELLA_CURRENT_RUNNING_DIR" == "" ]; then
      _STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "." )" && pwd )"
@@ -48,7 +52,7 @@ function __get_stella() {
 		git clone https://github.com/StudioEtrange/stella "$_path"
 	else
 		mkdir -p "$_path" 
-		curl -L -o "$_path"/$stella-nix-"$_ver".gz.sh http://studio-etrange.org/dist/stella-nix-"$_ver".gz.run
+		curl -L -o "$_path"/$stella-nix-"$_ver".gz.sh $__STELLA_DIST_URL/stella-nix-"$_ver".gz.run
 		chmod +x "$_path"/$stella-nix-"$_ver".gz.run
 		./"$_path"/$stella-nix-"$_ver".gz.run
 		rm -f "$_path"/$stella-nix-"$_ver".gz.run

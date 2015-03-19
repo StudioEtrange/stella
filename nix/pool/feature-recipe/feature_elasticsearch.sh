@@ -31,7 +31,7 @@ function feature_elasticsearch_1_4_4() {
 
 
 function feature_elasticsearch_install_binary() {
-	INSTALL_DIR="$FEATURE_RESULT_ROOT"
+	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR=
 	BUILD_DIR=
 

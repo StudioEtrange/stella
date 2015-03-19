@@ -41,7 +41,7 @@ __init_stella_env
 if [ "$ACTION" == "init" ]; then
 
     if [ "$APPROOT" == "" ]; then
-        APPROOT=$_STELLA_CURRENT_RUNNING_DIR
+        APPROOT=$_STELLA_CURRENT_RUNNING_DIR/$ID
     fi
     if [ "$WORKROOT" == "" ]; then
         WORKROOT=$APPROOT

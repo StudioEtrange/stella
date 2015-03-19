@@ -40,15 +40,15 @@ function __make_sevenzip_sfx_bin() {
 	local extractor_binary
 	case $_platform in
 		win)
-			__download "http://studio-etrange.org/repository/sfx_for_7z/7z9.20Win32Con.sfx" "_AUTO_"
+			__download "$STELLA_URL/$STELLA_POOL_PATH/sfx_for_7z/7z9.20Win32Con.sfx" "_AUTO_"
 			extractor_binary="$STELLA_APP_CACHE_DIR/7z9.20Win32Con.sfx"
 			;;
 		linux)
-			__download "http://studio-etrange.org/repository/sfx_for_7z/7z9.20LinuxI386Con.sfx" "_AUTO_"
+			__download "$STELLA_URL/$STELLA_POOL_PATH/sfx_for_7z/7z9.20LinuxI386Con.sfx" "_AUTO_"
 			extractor_binary="$STELLA_APP_CACHE_DIR/7z9.20LinuxI386Con.sfx"
 			;;
 		macos)
-			__download "http://studio-etrange.org/repository/sfx_for_7z/7z9.20Macosx10.6I386.sfx"  "_AUTO_"
+			__download "$STELLA_URL/$STELLA_POOL_PATH/sfx_for_7z/7z9.20Macosx10.6I386.sfx"  "_AUTO_"
 			extractor_binary="$STELLA_APP_CACHE_DIR/7z9.20Macosx10.6I386.sfx"
 			;;
 	esac

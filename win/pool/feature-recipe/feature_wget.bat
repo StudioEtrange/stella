@@ -31,8 +31,8 @@ goto :eof
 
 
 :feature_wget_1_11_4_patch
-	call %STELLA_COMMON%\common.bat :uncompress "%STELLA_FEATURE_REPOSITORY_LOCAL%\wget-1.11.4-1-bin.zip" "%INSTALL_DIR%"
-	call %STELLA_COMMON%\common.bat :uncompress "%STELLA_FEATURE_REPOSITORY_LOCAL%\wget-1.11.4-1-dep.zip" "%INSTALL_DIR%"
+	call %STELLA_COMMON%\common.bat :uncompress "%STELLA_REPOSITORY_LOCAL%\wget-1.11.4-1-bin.zip" "%INSTALL_DIR%"
+	call %STELLA_COMMON%\common.bat :uncompress "%STELLA_REPOSITORY_LOCAL%\wget-1.11.4-1-dep.zip" "%INSTALL_DIR%"
 goto :eof
 
 :feature_wget_install_binary

@@ -38,7 +38,7 @@ function feature_template_patch_0_0_1 () {
 }
 
 function feature_template_install_source() {
-	INSTALL_DIR="$FEATURE_RESULT_ROOT"
+	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-build"
 

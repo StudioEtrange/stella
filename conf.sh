@@ -17,14 +17,18 @@ STELLA_COMMON="$STELLA_ROOT/nix/common"
 STELLA_POOL="$STELLA_ROOT/nix/pool"
 STELLA_BIN="$STELLA_ROOT/nix/bin"
 STELLA_FEATURE_RECIPE="$STELLA_POOL/feature-recipe"
-STELLA_FEATURE_REPOSITORY_LOCAL="$STELLA_FEATURE_RECIPE/feature-repository"
-STELLA_TEST="$STELLA_ROOT/test"
-STELLA_ADMIN="$STELLA_ROOT/admin"
+STELLA_REPOSITORY_LOCAL="$STELLA_POOL/repository-local"
+STELLA_APPLICATION="$STELLA_ROOT/app"
+STELLA_TEMPLATE="$STELLA_POOL/template"
 
 # URL PATHS ---------------------------------------------
-STELLA_URL="http://studio-etrange.org/"
-STELLA_FEATURE_REPOSITORY="$STELLA_URL/repository/feature_repository"
-STELLA_DIST="STELLA_URL/dist"
+STELLA_URL="http://stella.sh"
+STELLA_POOL_PATH="pool"
+STELLA_POOL_URL="$STELLA_URL/$STELLA_POOL_PATH/nix"
+STELLA_FEATURE_RECIPE_URL="$STELLA_POOL_URL/feature-recipe"
+STELLA_REPOSITORY_URL="$STELLA_POOL_URL/repository"
+STELLA_DIST_PATH="dist"
+STELLA_DIST_URL="$STELLA_URL/$STELLA_DIST_PATH"
 
 # STELLA INCLUDE ---------------------------------------------
 
@@ -32,7 +36,6 @@ source $STELLA_COMMON/libscreenfetch.sh
 source $STELLA_COMMON/platform.sh
 
 source $STELLA_COMMON/common.sh
-#source $STELLA_COMMON/common-feature-old.sh
 source $STELLA_COMMON/common-feature.sh
 source $STELLA_COMMON/common-app.sh
 source $STELLA_COMMON/common-virtual.sh
@@ -55,7 +58,7 @@ __get_all_properties $_STELLA_APP_PROPERTIES_FILE
 # APP PATH ---------------------------------------------
 STELLA_APP_ROOT=$(__rel_to_abs_path "$STELLA_APP_ROOT" "$_STELLA_CURRENT_RUNNING_DIR")
 
-[ "$STELLA_APP_WORK_ROOT" == "" ] && STELLA_APP_WORK_ROOT=$STELLA_APP_ROOT
+[ "$STELLA_APP_WORK_ROOT" == "" ] && STELLA_APP_WORK_ROOT=$STELLA_APP_ROOT/workspace
 STELLA_APP_WORK_ROOT=$(__rel_to_abs_path "$STELLA_APP_WORK_ROOT" "$STELLA_APP_ROOT")
 
 [ "$STELLA_APP_CACHE_DIR" == "" ] && STELLA_APP_CACHE_DIR="$STELLA_APP_WORK_ROOT/cache"
@@ -93,15 +96,15 @@ VIRTUAL_DEFAULT_HYPERVISOR=virtualbox
 
 # INTERNAL LIST---------------------------------------------
 __STELLA_DISTRIB_LIST="ubuntu64_13_10 debian64_7_5 centos64_6_5 archlinux boot2docker"
-__STELLA_FEATURE_LIST="wget ninja cmake packer autotools perl gettext getopt ucl upx elasticsearch kibana nginx ngrok go pcre libtool m4 automake autoconf"
+__STELLA_FEATURE_LIST="scala docker-machine jq wget ninja cmake packer autotools perl gettext getopt ucl upx elasticsearch kibana nginx ngrok go pcre libtool m4 automake autoconf"
 
 # API ---------------------------------------------
 STELLA_API_COMMON_PUBLIC="is_abs argparse get_filename_from_string \
 get_ressource download_uncompress copy_folder_content_into del_folder \
 get_key add_key del_key mercurial_project_version git_project_version get_stella_version \
 make_sevenzip_sfx_bin make_targz_sfx_shell compress trim"
-STELLA_API_APP_PUBLIC="info_feature get_data get_assets get_all_data get_all_assets update_data update_assets revert_data revert_assets get_env_properties setup_env get_features"
-STELLA_API_FEATURE_PUBLIC="feature_install feature_install_list feature_init list_active_features reinit_installed_features feature_info feature_is_installed"
+STELLA_API_APP_PUBLIC="get_data get_assets get_all_data get_all_assets update_data update_assets revert_data revert_assets get_env_properties setup_env get_features"
+STELLA_API_FEATURE_PUBLIC="feature_info feature_install feature_install_list feature_init list_active_features reinit_installed_features feature_info feature_is_installed"
 STELLA_API_VIRTUAL_PUBLIC=""
 STELLA_API_BUILD_PUBLIC="fix_rpath_macos fix_linked_lib_macos fix_dynamiclib_install_name_macos fix_dynamiclib_install_name_macos_by_rootname fix_dynamiclib_install_name_macos_by_folder"
 #STELLA_API_RETURN_FUNCTION=

@@ -12,14 +12,20 @@ set STELLA_COMMON=%STELLA_ROOT%\win\common
 set STELLA_POOL=%STELLA_ROOT%\win\pool
 set STELLA_BIN=%STELLA_ROOT%\win\bin
 set STELLA_FEATURE_RECIPE=%STELLA_POOL%\feature-recipe
-set STELLA_FEATURE_REPOSITORY_LOCAL=%STELLA_POOL%\feature-repository
-set STELLA_TEST=%STELLA_ROOT%\test
-set STELLA_ADMIN=%STELLA_ROOT%\admin
+set STELLA_REPOSITORY_LOCAL=%STELLA_POOL%\repository-local
+set STELLA_APPLICATION=%STELLA_ROOT%\app
+set STELLA_TEMPLATE=%STELLA_POOL%\template
 
 :: URL
-set STELLA_URL=http://studio-etrange.org/
-set STELLA_FEATURE_REPOSITORY=%STELLA_URL%/repository/feature_repository
-set STELLA_DIST=%STELLA_URL%/dist
+set STELLA_URL=http://stella.sh
+set STELLA_POOL_PATH=pool
+set STELLA_POOL_URL=%STELLA_URL%/%STELLA_POOL_URL%/win
+set STELLA_FEATURE_RECIPE_URL=%STELLA_POOL_URL%/feature-recipe
+set STELLA_REPOSITORY_URL=%STELLA_POOL_URL%/repository
+set STELLA_DIST_PATH=dist
+set STELLA_DIST_URL=%STELLA_URL%/%STELLA_DIST_URL%
+
+
 
 :: GATHER PLATFORM INFO  -------------
 call %STELLA_COMMON%\platform.bat :set_current_platform_info
@@ -39,7 +45,7 @@ call %STELLA_COMMON%\common-app.bat :get_all_properties !_STELLA_APP_PROPERTIES_
 call %STELLA_COMMON%\common.bat :rel_to_abs_path "STELLA_APP_ROOT" "%STELLA_APP_ROOT%" "%_STELLA_CURRENT_RUNNING_DIR%"
 
 if "%STELLA_APP_WORK_ROOT%"=="" (
-	set STELLA_APP_WORK_ROOT=%STELLA_APP_ROOT%
+	set STELLA_APP_WORK_ROOT=%STELLA_APP_ROOT%\workspace
 )
 call %STELLA_COMMON%\common.bat :rel_to_abs_path "STELLA_APP_WORK_ROOT" "%STELLA_APP_WORK_ROOT%" "%STELLA_APP_ROOT%"
 
@@ -91,12 +97,12 @@ set VIRTUAL_DEFAULT_HYPERVISOR=virtualbox
 
 :: INTERNAL LIST ---------------------------------------------
 set "__STELLA_DISTRIB_LIST=ubuntu64_13_10 debian64_7_5 centos64_6_5 archlinux boot2docker"
-set "__STELLA_FEATURE_LIST=conemu goconfig-cli ninja jom cmake packer perl ruby nasm python vagrant openssh wget unzip sevenzip patch gnumake"
+set "__STELLA_FEATURE_LIST=conemu goconfig-cli ninja jom cmake packer perl ruby rubydevkit nasm python vagrant openssh wget unzip sevenzip patch gnumake"
 
 :: API ---------------------------------------------
 set "STELLA_API_COMMON_PUBLIC=trim argparse is_path_abs get_ressource download_uncompress del_folder copy_folder_content_into fork run_admin mercurial_project_version git_project_version"
 set "STELLA_API_APP_PUBLIC=get_data get_assets get_all_data get_all_assets update_data update_assets revert_data revert_assets get_features"
-set "STELLA_API_FEATURE_PUBLIC=info_feature install_feature init_feature reinit_installed_features list_active_features"
+set "STELLA_API_FEATURE_PUBLIC=feature_info feature_install feature_install_list feature_init list_active_features reinit_installed_features feature_info feature_is_installed"
 set "STELLA_API_VIRTUAL_PUBLIC="
 set "STELLA_API_BUILD_PUBLIC="
 

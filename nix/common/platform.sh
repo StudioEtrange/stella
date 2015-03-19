@@ -21,6 +21,9 @@ function __get_os_from_distro() {
 	local _os=$1
 
 	case $_os in
+		"Red Hat Enterprise Linux")
+			echo "rhel"
+			;;
 		Ubuntu|ubuntu*)
 			echo "ubuntu"
 			;;
@@ -52,7 +55,7 @@ function __get_platform_from_os() {
 	local _os=$1
 
 	case $_os in
-		centos*|archlinux*|ubuntu*|debian*|linuxgeneric*)
+		centos|archlinux|ubuntu|debian|linuxgeneric|rhel)
 			echo "linux"
 			;;
 		macos)

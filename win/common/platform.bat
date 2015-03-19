@@ -53,6 +53,12 @@ goto :eof
 		goto :eof
 	)
 
+	call %STELLA_COMMON%\common.bat :match_exp "Red Hat Enterprise Linux" "%_distro%"
+	if "!_match_exp!"=="TRUE" (
+		set "%_return_var%=rhel"
+		goto :eof
+	)
+
 goto :eof
 
 
@@ -64,45 +70,43 @@ goto :eof
 
 	set "%_return_var%=unknown"
 
-	call %STELLA_COMMON%\common.bat :match_exp "windows.*" "%_os%"
-	if "!_match_exp!"=="TRUE" (
+	if "!_os!"=="windows" (
 		set "%_return_var%=windows"
 		goto :eof
 	)
 
-	call %STELLA_COMMON%\common.bat :match_exp "centos.*" "%_os%"
-	if "!_match_exp!"=="TRUE" (
+	if "!_os!"=="centos" (
 		set "%_return_var%=linux"
 		goto :eof
 	)
 
-	call %STELLA_COMMON%\common.bat :match_exp "archlinux.*" "%_os%"
-	if "!_match_exp!"=="TRUE" (
+	if "!_os!"=="centos" (
+		set "%_return_var%=linux"
+		goto :eof
+	)
+	
+	if "!_os!"=="archlinux" (
 		set "%_return_var%=linux"
 		goto :eof
 	)
 
-	call %STELLA_COMMON%\common.bat :match_exp "ubuntu.*" "%_os%"
-	if "!_match_exp!"=="TRUE" (
-		set "%_return_var%=linux"
-		goto :eof
-	)
-
-	call %STELLA_COMMON%\common.bat :match_exp "debian.*" "%_os%"
-	if "!_match_exp!"=="TRUE" (
-		set "%_return_var%=linux"
-		goto :eof
-	)
-
-	call %STELLA_COMMON%\common.bat :match_exp "linuxgeneric.*" "%_os%"
-	if "!_match_exp!"=="TRUE" (
+	if "!_os!"=="ubuntu" (
 		set "%_return_var%=linux"
 		goto :eof
 	)
 
 
-	call %STELLA_COMMON%\common.bat :match_exp "macos.*" "%_os%"
-	if "!_match_exp!"=="TRUE" (
+	if "!_os!"=="debian" (
+		set "%_return_var%=linux"
+		goto :eof
+	)
+
+	if "!_os!"=="linuxgeneric" (
+		set "%_return_var%=linux"
+		goto :eof
+	)
+
+	if "!_os!"=="macos" (
 		set "%_return_var%=macos"
 		goto :eof
 	)
@@ -117,24 +121,21 @@ goto :eof
 
 	set "%_return_var%=unknown"
 
-	call %STELLA_COMMON%\common.bat :match_exp "windows" "%_platform%"
-	if "!_match_exp!"=="TRUE" (
+
+	if "!_platform!"=="windows" (
 		set "%_return_var%=win"
 		goto :eof
 	)
 
-	call %STELLA_COMMON%\common.bat :match_exp "linux" "%_platform%"
-	if "!_match_exp!"=="TRUE" (
+	if "!_platform!"=="linux" (
 		set "%_return_var%=linux"
 		goto :eof
 	)
 
-	call %STELLA_COMMON%\common.bat :match_exp "macos" "%_platform%"
-	if "!_match_exp!"=="TRUE" (
+	if "!_platform!"=="macos" (
 		set "%_return_var%=macos"
 		goto :eof
 	)
-
 goto :eof
 
 

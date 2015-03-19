@@ -56,7 +56,7 @@ REM APP RESSOURCES & ENV MANAGEMENT ---------------
 goto :eof
 
 :get_features
-	call %STELLA_COMMON%\common-feature.bat :install_feature_list "!STELLA_APP_FEATURE_LIST!"
+	call %STELLA_COMMON%\common-feature.bat :feature_install_list "!STELLA_APP_FEATURE_LIST!"
 goto :eof
 
 :get_data
@@ -180,8 +180,8 @@ goto :eof
 :create_app_samples
 	set "_approot=%~1"
 
-	copy /y "%STELLA_POOL%\sample-app.bat" "%_approot%\sample-app.bat"
-	copy /y "%STELLA_POOL%\sample-stella.properties" "%_approot%\sample-stella.properties"
+	copy /y "%STELLA_TEMPLATE%\sample-app.bat" "%_approot%\sample-app.bat"
+	copy /y "%STELLA_TEMPLATE%\sample-stella.properties" "%_approot%\sample-stella.properties"
 
 goto :eof
 
@@ -224,7 +224,7 @@ goto :eof
 	>> "!_approot!\stella-link.bat.temp" ECHO(@set STELLA_ROOT=%%_STELLA_LINK_CURRENT_FILE_DIR%%\!_stella_root!
 	>> "!_approot!\stella-link.bat.temp" ECHO(@set STELLA_APP_ROOT=%%_STELLA_LINK_CURRENT_FILE_DIR%%
 
-	copy /b "!_approot!\stella-link.bat.temp"+"%STELLA_POOL%\sample-stella-link.bat" "!_approot!\stella-link.bat"
+	copy /b "!_approot!\stella-link.bat.temp"+"%STELLA_TEMPLATE%\sample-stella-link.bat" "!_approot!\stella-link.bat"
 
 	 del /f /q "!_approot!\stella-link.bat.temp" >nul
 

@@ -18,7 +18,7 @@ goto :eof
 	set FEAT_SOURCE_URL=
 	set FEAT_SOURCE_URL_FILENAME=
 	set FEAT_SOURCE_PATCH_CALLBACK=
-	set "FEAT_BINARY_URL=%STELLA_FEATURE_REPOSITORY%/win/goconfig-cli/goconfig-cli.exe"
+	set "FEAT_BINARY_URL=%STELLA_REPOSITORY_URL%/win/goconfig-cli/goconfig-cli.exe"
 	set "FEAT_BINARY_URL_FILENAME=goconfig-cli.exe"
 	set FEAT_BINARY_CALLBACK=
 

@@ -4,17 +4,36 @@ _CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
 source $_CURRENT_FILE_DIR/stella-link.sh include
 
 
+STELLA_FTP_HOST=ftp.cluster002.ovh.net
+STELLA_FTP_ROOT=$STELLA_FTP_HOST/stella
+
+STELLA_APP_ADMIN=$STELLA_APPLICATION/admin
+
 function usage() {
 	echo "USAGE :"
 	echo "----------------"
 	echo "List of commands"
 	echo " o-- Release management :"
-	echo " L     local --platform=<win|nix|all> : pack and push a release from local source code"
-	echo " L     repository : push all repository items on distant web repository"
+	echo " L     lib --platform=<win|nix|all> : pack and push a release from local source code"
+	echo " L     pool : push all pool items on distant web repository"
 }
 
 
-function release_from_local() {
+
+function stella_pool_release() {
+
+	rm -Rf $STELLA_APP_WORK_ROOT/$STELLA_POOL_PATH
+	__copy_folder_content_into "$STELLA_APP_ADMIN/$STELLA_POOL_PATH" "$STELLA_APP_WORK_ROOT/$STELLA_POOL_PATH"
+
+	pack_goconfig-cli
+
+	# TODO : delete ftp respository first
+	cd $STELLA_APP_WORK_ROOT
+	_recurse_push_ftp $STELLA_POOL_PATH
+}
+
+
+function stella_lib_release() {
 	local _platform=$1
 	local _opt="$2"
 
@@ -44,15 +63,16 @@ function release_from_local() {
 
 	[ "$_opt_auto_extract" == "ON" ] && release_filename="$release_filename.run"
 
-	pack "$_platform" "$release_filename" "$_opt"
+	pack_stella "$_platform" "$release_filename" "$_opt"
 
-	upload_ftp "$STELLA_APP_WORK_ROOT/output/$release_filename" "dist"
+	upload_ftp "$STELLA_APP_WORK_ROOT/output/$release_filename" "$STELLA_DIST_PATH"
 
 	rm -f "$STELLA_ROOT/VERSION"
 }
 
 
-function pack() {
+
+function pack_stella() {
 	local _platform=$1
 	local _release_filename=$2
 	local _opt="$3"
@@ -64,17 +84,17 @@ function pack() {
 
 	case $_platform in
 		win)
-			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./nix/" --exclude "./test/" --exclude "./admin/" --exclude "*.sh" \
+			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./nix/" --exclude "./app/" --exclude "*.sh" \
 		-f "$STELLA_APP_WORK_ROOT/output/$_release_filename" -C "$STELLA_ROOT/.."  "$(basename $STELLA_ROOT)"
 		;;
 
 		nix)
-			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./win/" --exclude "./test/" --exclude "./admin/" --exclude "*.bat" \
+			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./win/" --exclude "./app/" --exclude "*.bat" \
 		-f "$STELLA_APP_WORK_ROOT/output/$_release_filename" -C "$STELLA_ROOT/.."  "$(basename $STELLA_ROOT)"
 		;;
 
 		all)
-			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./test/" --exclude "./admin/" \
+			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./app/" \
 		-f "$STELLA_APP_WORK_ROOT/output/$_release_filename" -C "$STELLA_ROOT/.."  "$(basename $STELLA_ROOT)"
 		;;
 	esac
@@ -87,12 +107,6 @@ function pack() {
 
 }
 
-function upload_ftp() {
-	local _file=$1
-	local _ftp_path=$2/
-
-	curl --ftp-create-dirs --netrc-file $HOME/stella_credentials -T $_file ftp://ftp.cluster014.ovh.net/stella/$_ftp_path
-}
 
 
 function pack_goconfig-cli() {
@@ -108,29 +122,35 @@ function pack_goconfig-cli() {
 	GOPATH="$GOPATH" go get github.com/laher/goxc
 	GOPATH="$GOPATH" "$GOPATH"/bin/goxc -tasks-=package
 
-	rm -f "$STELLA_ADMIN/repository/feature_repository/win/goconfig-cli/goconfig-cli*"
-	cp "$GOPATH"/bin/goconfig-cli-xc/snapshot/windows_386/goconfig-cli.exe "$STELLA_ADMIN"/repository/feature_repository/win/goconfig-cli/
+	mkdir -p "$STELLA_APP_WORK_ROOT/$STELLA_POOL_PATH"/win/repository/goconfig-cli/
+	cp "$GOPATH"/bin/goconfig-cli-xc/snapshot/windows_386/goconfig-cli.exe "$STELLA_APP_WORK_ROOT/$STELLA_POOL_PATH"/win/repository/goconfig-cli/
 
-	upx "$STELLA_ADMIN"/repository/feature_repository/win/goconfig-cli/goconfig-cli.exe
+	upx "$STELLA_APP_WORK_ROOT/$STELLA_POOL_PATH"/win/repository/goconfig-cli/goconfig-cli.exe
 }
 
 
-function push_repository() {
-	# TODO : delete ftp respository first
-	cd $STELLA_ADMIN
-	_recurse_push_repository repository
+
+
+
+
+
+function _upload_ftp() {
+	local _file=$1
+	local _ftp_path=$2/
+
+	curl --ftp-create-dirs --netrc-file $HOME/stella_credentials -T $_file ftp://$STELLA_FTP_ROOT/$_ftp_path
 }
 
-function _recurse_push_repository() {
+function _recurse_push_ftp() {
 	for f in  "$1"/*; do
-		[ -d "$f" ] && _recurse_push_repository "$f"
-		[ -f "$f" ] && upload_ftp "$f" "$(dirname $f)"
+		[ -d "$f" ] && _recurse_push_ftp "$f"
+		[ -f "$f" ] && _upload_ftp "$f" "$(dirname $f)"
 	done
 }
 
 # ARGUMENTS -----------------------------------------------------------------------------------
 PARAMETERS="
-ACTION=						'action' 			a						'local repository'					Action.
+ACTION=						'action' 			a						'lib pool'					Action.
 "
 OPTIONS="
 PLATFORM='all'				''			''					'a'			0			'win nix all'			Target platform.
@@ -149,12 +169,11 @@ mkdir -p $STELLA_APP_WORK_ROOT/output
 
 
 case $ACTION in
-    local)
-		release_from_local $PLATFORM AUTO_EXTRACT
+    lib)
+		stella_lib_release $PLATFORM AUTO_EXTRACT
 		;;
-	repository)
-		pack_goconfig-cli
-		push_repository
+	pool)
+		stella_pool_release
 		;;
 	*)
 		echo "use option --help for help"

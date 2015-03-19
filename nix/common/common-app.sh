@@ -30,10 +30,10 @@ function __select_app() {
 function __create_app_samples() {
 	local _approot=$1
 
-	cp -f "$STELLA_POOL/sample-app.sh" "$_approot/sample-app.sh"
+	cp -f "$STELLA_TEMPLATE/sample-app.sh" "$_approot/sample-app.sh"
 	chmod +x $_approot/sample-app.sh
 
-	cp -f "$STELLA_POOL/sample-stella.properties" "$_approot/sample-stella.properties"
+	cp -f "$STELLA_TEMPLATE/sample-stella.properties" "$_approot/sample-stella.properties"
 }
 
 function __init_app() {
@@ -68,7 +68,7 @@ function __init_app() {
 	echo "STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$_approot/stella-link.sh.temp
 	echo "STELLA_APP_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR" >>$_approot/stella-link.sh.temp
 
-	cat $_approot/stella-link.sh.temp $STELLA_POOL/sample-stella-link.sh > $_approot/stella-link.sh
+	cat $_approot/stella-link.sh.temp $STELLA_TEMPLATE/sample-stella-link.sh > $_approot/stella-link.sh
 	chmod +x $_approot/stella-link.sh
 	rm -f $_approot/stella-link.sh.temp
 
@@ -252,7 +252,7 @@ function __add_app_feature() {
 
 
 function __get_features() {
-	__install_feature_list "$STELLA_APP_FEATURE_LIST"
+	__feature_install_list "$STELLA_APP_FEATURE_LIST"
 }
 
 function __get_data() {

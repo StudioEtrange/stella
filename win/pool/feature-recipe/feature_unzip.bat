@@ -32,7 +32,7 @@ goto :eof
 
 
 :feature_unzip_5_51_1_patch
-	call %STELLA_COMMON%\common.bat :copy_folder_content_into "%STELLA_FEATURE_REPOSITORY_LOCAL%\unzip-5.51-1-bin" "%INSTALL_DIR%"
+	call %STELLA_COMMON%\common.bat :copy_folder_content_into "%STELLA_REPOSITORY_LOCAL%\unzip-5.51-1-bin" "%INSTALL_DIR%"
 goto :eof
 
 :feature_unzip_install_binary
