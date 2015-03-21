@@ -23,7 +23,8 @@ function feature_libtool_2_4_2() {
 	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/libtool
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-
+	FEAT_ENV=
+	
 	FEAT_BUNDLE_LIST=
 }
 

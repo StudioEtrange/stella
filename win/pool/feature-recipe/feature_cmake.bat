@@ -24,7 +24,8 @@ goto :eof
 	set FEAT_DEPENDENCIES=
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\cmake.exe"
 	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\bin"
-
+	set FEAT_ENV=
+	
 	set FEAT_BUNDLE_LIST=
 goto :eof
 

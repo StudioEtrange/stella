@@ -26,6 +26,7 @@ goto :eof
 	set FEAT_DEPENDENCIES=
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\perl\bin\perl.exe"
 	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\perl\bin;!FEAT_INSTALL_ROOT!\perl\site\bin;!FEAT_INSTALL_ROOT!\c\bin"
+	set FEAT_ENV=
 
 	set FEAT_BUNDLE_LIST=
 goto :eof

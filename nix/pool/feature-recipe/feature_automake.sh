@@ -24,7 +24,8 @@ function feature_automake_1_14() {
 	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/automake
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-
+	FEAT_ENV=
+	
 	FEAT_BUNDLE_LIST=
 }
 

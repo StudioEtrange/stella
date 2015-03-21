@@ -24,7 +24,8 @@ function feature_nginx_1_7_10() {
 	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/sbin/nginx
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/sbin
-
+	FEAT_ENV=
+	
 	FEAT_BUNDLE_LIST=
 }
 

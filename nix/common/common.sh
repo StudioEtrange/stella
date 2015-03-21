@@ -6,7 +6,7 @@ set +h
 
 
 # VARIOUS-----------------------------
-function __clone_stella_env() {
+function __bootstrap_stella_env() {
 	export PS1="[stella] \u@\h|\W >"
 	
 	local _t=$(mktmp)
@@ -571,20 +571,26 @@ function __download() {
 		if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
 			curl -kSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL"
 		else
-			wget "$URL" -O "$STELLA_APP_CACHE_DIR/$FILE_NAME" --no-check-certificate
+			wget "$URL" -O "$STELLA_APP_CACHE_DIR/$FILE_NAME" --no-check-certificate || rm -f "$STELLA_APP_CACHE_DIR/$FILE_NAME"
 		fi
 	else
 		echo " ** Already downloaded"
 	fi
 
-	if [ ! "$DEST_DIR" == "" ]; then
-		if [ ! "$DEST_DIR" == "$STELLA_APP_CACHE_DIR" ]; then
-			if [ ! -d "$DEST_DIR" ]; then
-				mkdir -p "$DEST_DIR"
+	if [ -f "$STELLA_APP_CACHE_DIR/$FILE_NAME" ]; then
+
+		if [ ! "$DEST_DIR" == "" ]; then
+			if [ ! "$DEST_DIR" == "$STELLA_APP_CACHE_DIR" ]; then
+				if [ ! -d "$DEST_DIR" ]; then
+					mkdir -p "$DEST_DIR"
+				fi
+				cp "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$DEST_DIR/"
+				echo "** Downloaded $FILE_NAME is in $DEST_DIR"
 			fi
-			cp "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$DEST_DIR/"
-			echo "** Downloaded $FILE_NAME is in $DEST_DIR"
 		fi
+
+	else  
+		echo "** ERROR downloading $URL"
 	fi
 }
 

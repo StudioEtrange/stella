@@ -26,7 +26,8 @@ function feature_ninja_last_release() {
 	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/ninja
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
-
+	FEAT_ENV=
+	
 	FEAT_BUNDLE_LIST=
 }
 

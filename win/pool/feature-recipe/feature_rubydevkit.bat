@@ -14,6 +14,10 @@ goto :eof
 	
 goto :eof
 
+:feature_rubydevkit_env
+	set TERM=dumb
+	SET "RI_DEVKIT=!FEAT_INSTALL_ROOT!\"
+goto :eof
 
 :feature_rubydevkit_4_7_2
 	set "FEAT_VERSION=4_7_2"
@@ -30,11 +34,9 @@ goto :eof
 	set FEAT_DEPENDENCIES=
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\devkitvars.bat"
 	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\bin;!FEAT_INSTALL_ROOT!\mingw\bin"
+	set FEAT_ENV=feature_rubydevkit_env
 
 	set FEAT_BUNDLE_LIST=
-
-	set TERM=dumb
-	SET "RI_DEVKIT=!FEAT_INSTALL_ROOT!\"
 goto :eof
 
 
@@ -52,11 +54,9 @@ goto :eof
 	set FEAT_DEPENDENCIES=
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\devkitvars.bat"
 	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\bin;!FEAT_INSTALL_ROOT!\mingw\bin"
+	set FEAT_ENV=feature_rubydevkit_env
 
 	set FEAT_BUNDLE_LIST=
-
-	set TERM=dumb
-	SET "RI_DEVKIT=!FEAT_INSTALL_ROOT!\"
 goto :eof
 
 

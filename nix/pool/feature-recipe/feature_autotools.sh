@@ -24,7 +24,8 @@ function feature_autotools_pack() {
 	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST=
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-
+	FEAT_ENV=
+	
 	# BUNDLE ITEM LIST
 	# order is important
 	# see http://petio.org/tools.html

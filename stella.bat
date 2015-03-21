@@ -6,7 +6,7 @@ call %~dp0\conf.bat
 
 
 :: arguments
-set "params=domain:"app feature virtual api" action:"init get-data get-assets update-data update-assets revert-data revert-assets get-features setup-env install list create-env run-env stop-env destroy-env info-env create-box get-box" id:"_ANY_""
+set "params=domain:"app feature virtual stella" action:"bootstrap api install init get-data get-assets update-data update-assets revert-data revert-assets get-features setup-env install list create-env run-env stop-env destroy-env info-env create-box get-box" id:"_ANY_""
 set "options=-f: -vcpu:_ANY_ -vmem:_ANY_ -head: -login: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_ -samples:"
 
 call %STELLA_COMMON%\argopt.bat :argopt %*
@@ -41,11 +41,28 @@ if "%DOMAIN%"=="app" goto :end
 
 
 
-REM --------------- API ----------------------------
-if "%DOMAIN%"=="api" (
-	if "%ACTION%"=="list" (
-		if "%id%"=="all" (
+REM --------------- STELLA ----------------------------
+if "%DOMAIN%"=="stella" (
+
+	if "%ACTION%"=="api" (
+		if "%id%"=="list" (
 			call %STELLA_COMMON%\common-api.bat :api_list "VAR"
+			echo !VAR!
+			goto :end
+		)
+	)
+
+	if "%ACTION%"=="install" (
+		if "%id%"=="dep" (
+			call %STELLA_COMMON%\platform.bat :__stella_requirement
+			echo !VAR!
+			goto :end
+		)
+	)
+
+	if "%ACTION%"=="bootstrap" (
+		if "%id%"=="env" (
+			call %STELLA_COMMON%\common.bat :bootstrap_stella_env
 			echo !VAR!
 			goto :end
 		)
@@ -97,7 +114,7 @@ if "%DOMAIN%"=="virtual" goto :end
 	echo 		%~n0 app setup-env ^<env id^|all^> : download, build, deploy and run virtual environment based on app properties
 	echo	* feature management :
 	echo 		%~n0 feature install required : install required features for Stella
-	echo 		%~n0 feature install ^<feature name^> : install a features. schema = feature_name[#version][@arch][/binary|source][:os_restriction]
+	echo 		%~n0 feature install ^<feature name^> : install a features. schema = feature_name[#version][@arch][/binary^|source][:os_restriction]
 	echo 		%~n0 feature list ^<all^|feature name^|active^>: list all available features OR available version of a feature OR current active features
 	echo	* virtual management :
 	echo 		%~n0 virtual create-env ^<env id#distrib id^> [-head] [-vmem=xxxx] [-vcpu=xx] : create a new environment from a generic box prebuilt with a specific distribution
@@ -105,8 +122,10 @@ if "%DOMAIN%"=="virtual" goto :end
 	echo		%~n0 virtual stop-env^|destroy-env ^<env id^> : manage environment
 	echo 		%~n0 virtual create-box^|get-box ^<distrib id^> : manage generic boxes built with a specific distribution
 	echo 		%~n0 virtual list ^<box^|env^|distrib^>
-	echo	* API :
+	echo	* various :
 	echo 		%~n0 api list all : list public functions of stella api
+	echo		%~n0 stella bootstrap env : launch a shell with all stella env var setted
+	echo		%~n0 stella install dep : install all features and systems requirements for the current OS (%STELLA_CURRENT_OS%)
 goto :end
 
 

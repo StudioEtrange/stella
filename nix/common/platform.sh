@@ -232,6 +232,12 @@ function __stella_features_requirement_by_os() {
 	esac	
 }
 
+
+function __stella_requirement() {
+	__stella_system_requirement_by_os $STELLA_CURRENT_OS
+	__stella_features_requirement_by_os $STELLA_CURRENT_OS
+}
+
 #TODO
 # from https://github.com/darkoperator/MSF-Installer/blob/master/msf_install.sh
 function check_dependencies_osx

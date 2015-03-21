@@ -42,7 +42,9 @@ function __feature_init() {
 				PATH="$FEAT_SEARCH_PATH:$PATH"
 			fi
 
-			feature_"$FEAT_NAME"_env 2>/dev/null
+			if [ ! "$FEAT_ENV" == "" ]; then
+				$FEAT_ENV
+			fi
 		fi
 	fi
 }
@@ -126,7 +128,11 @@ function __feature_install() {
 			local _save_app_feature_root=
 			if [ "$_opt_internal_feature" == "ON" ]; then
 				_save_app_feature_root=$STELLA_APP_FEATURE_ROOT
-				STELLA_APP_FEATURE_ROOT=$STELLA_INTERNAL_FEATURE_ROOT		
+				STELLA_APP_FEATURE_ROOT=$STELLA_INTERNAL_FEATURE_ROOT
+				_save_app_cache_dir=$STELLA_APP_CACHE_DIR
+				STELLA_APP_CACHE_DIR=$STELLA_INTERNAL_CACHE_DIR
+				_save_app_temp_dir=$STELLA_APP_TEMP_DIR
+				STELLA_APP_TEMP_DIR=$STELLA_INTERNAL_TEMP_DIR
 			fi
 			if [ ! "$_opt_hidden_feature" == "ON" ]; then
 				__add_app_feature $_SCHEMA
@@ -192,6 +198,8 @@ function __feature_install() {
 
 			if [ "$_opt_internal_feature" == "ON" ]; then
 				STELLA_APP_FEATURE_ROOT=$_save_app_feature_root
+				STELLA_APP_CACHE_DIR=$_save_app_cache_dir
+				STELLA_APP_TEMP_DIR=$_save_app_temp_dir
 			fi
 
 

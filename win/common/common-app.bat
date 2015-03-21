@@ -401,8 +401,7 @@ goto :eof
 :ask_install_requirements
 	set /p input="Do you wish to auto-install requirements for stella ? [Y/n] "
 	if not "%input%"=="n" (
-		call %STELLA_COMMON%\platform.bat :__stella_system_requirement_by_os %STELLA_CURRENT_OS%
-		call %STELLA_COMMON%\platform.bat :__stella_features_requirement_by_os %STELLA_CURRENT_OS%
+		call %STELLA_COMMON%\platform.bat :__stella_requirement
 		@echo off
 	)
 goto :eof

@@ -25,7 +25,8 @@ goto :eof
 	set FEAT_DEPENDENCIES=
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\goconfig-cli.exe"
 	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!"
-
+	set FEAT_ENV=
+	
 	set FEAT_BUNDLE_LIST=
 goto :eof
 
@@ -35,7 +36,7 @@ goto :eof
 	set SRC_DIR=
 	set BUILD_DIR=
 
-	call %STELLA_COMMON%\common.bat :download_uncompress "%FEAT_BINARY_URL%" "%FEAT_BINARY_URL_FILENAME%" "%INSTALL_DIR%" "DEST_ERASE STRIP"
+	call %STELLA_COMMON%\common.bat :download "%FEAT_BINARY_URL%" "%FEAT_BINARY_URL_FILENAME%" "%INSTALL_DIR%"
 		
 goto :eof
 

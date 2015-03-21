@@ -38,7 +38,8 @@ function feature_ngrok_stable() {
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/ngrok
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
-
+	FEAT_ENV=
+	
 	FEAT_BUNDLE_LIST=
 }
 

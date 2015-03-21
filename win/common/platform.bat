@@ -172,3 +172,7 @@ goto :eof
 	call %STELLA_COMMON%\common-feature.bat :feature_install goconfig-cli#snapshot "HIDDEN INTERNAL"
 goto :eof
 
+:__stella_requirement
+	call :__stella_system_requirement_by_os %STELLA_CURRENT_OS%
+	call :__stella_features_requirement_by_os %STELLA_CURRENT_OS%
+goto  :eof

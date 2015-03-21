@@ -42,6 +42,10 @@ goto :eof
 		if "!TEST_FEATURE!"=="1" (
 			if not "%_opt_hidden_feature%"=="ON" set "FEATURE_LIST_ENABLED=!FEATURE_LIST_ENABLED! !FEAT_NAME!#!FEAT_VERSION!"
 			if not "!FEAT_SEARCH_PATH!"=="" set "PATH=!FEAT_SEARCH_PATH!;!PATH!"
+
+			if not "!FEAT_ENV!"=="" (
+				call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :!FEAT_ENV!
+			)
 		)
 	)
 goto :eof
@@ -125,6 +129,12 @@ goto :eof
 		if "%_opt_internal_feature%"=="ON" (
 			set "_save_app_feature_root=!STELLA_APP_FEATURE_ROOT!"
 			set "STELLA_APP_FEATURE_ROOT=!STELLA_INTERNAL_FEATURE_ROOT!"
+
+			set "_save_app_cache_dir=!STELLA_APP_CACHE_DIR!"
+			set "STELLA_APP_CACHE_DIR=!STELLA_INTERNAL_CACHE_DIR!"
+
+			set "_save_app_temp_dir=!STELLA_APP_TEMP_DIR!"
+			set "STELLA_APP_TEMP_DIR=!STELLA_INTERNAL_TEMP_DIR!"
 		)
 
 		if not "%_opt_hidden_feature%"=="ON" (
@@ -186,6 +196,8 @@ goto :eof
 
 		if "%_opt_internal_feature%"=="ON" (
 			set "STELLA_APP_FEATURE_ROOT=!_save_app_feature_root!"
+			set "STELLA_APP_CACHE_DIR=!_save_app_cache_dir!"
+			set "STELLA_APP_TEMP_DIR=!_save_app_temp_dir!"
 		)
 
 		

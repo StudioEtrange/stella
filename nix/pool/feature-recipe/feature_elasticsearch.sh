@@ -11,6 +11,12 @@ function feature_elasticsearch() {
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
+
+function feature_elasticsearch_env() {
+	ES_HOME=$FEAT_INSTALL_ROOT
+	export ES_HOME	
+}
+
 function feature_elasticsearch_1_4_4() {
 	FEAT_VERSION=1_4_4
 
@@ -25,6 +31,7 @@ function feature_elasticsearch_1_4_4() {
 	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/elasticsearch
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+	FEAT_ENV=feature_elasticsearch_env
 
 	FEAT_BUNDLE_LIST=
 }

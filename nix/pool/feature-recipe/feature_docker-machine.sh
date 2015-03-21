@@ -39,7 +39,8 @@ function feature_docker-machine_0_1_0() {
 	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/docker-machine
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
-
+	FEAT_ENV=
+	
 	FEAT_BUNDLE_LIST=
 }
 

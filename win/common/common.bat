@@ -10,6 +10,9 @@ goto :eof
 goto :eof
 
 
+
+
+
 :argparse
 	call %STELLA_COMMON%\argopt.bat :argopt %*
 goto :eof
@@ -270,8 +273,7 @@ goto :eof
 goto :eof
 
 :: set a new command line with STELLA var initialized
-:bootstrap_env
-	REM Useless ?
+:bootstrap_stella_env
 	set _TITLE=%STELLA_APP_NAME% -- %~1
 	:: folder in wich the new bootstraped env will remain
 	set _FOLDER=%~2
@@ -623,15 +625,19 @@ REM - use powershell in batch http://stackoverflow.com/a/20476904
 	REM )
 
 	if not exist "%STELLA_APP_CACHE_DIR%\%FILE_NAME%" (
-		"%WGET%" "%URL%" -O "%STELLA_APP_CACHE_DIR%\%FILE_NAME%" --no-check-certificate
+		"%WGET%" "%URL%" -O "%STELLA_APP_CACHE_DIR%\%FILE_NAME%" --no-check-certificate || del /F "%STELLA_APP_CACHE_DIR%\%FILE_NAME%"
 	) else (
 		echo ** Already downloaded
 	)
 
-	if not "%DEST_DIR%"=="" if not "%DEST_DIR%"=="%STELLA_APP_CACHE_DIR%" (
-		if not exist "%DEST_DIR%" mkdir "%DEST_DIR%"
-		copy /y "%STELLA_APP_CACHE_DIR%\%FILE_NAME%" "%DEST_DIR%\"
-		echo ** Downloaded %FILE_NAME% is in %DEST_DIR%
+	if exist "%STELLA_APP_CACHE_DIR%\%FILE_NAME%" (
+		if not "%DEST_DIR%"=="" if not "%DEST_DIR%"=="%STELLA_APP_CACHE_DIR%" (
+			if not exist "%DEST_DIR%" mkdir "%DEST_DIR%"
+			copy /y "%STELLA_APP_CACHE_DIR%\%FILE_NAME%" "%DEST_DIR%\"
+			echo ** Downloaded %FILE_NAME% is in %DEST_DIR%
+		)
+	) else (
+		echo ** ERROR downloading %URL%
 	)
 
 goto :eof

@@ -41,6 +41,7 @@ function feature_packer_0_6_0() {
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/packer
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
+	FEAT_ENV=
 
 	FEAT_BUNDLE_LIST=
 }
@@ -73,7 +74,8 @@ function feature_packer_0_7_5() {
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/packer
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
-
+	FEAT_ENV=
+	
 	FEAT_BUNDLE_LIST=
 }
 

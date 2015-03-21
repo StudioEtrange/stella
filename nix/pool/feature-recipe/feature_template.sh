@@ -12,6 +12,11 @@ function feature_template() {
 	FEAT_BUNDLE_EMBEDDED=
 }
 
+function feature_template_env()  {
+	TEMPLATE_HOME=$FEAT_INSTALL_ROOT
+	export TEMPLATE_HOME
+}
+
 function feature_template_0_0_1() {
 
 	FEAT_VERSION=0_0_1
@@ -29,13 +34,16 @@ function feature_template_0_0_1() {
 	
 	FEAT_INSTALL_TEST=$FEAT_INSTALL_ROOT/bin/foo
 	FEAT_SEARCH_PATH=$FEAT_INSTALL_ROOT/bin
-	
+	FEAT_ENV=feature_template_env
+
 	FEAT_BUNDLE_LIST=
 }
 
 function feature_template_patch_0_0_1 () {
 
 }
+
+
 
 function feature_template_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"

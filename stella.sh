@@ -27,8 +27,9 @@ function usage() {
     echo " L     virtual create-box|get-box <distrib id> : manage generic boxes built with a specific distribution"
     echo " L     virtual list <env|box|distrib> : list existing available environment, box and distribution"
 	echo " o-- stella various :"
-	echo " L     api list all : list public functions of stella api"
-	echo " L     env pop stella : set current shell with stella env var "
+	echo " L     stella api list : list public functions of stella api"
+	echo " L     stella bootstrap env : launch a shell with all stella env var setted"
+	echo " L  	 stella install dep : install all features and systems requirements for the current OS ($STELLA_CURRENT_OS)"
 }
 
 
@@ -36,8 +37,8 @@ function usage() {
 
 # arguments
 PARAMETERS="
-DOMAIN=                          'domain'     		a           'app feature virtual api env'         										   				Action domain.
-ACTION=                         'action'   					a           'pop init get-data get-assets update-data update-assets revert-data revert-assets get-features setup-env install list create-env run-env stop-env destroy-env create-box get-box'         	Action to compute.
+DOMAIN=                          'domain'     		a           'app feature virtual stella'         										   				Action domain.
+ACTION=                         'action'   					a           'api bootstrap install init get-data get-assets update-data update-assets revert-data revert-assets get-features setup-env install list create-env run-env stop-env destroy-env create-box get-box'         	Action to compute.
 ID=							 ''								s 			'' 						Feature ID or Data or Assets or Env or Distrib ID.
 "
 OPTIONS="
@@ -98,11 +99,25 @@ if [ "$DOMAIN" == "feature" ]; then
 fi
 
 
-# --------------- API ----------------------------
-if [ "$DOMAIN" == "api" ]; then
+# --------------- STELLA ----------------------------
+if [ "$DOMAIN" == "stella" ]; then
 
-	if [ "$ACTION" == "list" ]; then
-		echo $(__api_list)
+	if [ "$ACTION" == "api" ]; then
+		if [ "$ID" == "list" ]; then
+			echo $(__api_list)
+		fi
+	fi
+
+	if [ "$ACTION" == "bootstrap" ]; then
+		if [ "$ID" == "env" ]; then
+			__bootstrap_stella_env
+		fi
+	fi
+
+	if [ "$ACTION" == "install" ]; then
+		if [ "$ID" == "dep" ]; then
+			__stella_requirement
+		fi
 	fi
 fi
 

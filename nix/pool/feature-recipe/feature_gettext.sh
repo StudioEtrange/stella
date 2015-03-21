@@ -26,7 +26,8 @@ function feature_gettext_0_19_4() {
 	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/gettext
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-
+	FEAT_ENV=
+	
 	FEAT_BUNDLE_LIST=
 }
 

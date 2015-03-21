@@ -26,7 +26,8 @@ function feature_pcre_8_36() {
 	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libpcre.a
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/lib
-
+	FEAT_ENV=
+	
 	FEAT_BUNDLE_LIST=
 }
 

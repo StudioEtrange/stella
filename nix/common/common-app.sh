@@ -414,8 +414,7 @@ function __ask_install_requirements() {
 	select yn in "Yes" "No"; do
 	    case $yn in
 	        Yes )
-				__stella_system_requirement_by_os $STELLA_CURRENT_OS
-				__stella_features_requirement_by_os $STELLA_CURRENT_OS
+				__stella_requirement
 				break;;
 	        No ) break;;
 	    esac
