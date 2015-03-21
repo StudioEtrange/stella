@@ -7,13 +7,13 @@ call %~dp0\conf.bat
 
 :: arguments
 set "params=domain:"app feature virtual api" action:"init get-data get-assets update-data update-assets revert-data revert-assets get-features setup-env install list create-env run-env stop-env destroy-env info-env create-box get-box" id:"_ANY_""
-set "options=-f: -arch:"#x64 x86" -vcpu:_ANY_ -vmem:_ANY_ -head: -login: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_ -samples:"
+set "options=-f: -vcpu:_ANY_ -vmem:_ANY_ -head: -login: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_ -samples:"
 
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
 if "%ARGOPT_FLAG_HELP%"=="1" goto :usage
 
-set ARCH=%-arch%
+::set ARCH=%-arch%
 set FORCE=%-f%
 
 :: setting env

@@ -11,6 +11,11 @@ function feature_scala() {
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
+function feature_scala_env() {
+	export SCALA_HOME=$FEAT_INSTALL_ROOT
+}
+
+
 function feature_scala_2_11_6() {
 	FEAT_VERSION=2_11_6
 
@@ -21,12 +26,14 @@ function feature_scala_2_11_6() {
 
 	FEAT_BINARY_CALLBACK=
 
+	# need JVM
 	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/scala
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 
 	FEAT_BUNDLE_LIST=
 }
+
 
 
 function feature_scala_install_binary() {

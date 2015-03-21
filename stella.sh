@@ -2,6 +2,11 @@
 _STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $_STELLA_CURRENT_FILE_DIR/conf.sh
 
+
+
+
+
+
 function usage() {
 	echo "USAGE :"
 	echo "----------------"
@@ -21,8 +26,9 @@ function usage() {
     echo " L     virtual stop-env|destroy-env <env id> : manage environment"
     echo " L     virtual create-box|get-box <distrib id> : manage generic boxes built with a specific distribution"
     echo " L     virtual list <env|box|distrib> : list existing available environment, box and distribution"
-	echo " o-- stella api :"
+	echo " o-- stella various :"
 	echo " L     api list all : list public functions of stella api"
+	echo " L     env pop stella : set current shell with stella env var "
 }
 
 
@@ -30,13 +36,12 @@ function usage() {
 
 # arguments
 PARAMETERS="
-DOMAIN=                          'domain'     		a           'app feature virtual api'         										   				Action domain.
-ACTION=                         'action'   					a           'init get-data get-assets update-data update-assets revert-data revert-assets get-features setup-env install list create-env run-env stop-env destroy-env create-box get-box'         	Action to compute.
+DOMAIN=                          'domain'     		a           'app feature virtual api env'         										   				Action domain.
+ACTION=                         'action'   					a           'pop init get-data get-assets update-data update-assets revert-data revert-assets get-features setup-env install list create-env run-env stop-env destroy-env create-box get-box'         	Action to compute.
 ID=							 ''								s 			'' 						Feature ID or Data or Assets or Env or Distrib ID.
 "
 OPTIONS="
 FORCE=''                       	'f'    		''            		b     		0     		'1'           			Force operation.
-ARCH='x64'						'a'			''					a			0			'x86 x64'			Select architecture.
 APPROOT=''						'' 			'path'				s 			0			'' 						App path (default current)
 WORKROOT='' 					'' 			'path'				s 			0			''						Work app path (default equal to app path)
 CACHEDIR=''						'' 			'path'				s 			0			''						Cache folder path
@@ -49,8 +54,6 @@ SAMPLES=''                      ''         ''                  b           0    
 
 __argparse "$0" "$OPTIONS" "$PARAMETERS" "Lib Stella" "$(usage)" "" "$@"
 
-# common initializations
-#__init_stella_env
 
 # --------------- APP ----------------------------
 if [ "$DOMAIN" == "app" ]; then
@@ -70,6 +73,17 @@ if [ "$DOMAIN" == "app" ]; then
 
 
 	$STELLA_BIN/app.sh $ACTION $ID $_app_options
+fi
+
+
+# --------------- ENV ----------------------------
+if [ "$DOMAIN" == "env" ]; then
+	if [ "$ACTION" == "pop" ]; then
+		if [ "$ID" == "stella" ]; then
+			__init_stella_env
+			__clone_stella_env
+		fi
+	fi
 fi
 
 

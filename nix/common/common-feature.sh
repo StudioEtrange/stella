@@ -41,6 +41,8 @@ function __feature_init() {
 			if [ ! "$FEAT_SEARCH_PATH" == "" ]; then
 				PATH="$FEAT_SEARCH_PATH:$PATH"
 			fi
+
+			feature_"$FEAT_NAME"_env 2>/dev/null
 		fi
 	fi
 }
