@@ -3,7 +3,7 @@
 echo ***************************************************************
 echo ** BOOTSTRAPING STELLA ENV
 
-call %~dp0\..\conf.bat
+call %~dp0..\..\conf.bat
 :: arguments
 set "params="
 set "options=-v: -vv: -internalcall:"

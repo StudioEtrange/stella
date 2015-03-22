@@ -43,7 +43,8 @@ if "%DOMAIN%"=="app" goto :end
 
 REM --------------- STELLA ----------------------------
 if "%DOMAIN%"=="stella" (
-
+	call %STELLA_COMMON%\common.bat :init_stella_env
+	
 	if "%ACTION%"=="api" (
 		if "%id%"=="list" (
 			call %STELLA_COMMON%\common-api.bat :api_list "VAR"
@@ -55,7 +56,6 @@ if "%DOMAIN%"=="stella" (
 	if "%ACTION%"=="install" (
 		if "%id%"=="dep" (
 			call %STELLA_COMMON%\platform.bat :__stella_requirement
-			echo !VAR!
 			goto :end
 		)
 	)
@@ -63,7 +63,6 @@ if "%DOMAIN%"=="stella" (
 	if "%ACTION%"=="bootstrap" (
 		if "%id%"=="env" (
 			call %STELLA_COMMON%\common.bat :bootstrap_stella_env
-			echo !VAR!
 			goto :end
 		)
 	)

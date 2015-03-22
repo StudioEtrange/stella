@@ -55,6 +55,8 @@ STELLA_APP_NAME=
 _STELLA_APP_PROPERTIES_FILE="$(__select_app $STELLA_APP_ROOT)"
 __get_all_properties $_STELLA_APP_PROPERTIES_FILE
 
+[ "$STELLA_APP_NAME" == "" ] && STELLA_APP_NAME=stella
+
 # APP PATH ---------------------------------------------
 STELLA_APP_ROOT=$(__rel_to_abs_path "$STELLA_APP_ROOT" "$_STELLA_CURRENT_RUNNING_DIR")
 

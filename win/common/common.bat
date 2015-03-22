@@ -219,7 +219,7 @@ goto :eof
 :: PROCESSUS TOOL--------------
 :fork
 
-	set _TITLE=%STELLA_APP_NAME% -- %~1
+	set _TITLE=%STELLA_APP_NAME%
 	REM folder in will the terminal will stay after command is over
 	set _FOLDER=%~2
 	set _COMMAND=%~3
@@ -274,9 +274,9 @@ goto :eof
 
 :: set a new command line with STELLA var initialized
 :bootstrap_stella_env
-	set _TITLE=%STELLA_APP_NAME% -- %~1
+	set _TITLE=%STELLA_APP_NAME%
 	:: folder in wich the new bootstraped env will remain
-	set _FOLDER=%~2
+	set _FOLDER=%_STELLA_CURRENT_RUNNING_DIR%
 
 	call :fork "%_TITLE%" "%_FOLDER%" "%STELLA_COMMON%\bootstrap-stella-env.bat -internalcall" "DETACH"
 	echo ** A new env %_TITLE% is bootstrapped with all STELLA default variable setted

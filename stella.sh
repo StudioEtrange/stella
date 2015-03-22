@@ -101,7 +101,8 @@ fi
 
 # --------------- STELLA ----------------------------
 if [ "$DOMAIN" == "stella" ]; then
-
+	__init_stella_env
+	
 	if [ "$ACTION" == "api" ]; then
 		if [ "$ID" == "list" ]; then
 			echo $(__api_list)
