@@ -3,6 +3,11 @@
 
 if not exist %STELLA_ROOT%\stella.bat (
 	echo ** WARNING Stella is missing
+	if "%~1"==":include" (
+		echo ** boostraping stella
+		call !_STELLA_LINK_CURRENT_FILE_DIR!\stella-link.bat bootstrap
+		@echo off
+	)
 )
 
 if "%~1"==":include" (

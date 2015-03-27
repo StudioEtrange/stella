@@ -15,7 +15,7 @@ function feature_kibana() {
 function feature_kibana_3_1_2() {
 	FEAT_VERSION=3_1_2
 
-	FEAT_SOURCE_URL=https://download.kibana.org/kibana/kibana/kibana-3.1.2.tar.gz
+	FEAT_SOURCE_URL=https://download.elasticsearch.org/kibana/kibana/kibana-3.1.2.tar.gz
 	FEAT_SOURCE_URL_FILENAME=kibana-3.1.2.tar.gz
 	FEAT_SOURCE_CALLBACK=
 	FEAT_BINARY_URL=
@@ -38,12 +38,12 @@ function feature_kibana_4_0_0() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_CALLBACK=
 	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then 
-		FEAT_BINARY_URL=https://download.kibana.org/kibana/kibana/kibana-4.0.0-darwin-x64.tar.gz
+		FEAT_BINARY_URL=https://download.elasticsearch.org/kibana/kibana/kibana-4.0.0-darwin-x64.tar.gz
 		FEAT_BINARY_URL_FILENAME=kibana-4.0.0-darwin-x64.tar.gz
 	fi
 
 	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-		FEAT_BINARY_URL=https://download.kibana.org/kibana/kibana/kibana-4.0.0-linux-x64.tar.gz
+		FEAT_BINARY_URL=https://download.elasticsearch.org/kibana/kibana/kibana-4.0.0-linux-x64.tar.gz
 		FEAT_BINARY_URL_FILENAME=kibana-4.0.0-linux-x64.tar.gz
 	fi
 

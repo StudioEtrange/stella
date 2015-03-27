@@ -16,6 +16,7 @@ function usage() {
 	echo " L     app get-data|get-assets|update-data|update-assets|revert-data|revert-assets <data id|assets id|all>"
 	echo " L     app get-features all : install all features defined in app properties file"
 	echo " L     app setup-env <env id|all> : download, build, deploy and run virtual environment based on app properties"
+	echo " L     app link stella [--stellaroot=<path>] : link current app to a specific stella path"
 	echo " o-- feature management :"
 	echo " L     feature install required : install required features for Stella"
 	echo " L     feature install <feature schema|required>: install a feature. schema = feature_name[#version][@arch][/binary|source][:os_restriction]"
@@ -29,7 +30,7 @@ function usage() {
 	echo " o-- stella various :"
 	echo " L     stella api list : list public functions of stella api"
 	echo " L     stella bootstrap env : launch a shell with all stella env var setted"
-	echo " L  	 stella install dep : install all features and systems requirements for the current OS ($STELLA_CURRENT_OS)"
+	echo " L     stella install dep : install all features and systems requirements for the current OS ($STELLA_CURRENT_OS)"
 }
 
 
@@ -38,7 +39,7 @@ function usage() {
 # arguments
 PARAMETERS="
 DOMAIN=                          'domain'     		a           'app feature virtual stella'         										   				Action domain.
-ACTION=                         'action'   					a           'api bootstrap install init get-data get-assets update-data update-assets revert-data revert-assets get-features setup-env install list create-env run-env stop-env destroy-env create-box get-box'         	Action to compute.
+ACTION=                         'action'   					a           'link api bootstrap install init get-data get-assets update-data update-assets revert-data revert-assets get-features setup-env install list create-env run-env stop-env destroy-env create-box get-box'         	Action to compute.
 ID=							 ''								s 			'' 						Feature ID or Data or Assets or Env or Distrib ID.
 "
 OPTIONS="
@@ -46,6 +47,7 @@ FORCE=''                       	'f'    		''            		b     		0     		'1'    
 APPROOT=''						'' 			'path'				s 			0			'' 						App path (default current)
 WORKROOT='' 					'' 			'path'				s 			0			''						Work app path (default equal to app path)
 CACHEDIR=''						'' 			'path'				s 			0			''						Cache folder path
+STELLAROOT=''                   ''          'path'              s           0           ''                      Stella path to link.
 VCPU=''							''			''					i 			0		''						Nb CPU attributed to the virtual env.
 VMEM=''							''			''					i 			0		''						Memory attributed to the virtual env.
 HEAD=''							''			''					b			0		'1'						Active hyperviser head.
@@ -70,6 +72,9 @@ if [ "$DOMAIN" == "app" ]; then
 	fi
 	if [ ! "$CACHEDIR" == "" ]; then
 		_app_options="$_app_options --cachedir=$CACHEDIR"
+	fi
+	if [ ! "$STELLAROOT" == "" ]; then
+		_app_options="$_app_options --stellaroot=$STELLAROOT"
 	fi
 
 

@@ -11,6 +11,7 @@ function usage() {
     echo " L     get-data|get-assets|update-data|update-assets|revert-data|revert-assets <data id|assets id|all>"
     echo " L     get-features all"
     echo " L     setup-env <env id|all> : download, build, deploy and run virtual environment based on app properties"
+    echo " L     link stella [--stellaroot=<path>] : link current app to a specific stella path"
     
 
 }
@@ -20,7 +21,7 @@ function usage() {
 
 # MAIN ------------------------
 PARAMETERS="
-ACTION=                         'action'                    a           'init get-data get-assets update-data update-assets revert-data revert-assets setup-env get-features'            Action to compute.
+ACTION=                         'action'                    a           'link init get-data get-assets update-data update-assets revert-data revert-assets setup-env get-features'            Action to compute.
 ID=                          ''                             s           ''                      Data or Assets or Env ID or Application name.
 "
 OPTIONS="
@@ -29,6 +30,7 @@ APPROOT=''                      ''          'path'              s           0   
 WORKROOT=''                     ''          'path'              s           0           ''                      Work app path (default equal to app path)
 CACHEDIR=''                     ''          'path'              s           0           ''                      Cache folder path
 SAMPLES=''                      ''         ''                  b           0       '1'                     Generate app samples.
+STELLAROOT=''                     ''          'path'              s           0           ''                      Stella path to link.
 "
 
 
@@ -61,6 +63,9 @@ else
     fi
 
     case $ACTION in
+        link)
+            __link_current_app $STELLAROOT
+            ;;
         get-data)
             if [ "$ID" == "all" ]; then
                 __get_all_data

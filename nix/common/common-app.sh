@@ -36,6 +36,23 @@ function __create_app_samples() {
 	cp -f "$STELLA_TEMPLATE/sample-stella.properties" "$_approot/sample-stella.properties"
 }
 
+function __link_current_app() {
+	local _stella_root=$1
+
+	[ "$_stella_root" == "" ] && _stella_root=$STELLA_ROOT
+	_stella_root=$(__abs_to_rel_path "$_stella_root" "$STELLA_APP_ROOT")
+
+	echo "#!/bin/bash" >$STELLA_APP_ROOT/stella-link.sh.temp
+	echo "_STELLA_LINK_CURRENT_FILE_DIR=\"\$( cd \"\$( dirname \"\${BASH_SOURCE[0]}\" )\" && pwd )\"" >>$STELLA_APP_ROOT/stella-link.sh.temp
+	echo "STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$STELLA_APP_ROOT/stella-link.sh.temp
+	echo "STELLA_APP_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR" >>$STELLA_APP_ROOT/stella-link.sh.temp
+
+	cat $STELLA_APP_ROOT/stella-link.sh.temp $STELLA_TEMPLATE/sample-stella-link.sh > $STELLA_APP_ROOT/stella-link.sh
+	chmod +x $STELLA_APP_ROOT/stella-link.sh
+	rm -f $STELLA_APP_ROOT/stella-link.sh.temp
+
+}
+
 function __init_app() {
 	local _app_name=$1
 	local _approot=$2

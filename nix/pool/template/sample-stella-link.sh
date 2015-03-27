@@ -1,4 +1,10 @@
-[ ! -f "$STELLA_ROOT/stella.sh" ] && echo "** WARNING Stella is missing"
+
+if [ "$1" == "include" ]; then
+	if [ ! -f "$STELLA_ROOT/stella.sh" ]; then
+		echo "** WARNING Stella is missing -- bootstraping stella"
+		$_STELLA_LINK_CURRENT_FILE_DIR/stella-link.sh bootstrap
+	fi
+fi
 
 ACTION=$1
 case $ACTION in

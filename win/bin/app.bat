@@ -5,8 +5,8 @@ call %~dp0\..\..\conf.bat
 
 
 :: arguments
-set "params=action:"init get-data get-assets update-data update-assets revert-data revert-assets setup-env get-features" id:"_ANY_""
-set "options=-f: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_ -samples:"
+set "params=action:"link init get-data get-assets update-data update-assets revert-data revert-assets setup-env get-features" id:"_ANY_""
+set "options=-f: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_ -stellaroot:_ANY_ -samples:"
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
 if "%ARGOPT_FLAG_HELP%"=="1" goto :usage
@@ -45,6 +45,11 @@ if not "%ACTION%"=="init" (
 		echo ** ERROR properties file does not exist
 		goto :end
 	)
+)
+
+if "%ACTION%"=="link" (
+	call %STELLA_COMMON%\common-app.bat :link_current_app "!-stellaroot!"
+	goto :end
 )
 
 if "%ACTION%"=="get-data" (
@@ -120,6 +125,8 @@ REM ------------------------------------ INTERNAL FUNCTIONS --------------------
 	echo 		%~n0 get-data^|get-assets^|update-data^|update-assets^|revert-data^|revert-assets ^<data id^|assets id^|all^>
 	echo 		%~n0 get-features all
 	echo 		%~n0 setup-env ^<env id^|all^> : download, build, deploy and run virtual environment based on app properties
+	echo		%~n0 link stella [-stellaroot=^<path^>] : link current app to a specific stella path
+	
 goto :end
 
 

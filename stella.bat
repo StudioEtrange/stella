@@ -6,8 +6,8 @@ call %~dp0\conf.bat
 
 
 :: arguments
-set "params=domain:"app feature virtual stella" action:"bootstrap api install init get-data get-assets update-data update-assets revert-data revert-assets get-features setup-env install list create-env run-env stop-env destroy-env info-env create-box get-box" id:"_ANY_""
-set "options=-f: -vcpu:_ANY_ -vmem:_ANY_ -head: -login: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_ -samples:"
+set "params=domain:"app feature virtual stella" action:"link bootstrap api install init get-data get-assets update-data update-assets revert-data revert-assets get-features setup-env install list create-env run-env stop-env destroy-env info-env create-box get-box" id:"_ANY_""
+set "options=-f: -vcpu:_ANY_ -vmem:_ANY_ -head: -login: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_ -stellaroot:_ANY_ -samples:"
 
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
@@ -27,7 +27,7 @@ if "%DOMAIN%"=="app" (
 	if not "%-approot%"=="" set "_app_options=!_app_options! -approot=%-approot%"
 	if not "%-workroot%"=="" set "_app_options=!_app_options! -workroot=%-workroot%"
 	if not "%-cachedir%"=="" set "_app_options=!_app_options! -cachedir=%-cachedir%"
-	
+	if not "%-stellaroot%"=="" set "_app_options=!_app_options! -stellaroot=%-stellaroot%"	
 
 	if "%-samples%"=="1" set "_app_options=!_app_options! -samples"
 	if "%-f%"=="1" set "_app_options=!_app_options! -f"

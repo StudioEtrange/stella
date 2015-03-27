@@ -802,6 +802,7 @@ function __argparse(){
 	local PARAMETERS="$3"
 	local SHORT_DESCRIPTION="$4"
 	local LONG_DESCRIPTION="$5"
+	# this variable, if setted, will receive the rest of the command line not processed
 	local COMMAND_LINE_RESULT="$6"
 	shift 6
 	
@@ -842,9 +843,8 @@ function __argparse(){
 
 	eval $RES
 
-	#echo "rest of command line : $@"
-	
 	if [ "$COMMAND_LINE_RESULT" ]; then
+		# Store rest of the command line not processed in COMMAND_LINE_RESULT
 		eval "$COMMAND_LINE_RESULT=\$@"
 	fi
 
