@@ -17,18 +17,23 @@ STELLA_COMMON="$STELLA_ROOT/nix/common"
 STELLA_POOL="$STELLA_ROOT/nix/pool"
 STELLA_BIN="$STELLA_ROOT/nix/bin"
 STELLA_FEATURE_RECIPE="$STELLA_POOL/feature-recipe"
-STELLA_REPOSITORY_LOCAL="$STELLA_POOL/repository-local"
+STELLA_ARTEFACT="$STELLA_POOL/artefact"
 STELLA_APPLICATION="$STELLA_ROOT/app"
 STELLA_TEMPLATE="$STELLA_POOL/template"
 
 # URL PATHS ---------------------------------------------
 STELLA_URL="http://stella.sh"
-STELLA_POOL_PATH="pool"
-STELLA_POOL_URL="$STELLA_URL/$STELLA_POOL_PATH/nix"
+STELLA_POOL_URL="$STELLA_URL/pool/nix"
 STELLA_FEATURE_RECIPE_URL="$STELLA_POOL_URL/feature-recipe"
-STELLA_REPOSITORY_URL="$STELLA_POOL_URL/repository"
-STELLA_DIST_PATH="dist"
-STELLA_DIST_URL="$STELLA_URL/$STELLA_DIST_PATH"
+STELLA_ARTEFACT_URL="$STELLA_POOL_URL/artefact"
+STELLA_DIST_URL="$STELLA_URL/dist"
+
+# SITE SCHEMA
+# /pool
+# /pool/nix
+# /pool/nix/feature-recipe
+# /pool/nix/artefact
+# /dist
 
 # STELLA INCLUDE ---------------------------------------------
 

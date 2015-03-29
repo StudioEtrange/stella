@@ -13,6 +13,7 @@ _STELLA_COMMON_MAKE_SFX_INCLUDED_=1
 #		for tiny unofficial extractors binary : http://ptspts.blogspot.fr/2013/12/tiny-7z-archive-extractors-and-sfx-for.html
 # NOTE : SFX for platform windows or linux
 # NOTE : output is a binary file to run
+# option 7Z will consider _target as a 7Z compressed file and will not try to compress _target (which is already compressed)
 function __make_sevenzip_sfx_bin() {
 	local _target=$1
 	local _output_sfx=$2
@@ -40,15 +41,15 @@ function __make_sevenzip_sfx_bin() {
 	local extractor_binary
 	case $_platform in
 		win)
-			__download "$STELLA_URL/$STELLA_POOL_PATH/sfx_for_7z/7z9.20Win32Con.sfx" "_AUTO_"
+			__download "$STELLA_POOL_URL/common/sfx_for_7z/7z9.20Win32Con.sfx" "_AUTO_"
 			extractor_binary="$STELLA_APP_CACHE_DIR/7z9.20Win32Con.sfx"
 			;;
 		linux)
-			__download "$STELLA_URL/$STELLA_POOL_PATH/sfx_for_7z/7z9.20LinuxI386Con.sfx" "_AUTO_"
+			__download "$STELLA_POOL_URL/common/sfx_for_7z/7z9.20LinuxI386Con.sfx" "_AUTO_"
 			extractor_binary="$STELLA_APP_CACHE_DIR/7z9.20LinuxI386Con.sfx"
 			;;
 		darwin)
-			__download "$STELLA_URL/$STELLA_POOL_PATH/sfx_for_7z/7z9.20Macosx10.6I386.sfx"  "_AUTO_"
+			__download "$STELLA_POOL_URL/common/sfx_for_7z/7z9.20Macosx10.6I386.sfx"  "_AUTO_"
 			extractor_binary="$STELLA_APP_CACHE_DIR/7z9.20Macosx10.6I386.sfx"
 			;;
 	esac
@@ -67,6 +68,7 @@ function __make_sevenzip_sfx_bin() {
 
 # NOTE : SFX for linux
 # NOTE : output is a shell file to run
+# option TARGZ will consider _target as a tar.gz file and will not try to compress _target (which is already compressed)
 function __make_targz_sfx_shell() {
 	local _target=$1
 	local _output_sfx=$2

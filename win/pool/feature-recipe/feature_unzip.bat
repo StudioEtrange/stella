@@ -27,13 +27,13 @@ goto :eof
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\unzip.exe"
 	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\bin"
 	set FEAT_ENV=
-	
+
 	set FEAT_BUNDLE_LIST=
 goto :eof
 
 
 :feature_unzip_5_51_1_patch
-	call %STELLA_COMMON%\common.bat :copy_folder_content_into "%STELLA_REPOSITORY_LOCAL%\unzip-5.51-1-bin" "%INSTALL_DIR%"
+	call %STELLA_COMMON%\common.bat :copy_folder_content_into "%STELLA_ARTEFACT%\unzip-5.51-1-bin" "%INSTALL_DIR%"
 goto :eof
 
 :feature_unzip_install_binary
@@ -42,7 +42,5 @@ goto :eof
 	set BUILD_DIR=
 
 	call %STELLA_COMMON%\common-feature.bat :feature_apply_binary_callback
-		
+
 goto :eof
-
-
