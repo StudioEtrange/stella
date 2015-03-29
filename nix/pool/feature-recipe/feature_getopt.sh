@@ -32,11 +32,12 @@ function feature_getopt_1_1_6() {
 	FEAT_BUNDLE_LIST=
 }
 
+# depend on gettext ?
 
 function feature_getopt_1_1_6_patch() {
 	# https://github.com/Homebrew/homebrew/blob/master/Library/Formula/gnu-getopt.rb
 
-	feature_info gettext
+	__feature_inspect gettext
 	sed -i .bak 's,^\(CPPFLAGS=.*\),\1 '"-I$FEAT_INSTALL_ROOT/include"',' $SRC_DIR/Makefile
 	sed -i .bak 's,^\(LDFLAGS=.*\),\1 '"-L$FEAT_INSTALL_ROOT/lib -lintl"',' $SRC_DIR/Makefile
 }

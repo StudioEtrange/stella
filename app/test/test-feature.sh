@@ -45,15 +45,37 @@ function test__translate_schema_1() {
 }
 
 
+function test__info_feature() {
+	_test="sbt"
+	__feature_catalog_info $_test
+	local def_ver=$FEAT_VERSION
+	local def_arch=$FEAT_ARCH
+
+	__feature_install $_test
+
+	# empty feature informations values
+	__internal_feature_context
+
+	__feature_inspect $_test
+	[ "$TEST_FEATURE" == "1" ] && [ "$FEAT_NAME" == "sbt" ] && [ "$FEAT_VERSION" == "$def_ver" ] && [ "$FEAT_ARCH" == "$def_arch" ] && \
+	[ "$FEAT_INSTALL_ROOT" == "$STELLA_APP_FEATURE_ROOT/$FEAT_NAME/$FEAT_VERSION" ] && result=OK || result=ERROR
+	echo "$_test => N:$FEAT_NAME==sbt V:$FEAT_VERSION==$def_ver A:$FEAT_ARCH==$def_arch R:$FEAT_INSTALL_ROOT==$STELLA_APP_FEATURE_ROOT/$FEAT_NAME/$FEAT_VERSION"
+
+	__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" ""
+	__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" "PREFIX"
+
+	log "test__info_feature" "$result" "test __feature_catalog_info __feature_inspect_info"
+}
+
 
 
 function test__install_feature_0() {
 	_test="packer#0_6_0@x86/binary"
 	__feature_install $_test
-	__feature_is_installed $_test
+	__feature_inspect $_test
 	[ "$TEST_FEATURE" == "1" ] && [ "$FEAT_NAME" == "packer" ] && [ "$FEAT_VERSION" == "0_6_0" ] && [ "$FEAT_ARCH" == "x86" ] && \
-	[ "$FEAT_INSTALL_ROOT" == "$STELLA_APP_FEATURE_ROOT/$FEAT_NAME/$FEAT_VER"@"$FEAT_ARCH" ] && result=OK || result=ERROR
-	echo "$_test => N:$FEAT_NAME V:$FEAT_VERSION A:$FEAT_ARCH R:$FEAT_INSTALL_ROOT"
+	[ "$FEAT_INSTALL_ROOT" == "$STELLA_APP_FEATURE_ROOT/$FEAT_NAME/$FEAT_VERSION"@"$FEAT_ARCH" ] && result=OK || result=ERROR
+	echo "$_test => N:$FEAT_NAME==sbt V:$FEAT_VERSION==0_6_0 A:$FEAT_ARCH==x86 R:$FEAT_INSTALL_ROOT==$STELLA_APP_FEATURE_ROOT/$FEAT_NAME/$FEAT_VERSION"@"$FEAT_ARCH"
 	if [ "$STELLA_APP_FEATURE_LIST" == "$_test" ]; then result=OK; else result=ERROR; fi;
 	echo "APP_FEATURE_LIST $_test shoud be equal to : $STELLA_APP_FEATURE_LIST"
 
@@ -68,14 +90,14 @@ function test__install_feature_0() {
 
 function test__install_feature_1() {
 	_test="packer"
-	__feature_info $_test
+	__feature_catalog_info $_test
 	local def_ver=$FEAT_VERSION
 	local def_arch=$FEAT_ARCH
 
 	__feature_install $_test
-	__feature_is_installed $_test
+	__feature_inspect $_test
 	[ "$TEST_FEATURE" == "1" ] && [ "$FEAT_NAME" == "packer" ] && [ "$FEAT_VERSION" == "$def_ver" ] && [ "$FEAT_ARCH" == "$def_arch" ] && \
-	[ "$FEAT_INSTALL_ROOT" == "$STELLA_APP_FEATURE_ROOT/$FEAT_NAME/$FEAT_VER"@"$FEAT_ARCH" ] && result=OK || result=ERROR
+	[ "$FEAT_INSTALL_ROOT" == "$STELLA_APP_FEATURE_ROOT/$FEAT_NAME/$FEAT_VERSION"@"$FEAT_ARCH" ] && result=OK || result=ERROR
 	echo "$_test => N:$FEAT_NAME V:$FEAT_VERSION A:$FEAT_ARCH R:$FEAT_INSTALL_ROOT"
 	if [ "$STELLA_APP_FEATURE_LIST" == "$_test" ]; then result=OK; else result=ERROR; fi;
 	echo "APP_FEATURE_LIST $_test shoud be equal to : $STELLA_APP_FEATURE_LIST"
@@ -91,14 +113,14 @@ function test__install_feature_1() {
 
 function test__install_feature_2() {
 	_test="wget"
-	__feature_info $_test
+	__feature_catalog_info $_test
 	local def_ver=$FEAT_VERSION
 	local def_arch=$FEAT_ARCH
 
 	__feature_install $_test
-	__feature_is_installed $_test
+	__feature_inspect $_test
 	[ "$TEST_FEATURE" == "1" ] && [ "$FEAT_NAME" == "wget" ] && [ "$FEAT_VERSION" == "$def_ver" ] && [ "$FEAT_ARCH" == "$def_arch" ] && \
-	[ "$FEAT_INSTALL_ROOT" == "$STELLA_APP_FEATURE_ROOT/$FEAT_NAME/$FEAT_VER" ] && result=OK || result=ERROR
+	[ "$FEAT_INSTALL_ROOT" == "$STELLA_APP_FEATURE_ROOT/$FEAT_NAME/$FEAT_VERSION" ] && result=OK || result=ERROR
 	echo "$_test => N:$FEAT_NAME V:$FEAT_VERSION A:$FEAT_ARCH R:$FEAT_INSTALL_ROOT"
 	if [ "$STELLA_APP_FEATURE_LIST" == "$_test" ]; then result=OK; else result=ERROR; fi;
 	echo "APP_FEATURE_LIST $_test shoud be equal to : $STELLA_APP_FEATURE_LIST"
@@ -115,14 +137,14 @@ function test__install_feature_2() {
 
 function test__install_feature_3() {
 	_test="wget/source"
-	__feature_info $_test
+	__feature_catalog_info $_test
 	local def_ver=$FEAT_VERSION
 	local def_arch=$FEAT_ARCH
 
 	__feature_install $_test
-	__feature_is_installed $_test
+	__feature_inspect $_test
 	[ "$TEST_FEATURE" == "1" ] && [ "$FEAT_NAME" == "wget" ] && [ "$FEAT_VERSION" == "$def_ver" ] && [ "$FEAT_ARCH" == "$def_arch" ] && \
-	[ "$FEAT_INSTALL_ROOT" == "$STELLA_APP_FEATURE_ROOT/$FEAT_NAME/$FEAT_VER" ] && result=OK || result=ERROR
+	[ "$FEAT_INSTALL_ROOT" == "$STELLA_APP_FEATURE_ROOT/$FEAT_NAME/$FEAT_VERSION" ] && result=OK || result=ERROR
 	echo "$_test => N:$FEAT_NAME V:$FEAT_VERSION A:$FEAT_ARCH R:$FEAT_INSTALL_ROOT"
 	if [ "$STELLA_APP_FEATURE_LIST" == "$_test" ]; then result=OK; else result=ERROR; fi;
 	echo "APP_FEATURE_LIST $_test shoud be equal to : $STELLA_APP_FEATURE_LIST"
@@ -137,21 +159,69 @@ function test__install_feature_3() {
 }
 
 
+
+function test__remove_feature() {
+	_test="sbt"
+	__feature_catalog_info $_test
+	local def_ver=$FEAT_VERSION
+	local def_arch=$FEAT_ARCH
+
+	__save_feature_list=$STELLA_APP_FEATURE_LIST
+
+	__feature_install $_test
+
+	__feature_remove $_test
+
+	# empty feature informations values
+	__internal_feature_context
+
+	__feature_inspect $_test
+	[ "$TEST_FEATURE" == "0" ] && [ "$FEAT_NAME" == "sbt" ] && [ "$FEAT_VERSION" == "$def_ver" ] && [ "$FEAT_ARCH" == "$def_arch" ] && \
+	[ "$FEAT_INSTALL_ROOT" == "$STELLA_APP_FEATURE_ROOT/$FEAT_NAME/$FEAT_VERSION" ] && result=OK || result=ERROR
+	echo "$_test => TEST_FEATURE:$TEST_FEATURE==0 N:$FEAT_NAME==sbt V:$FEAT_VERSION==$def_ver A:$FEAT_ARCH==$def_arch R:$FEAT_INSTALL_ROOT==$STELLA_APP_FEATURE_ROOT/$FEAT_NAME/$FEAT_VERSION"
+
+
+	__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" "PREFIX"
+	[ "$STELLA_APP_FEATURE_LIST" == "$__save_feature_list" ] && result=OK || result=ERROR
+
+	log "test__remove_feature" "$result" "test __remove_feature"
+}
+
+
 rm -Rf $STELLA_APP_FEATURE_ROOT
 mkdir -p $STELLA_APP_FEATURE_ROOT
 
 echo "******* test__translate_schema_1 ********"
 test__translate_schema_1
 
-echo "******* test__install_feature_0 ********"
-test__install_feature_0
 
-echo "******* test__install_feature_1 ********"
-test__install_feature_1
+# echo "******* test__install_feature_0 ********"
+# test__install_feature_0
+# rm -Rf $STELLA_APP_FEATURE_ROOT
+# mkdir -p $STELLA_APP_FEATURE_ROOT
 
-echo "******* test__install_feature_2 ********"
-test__install_feature_2
+echo "******* test__info_feature ********"
+test__info_feature
+rm -Rf $STELLA_APP_FEATURE_ROOT
+mkdir -p $STELLA_APP_FEATURE_ROOT
 
-echo "******* test__install_feature_3 ********"
-test__install_feature_3
+# echo "******* test__install_feature_1 ********"
+# test__install_feature_1
+# rm -Rf $STELLA_APP_FEATURE_ROOT
+# mkdir -p $STELLA_APP_FEATURE_ROOT
+
+# echo "******* test__install_feature_2 ********"
+# test__install_feature_2
+# rm -Rf $STELLA_APP_FEATURE_ROOT
+# mkdir -p $STELLA_APP_FEATURE_ROOT
+
+# echo "******* test__install_feature_3 ********"
+# test__install_feature_3
+# rm -Rf $STELLA_APP_FEATURE_ROOT
+# mkdir -p $STELLA_APP_FEATURE_ROOT
+
+echo "******* test__remove_feature ********"
+test__remove_feature
+rm -Rf $STELLA_APP_FEATURE_ROOT
+mkdir -p $STELLA_APP_FEATURE_ROOT
 	

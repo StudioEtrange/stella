@@ -14,7 +14,7 @@ function feature_elasticsearch() {
 
 function feature_elasticsearch_env() {
 	ES_HOME=$FEAT_INSTALL_ROOT
-	export ES_HOME	
+	export ES_HOME=$FEAT_INSTALL_ROOT
 }
 
 function feature_elasticsearch_1_4_4() {

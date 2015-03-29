@@ -47,7 +47,7 @@ function __make_sevenzip_sfx_bin() {
 			__download "$STELLA_URL/$STELLA_POOL_PATH/sfx_for_7z/7z9.20LinuxI386Con.sfx" "_AUTO_"
 			extractor_binary="$STELLA_APP_CACHE_DIR/7z9.20LinuxI386Con.sfx"
 			;;
-		macos)
+		darwin)
 			__download "$STELLA_URL/$STELLA_POOL_PATH/sfx_for_7z/7z9.20Macosx10.6I386.sfx"  "_AUTO_"
 			extractor_binary="$STELLA_APP_CACHE_DIR/7z9.20Macosx10.6I386.sfx"
 			;;
@@ -58,7 +58,7 @@ function __make_sevenzip_sfx_bin() {
 	[ "$_opt_target_is_sevenzip" == "OFF" ] && rm -Rf "$tp_7z"
 
 	case $_platform in
-		linux|macos)
+		linux|darwin)
 			chmod +x $_output_sfx 2>/dev/null
 			;;
 	esac

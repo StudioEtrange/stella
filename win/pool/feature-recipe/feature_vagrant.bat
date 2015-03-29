@@ -36,7 +36,7 @@ goto :eof
 
 
 :_call_vagrant_from_git
-	call %STELLA_COMMON%\common-feature.bat :feature_info vagrant#git/source
+	call %STELLA_COMMON%\common-feature.bat :feature_catalog_info vagrant#git/source
 	set "BUNDLE_GEMFILE=!FEAT_INSTALL_ROOT!\Gemfile"
 	call bundle exec vagrant %*
 	set BUNDLE_GEMFILE=

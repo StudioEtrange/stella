@@ -33,7 +33,7 @@ function __feature_init() {
 		[ "$FEAT_NAME#$FEAT_VERSION" == "$a" ] && _flag=1
 	done
 	if [ "$_flag" == "0" ]; then
-		__feature_is_installed $FEAT_SCHEMA_SELECTED
+		__feature_inspect $FEAT_SCHEMA_SELECTED
 		if [ "$TEST_FEATURE" == "1" ]; then
 			if [ ! "$_opt_hidden_feature" == "ON" ]; then
 				FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $FEAT_NAME#$FEAT_VERSION"
@@ -51,45 +51,94 @@ function __feature_init() {
 
 
 
-# get information on feature (installed or not)
-function __feature_info() {
+# get information on feature (from catalog)
+function __feature_catalog_info() {
 	local _SCHEMA=$1
 	__internal_feature_context $_SCHEMA
 }
 
-function __feature_is_installed() {
+
+
+
+# look for information about an installed feature
+function __feature_match_installed() {
 	local _SCHEMA=$1
 
-	__internal_feature_context $_SCHEMA
-	
+	__translate_schema "$1" "__VAR_FEATURE_NAME" "__VAR_FEATURE_VER" "__VAR_FEATURE_ARCH"
+
+	local _tested=
+	local _found=
+
+	[ ! "$__VAR_FEATURE_VER" == "" ] && _tested=$__VAR_FEATURE_VER
+	[ ! "$__VAR_FEATURE_ARCH" == "" ] && _tested="$_tested"@"$__VAR_FEATURE_ARCH"
+
+	if [ -d "$STELLA_APP_FEATURE_ROOT/$__VAR_FEATURE_NAME" ]; then
+		# for each detected version
+		for v in  "$STELLA_APP_FEATURE_ROOT"/"$__VAR_FEATURE_NAME"/*; do
+			if [ "$_tested" == "" ]; then
+				_found=$v
+			else
+				case $v in
+					*"$_tested"*)
+						_found=$v
+					;;
+					*);;
+				esac
+			fi
+		done
+	fi
+
+	if [ ! "$_found" == "" ]; then
+		__internal_feature_context "$__VAR_FEATURE_NAME"#"$(__get_filename_from_string $v)"
+	else
+		# empty info values
+		__internal_feature_context
+	fi
+
+}
+
+# test if a feature is installed
+# AND retrieve informations based on actually installed feature (looking inside STELLA_APP_FEATURE_ROOT) OR from feature recipe if not installed
+# do not use default values from feature recipe to search installed feature
+function __feature_inspect() {
+	local _SCHEMA=$1
+
 	TEST_FEATURE=0
 
-	if [ ! "$FEAT_BUNDLE_LIST" == "" ]; then
-		local p
-		local _t=1
-		local save_FEAT_INSTALL_ROOT=$FEAT_INSTALL_ROOT
-		
-		FEAT_BUNDLE_EMBEDDED_PATH=
-		[ "$FEAT_BUNDLE_EMBEDDED" == "TRUE" ] && FEAT_BUNDLE_EMBEDDED_PATH="$save_FEAT_INSTALL_ROOT"
-		for p in $FEAT_BUNDLE_LIST; do
-			TEST_FEATURE=0
-			__feature_is_installed $p
-			[ "$TEST_FEATURE" == "0" ] && _t=0
-		done
-		FEAT_BUNDLE_EMBEDDED_PATH=
+	__feature_match_installed $_SCHEMA
 
-		__internal_feature_context $_SCHEMA
-		TEST_FEATURE=$_t
-		if [ "$TEST_FEATURE" == "1" ]; then
-			[ "$VERBOSE_MODE" == "0" ] || echo " ** BUNDLE Detected in $save_FEAT_INSTALL_ROOT"
+
+	if [ ! "$FEAT_SCHEMA_SELECTED" == "" ]; then
+		if [ ! "$FEAT_BUNDLE_LIST" == "" ]; then
+			local p
+			local _t=1
+			local save_FEAT_INSTALL_ROOT=$FEAT_INSTALL_ROOT
+			
+			FEAT_BUNDLE_EMBEDDED_PATH=
+			[ "$FEAT_BUNDLE_EMBEDDED" == "TRUE" ] && FEAT_BUNDLE_EMBEDDED_PATH="$save_FEAT_INSTALL_ROOT"
+			for p in $FEAT_BUNDLE_LIST; do
+				TEST_FEATURE=0
+				__feature_inspect $p
+				[ "$TEST_FEATURE" == "0" ] && _t=0
+			done
+			FEAT_BUNDLE_EMBEDDED_PATH=
+
+			__internal_feature_context $_SCHEMA
+			TEST_FEATURE=$_t
+			if [ "$TEST_FEATURE" == "1" ]; then
+				[ "$VERBOSE_MODE" == "0" ] || echo " ** BUNDLE Detected in $save_FEAT_INSTALL_ROOT"
+			fi
+		else
+			if [ -f "$FEAT_INSTALL_TEST" ]; then
+				TEST_FEATURE=1
+				[ "$VERBOSE_MODE" == "0" ] || echo " ** FEATURE Detected in $FEAT_INSTALL_ROOT"
+			fi
 		fi
 	else
-		if [ -f "$FEAT_INSTALL_TEST" ]; then
-			TEST_FEATURE=1
-			[ "$VERBOSE_MODE" == "0" ] || echo " ** FEATURE Detected in $FEAT_INSTALL_ROOT"
-		fi
+		__feature_catalog_info $_SCHEMA
 	fi
 }
+
 
 
 function __feature_install_list() {
@@ -101,6 +150,72 @@ function __feature_install_list() {
 }
 
 
+function __feature_remove() {
+	local _SCHEMA=$1
+	local _OPT="$2"
+
+	local o
+	local _opt_internal_feature=OFF
+	local _opt_hidden_feature=OFF
+	for o in $_OPT; do 
+		[ "$o" == "INTERNAL" ] && _opt_internal_feature=ON
+		[ "$o" == "HIDDEN" ] && _opt_hidden_feature=ON
+	done
+
+	__feature_inspect $_SCHEMA	
+
+	if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" == "" ]; then
+		if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" == "$STELLA_CURRENT_OS" ]; then
+			return
+		fi
+	fi
+
+	local _save_app_feature_root=
+	if [ "$_opt_internal_feature" == "ON" ]; then
+		_save_app_feature_root=$STELLA_APP_FEATURE_ROOT
+		STELLA_APP_FEATURE_ROOT=$STELLA_INTERNAL_FEATURE_ROOT
+		_save_app_cache_dir=$STELLA_APP_CACHE_DIR
+		STELLA_APP_CACHE_DIR=$STELLA_INTERNAL_CACHE_DIR
+		_save_app_temp_dir=$STELLA_APP_TEMP_DIR
+		STELLA_APP_TEMP_DIR=$STELLA_INTERNAL_TEMP_DIR
+	fi
+
+	if [ ! "$_opt_hidden_feature" == "ON" ]; then
+		__remove_app_feature $_SCHEMA
+	fi
+
+	if [ "$TEST_FEATURE" == "1" ]; then
+
+		if [ ! "$FEAT_BUNDLE_LIST" == "" ]; then
+			local save_FEAT_INSTALL_ROOT=$FEAT_INSTALL_ROOT
+
+			FEAT_BUNDLE_EMBEDDED_PATH=
+			local _flag_hidden=
+			if [ "$FEAT_BUNDLE_EMBEDDED" == "TRUE" ]; then
+				FEAT_BUNDLE_EMBEDDED_PATH="$save_FEAT_INSTALL_ROOT"
+				_flag_hidden="HIDDEN"
+			fi
+			local p
+			for p in $FEAT_BUNDLE_LIST; do
+				__feature_remove $p "$_OPT $_flag_hidden"
+			done
+			FEAT_BUNDLE_EMBEDDED_PATH=
+
+			__internal_feature_context
+		else
+			echo " ** Remove $FEAT_NAME version $FEAT_VERSION from $FEAT_INSTALL_ROOT"
+			__del_folder $FEAT_INSTALL_ROOT
+		fi
+	fi
+	
+
+	if [ "$_opt_internal_feature" == "ON" ]; then
+		STELLA_APP_FEATURE_ROOT=$_save_app_feature_root
+		STELLA_APP_CACHE_DIR=$_save_app_cache_dir
+		STELLA_APP_TEMP_DIR=$_save_app_temp_dir
+	fi
+
+}
 
 function __feature_install() {
 	local _SCHEMA=$1
@@ -125,6 +240,12 @@ function __feature_install() {
 
 		if [ ! "$FEAT_SCHEMA_SELECTED" == "" ]; then
 
+			if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" == "" ]; then
+				if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" == "$STELLA_CURRENT_OS" ]; then
+					return
+				fi
+			fi
+
 			local _save_app_feature_root=
 			if [ "$_opt_internal_feature" == "ON" ]; then
 				_save_app_feature_root=$STELLA_APP_FEATURE_ROOT
@@ -138,22 +259,16 @@ function __feature_install() {
 				__add_app_feature $_SCHEMA
 			fi
 
-
-			if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" == "" ]; then
-				if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" == "$STELLA_CURRENT_OS" ]; then
-					return
-				fi
-			fi
-
 			
 			if [ "$FORCE" == "1" ]; then
 				TEST_FEATURE=0
 				__del_folder $FEAT_INSTALL_ROOT
 			else
-				__feature_is_installed $FEAT_SCHEMA_SELECTED	
+				__feature_inspect $FEAT_SCHEMA_SELECTED
 			fi
 
 			if [ "$TEST_FEATURE" == "0" ]; then
+				#__internal_feature_context $FEAT_SCHEMA_SELECTED
 				mkdir -p $FEAT_INSTALL_ROOT
 
 				if [ ! "$FEAT_BUNDLE_LIST" == "" ]; then
@@ -181,7 +296,7 @@ function __feature_install() {
 					feature_"$FEAT_NAME"_install_"$FEAT_SCHEMA_FLAVOUR"
 				fi
 
-				__feature_is_installed $FEAT_SCHEMA_SELECTED
+				__feature_inspect $FEAT_SCHEMA_SELECTED
 				if [ "$TEST_FEATURE" == "1" ]; then
 					echo "** Feature $_SCHEMA is installed"
 					__feature_init "$FEAT_SCHEMA_SELECTED" $_OPT
@@ -302,9 +417,8 @@ function __internal_feature_context() {
 
 
 
-	__select_schema $_SCHEMA "FEAT_SCHEMA_SELECTED"
+	[ ! "$_SCHEMA" == "" ] && __select_schema $_SCHEMA "FEAT_SCHEMA_SELECTED"
 
-	
 
 	FEAT_NAME=
 	FEAT_LIST_SCHEMA=
@@ -363,7 +477,7 @@ function __internal_feature_context() {
 
 
 
-
+# pick a feature schema by filling some values with default one
 function __select_schema() {
 	local _SCHEMA=$1
 	local _RESULT_SCHEMA=$2
@@ -412,6 +526,7 @@ function __select_schema() {
 }
 
 
+# split schema properties
 # feature schema name[#version][@arch][/flavour][:os_restriction] in any order
 #				@arch could be x86 or x64
 #				/flavour could be binary or source

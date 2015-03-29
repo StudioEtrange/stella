@@ -19,7 +19,7 @@ function usage() {
 	echo " L     app link stella [--stellaroot=<path>] : link current app to a specific stella path"
 	echo " o-- feature management :"
 	echo " L     feature install required : install required features for Stella"
-	echo " L     feature install <feature schema|required>: install a feature. schema = feature_name[#version][@arch][/binary|source][:os_restriction]"
+	echo " L     feature install <feature schema|required> : install a feature. schema = feature_name[#version][@arch][/binary|source][:os_restriction]"
 	echo " L     feature list <all|feature name|active> : list all available feature OR available versions of a feature OR current active features"
 	echo " o-- virtual management :"
 	echo " L     virtual create-env <env id#distrib id> [--head] [--vmem=xxxx] [--vcpu=xx] : create a new environment from a generic box prebuilt with a specific distribution"
@@ -31,6 +31,9 @@ function usage() {
 	echo " L     stella api list : list public functions of stella api"
 	echo " L     stella bootstrap env : launch a shell with all stella env var setted"
 	echo " L     stella install dep : install all features and systems requirements for the current OS ($STELLA_CURRENT_OS)"
+	echo " L     proxy enable <name> : active this proxy"
+	echo " L     proxy disable off : active this proxy"
+	echo " L     proxy register <name> --proxyhost=<host> --proxyport=<port> [--proxyuser=<string> --proxypass=<string>] : register this proxy"
 }
 
 
@@ -38,8 +41,8 @@ function usage() {
 
 # arguments
 PARAMETERS="
-DOMAIN=                          'domain'     		a           'app feature virtual stella'         										   				Action domain.
-ACTION=                         'action'   					a           'link api bootstrap install init get-data get-assets update-data update-assets revert-data revert-assets get-features setup-env install list create-env run-env stop-env destroy-env create-box get-box'         	Action to compute.
+DOMAIN=                          'domain'     		a           'app feature virtual stella proxy'         										   				Action domain.
+ACTION=                         'action'   					a           'enable disable register link api bootstrap install init get-data get-assets update-data update-assets revert-data revert-assets get-features setup-env install list create-env run-env stop-env destroy-env create-box get-box'         	Action to compute.
 ID=							 ''								s 			'' 						Feature ID or Data or Assets or Env or Distrib ID.
 "
 OPTIONS="
@@ -53,6 +56,10 @@ VMEM=''							''			''					i 			0		''						Memory attributed to the virtual env.
 HEAD=''							''			''					b			0		'1'						Active hyperviser head.
 LOGIN=''						'l'			''					b			0		'1'						Autologin in env.
 SAMPLES=''                      ''         ''                  b           0       '1'                     Generate app samples.
+PROXYHOST='' 					'' 			'host'				s 			0			''					proxy host
+PROXYPORT='' 					'' 			'port'				s 			0			''					proxy port
+PROXYUSER='' 					'' 			'user'				s 			0			''					proxy user
+PROXYPASS='' 					'' 			'password'				s 			0			''					proxy password
 "
 
 __argparse "$0" "$OPTIONS" "$PARAMETERS" "Lib Stella" "$(usage)" "" "$@"
@@ -82,16 +89,6 @@ if [ "$DOMAIN" == "app" ]; then
 fi
 
 
-# --------------- ENV ----------------------------
-if [ "$DOMAIN" == "env" ]; then
-	if [ "$ACTION" == "pop" ]; then
-		if [ "$ID" == "stella" ]; then
-			__init_stella_env
-			__clone_stella_env
-		fi
-	fi
-fi
-
 
 # --------------- FEATURE ----------------------------
 if [ "$DOMAIN" == "feature" ]; then
@@ -103,6 +100,24 @@ if [ "$DOMAIN" == "feature" ]; then
 
 fi
 
+
+
+# --------------- PROXY ----------------------------
+if [ "$DOMAIN" == "proxy" ]; then
+	__init_stella_env
+	
+	if [ "$ACTION" == "enable" ]; then
+		__enable_proxy "$ID"
+	fi
+
+	if [ "$ACTION" == "disable" ]; then
+		__disable_proxy
+	fi
+
+	if [ "$ACTION" == "register" ]; then
+		__register_proxy "$ID" "$PROXYHOST" "$PROXYPORT" "$PROXYUSER" "$PROXYPASS"
+	fi
+fi
 
 # --------------- STELLA ----------------------------
 if [ "$DOMAIN" == "stella" ]; then

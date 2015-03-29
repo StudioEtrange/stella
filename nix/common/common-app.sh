@@ -215,9 +215,22 @@ function __get_env_properties() {
 	fi
 }
 
+function __remove_app_feature() {
+	local _SCHEMA=$1
+
+	__app_feature "REMOVE" $_SCHEMA
+}
 
 function __add_app_feature() {
 	local _SCHEMA=$1
+
+	__app_feature "ADD" $_SCHEMA
+}
+
+function __app_feature() {
+	# ADD or REMOVE
+	local _MODE=$1
+	local _SCHEMA=$2
 	local _APP_FEATURE_LIST=
 
 	local _flag=0
@@ -228,7 +241,7 @@ function __add_app_feature() {
 	if [ -f "$_STELLA_APP_PROPERTIES_FILE" ]; then
 
 		if [ "$STELLA_APP_FEATURE_LIST" == "" ]; then
-			_APP_FEATURE_LIST="$_APP_FEATURE_LIST $_SCHEMA"
+			[ "$_MODE" == "ADD" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_SCHEMA"
 		else
 
 			for f in $STELLA_APP_FEATURE_LIST; do
@@ -247,12 +260,18 @@ function __add_app_feature() {
 						fi
 					fi
 				fi
-				_APP_FEATURE_LIST="$_APP_FEATURE_LIST $f"
+				if [ "$_MODE" == "REMOVE" ]; then
+					[ ! "$_flag" == "1" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $f"
+					_flag=0
+				fi
+				[ "$_MODE" == "ADD" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $f"
 			done
 
-			# This is a new feature
-			if [ "$_flag" == "0" ]; then
-				_APP_FEATURE_LIST="$_APP_FEATURE_LIST $_SCHEMA"
+			if [ "$_MODE" == "ADD" ]; then
+				# This is a new feature
+				if [ "$_flag" == "0" ]; then
+					_APP_FEATURE_LIST="$_APP_FEATURE_LIST $_SCHEMA"
+				fi
 			fi
 		fi
 

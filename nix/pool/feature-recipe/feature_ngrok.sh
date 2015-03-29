@@ -4,7 +4,7 @@ _NGROK_INCLUDED_=1
 
 function feature_ngrok() {
 	FEAT_NAME=ngrok
-	FEAT_LIST_SCHEMA="stable#x86/binary stable#x64/binary"
+	FEAT_LIST_SCHEMA="stable@x86/binary stable@x64/binary"
 	FEAT_DEFAULT_VERSION=stable
 	FEAT_DEFAULT_ARCH=x64
 	FEAT_DEFAULT_FLAVOUR="binary"
@@ -17,7 +17,7 @@ function feature_ngrok_stable() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_CALLBACK=
 	
-	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		FEAT_BINARY_URL_x64="https://api.equinox.io/1/Applications/ap_pJSFC5wQYkAyI0FIVwKYs9h1hW/Updates/Asset/ngrok.zip?channel=stable&os=darwin&arch=amd64"
 		FEAT_BINARY_URL_FILENAME_x64=ngrok_darwin_amd64.zip
 

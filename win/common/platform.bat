@@ -107,7 +107,7 @@ goto :eof
 	)
 
 	if "!_os!"=="macos" (
-		set "%_return_var%=macos"
+		set "%_return_var%=darwin"
 		goto :eof
 	)
 
@@ -132,8 +132,8 @@ goto :eof
 		goto :eof
 	)
 
-	if "!_platform!"=="macos" (
-		set "%_return_var%=macos"
+	if "!_platform!"=="darwin" (
+		set "%_return_var%=darwin"
 		goto :eof
 	)
 goto :eof

@@ -7,6 +7,17 @@ REM APP RESSOURCES & ENV MANAGEMENT ---------------
 
 :add_app_feature
 	set "_SCHEMA=%~1"
+	call :app_feature "ADD" "%_SCHEMA%"
+goto :eof
+
+:remove_app_feature
+	set "_SCHEMA=%~1"
+	call :app_feature "REMOVE" "%_SCHEMA%"
+goto :eof
+
+:app_feature
+	set "_MODE=%~1"
+	set "_SCHEMA=%~2"
 	set "_app_feature_list="
 
 	call %STELLA_COMMON%\common-feature.bat :translate_schema "!_SCHEMA!" "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR"  "TR_FEATURE_OS_RESTRICTION"
@@ -14,7 +25,7 @@ REM APP RESSOURCES & ENV MANAGEMENT ---------------
 	set _flag_add_app_feature=0
 	if exist "%_STELLA_APP_PROPERTIES_FILE%" (
 		if "!STELLA_APP_FEATURE_LIST!"=="" (
-			set "_app_feature_list=!_app_feature_list! !_SCHEMA!"
+			if "%_MODE%"=="ADD" set "_app_feature_list=!_app_feature_list! !_SCHEMA!"
 		) else (
 			for %%F in (!STELLA_APP_FEATURE_LIST!) do (		
 				
@@ -32,12 +43,22 @@ REM APP RESSOURCES & ENV MANAGEMENT ---------------
 						)
 					)
 				)
-				set "_app_feature_list=!_app_feature_list! %%F"
+				if "%_MODE%"=="REMOVE" (
+					if not "!_flag_add_app_feature!"=="1" (
+						set "_app_feature_list=!_app_feature_list! %%F"
+					)
+					set _flag_add_app_feature=0
+				)
+				if "%_MODE%"=="ADD" (
+					set "_app_feature_list=!_app_feature_list! %%F"
+				)
 			)
 
-			REM This is a new feature
-			if "!_flag_add_app_feature!"=="0" (
-				set "_app_feature_list=!_app_feature_list! !_SCHEMA!"
+			if "%_MODE%"=="ADD" (
+				REM This is a new feature
+				if "!_flag_add_app_feature!"=="0" (
+					set "_app_feature_list=!_app_feature_list! !_SCHEMA!"
+				)
 			)
 		)
 

@@ -23,7 +23,7 @@ function feature_jq_1_4() {
 		FEAT_BINARY_URL_x86=http://stedolan.github.io/jq/download/linux32/jq
 		FEAT_BINARY_URL_FILENAME_x86=jq-1.4-linux-32
 	fi
-	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		FEAT_BINARY_URL_x64=http://stedolan.github.io/jq/download/osx64/jq
 		FEAT_BINARY_URL_FILENAME_x64=jq-1.4-osx-64
 		FEAT_BINARY_URL_x86=http://stedolan.github.io/jq/download/osx32/jq

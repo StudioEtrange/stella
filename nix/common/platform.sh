@@ -59,7 +59,7 @@ function __get_platform_from_os() {
 			echo "linux"
 			;;
 		macos)
-			echo "macos"
+			echo "darwin"
 			;;
 		windows)
 			echo "windows"
@@ -77,8 +77,8 @@ function __get_platform_suffix() {
 		linux)
 			echo "linux"
 			;;
-		macos)
-			echo "macos"
+		darwin)
+			echo "darwin"
 			;;
 		windows)
 			echo "win"
@@ -93,7 +93,7 @@ function __set_current_platform_info() {
 	# Linux
 	if [[ -n `which lscpu 2> /dev/null` ]]; then
 		STELLA_HOST_CPU=`lscpu | awk 'NR== 1 {print $2}'`
-	# MacOS
+	# Darwin
 	elif [[ -n `which sysctl 2> /dev/null` ]]; then
 		STELLA_HOST_CPU=`sysctl hw 2> /dev/null | egrep -i 'hw.machine' | awk '{print $NF}'`
 	else
@@ -103,7 +103,7 @@ function __set_current_platform_info() {
 	# linux
 	if [[ -n `which nproc 2> /dev/null` ]]; then
 		STELLA_NB_CPU=`nproc`
-	# MacOs
+	# Darwin
 	elif [[ -n `which sysctl 2> /dev/null` ]]; then
 		STELLA_NB_CPU=`sysctl hw.ncpu 2> /dev/null | awk '{print $NF}'`
 	else
@@ -127,7 +127,7 @@ function __set_current_platform_info() {
 
 function __override_platform_command() {
 	#http://unix.stackexchange.com/questions/30091/fix-or-alternative-for-mktemp-in-os-x
-	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		function mktmp() {
 			local tempfile=$(mktemp -t stella)
 	    	echo "$tempfile"
@@ -147,7 +147,7 @@ function __override_platform_command() {
 		}
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		GETOPT_CMD="$(brew --prefix)/opt/gnu-getopt/bin/getopt"
 	else
 		GETOPT_CMD=getopt
@@ -240,7 +240,7 @@ function __stella_requirement() {
 
 #TODO
 # from https://github.com/darkoperator/MSF-Installer/blob/master/msf_install.sh
-function check_dependencies_osx
+function check_dependencies_macos
 {
     # Get a list of all the packages installed on the system
     PKGS=`pkgutil --pkgs`

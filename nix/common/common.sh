@@ -111,7 +111,7 @@ function __rel_to_abs_path() {
 					#result="$_abs_root_path/$_rel_path"
 					# NOTE using this method if directory does not exist returned path is not real absolute (example : /tata/toto/../titi instead of /tata/titi)
 
-					[ "$STELLA_CURRENT_PLATFORM" == "macos" ] && result=$(__rel_to_abs_path_alternative_1 "$_rel_path" "$_abs_root_path")
+					[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && result=$(__rel_to_abs_path_alternative_1 "$_rel_path" "$_abs_root_path")
 					[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && result=$(__rel_to_abs_path_alternative_2 "$_rel_path" "$_abs_root_path")
 				fi
 				;;
@@ -265,7 +265,7 @@ function __copy_folder_content_into() {
 		filter="*"
 	fi
 	mkdir -p $2
-	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		cp -R $1/$filter $2
 	else
 		cp -R $1/$filter --target-directory=$2
@@ -568,7 +568,7 @@ function __download() {
 
 
 	if [ ! -f "$STELLA_APP_CACHE_DIR/$FILE_NAME" ]; then
-		if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
+		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 			curl -kSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL"
 		else
 			wget "$URL" -O "$STELLA_APP_CACHE_DIR/$FILE_NAME" --no-check-certificate || rm -f "$STELLA_APP_CACHE_DIR/$FILE_NAME"
@@ -749,7 +749,7 @@ function __ini_file() {
 	}
 
 	# Entering the section, set the flag
-	/^\['$_SECTION'/ {
+	/^\['$_SECTION']/ {
 		processing = 1;
 	}
 		

@@ -37,7 +37,7 @@ function feature_kibana_4_0_0() {
 	FEAT_SOURCE_URL=
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_CALLBACK=
-	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then 
+	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then 
 		FEAT_BINARY_URL=https://download.elasticsearch.org/kibana/kibana/kibana-4.0.0-darwin-x64.tar.gz
 		FEAT_BINARY_URL_FILENAME=kibana-4.0.0-darwin-x64.tar.gz
 	fi
@@ -61,7 +61,7 @@ function feature_kibana_4_0_1() {
 	FEAT_SOURCE_URL=
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_CALLBACK=
-	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then 
+	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then 
 		FEAT_BINARY_URL=https://download.elasticsearch.org/kibana/kibana/kibana-4.0.1-darwin-x64.tar.gz
 		FEAT_BINARY_URL_FILENAME=kibana-4.0.1-darwin-x64.tar.gz
 	fi

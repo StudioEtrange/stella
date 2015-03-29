@@ -7,7 +7,7 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 # fix rpath value
 #		remove all rpath value
 #		add "@loader_path/" and "." as rpath 
-function __fix_rpath_macos() {
+function __fix_rpath_darwin() {
 	local _file=$1
 
 	otool -l "$_file" | grep -E "LC_RPATH" -A2 | grep path | tr -s ' ' | cut -d ' ' -f 3 | while read -r line; do 
@@ -23,7 +23,7 @@ function __fix_rpath_macos() {
 }
 
 # fix linked dynamic lib with hardcoded path with @rpath/libname
-function __fix_linked_lib_macos() {
+function __fix_linked_lib_darwin() {
 	local _file=$1
 	local _linked_lib_name=$2
 
@@ -36,7 +36,7 @@ function __fix_linked_lib_macos() {
 
 
 # fix install name with @rpath/lib_name
-function __fix_dynamiclib_install_name_macos() {
+function __fix_dynamiclib_install_name_darwin() {
 	local _lib=$1
 	
 	if [ -f "$_lib" ]; then
@@ -58,23 +58,23 @@ function __fix_dynamiclib_install_name_macos() {
 
 # fix install name with @rpath/lib_name
 # find all dylib beginning with _lib_root_name
-function __fix_dynamiclib_install_name_macos_by_rootname() {
+function __fix_dynamiclib_install_name_darwin_by_rootname() {
 	local _lib_path=$1
 	local _lib_root_name=$2
 
 	for l in $_lib_path/$_lib_root_name*.dylib; do
-		__fix_dynamiclib_install_name_macos $l
+		__fix_dynamiclib_install_name_darwin $l
 	done
 }
 
 # fix install name with @rpath/lib_name
 # find all dylib inside a specified folder
-function __fix_dynamiclib_install_name_macos_by_folder() {
+function __fix_dynamiclib_install_name_darwin_by_folder() {
 	for f in  "$1"/*; do
-		[ -d "$f" ] && __fix_all_dynamiclib_install_name_macos "$f"
+		[ -d "$f" ] && __fix_all_dynamiclib_install_name_darwin "$f"
 		if [ -f "$f" ]; then
 			case $f in
-				*.dylib) __fix_dynamiclib_install_name_macos "$f"
+				*.dylib) __fix_dynamiclib_install_name_darwin "$f"
 				;;
 			esac
 		fi

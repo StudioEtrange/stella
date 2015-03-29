@@ -18,7 +18,7 @@ function feature_docker-machine_0_1_0() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_CALLBACK=	
 	
-	if [ "$STELLA_CURRENT_PLATFORM" == "macos" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		FEAT_BINARY_URL_x64=https://github.com/docker/machine/releases/download/v0.1.0/docker-machine_darwin-amd64
 		FEAT_BINARY_URL_FILENAME_x64=docker-machine_darwin-amd64-0_1_0
 
