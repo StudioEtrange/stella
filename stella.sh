@@ -16,7 +16,7 @@ function usage() {
 	echo " L     app get-data|get-assets|update-data|update-assets|revert-data|revert-assets <data id|assets id|all>"
 	echo " L     app get-features all : install all features defined in app properties file"
 	echo " L     app setup-env <env id|all> : download, build, deploy and run virtual environment based on app properties"
-	echo " L     app link stella [--stellaroot=<path>] : link current app to a specific stella path"
+	echo " L     app link <app-path> [--stellaroot=<path>] : link an app to a specific stella path"
 	echo " o-- feature management :"
 	echo " L     feature install required : install required features for Stella"
 	echo " L     feature install <feature schema|required> : install a feature. schema = feature_name[#version][@arch][/binary|source][:os_restriction]"

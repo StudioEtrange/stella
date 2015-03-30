@@ -48,7 +48,7 @@ if not "%ACTION%"=="init" (
 )
 
 if "%ACTION%"=="link" (
-	call %STELLA_COMMON%\common-app.bat :link_current_app "!-stellaroot!"
+	call %STELLA_COMMON%\common-app.bat :link_app "%id%" "!-stellaroot!"
 	goto :end
 )
 
@@ -125,7 +125,7 @@ REM ------------------------------------ INTERNAL FUNCTIONS --------------------
 	echo 		%~n0 get-data^|get-assets^|update-data^|update-assets^|revert-data^|revert-assets ^<data id^|assets id^|all^>
 	echo 		%~n0 get-features all
 	echo 		%~n0 setup-env ^<env id^|all^> : download, build, deploy and run virtual environment based on app properties
-	echo		%~n0 link stella [-stellaroot=^<path^>] : link current app to a specific stella path
+	echo		%~n0 link ^<app-path^> [-stellaroot=^<path^>] : link an app to a specific stella path
 	
 goto :end
 

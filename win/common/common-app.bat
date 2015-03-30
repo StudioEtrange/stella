@@ -206,8 +206,9 @@ goto :eof
 
 goto :eof
 
-:link_current_app
-	set "_stella_root=%~1"
+:link_app
+	set "_approot=%~1"
+	set "_stella_root=%~2"
 
 	if "!_stella_root!" == "" {
 		set "_stella_root=%STELLA_ROOT%"
@@ -215,18 +216,18 @@ goto :eof
 
 	call %STELLA_COMMON%\common.bat :is_path_abs "IS_ABS" "%_stella_root%"
 	if "%IS_ABS%"=="FALSE" (
-		call %STELLA_COMMON%\common.bat :rel_to_abs_path "_stella_root" "%_stella_root%" "%STELLA_APP_ROOT%"
+		call %STELLA_COMMON%\common.bat :rel_to_abs_path "_stella_root" "%_stella_root%" "%_approot%"
 	)
-	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_stella_root" "%_stella_root%" "%STELLA_APP_ROOT%"
+	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_stella_root" "%_stella_root%" "%_approot%"
 
-	> "!STELLA_APP_ROOT!\stella-link.bat.temp" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%~dp0
-	>> "!STELLA_APP_ROOT!\stella-link.bat.temp" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%_STELLA_LINK_CURRENT_FILE_DIR:~0,-1%%
-	>> "!STELLA_APP_ROOT!\stella-link.bat.temp" ECHO(@set STELLA_ROOT=%%_STELLA_LINK_CURRENT_FILE_DIR%%\!_stella_root!
-	>> "!STELLA_APP_ROOT!\stella-link.bat.temp" ECHO(@set STELLA_APP_ROOT=%%_STELLA_LINK_CURRENT_FILE_DIR%%
+	> "!_approot!\stella-link.bat.temp" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%~dp0
+	>> "!_approot!\stella-link.bat.temp" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%_STELLA_LINK_CURRENT_FILE_DIR:~0,-1%%
+	>> "!_approot!\stella-link.bat.temp" ECHO(@set STELLA_ROOT=%%_STELLA_LINK_CURRENT_FILE_DIR%%\!_stella_root!
+	>> "!_approot!\stella-link.bat.temp" ECHO(@set STELLA_APP_ROOT=%%_STELLA_LINK_CURRENT_FILE_DIR%%
 
-	copy /b "!STELLA_APP_ROOT!\stella-link.bat.temp"+"%STELLA_TEMPLATE%\sample-stella-link.bat" "!STELLA_APP_ROOT!\stella-link.bat"
+	copy /b "!_approot!\stella-link.bat.temp"+"%STELLA_TEMPLATE%\sample-stella-link.bat" "!_approot!\stella-link.bat"
 
-	del /f /q "!STELLA_APP_ROOT!\stella-link.bat.temp" >nul
+	del /f /q "!_approot!\stella-link.bat.temp" >nul
 
 goto :eof
 

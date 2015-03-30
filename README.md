@@ -77,3 +77,22 @@ Install HomeBrew [HomeBrew website](http://brew.sh)
 Install some brew formulas
 
 	brew install gnu-getopt p7zip
+
+
+## Advanced Usage
+
+### Linked or Nested Applications
+
+* If a stella application is launched by another stella application, the second one will automaticly share the stella installation of the first one. [NIX only]
+
+* At launch, a stella application will look for a stella installation according to its stella-link file. But if at this location it found a stella application instead, it will look for a stella installation according to the last one. [NIX only]
+
+* There is an API function link_app that could be use to link a stella application to a specific stella installation (by default to the current one)
+
+	from app1.sh :
+	$STELLA_API link_app $STELLA_APP_WORK_ROOT/app2
+
+Then app2.sh will use the same stella installation than app1.sh
+
+* Two nested or linked stella applications will share the same cache folder. The first running cache stella application will be used.
+

@@ -36,19 +36,20 @@ function __create_app_samples() {
 	cp -f "$STELLA_TEMPLATE/sample-stella.properties" "$_approot/sample-stella.properties"
 }
 
-function __link_current_app() {
-	local _stella_root=$1
+function __link_app() {
+	local _approot=$1
+	local _stella_root=$2
 
 	[ "$_stella_root" == "" ] && _stella_root=$STELLA_ROOT
-	_stella_root=$(__abs_to_rel_path "$_stella_root" "$STELLA_APP_ROOT")
+	_stella_root=$(__abs_to_rel_path "$_stella_root" "$_approot")
 
-	echo "#!/bin/bash" >$STELLA_APP_ROOT/stella-link.sh.temp
-	echo "_STELLA_LINK_CURRENT_FILE_DIR=\"\$( cd \"\$( dirname \"\${BASH_SOURCE[0]}\" )\" && pwd )\"" >>$STELLA_APP_ROOT/stella-link.sh.temp
-	echo "[ \"\$STELLA_ROOT\" == \"\" ] && export STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$STELLA_APP_ROOT/stella-link.sh.temp
+	echo "#!/bin/bash" >$_approot/stella-link.sh.temp
+	echo "_STELLA_LINK_CURRENT_FILE_DIR=\"\$( cd \"\$( dirname \"\${BASH_SOURCE[0]}\" )\" && pwd )\"" >>$_approot/stella-link.sh.temp
+	echo "[ \"\$STELLA_ROOT\" == \"\" ] && export STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$_approot/stella-link.sh.temp
 
-	cat $STELLA_APP_ROOT/stella-link.sh.temp $STELLA_TEMPLATE/sample-stella-link.sh > $STELLA_APP_ROOT/stella-link.sh
-	chmod +x $STELLA_APP_ROOT/stella-link.sh
-	rm -f $STELLA_APP_ROOT/stella-link.sh.temp
+	cat $_approot/stella-link.sh.temp $STELLA_TEMPLATE/sample-stella-link.sh > $_approot/stella-link.sh
+	chmod +x $_approot/stella-link.sh
+	rm -f $_approot/stella-link.sh.temp
 
 }
 
@@ -111,7 +112,8 @@ function __get_all_properties() {
 		# STELLA VARs
 		__get_key "$_properties_file" "STELLA" "APP_NAME" "PREFIX"
 		__get_key "$_properties_file" "STELLA" "APP_WORK_ROOT" "PREFIX"
-		__get_key "$_properties_file" "STELLA" "APP_CACHE_DIR" "PREFIX"
+		# so that nested stella application will use the same cache folder
+		[ "$STELLA_APP_CACHE_DIR" == "" ] && __get_key "$_properties_file" "STELLA" "APP_CACHE_DIR" "PREFIX"
 		__get_key "$_properties_file" "STELLA" "DATA_LIST" "PREFIX"
 		__get_key "$_properties_file" "STELLA" "ASSETS_LIST" "PREFIX"
 		__get_key "$_properties_file" "STELLA" "ENV_LIST" "PREFIX"

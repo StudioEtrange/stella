@@ -111,6 +111,7 @@ if "%DOMAIN%"=="virtual" goto :end
 	echo 		%~n0 app get-data^|get-assets^|update-data^|update-assets^|revert-data^|revert-assets ^<data id^|assets id^|all^>
 	echo 		%~n0 app get-features all : install all features defined in app properties file
 	echo 		%~n0 app setup-env ^<env id^|all^> : download, build, deploy and run virtual environment based on app properties
+	echo		%~n0 app link ^<app-path^> [-stellaroot=^<path^>] : link an app to a specific stella path
 	echo	* feature management :
 	echo 		%~n0 feature install required : install required features for Stella
 	echo 		%~n0 feature install ^<feature name^> : install a features. schema = feature_name[#version][@arch][/binary^|source][:os_restriction]
