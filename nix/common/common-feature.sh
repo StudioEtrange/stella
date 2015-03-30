@@ -302,6 +302,7 @@ function __feature_install() {
 					__feature_init "$FEAT_SCHEMA_SELECTED" $_OPT
 				else
 					echo "** Error while installing feature $FEAT_SCHEMA_SELECTED"
+					cd $STELLA_APP_ROOT
 				fi
 				
 			else
