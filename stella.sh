@@ -20,6 +20,7 @@ function usage() {
 	echo " o-- feature management :"
 	echo " L     feature install required : install required features for Stella"
 	echo " L     feature install <feature schema|required> : install a feature. schema = feature_name[#version][@arch][/binary|source][:os_restriction]"
+	echo " L     feature remove <feature schema> : remove a feature"
 	echo " L     feature list <all|feature name|active> : list all available feature OR available versions of a feature OR current active features"
 	echo " o-- virtual management :"
 	echo " L     virtual create-env <env id#distrib id> [--head] [--vmem=xxxx] [--vcpu=xx] : create a new environment from a generic box prebuilt with a specific distribution"
@@ -42,7 +43,7 @@ function usage() {
 # arguments
 PARAMETERS="
 DOMAIN=                          'domain'     		a           'app feature virtual stella proxy'         										   				Action domain.
-ACTION=                         'action'   					a           'enable disable register link api bootstrap install init get-data get-assets update-data update-assets revert-data revert-assets get-features setup-env install list create-env run-env stop-env destroy-env create-box get-box'         	Action to compute.
+ACTION=                         'action'   					a           'remove enable disable register link api bootstrap install init get-data get-assets update-data update-assets revert-data revert-assets get-features setup-env install list create-env run-env stop-env destroy-env create-box get-box'         	Action to compute.
 ID=							 ''								s 			'' 						Feature ID or Data or Assets or Env or Distrib ID.
 "
 OPTIONS="

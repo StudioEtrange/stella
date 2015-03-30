@@ -107,7 +107,7 @@ VIRTUAL_DEFAULT_HYPERVISOR=virtualbox
 
 # INTERNAL LIST---------------------------------------------
 __STELLA_DISTRIB_LIST="ubuntu64_13_10 debian64_7_5 centos64_6_5 archlinux boot2docker"
-__STELLA_FEATURE_LIST="socat gnu-netcat maven spark sbt scala docker-machine jq wget ninja cmake packer autotools perl gettext getopt ucl upx elasticsearch kibana nginx ngrok go pcre libtool m4 automake autoconf"
+__STELLA_FEATURE_LIST="zlib socat gnu-netcat maven spark sbt scala docker-machine jq wget ninja cmake packer autotools perl gettext getopt ucl upx elasticsearch kibana nginx ngrok go pcre libtool m4 automake autoconf"
 
 # API ---------------------------------------------
 STELLA_API_COMMON_PUBLIC="is_abs argparse get_filename_from_string \

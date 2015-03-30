@@ -4,7 +4,7 @@
 call %~dp0\..\..\conf.bat
 
 :: arguments
-set "params=action:"install list" id:"_ANY_""
+set "params=action:"install remove list" id:"_ANY_""
 set "options=-f:"
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
@@ -17,6 +17,11 @@ call %STELLA_COMMON%\common.bat :init_stella_env
 
 if "%action%"=="install" (
 	call %STELLA_COMMON%\common-feature.bat :feature_install %id%
+	goto :end
+)
+
+if "%action%"=="remove" (
+	call %STELLA_COMMON%\common-feature.bat :feature_remove %id%
 	goto :end
 )
 
@@ -48,6 +53,7 @@ goto :usage
    	echo	* feature management :
 	echo 		%~n0 install required : install required features for Stella
 	echo 		%~n0 install ^<feature schema^> : install a feature. schema = feature_name[#version][@arch][/binary|source][:os_restriction]
+	echo 		%~n0 remove ^<feature schema^> : remove a feature
 	echo 		%~n0 list ^<all^|feature name^|active^>: list all available feature OR available version of a feature OR current active features
 goto :end
 

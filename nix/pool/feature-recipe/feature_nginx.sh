@@ -29,10 +29,11 @@ function feature_nginx_1_7_11() {
 	FEAT_BUNDLE_LIST=
 }
 
+# depend on zlib
 
 
 function feature_nginx_get_pcre() {
-	# depend on pcre, but nginx have special recipe to build it by itself
+	# depend on pcre, but nginx have its own way of building it
 	__download_uncompress "https://downloads.sourceforge.net/project/pcre/pcre/8.36/pcre-8.36.tar.bz2" "pcre-8.36.tar.bz2" "$SRC_DIR/pcre/pcre-8_36-src" "DEST_ERASE STRIP"
 
 	AUTO_INSTALL_FLAG_POSTFIX="$AUTO_INSTALL_FLAG_POSTFIX --with-pcre=$SRC_DIR/pcre/pcre-8_36-src"

@@ -6,7 +6,7 @@ call %~dp0\conf.bat
 
 
 :: arguments
-set "params=domain:"app feature virtual stella" action:"link bootstrap api install init get-data get-assets update-data update-assets revert-data revert-assets get-features setup-env install list create-env run-env stop-env destroy-env info-env create-box get-box" id:"_ANY_""
+set "params=domain:"app feature virtual stella" action:"remove link bootstrap api install init get-data get-assets update-data update-assets revert-data revert-assets get-features setup-env install list create-env run-env stop-env destroy-env info-env create-box get-box" id:"_ANY_""
 set "options=-f: -vcpu:_ANY_ -vmem:_ANY_ -head: -login: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_ -stellaroot:_ANY_ -samples:"
 
 call %STELLA_COMMON%\argopt.bat :argopt %*
@@ -114,7 +114,8 @@ if "%DOMAIN%"=="virtual" goto :end
 	echo		%~n0 app link ^<app-path^> [-stellaroot=^<path^>] : link an app to a specific stella path
 	echo	* feature management :
 	echo 		%~n0 feature install required : install required features for Stella
-	echo 		%~n0 feature install ^<feature name^> : install a features. schema = feature_name[#version][@arch][/binary^|source][:os_restriction]
+	echo 		%~n0 feature install ^<feature schema^> : install a feature. schema = feature_name[#version][@arch][/binary|source][:os_restriction]
+	echo 		%~n0 feature remove ^<feature schema^> : remove a feature
 	echo 		%~n0 feature list ^<all^|feature name^|active^>: list all available features OR available version of a feature OR current active features
 	echo	* virtual management :
 	echo 		%~n0 virtual create-env ^<env id#distrib id^> [-head] [-vmem=xxxx] [-vcpu=xx] : create a new environment from a generic box prebuilt with a specific distribution

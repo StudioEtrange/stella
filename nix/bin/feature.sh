@@ -9,7 +9,8 @@ function usage() {
 	echo "List of commands"
 	echo " o-- Feature management :"
 	echo " L     install required : install minimal required features for Stella"
-	echo " L     install <feature schema|required>: install a feature. schema = feature_name[#version][@arch][/binary|source][:os_restriction]"
+	echo " L     install <feature schema|required> : install a feature. schema = feature_name[#version][@arch][/binary|source][:os_restriction]"
+	echo " L     remove <feature schema> : remove a feature"
 	echo " L     list <all|feature name|active> : list all available features OR available versions of a feature OR current active features"
 }
 
@@ -18,7 +19,7 @@ function usage() {
 
 # MAIN ------------------------
 PARAMETERS="
-ACTION=											'action' 			a						'install list'					Action to compute. 'install' install feature specified by name argument.
+ACTION=											'action' 			a						'remove install list'					Action to compute. 'install' install feature specified by name argument.
 ID= 											''					s 						'' 	Select feature to install. Use 'required' to install required features for Stella. 
 "
 OPTIONS="
@@ -35,6 +36,9 @@ __init_stella_env
 #BUILD_JOB=$JOB
 
 case $ACTION in
+	remove)
+		__feature_remove $ID
+		;;
     install)
 		case $ID in
 			required)

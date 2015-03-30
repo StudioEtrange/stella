@@ -301,6 +301,8 @@ goto :eof
 				call :feature_init "!FEAT_SCHEMA_SELECTED!" !_OPT!
 			) else (
 				echo ** Error while installing feature !FEAT_SCHEMA_SELECTED!
+				REM Sometimes current directory is lost by the system
+				cd /D %STELLA_APP_ROOT%
 			)
 
 		) else (
