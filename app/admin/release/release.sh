@@ -25,14 +25,12 @@ function usage() {
 
 function stella_items_release() {
 
-	rm -Rf $STELLA_APP_WORK_ROOT/$STELLA_POOL_PATH
-	__copy_folder_content_into "$STELLA_ADMIN/pool" "$STELLA_APP_WORK_ROOT/pool"
 
-	pack_goconfig-cli
+	__copy_folder_content_into "$STELLA_ADMIN/pool" "$STELLA_APP_WORK_ROOT/output/pool"
 
-	# TODO : delete ftp respository first
-	cd $STELLA_APP_WORK_ROOT
-	_recurse_push_ftp pool
+	#pack_goconfig-cli
+
+	
 }
 
 
@@ -43,10 +41,8 @@ function stella_lib_release() {
 	local release_filename
 
 	local _opt_auto_extract=OFF # make a self uncompress archive
-	local _opt_upload=OFF # upload release file
 	for o in $_opt; do 
 		[ "$o" == "AUTO_EXTRACT" ] && _opt_auto_extract=ON
-		[ "$o" == "UPLOAD" ] && _opt_upload=ON
 	done
 
 	version=$(__get_stella_version "LONG")
@@ -66,7 +62,7 @@ function stella_lib_release() {
 
 	pack_stella "$_platform" "$release_filename" "$_opt"
 
-	[ "$_opt_upload" == "ON" ] && _upload_ftp "$STELLA_APP_WORK_ROOT/output/$release_filename" "dist"
+	
 
 	rm -f "$STELLA_ROOT/VERSION"
 }
@@ -87,54 +83,58 @@ function pack_stella() {
 	# DISTRIBUTIONS PACKAGE FOR NIX SYSTEM WITH tar.gz
 	case $_platform in
 		win)
-			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./cache/" --exclude "./workspace/" --exclude "./temp/" --exclude "./nix/" --exclude "./app/" --exclude "*.sh" \
-		-f "$STELLA_APP_WORK_ROOT/output/$_release_filename".tar.gz -C "$STELLA_ROOT/.."  "$(basename $STELLA_ROOT)"
+			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./cache/" --exclude "./workspace/" --exclude "./temp/" --exclude "./app/" \
+			--exclude "./nix/" --exclude "*.sh" \
+			-f "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz -C "$STELLA_ROOT/.."  "$(basename $STELLA_ROOT)"
 		;;
 
 		nix)
-			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./cache/" --exclude "./workspace/" --exclude "./temp/" --exclude "./win/" --exclude "./app/" --exclude "*.bat" \
-		-f "$STELLA_APP_WORK_ROOT/output/$_release_filename".tar.gz -C "$STELLA_ROOT/.."  "$(basename $STELLA_ROOT)"
+			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./cache/" --exclude "./workspace/" --exclude "./temp/" --exclude "./app/" \
+			--exclude "./win/" --exclude "*.bat" \
+			-f "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz -C "$STELLA_ROOT/.."  "$(basename $STELLA_ROOT)"
 		;;
 
 		all)
 			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./cache/" --exclude "./workspace/" --exclude "./temp/" --exclude "./app/" \
-		-f "$STELLA_APP_WORK_ROOT/output/$_release_filename".tar.gz -C "$STELLA_ROOT/.."  "$(basename $STELLA_ROOT)"
+			-f "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz -C "$STELLA_ROOT/.."  "$(basename $STELLA_ROOT)"
 		;;
 	esac
 	
 
-
 	if [ "$_opt_auto_extract" == "ON" ]; then
-		__make_targz_sfx_shell "$STELLA_APP_WORK_ROOT/output/$_release_filename".tar.gz "$STELLA_APP_WORK_ROOT/output/$_release_filename".tar.gz.run "TARGZ"
+		__make_targz_sfx_shell "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz.run "TARGZ"
 	fi
 
-# 	# DISTRIBUTIONS PACKAGE FOR WIN SYSTEM WITH 7Z
+ 	# DISTRIBUTIONS PACKAGE FOR WIN SYSTEM WITH 7Z
 	case $_platform in
 		win)
-			7z a -t7z "$STELLA_APP_WORK_ROOT/output/$_release_filename".7z \
-			-xr\!"*DS_Store" -xr0\!"stella/.stella-env" -xr\!".git" -xr\!"*.gitignore*" -xr0\!"stella/cache" -xr0\!"stella/workspace" -xr0\!"stella/temp" -xr0\!"stella/app" -xr0\!"stella/nix" -xr\!"*.sh" \
+			7z a -t7z "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".7z \
+			-xr\!"*DS_Store" -xr0\!"stella/.stella-env" -xr\!".git" -xr\!"*.gitignore*" -xr0\!"stella/cache" -xr0\!"stella/workspace" -xr0\!"stella/temp" -xr0\!"stella/app" \
+			-xr0\!"stella/nix" -xr\!"*.sh" \
 			"$STELLA_ROOT"
 		;;
 		nix)
-			7z a -t7z "$STELLA_APP_WORK_ROOT/output/$_release_filename".7z \
-			-xr\!"*DS_Store" -xr0\!"stella/.stella-env" -xr\!".git" -xr\!"*.gitignore*" -xr0\!"stella/cache" -xr0\!"stella/workspace" -xr0\!"stella/temp" -xr0\!"stella/app" -xr0\!"stella/win" -xr\!"*.bat" \
+			7z a -t7z "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".7z \
+			-xr\!"*DS_Store" -xr0\!"stella/.stella-env" -xr\!".git" -xr\!"*.gitignore*" -xr0\!"stella/cache" -xr0\!"stella/workspace" -xr0\!"stella/temp" -xr0\!"stella/app" \
+			-xr0\!"stella/win" -xr\!"*.bat" \
 			"$STELLA_ROOT"
 		;;
 		all)
-			7z a -t7z "$STELLA_APP_WORK_ROOT/output/$_release_filename".7z \
+			7z a -t7z "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".7z \
 			-xr\!"*DS_Store" -xr0\!"stella/.stella-env" -xr\!".git" -xr\!"*.gitignore*" -xr0\!"stella/cache" -xr0\!"stella/workspace" -xr0\!"stella/temp" -xr0\!"stella/app" \
 			"$STELLA_ROOT"
 		;;
 	esac
 
 	if [ "$_opt_auto_extract" == "ON" ]; then
-		__make_targz_sfx_shell "$STELLA_APP_WORK_ROOT/output/$_release_filename".7z "$STELLA_APP_WORK_ROOT/output/$_release_filename".7z.exe win "7Z"
+		__make_targz_sfx_shell "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".7z "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".7z.exe win "7Z"
 	fi
 }
 
 
 # -------------------- STELLA ITEM packaging -------------------------------
 
+# TODO review
 function pack_goconfig-cli() {
 	# Need Go
 	GOPATH="$STELLA_APP_WORK_ROOT/go"
@@ -160,23 +160,38 @@ function pack_goconfig-cli() {
 
 # ----------------------- FTP FUNCTIONS -------------------
 
-function _upload_ftp() {
-	local _file=$1
-	local _ftp_path=$2/
 
-	curl --ftp-create-dirs --netrc-file $HOME/stella_credentials -T $_file ftp://$STELLA_FTP_ROOT/$_ftp_path
+
+function upload_ftp() {
+	local _local_target=$1
+	local _ftp_target=$2
+
+	[ -f "$_local_target" ] && __ftp_push_file "$_local_target" "$_ftp_target"
+	[ -d "$_local_target" ] && __ftp_push_directory_recurse "$_local_target" "$_ftp_target"
+
 }
 
-function _recurse_push_ftp() {
-	for f in  "$1"/*; do
-		[ -d "$f" ] && _recurse_push_ftp "$f"
-		[ -f "$f" ] && _upload_ftp "$f" "$(dirname $f)"
+function __ftp_push_file() {
+	local _local_target=$1
+	local _ftp_target=$2/
+
+	curl --ftp-create-dirs --netrc-file $HOME/stella_credentials -T $_local_target ftp://$STELLA_FTP_ROOT/$_ftp_target
+}
+
+function __ftp_push_directory_recurse() {
+	local _local_target=$1
+	local _ftp_target=$2
+	local f=
+
+	for f in  "$_local_target"/*; do
+		[ -d "$f" ] && __ftp_push_directory_recurse "$f" "$_ftp_target/$(basename $f)"
+		[ -f "$f" ] && __ftp_push_file "$f" "$_ftp_target"
 	done
 }
 
 # ARGUMENTS -----------------------------------------------------------------------------------
 PARAMETERS="
-ACTION=						'action' 			a						'dep dist item'					action.
+ACTION=						'action' 			a						'dep dist items'					action.
 "
 OPTIONS="
 UPLOAD=''                   'u'    		''            		b     		0     		'1'           			upload.
@@ -189,10 +204,10 @@ __init_stella_env
 
 # MAIN -----------------------------------------------------------------------------------
 
-rm -Rf $STELLA_APP_WORK_ROOT/output
+
 mkdir -p $STELLA_APP_WORK_ROOT/output
 
-[ "$UPLOAD" == "1" ] && UPLOAD=UPLOAD
+# TODO : delete ftp respository first
 
 case $ACTION in
 	dep)
@@ -200,12 +215,18 @@ case $ACTION in
 		__copy_folder_content_into "$STELLA_ADMIN/pool/common/sfx_for_7z" "$STELLA_APP_CACHE_DIR"
 		;;
     dist)
-		stella_lib_release nix "AUTO_EXTRACT $UPLOAD"
-		stella_lib_release win "AUTO_EXTRACT $UPLOAD"
-		stella_lib_release all "AUTO_EXTRACT $UPLOAD"
+		rm -Rf $STELLA_APP_WORK_ROOT/output/dist
+		mkdir -p $STELLA_APP_WORK_ROOT/output/dist
+		stella_lib_release nix "AUTO_EXTRACT"
+		stella_lib_release win "AUTO_EXTRACT"
+		stella_lib_release all "AUTO_EXTRACT"
+		[ "$UPLOAD" == "1" ] && upload_ftp "$STELLA_APP_WORK_ROOT/output/dist" "dist/$version"
 		;;
 	items)
+		rm -Rf $STELLA_APP_WORK_ROOT/output/pool
+		mkdir -p $STELLA_APP_WORK_ROOT/output/pool
 		stella_items_release
+		[ "$UPLOAD" == "1" ] && upload_ftp "$STELLA_APP_WORK_ROOT/output/pool" "pool"
 		;;
 	*)
 		echo "use option --help for help"

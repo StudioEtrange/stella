@@ -44,8 +44,7 @@ function __link_current_app() {
 
 	echo "#!/bin/bash" >$STELLA_APP_ROOT/stella-link.sh.temp
 	echo "_STELLA_LINK_CURRENT_FILE_DIR=\"\$( cd \"\$( dirname \"\${BASH_SOURCE[0]}\" )\" && pwd )\"" >>$STELLA_APP_ROOT/stella-link.sh.temp
-	echo "STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$STELLA_APP_ROOT/stella-link.sh.temp
-	echo "STELLA_APP_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR" >>$STELLA_APP_ROOT/stella-link.sh.temp
+	echo "[ \"\$STELLA_ROOT\" == \"\" ] && export STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$STELLA_APP_ROOT/stella-link.sh.temp
 
 	cat $STELLA_APP_ROOT/stella-link.sh.temp $STELLA_TEMPLATE/sample-stella-link.sh > $STELLA_APP_ROOT/stella-link.sh
 	chmod +x $STELLA_APP_ROOT/stella-link.sh
@@ -82,9 +81,8 @@ function __init_app() {
 
 	echo "#!/bin/bash" >$_approot/stella-link.sh.temp
 	echo "_STELLA_LINK_CURRENT_FILE_DIR=\"\$( cd \"\$( dirname \"\${BASH_SOURCE[0]}\" )\" && pwd )\"" >>$_approot/stella-link.sh.temp
-	echo "STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$_approot/stella-link.sh.temp
-	echo "STELLA_APP_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR" >>$_approot/stella-link.sh.temp
-
+	echo "[ \"\$STELLA_ROOT\" == \"\" ] && export STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$_approot/stella-link.sh.temp
+	
 	cat $_approot/stella-link.sh.temp $STELLA_TEMPLATE/sample-stella-link.sh > $_approot/stella-link.sh
 	chmod +x $_approot/stella-link.sh
 	rm -f $_approot/stella-link.sh.temp

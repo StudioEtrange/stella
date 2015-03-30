@@ -6,7 +6,7 @@
 
 
 __STELLA_URL="http://stella.sh"
-__STELLA_DIST_URL="$__STELLA_URL/dist"
+
 
 
 #_STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -52,7 +52,7 @@ function __get_stella() {
 		git clone https://github.com/StudioEtrange/stella "$_path"
 	else
 		mkdir -p "$_path" 
-		curl -L -o "$_path"/$stella-nix-"$_ver".gz.sh $__STELLA_DIST_URL/stella-nix-"$_ver".gz.run
+		curl -L -o "$_path"/$stella-nix-"$_ver".gz.sh $__STELLA_URL/dist/$_ver/stella-nix-"$_ver".tar.gz.run
 		chmod +x "$_path"/$stella-nix-"$_ver".gz.run
 		./"$_path"/$stella-nix-"$_ver".gz.run
 		rm -f "$_path"/$stella-nix-"$_ver".gz.run

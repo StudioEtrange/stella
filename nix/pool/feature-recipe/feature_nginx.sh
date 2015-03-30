@@ -5,17 +5,17 @@ _NGINX_INCLUDED_=1
 
 function feature_nginx() {
 	FEAT_NAME=nginx
-	FEAT_LIST_SCHEMA="1_7_10/source"
-	FEAT_DEFAULT_VERSION=1_7_10
+	FEAT_LIST_SCHEMA="1_7_11/source"
+	FEAT_DEFAULT_VERSION=1_7_11
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_nginx_1_7_10() {
-	FEAT_VERSION=1_7_10
+function feature_nginx_1_7_11() {
+	FEAT_VERSION=1_7_11
 
-	FEAT_SOURCE_URL=http://nginx.org/download/nginx-1.7.10.tar.gz
-	FEAT_SOURCE_URL_FILENAME=nginx-1.7.10.tar.gz
+	FEAT_SOURCE_URL=http://nginx.org/download/nginx-1.7.11.tar.gz
+	FEAT_SOURCE_URL_FILENAME=nginx-1.7.11.tar.gz
 	FEAT_SOURCE_CALLBACK=feature_nginx_get_pcre
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=

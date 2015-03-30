@@ -127,10 +127,6 @@ REM Various functions ------------------
 :get_stella
 	set "_ver=%~1"
 	set "_path=%~2"
-	
-	set __STELLA_URL=http://stella.sh
-	set __STELLA_DIST_URL=%__STELLA_URL%/dist
-
 
 	if "%_ver%"=="git" (
 		git clone https://github.com/StudioEtrange/stella "%_path%"
@@ -138,7 +134,7 @@ REM Various functions ------------------
 		pushd
 		if not exist %_path% mkdir %_path%
 		cd /d %_path%
-		powershell -Command "(New-Object Net.WebClient).DownloadFile('http://"%__STELLA_DIST_URL%"/stella-win-"%_ver%".7z.exe', 'stella-win-"%_ver%".zip.exe')"
+		powershell -Command "(New-Object Net.WebClient).DownloadFile('http://"%__STELLA_URL%"/dist/%_ver%/stella-win-"%_ver%".7z.exe', 'stella-win-"%_ver%".zip.exe')"
 		popd
 	)
 

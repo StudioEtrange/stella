@@ -647,7 +647,7 @@ REM alternative with powershell for reading only : https://gallery.technet.micro
 REM not implemented
 
 
-REM alternative go : http://godoc.org/github.com/Unknwon/goconfig OR http://godoc.org/github.com/robfig/config
+REM alternative with http://godoc.org/github.com/Unknwon/goconfig (OR try http://godoc.org/github.com/robfig/config)
 :add_key_2
 	set "_FILE=%~1"
 	set "_SECTION=%~2"
@@ -773,9 +773,6 @@ goto :eof
 
 :: ARG1 is the name of the return variable
 :: ARG2 path to repository
-:: https://vcversioner.readthedocs.org/en/latest/
-:: TODO : should work only if at least one tag exist ?
-:: TODO : should have problem when merge exist ? : http://www.xerxesb.com/2010/git-describe-and-the-tale-of-the-wrong-commits/
 :git_project_version
 	set "_result_var_git_project_version=%~1"
 	set "_path=%~2"
@@ -791,13 +788,13 @@ goto :eof
 	)
 
 	if "%_opt_version_long%"=="ON" (
-		for /f %%m in ('git --git-dir "%_path%/.git" describe --tags --long') do (
+		for /f %%m in ('git --git-dir "%_path%/.git" describe --tags --long --always --first-parent') do (
 			set "_version=%%m"
 		)
 	)
 
 	if "%_opt_version_short%"=="ON" (
-		for /f %%m in ('git --git-dir "%_path%/.git" describe --tags --abbrev=0') do (
+		for /f %%m in ('git --git-dir "%_path%/.git" describe --tags --abbrev=0 --always --first-parent') do (
 			set "_version=%%m"
 		)
 	)
@@ -811,7 +808,7 @@ goto :eof
 :get_stella_version
 	set "_result_var_get_stella_version=%~1"
 	set "_path=%~2"
-	set "_OPT=%~4"
+	set "_OPT=%~3"
 	
 	
 	REM option
@@ -821,7 +818,9 @@ goto :eof
 	if "%_OPT%"=="" set _OPT=SHORT
 
 	if exist "%STELLA_ROOT%\VERSION" (
-		cat "$STELLA_ROOT/VERSION"
+		for /f %%_v in ("%STELLA_ROOT%\VERSION") do (
+			set "%_result_var_git_project_version%=!_v!"
+		)
 	) else (
 		call :__git_project_version "%_result_var_get_stella_version%" "%_OPT%"
 	)

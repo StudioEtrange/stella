@@ -1,8 +1,16 @@
+[ "$STELLA_APP_ROOT" == "" ] && STELLA_APP_ROOT=$_STELLA_LINK_CURRENT_FILE_DIR
 
-if [ "$1" == "include" ]; then
+if [ "$1" == "include" ]||[ "$1" == "chaining" ]; then
 	if [ ! -f "$STELLA_ROOT/stella.sh" ]; then
-		echo "** WARNING Stella is missing -- bootstraping stella"
-		$_STELLA_LINK_CURRENT_FILE_DIR/stella-link.sh bootstrap
+		if [ -f "$(dirname $STELLA_ROOT)/stella-link.sh" ]; then
+			echo " ** Try to chain link stella from $(dirname $STELLA_ROOT)"
+			source $(dirname $STELLA_ROOT)/stella-link.sh chaining
+		else
+			echo "** WARNING Stella is missing -- bootstraping stella"
+			$_STELLA_LINK_CURRENT_FILE_DIR/stella-link.sh bootstrap
+		fi
+	else
+		echo " ** Stella found : $STELLA_ROOT"
 	fi
 fi
 
@@ -20,7 +28,7 @@ case $ACTION in
 		./stella-bridge.sh bootstrap
 		rm -f stella-bridge.sh
 		;;
-	nothing)
+	nothing|chaining)
 		;;
 	*) 
 		$STELLA_ROOT/stella.sh $*
