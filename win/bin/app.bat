@@ -5,7 +5,7 @@ call %~dp0\..\..\conf.bat
 
 
 :: arguments
-set "params=action:"link init get-data get-assets update-data update-assets revert-data revert-assets setup-env get-features" id:"_ANY_""
+set "params=action:"link init get-data get-assets update-data update-assets revert-data revert-assets setup-env get-feature" id:"_ANY_""
 set "options=-f: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_ -stellaroot:_ANY_ -samples:"
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
@@ -61,11 +61,11 @@ if "%ACTION%"=="get-data" (
 	goto :end
 )
 
-if "%ACTION%"=="get-features" (
+if "%ACTION%"=="get-feature" (
 	if "%id%"=="all" (
 		call %STELLA_COMMON%\common-app.bat :get_features
 	) else (
-		goto :usage
+		call %STELLA_COMMON%\common-app.bat :get_feature "%id%"
 	)
 	goto :end
 )
@@ -123,7 +123,7 @@ REM ------------------------------------ INTERNAL FUNCTIONS --------------------
 	echo	* application management :
 	echo 		%~n0 init ^<application name^> [-approot=^<path^>] [-workroot=^<path^>] [-cachedir=^<path^>] [-samples]
 	echo 		%~n0 get-data^|get-assets^|update-data^|update-assets^|revert-data^|revert-assets ^<data id^|assets id^|all^>
-	echo 		%~n0 get-features all
+	echo 		%~n0 app get-feature ^<all^|feature schema^> : install all features defined in app properties file or install a matching one
 	echo 		%~n0 setup-env ^<env id^|all^> : download, build, deploy and run virtual environment based on app properties
 	echo		%~n0 link ^<app-path^> [-stellaroot=^<path^>] : link an app to a specific stella path
 	

@@ -40,6 +40,8 @@ function __link_app() {
 	local _approot=$1
 	local _stella_root=$2
 
+	_approot=$(__rel_to_abs_path $_approot $_STELLA_CURRENT_RUNNING_DIR)
+
 	[ "$_stella_root" == "" ] && _stella_root=$STELLA_ROOT
 	_stella_root=$(__abs_to_rel_path "$_stella_root" "$_approot")
 
@@ -289,6 +291,35 @@ function __app_feature() {
 
 function __get_features() {
 	__feature_install_list "$STELLA_APP_FEATURE_LIST"
+}
+
+# install a feature listed in app feature list. Look for matching version in app feature list, so could match several version
+function __get_feature() {
+	local _SCHEMA=$1
+
+	local _flag=0
+
+	__translate_schema $_SCHEMA "_TR_FEATURE_NAME" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR" "_TR_FEATURE_OS_RESTRICTION"
+
+	if [ ! "$STELLA_APP_FEATURE_LIST" == "" ]; then
+		
+		for f in $STELLA_APP_FEATURE_LIST; do
+
+			__translate_schema $f "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR" "TR_FEATURE_OS_RESTRICTION"
+
+			_flag=1
+			[ ! "$_TR_FEATURE_NAME" == "$TR_FEATURE_NAME" ] && _flag=0
+			[ ! "$_TR_FEATURE_FLAVOUR" == "" ] && [ ! "$_TR_FEATURE_FLAVOUR" == "$TR_FEATURE_FLAVOUR" ] && _flag=0
+			[ ! "$_TR_FEATURE_ARCH" == "" ] && [ ! "$_TR_FEATURE_ARCH" == "$TR_FEATURE_ARCH" ] && _flag=0
+			[ ! "$_TR_FEATURE_VER" == "" ] && [ ! "$_TR_FEATURE_VER" == "$TR_FEATURE_VER" ] && _flag=0
+
+			
+			if [ "$_flag" == "1" ]; then
+				__feature_install $f
+			fi
+		done
+	fi
+
 }
 
 function __get_data() {

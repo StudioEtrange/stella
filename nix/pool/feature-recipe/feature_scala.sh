@@ -13,7 +13,7 @@ function feature_scala() {
 
 function feature_scala_env() {
 	SCALA_HOME=$FEAT_INSTALL_ROOT
-	export SCALA_HOME
+	export SCALA_HOME=$FEAT_INSTALL_ROOT
 }
 
 

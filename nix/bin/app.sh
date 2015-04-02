@@ -9,7 +9,7 @@ function usage() {
     echo " o-- application management :"
     echo " L     init <application name> [--approot=<path>] [--workroot=<abs or relative path to approot>] [--cachedir=<abs or relative path to approot>] [--samples]"
     echo " L     get-data|get-assets|update-data|update-assets|revert-data|revert-assets <data id|assets id|all>"
-    echo " L     get-features all"
+    echo " L     get-feature <all|feature schema> : install all features defined in app properties file or install a matching one"
     echo " L     setup-env <env id|all> : download, build, deploy and run virtual environment based on app properties"
     echo " L     link stella <app-path> [--stellaroot=<path>] : link an app to a specific stella path"
     
@@ -21,7 +21,7 @@ function usage() {
 
 # MAIN ------------------------
 PARAMETERS="
-ACTION=                         'action'                    a           'link init get-data get-assets update-data update-assets revert-data revert-assets setup-env get-features'            Action to compute.
+ACTION=                         'action'                    a           'link init get-data get-assets update-data update-assets revert-data revert-assets setup-env get-feature'            Action to compute.
 ID=                          ''                             s           ''                      Data or Assets or Env ID or Application name.
 "
 OPTIONS="
@@ -73,11 +73,11 @@ else
                 __get_data $ID
             fi
             ;;
-        get-features)
+        get-feature)
             if [ "$ID" == "all" ]; then
                 __get_features
             else
-                usage
+                __get_feature "$ID"
             fi
             ;;
         get-assets)

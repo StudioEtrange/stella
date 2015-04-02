@@ -20,8 +20,8 @@ goto :eof
 	set "_SCHEMA=%~2"
 	set "_app_feature_list="
 
-	call %STELLA_COMMON%\common-feature.bat :translate_schema "!_SCHEMA!" "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR"  "TR_FEATURE_OS_RESTRICTION"
-				
+	call %STELLA_COMMON%\common-feature.bat :translate_schema "!_SCHEMA!" "_TR_FEATURE_NAME" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR"  "_TR_FEATURE_OS_RESTRICTION"
+		
 	set _flag_add_app_feature=0
 	if exist "%_STELLA_APP_PROPERTIES_FILE%" (
 		if "!STELLA_APP_FEATURE_LIST!"=="" (
@@ -29,8 +29,8 @@ goto :eof
 		) else (
 			for %%F in (!STELLA_APP_FEATURE_LIST!) do (		
 				
-				call %STELLA_COMMON%\common-feature.bat :translate_schema "%%F" "_TR_FEATURE_NAME" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR"  "_TR_FEATURE_OS_RESTRICTION"
-
+				call %STELLA_COMMON%\common-feature.bat :translate_schema "%%F" "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR"  "TR_FEATURE_OS_RESTRICTION"
+	
 
 				if "%_TR_FEATURE_OS_RESTRICTION%"=="%TR_FEATURE_OS_RESTRICTION%" (
 					if "%_TR_FEATURE_VER%"=="%TR_FEATURE_VER%" (
@@ -76,8 +76,50 @@ goto :eof
 	)
 goto :eof
 
+REM instal all features listed in app feature list.
 :get_features
 	call %STELLA_COMMON%\common-feature.bat :feature_install_list "!STELLA_APP_FEATURE_LIST!"
+goto :eof
+
+REM install a feature listed in app feature list. Look for matching version in app feature list, so could match several version
+:get_feature
+	set "_SCHEMA=%~1"
+
+	call %STELLA_COMMON%\common-feature.bat :translate_schema "!_SCHEMA!" "_TR_FEATURE_NAME" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR"  "_TR_FEATURE_OS_RESTRICTION"
+	
+	set _flag_get_feature=1
+
+	if not "!STELLA_APP_FEATURE_LIST!"=="" (
+		for %%F in (!STELLA_APP_FEATURE_LIST!) do (
+			
+			call %STELLA_COMMON%\common-feature.bat :translate_schema "%%F" "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR"  "TR_FEATURE_OS_RESTRICTION"
+			
+			set _flag_get_feature=1
+			if not "%_TR_FEATURE_NAME%"=="%TR_FEATURE_NAME%" (
+				set _flag_get_feature=0
+			)
+			if not "%_TR_FEATURE_FLAVOUR%"=="" (
+				if not "%_TR_FEATURE_FLAVOUR%"=="%TR_FEATURE_FLAVOUR%" (
+					set _flag_get_feature=0
+				)
+			)
+			if not "%_TR_FEATURE_ARCH%"=="" (
+				if not "%_TR_FEATURE_ARCH%"=="%TR_FEATURE_ARCH%" (
+					set _flag_get_feature=0
+				)
+			)
+			if not "%_TR_FEATURE_VER%"=="" (
+				if not "%_TR_FEATURE_VER%"=="%TR_FEATURE_VER%" (
+					set _flag_get_feature=0
+				)
+			)
+
+			if "!_flag_get_feature!"=="1" (
+				call %STELLA_COMMON%\common-feature.bat :feature_install "%%F"
+			)
+		)
+	)
+
 goto :eof
 
 :get_data
@@ -213,6 +255,8 @@ goto :eof
 	if "!_stella_root!" == "" {
 		set "_stella_root=%STELLA_ROOT%"
 	} 
+
+	call %STELLA_COMMON%\common.bat :rel_to_abs_path "_approot" "!_approot!" "%_STELLA_CURRENT_RUNNING_DIR%"
 
 	call %STELLA_COMMON%\common.bat :is_path_abs "IS_ABS" "%_stella_root%"
 	if "%IS_ABS%"=="FALSE" (
