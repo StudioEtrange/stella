@@ -92,7 +92,13 @@ Install some brew formulas
 	from app1.sh :
 	$STELLA_API link_app $STELLA_APP_WORK_ROOT/app2
 
-Then app2.sh will use the same stella installation than app1.sh
+Then app2.sh will use the same stella folder than app1.sh
 
 * Two nested or linked stella applications will share the same cache folder. The first running cache stella application will be used.
 
+* From app1 you can use STELLA API functions connected to another app2 (means : in the context of app2)
+
+	from app1.sh
+	$STELLA_API api_connect $APP_PATH/app2
+	$STELLA_API feature_inspect wget
+	$STELLA_API api_disconnect

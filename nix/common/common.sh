@@ -6,6 +6,18 @@ set +h
 
 
 # VARIOUS-----------------------------
+function __daemonize() {
+	local _item_path=$1
+	local _log_file=$2
+
+	if [ "$_log_file" == "" ]; then
+		nohup $_item_path 1>/dev/null 2>&1 &
+	else
+		nohup $_item_path 1>$_log_file 2>&1 &
+	fi
+
+}
+
 function __bootstrap_stella_env() {
 	export PS1="[stella] \u@\h|\W>"
 	

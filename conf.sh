@@ -110,7 +110,7 @@ __STELLA_DISTRIB_LIST="ubuntu64_13_10 debian64_7_5 centos64_6_5 archlinux boot2d
 __STELLA_FEATURE_LIST="zlib socat gnu-netcat maven spark sbt scala docker-machine jq wget ninja cmake packer autotools perl gettext getopt ucl upx elasticsearch kibana nginx ngrok go pcre libtool m4 automake autoconf"
 
 # API ---------------------------------------------
-STELLA_API_COMMON_PUBLIC="rel_to_abs_path is_abs argparse get_filename_from_string \
+STELLA_API_COMMON_PUBLIC="daemonize rel_to_abs_path is_abs argparse get_filename_from_string \
 get_ressource download_uncompress copy_folder_content_into del_folder \
 get_key add_key del_key mercurial_project_version git_project_version get_stella_version \
 make_sevenzip_sfx_bin make_targz_sfx_shell compress trim"
