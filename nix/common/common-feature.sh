@@ -69,6 +69,7 @@ function __feature_match_installed() {
 	local _tested=
 	local _found=
 
+
 	[ ! "$__VAR_FEATURE_VER" == "" ] && _tested=$__VAR_FEATURE_VER
 	[ ! "$__VAR_FEATURE_ARCH" == "" ] && _tested="$_tested"@"$__VAR_FEATURE_ARCH"
 
@@ -378,7 +379,7 @@ function __feature_init_installed() {
 	done
 
 
-	[ ! "$FEATURE_LIST_ENABLED" == "" ] && echo "** Features initialized : $FEATURE_LIST_ENABLED"
+	[ ! "$FEATURE_LIST_ENABLED" == "" ] && [ "$STELLA_SILENT" == "" ] && echo "** Features initialized : $FEATURE_LIST_ENABLED"
 }
 
 

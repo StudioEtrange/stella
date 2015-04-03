@@ -7,7 +7,7 @@ set +h
 
 # VARIOUS-----------------------------
 function __bootstrap_stella_env() {
-	export PS1="[stella] \u@\h|\W >"
+	export PS1="[stella] \u@\h|\W>"
 	
 	local _t=$(mktmp)
 	(set -o posix; set) >$_t

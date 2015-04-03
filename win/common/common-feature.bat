@@ -60,13 +60,19 @@ goto :eof
 
 
 :: look for information about an installed feature
+:: _app_feature_root may be used if we want to match installed feature from an other app
 :feature_match_installed
 	set "_SCHEMA=%~1"
+	set "_app_feature_root%~2"
 
 	call :translate_schema !FEAT_SCHEMA_SELECTED! "__VAR_FEATURE_NAME" "__VAR_FEATURE_VER" "__VAR_FEATURE_ARCH"
 
 	set "_tested="
 	set "_found="
+
+	if "%_app_feature_root%"=="" (
+		set "_app_feature_root=%STELLA_APP_FEATURE_ROOT%"
+	)
 
 	if not "!__VAR_FEATURE_VER!"=="" (
 		set "_tested=!__VAR_FEATURE_VER!"
@@ -75,9 +81,9 @@ goto :eof
 		set "_tested=!_tested!@!__VAR_FEATURE_ARCH!"
 	)
 
-	if exist "%STELLA_APP_FEATURE_ROOT%\!__VAR_FEATURE_NAME!" (
+	if exist "!_app_feature_root!\!__VAR_FEATURE_NAME!" (
 		REM for each detected version
-		for /D %%V in ( %STELLA_APP_FEATURE_ROOT%\!__VAR_FEATURE_NAME!\* ) do (
+		for /D %%V in ( !_app_feature_root!\!__VAR_FEATURE_NAME!\* ) do (
 			set "_ver=%%~nxV"
 			if not "!_tested!"=="" (
 				set "_found=!_ver!"
@@ -102,12 +108,14 @@ goto :eof
 :: test if a feature is installed
 :: AND retrieve informations based on actually installed feature (looking inside STELLA_APP_FEATURE_ROOT) OR from feature recipe if not installed
 :: do not use default values from feature recipe to search installed feature
+:: _app_feature_root may be used if we want to inspect installed feature from an other app
 :feature_inspect
 	set "_SCHEMA=%~1"
+	set "_app_feature_root%~2"
 
 	set TEST_FEATURE=0
 
-	call :feature_match_installed %_SCHEMA%
+	call :feature_match_installed %_SCHEMA% "%_app_feature_root%"
 	
 
 	if not "!FEAT_SCHEMA_SELECTED!"=="" (
@@ -122,7 +130,7 @@ goto :eof
 
 			for %%p in (!FEAT_BUNDLE_LIST!) do (
 				set "TEST_FEATURE=0"
-				call :feature_inspect %%p
+				call :feature_inspect %%p "%_app_feature_root%"
 				if "!TEST_FEATURE!"=="0" (
 					set "_t=0"
 				)

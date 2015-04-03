@@ -114,6 +114,7 @@ STELLA_API_COMMON_PUBLIC="rel_to_abs_path is_abs argparse get_filename_from_stri
 get_ressource download_uncompress copy_folder_content_into del_folder \
 get_key add_key del_key mercurial_project_version git_project_version get_stella_version \
 make_sevenzip_sfx_bin make_targz_sfx_shell compress trim"
+STELLA_API_API_PUBLIC="api_connect api_disconnect"
 STELLA_API_APP_PUBLIC="link_app get_data get_assets get_all_data get_all_assets update_data update_assets revert_data revert_assets get_env_properties setup_env get_feature get_features"
 STELLA_API_FEATURE_PUBLIC="feature_remove feature_catalog_info feature_install feature_install_list feature_init list_active_features reinit_installed_features feature_inspect"
 STELLA_API_VIRTUAL_PUBLIC=""
