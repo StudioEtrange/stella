@@ -240,6 +240,7 @@ function __stella_requirement() {
 
 #TODO
 # from https://github.com/darkoperator/MSF-Installer/blob/master/msf_install.sh
+# http://docs.python-guide.org/en/latest/starting/install/osx/
 function check_dependencies_macos
 {
     # Get a list of all the packages installed on the system

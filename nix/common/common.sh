@@ -11,9 +11,9 @@ function __daemonize() {
 	local _log_file=$2
 
 	if [ "$_log_file" == "" ]; then
-		nohup $_item_path 1>/dev/null 2>&1 &
+		nohup -- $_item_path 1>/dev/null 2>&1 &
 	else
-		nohup $_item_path 1>$_log_file 2>&1 &
+		nohup -- $_item_path 1>$_log_file 2>&1 &
 	fi
 
 }

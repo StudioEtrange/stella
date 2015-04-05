@@ -17,7 +17,7 @@ function usage() {
 	echo " L     app link <app-path> [--stellaroot=<path>] : link an app to a specific stella path"
 	echo " o-- feature management :"
 	echo " L     feature install required : install required features for Stella"
-	echo " L     feature install <feature schema|required> : install a feature. schema = feature_name[#version][@arch][/binary|source][:os_restriction]"
+	echo " L     feature install <feature schema> : install a feature. schema = feature_name[#version][@arch][/binary|source][:os_restriction]"
 	echo " L     feature remove <feature schema> : remove a feature"
 	echo " L     feature list <all|feature name|active> : list all available feature OR available versions of a feature OR current active features"
 	echo " o-- virtual management :"
