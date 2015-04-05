@@ -33,7 +33,7 @@ function feature_packer_0_6_0() {
 		FEAT_BINARY_URL_FILENAME_x64=packer_0.6.0_linux_amd64.zip
 
 		FEAT_BINARY_URL_x86=https://dl.bintray.com/mitchellh/packer/0.6.0_linux_386.zip
-		FEAT_BINARY_URL_FILENAME_x64=packer_0.6.0_linux_386.zip
+		FEAT_BINARY_URL_FILENAME_x86=packer_0.6.0_linux_386.zip
 	fi
 	FEAT_BINARY_CALLBACK=
 

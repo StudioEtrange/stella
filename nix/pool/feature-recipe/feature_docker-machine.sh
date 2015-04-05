@@ -31,7 +31,7 @@ function feature_docker-machine_0_1_0() {
 		FEAT_BINARY_URL_FILENAME_x64=docker-machine_linux-amd64-0_1_0
 
 		FEAT_BINARY_URL_x86=https://github.com/docker/machine/releases/download/v0.1.0/docker-machine_linux-386
-		FEAT_BINARY_URL_FILENAME_x64=docker-machine_linux-386-0_1_0
+		FEAT_BINARY_URL_FILENAME_x86=docker-machine_linux-386-0_1_0
 	fi
 
 	FEAT_BINARY_CALLBACK=
@@ -67,7 +67,7 @@ function feature_docker-machine_0_2_0_rc3() {
 		FEAT_BINARY_URL_FILENAME_x64=docker-machine_linux-amd64-0_2_0_rc3
 
 		FEAT_BINARY_URL_x86=https://github.com/docker/machine/releases/download/v0.2.0-rc3/docker-machine_linux-386
-		FEAT_BINARY_URL_FILENAME_x64=docker-machine_linux-386-0_2_0_rc3
+		FEAT_BINARY_URL_FILENAME_x86=docker-machine_linux-386-0_2_0_rc3
 	fi
 
 	FEAT_BINARY_CALLBACK=

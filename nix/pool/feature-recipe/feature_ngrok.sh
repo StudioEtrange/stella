@@ -30,7 +30,7 @@ function feature_ngrok_stable() {
 		FEAT_BINARY_URL_FILENAME_x64=ngrok_linux_amd64
 
 		FEAT_BINARY_URL_x86="https://api.equinox.io/1/Applications/ap_pJSFC5wQYkAyI0FIVwKYs9h1hW/Updates/Asset/ngrok.zip?channel=stable&os=linux&arch=386"
-		FEAT_BINARY_URL_FILENAME_x64=ngrok_linux_386.zip
+		FEAT_BINARY_URL_FILENAME_x86=ngrok_linux_386.zip
 	fi
 	FEAT_BINARY_CALLBACK=
 
