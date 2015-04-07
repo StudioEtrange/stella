@@ -22,8 +22,9 @@ function __bootstrap_stella_env() {
 	export PS1="[stella] \u@\h|\W>"
 	
 	local _t=$(mktmp)
-	(set -o posix; set) >$_t
-
+	#(set -o posix; set) >$_t
+	declare >$_t
+	declare -f >>$_t
 ( exec bash -i 3<<SCRIPT 4<&0 <&3
 . $_t 2>/dev/null;rm $_t;
 echo "** STELLA SHELL with env var setted (type exit to exit...) **"

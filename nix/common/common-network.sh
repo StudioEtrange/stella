@@ -50,7 +50,7 @@ function curl() {
 
 
 function git() {
-	command git "$@"
+	https_proxy="$STELLA_HTTPS_PROXY" http_proxy="$STELLA_HTTP_PROXY" command git "$@"
 }
 
 function hg() {

@@ -41,12 +41,12 @@ source $STELLA_COMMON/libscreenfetch.sh
 source $STELLA_COMMON/platform.sh
 source $STELLA_COMMON/common.sh
 source $STELLA_COMMON/common-feature.sh
-source $STELLA_COMMON/common-network.sh
 source $STELLA_COMMON/common-app.sh
 source $STELLA_COMMON/common-virtual.sh
 source $STELLA_COMMON/common-build.sh
 source $STELLA_COMMON/common-api.sh
 source $STELLA_COMMON/make-sfx.sh
+source $STELLA_COMMON/common-network.sh
 
 # GATHER PLATFORM INFO ---------------------------------------------
 __set_current_platform_info
