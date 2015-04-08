@@ -378,8 +378,8 @@ function __feature_init_installed() {
 		fi
 	done
 
-
-	[ ! "$FEATURE_LIST_ENABLED" == "" ] && [ "$STELLA_SILENT" == "" ] && echo "** Features initialized : $FEATURE_LIST_ENABLED"
+	# TODO log
+	[ ! "$FEATURE_LIST_ENABLED" == "" ] && echo "** Features initialized : $FEATURE_LIST_ENABLED"
 }
 
 
