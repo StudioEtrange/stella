@@ -20,7 +20,7 @@ function usage() {
 	echo " L     feature install <feature schema> : install a feature. schema = feature_name[#version][@arch][/binary|source][:os_restriction]"
 	echo " L     feature remove <feature schema> : remove a feature"
 	echo " L     feature list <all|feature name|active> : list all available feature OR available versions of a feature OR current active features"
-	echo " o-- virtual management :"
+	echo " o-- virtual management (experimental) :"
 	echo " L     virtual create-env <env id#distrib id> [--head] [--vmem=xxxx] [--vcpu=xx] : create a new environment from a generic box prebuilt with a specific distribution"
     echo " L     virtual run-env <env id> [--login] : manage environment"
     echo " L     virtual stop-env|destroy-env <env id> : manage environment"

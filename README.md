@@ -89,6 +89,7 @@ Install some brew formulas
 
 * There is an API function link_app that could be use to link a stella application to a specific stella installation (by default to the current one)
 
+
 	from app1.sh :
 	$STELLA_API link_app $STELLA_APP_WORK_ROOT/app2
 
@@ -98,7 +99,8 @@ Then app2.sh will use the same stella folder than app1.sh
 
 * From app1 you can use STELLA API functions connected to another app2 (means : in the context of app2)
 
-	from app1.sh
+
+	from app1.sh :
 	$STELLA_API api_connect $APP_PATH/app2
 	$STELLA_API feature_inspect wget
 	$STELLA_API api_disconnect
