@@ -40,12 +40,35 @@ goto :eof
 	if "%_flag%"=="0" (
 		call :feature_inspect !FEAT_SCHEMA_SELECTED!
 		if "!TEST_FEATURE!"=="1" (
-			if not "%_opt_hidden_feature%"=="ON" set "FEATURE_LIST_ENABLED=!FEATURE_LIST_ENABLED! !FEAT_NAME!#!FEAT_VERSION!"
-			if not "!FEAT_SEARCH_PATH!"=="" set "PATH=!FEAT_SEARCH_PATH!;!PATH!"
 
-			if not "!FEAT_ENV!"=="" (
-				call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :!FEAT_ENV!
+			if "!FEAT_BUNDLE_EMBEDDED!"=="TRUE" (	
+				set "save_FEAT_INSTALL_ROOT=!FEAT_INSTALL_ROOT!"		
+				set "FEAT_BUNDLE_EMBEDDED_PATH=!save_FEAT_INSTALL_ROOT!"
+				
+				for %%p in (!FEAT_BUNDLE_LIST!) do (
+					call :feature_init %%p "HIDDEN"
+				)
+				set "FEAT_BUNDLE_EMBEDDED_PATH="
+
+				REM compute bundle variables
+				call :internal_feature_context %_SCHEMA%
+				set "FEATURE_LIST_ENABLED=!FEATURE_LIST_ENABLED! !FEAT_NAME!#!FEAT_VERSION!"
+				if not "!FEAT_SEARCH_PATH!"=="" set "PATH=!FEAT_SEARCH_PATH!;!PATH!"
+				if not "!FEAT_ENV!"=="" (
+					call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :!FEAT_ENV!
+				)
+
+			) else (
+
+				if not "%_opt_hidden_feature%"=="ON" set "FEATURE_LIST_ENABLED=!FEATURE_LIST_ENABLED! !FEAT_NAME!#!FEAT_VERSION!"
+				if not "!FEAT_SEARCH_PATH!"=="" set "PATH=!FEAT_SEARCH_PATH!;!PATH!"
+
+				if not "!FEAT_ENV!"=="" (
+					call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :!FEAT_ENV!
+				)
+		
 			)
+
 		)
 	)
 goto :eof
@@ -60,47 +83,48 @@ goto :eof
 
 
 :: look for information about an installed feature
-:: _app_feature_root may be used if we want to match installed feature from an other app
 :feature_match_installed
 	set "_SCHEMA=%~1"
-	set "_app_feature_root%~2"
-
-	call :translate_schema !FEAT_SCHEMA_SELECTED! "__VAR_FEATURE_NAME" "__VAR_FEATURE_VER" "__VAR_FEATURE_ARCH"
 
 	set "_tested="
 	set "_found="
 
-	if "%_app_feature_root%"=="" (
-		set "_app_feature_root=%STELLA_APP_FEATURE_ROOT%"
-	)
+	if "!FEAT_BUNDLE_EMBEDDED_PATH!"=="" (
 
-	if not "!__VAR_FEATURE_VER!"=="" (
-		set "_tested=!__VAR_FEATURE_VER!"
-	)
-	if not "$__VAR_FEATURE_ARCH!"=="" (
-		set "_tested=!_tested!@!__VAR_FEATURE_ARCH!"
-	)
+		call :translate_schema !FEAT_SCHEMA_SELECTED! "__VAR_FEATURE_NAME" "__VAR_FEATURE_VER" "__VAR_FEATURE_ARCH"
 
-	if exist "!_app_feature_root!\!__VAR_FEATURE_NAME!" (
-		REM for each detected version
-		for /D %%V in ( !_app_feature_root!\!__VAR_FEATURE_NAME!\* ) do (
-			set "_ver=%%~nxV"
-			if not "!_tested!"=="" (
-				set "_found=!_ver!"
-			) else (
-				call %STELLA_COMMON%\common.bat :match_exp ".*!_tested!.*" "!_ver!"
-				if "!_match_exp!"=="TRUE" (
+		
+		if not "!__VAR_FEATURE_VER!"=="" (
+			set "_tested=!__VAR_FEATURE_VER!"
+		)
+		if not "$__VAR_FEATURE_ARCH!"=="" (
+			set "_tested=!_tested!@!__VAR_FEATURE_ARCH!"
+		)
+
+		if exist "!STELLA_APP_FEATURE_ROOT!\!__VAR_FEATURE_NAME!" (
+			REM for each detected version
+			for /D %%V in ( !_app_feature_root!\!__VAR_FEATURE_NAME!\* ) do (
+				set "_ver=%%~nxV"
+				if not "!_tested!"=="" (
 					set "_found=!_ver!"
+				) else (
+					call %STELLA_COMMON%\common.bat :match_exp ".*!_tested!.*" "!_ver!"
+					if "!_match_exp!"=="TRUE" (
+						set "_found=!_ver!"
+					)
 				)
 			)
 		)
-	)
 
-	if not "%_found%"=="" (
-		call :internal_feature_context "!__VAR_FEATURE_NAME!#$!_ver!"
+		if not "%_found%"=="" (
+			call :internal_feature_context "!__VAR_FEATURE_NAME!#$!_ver!"
+		) else (
+			REM empty info values
+			call :internal_feature_context
+		)
+
 	) else (
-		REM empty info values
-		call :internal_feature_context
+		call :internal_feature_context $_SCHEMA
 	)
 goto :eof
 
@@ -108,29 +132,25 @@ goto :eof
 :: test if a feature is installed
 :: AND retrieve informations based on actually installed feature (looking inside STELLA_APP_FEATURE_ROOT) OR from feature recipe if not installed
 :: do not use default values from feature recipe to search installed feature
-:: _app_feature_root may be used if we want to inspect installed feature from an other app
+
 :feature_inspect
 	set "_SCHEMA=%~1"
-	set "_app_feature_root%~2"
 
 	set TEST_FEATURE=0
 
-	call :feature_match_installed %_SCHEMA% "%_app_feature_root%"
-	
+	call :feature_match_installed %_SCHEMA%
+
 
 	if not "!FEAT_SCHEMA_SELECTED!"=="" (
-		if not "!FEAT_BUNDLE_LIST!"=="" (
+		if "!FEAT_BUNDLE_EMBEDDED!"=="TRUE" (
 			set "_t=1"
 			set "save_FEAT_INSTALL_ROOT=!FEAT_INSTALL_ROOT!"
 			
-			set "FEAT_BUNDLE_EMBEDDED_PATH="
-			if "!FEAT_BUNDLE_EMBEDDED!"=="TRUE" (
-				set "FEAT_BUNDLE_EMBEDDED_PATH=!save_FEAT_INSTALL_ROOT!"
-			)
-
+			set "FEAT_BUNDLE_EMBEDDED_PATH=!save_FEAT_INSTALL_ROOT!"
+			
 			for %%p in (!FEAT_BUNDLE_LIST!) do (
 				set "TEST_FEATURE=0"
-				call :feature_inspect %%p "%_app_feature_root%"
+				call :feature_inspect %%p
 				if "!TEST_FEATURE!"=="0" (
 					set "_t=0"
 				)
@@ -188,27 +208,8 @@ goto :eof
 	)
 
 	if "!TEST_FEATURE!"=="1" (
-
-		if not "!FEAT_BUNDLE_LIST!"=="" (
-			set "save_FEAT_INSTALL_ROOT=!FEAT_INSTALL_ROOT!"
-
-			set "FEAT_BUNDLE_EMBEDDED_PATH="
-			set " _flag_hidden="
-			if "!FEAT_BUNDLE_EMBEDDED!"=="TRUE" (
-				set "FEAT_BUNDLE_EMBEDDED_PATH=!save_FEAT_INSTALL_ROOT!"
-				set "_flag_hidden=HIDDEN"
-			)
-
-			for %%p in (!FEAT_BUNDLE_LIST!) do (
-				call :feature_remove %%p "!_OPT! !_flag_hidden!"
-			)
-			set "FEAT_BUNDLE_EMBEDDED_PATH="
-			call :internal_feature_context
-		) else (
-			echo Remove !FEAT_NAME! version !FEAT_VERSION! from !FEAT_INSTALL_ROOT!
-			call %STELLA_COMMON%\common.bat :del_folder !FEAT_INSTALL_ROOT!
-		)
-
+		echo Remove !FEAT_NAME! version !FEAT_VERSION! from !FEAT_INSTALL_ROOT!
+		call %STELLA_COMMON%\common.bat :del_folder !FEAT_INSTALL_ROOT!
 	)
 
 	if "%_opt_internal_feature%"=="ON" (
@@ -435,8 +436,8 @@ goto :eof
 	set "FEAT_INSTALL_TEST="
 	set "FEAT_INSTALL_ROOT="
 	set "FEAT_SEARCH_PATH="
+	set "FEAT_ENV="
 	set "FEAT_BUNDLE_LIST="
-	
 	REM TRUE / FALSE
 	set "FEAT_BUNDLE_EMBEDDED="
 

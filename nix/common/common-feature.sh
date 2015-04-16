@@ -32,20 +32,47 @@ function __feature_init() {
 	for a in $FEATURE_LIST_ENABLED; do
 		[ "$FEAT_NAME#$FEAT_VERSION" == "$a" ] && _flag=1
 	done
+
 	if [ "$_flag" == "0" ]; then
 		__feature_inspect $FEAT_SCHEMA_SELECTED
 		if [ "$TEST_FEATURE" == "1" ]; then
-			if [ ! "$_opt_hidden_feature" == "ON" ]; then
-				FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $FEAT_NAME#$FEAT_VERSION"
-			fi
-			if [ ! "$FEAT_SEARCH_PATH" == "" ]; then
-				PATH="$FEAT_SEARCH_PATH:$PATH"
-			fi
 
-			if [ ! "$FEAT_ENV" == "" ]; then
-				$FEAT_ENV
+			if [ "$FEAT_BUNDLE_EMBEDDED" == "TRUE" ]; then
+				local p	
+				local save_FEAT_INSTALL_ROOT=$FEAT_INSTALL_ROOT
+				
+				FEAT_BUNDLE_EMBEDDED_PATH="$save_FEAT_INSTALL_ROOT"
+				for p in $FEAT_BUNDLE_LIST; do	
+					__feature_init $p "HIDDEN"
+				done
+				FEAT_BUNDLE_EMBEDDED_PATH=
+
+				# compute bundle variables
+				__internal_feature_context $_SCHEMA
+				FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $FEAT_NAME#$FEAT_VERSION"
+				if [ ! "$FEAT_SEARCH_PATH" == "" ]; then
+					PATH="$FEAT_SEARCH_PATH:$PATH"
+				fi
+				if [ ! "$FEAT_ENV" == "" ]; then
+					$FEAT_ENV
+				fi
+			else
+
+				
+				if [ ! "$_opt_hidden_feature" == "ON" ]; then
+					FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $FEAT_NAME#$FEAT_VERSION"
+				fi
+				if [ ! "$FEAT_SEARCH_PATH" == "" ]; then
+					PATH="$FEAT_SEARCH_PATH:$PATH"
+				fi
+
+				if [ ! "$FEAT_ENV" == "" ]; then
+					$FEAT_ENV
+				fi
+			
 			fi
 		fi
+
 	fi
 }
 
@@ -64,36 +91,42 @@ function __feature_catalog_info() {
 function __feature_match_installed() {
 	local _SCHEMA=$1
 
-	__translate_schema "$1" "__VAR_FEATURE_NAME" "__VAR_FEATURE_VER" "__VAR_FEATURE_ARCH"
-
 	local _tested=
 	local _found=
 
+	if [ "$FEAT_BUNDLE_EMBEDDED_PATH" == "" ]; then
 
-	[ ! "$__VAR_FEATURE_VER" == "" ] && _tested=$__VAR_FEATURE_VER
-	[ ! "$__VAR_FEATURE_ARCH" == "" ] && _tested="$_tested"@"$__VAR_FEATURE_ARCH"
+		__translate_schema "$_SCHEMA" "__VAR_FEATURE_NAME" "__VAR_FEATURE_VER" "__VAR_FEATURE_ARCH"
 
-	if [ -d "$STELLA_APP_FEATURE_ROOT/$__VAR_FEATURE_NAME" ]; then
-		# for each detected version
-		for v in  "$STELLA_APP_FEATURE_ROOT"/"$__VAR_FEATURE_NAME"/*; do
-			if [ "$_tested" == "" ]; then
-				_found=$v
-			else
-				case $v in
-					*"$_tested"*)
-						_found=$v
-					;;
-					*);;
-				esac
-			fi
-		done
-	fi
 
-	if [ ! "$_found" == "" ]; then
-		__internal_feature_context "$__VAR_FEATURE_NAME"#"$(__get_filename_from_string $v)"
+		[ ! "$__VAR_FEATURE_VER" == "" ] && _tested=$__VAR_FEATURE_VER
+		[ ! "$__VAR_FEATURE_ARCH" == "" ] && _tested="$_tested"@"$__VAR_FEATURE_ARCH"
+
+		if [ -d "$STELLA_APP_FEATURE_ROOT/$__VAR_FEATURE_NAME" ]; then
+			# for each detected version
+			for v in  "$STELLA_APP_FEATURE_ROOT"/"$__VAR_FEATURE_NAME"/*; do
+				if [ "$_tested" == "" ]; then
+					_found=$v
+				else
+					case $v in
+						*"$_tested"*)
+							_found=$v
+						;;
+						*);;
+					esac
+				fi
+			done
+		fi
+
+		if [ ! "$_found" == "" ]; then
+			__internal_feature_context "$__VAR_FEATURE_NAME"#"$(__get_filename_from_string $v)"
+		else
+			# empty info values
+			__internal_feature_context
+		fi
 	else
-		# empty info values
-		__internal_feature_context
+		__internal_feature_context $_SCHEMA
+
 	fi
 
 }
@@ -110,13 +143,12 @@ function __feature_inspect() {
 
 
 	if [ ! "$FEAT_SCHEMA_SELECTED" == "" ]; then
-		if [ ! "$FEAT_BUNDLE_LIST" == "" ]; then
+		if [ "$FEAT_BUNDLE_EMBEDDED" == "TRUE" ]; then
 			local p
 			local _t=1
 			local save_FEAT_INSTALL_ROOT=$FEAT_INSTALL_ROOT
 			
-			FEAT_BUNDLE_EMBEDDED_PATH=
-			[ "$FEAT_BUNDLE_EMBEDDED" == "TRUE" ] && FEAT_BUNDLE_EMBEDDED_PATH="$save_FEAT_INSTALL_ROOT"
+			FEAT_BUNDLE_EMBEDDED_PATH="$save_FEAT_INSTALL_ROOT"
 			for p in $FEAT_BUNDLE_LIST; do
 				TEST_FEATURE=0
 				__feature_inspect $p
@@ -186,27 +218,8 @@ function __feature_remove() {
 	fi
 
 	if [ "$TEST_FEATURE" == "1" ]; then
-
-		if [ ! "$FEAT_BUNDLE_LIST" == "" ]; then
-			local save_FEAT_INSTALL_ROOT=$FEAT_INSTALL_ROOT
-
-			FEAT_BUNDLE_EMBEDDED_PATH=
-			local _flag_hidden=
-			if [ "$FEAT_BUNDLE_EMBEDDED" == "TRUE" ]; then
-				FEAT_BUNDLE_EMBEDDED_PATH="$save_FEAT_INSTALL_ROOT"
-				_flag_hidden="HIDDEN"
-			fi
-			local p
-			for p in $FEAT_BUNDLE_LIST; do
-				__feature_remove $p "$_OPT $_flag_hidden"
-			done
-			FEAT_BUNDLE_EMBEDDED_PATH=
-
-			__internal_feature_context
-		else
-			echo " ** Remove $FEAT_NAME version $FEAT_VERSION from $FEAT_INSTALL_ROOT"
-			__del_folder $FEAT_INSTALL_ROOT
-		fi
+		echo " ** Remove $FEAT_NAME version $FEAT_VERSION from $FEAT_INSTALL_ROOT"
+		__del_folder $FEAT_INSTALL_ROOT
 	fi
 	
 
@@ -442,6 +455,7 @@ function __internal_feature_context() {
 	FEAT_BUNDLE_LIST=
 	# TRUE / FALSE
 	FEAT_BUNDLE_EMBEDDED=
+	FEAT_ENV=
 
 	if [ ! "$FEAT_SCHEMA_SELECTED" == "" ]; then
 		
