@@ -8,7 +8,7 @@ function feature_autotools() {
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR=
 
-	FEAT_BUNDLE_EMBEDDED=TRUE
+	FEAT_BUNDLE=TRUE
 }
 
 function feature_autotools_pack() {

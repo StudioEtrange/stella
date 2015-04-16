@@ -9,7 +9,7 @@ function feature_template() {
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR=binary
 
-	FEAT_BUNDLE_EMBEDDED=
+	FEAT_BUNDLE=
 }
 
 function feature_template_env()  {

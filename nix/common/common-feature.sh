@@ -37,7 +37,7 @@ function __feature_init() {
 		__feature_inspect $FEAT_SCHEMA_SELECTED
 		if [ "$TEST_FEATURE" == "1" ]; then
 
-			if [ "$FEAT_BUNDLE_EMBEDDED" == "TRUE" ]; then
+			if [ "$FEAT_BUNDLE" == "TRUE" ]; then
 				local p	
 				local save_FEAT_INSTALL_ROOT=$FEAT_INSTALL_ROOT
 				
@@ -143,7 +143,7 @@ function __feature_inspect() {
 
 
 	if [ ! "$FEAT_SCHEMA_SELECTED" == "" ]; then
-		if [ "$FEAT_BUNDLE_EMBEDDED" == "TRUE" ]; then
+		if [ "$FEAT_BUNDLE" == "TRUE" ]; then
 			local p
 			local _t=1
 			local save_FEAT_INSTALL_ROOT=$FEAT_INSTALL_ROOT
@@ -292,7 +292,7 @@ function __feature_install() {
 
 					FEAT_BUNDLE_EMBEDDED_PATH=
 					local _flag_hidden=
-					if [ "$FEAT_BUNDLE_EMBEDDED" == "TRUE" ]; then
+					if [ "$FEAT_BUNDLE" == "TRUE" ]; then
 						FEAT_BUNDLE_EMBEDDED_PATH="$save_FEAT_INSTALL_ROOT"
 						_flag_hidden="HIDDEN"
 					fi
@@ -454,7 +454,7 @@ function __internal_feature_context() {
 	FEAT_SEARCH_PATH=
 	FEAT_BUNDLE_LIST=
 	# TRUE / FALSE
-	FEAT_BUNDLE_EMBEDDED=
+	FEAT_BUNDLE=
 	FEAT_ENV=
 
 	if [ ! "$FEAT_SCHEMA_SELECTED" == "" ]; then

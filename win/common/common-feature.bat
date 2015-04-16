@@ -41,7 +41,7 @@ goto :eof
 		call :feature_inspect !FEAT_SCHEMA_SELECTED!
 		if "!TEST_FEATURE!"=="1" (
 
-			if "!FEAT_BUNDLE_EMBEDDED!"=="TRUE" (	
+			if "!FEAT_BUNDLE!"=="TRUE" (	
 				set "save_FEAT_INSTALL_ROOT=!FEAT_INSTALL_ROOT!"		
 				set "FEAT_BUNDLE_EMBEDDED_PATH=!save_FEAT_INSTALL_ROOT!"
 				
@@ -132,7 +132,6 @@ goto :eof
 :: test if a feature is installed
 :: AND retrieve informations based on actually installed feature (looking inside STELLA_APP_FEATURE_ROOT) OR from feature recipe if not installed
 :: do not use default values from feature recipe to search installed feature
-
 :feature_inspect
 	set "_SCHEMA=%~1"
 
@@ -142,7 +141,7 @@ goto :eof
 
 
 	if not "!FEAT_SCHEMA_SELECTED!"=="" (
-		if "!FEAT_BUNDLE_EMBEDDED!"=="TRUE" (
+		if "!FEAT_BUNDLE!"=="TRUE" (
 			set "_t=1"
 			set "save_FEAT_INSTALL_ROOT=!FEAT_INSTALL_ROOT!"
 			
@@ -158,7 +157,7 @@ goto :eof
 			set "FEAT_BUNDLE_EMBEDDED_PATH="
 
 			call :internal_feature_context %_SCHEMA%
-			set "TEST_FEATURE=$_t"
+			set "TEST_FEATURE=!_t!"
 			REM if "!TEST_FEATURE!"=="1" (
 				REM echo ** BUNDLE Detected in !save_FEAT_INSTALL_ROOT!
 			REM )
@@ -285,7 +284,7 @@ goto :eof
 
 				set "FEAT_BUNDLE_EMBEDDED_PATH="
 				set " _flag_hidden="
-				if "!FEAT_BUNDLE_EMBEDDED!"=="TRUE" (
+				if "!FEAT_BUNDLE!"=="TRUE" (
 					set "FEAT_BUNDLE_EMBEDDED_PATH=!save_FEAT_INSTALL_ROOT!"
 					set "_flag_hidden=HIDDEN"
 				)
@@ -439,7 +438,7 @@ goto :eof
 	set "FEAT_ENV="
 	set "FEAT_BUNDLE_LIST="
 	REM TRUE / FALSE
-	set "FEAT_BUNDLE_EMBEDDED="
+	set "FEAT_BUNDLE="
 
 	if not "!FEAT_SCHEMA_SELECTED!"=="" (
 		
