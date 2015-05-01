@@ -254,7 +254,7 @@ function check_dependencies_macos
         exit 1
     fi
 
-    if [[ $PKGS =~ com.apple.pkg.XcodeMAS ]] ; then
+    if [[ $PKGS =~ com.apple.pkg.Xcode ]] ; then
         print_good "Xcode is installed."
     else
         print_error "Xcode is not installed on this system. Install from the Apple AppStore."

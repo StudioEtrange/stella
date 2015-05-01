@@ -14,7 +14,7 @@ function feature_gettext() {
 
 function feature_gettext_0_19_4() {
 
-	FEAT_VERSION=last_release
+	FEAT_VERSION=0_19_4
 
 	FEAT_SOURCE_URL=http://ftpmirror.gnu.org/gettext/gettext-0.19.4.tar.xz
 	FEAT_SOURCE_URL_FILENAME=gettext-0.19.4.tar.xz
