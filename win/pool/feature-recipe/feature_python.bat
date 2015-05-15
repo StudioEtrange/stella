@@ -5,9 +5,9 @@ goto :eof
 
 :feature_python
 	set "FEAT_NAME=python"
-	set "FEAT_LIST_SCHEMA=2_7_6/binary"
+	set "FEAT_LIST_SCHEMA=2_7_6@x64/binary 2_7_6@x86/binary"
 	set "FEAT_DEFAULT_VERSION=2_7_6"
-	set "FEAT_DEFAULT_ARCH="
+	set "FEAT_DEFAULT_ARCH=x64"
 	set "FEAT_DEFAULT_FLAVOUR=binary"
 goto :eof
 

@@ -38,7 +38,7 @@ goto :eof
 	set BUILD_DIR=
 
 	echo ** Installing strawberry perl portable edition version 
-
+	
 	call %STELLA_COMMON%\common.bat :download_uncompress "%FEAT_BINARY_URL%" "%FEAT_BINARY_URL_FILENAME%" "%INSTALL_DIR%" "DEST_ERASE STRIP"
 		
 goto :eof

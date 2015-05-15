@@ -37,7 +37,9 @@ goto :eof
 	set SRC_DIR=
 	set BUILD_DIR=
 
+	if exist "%INSTALL_DIR%" rmdir /s/q "%INSTALL_DIR%"
+
 	for %%i in (!FEAT_BINARY_URL!) do (
-		call %STELLA_COMMON%\common.bat :download_uncompress "%FEAT_BINARY_URL%" "_AUTO_" "%INSTALL_DIR%" "DEST_ERASE STRIP"
+		call %STELLA_COMMON%\common.bat :download_uncompress "%%i" "_AUTO_" "%INSTALL_DIR%" ""
 	)	
 goto :eof

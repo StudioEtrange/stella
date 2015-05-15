@@ -513,19 +513,18 @@ goto :eof
 		echo ** ERROR missing URL
 		goto :eof
 	)
-	if "%FILE_NAME%"=="" (
-		echo ** ERROR missing filename
-		goto :eof
+	if "!FILE_NAME!"=="" (
+		set "FILE_NAME=_AUTO_"
 	)
 
-	if "%FILE_NAME%"=="_AUTO_" (
+	if "!FILE_NAME!"=="_AUTO_" (
 		for %%A in ( %URL% ) do set FILE_NAME=%%~nxA
-		echo ** Guessed file name is %FILE_NAME%
+		echo ** Guessed file name is !FILE_NAME!
 	)
 
-	call :download "%URL%" "%FILE_NAME%"
+	call :download "%URL%" "!FILE_NAME!"
 
-	call :uncompress "%STELLA_APP_CACHE_DIR%\%FILE_NAME%" "%UNZIP_DIR%" "%OPT%"
+	call :uncompress "%STELLA_APP_CACHE_DIR%\!FILE_NAME!" "%UNZIP_DIR%" "%OPT%"
 goto :eof
 
 :uncompress
@@ -559,7 +558,8 @@ goto :eof
 	if "%EXTENSION%"==".7z" (
 		echo ** Using 7zip : %SEVENZIP%
 		set "USE7ZIP=TRUE"
-	) else (
+	) 
+	if "%EXTENSION%"==".zip" (
 		echo ** Using unzip : %UZIP%
 		set "USE7ZIP=FALSE"
 	)
@@ -629,7 +629,7 @@ REM - use powershell in batch http://stackoverflow.com/a/20476904
 
 	if "%FILE_NAME%"=="_AUTO_" (
 		for %%A in ( %URL% ) do set FILE_NAME=%%~nxA
-		echo ** Guessed file name is %FILE_NAME%
+		echo ** Guessed file name is !FILE_NAME!
 	)
 
 	if not exist "%STELLA_APP_CACHE_DIR%" (
@@ -662,10 +662,8 @@ goto :eof
 
 REM INI FILE MANAGEMENT---------------------------------------------------
 REM alternative with powershell for reading only : https://gallery.technet.microsoft.com/scriptcenter/ea40c1ef-c856-434b-b8fb-ebd7a76e8d91
-REM not implemented
 
-
-REM alternative with http://godoc.org/github.com/Unknwon/goconfig (OR try http://godoc.org/github.com/robfig/config)
+REM TODO alternative with http://godoc.org/github.com/Unknwon/goconfig (OR try http://godoc.org/github.com/robfig/config)
 :add_key_2
 	set "_FILE=%~1"
 	set "_SECTION=%~2"
@@ -861,25 +859,6 @@ goto :eof
 	set "_match_exp=FALSE"
 	for /f %%m in ('echo  %_string%^| findstr /N "%_win_regexp%" ^| find /c ":"') do (
 		if not "%%m"=="0" set "_match_exp=TRUE"
-	)
-goto :eof
-
-:: check if file.lib is an import lib or a static lib
-:: by setting 
-::		LIB_TYPE with UNKNOW, STATIC, IMPORT
-:: first argument is the file to test
-:is_import_or_static_lib
-	set LIB_TYPE=UNKNOW
-	set _nb_dll=0
-	set _nb_obj=0
-	for /f %%i in ('lib /list %~1 ^| findstr /N ".dll$" ^| find /c ":"') do set _nb_dll=%%i
-	for /f %%j in ('lib /list %~1 ^| findstr /N ".obj$" ^| find /c ":"') do set _nb_obj=%%j
-	for /f %%j in ('lib /list %~1 ^| findstr /N ".o$" ^| find /c ":"') do set /a _nb_obj=%%j+!_nb_obj!
-	if %_nb_dll% EQU 0 if %_nb_obj% GTR 0 (
-		set LIB_TYPE=STATIC
-	)
-	if %_nb_obj% EQU 0 if %_nb_dll% GTR 0 (
-		set LIB_TYPE=IMPORT
 	)
 goto :eof
 

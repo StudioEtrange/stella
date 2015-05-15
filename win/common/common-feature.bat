@@ -462,11 +462,13 @@ goto :eof
 		call %STELLA_FEATURE_RECIPE%\feature_!TMP_FEAT_SCHEMA_NAME!.bat :feature_!TMP_FEAT_SCHEMA_NAME!_!TMP_FEAT_SCHEMA_VERSION!
 
 		REM set url dependending on arch
+
 		if not "!FEAT_ARCH!"=="" (
-			set "_tmp=!FEAT_BINARY_URL!_!FEAT_ARCH!"
-			set "FEAT_BINARY_URL=!%_tmp%!"
-			set "_tmp=!FEAT_BINARY_URL_FILENAME!_!FEAT_ARCH!"
-			set "FEAT_BINARY_URL_FILENAME=!%_tmp%!"
+			set "_tmp=FEAT_BINARY_URL_!FEAT_ARCH!"
+			for /F  %%a in ('echo !_tmp!') do set "FEAT_BINARY_URL=!%%a!"
+
+			set "_tmp=FEAT_BINARY_URL_FILENAME_!FEAT_ARCH!"
+			for /F  %%a in ('echo !_tmp!') do set "FEAT_BINARY_URL_FILENAME=!%%a!"
 		)
 	)
 
