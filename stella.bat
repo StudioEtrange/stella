@@ -114,7 +114,7 @@ if "%DOMAIN%"=="virtual" goto :end
 	echo		%~n0 app link ^<app-path^> [-stellaroot=^<path^>] : link an app to a specific stella path
 	echo	* feature management :
 	echo 		%~n0 feature install required : install required features for Stella
-	echo 		%~n0 feature install ^<feature schema^> : install a feature. schema = feature_name[#version][@arch][/binary|source][:os_restriction]
+	echo 		%~n0 feature install ^<feature schema^> : install a feature. schema = feature_name[#version][@arch][/binary^|source][:os_restriction]
 	echo 		%~n0 feature remove ^<feature schema^> : remove a feature
 	echo 		%~n0 feature list ^<all^|feature name^|active^>: list all available features OR available version of a feature OR current active features
 	echo	* virtual management :

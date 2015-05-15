@@ -91,21 +91,21 @@ goto :eof
 
 	if "!FEAT_BUNDLE_EMBEDDED_PATH!"=="" (
 
-		call :translate_schema !FEAT_SCHEMA_SELECTED! "__VAR_FEATURE_NAME" "__VAR_FEATURE_VER" "__VAR_FEATURE_ARCH"
+		call :translate_schema !_SCHEMA! "__VAR_FEATURE_NAME" "__VAR_FEATURE_VER" "__VAR_FEATURE_ARCH"
 
 		
 		if not "!__VAR_FEATURE_VER!"=="" (
 			set "_tested=!__VAR_FEATURE_VER!"
 		)
-		if not "$__VAR_FEATURE_ARCH!"=="" (
+		if not "!__VAR_FEATURE_ARCH!"=="" (
 			set "_tested=!_tested!@!__VAR_FEATURE_ARCH!"
 		)
-
 		if exist "!STELLA_APP_FEATURE_ROOT!\!__VAR_FEATURE_NAME!" (
 			REM for each detected version
-			for /D %%V in ( !_app_feature_root!\!__VAR_FEATURE_NAME!\* ) do (
+			for /D %%V in ( !STELLA_APP_FEATURE_ROOT!\!__VAR_FEATURE_NAME!\* ) do (
 				set "_ver=%%~nxV"
-				if not "!_tested!"=="" (
+
+				if "!_tested!"=="" (
 					set "_found=!_ver!"
 				) else (
 					call %STELLA_COMMON%\common.bat :match_exp ".*!_tested!.*" "!_ver!"
@@ -116,16 +116,17 @@ goto :eof
 			)
 		)
 
-		if not "%_found%"=="" (
-			call :internal_feature_context "!__VAR_FEATURE_NAME!#$!_ver!"
+		if not "!_found!"=="" (
+			call :internal_feature_context "!__VAR_FEATURE_NAME!#!_ver!"
 		) else (
 			REM empty info values
 			call :internal_feature_context
 		)
 
 	) else (
-		call :internal_feature_context $_SCHEMA
+		call :internal_feature_context !_SCHEMA!
 	)
+
 goto :eof
 
 
@@ -134,11 +135,12 @@ goto :eof
 :: do not use default values from feature recipe to search installed feature
 :feature_inspect
 	set "_SCHEMA=%~1"
+	set "feature_inspect_ORIGINAL_SCHEMA=%~1"
 
 	set TEST_FEATURE=0
 
 	call :feature_match_installed %_SCHEMA%
-
+	set "_SCHEMA=!feature_inspect_ORIGINAL_SCHEMA!"
 
 	if not "!FEAT_SCHEMA_SELECTED!"=="" (
 		if "!FEAT_BUNDLE!"=="TRUE" (
@@ -245,7 +247,7 @@ goto :eof
 		goto :eof
 	)
 
-	call :internal_feature_context %_SCHEMA%
+	call :internal_feature_context !_SCHEMA!
 
 	if not "!FEAT_SCHEMA_SELECTED!"=="" (
 		if "%_opt_internal_feature%"=="ON" (
@@ -301,7 +303,6 @@ goto :eof
 				echo Installing !FEAT_NAME! version !FEAT_VERSION! in !FEAT_INSTALL_ROOT!
 				call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :feature_!FEAT_NAME!_install_!FEAT_SCHEMA_FLAVOUR!
 			)
-
 
 			call :feature_inspect !FEAT_SCHEMA_SELECTED!
 			if "!TEST_FEATURE!"=="1" (
@@ -404,7 +405,7 @@ goto :eof
 
 :internal_feature_context
 	set "_SCHEMA=%~1"
-	set "_ORIGINAL_SCHEMA=%~1"
+	set "feature_context_ORIGINAL_SCHEMA=%~1"
 
 	set "FEAT_ARCH="
 	
@@ -469,8 +470,7 @@ goto :eof
 		)
 	)
 
-	set "_SCHEMA=%_ORIGINAL_SCHEMA%"
-
+	set "_SCHEMA=!feature_context_ORIGINAL_SCHEMA!"
 goto :eof
 
 
@@ -529,7 +529,6 @@ goto :eof
 			)
 		)
 	)
-
 goto:eof
 
 
@@ -540,7 +539,7 @@ REM				@arch could be x86 or x64
 REM				/flavour could be binary or source
 REM example: wget:ubuntu#1_2@x86/source
 :translate_schema
-	set "_schema=%~1"
+	set "_trans_schema=%~1"
 
 	set "_VAR_FEATURE_NAME=%~2"
 	set "_VAR_FEATURE_VER=%~3"
@@ -556,7 +555,7 @@ REM example: wget:ubuntu#1_2@x86/source
 	if not "!_VAR_FEATURE_OS_RESTRICTION!"=="" set "!_VAR_FEATURE_OS_RESTRICTION!="
 
 	set "_tmp="
-	set "_tmp=!_schema::="^&REM :!
+	set "_tmp=!_trans_schema::="^&REM :!
 	set "_tmp=!_tmp:#="^&REM #!
 	set "_tmp=!_tmp:@="^&REM @!
 	set "_tmp=!_tmp:/="^&REM /!
@@ -565,8 +564,8 @@ REM example: wget:ubuntu#1_2@x86/source
 	REM :
 	if not "!_VAR_FEATURE_OS_RESTRICTION!"=="" (
 		set "_tmp="
-		if not "x!_schema::=!"=="x!_schema!" (
-			set "_tmp=!_schema:*:=!"
+		if not "x!_trans_schema::=!"=="x!_trans_schema!" (
+			set "_tmp=!_trans_schema:*:=!"
 			set "_tmp=!_tmp:#="^&REM #!
 			set "_tmp=!_tmp:@="^&REM @!
 			set "_tmp=!_tmp:/="^&REM /!
@@ -577,8 +576,8 @@ REM example: wget:ubuntu#1_2@x86/source
 	REM #
 	if not "!_VAR_FEATURE_VER!"=="" (
 		set "_tmp="
-		if not "x!_schema:#=!"=="x!_schema!" (
-			set "_tmp=!_schema:*#=!"
+		if not "x!_trans_schema:#=!"=="x!_trans_schema!" (
+			set "_tmp=!_trans_schema:*#=!"
 			set "_tmp=!_tmp::="^&REM :!
 			set "_tmp=!_tmp:@="^&REM @!
 			set "_tmp=!_tmp:/="^&REM /!
@@ -589,8 +588,8 @@ REM example: wget:ubuntu#1_2@x86/source
 	REM @
 	if not "!_VAR_FEATURE_ARCH!"=="" (
 		set "_tmp="
-		if not "x!_schema:@=!"=="x!_schema!" (
-			set "_tmp=!_schema:*@=!"
+		if not "x!_trans_schema:@=!"=="x!_trans_schema!" (
+			set "_tmp=!_trans_schema:*@=!"
 			set "_tmp=!_tmp::="^&REM :!
 			set "_tmp=!_tmp:#="^&REM #!
 			set "_tmp=!_tmp:/="^&REM /!
@@ -601,8 +600,8 @@ REM example: wget:ubuntu#1_2@x86/source
 	REM /
 	if not "!_VAR_FEATURE_OS_RESTRICTION!"=="" (
 		set "_tmp="
-		if not "x!_schema:/=!"=="x!_schema!" (
-			set "_tmp=!_schema:*/=!"
+		if not "x!_trans_schema:/=!"=="x!_trans_schema!" (
+			set "_tmp=!_trans_schema:*/=!"
 			set "_tmp=!_tmp::="^&REM :!
 			set "_tmp=!_tmp:#="^&REM #!
 			set "_tmp=!_tmp:@="^&REM @!

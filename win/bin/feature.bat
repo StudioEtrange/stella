@@ -52,7 +52,7 @@ goto :usage
 	echo List of commands
    	echo	* feature management :
 	echo 		%~n0 install required : install required features for Stella
-	echo 		%~n0 install ^<feature schema^> : install a feature. schema = feature_name[#version][@arch][/binary|source][:os_restriction]
+	echo 		%~n0 install ^<feature schema^> : install a feature. schema = feature_name[#version][@arch][/binary^|source][:os_restriction]
 	echo 		%~n0 remove ^<feature schema^> : remove a feature
 	echo 		%~n0 list ^<all^|feature name^|active^>: list all available feature OR available version of a feature OR current active features
 goto :end

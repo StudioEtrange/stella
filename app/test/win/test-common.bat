@@ -9,6 +9,7 @@ call :test_is_path_abs
 
 call :test_abs_to_rel_path
 
+call :test_key
 
 goto :eof
 
@@ -85,4 +86,13 @@ goto :eof
 
 goto:eof
 
+
+:test_key
+	if not exist "%STELLA_APP_WORK_ROOT%" (
+		mkdir %STELLA_APP_WORK_ROOT%
+	)
+	call %STELLA_COMMON%\common.bat :add_key "%STELLA_APP_WORK_ROOT%\test.properties" "STELLA" "TEST" "33"
+	call %STELLA_COMMON%\common.bat :get_key "%STELLA_APP_WORK_ROOT%\test.properties" "STELLA" "TEST" "PREFIX"
+	echo x!STELLA_TEST!x && if not "!STELLA_TEST!"=="33" echo ERROR
+goto:eof
 @echo on

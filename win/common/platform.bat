@@ -169,7 +169,7 @@ goto :eof
 	call %STELLA_COMMON%\common-feature.bat :feature_install unzip#5_51_1 "HIDDEN INTERNAL"
 	call %STELLA_COMMON%\common-feature.bat :feature_install wget#1_11_4 "HIDDEN INTERNAL"
 	call %STELLA_COMMON%\common-feature.bat :feature_install sevenzip#9_20 "HIDDEN INTERNAL"
-	call %STELLA_COMMON%\common-feature.bat :feature_install goconfig-cli#snapshot "HIDDEN INTERNAL"
+	REM call %STELLA_COMMON%\common-feature.bat :feature_install goconfig-cli#snapshot "HIDDEN INTERNAL"
 goto :eof
 
 :__stella_requirement

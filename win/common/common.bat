@@ -529,11 +529,11 @@ goto :eof
 goto :eof
 
 :uncompress
+
 	set FILE_PATH=%~1
 	set UNZIP_DIR=%~2
 	set OPT=%~3
 
-	
 	REM OPTIONS
 	REM 	DEST_ERASE
 	REM 		delete destination folder
@@ -581,13 +581,31 @@ goto :eof
 		)
 		
 		cd /D "%STELLA_APP_TEMP_DIR%\%_FILENAME%"
+
+		:: we strip folder only if there is one folder at the root
+		set "_only_one_folder_exist=NONE"
 		for /D %%i in (*) do (
-			::for /D %%i in (*) do xcopy /q /y /e /i %%i "%UNZIP_DIR%"
-			REM TODO why not cd /D %%i ?????
-			cd %%i			
+			if "!_only_one_folder_exist!"=="NONE" (
+				set "_only_one_folder_exist=TRUE"
+			) else (
+				:: there is more than one folder
+				set "_only_one_folder_exist=FALSE"
+			)
+			:: check if a file exist
+			for %%j in (*) do set "_only_one_folder_exist=FALSE"
+		)
+		if "!_only_one_folder_exist!"=="TRUE" (
+			for /D %%i in (*) do (
+				::for /D %%i in (*) do xcopy /q /y /e /i %%i "%UNZIP_DIR%"
+				cd /D %%i
+				for /D %%j in (*) do move /y %%j "%UNZIP_DIR%\"
+				for %%j in (*) do move /y %%j "%UNZIP_DIR%\"
+			)
+		) else (
 			for /D %%j in (*) do move /y %%j "%UNZIP_DIR%\"
 			for %%j in (*) do move /y %%j "%UNZIP_DIR%\"
 		)
+		set "_only_one_folder_exist=NONE"
 		cd /D "%STELLA_APP_WORK_ROOT%"
 		if exist "%STELLA_APP_TEMP_DIR%\%_FILENAME%" rmdir /q /s "%STELLA_APP_TEMP_DIR%\%_FILENAME%"
 	)

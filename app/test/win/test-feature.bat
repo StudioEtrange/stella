@@ -52,7 +52,6 @@ goto :eof
 
 
 :test_feature_install
-
 	call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_FEATURE_LIST" ""
 
 	set RESULT=ERROR
@@ -60,8 +59,8 @@ goto :eof
 	call %STELLA_COMMON%\common-feature.bat :feature_install "%TEST%"
 	call %STELLA_COMMON%\common-feature.bat :feature_catalog_info "%TEST%"
 	if "%FEAT_INSTALL_ROOT%"=="%STELLA_APP_FEATURE_ROOT%\wget\1_11_4" if "%FEAT_VERSION%"=="1_11_4" set RESULT=OK
-	call %STELLA_COMMON%\common.bat :get_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_FEATURE_LIST"
 	echo %RESULT% : %TEST% =^> ROOT=!FEAT_INSTALL_ROOT! VER=%FEAT_VERSION%
+	call %STELLA_COMMON%\common.bat :get_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_FEATURE_LIST"
 	echo APP_FEATURE_LIST=%APP_FEATURE_LIST%
 	call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_FEATURE_LIST" ""
 
@@ -70,8 +69,8 @@ goto :eof
 	call %STELLA_COMMON%\common-feature.bat :feature_install "%TEST%"
 	call %STELLA_COMMON%\common-feature.bat :feature_catalog_info "%TEST%"
 	if "%FEAT_INSTALL_ROOT%"=="%STELLA_APP_FEATURE_ROOT%\patch\%FEAT_VERSION%" set RESULT=OK
-	call %STELLA_COMMON%\common.bat :get_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_FEATURE_LIST"
 	echo %RESULT% : %TEST% =^> ROOT=!FEAT_INSTALL_ROOT! VER=%FEAT_VERSION%
+	call %STELLA_COMMON%\common.bat :get_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_FEATURE_LIST"
 	echo APP_FEATURE_LIST=%APP_FEATURE_LIST%
 	call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_FEATURE_LIST" ""
 

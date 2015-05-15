@@ -7,12 +7,12 @@ REM APP RESSOURCES & ENV MANAGEMENT ---------------
 
 :add_app_feature
 	set "_SCHEMA=%~1"
-	call :app_feature "ADD" "%_SCHEMA%"
+	call :app_feature "ADD" "!_SCHEMA!"
 goto :eof
 
 :remove_app_feature
 	set "_SCHEMA=%~1"
-	call :app_feature "REMOVE" "%_SCHEMA%"
+	call :app_feature "REMOVE" "!_SCHEMA!"
 goto :eof
 
 :app_feature
@@ -21,22 +21,21 @@ goto :eof
 	set "_app_feature_list="
 
 	call %STELLA_COMMON%\common-feature.bat :translate_schema "!_SCHEMA!" "_TR_FEATURE_NAME" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR"  "_TR_FEATURE_OS_RESTRICTION"
-		
+
 	set _flag_add_app_feature=0
 	if exist "%_STELLA_APP_PROPERTIES_FILE%" (
 		if "!STELLA_APP_FEATURE_LIST!"=="" (
 			if "%_MODE%"=="ADD" set "_app_feature_list=!_app_feature_list! !_SCHEMA!"
 		) else (
-			for %%F in (!STELLA_APP_FEATURE_LIST!) do (		
+			for %%F in (!STELLA_APP_FEATURE_LIST!) do (
 				
 				call %STELLA_COMMON%\common-feature.bat :translate_schema "%%F" "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR"  "TR_FEATURE_OS_RESTRICTION"
 	
-
-				if "%_TR_FEATURE_OS_RESTRICTION%"=="%TR_FEATURE_OS_RESTRICTION%" (
-					if "%_TR_FEATURE_VER%"=="%TR_FEATURE_VER%" (
-						if "%_TR_FEATURE_NAME%"=="%TR_FEATURE_NAME%" (
-							if "%_TR_FEATURE_ARCH%"=="%TR_FEATURE_ARCH%" (
-								if "%_TR_FEATURE_FLAVOUR%"=="%TR_FEATURE_FLAVOUR%" (
+				if "!_TR_FEATURE_OS_RESTRICTION!"=="!TR_FEATURE_OS_RESTRICTION!" (
+					if "!_TR_FEATURE_VER!"=="!TR_FEATURE_VER!" (
+						if "!_TR_FEATURE_NAME!"=="!TR_FEATURE_NAME!" (
+							if "!_TR_FEATURE_ARCH!"=="!TR_FEATURE_ARCH!" (
+								if "!_TR_FEATURE_FLAVOUR!"=="!TR_FEATURE_FLAVOUR!" (
 									set _flag_add_app_feature=1
 								)
 							)
@@ -63,7 +62,6 @@ goto :eof
 		)
 
 		
-
 
 		call %STELLA_COMMON%\common.bat :trim "_app_feature_list" "!_app_feature_list!"
 		call %STELLA_COMMON%\common.bat :trim "STELLA_APP_FEATURE_LIST" "!STELLA_APP_FEATURE_LIST!"
