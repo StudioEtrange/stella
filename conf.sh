@@ -2,9 +2,9 @@ if [ ! "$_STELLA_CONF_INCLUDED_" == "1" ]; then
 _STELLA_CONF_INCLUDED_=1
 
 _STELLA_CONF_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-if [ "$_STELLA_CURRENT_RUNNING_DIR" == "" ]; then
-	#_STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
-	_STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "." )" && pwd )"
+if [ "$STELLA_CURRENT_RUNNING_DIR" == "" ]; then
+	#STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
+	STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "." )" && pwd )"
 fi
 
 # for I in $(seq 0 $(expr ${#BASH_SOURCE[@]} - 1) ); do
@@ -55,7 +55,7 @@ __set_current_platform_info
 STELLA_APP_PROPERTIES_FILENAME="stella.properties"
 STELLA_APP_NAME=
 
-[ "$STELLA_APP_ROOT" == "" ] && STELLA_APP_ROOT="$_STELLA_CURRENT_RUNNING_DIR"
+[ "$STELLA_APP_ROOT" == "" ] && STELLA_APP_ROOT="$STELLA_CURRENT_RUNNING_DIR"
 
 _STELLA_APP_PROPERTIES_FILE="$(__select_app $STELLA_APP_ROOT)"
 __get_all_properties $_STELLA_APP_PROPERTIES_FILE
@@ -63,7 +63,7 @@ __get_all_properties $_STELLA_APP_PROPERTIES_FILE
 [ "$STELLA_APP_NAME" == "" ] && STELLA_APP_NAME=stella
 
 # APP PATH ---------------------------------------------
-STELLA_APP_ROOT=$(__rel_to_abs_path "$STELLA_APP_ROOT" "$_STELLA_CURRENT_RUNNING_DIR")
+STELLA_APP_ROOT=$(__rel_to_abs_path "$STELLA_APP_ROOT" "$STELLA_CURRENT_RUNNING_DIR")
 
 [ "$STELLA_APP_WORK_ROOT" == "" ] && STELLA_APP_WORK_ROOT=$STELLA_APP_ROOT/workspace
 STELLA_APP_WORK_ROOT=$(__rel_to_abs_path "$STELLA_APP_WORK_ROOT" "$STELLA_APP_ROOT")
@@ -111,14 +111,15 @@ __STELLA_FEATURE_LIST="python zlib socat gnu-netcat maven spark sbt scala docker
 
 # API ---------------------------------------------
 STELLA_API_COMMON_PUBLIC="daemonize rel_to_abs_path is_abs argparse get_filename_from_string \
-get_ressource download_uncompress copy_folder_content_into del_folder \
+get_resource delete_resource update_resource revert_resource download_uncompress copy_folder_content_into del_folder \
 get_key add_key del_key mercurial_project_version git_project_version get_stella_version \
 make_sevenzip_sfx_bin make_targz_sfx_shell compress trim"
 STELLA_API_API_PUBLIC="api_connect api_disconnect"
-STELLA_API_APP_PUBLIC="link_app get_data get_assets get_all_data get_all_assets update_data update_assets revert_data revert_assets get_env_properties setup_env get_feature get_features"
+STELLA_API_APP_PUBLIC="link_app get_data get_assets get_data_pack get_assets_pack remove_data remove_assets remove_data_pack remove_assets_pack update_data update_assets revert_data revert_assets get_env_properties setup_env get_feature get_features"
 STELLA_API_FEATURE_PUBLIC="feature_remove feature_catalog_info feature_install feature_install_list feature_init list_active_features reinit_installed_features feature_inspect"
 STELLA_API_VIRTUAL_PUBLIC=""
 STELLA_API_BUILD_PUBLIC="fix_rpath_darwin fix_linked_lib_darwin fix_dynamiclib_install_name_darwin fix_dynamiclib_install_name_darwin_by_rootname fix_dynamiclib_install_name_darwin_by_folder"
+
 #STELLA_API_RETURN_FUNCTION=
 STELLA_API_RETURN_FUNCTION="rel_to_abs_path trim is_abs mercurial_project_version git_project_version get_stella_version list_active_features get_filename_from_string get_key"
 STELLA_API=__api_proxy

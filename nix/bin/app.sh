@@ -8,7 +8,8 @@ function usage() {
     echo "List of commands"
     echo " o-- application management :"
     echo " L     init <application name> [--approot=<path>] [--workroot=<abs or relative path to approot>] [--cachedir=<abs or relative path to approot>] [--samples]"
-    echo " L     get-data|get-assets|update-data|update-assets|revert-data|revert-assets <data id|assets id|all>"
+    echo " L     get-data|get-assets|update-data|update-assets|revert-data|revert-assets <list of data id|list of assets id>"
+    echo " L     get-data-pack|get-assets-pack|remove-data-pack|remove-assets-pack <data pack name|assets pack name>"
     echo " L     get-feature <all|feature schema> : install all features defined in app properties file or install a matching one"
     echo " L     setup-env <env id|all> : download, build, deploy and run virtual environment based on app properties"
     echo " L     link stella <app-path> [--stellaroot=<path>] : link an app to a specific stella path"
@@ -43,7 +44,7 @@ __init_stella_env
 if [ "$ACTION" == "init" ]; then
 
     if [ "$APPROOT" == "" ]; then
-        APPROOT=$_STELLA_CURRENT_RUNNING_DIR/$ID
+        APPROOT=$STELLA_CURRENT_RUNNING_DIR/$ID
     fi
     if [ "$WORKROOT" == "" ]; then
         WORKROOT=$APPROOT
@@ -66,13 +67,6 @@ else
         link)
             __link_app "$ID" "$STELLAROOT"
             ;;
-        get-data)
-            if [ "$ID" == "all" ]; then
-                __get_all_data
-            else
-                __get_data $ID
-            fi
-            ;;
         get-feature)
             if [ "$ID" == "all" ]; then
                 __get_features
@@ -80,12 +74,29 @@ else
                 __get_feature "$ID"
             fi
             ;;
+        get-data)
+            __get_data $ID
+            ;;
+        get-data-pack)
+            __get_data_pack $ID
+            ;;
         get-assets)
-            if [ "$ID" == "all" ]; then
-                __get_all_assets
-            else
-                __get_assets $ID
-            fi
+            __get_assets $ID
+            ;;
+        get-assets-pack)
+            __get_assets_pack $ID
+            ;;
+        remove-data)
+            __remove_data $ID
+            ;;
+        remove-assets)
+            __remove_assets $ID
+            ;;
+        remove-data-pack)
+            __remove_data_pack $ID
+            ;;
+        remove-assets-pack)
+            __remove_assets_pack $ID
             ;;
         udpate-data)
             __update_data $ID

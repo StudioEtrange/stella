@@ -10,8 +10,8 @@ __STELLA_URL="http://stella.sh"
 
 
 #_STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-if [ "$_STELLA_CURRENT_RUNNING_DIR" == "" ]; then
-     _STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "." )" && pwd )"
+if [ "$STELLA_CURRENT_RUNNING_DIR" == "" ]; then
+     STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "." )" && pwd )"
 fi
 
 function ___rel_to_abs_path() {
@@ -63,9 +63,9 @@ function __get_stella() {
 # Install stella in standalone ------------------
 function standalone() {
 	
-	[ "$PROVIDED_PATH" == "" ] && PROVIDED_PATH=$_STELLA_CURRENT_RUNNING_DIR/stella	
+	[ "$PROVIDED_PATH" == "" ] && PROVIDED_PATH=$STELLA_CURRENT_RUNNING_DIR/stella	
 
-	_STELLA_INSTALL_PATH=$(___rel_to_abs_path "$PROVIDED_PATH" "$_STELLA_CURRENT_RUNNING_DIR")
+	_STELLA_INSTALL_PATH=$(___rel_to_abs_path "$PROVIDED_PATH" "$STELLA_CURRENT_RUNNING_DIR")
 
 	if [ ! -f "$_STELLA_INSTALL_PATH/stella.sh" ]; then
 		__get_stella "git" "$_STELLA_INSTALL_PATH"
@@ -86,13 +86,13 @@ function bootstrap() {
 
 	IS_STELLA_JUST_INSTALLED="FALSE"
 
-	[ "$PROVIDED_PATH" == "" ] && PROVIDED_PATH=$_STELLA_CURRENT_RUNNING_DIR/stella
+	[ "$PROVIDED_PATH" == "" ] && PROVIDED_PATH=$STELLA_CURRENT_RUNNING_DIR/stella
 
 
 	# Check if APP/PROJECT in current dir is linked to STELLA
-	if [ -f "$_STELLA_CURRENT_RUNNING_DIR/stella-link.sh" ]; then
+	if [ -f "$STELLA_CURRENT_RUNNING_DIR/stella-link.sh" ]; then
 		IS_STELLA_LINK_FILE="TRUE"
-		source "$_STELLA_CURRENT_RUNNING_DIR/stella-link.sh" nothing
+		source "$STELLA_CURRENT_RUNNING_DIR/stella-link.sh" nothing
 		if [ ! "$STELLA_ROOT" == "" ]; then
 			if [ -f "$STELLA_ROOT/stella.sh" ]; then
 				IS_STELLA_LINKED="TRUE"
@@ -108,10 +108,10 @@ function bootstrap() {
 
 		if [ "$IS_STELLA_LINK_FILE" == "TRUE" ]; then
 			# install STELLA into STELLA_ROOT defined in link file
-			_STELLA_INSTALL_PATH=$(___rel_to_abs_path "$STELLA_ROOT" "$_STELLA_CURRENT_RUNNING_DIR")
+			_STELLA_INSTALL_PATH=$(___rel_to_abs_path "$STELLA_ROOT" "$STELLA_CURRENT_RUNNING_DIR")
 		else
 			# install STELLA into default path
-			_STELLA_INSTALL_PATH=$(___rel_to_abs_path "$PROVIDED_PATH" "$_STELLA_CURRENT_RUNNING_DIR")
+			_STELLA_INSTALL_PATH=$(___rel_to_abs_path "$PROVIDED_PATH" "$STELLA_CURRENT_RUNNING_DIR")
 		fi
 
 		if [ ! -f "$_STELLA_INSTALL_PATH/stella.sh" ]; then

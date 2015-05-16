@@ -12,7 +12,7 @@ function test__abs_to_rel_path_1() {
 	result=OK
 	r=$(__abs_to_rel_path "/path1" "/path1/path2") && echo $r  && [ "$r" == ".." ] && result=OK || result=ERROR
 	[ ! "$result" == "ERROR" ] && r=$(__abs_to_rel_path "/path1" "/path1/path2/path3") && echo $r && [ "$r" == "../.." ] && result=OK || result=ERROR
-	[ ! "$result" == "ERROR" ] && r=$(__abs_to_rel_path "$_STELLA_CURRENT_RUNNING_DIR" "/path1/path2/path3") && echo $r && [ "$r" == "../../..$_STELLA_CURRENT_RUNNING_DIR" ] && result=OK || result=ERROR
+	[ ! "$result" == "ERROR" ] && r=$(__abs_to_rel_path "$STELLA_CURRENT_RUNNING_DIR" "/path1/path2/path3") && echo $r && [ "$r" == "../../..$STELLA_CURRENT_RUNNING_DIR" ] && result=OK || result=ERROR
 	[ ! "$result" == "ERROR" ] && r=$(__abs_to_rel_path "/path1/path2" "/path1/path3") && echo $r && [ "$r" == "../path2" ] && result=OK || result=ERROR
 	[ ! "$result" == "ERROR" ] && r=$(__abs_to_rel_path "/path1/path2" "/path1") && echo $r && [ "$r" == "path2" ] && result=OK || result=ERROR
 	[ ! "$result" == "ERROR" ] && r=$(__abs_to_rel_path "/path1/path2/path3" "/path1") && echo $r && [ "$r" == "path2/path3" ] && result=OK || result=ERROR

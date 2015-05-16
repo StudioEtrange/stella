@@ -120,51 +120,98 @@ REM install a feature listed in app feature list. Look for matching version in a
 
 goto :eof
 
+REM get a list of data id
 :get_data
-	call :_get_app_ressources "DATA" "GET" "%~1"
+	call :_app_resources "DATA" "GET" "%~1"
 goto :eof
 
+REM get a list of assets id
 :get_assets
 	if not exist "%ASSETS_ROOT%" mkdir "%ASSETS_ROOT%"
 	if not exist "%ASSETS_REPOSITORY%" mkdir "%ASSETS_REPOSITORY%"
-	call :_get_app_ressources "ASSETS" "GET" "%~1"
+	call :_app_resources "ASSETS" "GET" "%~1"
 goto :eof
 
 :update_data
-	call :_get_app_ressources "DATA" "UPDATE" "%~1"
+	call :_app_resources "DATA" "UPDATE" "%~1"
 goto :eof
 
 :update_assets
-	call :_get_app_ressources "ASSETS" "UPDATE" "%~1"
+	call :_app_resources "ASSETS" "UPDATE" "%~1"
 goto :eof
 
 :revert_data
-	call :_get_app_ressources "DATA" "REVERT" "%~1"
+	call :_app_resources "DATA" "REVERT" "%~1"
 goto :eof
 
 :revert_assets
-	call :_get_app_ressources "ASSETS" "REVERT" "%~1"
+	call :_app_resources "ASSETS" "REVERT" "%~1"
 goto :eof
 
-:get_all_data
-	call :get_data "%STELLA_DATA_LIST%"
+:remove_data
+	call :_app_resources "DATA" "DELETE" "%~1"
 goto :eof
 
-:get_all_assets
-	call :get_assets "%STELLA_ASSETS_LIST%"
+:remove_assets
+	call :_app_resources "ASSETS" "DELETE" "%~1"
 goto :eof
 
 
-:: ARG1 ressource mode is DATA or ASSET
-:: ARG2 operation is GET or UPDATE or REVERT (UPDATE or REVERT if applicable)
-:: ARG3 list of ressource ID
-:_get_app_ressources
+:get_data_pack
+	set "_list_name=%~1"
+
+	call %STELLA_COMMON%\common.bat :get_key "!_STELLA_APP_PROPERTIES_FILE!" "STELLA" "!_list_name!" ""
+
+	for /F %%a in ('echo !_list_name!') do set "_list_pack=!%%a!"
+	call :get_data "!_list_pack!"
+goto:eof
+
+:get_assets_pack
+	set "_list_name=%~1"
+	call %STELLA_COMMON%\common.bat :get_key "!_STELLA_APP_PROPERTIES_FILE!" "STELLA" "!_list_name!" ""
+	
+	for /F %%a in ('echo !_list_name!') do set "_list_pack=!%%a!"
+	call :get_assets "!_list_pack!"
+goto:eof
+
+:remove_data_pack
+	set "_list_name=%~1"
+
+	call %STELLA_COMMON%\common.bat :get_key "!_STELLA_APP_PROPERTIES_FILE!" "STELLA" "!_list_name!" ""
+
+	for /F %%a in ('echo !_list_name!') do set "_list_pack=!%%a!"
+	call :remove_data "!_list_pack!"
+goto:eof
+
+:remove_assets_pack
+	set "_list_name=%~1"
+	call %STELLA_COMMON%\common.bat :get_key "!_STELLA_APP_PROPERTIES_FILE!" "STELLA" "!_list_name!" ""
+	
+	for /F %%a in ('echo !_list_name!') do set "_list_pack=!%%a!"
+	call :remove_assets "!_list_pack!"
+goto:eof
+
+
+
+
+:: ARG1 resource mode is DATA or ASSET
+:: ARG2 operation is GET or UPDATE or REVERT or DELETE (UPDATE or REVERT if applicable)
+:: ARG3 list of resource ID
+:_app_resources
 	set "_mode=%~1"
 	set "_operation=%~2"
 	set "_list_id=%~3"
 
+	if "%_mode%"=="DATA" (
+		call :get_data_properties "!_STELLA_APP_PROPERTIES_FILE!" "%_list_id%"
+	)
+	if "%_mode%"=="ASSETS" (
+		call :get_assets_properties "!_STELLA_APP_PROPERTIES_FILE!" "%_list_id%"
+	)
+
 	for %%A in (!_list_id!) do (
 
+		
 		set "_opt=!%%A_%_mode%_OPTIONS!"
 		set "_uri=!%%A_%_mode%_URI!"
 		set "_prot=!%%A_%_mode%_GET_PROTOCOL!"
@@ -195,14 +242,15 @@ goto :eof
 				if "%%O"=="MERGE" set _merge=MERGE
 			)
 
-			echo * !_operation! !_name! [%%A] ressources
+			echo * !_operation! !_name! [%%A] resources
 
 			if "!_merge!"=="MERGE" (
 				echo * Main package of [%%A] is !_namespace!
 			)
 
 
-			call %STELLA_COMMON%\common.bat :get_ressource "%_mode% : !_name! [!_namespace!]" "!_uri!" "!_prot!" "!_artefact_dest!\!_namespace!" "!_opt! !_operation!"
+			call %STELLA_COMMON%\common.bat :resource "%_mode% : !_name! [!_namespace!]" "!_uri!" "!_prot!" "!_artefact_dest!\!_namespace!" "!_opt! !_operation!"
+
 			if "!_merge!"=="MERGE" (
 				echo * !_name! merged into !_namespace!
 			)
@@ -225,7 +273,7 @@ goto :eof
 	set "_properties_file="
 
 	if "%_app_path%"=="" (
-		set "_app_path=%_STELLA_CURRENT_RUNNING_DIR%"
+		set "_app_path=%STELLA_CURRENT_RUNNING_DIR%"
 	)
 
 
@@ -254,7 +302,7 @@ goto :eof
 		set "_stella_root=%STELLA_ROOT%"
 	} 
 
-	call %STELLA_COMMON%\common.bat :rel_to_abs_path "_approot" "!_approot!" "%_STELLA_CURRENT_RUNNING_DIR%"
+	call %STELLA_COMMON%\common.bat :rel_to_abs_path "_approot" "!_approot!" "%STELLA_CURRENT_RUNNING_DIR%"
 
 	call %STELLA_COMMON%\common.bat :is_path_abs "IS_ABS" "%_stella_root%"
 	if "%IS_ABS%"=="FALSE" (
@@ -279,7 +327,7 @@ goto :eof
 	set "_workroot=%~3"
 	set "_cachedir=%~4"
 
-	call %STELLA_COMMON%\common.bat :rel_to_abs_path "_approot" "!_approot!" "%_STELLA_CURRENT_RUNNING_DIR%"
+	call %STELLA_COMMON%\common.bat :rel_to_abs_path "_approot" "!_approot!" "%STELLA_CURRENT_RUNNING_DIR%"
 	if not exist "!_approot!" mkdir "!_approot!"
 
 
@@ -323,8 +371,8 @@ goto :eof
 		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_NAME" "!_app_name!"
 		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_WORK_ROOT" "!_workroot!"
 		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_CACHE_DIR" "!_cachedir!"
-		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "DATA_LIST" ""
-		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "ASSETS_LIST" ""
+		REM call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "DATA_LIST" ""
+		REM call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "ASSETS_LIST" ""
 		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "ENV_LIST" ""
 		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "INFRA_LIST" ""
 		call %STELLA_COMMON%\common.bat :add_key "%_STELLA_APP_PROPERTIES_FILE%" "STELLA" "APP_FEATURE_LIST" ""
@@ -350,14 +398,14 @@ goto :eof
 	)
 
 	call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "STELLA" "APP_CACHE_DIR" "PREFIX"
-	call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "STELLA" "DATA_LIST" "PREFIX" "PREFIX"
-	call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "STELLA" "ASSETS_LIST" "PREFIX"
+	REM call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "STELLA" "DATA_LIST" "PREFIX"
+	REM call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "STELLA" "ASSETS_LIST" "PREFIX"
 	call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "STELLA" "ENV_LIST" "PREFIX"
 	call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "STELLA" "INFRA_LIST" "PREFIX"
 	call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "STELLA" "APP_FEATURE_LIST" "PREFIX"
 
-	call :get_data_properties "%_properties_file%" "!STELLA_DATA_LIST!"
-	call :get_assets_properties "%_properties_file%" "!STELLA_ASSETS_LIST!"
+	REM call :get_data_properties "%_properties_file%" "!STELLA_DATA_LIST!"
+	REM call :get_assets_properties "%_properties_file%" "!STELLA_ASSETS_LIST!"
 	call :get_infra_properties "%_properties_file%" "!STELLA_INFRA_LIST!"
 	call :get_env_properties "%_properties_file%" "!STELLA_ENV_LIST!"
 
@@ -503,7 +551,7 @@ goto :eof
 :ask_init_app
 	set /p input="Do you wish to init your stella app (create properties files, link app to stella...) ? [Y/n] "
 		if not "%input%"=="n" (
-			for /D %%I IN ("%_STELLA_CURRENT_RUNNING_DIR%") do set _project_name=%%~nxI
+			for /D %%I IN ("%STELLA_CURRENT_RUNNING_DIR%") do set _project_name=%%~nxI
 			set /p input="What is your project name ? [!_project_name!] "
 			if not "!input!"=="" (
 				set "_project_name=!input!"
@@ -512,11 +560,11 @@ goto :eof
 			set /p input="Do you wish to generate a sample app for your project ? [y/N] "
 			if "!input!"=="y" (
 				REM using default values for app paths (because we didnt ask them)
-				call :init_app "!_project_name!" "!_STELLA_CURRENT_RUNNING_DIR!"
+				call :init_app "!_project_name!" "!STELLA_CURRENT_RUNNING_DIR!"
 
-				call :create_app_samples "!_STELLA_CURRENT_RUNNING_DIR!"
+				call :create_app_samples "!STELLA_CURRENT_RUNNING_DIR!"
 			) else (
-				call :init_app "!_project_name!" "!_STELLA_CURRENT_RUNNING_DIR!"
+				call :init_app "!_project_name!" "!STELLA_CURRENT_RUNNING_DIR!"
 			)
 			@echo off
 		)

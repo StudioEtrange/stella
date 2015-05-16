@@ -3,7 +3,7 @@ if "!__STELLA_CONFIGURED__!"=="TRUE" goto :eof
 
 set _STELLA_CONF_CURRENT_FILE_DIR=%~dp0
 set _STELLA_CONF_CURRENT_FILE_DIR=%_STELLA_CONF_CURRENT_FILE_DIR:~0,-1%
-if "%_STELLA_CURRENT_RUNNING_DIR%"=="" set _STELLA_CURRENT_RUNNING_DIR=%cd%
+if "%STELLA_CURRENT_RUNNING_DIR%"=="" set STELLA_CURRENT_RUNNING_DIR=%cd%
 
 
 :: PATHS
@@ -33,7 +33,7 @@ set STELLA_APP_PROPERTIES_FILENAME=stella.properties
 set STELLA_APP_NAME=
 
 if "%STELLA_APP_ROOT%"=="" (
-	set STELLA_APP_ROOT=%_STELLA_CURRENT_RUNNING_DIR%
+	set STELLA_APP_ROOT=%STELLA_CURRENT_RUNNING_DIR%
 )
 
 call %STELLA_COMMON%\common-app.bat :select_app "_STELLA_APP_PROPERTIES_FILE"
@@ -44,7 +44,7 @@ if "%STELLA_APP_NAME%"=="" (
 )
 
 :: APP PATH
-call %STELLA_COMMON%\common.bat :rel_to_abs_path "STELLA_APP_ROOT" "%STELLA_APP_ROOT%" "%_STELLA_CURRENT_RUNNING_DIR%"
+call %STELLA_COMMON%\common.bat :rel_to_abs_path "STELLA_APP_ROOT" "%STELLA_APP_ROOT%" "%STELLA_CURRENT_RUNNING_DIR%"
 
 if "%STELLA_APP_WORK_ROOT%"=="" (
 	set STELLA_APP_WORK_ROOT=%STELLA_APP_ROOT%\workspace
@@ -106,9 +106,9 @@ set "__STELLA_DISTRIB_LIST=ubuntu64_13_10 debian64_7_5 centos64_6_5 archlinux bo
 set "__STELLA_FEATURE_LIST=conemu goconfig-cli ninja jom cmake packer perl ruby rubydevkit nasm python vagrant openssh wget unzip sevenzip patch gnumake"
 
 :: API ---------------------------------------------
-set "STELLA_API_COMMON_PUBLIC=trim argparse is_path_abs get_ressource download_uncompress del_folder copy_folder_content_into fork run_admin mercurial_project_version git_project_version"
+set "STELLA_API_COMMON_PUBLIC=trim argparse is_path_abs get_resource delete_resource update_resource revert_resource download_uncompress del_folder copy_folder_content_into fork run_admin mercurial_project_version git_project_version"
 set "STELLA_API_API_PUBLIC=api_connect api_disconnect"
-set "STELLA_API_APP_PUBLIC=link_app get_data get_assets get_all_data get_all_assets update_data update_assets revert_data revert_assets get_feature get_features"
+set "STELLA_API_APP_PUBLIC=link_app get_data get_assets get_data_pack get_assets_pack remove_data remove_data_pack remove_assets remove_assets_pack update_data update_assets revert_data revert_assets get_feature get_features"
 set "STELLA_API_FEATURE_PUBLIC=feature_remove feature_catalog_info feature_install feature_install_list feature_init list_active_features reinit_installed_features feature_inspect"
 set "STELLA_API_VIRTUAL_PUBLIC="
 set "STELLA_API_BUILD_PUBLIC=is_import_or_static_lib"

@@ -40,8 +40,8 @@ rem		call %STELLA_COMMON%\common.bat :trim "result" "!_s!"
 goto :eof
 
 :: FILES TOOL ---------------------------------------
-:del_folder
-	if exist %~1 (
+:del_folder2
+	if exist "%~1" (
 		echo ** Deleting %~1 folder
 		REM call :timecount_start timecount_id
 		del /f/q %~1 >nul 2>&1
@@ -53,7 +53,14 @@ goto :eof
 		REM icacls %~1 /reset /t >nul
 		REM icacls %~1 /setowner "%username%" /t >nul
 	)
-goto :eof	
+goto :eof
+REM TODO powershell alternative 
+:del_folder
+	if exist "%~1" (
+		echo ** Deleting %~1 folder
+		powershell -Command "remove-item %~1 -force -recurse"
+	)
+goto :eof
 
 :: copy content of folder ARG1 into folder ARG2 (with an optional filter ARG3)
 :copy_folder_content_into
@@ -122,7 +129,7 @@ REM %~dp0 get the fully qualified path of the 0th argument (which is the current
 		set %_result_var_rel_to_abs_path%=!_temp_path:~0,-1!
 	) else (
 		set "_abs_root_path=%~3"
-		if not defined _abs_root_path set "_abs_root_path=%_STELLA_CURRENT_RUNNING_DIR%"
+		if not defined _abs_root_path set "_abs_root_path=%STELLA_CURRENT_RUNNING_DIR%"
 		for /f "tokens=*" %%A in ("!_abs_root_path!.\%_rel_path%") do set "%_result_var_rel_to_abs_path%=%%~fA"
 	)
 	
@@ -153,7 +160,7 @@ REM http://www.dostips.com/DtCodeCmdLib.php#Function.MakeRelative
 	set _tmp=
 	set _sub=
 
-	if not defined _base_path set _base_path=%_STELLA_CURRENT_RUNNING_DIR%
+	if not defined _base_path set _base_path=%STELLA_CURRENT_RUNNING_DIR%
 	for /f "tokens=*" %%a in ("%_abs_path%") do set _abs_path=%%~fa
 	for /f "tokens=*" %%a in ("%_base_path%") do set _base_path=%%~fa
 	REM set _mat=&rem variable to store matching part of the name
@@ -276,15 +283,40 @@ goto :eof
 :bootstrap_stella_env
 	set _TITLE=%STELLA_APP_NAME%
 	:: folder in wich the new bootstraped env will remain
-	set _FOLDER=%_STELLA_CURRENT_RUNNING_DIR%
+	set _FOLDER=%STELLA_CURRENT_RUNNING_DIR%
 
 	call :fork "%_TITLE%" "%_FOLDER%" "%STELLA_COMMON%\bootstrap-stella-env.bat -internalcall" "DETACH"
 	echo ** A new env %_TITLE% is bootstrapped with all STELLA default variable setted
 goto :eof
 
 
-:: DOWNLOAD AND ZIP TOOLS-----------------------------------------------------
-:get_ressource
+::RESSOURCES MANAGEMENT ---------------------------------------------------
+:get_resource
+	SET "OPT=%~5"
+	set "OPT=%OPT% GET"
+	call :resource %~1 %~2 %~3 %~4 !OPT!
+goto :eof
+
+:update_resource
+	SET "OPT=%~5"
+	set "OPT=%OPT% UPDATE"
+	call :resource %~1 %~2 %~3 %~4 !OPT!
+goto :eof
+
+:delete_resource
+	SET "OPT=%~5"
+	set "OPT=%OPT% DELETE"
+	call :resource %~1 %~2 %~3 %~4 !OPT!
+goto :eof
+
+:revert_resource
+	SET "OPT=%~5"
+	set "OPT=%OPT% REVERT"
+	call :resource %~1 %~2 %~3 %~4 !OPT!
+goto :eof
+
+
+:resource
 	set "NAME=%~1"
 	set "URI=%~2"
 	set "PROTOCOL=%~3"
@@ -293,9 +325,10 @@ goto :eof
 	REM option should passed as one string "OPT1 OPT2"
 	REM 	"MERGE" for merge in FINAL_DESTINATION
 	REM 	"STRIP" for remove root folder and copy content of root folder in FINAL_DESTINATION
-	REM 	"UPDATE" pull and update ressource (only for HG or GIT)
-	REM 	"REVERT" complete revert of the ressource (only for HG or GIT)
+	REM 	"UPDATE" pull and update resource (only for HG or GIT)
+	REM 	"REVERT" complete revert of the resource (only for HG or GIT)
 	REM 	"FORCE_NAME" force name of downloaded file
+	REM 	"DELETE" delete resource
 	SET "OPT=%~5"
 
 	set "_name_legal=%NAME::=%"
@@ -312,6 +345,7 @@ goto :eof
 
 	:: operation is GET by default
 	set _opt_get=ON
+	set _opt_delete=OFF
 	set _opt_update=OFF
 	set _opt_revert=OFF
 	set _opt_force_name=OFF
@@ -322,10 +356,11 @@ goto :eof
 			if "%%O"=="STRIP" set _opt_strip=ON
 			if "%%O"=="UPDATE" set _opt_update=ON
 			if "%%O"=="REVERT" set _opt_revert=ON
+			if "%%O"=="DELETE" set _opt_delete=ON
 			if "%%O"=="FORCE_NAME" set _opt_force_name=ON
 		) else (
-				set "_download_filename=%%O"
-				set _opt_force_name=OFF
+			set "_download_filename=%%O"
+			set _opt_force_name=OFF
 		)
 	)
 
@@ -333,114 +368,138 @@ goto :eof
 	if "!_opt_update!"=="ON" (
 		set _opt_get=OFF
 		set _opt_revert=OFF
+		set _opt_delete=OFF
 		set "_text=Updating"
 	)
 	if "!_opt_revert!"=="ON" (
 		set _opt_get=OFF
 		set _opt_update=OFF
+		set _opt_delete=OFF
 		set "_text=Reverting"
+	)
+	if "!_opt_delete!"=="ON" (
+		set _opt_get=OFF
+		set _opt_update=OFF
+		set _opt_revert=OFF
+		set "_text=Deleting"
 	)
 
 	
 	if not "%FINAL_DESTINATION%"=="" (
-		echo ** !_text! ressource : %NAME% into %FINAL_DESTINATION%
+		echo ** !_text! resource : %NAME% in %FINAL_DESTINATION%
 	) else (
-		echo ** !_text! ressource : %NAME%
-	)
-
-	if "%FORCE%"=="1" (
-		call :del_folder "%FINAL_DESTINATION%"
+		echo ** !_text! resource : %NAME%
 	)
 
 	
-	:: strip root folder mode
-	set "_STRIP="
-	if "!_opt_strip!"=="ON" set "_STRIP=STRIP"
-
-
-	set _TEST=0
-	if "%PROTOCOL%"=="HTTP_ZIP" set _TEST=1
-	if "%PROTOCOL%"=="HTTP" set _TEST=2
-	if "%PROTOCOL%"=="HG" set _TEST=3
-	if "%PROTOCOL%"=="GIT" set _TEST=3
-	if "%PROTOCOL%"=="FILE" set _TEST=2
-	if "%PROTOCOL%"=="FILE_ZIP" set _TEST=1
-
-	set _FLAG=1
-	if "%_TEST%"=="1" (
-		if "!_opt_revert!"=="ON" (
-			echo REVERT Not supported with HTTP_ZIP protocol
-			set _FLAG=0
-		)
-		if "!_opt_update!"=="ON" (
-			echo UPDATE Not supported with HTTP_ZIP protocol
-			set _FLAG=0
-		)
-		if exist "%FINAL_DESTINATION%" (
-			if "!_opt_get!"=="ON" (
-				if "!_opt_merge!"=="ON" (
-					if exist "%FINAL_DESTINATION%\._MERGED_!_name_legal!" (
-						echo  ** Ressource already merged
-						set _FLAG=0
-					)
-				)
-				if "!_opt_strip!"=="ON" (
-					echo  ** Ressource already stripped
-					set _FLAG=0
-				)
-			)	
-		)
-	)
-
-	if "%_TEST%"=="2" (
-		if "!_opt_strip!"=="ON" echo STRIP option not in use
-		if "!_opt_revert!"=="ON" (
-			echo REVERT Not supported with HTTP_ZIP protocol
-			set _FLAG=0
-		)
-		if "!_opt_update!"=="ON" (
-			echo UPDATE Not supported with HTTP_ZIP protocol
-			set _FLAG=0
-		)
-		
-		if exist "%FINAL_DESTINATION%" (
-			if "!_opt_get!"=="ON" (
-				if "!_opt_merge!"=="ON" (
-					if exist "%FINAL_DESTINATION%\._MERGED_!_name_legal!" (
-						echo  ** Ressource already merged
-						set _FLAG=0
-					)
-				)
-			)	
-		)
-	)
-
-	if "%_TEST%"=="3" (
-		if "!_opt_strip!"=="ON" echo STRIP option not in use
-		if exist "%FINAL_DESTINATION%" (
-			if "!_opt_get!"=="ON" (
-				echo  ** Ressource already exist
-				set _FLAG=0
-				if "!_opt_merge!"=="ON" (
-					if exist "%FINAL_DESTINATION%\._MERGED_!_name_legal!" (
-						echo  ** Ressource already merged
-						set _FLAG=0
-					)
-				)
+	if "!_opt_get!"=="ON" (
+		if "%FORCE%"=="1" (
+			if "!_opt_merge!"=="OFF" (
+				call :del_folder "%FINAL_DESTINATION%"
 			)
-		) else (
+			if "!_opt_merge!"=="ON" (
+				del /q/f "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
+			)
+		)
+	)
+
+	if "!_opt_delete!"=="ON" (
+		if "!_opt_merge!"=="OFF" (
+			call :del_folder "%FINAL_DESTINATION%"
+		)
+		if "!_opt_merge!"=="ON" (
+			del /q/f "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
+		)
+		set _FLAG=0
+	)
+
+	if "!_opt_delete!"=="OFF" (
+		:: strip root folder mode
+		set "_STRIP="
+		if "!_opt_strip!"=="ON" set "_STRIP=STRIP"
+
+		
+
+		set _TEST=0
+		if "%PROTOCOL%"=="HTTP_ZIP" set _TEST=1
+		if "%PROTOCOL%"=="HTTP" set _TEST=2
+		if "%PROTOCOL%"=="HG" set _TEST=3
+		if "%PROTOCOL%"=="GIT" set _TEST=3
+		if "%PROTOCOL%"=="FILE" set _TEST=2
+		if "%PROTOCOL%"=="FILE_ZIP" set _TEST=1
+
+
+		set _FLAG=1
+		if "%_TEST%"=="1" (
 			if "!_opt_revert!"=="ON" (
-				echo  ** Ressource does not exist
+				echo REVERT Not supported with HTTP_ZIP protocol
 				set _FLAG=0
 			)
 			if "!_opt_update!"=="ON" (
-				echo  ** Ressource does not exist
+				echo UPDATE Not supported with HTTP_ZIP protocol
 				set _FLAG=0
+			)
+			if exist "%FINAL_DESTINATION%" (
+				if "!_opt_get!"=="ON" (
+					if "!_opt_merge!"=="ON" (
+						if exist "%FINAL_DESTINATION%\._MERGED_!_name_legal!" (
+							echo  ** Ressource already merged
+							set _FLAG=0
+						)
+					)
+					if "!_opt_strip!"=="ON" (
+						echo  ** Ressource already stripped
+						set _FLAG=0
+					)
+				)	
+			)
+		)
+
+		if "%_TEST%"=="2" (
+			if "!_opt_strip!"=="ON" echo STRIP option not supported
+			if "!_opt_revert!"=="ON" (
+				echo REVERT Not supported with HTTP_ZIP protocol
+				set _FLAG=0
+			)
+			if "!_opt_update!"=="ON" (
+				echo UPDATE Not supported with HTTP_ZIP protocol
+				set _FLAG=0
+			)
+			
+			if exist "%FINAL_DESTINATION%" (
+				if "!_opt_get!"=="ON" (
+					if "!_opt_merge!"=="ON" (
+						if exist "%FINAL_DESTINATION%\._MERGED_!_name_legal!" (
+							echo  ** Ressource already merged
+							set _FLAG=0
+						)
+					)
+				)	
+			)
+		)
+
+		if "%_TEST%"=="3" (
+			if "!_opt_strip!"=="ON" echo STRIP option not supported
+			if "!_opt_merge!"=="ON" echo MERGE option not supported
+			if exist "%FINAL_DESTINATION%" (
+				if "!_opt_get!"=="ON" (
+					echo  ** Ressource already exist
+					set _FLAG=0
+				)
+			) else (
+				if "!_opt_revert!"=="ON" (
+					echo  ** Ressource does not exist
+					set _FLAG=0
+				)
+				if "!_opt_update!"=="ON" (
+					echo  ** Ressource does not exist
+					set _FLAG=0
+				)
 			)
 		)
 	)
 
-	if "%_FLAG%"=="1" (
+	if "!_FLAG!"=="1" (
 		if not exist "%FINAL_DESTINATION%" mkdir %FINAL_DESTINATION%
 
 		if "%PROTOCOL%"=="HTTP_ZIP" (
@@ -464,7 +523,6 @@ goto :eof
 				hg update
 			)
 			if "!_opt_get!"=="ON" hg clone %URI% "%FINAL_DESTINATION%"
-			if "!_opt_merge!"=="ON" echo 1 > "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
 		)
 		if "%PROTOCOL%"=="GIT" (
 			if "!_opt_revert!"=="ON" (
@@ -476,7 +534,6 @@ goto :eof
 				git pull
 			)
 			if "!_opt_get!"=="ON" git clone %URI% "%FINAL_DESTINATION%"
-			if "!_opt_merge!"=="ON" echo 1 > "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
 		)
 		if "%PROTOCOL%"=="FILE" (
 			if "!_opt_get!"=="ON" call :copy_folder_content_into "%URI%" "%FINAL_DESTINATION%"
@@ -489,6 +546,7 @@ goto :eof
 	)
 goto :eof
 
+:: DOWNLOAD AND ZIP TOOLS-----------------------------------------------------
 :download_uncompress
 	set URL=%~1
 	set FILE_NAME=%~2
@@ -823,8 +881,7 @@ goto :eof
 :: VARIOUS ---------------------------------------
 :get_stella_version
 	set "_result_var_get_stella_version=%~1"
-	set "_path=%~2"
-	set "_OPT=%~3"
+	set "_OPT=%~2"
 	
 	
 	REM option
@@ -838,7 +895,7 @@ goto :eof
 			set "%_result_var_git_project_version%=!_v!"
 		)
 	) else (
-		call :__git_project_version "%_result_var_get_stella_version%" "%_OPT%"
+		call :git_project_version "%_result_var_get_stella_version%" "%STELLA_ROOT%" "%_OPT%"
 	)
 goto :eof
 

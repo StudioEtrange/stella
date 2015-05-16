@@ -15,7 +15,7 @@ function __select_app() {
 	local _properties_file=
 
 	if [ "$_app_path" == "" ]; then
-		_app_path=$_STELLA_CURRENT_RUNNING_DIR
+		_app_path=$STELLA_CURRENT_RUNNING_DIR
 	fi
 
 	if [ -f "$_app_path/$STELLA_APP_PROPERTIES_FILENAME" ]; then
@@ -40,7 +40,7 @@ function __link_app() {
 	local _approot=$1
 	local _stella_root=$2
 
-	_approot=$(__rel_to_abs_path $_approot $_STELLA_CURRENT_RUNNING_DIR)
+	_approot=$(__rel_to_abs_path $_approot $STELLA_CURRENT_RUNNING_DIR)
 
 	[ "$_stella_root" == "" ] && _stella_root=$STELLA_ROOT
 	_stella_root=$(__abs_to_rel_path "$_stella_root" "$_approot")
@@ -63,8 +63,8 @@ function __init_app() {
 
 
 	if [ "$(__is_abs "$_approot")" == "FALSE" ]; then
-		mkdir -p $_STELLA_CURRENT_RUNNING_DIR/$_approot
-		_approot=$(__rel_to_abs_path "$_approot" "$_STELLA_CURRENT_RUNNING_DIR")
+		mkdir -p $STELLA_CURRENT_RUNNING_DIR/$_approot
+		_approot=$(__rel_to_abs_path "$_approot" "$STELLA_CURRENT_RUNNING_DIR")
 	else
 		mkdir -p $_approot
 	fi
@@ -97,8 +97,8 @@ function __init_app() {
 		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_NAME" "$_app_name"
 		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_WORK_ROOT" "$_workroot"
 		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_CACHE_DIR" "$_cachedir"
-		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "DATA_LIST"
-		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "ASSETS_LIST"
+		#__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "DATA_LIST"
+		#__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "ASSETS_LIST"
 		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "ENV_LIST"
 		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "INFRA_LIST"
 		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST"
@@ -116,14 +116,14 @@ function __get_all_properties() {
 		__get_key "$_properties_file" "STELLA" "APP_WORK_ROOT" "PREFIX"
 		# so that nested stella application will use the same cache folder
 		[ "$STELLA_APP_CACHE_DIR" == "" ] && __get_key "$_properties_file" "STELLA" "APP_CACHE_DIR" "PREFIX"
-		__get_key "$_properties_file" "STELLA" "DATA_LIST" "PREFIX"
-		__get_key "$_properties_file" "STELLA" "ASSETS_LIST" "PREFIX"
+		#__get_key "$_properties_file" "STELLA" "DATA_LIST" "PREFIX"
+		#__get_key "$_properties_file" "STELLA" "ASSETS_LIST" "PREFIX"
 		__get_key "$_properties_file" "STELLA" "ENV_LIST" "PREFIX"
 		__get_key "$_properties_file" "STELLA" "INFRA_LIST" "PREFIX"
 		__get_key "$_properties_file" "STELLA" "APP_FEATURE_LIST" "PREFIX"
 
-		__get_data_properties "$_properties_file" "$STELLA_DATA_LIST"
-		__get_assets_properties "$_properties_file" "$STELLA_ASSETS_LIST"
+		#__get_data_properties "$_properties_file" "$STELLA_DATA_LIST"
+		#__get_assets_properties "$_properties_file" "$STELLA_ASSETS_LIST"
 		__get_infra_properties "$_properties_file" "$STELLA_INFRA_LIST"
 		__get_env_properties "$_properties_file" "$STELLA_ENV_LIST"
 	fi
@@ -322,64 +322,99 @@ function __get_feature() {
 
 }
 
+
+
+
+
+# get a list of data by id
 function __get_data() {
 	local _list_id=$1
-
-	__get_app_ressources "DATA" "GET" "$_list_id"
-
+	__app_resources "DATA" "GET" "$_list_id"
 }
 
+# get a list of assets by id
 function __get_assets() {
 	local _list_id=$1
-	
 	mkdir -p "$ASSETS_ROOT"
 	mkdir -p "$ASSETS_REPOSITORY"
-	
-	__get_app_ressources "ASSETS" "GET" "$_list_id"
+
+	__app_resources "ASSETS" "GET" "$_list_id"
 }
 
 function __update_data() {
 	local _list_id=$1
-	
-	__get_app_ressources "DATA" "UPDATE" "$_list_id"
-
+	__app_resources "DATA" "UPDATE" "$_list_id"
 }
 
 function __update_assets() {
 	local _list_id=$1
-	
-	__get_app_ressources "ASSETS" "UPDATE" "$_list_id"
+	__app_resources "ASSETS" "UPDATE" "$_list_id"
 }
 
 function __revert_data() {
 	local _list_id=$1
-	
-	__get_app_ressources "DATA" "REVERT" "$_list_id"
+	__app_resources "DATA" "REVERT" "$_list_id"
 
 }
 
 function __revert_assets() {
 	local _list_id=$1
-	
-	__get_app_ressources "ASSETS" "REVERT" "$_list_id"
+	__app_resources "ASSETS" "REVERT" "$_list_id"
 }
 
-function __get_all_data() {
 
-	__get_data "$STELLA_DATA_LIST"
+function __get_data_pack() {
+	local _list_name=$1
+
+	__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "$_list_name" ""
+
+	local _list_pack="$(eval "$"$(echo $_list_name))"
+	__get_data "$_list_pack"
 }
 
-function __get_all_assets() {
-	__get_assets "$STELLA_ASSETS_LIST"
+function __get_assets_pack() {
+	local _list_name=$1
+
+	__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "$_list_name" ""
+
+	local _list_pack="$(eval "$"$(echo $_list_name))"
+	__get_assets "$_list_pack"
 }
 
-# ARG1 ressource mode is DATA or ASSET
-# ARG2 operation is GET or UPDATE or REVERT (UPDATE or REVERT if applicable)
-# ARG3 list of ressource ID
-function __get_app_ressources() {
+function __remove_data_pack() {
+	local _list_name=$1
+
+	__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "$_list_name" ""
+
+	local _list_pack="$(eval "$"$(echo $_list_name))"
+	__remove_data "$_list_pack"
+}
+
+function __remove_assets_pack() {
+	local _list_name=$1
+
+	__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "$_list_name" ""
+
+	local _list_pack="$(eval "$"$(echo $_list_name))"
+	__remove_assets "$_list_pack"
+}
+
+
+# ARG1 resource mode is DATA or ASSET
+# ARG2 operation is GET or UPDATE or REVERT or DELETE (UPDATE or REVERT if applicable)
+# ARG3 list of resource ID
+function __app_resources() {
 	local _mode=$1
 	local _operation=$2
 	local _list_id=$3
+
+	if [ "$_mode" == "DATA" ]; then
+		__get_data_properties "$_STELLA_APP_PROPERTIES_FILE" "$_list_id"
+	fi
+
+	if [ "$_mode" == "ASSETS" ]; then
+		__get_assets_properties "$_STELLA_APP_PROPERTIES_FILE" "$_list_id"
+	fi
 
 	for a in $_list_id; do
 		_artefact_namespace="$a"_"$_mode"_NAMESPACE
@@ -414,14 +449,14 @@ function __get_app_ressources() {
 		done
 
 
-		echo "* $_operation $_name [$a] ressources"
+		echo "* $_operation $_name [$a] resources"
 
 		if [ "$_merge" == "MERGE" ]; then 
 			echo "* Main package of [$a] is $_artefact_namespace"
 		fi
 
 		
-		__get_ressource "$_mode : $_name [$_artefact_namespace]" "$_uri" "$_prot" "$_artefact_dest/$_artefact_namespace" "$_opt $_operation"
+		__resource "$_mode : $_name [$_artefact_namespace]" "$_uri" "$_prot" "$_artefact_dest/$_artefact_namespace" "$_opt $_operation"
 		if [ "$_merge" == "MERGE" ]; then echo "* $_name merged into $_artefact_namespace"; fi
 		if [ "$_artefact_link" == "1" ]; then
 			if [ "$FORCE" == "1" ]; then rm -f "$_artefact_link_target/$_artefact_namespace"; fi
@@ -493,7 +528,7 @@ function __ask_init_app() {
 		select yn in "Yes" "No"; do
 		    case $yn in
 		        Yes )
-					_project_name=$(basename $_STELLA_CURRENT_RUNNING_DIR)
+					_project_name=$(basename $STELLA_CURRENT_RUNNING_DIR)
 					read -p "What is your project name ? [$_project_name]" _temp_project_name
 					if [ ! "$_temp_project_name" == "" ]; then
 						_project_name=$_temp_project_name
@@ -504,11 +539,11 @@ function __ask_init_app() {
 						case $sample in
 							Yes )
 								# using default values for app paths (because we didnt ask them)
-								__init_app $_project_name $_STELLA_CURRENT_RUNNING_DIR
-								__create_app_samples $_STELLA_CURRENT_RUNNING_DIR
+								__init_app $_project_name $STELLA_CURRENT_RUNNING_DIR
+								__create_app_samples $STELLA_CURRENT_RUNNING_DIR
 								break;;
 							No )
-								__init_app $_project_name $_STELLA_CURRENT_RUNNING_DIR
+								__init_app $_project_name $STELLA_CURRENT_RUNNING_DIR
 								break;;
 						esac
 					done

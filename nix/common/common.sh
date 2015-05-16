@@ -102,7 +102,7 @@ function __rel_to_abs_path() {
 	local result
 
 	if [ "$_abs_root_path" == "" ]; then
-		_abs_root_path=$_STELLA_CURRENT_RUNNING_DIR
+		_abs_root_path=$STELLA_CURRENT_RUNNING_DIR
 	fi
 
 
@@ -197,7 +197,7 @@ function __abs_to_rel_path() {
 	local result=""
 
 	if [ "$_abs_path_root" == "" ]; then
-		_abs_path_root=$_STELLA_CURRENT_RUNNING_DIR
+		_abs_path_root=$STELLA_CURRENT_RUNNING_DIR
 	fi
 
 	_abs_path_root="$_abs_path_root"/
@@ -285,8 +285,32 @@ function __copy_folder_content_into() {
 	fi
 }
 
-#DOWNLOAD AND ZIP FUNCTIONS---------------------------------------------------
-function __get_ressource() {
+#RESSOURCES MANAGEMENT ---------------------------------------------------
+function __get_resource() {
+	local OPT="$5"
+	OPT="$OPT GET"
+	__resource $1 $2 $3 $4 $OPT
+}
+
+function __update_resource() {
+	local OPT="$5"
+	OPT="$OPT UPDATE"
+	__resource $1 $2 $3 $4 $OPT
+}
+
+function __delete_resource() {
+	local OPT="$5"
+	OPT="$OPT DELETE"
+	__resource $1 $2 $3 $4 $OPT
+}
+
+function __revert_resource() {
+	local OPT="$5"
+	OPT="$OPT REVERT"
+	__resource $1 $2 $3 $4 $OPT
+}
+
+function __resource() {
 	local NAME=$1
 	local URI=$2
 	local PROTOCOL=$3
@@ -295,15 +319,16 @@ function __get_ressource() {
 	# option should passed as one string "OPT1 OPT2"
 	# 	"MERGE" for merge in FINAL_DESTINATION
 	# 	"STRIP" for remove root folder and copy content of root folder in FINAL_DESTINATION
-	# 	"UPDATE" pull and update ressource (only for HG or GIT)
-	# 	"REVERT" complete revert of the ressource (only for HG or GIT)
+	# 	"UPDATE" pull and update resource (only for HG or GIT)
+	# 	"REVERT" complete revert of the resource (only for HG or GIT)
 	# 	"FORCE_NAME" force name of downloaded file
-
+	# 	"DELETE" delete resource
 	# TODO : remove illegal characters in NAME. NAME is used in flag file name when merging
 
 	local _opt_merge=OFF
 	local _opt_strip=OFF
 	local _opt_get=ON
+	local _opt_delete=OFF
 	local _opt_update=OFF
 	local _opt_revert=OFF
 	local _opt_force_name=OFF
@@ -313,83 +338,93 @@ function __get_ressource() {
 			[ "$o" == "MERGE" ] && _opt_merge=ON
 			[ "$o" == "STRIP" ] && _opt_strip=ON
 			[ "$o" == "FORCE_NAME" ] && _opt_force_name=ON
-			if [ "$o" == "UPDATE" ]; then _opt_update=ON;  _opt_revert=OFF;  _opt_get=OFF; fi
-			if [ "$o" == "REVERT" ]; then _opt_revert=ON;  _opt_update=OFF;  _opt_get=OFF; fi
+			if [ "$o" == "DELETE" ]; then _opt_delete=ON;  _opt_revert=OFF;  _opt_get=OFF; _opt_update=OFF; fi
+			if [ "$o" == "UPDATE" ]; then _opt_update=ON;  _opt_revert=OFF;  _opt_get=OFF; _opt_delete=OFF; fi
+			if [ "$o" == "REVERT" ]; then _opt_revert=ON;  _opt_update=OFF;  _opt_get=OFF; _opt_delete=OFF; fi
 		else
 			_download_filename=$o
 			_opt_force_name=OFF
 		fi
 	done
 
-	[ "$_opt_revert" == "ON" ] && echo " ** Reverting ressource :"
-	[ "$_opt_update" == "ON" ] && echo " ** Updating ressource :"
-	[ "$_opt_get" == "ON" ] && echo " ** Getting ressource :"
-	[ ! "$FINAL_DESTINATION" == "" ] && echo " $NAME into $FINAL_DESTINATION" || echo " $NAME"
+	[ "$_opt_revert" == "ON" ] && echo " ** Reverting resource :"
+	[ "$_opt_update" == "ON" ] && echo " ** Updating resource :"
+	[ "$_opt_delete" == "ON" ] && echo " ** Deleting resource :"
+	[ "$_opt_get" == "ON" ] && echo " ** Getting resource :"
+	[ ! "$FINAL_DESTINATION" == "" ] && echo " $NAME in $FINAL_DESTINATION" || echo " $NAME"
 
-	[ "$FORCE" ] && rm -Rf $FINAL_DESTINATION
-
+	#[ "$FORCE" ] && rm -Rf $FINAL_DESTINATION
+	if [ "$_opt_get" == "ON" ]; then
+		if [ "$FORCE" ]; then
+			[ "$_opt_merge" == "OFF" ] && rm -Rf "$FINAL_DESTINATION"
+			[ "$_opt_merge" == "ON" ] && rm -f "$FINAL_DESTINATION/._MERGED_$NAME"
+		fi
+	fi
 	
 
-	# strip root folder mode
-	_STRIP=
-	[ "$_opt_strip" == "ON" ] && _STRIP=STRIP
+	if [ "$_opt_delete" == "ON" ]; then
+		[ "$_opt_merge" == "OFF" ] && rm -Rf "$FINAL_DESTINATION"
+		[ "$_opt_merge" == "ON" ] && rm -f "$FINAL_DESTINATION/._MERGED_$NAME"
+		_FLAG=0
+	fi
+
+	if [ "$_opt_delete" == "OFF" ]; then
+		# strip root folder mode
+		_STRIP=
+		[ "$_opt_strip" == "ON" ] && _STRIP=STRIP
+		
 	
-	_FLAG=1
-	case $PROTOCOL in
-		HTTP_ZIP|FILE_ZIP)
-			[ "$_opt_revert" == "ON" ] && echo "REVERT Not supported with this protocol" && _FLAG=0
-			[ "$_opt_update" == "ON" ] && echo "UPDATE Not supported with this protocol" && _FLAG=0
-			if [ -d "$FINAL_DESTINATION" ]; then
-				if [ "$_opt_get" == "ON" ]; then
-					if [ "$_opt_merge" == "ON" ]; then
-						if [ -f "$FINAL_DESTINATION/._MERGED_$NAME" ]; then
-							echo " ** Ressource already merged"
+		_FLAG=1
+		case $PROTOCOL in
+			HTTP_ZIP|FILE_ZIP)
+				[ "$_opt_revert" == "ON" ] && echo "REVERT Not supported with this protocol" && _FLAG=0
+				[ "$_opt_update" == "ON" ] && echo "UPDATE Not supported with this protocol" && _FLAG=0
+				if [ -d "$FINAL_DESTINATION" ]; then
+					if [ "$_opt_get" == "ON" ]; then
+						if [ "$_opt_merge" == "ON" ]; then
+							if [ -f "$FINAL_DESTINATION/._MERGED_$NAME" ]; then
+								echo " ** Ressource already merged"
+								_FLAG=0
+							fi
+						fi
+						if [ "$_opt_strip" == "ON" ]; then
+							echo " ** Ressource already stripped"
 							_FLAG=0
 						fi
 					fi
-					if [ "$_opt_strip" == "ON" ]; then
-						echo " ** Ressource already stripped"
+				fi
+				;;
+			HTTP|FILE)
+				[ "$_opt_strip" == "ON" ] && echo "STRIP option not in use"
+				[ "$_opt_revert" == "ON" ] && echo "REVERT Not supported with this protocol" && _FLAG=0
+				[ "$_opt_update" == "ON" ] && echo "UPDATE Not supported with this protocol" && _FLAG=0
+				
+				if [ -d "$FINAL_DESTINATION" ]; then
+					if [ "$_opt_get" == "ON" ]; then
+						if [ "$_opt_merge" == "ON" ]; then
+							if [ -f "$FINAL_DESTINATION/._MERGED_$NAME" ]; then
+								echo " ** Ressource already merged"
+								_FLAG=0
+							fi
+						fi
+					fi		
+				fi
+				;;
+			HG|GIT)
+				[ "$_opt_strip" == "ON" ] && echo "STRIP option not supported with this protocol"
+				[ "$_opt_merge" == "ON" ] && echo "MERGE option not supported with this protocol"
+				if [ -d "$FINAL_DESTINATION" ]; then
+					if [ "$_opt_get" == "ON" ]; then
+						echo " ** Ressource already exist"
 						_FLAG=0
-					fi
-				fi		
-			fi
-			;;
-		HTTP|FILE)
-			[ "$_opt_strip" == "ON" ] && echo "STRIP option not in use"
-			[ "$_opt_revert" == "ON" ] && echo "REVERT Not supported with this protocol" && _FLAG=0
-			[ "$_opt_update" == "ON" ] && echo "UPDATE Not supported with this protocol" && _FLAG=0
-			
-			if [ -d "$FINAL_DESTINATION" ]; then
-				if [ "$_opt_get" == "ON" ]; then
-					if [ "$_opt_merge" == "ON" ]; then
-						if [ -f "$FINAL_DESTINATION/._MERGED_$NAME" ]; then
-							echo " ** Ressource already merged"
-							_FLAG=0
-						fi
-					fi
-				fi		
-			fi
-			;;
-		HG|GIT)
-			[ "$_opt_strip" == "ON" ] && echo "STRIP option not in use"
-			if [ -d "$FINAL_DESTINATION" ]; then
-				if [ "$_opt_get" == "ON" ]; then
-					echo " ** Ressource already exist"
-					_FLAG=0
-					if [ "$_opt_merge" == "ON" ]; then
-						if [ -f "$FINAL_DESTINATION/._MERGED_$NAME" ]; then
-							echo " ** Ressource already merged"
-							_FLAG=0
-						fi
-					fi
-				fi	
-			else
-				[ "$_opt_revert" == "ON" ] && echo " ** Ressource does not exist" && _FLAG=0
-				[ "$_opt_update" == "ON" ] && echo " ** Ressource does not exist" && _FLAG=0
-			fi
-			;;
-	esac
-
+					fi	
+				else
+					[ "$_opt_revert" == "ON" ] && echo " ** Ressource does not exist" && _FLAG=0
+					[ "$_opt_update" == "ON" ] && echo " ** Ressource does not exist" && _FLAG=0
+				fi
+				;;
+		esac
+	fi
 
 	if [ "$_FLAG" == "1" ]; then
 		[ ! -d $FINAL_DESTINATION ] && mkdir -p $FINAL_DESTINATION
@@ -409,13 +444,13 @@ function __get_ressource() {
 				if [ "$_opt_revert" == "ON" ]; then cd "$FINAL_DESTINATION"; hg revert --all -C; fi
 				if [ "$_opt_update" == "ON" ]; then cd "$FINAL_DESTINATION"; hg pull; hg update; fi
 				[ "$_opt_get" == "ON" ] && hg clone $URI "$FINAL_DESTINATION"
-				[ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
+				# [ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
 			GIT)
 				if [ "$_opt_revert" == "ON" ]; then cd "$FINAL_DESTINATION"; git reset --hard; fi
 				if [ "$_opt_update" == "ON" ]; then cd "$FINAL_DESTINATION"; git pull; fi
 				[ "$_opt_get" == "ON" ] && git clone $URI "$FINAL_DESTINATION"
-				[ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
+				# [ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
 			FILE)
 				[ "$_opt_get" == "ON" ] && __copy_folder_content_into "$URI" "$FINAL_DESTINATION"
@@ -432,6 +467,7 @@ function __get_ressource() {
 	fi
 }
 
+#DOWNLOAD AND ZIP FUNCTIONS---------------------------------------------------
 function __download_uncompress() {
 	local URL
 	local FILE_NAME

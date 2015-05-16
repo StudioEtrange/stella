@@ -11,7 +11,8 @@ function usage() {
 	echo "List of commands"
 	echo " o-- application management :"
 	echo " L     app init <application name> [--approot=<path>] [--workroot=<abs or relative path to approot>] [--cachedir=<abs or relative path to approot>] [--samples]"
-	echo " L     app get-data|get-assets|update-data|update-assets|revert-data|revert-assets <data id|assets id|all>"
+	echo " L     app get-data|get-assets|remove-data|remove-assets|update-data|update-assets|revert-data|revert-assets <data id|assets id>"
+	echo " L     app get-data-pack|get-assets-pack|remove-data-pack|remove-assets-pack <data pack name|assets pack name>"
 	echo " L     app get-feature <all|feature schema> : install all features defined in app properties file or install a matching one"
 	echo " L     app setup-env <env id|all> : download, build, deploy and run virtual environment based on app properties"
 	echo " L     app link <app-path> [--stellaroot=<path>] : link an app to a specific stella path"
@@ -41,7 +42,7 @@ function usage() {
 # arguments
 PARAMETERS="
 DOMAIN=                          'domain'     		a           'app feature virtual stella proxy'         										   				Action domain.
-ACTION=                         'action'   					a           'remove enable disable register link api bootstrap install init get-data get-assets update-data update-assets revert-data revert-assets get-feature setup-env install list create-env run-env stop-env destroy-env create-box get-box'         	Action to compute.
+ACTION=                         'action'   					a           'remove enable disable register link api bootstrap install init get-data get-assets get-data-pack get-assets-pack remove-data remove-data-pack remove-assets remove-assets-pack update-data update-assets revert-data revert-assets get-feature setup-env install list create-env run-env stop-env destroy-env create-box get-box'         	Action to compute.
 ID=							 ''								s 			'' 						Feature ID or Data or Assets or Env or Distrib ID.
 "
 OPTIONS="
