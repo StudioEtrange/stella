@@ -32,7 +32,7 @@ function usage() {
 	echo " L     stella bootstrap env : launch a shell with all stella env var setted"
 	echo " L     stella install dep : install all features and systems requirements for the current OS ($STELLA_CURRENT_OS)"
 	echo " L     proxy enable <name> : active this proxy"
-	echo " L     proxy disable off : active this proxy"
+	echo " L     proxy disable all : active this proxy"
 	echo " L     proxy register <name> --proxyhost=<host> --proxyport=<port> [--proxyuser=<string> --proxypass=<string>] : register this proxy"
 }
 
