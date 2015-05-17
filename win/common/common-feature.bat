@@ -385,7 +385,7 @@ goto :eof
 
 
 :feature_reinit_installed
-	FEATURE_LIST_ENABLED=
+	set "FEATURE_LIST_ENABLED="
 	call :feature_init_installed
 goto :eof
 
