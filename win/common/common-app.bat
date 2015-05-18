@@ -148,11 +148,11 @@ goto :eof
 	call :_app_resources "ASSETS" "REVERT" "%~1"
 goto :eof
 
-:remove_data
+:delete_data
 	call :_app_resources "DATA" "DELETE" "%~1"
 goto :eof
 
-:remove_assets
+:delete_assets
 	call :_app_resources "ASSETS" "DELETE" "%~1"
 goto :eof
 
@@ -174,23 +174,57 @@ goto:eof
 	call :get_assets "!_list_pack!"
 goto:eof
 
-:remove_data_pack
+:delete_data_pack
 	set "_list_name=%~1"
 
 	call %STELLA_COMMON%\common.bat :get_key "!_STELLA_APP_PROPERTIES_FILE!" "STELLA" "!_list_name!" ""
 
 	for /F %%a in ('echo !_list_name!') do set "_list_pack=!%%a!"
-	call :remove_data "!_list_pack!"
+	call :delete_data "!_list_pack!"
 goto:eof
 
-:remove_assets_pack
+:delete_assets_pack
 	set "_list_name=%~1"
 	call %STELLA_COMMON%\common.bat :get_key "!_STELLA_APP_PROPERTIES_FILE!" "STELLA" "!_list_name!" ""
 	
 	for /F %%a in ('echo !_list_name!') do set "_list_pack=!%%a!"
-	call :remove_assets "!_list_pack!"
+	call :delete_assets "!_list_pack!"
 goto:eof
 
+
+:update_data_pack
+	set "_list_name=%~1"
+
+	call %STELLA_COMMON%\common.bat :get_key "!_STELLA_APP_PROPERTIES_FILE!" "STELLA" "!_list_name!" ""
+
+	for /F %%a in ('echo !_list_name!') do set "_list_pack=!%%a!"
+	call :update_data "!_list_pack!"
+goto:eof
+
+:update_assets_pack
+	set "_list_name=%~1"
+	call %STELLA_COMMON%\common.bat :get_key "!_STELLA_APP_PROPERTIES_FILE!" "STELLA" "!_list_name!" ""
+	
+	for /F %%a in ('echo !_list_name!') do set "_list_pack=!%%a!"
+	call :update_assets "!_list_pack!"
+goto:eof
+
+:revert_data_pack
+	set "_list_name=%~1"
+
+	call %STELLA_COMMON%\common.bat :get_key "!_STELLA_APP_PROPERTIES_FILE!" "STELLA" "!_list_name!" ""
+
+	for /F %%a in ('echo !_list_name!') do set "_list_pack=!%%a!"
+	call :revert_data "!_list_pack!"
+goto:eof
+
+:revert_assets_pack
+	set "_list_name=%~1"
+	call %STELLA_COMMON%\common.bat :get_key "!_STELLA_APP_PROPERTIES_FILE!" "STELLA" "!_list_name!" ""
+	
+	for /F %%a in ('echo !_list_name!') do set "_list_pack=!%%a!"
+	call :revert_assets "!_list_pack!"
+goto:eof
 
 
 

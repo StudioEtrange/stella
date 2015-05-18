@@ -323,6 +323,7 @@ function __resource() {
 	# 	"REVERT" complete revert of the resource (only for HG or GIT)
 	# 	"FORCE_NAME" force name of downloaded file
 	# 	"DELETE" delete resource
+	# 	"VERSION" retrieve specific version (only for HG or GIT) when GET or UPDATE
 	# TODO : remove illegal characters in NAME. NAME is used in flag file name when merging
 
 	local _opt_merge=OFF
@@ -332,18 +333,26 @@ function __resource() {
 	local _opt_update=OFF
 	local _opt_revert=OFF
 	local _opt_force_name=OFF
+	local _opt_version=OFF
+	local _checkout_version=
 	local _download_filename=_AUTO_
 	for o in $OPT; do 
-		if [ "$_opt_force_name" == "OFF" ]; then
-			[ "$o" == "MERGE" ] && _opt_merge=ON
-			[ "$o" == "STRIP" ] && _opt_strip=ON
-			[ "$o" == "FORCE_NAME" ] && _opt_force_name=ON
-			if [ "$o" == "DELETE" ]; then _opt_delete=ON;  _opt_revert=OFF;  _opt_get=OFF; _opt_update=OFF; fi
-			if [ "$o" == "UPDATE" ]; then _opt_update=ON;  _opt_revert=OFF;  _opt_get=OFF; _opt_delete=OFF; fi
-			if [ "$o" == "REVERT" ]; then _opt_revert=ON;  _opt_update=OFF;  _opt_get=OFF; _opt_delete=OFF; fi
-		else
+		if [ "$_opt_force_name" == "ON" ]; then
 			_download_filename=$o
 			_opt_force_name=OFF
+		else
+			if [ "$_opt_version" == "ON" ]; then
+				_checkout_version=$o
+				_opt_version=OFF
+			else
+				[ "$o" == "VERSION" ] && _opt_version=ON
+				[ "$o" == "MERGE" ] && _opt_merge=ON
+				[ "$o" == "STRIP" ] && _opt_strip=ON
+				[ "$o" == "FORCE_NAME" ] && _opt_force_name=ON
+				if [ "$o" == "DELETE" ]; then _opt_delete=ON;  _opt_revert=OFF;  _opt_get=OFF; _opt_update=OFF; fi
+				if [ "$o" == "UPDATE" ]; then _opt_update=ON;  _opt_revert=OFF;  _opt_get=OFF; _opt_delete=OFF; fi
+				if [ "$o" == "REVERT" ]; then _opt_revert=ON;  _opt_update=OFF;  _opt_get=OFF; _opt_delete=OFF; fi
+			fi
 		fi
 	done
 
@@ -442,14 +451,14 @@ function __resource() {
 				;;
 			HG)
 				if [ "$_opt_revert" == "ON" ]; then cd "$FINAL_DESTINATION"; hg revert --all -C; fi
-				if [ "$_opt_update" == "ON" ]; then cd "$FINAL_DESTINATION"; hg pull; hg update; fi
-				[ "$_opt_get" == "ON" ] && hg clone $URI "$FINAL_DESTINATION"
+				if [ "$_opt_update" == "ON" ]; then cd "$FINAL_DESTINATION"; hg pull; hg update $_checkout_version; fi
+				if [ "$_opt_get" == "ON" ]; then hg clone $URI "$FINAL_DESTINATION"; if [ ! "$_checkout_version" == "" ]; then cd "$FINAL_DESTINATION"; hg pull; hg update $_checkout_version; fi; fi
 				# [ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
 			GIT)
 				if [ "$_opt_revert" == "ON" ]; then cd "$FINAL_DESTINATION"; git reset --hard; fi
-				if [ "$_opt_update" == "ON" ]; then cd "$FINAL_DESTINATION"; git pull; fi
-				[ "$_opt_get" == "ON" ] && git clone $URI "$FINAL_DESTINATION"
+				if [ "$_opt_update" == "ON" ]; then cd "$FINAL_DESTINATION"; git pull;if [ ! "$_checkout_version" == "" ]; then git checkout $_checkout_version; fi; fi
+				if [ "$_opt_get" == "ON" ]; then git clone $URI "$FINAL_DESTINATION"; if [ ! "$_checkout_version" == "" ]; then cd "$FINAL_DESTINATION"; git checkout $_checkout_version; fi; fi
 				# [ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
 			FILE)

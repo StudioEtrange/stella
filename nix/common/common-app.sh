@@ -84,7 +84,7 @@ function __init_app() {
 
 	echo "#!/bin/bash" >$_approot/stella-link.sh.temp
 	echo "_STELLA_LINK_CURRENT_FILE_DIR=\"\$( cd \"\$( dirname \"\${BASH_SOURCE[0]}\" )\" && pwd )\"" >>$_approot/stella-link.sh.temp
-	echo "[ \"\$STELLA_ROOT\" == \"\" ] && export STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$_approot/stella-link.sh.temp
+	echo "export STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$_approot/stella-link.sh.temp
 	
 	cat $_approot/stella-link.sh.temp $STELLA_TEMPLATE/sample-stella-link.sh > $_approot/stella-link.sh
 	chmod +x $_approot/stella-link.sh
@@ -341,6 +341,16 @@ function __get_assets() {
 	__app_resources "ASSETS" "GET" "$_list_id"
 }
 
+function __delete_data() {
+	local _list_id=$1
+	__app_resources "DATA" "DELETE" "$_list_id"
+}
+
+function __delete_assets() {
+	local _list_id=$1
+	__app_resources "ASSETS" "DELETE" "$_list_id"
+}
+
 function __update_data() {
 	local _list_id=$1
 	__app_resources "DATA" "UPDATE" "$_list_id"
@@ -368,7 +378,7 @@ function __get_data_pack() {
 
 	__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "$_list_name" ""
 
-	local _list_pack="$(eval "$"$(echo $_list_name))"
+	local _list_pack="$(eval echo "$"$(echo $_list_name))"
 	__get_data "$_list_pack"
 }
 
@@ -377,28 +387,63 @@ function __get_assets_pack() {
 
 	__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "$_list_name" ""
 
-	local _list_pack="$(eval "$"$(echo $_list_name))"
+	local _list_pack="$(eval echo "$"$(echo $_list_name))"
 	__get_assets "$_list_pack"
 }
 
-function __remove_data_pack() {
+function __delete_data_pack() {
 	local _list_name=$1
 
 	__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "$_list_name" ""
 
-	local _list_pack="$(eval "$"$(echo $_list_name))"
-	__remove_data "$_list_pack"
+	local _list_pack="$(eval echo "$"$(echo $_list_name))"
+	__delete_data "$_list_pack"
 }
 
-function __remove_assets_pack() {
+function __delete_assets_pack() {
 	local _list_name=$1
 
 	__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "$_list_name" ""
 
-	local _list_pack="$(eval "$"$(echo $_list_name))"
-	__remove_assets "$_list_pack"
+	local _list_pack="$(eval echo "$"$(echo $_list_name))"
+	__delete_assets "$_list_pack"
 }
 
+function __update_data_pack() {
+	local _list_name=$1
+
+	__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "$_list_name" ""
+
+	local _list_pack="$(eval echo "$"$(echo $_list_name))"
+	__update_data "$_list_pack"
+}
+
+function __update_assets_pack() {
+	local _list_name=$1
+
+	__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "$_list_name" ""
+
+	local _list_pack="$(eval echo "$"$(echo $_list_name))"
+	__update_assets "$_list_pack"
+}
+
+function __revert_data_pack() {
+	local _list_name=$1
+
+	__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "$_list_name" ""
+
+	local _list_pack="$(eval echo "$"$(echo $_list_name))"
+	__revert_data "$_list_pack"
+}
+
+function __revert_assets_pack() {
+	local _list_name=$1
+
+	__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "$_list_name" ""
+
+	local _list_pack="$(eval echo "$"$(echo $_list_name))"
+	__revert_assets "$_list_pack"
+}
 
 # ARG1 resource mode is DATA or ASSET
 # ARG2 operation is GET or UPDATE or REVERT or DELETE (UPDATE or REVERT if applicable)

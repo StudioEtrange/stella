@@ -108,7 +108,7 @@ set "__STELLA_FEATURE_LIST=nikpeviewer dependencywalker conemu goconfig-cli ninj
 :: API ---------------------------------------------
 set "STELLA_API_COMMON_PUBLIC=trim argparse is_path_abs get_resource delete_resource update_resource revert_resource download_uncompress del_folder copy_folder_content_into fork run_admin mercurial_project_version git_project_version"
 set "STELLA_API_API_PUBLIC=api_connect api_disconnect"
-set "STELLA_API_APP_PUBLIC=link_app get_data get_assets get_data_pack get_assets_pack remove_data remove_data_pack remove_assets remove_assets_pack update_data update_assets revert_data revert_assets get_feature get_features"
+set "STELLA_API_APP_PUBLIC=link_app get_data get_assets get_data_pack get_assets_pack delete_data delete_data_pack delete_assets delete_assets_pack update_data update_assets revert_data revert_assets update_data_pack update_assets_pack revert_data_pack revert_assets_pack get_feature get_features"
 set "STELLA_API_FEATURE_PUBLIC=feature_remove feature_catalog_info feature_install feature_install_list feature_init list_active_features feature_reinit_installed feature_inspect"
 set "STELLA_API_VIRTUAL_PUBLIC="
 set "STELLA_API_BUILD_PUBLIC=is_import_or_static_lib"

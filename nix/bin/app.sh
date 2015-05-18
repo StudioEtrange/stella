@@ -8,8 +8,8 @@ function usage() {
     echo "List of commands"
     echo " o-- application management :"
     echo " L     init <application name> [--approot=<path>] [--workroot=<abs or relative path to approot>] [--cachedir=<abs or relative path to approot>] [--samples]"
-    echo " L     get-data|get-assets|update-data|update-assets|revert-data|revert-assets <list of data id|list of assets id>"
-    echo " L     get-data-pack|get-assets-pack|remove-data-pack|remove-assets-pack <data pack name|assets pack name>"
+    echo " L     get-data|get-assets|update-data|update-assets|revert-data|revert-assets|delete-data|delete-assets <list of data id|list of assets id>"
+    echo " L     get-data-pack|get-assets-pack|update-data-pack|update-assets-pack|revert-data-pack|revert-assets-pack|delete-data-pack|delete-assets-pack <data pack name|assets pack name>"
     echo " L     get-feature <all|feature schema> : install all features defined in app properties file or install a matching one"
     echo " L     setup-env <env id|all> : download, build, deploy and run virtual environment based on app properties"
     echo " L     link stella <app-path> [--stellaroot=<path>] : link an app to a specific stella path"
@@ -22,7 +22,7 @@ function usage() {
 
 # MAIN ------------------------
 PARAMETERS="
-ACTION=                         'action'                    a           'link init get-data get-assets update-data update-assets revert-data revert-assets setup-env get-feature'            Action to compute.
+ACTION=                         'action'                    a           'link init get-data get-assets delete-data delete-assets update-data update-assets revert-data revert-assets setup-env get-feature get-data-pack get-assets-pack update-data-pack update-assets-pack revert-data-pack revert-assets-pack'            Action to compute.
 ID=                          ''                             s           ''                      Data or Assets or Env ID or Application name.
 "
 OPTIONS="
@@ -86,17 +86,17 @@ else
         get-assets-pack)
             __get_assets_pack $ID
             ;;
-        remove-data)
-            __remove_data $ID
+        delete-data)
+            __delete_data $ID
             ;;
-        remove-assets)
-            __remove_assets $ID
+        delete-assets)
+            __delete_assets $ID
             ;;
-        remove-data-pack)
-            __remove_data_pack $ID
+        delete-data-pack)
+            __delete_data_pack $ID
             ;;
-        remove-assets-pack)
-            __remove_assets_pack $ID
+        delete-assets-pack)
+            __delete_assets_pack $ID
             ;;
         udpate-data)
             __update_data $ID

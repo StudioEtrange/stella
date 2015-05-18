@@ -84,6 +84,9 @@ function feature_cmake_install_source() {
 	make
 	make install
 
+	__del_folder "$SRC_DIR"
+	__del_folder "$BUILD_DIR"
+
 }
 
 
