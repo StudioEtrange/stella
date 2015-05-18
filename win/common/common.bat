@@ -329,6 +329,7 @@ goto :eof
 	REM 	"REVERT" complete revert of the resource (only for HG or GIT)
 	REM 	"FORCE_NAME" force name of downloaded file
 	REM 	"DELETE" delete resource
+	REM  	"VERSION" retrieve specific version (only for HG or GIT) when GET or UPDATE
 	SET "OPT=%~5"
 
 	set "_name_legal=%NAME::=%"
@@ -349,19 +350,28 @@ goto :eof
 	set _opt_update=OFF
 	set _opt_revert=OFF
 	set _opt_force_name=OFF
+	set _opt_version=OFF
+	set _checkout_version=
 	set _download_filename=_AUTO_
 	for %%O in (%OPT%) do (
-		if "!_opt_force_name!"=="OFF" (
-			if "%%O"=="MERGE" set _opt_merge=ON
-			if "%%O"=="STRIP" set _opt_strip=ON
-			if "%%O"=="UPDATE" set _opt_update=ON
-			if "%%O"=="REVERT" set _opt_revert=ON
-			if "%%O"=="DELETE" set _opt_delete=ON
-			if "%%O"=="FORCE_NAME" set _opt_force_name=ON
-		) else (
+		if "!_opt_force_name!"=="ON" (
 			set "_download_filename=%%O"
 			set _opt_force_name=OFF
+		) else (
+			if  "!_opt_version!"=="ON" (
+				set "_checkout_version=%%O"
+				set _opt_version=OFF
+			) else (
+				if "%%O"=="VERSION" set _opt_version=ON
+				if "%%O"=="MERGE" set _opt_merge=ON
+				if "%%O"=="STRIP" set _opt_strip=ON
+				if "%%O"=="UPDATE" set _opt_update=ON
+				if "%%O"=="REVERT" set _opt_revert=ON
+				if "%%O"=="DELETE" set _opt_delete=ON
+				if "%%O"=="FORCE_NAME" set _opt_force_name=ON
+			)
 		)
+			
 	)
 
 	set "_text=Getting"
@@ -520,9 +530,19 @@ goto :eof
 			if "!_opt_update!"=="ON" (
 				cd /D "%FINAL_DESTINATION%"
 				hg pull
-				hg update
+				if "!_checkout_version!"=="" (
+					hg update
+				) else (
+					hg update "!_checkout_version!"
+				)
 			)
-			if "!_opt_get!"=="ON" hg clone %URI% "%FINAL_DESTINATION%"
+			if "!_opt_get!"=="ON" (
+				hg clone %URI% "%FINAL_DESTINATION%"
+				if not "!_checkout_version!"=="" (
+					cd /D "%FINAL_DESTINATION%"
+					hg update "!_checkout_version!"
+				)
+			)
 		)
 		if "%PROTOCOL%"=="GIT" (
 			if "!_opt_revert!"=="ON" (
@@ -531,9 +551,19 @@ goto :eof
 			)
 			if "!_opt_update!"=="ON" (
 				cd /D "%FINAL_DESTINATION%"
-				git pull
+				if "!_checkout_version!"=="" (
+					git pull
+				) else (
+					git checkout "!_checkout_version!"
+				)
 			)
-			if "!_opt_get!"=="ON" git clone %URI% "%FINAL_DESTINATION%"
+			if "!_opt_get!"=="ON" (
+				git clone %URI% "%FINAL_DESTINATION%"
+				if not "!_checkout_version!"=="" (
+					cd /D "%FINAL_DESTINATION%"
+					git checkout "!_checkout_version!"
+				)
+			)
 		)
 		if "%PROTOCOL%"=="FILE" (
 			if "!_opt_get!"=="ON" call :copy_folder_content_into "%URI%" "%FINAL_DESTINATION%"

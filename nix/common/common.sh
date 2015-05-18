@@ -452,7 +452,7 @@ function __resource() {
 			HG)
 				if [ "$_opt_revert" == "ON" ]; then cd "$FINAL_DESTINATION"; hg revert --all -C; fi
 				if [ "$_opt_update" == "ON" ]; then cd "$FINAL_DESTINATION"; hg pull; hg update $_checkout_version; fi
-				if [ "$_opt_get" == "ON" ]; then hg clone $URI "$FINAL_DESTINATION"; if [ ! "$_checkout_version" == "" ]; then cd "$FINAL_DESTINATION"; hg pull; hg update $_checkout_version; fi; fi
+				if [ "$_opt_get" == "ON" ]; then hg clone $URI "$FINAL_DESTINATION"; if [ ! "$_checkout_version" == "" ]; then cd "$FINAL_DESTINATION"; hg update $_checkout_version; fi; fi
 				# [ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
 			GIT)
