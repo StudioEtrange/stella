@@ -15,10 +15,10 @@ function __list_feature_version() {
 	echo $FEAT_LIST_SCHEMA
 }
 
+
 function __feature_init() {
 	local _SCHEMA=$1
 	local _OPT="$2"
-
 	local _opt_hidden_feature=OFF
 	local o
 	for o in $_OPT; do 
@@ -49,7 +49,9 @@ function __feature_init() {
 
 				# compute bundle variables
 				__internal_feature_context $_SCHEMA
-				FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $FEAT_NAME#$FEAT_VERSION"
+				if [ ! "$_opt_hidden_feature" == "ON" ]; then
+					FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $FEAT_NAME#$FEAT_VERSION"
+				fi
 				if [ ! "$FEAT_SEARCH_PATH" == "" ]; then
 					PATH="$FEAT_SEARCH_PATH:$PATH"
 				fi
@@ -119,7 +121,7 @@ function __feature_match_installed() {
 		fi
 
 		if [ ! "$_found" == "" ]; then
-			__internal_feature_context "$__VAR_FEATURE_NAME"#"$(__get_filename_from_string $v)"
+			__internal_feature_context "$__VAR_FEATURE_NAME"#"$(__get_filename_from_string $_found)"
 		else
 			# empty info values
 			__internal_feature_context
@@ -136,11 +138,9 @@ function __feature_match_installed() {
 # do not use default values from feature recipe to search installed feature
 function __feature_inspect() {
 	local _SCHEMA=$1
-
 	TEST_FEATURE=0
-
+	
 	__feature_match_installed $_SCHEMA
-
 
 	if [ ! "$FEAT_SCHEMA_SELECTED" == "" ]; then
 		if [ "$FEAT_BUNDLE" == "TRUE" ]; then

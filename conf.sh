@@ -68,9 +68,8 @@ STELLA_APP_ROOT=$(__rel_to_abs_path "$STELLA_APP_ROOT" "$STELLA_CURRENT_RUNNING_
 [ "$STELLA_APP_WORK_ROOT" == "" ] && STELLA_APP_WORK_ROOT=$STELLA_APP_ROOT/workspace
 STELLA_APP_WORK_ROOT=$(__rel_to_abs_path "$STELLA_APP_WORK_ROOT" "$STELLA_APP_ROOT")
 
-# we use 'export' so that nested stella application will use the same cache folder
-[ "$STELLA_APP_CACHE_DIR" == "" ] && export STELLA_APP_CACHE_DIR="$STELLA_APP_ROOT/cache"
-export STELLA_APP_CACHE_DIR=$(__rel_to_abs_path "$STELLA_APP_CACHE_DIR" "$STELLA_APP_ROOT")
+[ "$STELLA_APP_CACHE_DIR" == "" ] && STELLA_APP_CACHE_DIR="$STELLA_APP_ROOT/cache"
+STELLA_APP_CACHE_DIR=$(__rel_to_abs_path "$STELLA_APP_CACHE_DIR" "$STELLA_APP_ROOT")
 
 STELLA_APP_TEMP_DIR="$STELLA_APP_WORK_ROOT/temp"
 STELLA_APP_FEATURE_ROOT="$STELLA_APP_WORK_ROOT/feature_$STELLA_CURRENT_PLATFORM_SUFFIX/$STELLA_CURRENT_OS"
@@ -115,13 +114,12 @@ get_resource delete_resource update_resource revert_resource download_uncompress
 get_key add_key del_key mercurial_project_version git_project_version get_stella_version \
 make_sevenzip_sfx_bin make_targz_sfx_shell compress trim"
 STELLA_API_API_PUBLIC="api_connect api_disconnect"
-STELLA_API_APP_PUBLIC="link_app get_data get_assets get_data_pack get_assets_pack delete_data delete_assets delete_data_pack delete_assets_pack update_data update_assets revert_data revert_assets update_data_pack update_assets_pack revert_data_pack revert_assets_pack get_env_properties setup_env get_feature get_features"
+STELLA_API_APP_PUBLIC="get_active_path link_app get_data get_assets get_data_pack get_assets_pack delete_data delete_assets delete_data_pack delete_assets_pack update_data update_assets revert_data revert_assets update_data_pack update_assets_pack revert_data_pack revert_assets_pack get_env_properties setup_env get_feature get_features"
 STELLA_API_FEATURE_PUBLIC="feature_remove feature_catalog_info feature_install feature_install_list feature_init list_active_features feature_reinit_installed feature_inspect"
 STELLA_API_VIRTUAL_PUBLIC=""
 STELLA_API_BUILD_PUBLIC="fix_rpath_darwin fix_linked_lib_darwin fix_dynamiclib_install_name_darwin fix_dynamiclib_install_name_darwin_by_rootname fix_dynamiclib_install_name_darwin_by_folder"
 
-#STELLA_API_RETURN_FUNCTION=
-STELLA_API_RETURN_FUNCTION="rel_to_abs_path trim is_abs mercurial_project_version git_project_version get_stella_version list_active_features get_filename_from_string get_key"
+STELLA_API_RETURN_FUNCTION="get_active_path rel_to_abs_path trim is_abs mercurial_project_version git_project_version get_stella_version list_active_features get_filename_from_string get_key"
 STELLA_API=__api_proxy
 
 

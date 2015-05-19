@@ -21,6 +21,7 @@ goto :eof
 
 
 
+
 :feature_init
 	set "_SCHEMA=%~1"
 	set "_OPT=%~2"
@@ -41,7 +42,8 @@ goto :eof
 		call :feature_inspect !FEAT_SCHEMA_SELECTED!
 		if "!TEST_FEATURE!"=="1" (
 
-			if "!FEAT_BUNDLE!"=="TRUE" (	
+			if "!FEAT_BUNDLE!"=="TRUE" (
+				set "save_opt_hidden_feature=!_opt_hidden_feature!"
 				set "save_FEAT_INSTALL_ROOT=!FEAT_INSTALL_ROOT!"		
 				set "FEAT_BUNDLE_EMBEDDED_PATH=!save_FEAT_INSTALL_ROOT!"
 				
@@ -52,7 +54,7 @@ goto :eof
 
 				REM compute bundle variables
 				call :internal_feature_context %_SCHEMA%
-				set "FEATURE_LIST_ENABLED=!FEATURE_LIST_ENABLED! !FEAT_NAME!#!FEAT_VERSION!"
+				if not "!save_opt_hidden_feature!"=="ON" set "FEATURE_LIST_ENABLED=!FEATURE_LIST_ENABLED! !FEAT_NAME!#!FEAT_VERSION!"
 				if not "!FEAT_SEARCH_PATH!"=="" set "PATH=!FEAT_SEARCH_PATH!;!PATH!"
 				if not "!FEAT_ENV!"=="" (
 					call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :!FEAT_ENV!
@@ -60,7 +62,7 @@ goto :eof
 
 			) else (
 
-				if not "%_opt_hidden_feature%"=="ON" set "FEATURE_LIST_ENABLED=!FEATURE_LIST_ENABLED! !FEAT_NAME!#!FEAT_VERSION!"
+				if not "!_opt_hidden_feature!"=="ON" set "FEATURE_LIST_ENABLED=!FEATURE_LIST_ENABLED! !FEAT_NAME!#!FEAT_VERSION!"
 				if not "!FEAT_SEARCH_PATH!"=="" set "PATH=!FEAT_SEARCH_PATH!;!PATH!"
 
 				if not "!FEAT_ENV!"=="" (
@@ -117,7 +119,7 @@ goto :eof
 		)
 
 		if not "!_found!"=="" (
-			call :internal_feature_context "!__VAR_FEATURE_NAME!#!_ver!"
+			call :internal_feature_context "!__VAR_FEATURE_NAME!#!_found!"
 		) else (
 			REM empty info values
 			call :internal_feature_context

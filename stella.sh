@@ -16,6 +16,7 @@ function usage() {
 	echo " L     app get-feature <all|feature schema> : install all features defined in app properties file or install a matching one"
 	echo " L     app setup-env <env id|all> : download, build, deploy and run virtual environment based on app properties"
 	echo " L     app link <app-path> [--stellaroot=<path>] : link an app to a specific stella path"
+	echo " L     app search path : print current system search path"
 	echo " o-- feature management :"
 	echo " L     feature install required : install required features for Stella"
 	echo " L     feature install <feature schema> : install a feature. schema = feature_name[#version][@arch][/binary|source][:os_restriction]"
@@ -42,7 +43,7 @@ function usage() {
 # arguments
 PARAMETERS="
 DOMAIN=                          'domain'     		a           'app feature virtual stella proxy'         										   				Action domain.
-ACTION=                         'action'   					a           'remove enable disable register link api bootstrap install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature setup-env install list create-env run-env stop-env destroy-env create-box get-box'         	Action to compute.
+ACTION=                         'action'   					a           'search remove enable disable register link api bootstrap install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature setup-env install list create-env run-env stop-env destroy-env create-box get-box'         	Action to compute.
 ID=							 ''								s 			'' 						Feature ID or Data or Assets or Env or Distrib ID.
 "
 OPTIONS="

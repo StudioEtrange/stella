@@ -6,6 +6,9 @@ _STELLA_COMMON_APP_INCLUDED_=1
 
 # APP RESSOURCES & ENV MANAGEMENT ---------------
 
+function __get_active_path() {
+	echo "$PATH"
+}
 
 # ARG 1 optional : specify an app path
 # return properties file path
@@ -47,7 +50,7 @@ function __link_app() {
 
 	echo "#!/bin/bash" >$_approot/stella-link.sh.temp
 	echo "_STELLA_LINK_CURRENT_FILE_DIR=\"\$( cd \"\$( dirname \"\${BASH_SOURCE[0]}\" )\" && pwd )\"" >>$_approot/stella-link.sh.temp
-	echo "[ \"\$STELLA_ROOT\" == \"\" ] && export STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$_approot/stella-link.sh.temp
+	echo "export STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$_approot/stella-link.sh.temp
 
 	cat $_approot/stella-link.sh.temp $STELLA_TEMPLATE/sample-stella-link.sh > $_approot/stella-link.sh
 	chmod +x $_approot/stella-link.sh

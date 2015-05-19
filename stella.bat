@@ -6,7 +6,7 @@ call %~dp0\conf.bat
 
 
 :: arguments
-set "params=domain:"app feature virtual stella" action:"remove link bootstrap api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature setup-env install list create-env run-env stop-env destroy-env info-env create-box get-box" id:"_ANY_""
+set "params=domain:"app feature virtual stella" action:"search remove link bootstrap api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature setup-env install list create-env run-env stop-env destroy-env info-env create-box get-box" id:"_ANY_""
 set "options=-f: -vcpu:_ANY_ -vmem:_ANY_ -head: -login: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_ -stellaroot:_ANY_ -samples:"
 
 call %STELLA_COMMON%\argopt.bat :argopt %*
@@ -109,6 +109,7 @@ if "%DOMAIN%"=="virtual" goto :end
 	echo 		%~n0 app get-feature ^<all^|feature schema^> : install all features defined in app properties file or install a matching one
 	echo 		%~n0 app setup-env ^<env id^|all^> : download, build, deploy and run virtual environment based on app properties
 	echo		%~n0 app link ^<app-path^> [-stellaroot=^<path^>] : link an app to a specific stella path
+	echo		%~n0 app search path : print current system search path
 	echo	* feature management :
 	echo 		%~n0 feature install required : install required features for Stella
 	echo 		%~n0 feature install ^<feature schema^> : install a feature. schema = feature_name[#version][@arch][/binary^|source][:os_restriction]

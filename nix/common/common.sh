@@ -18,6 +18,7 @@ function __daemonize() {
 
 }
 
+
 function __bootstrap_stella_env() {
 	export PS1="[stella] \u@\h|\W>"
 	

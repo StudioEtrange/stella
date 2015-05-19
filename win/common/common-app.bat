@@ -5,6 +5,11 @@ goto :eof
 
 REM APP RESSOURCES & ENV MANAGEMENT ---------------
 
+
+:get_active_path
+	set "%~1=!PATH!"
+goto:eof
+
 :add_app_feature
 	set "_SCHEMA=%~1"
 	call :app_feature "ADD" "!_SCHEMA!"

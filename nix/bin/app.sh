@@ -13,6 +13,7 @@ function usage() {
     echo " L     get-feature <all|feature schema> : install all features defined in app properties file or install a matching one"
     echo " L     setup-env <env id|all> : download, build, deploy and run virtual environment based on app properties"
     echo " L     link stella <app-path> [--stellaroot=<path>] : link an app to a specific stella path"
+    echo " L     search path : print current system search path"
     
 
 }
@@ -22,7 +23,7 @@ function usage() {
 
 # MAIN ------------------------
 PARAMETERS="
-ACTION=                         'action'                    a           'link init get-data get-assets delete-data delete-assets update-data update-assets revert-data revert-assets setup-env get-feature get-data-pack get-assets-pack update-data-pack update-assets-pack revert-data-pack revert-assets-pack'            Action to compute.
+ACTION=                         'action'                    a           'search link init get-data get-assets delete-data delete-assets update-data update-assets revert-data revert-assets setup-env get-feature get-data-pack get-assets-pack update-data-pack update-assets-pack revert-data-pack revert-assets-pack'            Action to compute.
 ID=                          ''                             s           ''                      Data or Assets or Env ID or Application name.
 "
 OPTIONS="
@@ -64,6 +65,11 @@ else
     fi
 
     case $ACTION in
+        search)
+            if [ "$ID" == "path" ]; then
+                echo $(__get_active_path)
+            fi
+            ;;
         link)
             __link_app "$ID" "$STELLAROOT"
             ;;
