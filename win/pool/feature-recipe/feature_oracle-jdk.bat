@@ -5,8 +5,8 @@ goto :eof
 REM Recipe for Oracle Java SE Development Kit
 REM http://stackoverflow.com/questions/1619662/how-can-i-get-the-latest-jre-jdk-as-a-zip-file-rather-than-exe-or-msi-installe
 
-:feature_oracle-javasejdk
-	set "FEAT_NAME=oracle-javasejdk"
+:feature_oracle-jdk
+	set "FEAT_NAME=oracle-jdk"
 	set "FEAT_LIST_SCHEMA=8u45@x86/binary 8u45@x64/binary"
 	set "FEAT_DEFAULT_VERSION=8u45"
 	set "FEAT_DEFAULT_ARCH=x64"
@@ -19,7 +19,7 @@ goto :eof
 
 
 
-:feature_oracle-javasejdk_8u45
+:feature_oracle-jdk_8u45
 	set "FEAT_VERSION=8u45"
 
 	set FEAT_SOURCE_URL=
@@ -39,7 +39,7 @@ goto :eof
 goto :eof
 
 
-:feature_oracle-javasejdk_install_binary
+:feature_oracle-jdk_install_binary
 	set "INSTALL_DIR=!FEAT_INSTALL_ROOT!"
 	set SRC_DIR=
 	set BUILD_DIR=
