@@ -524,43 +524,43 @@ goto :eof
 		if "%PROTOCOL%"=="HG" (
 			if "!_opt_revert!"=="ON" (
 				cd /D "%FINAL_DESTINATION%"
-				hg revert --all -C
+				%HG% revert --all -C
 			)
 			if "!_opt_update!"=="ON" (
 				cd /D "%FINAL_DESTINATION%"
-				hg pull
+				%HG% pull
 				if "!_checkout_version!"=="" (
-					hg update
+					%HG% update
 				) else (
-					hg update "!_checkout_version!"
+					%HG% update "!_checkout_version!"
 				)
 			)
 			if "!_opt_get!"=="ON" (
-				hg clone %URI% "%FINAL_DESTINATION%"
+				%HG% clone %URI% "%FINAL_DESTINATION%"
 				if not "!_checkout_version!"=="" (
 					cd /D "%FINAL_DESTINATION%"
-					hg update "!_checkout_version!"
+					%HG% update "!_checkout_version!"
 				)
 			)
 		)
 		if "%PROTOCOL%"=="GIT" (
 			if "!_opt_revert!"=="ON" (
 				cd /D "%FINAL_DESTINATION%"
-				git reset --hard
+				%GIT% reset --hard
 			)
 			if "!_opt_update!"=="ON" (
 				cd /D "%FINAL_DESTINATION%"
 				if "!_checkout_version!"=="" (
-					git pull
+					%GIT% pull
 				) else (
-					git checkout "!_checkout_version!"
+					%GIT% checkout "!_checkout_version!"
 				)
 			)
 			if "!_opt_get!"=="ON" (
-				git clone %URI% "%FINAL_DESTINATION%"
+				%GIT% clone %URI% "%FINAL_DESTINATION%"
 				if not "!_checkout_version!"=="" (
 					cd /D "%FINAL_DESTINATION%"
-					git checkout "!_checkout_version!"
+					%GIT% checkout "!_checkout_version!"
 				)
 			)
 		)
@@ -642,29 +642,58 @@ goto :eof
 	for %%A in ( %FILE_PATH% ) do set _FILENAME=%%~nxA
 	for %%B in ( %FILE_PATH% ) do set EXTENSION=%%~xB
 
-	if "%EXTENSION%"==".7z" (
-		echo ** Using 7zip : %SEVENZIP%
-		set "USE7ZIP=TRUE"
-	) 
-	if "%EXTENSION%"==".zip" (
-		echo ** Using unzip : %UZIP%
-		set "USE7ZIP=FALSE"
-	)
+	
 
 	if "!_opt_strip!"=="OFF" (
-		if "%USE7ZIP%"=="FALSE" "%UZIP%" -o "%FILE_PATH%" -d "%UNZIP_DIR%"
-		if "%USE7ZIP%"=="TRUE" "%SEVENZIP%" x "%FILE_PATH%" -y -o"%UNZIP_DIR%"
+		if "%EXTENSION%"==".7z" (
+			"%SEVENZIP%" x "%FILE_PATH%" -y -o"%UNZIP_DIR%"
+		)
+		if "%EXTENSION%"==".exe" (
+			"%SEVENZIP%" x "%FILE_PATH%" -y -o"%UNZIP_DIR%"
+		)
+
+		if "%EXTENSION%"==".tgz" (
+			REM http://superuser.com/a/546694
+			"%SEVENZIP%" x "%FILE_PATH%" -y -so | "%SEVENZIP%" x -y -aoa -si -ttar -o"%UNZIP_DIR%"
+		)
+
+		if "%EXTENSION%"==".gz" (
+			for %%C in ( %_FILENAME% ) do set EXTENSION_BIS=%%~xC
+			if "%EXTENSION_BIS%"==".tar" (
+				"%SEVENZIP%" x "%FILE_PATH%" -y -so | "%SEVENZIP%" x -y -aoa -si -ttar -o"%UNZIP_DIR%"
+			) else (
+				"%SEVENZIP%" x "%FILE_PATH%" -y -o"%UNZIP_DIR%"
+			)
+		)
+
+		if "%EXTENSION%"==".zip" (
+			"%UZIP%" -o "%FILE_PATH%" -d "%UNZIP_DIR%"
+		)
+
 	) else (
 		echo ** Stripping first folder
 		if exist "%STELLA_APP_TEMP_DIR%\%_FILENAME%" (
 			rmdir /q /s "%STELLA_APP_TEMP_DIR%\%_FILENAME%"
 		)
 		mkdir "%STELLA_APP_TEMP_DIR%\%_FILENAME%"
-		if "%USE7ZIP%"=="FALSE" (
+		if "%EXTENSION%"==".zip" (
 			"%UZIP%" -o "%FILE_PATH%" -d "%STELLA_APP_TEMP_DIR%\%_FILENAME%"
 		)
-		if "%USE7ZIP%"=="TRUE" (
+		if "%EXTENSION%"==".7z" (
 			"%SEVENZIP%" x "%FILE_PATH%" -y -o"%STELLA_APP_TEMP_DIR%\%_FILENAME%"
+		)
+		if "%EXTENSION%"==".exe" (
+			"%SEVENZIP%" x "%FILE_PATH%" -y -o"%STELLA_APP_TEMP_DIR%\%_FILENAME%"
+		)
+		if "%EXTENSION%"==".tgz" (
+			"%SEVENZIP%" x "%FILE_PATH%" -y -so | "%SEVENZIP%" x -y -aoa -si -ttar -o"%STELLA_APP_TEMP_DIR%\%_FILENAME%"
+		)
+		if "%EXTENSION%"==".gz" (
+			if "%EXTENSION_BIS%"==".tar" (
+				"%SEVENZIP%" x "%FILE_PATH%" -y -so | "%SEVENZIP%" x -y -aoa -si -ttar -o"%STELLA_APP_TEMP_DIR%\%_FILENAME%"
+			) else (
+				"%SEVENZIP%" x "%FILE_PATH%" -y -o"%STELLA_APP_TEMP_DIR%\%_FILENAME%"
+			)
 		)
 		
 		cd /D "%STELLA_APP_TEMP_DIR%\%_FILENAME%"
@@ -859,13 +888,13 @@ goto :eof
 	)
 
 	if "%_opt_version_long%"=="ON" (
-		for /f %%m in ('hg log -R "%_path%" -r . --template "{latesttag}-{latesttagdistance}-{node|short}"') do (
+		for /f %%m in ('%HG% log -R "%_path%" -r . --template "{latesttag}-{latesttagdistance}-{node|short}"') do (
 			set "_version=%%m"
 		)
 	)
 
 	if "%_opt_version_short%"=="ON" (
-		for /f %%m in ('hg log -R "%_path%" -r . --template "{latesttag}"') do (
+		for /f %%m in ('%HG% log -R "%_path%" -r . --template "{latesttag}"') do (
 			set "_version=%%m"
 		)
 	)
@@ -891,13 +920,13 @@ goto :eof
 	)
 
 	if "%_opt_version_long%"=="ON" (
-		for /f %%m in ('git --git-dir "%_path%/.git" describe --tags --long --always --first-parent') do (
+		for /f %%m in ('%GIT% --git-dir "%_path%/.git" describe --tags --long --always --first-parent') do (
 			set "_version=%%m"
 		)
 	)
 
 	if "%_opt_version_short%"=="ON" (
-		for /f %%m in ('git --git-dir "%_path%/.git" describe --tags --abbrev=0 --always --first-parent') do (
+		for /f %%m in ('%GIT% --git-dir "%_path%/.git" describe --tags --abbrev=0 --always --first-parent') do (
 			set "_version=%%m"
 		)
 	)

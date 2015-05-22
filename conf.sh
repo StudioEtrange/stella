@@ -85,6 +85,8 @@ STELLA_INTERNAL_TEMP_DIR=$STELLA_INTERNAL_WORK_ROOT/temp
 # OTHERS ---------------------------------------------
 FEATURE_LIST_ENABLED=
 VERBOSE_MODE=0
+# PROXY
+__init_proxy
 
 # VIRTUALIZATION ------------------------------------------
 VIRTUAL_WORK_ROOT="$STELLA_APP_WORK_ROOT/virtual"

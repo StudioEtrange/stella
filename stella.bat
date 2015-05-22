@@ -6,9 +6,8 @@ call %~dp0\conf.bat
 
 
 :: arguments
-set "params=domain:"app feature virtual stella" action:"search remove link bootstrap api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature setup-env install list create-env run-env stop-env destroy-env info-env create-box get-box" id:"_ANY_""
-set "options=-f: -vcpu:_ANY_ -vmem:_ANY_ -head: -login: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_ -stellaroot:_ANY_ -samples:"
-
+set "params=domain:"app feature virtual stella proxy" action:"on off register search remove link bootstrap api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature setup-env install list create-env run-env stop-env destroy-env info-env create-box get-box" id:"_ANY_""
+set "options=-f: -vcpu:_ANY_ -vmem:_ANY_ -head: -login: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_ -stellaroot:_ANY_ -samples: -proxyhost:_ANY_ -proxyport:_ANY_ -proxyuser:_ANY_ -proxypass:_ANY_"
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
 if "%ARGOPT_FLAG_HELP%"=="1" goto :usage
@@ -78,6 +77,24 @@ if "%DOMAIN%"=="feature" (
 )
 if "%DOMAIN%"=="feature" goto :end
 
+REM --------------- PROXY ----------------------------
+if "%DOMAIN%"=="proxy" (
+	if "%ACTION%"=="on" (
+		call %STELLA_COMMON%\common-network.bat :enable_proxy "%id%"
+		goto :end
+	)
+	if "%ACTION%"=="off" (
+		call %STELLA_COMMON%\common-network.bat :disable_proxy
+		goto :end
+	)
+	if "%ACTION%"=="register" (
+		call %STELLA_COMMON%\common-network.bat :register_proxy %id% %-proxyhost% %-proxyport% %-proxyuser% %-proxypass%
+		goto :end
+	)
+	
+)
+if "%DOMAIN%"=="proxy" goto :end
+
 
 REM --------------- VIRTUAL ----------------------------
 if "%DOMAIN%"=="virtual" (
@@ -103,30 +120,33 @@ if "%DOMAIN%"=="virtual" goto :end
 	echo ----------------
 	echo List of commands
 	echo 	* application management :
-	echo 		%~n0 app init ^<application name^> [-approot=^<path^>] [-workroot=^<path^>] [-cachedir=^<path^>] [-samples]
-	echo 		%~n0 app get-data^|get-assets^|delete-data^|delete-assets^|update-data^|update-assets^|revert-data^|revert-assets ^<data id^|assets id^>
-	echo 		%~n0 app get-data-pack^|get-assets-pack^|delete-data-pack^|delete-assets-pack^|update-data-pack^|update-assets-pack^|revert-data-pack^|revert-assets-pack ^<data pack name^|assets pack name^>
-	echo 		%~n0 app get-feature ^<all^|feature schema^> : install all features defined in app properties file or install a matching one
-	echo 		%~n0 app setup-env ^<env id^|all^> : download, build, deploy and run virtual environment based on app properties
-	echo		%~n0 app link ^<app-path^> [-stellaroot=^<path^>] : link an app to a specific stella path
-	echo		%~n0 app search path : print current system search path
+	echo 		app init ^<application name^> [-approot=^<path^>] [-workroot=^<path^>] [-cachedir=^<path^>] [-samples]
+	echo 		app get-data^|get-assets^|delete-data^|delete-assets^|update-data^|update-assets^|revert-data^|revert-assets ^<data id^|assets id^>
+	echo 		app get-data-pack^|get-assets-pack^|delete-data-pack^|delete-assets-pack^|update-data-pack^|update-assets-pack^|revert-data-pack^|revert-assets-pack ^<data pack name^|assets pack name^>
+	echo 		app get-feature ^<all^|feature schema^> : install all features defined in app properties file or install a matching one
+	echo 		app setup-env ^<env id^|all^> : download, build, deploy and run virtual environment based on app properties
+	echo		app link ^<app-path^> [-stellaroot=^<path^>] : link an app to a specific stella path
+	echo		app search path : print current system search path
 	echo	* feature management :
-	echo 		%~n0 feature install required : install required features for Stella
-	echo 		%~n0 feature install ^<feature schema^> : install a feature. schema = feature_name[#version][@arch][/binary^|source][:os_restriction]
-	echo 		%~n0 feature remove ^<feature schema^> : remove a feature
-	echo 		%~n0 feature list ^<all^|feature name^|active^>: list all available features OR available version of a feature OR current active features
+	echo 		feature install required : install required features for Stella
+	echo 		feature install ^<feature schema^> : install a feature. schema = feature_name[#version][@arch][/binary^|source][:os_restriction]
+	echo 		feature remove ^<feature schema^> : remove a feature
+	echo 		feature list ^<all^|feature name^|active^>: list all available features OR available version of a feature OR current active features
 	echo	* virtual management :
-	echo 		%~n0 virtual create-env ^<env id#distrib id^> [-head] [-vmem=xxxx] [-vcpu=xx] : create a new environment from a generic box prebuilt with a specific distribution
-	echo		%~n0 virtual run-env ^<env id^> [-login] : manage environment
-	echo		%~n0 virtual stop-env^|destroy-env ^<env id^> : manage environment
-	echo 		%~n0 virtual create-box^|get-box ^<distrib id^> : manage generic boxes built with a specific distribution
-	echo 		%~n0 virtual list ^<box^|env^|distrib^>
+	echo 		virtual create-env ^<env id#distrib id^> [-head] [-vmem=xxxx] [-vcpu=xx] : create a new environment from a generic box prebuilt with a specific distribution
+	echo		virtual run-env ^<env id^> [-login] : manage environment
+	echo		virtual stop-env^|destroy-env ^<env id^> : manage environment
+	echo 		virtual create-box^|get-box ^<distrib id^> : manage generic boxes built with a specific distribution
+	echo 		virtual list ^<box^|env^|distrib^>
 	echo	* various :
-	echo 		%~n0 api list all : list public functions of stella api
-	echo		%~n0 stella bootstrap env : launch a shell with all stella env var setted
-	echo		%~n0 stella install dep : install all features and systems requirements for the current OS (%STELLA_CURRENT_OS%)
+	echo 		api list all : list public functions of stella api
+	echo		stella bootstrap env : launch a shell with all stella env var setted
+	echo		stella install dep : install all features and systems requirements for the current OS (%STELLA_CURRENT_OS%)
+	echo	* network management :
+	echo 	    proxy on ^<name^> : active this proxy
+	echo 	    proxy off now : active this proxy
+	echo    	proxy register ^<name^> -proxyhost=^<host^> -proxyport=^<port^> [-proxyuser=^<string^> -proxypass=^<string^>] : register this proxy
 goto :end
-
 
 
 :end

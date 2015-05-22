@@ -401,7 +401,7 @@ goto :eof
 
 	copy /b "!_approot!\stella-link.bat.temp"+"%STELLA_TEMPLATE%\sample-stella-link.bat" "!_approot!\stella-link.bat"
 
-	 del /f /q "!_approot!\stella-link.bat.temp" >nul
+	del /f /q "!_approot!\stella-link.bat.temp" >nul
 
 	set "_STELLA_APP_PROPERTIES_FILE=!_approot!\%STELLA_APP_PROPERTIES_FILENAME%"
 	if exist "%_STELLA_APP_PROPERTIES_FILE%" (

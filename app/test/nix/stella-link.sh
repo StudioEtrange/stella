@@ -1,10 +1,10 @@
 #!/bin/bash
 _STELLA_LINK_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export STELLA_ROOT=$_STELLA_LINK_CURRENT_FILE_DIR/../../../../stella
-[ "$STELLA_APP_ROOT" == "" ] && STELLA_APP_ROOT=$_STELLA_LINK_CURRENT_FILE_DIR
+[ ! "$1" == "chaining" ] && STELLA_APP_ROOT=$_STELLA_LINK_CURRENT_FILE_DIR
 
-if [ "$1" != "nothing" ]; then
-	if [ "$1" != "bootstrap" ]; then
+if [ ! "$1" == "nothing" ]; then
+	if [ ! "$1" == "bootstrap" ]; then
 		if [ ! -f "$STELLA_ROOT/stella.sh" ]; then
 			if [ -f "$(dirname $STELLA_ROOT)/stella-link.sh" ]; then
 				echo " ** Try to chain link stella from $(dirname $STELLA_ROOT)"
