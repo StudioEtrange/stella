@@ -70,6 +70,9 @@ function feature_oracle-jdk_7u80() {
 		FEAT_BINARY_URL_FILENAME_x64=jdk-7u80-macosx-x64.dmg
 		FEAT_BINARY_URL_x86=
 		FEAT_BINARY_URL_FILENAME_86=
+
+		DMG_VOLUME_NAME="JDK 7 Update 80"
+		PKG_NAME="JDK 7 Update 80.pkg"
 	fi
 
 	FEAT_DEPENDENCIES=
@@ -117,7 +120,7 @@ function feature_oracle-jdk_install_binary() {
 		rm -Rf "$STELLA_APP_TEMP_DIR/$FEAT_VERSION"
 		pkgutil --expand "$STELLA_APP_CACHE_DIR/$PKG_NAME" "$STELLA_APP_TEMP_DIR/$FEAT_VERSION/"
 
-		# extract jdk Payload from pkg file
+		# extract jdk from binary payload file
 		rm -Rf "$FEAT_INSTALL_ROOT"
 		mkdir -p "$FEAT_INSTALL_ROOT"
 		cd "$FEAT_INSTALL_ROOT"
