@@ -23,7 +23,7 @@ goto :eof
 
 	set FEAT_SOURCE_URL=
 	set FEAT_SOURCE_URL_FILENAME=
-	set FEAT_SOURCE_PATCH_CALLBACK=
+	set FEAT_SOURCE_CALLBACK=
 	set "FEAT_BINARY_URL_x64=http://dl.bintray.com/oneclick/rubyinstaller/ruby-2.0.0-p451-x64-mingw32.7z"
 	set "FEAT_BINARY_URL_FILENAME_x64=ruby-2.0.0-p451-x64-mingw32.7z"
 	set "FEAT_BINARY_URL_x86=http://dl.bintray.com/oneclick/rubyinstaller/ruby-2.0.0-p451-i386-mingw32.7z"
@@ -46,7 +46,7 @@ goto :eof
 
 	set FEAT_SOURCE_URL=
 	set FEAT_SOURCE_URL_FILENAME=
-	set FEAT_SOURCE_PATCH_CALLBACK=
+	set FEAT_SOURCE_CALLBACK=
 	set "FEAT_BINARY_URL_x86=http://dl.bintray.com/oneclick/rubyinstaller/ruby-1.9.3-p545-i386-mingw32.7z"
 	set "FEAT_BINARY_URL_FILENAME_x86=ruby-1.9.3-p545-i386-mingw32.7z"
 	set FEAT_BINARY_CALLBACK=

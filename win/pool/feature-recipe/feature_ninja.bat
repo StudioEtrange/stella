@@ -8,7 +8,7 @@ goto :eof
 	set "FEAT_NAME=ninja"
 	set "FEAT_LIST_SCHEMA=last_release/source"
 	set "FEAT_DEFAULT_VERSION=last_release"
-	set "FEAT_DEFAULT_ARCH="
+	set FEAT_DEFAULT_ARCH=
 	set "FEAT_DEFAULT_FLAVOUR=source"
 goto :eof
 
@@ -18,7 +18,7 @@ goto :eof
 
 	set "FEAT_SOURCE_URL=https://github.com/martine/ninja/archive/release.zip"
 	set "FEAT_SOURCE_URL_FILENAME=ninja-release.zip"
-	set FEAT_SOURCE_PATCH_CALLBACK=
+	set FEAT_SOURCE_CALLBACK=
 	set FEAT_BINARY_URL=
 	set FEAT_BINARY_URL_FILENAME=
 	set FEAT_BINARY_CALLBACK=

@@ -16,7 +16,7 @@ goto :eof
 
 	set FEAT_SOURCE_URL=
 	set FEAT_SOURCE_URL_FILENAME=
-	set FEAT_SOURCE_PATCH_CALLBACK=
+	set FEAT_SOURCE_CALLBACK=
 	set "FEAT_BINARY_URL_x86=http://strawberryperl.com/download/5.18.2.1/strawberry-perl-5.18.2.1-32bit-portable.zip"
 	set "FEAT_BINARY_URL_FILENAME_x86=strawberry-perl-5.18.2.1-32bit-portable.zip"
 	set "FEAT_BINARY_URL_x64=http://strawberryperl.com/download/5.18.2.1/strawberry-perl-5.18.2.1-64bit-portable.zip"

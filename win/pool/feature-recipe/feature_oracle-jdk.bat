@@ -29,6 +29,7 @@ goto :eof
 	set "FEAT_BINARY_URL_FILENAME_x64=jdk-8u45-windows-x64.exe"
 	set "FEAT_BINARY_URL_x86=http://download.oracle.com/otn-pub/java/jdk/8u45-b15/jdk-8u45-windows-i586.exe"
 	set "FEAT_BINARY_URL_FILENAME_86=jdk-8u45-windows-i586.exe"
+	set FEAT_BINARY_CALLBACK=
 
 	set FEAT_DEPENDENCIES=
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\java.exe"

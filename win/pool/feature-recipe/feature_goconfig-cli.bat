@@ -7,7 +7,7 @@ goto :eof
 	set "FEAT_NAME=goconfig-cli"
 	set "FEAT_LIST_SCHEMA=snapshot/binary"
 	set "FEAT_DEFAULT_VERSION=snapshot"
-	set "FEAT_DEFAULT_ARCH="
+	set FEAT_DEFAULT_ARCH=
 	set "FEAT_DEFAULT_FLAVOUR=binary"
 goto :eof
 
@@ -17,7 +17,7 @@ goto :eof
 
 	set FEAT_SOURCE_URL=
 	set FEAT_SOURCE_URL_FILENAME=
-	set FEAT_SOURCE_PATCH_CALLBACK=
+	set FEAT_SOURCE_CALLBACK=
 	set "FEAT_BINARY_URL=%STELLA_ARTEFACT_URL%/win/goconfig-cli/goconfig-cli.exe"
 	set "FEAT_BINARY_URL_FILENAME=goconfig-cli.exe"
 	set FEAT_BINARY_CALLBACK=

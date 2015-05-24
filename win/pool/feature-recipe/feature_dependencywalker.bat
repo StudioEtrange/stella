@@ -19,7 +19,7 @@ goto :eof
 
 	set FEAT_SOURCE_URL=
 	set FEAT_SOURCE_URL_FILENAME=
-	set FEAT_SOURCE_PATCH_CALLBACK=
+	set FEAT_SOURCE_CALLBACK=
 	set "FEAT_BINARY_URL_x64=http://www.dependencywalker.com/depends22_x64.zip"
 	set "FEAT_BINARY_URL_FILENAME_x64=depends22_x64.zip"
 	set "FEAT_BINARY_URL_x86=http://www.dependencywalker.com/depends22_x86.zip"

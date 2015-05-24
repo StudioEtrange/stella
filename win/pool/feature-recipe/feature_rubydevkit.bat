@@ -24,7 +24,7 @@ goto :eof
 
 	set FEAT_SOURCE_URL=
 	set FEAT_SOURCE_URL_FILENAME=
-	set FEAT_SOURCE_PATCH_CALLBACK=
+	set FEAT_SOURCE_CALLBACK=
 	set "FEAT_BINARY_URL_x64=http://cdn.rubyinstaller.org/archives/devkits/DevKit-mingw64-64-4.7.2-20130224-1432-sfx.exe"
 	set "FEAT_BINARY_URL_FILENAME_x64=DevKit-mingw64-64-4.7.2-20130224-1432-sfx.exe"
 	set "FEAT_BINARY_URL_x86=http://cdn.rubyinstaller.org/archives/devkits/DevKit-mingw64-32-4.7.2-20130224-1151-sfx.exe"
@@ -46,7 +46,7 @@ goto :eof
 
 	set FEAT_SOURCE_URL=
 	set FEAT_SOURCE_URL_FILENAME=
-	set FEAT_SOURCE_PATCH_CALLBACK=
+	set FEAT_SOURCE_CALLBACK=
 	set "FEAT_BINARY_URL_x86=https://github.com/downloads/oneclick/rubyinstaller/DevKit-tdm-32-4.5.2-20111229-1559-sfx.exe"
 	set "FEAT_BINARY_URL_FILENAME_x86=DevKit-tdm-32-4.5.2-20111229-1559-sfx.exe"
 	set FEAT_BINARY_CALLBACK=

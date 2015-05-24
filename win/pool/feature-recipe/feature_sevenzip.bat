@@ -19,7 +19,7 @@ goto :eof
 
 	set FEAT_SOURCE_URL=
 	set FEAT_SOURCE_URL_FILENAME=
-	set FEAT_SOURCE_PATCH_CALLBACK=
+	set FEAT_SOURCE_CALLBACK=
 	set "FEAT_BINARY_URL=http://sourceforge.net/projects/winpenpack/files/X-7Zip/releases/X-7Zip_9.38-beta_rev11.zip/download"
 	set "FEAT_BINARY_URL_FILENAME=X-7Zip_9.38-beta_rev11.zip"
 	set FEAT_BINARY_CALLBACK=

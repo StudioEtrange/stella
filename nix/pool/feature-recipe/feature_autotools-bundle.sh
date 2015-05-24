@@ -1,18 +1,18 @@
-if [ ! "$_AUTOTOOLS_INCLUDED_" == "1" ]; then 
-_AUTOTOOLS_INCLUDED_=1
+if [ ! "$_AUTOTOOLSBUNDLE_INCLUDED_" == "1" ]; then 
+_AUTOTOOLSBUNDLE_INCLUDED_=1
 
-function feature_autotools() {
-	FEAT_NAME=autotools
-	FEAT_LIST_SCHEMA="pack"
-	FEAT_DEFAULT_VERSION=pack
+function feature_autotools-bundle() {
+	FEAT_NAME=autotools-bundle
+	FEAT_LIST_SCHEMA="1"
+	FEAT_DEFAULT_VERSION=1
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR=
 
 	FEAT_BUNDLE=TRUE
 }
 
-function feature_autotools_pack() {
-	FEAT_VERSION=pack
+function feature_autotools-bundle_1() {
+	FEAT_VERSION=1
 
 	FEAT_SOURCE_URL=
 	FEAT_SOURCE_URL_FILENAME=

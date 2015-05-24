@@ -16,7 +16,7 @@ goto :eof
 
 	set FEAT_SOURCE_URL=
 	set FEAT_SOURCE_URL_FILENAME=
-	set FEAT_SOURCE_PATCH_CALLBACK=
+	set FEAT_SOURCE_CALLBACK=
 	set "FEAT_BINARY_URL_x86=http://www.cmake.org/files/v3.1/cmake-3.1.2-win32-x86.zip"
 	set "FEAT_BINARY_URL_FILENAME_x86=cmake-3.1.2-win32-x86.zip"
 	set FEAT_BINARY_CALLBACK=
@@ -35,7 +35,7 @@ goto :eof
 
 	set FEAT_SOURCE_URL=
 	set FEAT_SOURCE_URL_FILENAME=
-	set FEAT_SOURCE_PATCH_CALLBACK=
+	set FEAT_SOURCE_CALLBACK=
 	set "FEAT_BINARY_URL_x86=http://www.cmake.org/files/v2.8/cmake-2.8.12-win32-x86.zip"
 	set "FEAT_BINARY_URL_FILENAME_x86=cmake-2.8.12-win32-x86.zip"
 	set FEAT_BINARY_CALLBACK=

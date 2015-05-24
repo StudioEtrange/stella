@@ -19,7 +19,7 @@ goto :eof
 
 	set FEAT_SOURCE_URL=
 	set FEAT_SOURCE_URL_FILENAME=
-	set FEAT_SOURCE_PATCH_CALLBACK=
+	set FEAT_SOURCE_CALLBACK=
 	set "FEAT_BINARY_URL_x86=http://www.codedebug.com/Downloads/Download.php?file=NikPEViewer_21v.zip"
 	set "FEAT_BINARY_URL_FILENAME_x86=NikPEViewer_21v.zip"
 	set FEAT_BINARY_CALLBACK=

@@ -8,7 +8,7 @@ goto :eof
 	set "FEAT_NAME=jom"
 	set "FEAT_LIST_SCHEMA=1_0_13/binary"
 	set "FEAT_DEFAULT_VERSION=1_0_13"
-	set "FEAT_DEFAULT_ARCH="
+	set FEAT_DEFAULT_ARCH=
 	set "FEAT_DEFAULT_FLAVOUR=binary"
 goto :eof
 
@@ -18,7 +18,7 @@ goto :eof
 
 	set FEAT_SOURCE_URL=
 	set FEAT_SOURCE_URL_FILENAME=
-	set FEAT_SOURCE_PATCH_CALLBACK=
+	set FEAT_SOURCE_CALLBACK=
 	set "FEAT_BINARY_URL=http://download.qt-project.org/official_releases/jom/jom_1_0_13.zip"
 	set "FEAT_BINARY_URL_FILENAME=jom_1_0_13.zip"
 	set FEAT_BINARY_CALLBACK=

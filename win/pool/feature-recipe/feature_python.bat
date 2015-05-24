@@ -17,7 +17,7 @@ goto :eof
 
 	set FEAT_SOURCE_URL=
 	set FEAT_SOURCE_URL_FILENAME=
-	set FEAT_SOURCE_PATCH_CALLBACK=
+	set FEAT_SOURCE_CALLBACK=
 	set "FEAT_BINARY_URL_x86=https://www.python.org/ftp/python/2.7.6/python-2.7.6.msi"
 	set "FEAT_BINARY_URL_FILENAME_x86=python-2.7.6.msi"
 	set "FEAT_BINARY_URL_x64=https://www.python.org/ftp/python/2.7.6/python-2.7.6.amd64.msi"

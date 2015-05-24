@@ -26,6 +26,7 @@ goto :eof
 	set FEAT_SOURCE_CALLBACK=	
 	set "FEAT_BINARY_URL=http://apache.mirrors.ovh.net/ftp.apache.org/dist/maven/maven-3/3.3.3/binaries/apache-maven-3.3.3-bin.zip"
 	set "FEAT_BINARY_URL_FILENAME=apache-maven-3.3.3-bin.zip"
+	set FEAT_BINARY_CALLBACK=
 	
 	set FEAT_DEPENDENCIES=
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\mvn"
