@@ -301,6 +301,10 @@ goto :eof
 				set "FORCE=!save_FORCE!"
 				call :internal_feature_context %_SCHEMA%
 
+				REM only called for a bundle
+				call :feature_apply_binary_callback
+				call :feature_apply_source_callback
+
 			) else (
 				echo Installing !FEAT_NAME! version !FEAT_VERSION! in !FEAT_INSTALL_ROOT!
 				call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :feature_!FEAT_NAME!_install_!FEAT_SCHEMA_FLAVOUR!
@@ -394,14 +398,14 @@ goto :eof
 
 :feature_apply_source_callback
 	for %%p in (!FEAT_SOURCE_CALLBACK!) do (
-		call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME! :%%p
+		call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :%%p
 	)
 goto :eof
 
 
 :feature_apply_binary_callback
 	for %%p in (!FEAT_BINARY_CALLBACK!) do (
-		call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME! :%%p
+		call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :%%p
 	)
 goto :eof
 

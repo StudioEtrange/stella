@@ -304,6 +304,10 @@ function __feature_install() {
 
 					FORCE=$save_FORCE
 					__internal_feature_context $_SCHEMA
+
+					# only called for a bundle
+					__feature_apply_binary_callback
+					__feature_apply_source_callback
 					
 				else
 					echo " ** Installing $FEAT_NAME version $FEAT_VERSION in $FEAT_INSTALL_ROOT"

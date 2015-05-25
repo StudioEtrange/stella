@@ -27,11 +27,14 @@ goto :eof
 	set FEAT_DEPENDENCIES=
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\go.exe"
 	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\bin"
-	set FEAT_ENV=
+	set FEAT_ENV=feature_go_set_env
 	
 	set FEAT_BUNDLE_LIST=
 goto :eof
 
+:feature_go_set_env
+	set "GOROOT=!FEAT_INSTALL_ROOT!"
+goto :eof
 
 :feature_go_install_binary
 	set "INSTALL_DIR=!FEAT_INSTALL_ROOT!"
