@@ -17,13 +17,15 @@ goto :eof
 :feature_go-buildchain-bundle_1_4_2
 	set "FEAT_VERSION=1_4_2"
 	
+	REM need gcc
+	set FEAT_DEPENDENCIES=
+
 	set "FEAT_BUNDLE_ITEM=go#1_4_2"
 
 	set FEAT_ENV_CALLBACK=feature_buildchain_setenv
 	set "FEAT_BUNDLE_CALLBACK=feature_buildchain_setenv feature_prepare_toolchain"
 
-	REM need gcc
-	set FEAT_DEPENDENCIES=
+	set FEAT_INSTALL_TEST=
 	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\_WORKSPACE_\bin"
 
 	set "BUILDCHAIN_GO_VERSION=1.4.2"

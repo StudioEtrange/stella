@@ -163,9 +163,13 @@ function __feature_inspect() {
 				[ "$VERBOSE_MODE" == "0" ] || echo " ** BUNDLE Detected in $save_FEAT_INSTALL_ROOT"
 			fi
 		else
-			if [ -f "$FEAT_INSTALL_TEST" ]; then
+			if [ "$FEAT_INSTALL_TEST" == "" ]; then
 				TEST_FEATURE=1
-				[ "$VERBOSE_MODE" == "0" ] || echo " ** FEATURE Detected in $FEAT_INSTALL_ROOT"
+			else
+				if [ -f "$FEAT_INSTALL_TEST" ]; then
+					TEST_FEATURE=1
+					[ "$VERBOSE_MODE" == "0" ] || echo " ** FEATURE Detected in $FEAT_INSTALL_ROOT"
+				fi
 			fi
 		fi
 	else
@@ -175,13 +179,7 @@ function __feature_inspect() {
 
 
 
-function __feature_install_list() {
-	local _list=$1
 
-	for f in $_list; do
-		__feature_install $f
-	done
-}
 
 
 function __feature_remove() {
@@ -226,11 +224,11 @@ function __feature_remove() {
 
 			FEAT_BUNDLE_MODE="$FEAT_BUNDLE"
 			for p in $FEAT_BUNDLE_ITEM; do
-				TEST_FEATURE=0
 				__feature_remove $p "HIDDEN"
 				
 			done
-			FEAT_BUNDLE_MODE
+			FEAT_BUNDLE_MODE=
+
 			__internal_feature_context $_SCHEMA
 
 		else
@@ -246,6 +244,14 @@ function __feature_remove() {
 		STELLA_APP_TEMP_DIR=$_save_app_temp_dir
 	fi
 
+}
+
+function __feature_install_list() {
+	local _list=$1
+
+	for f in $_list; do
+		__feature_install $f
+	done
 }
 
 function __feature_install() {
@@ -310,7 +316,7 @@ function __feature_install() {
 						FORCE=0
 
 						local _flag_hidden
-						if [ "$FEAT_BUNDLE" == "LIST" ]; then
+						if [ "$FEAT_BUNDLE_MODE" == "LIST" ]; then
 							_flag_hidden=
 						else
 							_flag_hidden="HIDDEN"
@@ -480,10 +486,12 @@ function __internal_feature_context() {
 	FEAT_INSTALL_TEST=
 	FEAT_INSTALL_ROOT=
 	FEAT_SEARCH_PATH=
+	FEAT_ENV_CALLBACK=
 	FEAT_BUNDLE_ITEM=
 	FEAT_BUNDLE_CALLBACK=
+	# MERGE / NESTED / LIST
 	FEAT_BUNDLE=
-	FEAT_ENV_CALLBACK=
+	
 
 	[ ! "$_SCHEMA" == "" ] && __select_schema $_SCHEMA "FEAT_SCHEMA_SELECTED"
 
@@ -499,13 +507,13 @@ function __internal_feature_context() {
 				FEAT_INSTALL_ROOT="$STELLA_APP_FEATURE_ROOT"/"$TMP_FEAT_SCHEMA_NAME"/"$TMP_FEAT_SCHEMA_VERSION"
 			fi
 		else
-			if [ "$FEAT_BUNDLE" == "MERGE" ]; then
+			if [ "$FEAT_BUNDLE_MODE" == "MERGE" ]; then
 				FEAT_INSTALL_ROOT="$FEAT_BUNDLE_PATH"
 			fi
-			if [ "$FEAT_BUNDLE" == "NESTED" ]; then
+			if [ "$FEAT_BUNDLE_MODE" == "NESTED" ]; then
 				FEAT_INSTALL_ROOT="$FEAT_BUNDLE_PATH"/"$TMP_FEAT_SCHEMA_NAME"
 			fi
-			if [ "$FEAT_BUNDLE" == "LIST" ]; then
+			if [ "$FEAT_BUNDLE_MODE" == "LIST" ]; then
 				if [ ! "$FEAT_ARCH" == "" ]; then
 					FEAT_INSTALL_ROOT="$STELLA_APP_FEATURE_ROOT"/"$TMP_FEAT_SCHEMA_NAME"/"$TMP_FEAT_SCHEMA_VERSION"@"$FEAT_ARCH"
 				else

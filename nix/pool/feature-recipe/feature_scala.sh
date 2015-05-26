@@ -33,7 +33,6 @@ function feature_scala_2_11_6() {
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 	FEAT_ENV_CALLBACK=feature_scala_env
 
-	FEAT_BUNDLE_ITEM=
 }
 
 

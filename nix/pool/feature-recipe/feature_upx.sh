@@ -11,21 +11,24 @@ function feature_upx() {
 
 function feature_upx_3_91() {
 	FEAT_VERSION=3_91
+	# TODO : mandatory dep on ucl
+	FEAT_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://upx.sourceforge.net/download/upx-3.91-src.tar.bz2
 	FEAT_SOURCE_URL_FILENAME=upx-3.91-src.tar.bz2
-	FEAT_SOURCE_CALLBACK=feature_ucl_link
+	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
+	
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
-	FEAT_BINARY_CALLBACK=
+	FEAT_BINARY_URL_PROTOCOL=
 
-	# TODO : mandatory dep on ucl
-	FEAT_DEPENDENCIES=
+	FEAT_SOURCE_CALLBACK=feature_ucl_link
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
+	
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/upx
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-	FEAT_ENV_CALLBACK=
-	
-	FEAT_BUNDLE_ITEM=
 }
 
 

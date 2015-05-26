@@ -178,6 +178,7 @@ function __auto_install() {
 
 	local STRIP=
 	[ "$_opt_strip" == "ON" ] && STRIP=STRIP
+	# TODO replace with get resource
 	__download_uncompress "$URL" "$FILE_NAME" "$SOURCE_DIR" "$STRIP"
 	
 	

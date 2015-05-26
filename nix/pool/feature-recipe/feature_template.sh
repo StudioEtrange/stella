@@ -4,42 +4,63 @@ _TEMPLATE_INCLUDED_=1
 
 function feature_template() {
 	FEAT_NAME=template
-	FEAT_LIST_SCHEMA="0_0_1/source 0_0_1/binary"
-	FEAT_DEFAULT_VERSION=0_0_1
-	FEAT_DEFAULT_ARCH=
-	FEAT_DEFAULT_FLAVOUR=binary
-
-	FEAT_BUNDLE=
+	FEAT_LIST_SCHEMA="1_0_0@x64/binary 1_0_0@x86/binary"
+	FEAT_DEFAULT_VERSION=1_0_0
+	FEAT_DEFAULT_ARCH=x64
+	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
-function feature_template_env()  {
+
+
+function feature_template_1_0_0() {
+	#if FEAT_ARCH is not not null, properties FOO_ARCH=BAR will be selected and setted as FOO=BAR
+	# if FOO_ARCH is empty, FOO will not be changed
+
+	FEAT_VERSION=1_0_0
+
+	# Dependencies (not yet implemented)
+	FEAT_DEPENDENCIES=
+
+	# Properties for SOURCE flavour
+	FEAT_SOURCE_URL="http://foo.com/template-1_0_0-src.zip"
+	FEAT_SOURCE_URL_FILENAME=
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
+
+	# Properties for BINARY flavour
+	FEAT_BINARY_URL=
+	FEAT_BINARY_URL_FILENAME=
+	FEAT_BINARY_URL_PROTOCOL=
+	FEAT_BINARY_URL_x86="http://foo.com/bar"
+	FEAT_BINARY_URL_FILENAME_x86="template-1_0_0-x86.zip"
+	FEAT_BINARY_URL_PROTOCOL_x86="HTTP_ZIP"
+	FEAT_BINARY_URL_x64="http://foo.com/bar"
+	FEAT_BINARY_URL_FILENAME_x64="template-1_0_0-x86.zip"
+	FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+
+	# callback are list of functions
+	# manual callback (with feature_callback)
+	FEAT_SOURCE_CALLBACK=
+	FEAT_BINARY_CALLBACK=
+	# automatic callback each time feature is initialized, to init env var
+	FEAT_ENV_CALLBACK=feature_template_setenv
+	
+	# File to test if feature is installed
+	FEAT_INSTALL_TEST=$FEAT_INSTALL_ROOT/bin/template
+	# PATH to add to system PATH
+	FEAT_SEARCH_PATH=$FEAT_INSTALL_ROOT/bin
+
+}
+
+function feature_template_setenv()  {
 	TEMPLATE_HOME=$FEAT_INSTALL_ROOT
 	export TEMPLATE_HOME
 }
 
-function feature_template_0_0_1() {
-
-	FEAT_VERSION=0_0_1
-
-	FEAT_SOURCE_URL=http://foo.org/foo-src.zip
-	FEAT_SOURCE_URL_FILENAME=foo-src.zip
-	FEAT_SOURCE_CALLBACK=feature_template_patch_0_0_1
-	FEAT_BINARY_URL=http://foo.org/foo-bin.zip
-	FEAT_BINARY_URL_FILENAME=foo-bin.zip
-	FEAT_BINARY_CALLBACK=feature_template_patch_0_0_1
-
-	FEAT_DEPENDENCIES=
-	# this one is auto setted but can be overrided
-	#FEAT_INSTALL_ROOT=
+function feature_template_install_binary() {
 	
-	FEAT_INSTALL_TEST=$FEAT_INSTALL_ROOT/bin/foo
-	FEAT_SEARCH_PATH=$FEAT_INSTALL_ROOT/bin
-	FEAT_ENV_CALLBACK=feature_template_env
+	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP FORCE_NAME $FEAT_BINARY_URL_FILENAME"
 
-	FEAT_BUNDLE_ITEM=
-}
-
-function feature_template_patch_0_0_1 () {
+	__feature_callback
 
 }
 
@@ -50,26 +71,17 @@ function feature_template_install_source() {
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-build"
 
+	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP"
+
 	__feature_callback
 
-	__download_uncompress "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_FILENAME" "$SRC_DIR" "DEST_ERASE STRIP"
-	
 	cd "$SRC_DIR"
 
 	make
 	make install && __del_folder $SRC_DIR
 }
 
-function feature_template_install_binary() {
-	INSTALL_DIR="$FEAT_INSTALL_ROOT"
-	SRC_DIR=
-	BUILD_DIR=
 
-	__feature_callback
-
-	__download_uncompress "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_FILENAME" "$INSTALL_DIR" "DEST_ERASE STRIP"
-
-}
 
 
 fi

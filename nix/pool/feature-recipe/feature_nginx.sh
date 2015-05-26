@@ -25,8 +25,6 @@ function feature_nginx_1_7_11() {
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/sbin/nginx
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/sbin
 	FEAT_ENV_CALLBACK=
-	
-	FEAT_BUNDLE_ITEM=
 }
 
 # depend on zlib

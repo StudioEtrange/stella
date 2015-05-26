@@ -23,6 +23,9 @@ goto :eof
 
 	set "FEAT_VERSION=1_0_0"
 
+	REM Dependencies (not yet implemented)
+	set FEAT_DEPENDENCIES=
+
 	REM Properties for bundle
 	set FEAT_BUNDLE_ITEM=
 	set "FEAT_BUNDLE_ITEM_x86=foo#1_0_0@x86 bar#1_0_0@x86"
@@ -30,12 +33,13 @@ goto :eof
 
 	REM callback are list of functions
 	REM automatic callback each time feature is initialized, to init env var
-	set FEAT_ENV_CALLBACK=feature_template-bundle_set_env
+	set FEAT_ENV_CALLBACK=feature_template-bundle_setenv
 	REM automatic callback after all items in bundle list are installed
 	set FEAT_BUNDLE_CALLBACK=
 
-	REM Dependencies (not yet implemented)
-	set FEAT_DEPENDENCIES=
+		
+	REM File to test if feature is installed
+	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\template-bundle.exe"
 
 	REM PATH to add to system PATH
 	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\bin"
@@ -43,8 +47,8 @@ goto :eof
 
 goto :eof
 
-:feature_template-bundle_set_env
-	set "VAR=VALUE"
+:feature_template-bundle_setenv
+	set "TEMPLATE_BUNDLE_HOME_HOME=!FEAT_INSTALL_ROOT!"
 goto :eof
 
 

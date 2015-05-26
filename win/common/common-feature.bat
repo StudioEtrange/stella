@@ -157,13 +157,13 @@ goto :eof
 
 			call :internal_feature_context %_SCHEMA%
 			set "TEST_FEATURE=!_t!"
-			REM if "!TEST_FEATURE!"=="1" (
-				REM echo ** BUNDLE Detected in !save_FEAT_INSTALL_ROOT!
-			REM )
 		) else (
-			if exist "!FEAT_INSTALL_TEST!" (
+			if "!FEAT_INSTALL_TEST!"=="" (
 				set "TEST_FEATURE=1"
-				REM echo ** FEATURE Detected in !FEAT_INSTALL_ROOT!
+			) else (
+				if exist "!FEAT_INSTALL_TEST!" (
+					set "TEST_FEATURE=1"
+				)
 			)
 		)
 	) else (

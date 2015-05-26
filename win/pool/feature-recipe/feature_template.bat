@@ -18,9 +18,12 @@ goto :eof
 
 	set "FEAT_VERSION=1_0_0"
 
+	REM Dependencies (not yet implemented)
+	set FEAT_DEPENDENCIES=
+
 	REM Properties for SOURCE flavour
-	set "FEAT_SOURCE_URL=http://foo.com/bar-source"
-	set "FEAT_SOURCE_URL_FILENAME=template-1_0_0-src.zip"
+	set "FEAT_SOURCE_URL=http://foo.com/template-1_0_0-src.zip"
+	set "FEAT_SOURCE_URL_FILENAME="
 	set "FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP"
 	
 	REM Properties for BINARY flavour
@@ -30,7 +33,7 @@ goto :eof
 	set "FEAT_BINARY_URL_x86=http://foo.com/bar"
 	set "FEAT_BINARY_URL_FILENAME_x86=template-1_0_0-x86.zip"
 	set "FEAT_BINARY_URL_PROTOCOL_x86=HTTP_ZIP"
-	set "FEAT_BINARY_URL_x64=http://foo.com/bar"
+	set "FEAT_BINARY_URL_x64=http://foo.com/template-1_0_0-x86.zip"
 	set "FEAT_BINARY_URL_FILENAME_x64=template-1_0_0-x86.zip"
 	set "FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP"
 
@@ -39,10 +42,9 @@ goto :eof
 	set FEAT_SOURCE_CALLBACK=
 	set FEAT_BINARY_CALLBACK=
 	REM automatic callback each time feature is initialized, to init env var
-	set FEAT_ENV_CALLBACK=feature_template_set_env
+	set FEAT_ENV_CALLBACK=feature_template_setenv
 
-	REM Dependencies (not yet implemented)
-	set FEAT_DEPENDENCIES=
+	
 
 	REM File to test if feature is installed
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\template.exe"
@@ -52,22 +54,25 @@ goto :eof
 
 goto :eof
 
-:feature_template_set_env
-	set "VAR=VALUE"
+:feature_template_setenv
+	set "TEMPLATE_HOME=!FEAT_INSTALL_ROOT!"
 goto :eof
 
 :feature_template_install_binary
 	call %STELLA_COMMON%\common.bat :get_resource "!FEAT_NAME!" "!FEAT_BINARY_URL!" "!FEAT_BINARY_URL_PROTOCOL!" "!FEAT_INSTALL_ROOT!" "DEST_ERASE STRIP FORCE_NAME !FEAT_BINARY_URL_FILENAME!"
-	
+	call %STELLA_COMMON%\common-feature :feature_callback
+
 goto :eof
 
 :feature_template_install_source
 	set "INSTALL_DIR=!FEAT_INSTALL_ROOT!"
-	set "SRC_DIR=!FEAT_INSTALL_ROOT!-src"
-	set "BUILD_DIR=!FEAT_INSTALL_ROOT!-build"
+	set "SRC_DIR=!FEAT_INSTALL_ROOT!\!FEAT_NAME!-!FEAT_VERSION!-src"
+	set "BUILD_DIR=!FEAT_INSTALL_ROOT!\!FEAT_NAME!-!FEAT_VERSION!-build"
 
-	call %STELLA_COMMON%\common.bat :get_resource "!FEAT_NAME!" "!FEAT_SOURCE_URL!" "!FEAT_SOURCE_URL_PROTOCOL!" "!SRC_DIR!" "DEST_ERASE STRIP FORCE_NAME !FEAT_BINARY_URL_FILENAME!"
+	call %STELLA_COMMON%\common.bat :get_resource "!FEAT_NAME!" "!FEAT_SOURCE_URL!" "!FEAT_SOURCE_URL_PROTOCOL!" "!SRC_DIR!" "DEST_ERASE STRIP"
 	
+	call %STELLA_COMMON%\common-feature :feature_callback
+
 	REM build instructions
 	cd /D %BUILD_DIR%
 	nmake -f %SRC_DIR%\Makefile
