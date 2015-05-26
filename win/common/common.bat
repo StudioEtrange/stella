@@ -293,25 +293,25 @@ goto :eof
 :get_resource
 	SET "OPT=%~5"
 	set "OPT=%OPT% GET"
-	call :resource %~1 %~2 %~3 %~4 !OPT!
+	call :resource "%~1" "%~2" "%~3" "%~4" "!OPT!"
 goto :eof
 
 :update_resource
 	SET "OPT=%~5"
 	set "OPT=%OPT% UPDATE"
-	call :resource %~1 %~2 %~3 %~4 !OPT!
+	call :resource "%~1" "%~2" "%~3" "%~4" "!OPT!"
 goto :eof
 
 :delete_resource
 	SET "OPT=%~5"
 	set "OPT=%OPT% DELETE"
-	call :resource %~1 %~2 %~3 %~4 !OPT!
+	call :resource "%~1" "%~2" "%~3" "%~4" "!OPT!"
 goto :eof
 
 :revert_resource
 	SET "OPT=%~5"
 	set "OPT=%OPT% REVERT"
-	call :resource %~1 %~2 %~3 %~4 !OPT!
+	call :resource "%~1" "%~2" "%~3" "%~4" "!OPT!"
 goto :eof
 
 

@@ -26,9 +26,9 @@ goto :eof
 	set FEAT_DEPENDENCIES=
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\unzip.exe"
 	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\bin"
-	set FEAT_ENV=
+	set FEAT_ENV_CALLBACK=
 
-	set FEAT_BUNDLE_LIST=
+	set FEAT_BUNDLE_ITEM=
 goto :eof
 
 
@@ -41,6 +41,6 @@ goto :eof
 	set SRC_DIR=
 	set BUILD_DIR=
 
-	call %STELLA_COMMON%\common-feature.bat :feature_apply_binary_callback
+	call %STELLA_COMMON%\common-feature.bat :feature_callback
 
 goto :eof

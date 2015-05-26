@@ -32,9 +32,9 @@ function feature_cmake_2_8_12() {
 	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/cmake
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-	FEAT_ENV=
+	FEAT_ENV_CALLBACK=
 	
-	FEAT_BUNDLE_LIST=
+	FEAT_BUNDLE_ITEM=
 }
 
 
@@ -61,7 +61,7 @@ function feature_cmake_3_2_2() {
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/cmake
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 	
-	FEAT_BUNDLE_LIST=
+	FEAT_BUNDLE_ITEM=
 }
 
 function feature_cmake_install_source() {

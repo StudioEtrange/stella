@@ -31,9 +31,9 @@ function feature_elasticsearch_1_4_4() {
 	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/elasticsearch
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-	FEAT_ENV=feature_elasticsearch_env
+	FEAT_ENV_CALLBACK=feature_elasticsearch_env
 
-	FEAT_BUNDLE_LIST=
+	FEAT_BUNDLE_ITEM=
 }
 
 
@@ -51,9 +51,9 @@ function feature_elasticsearch_1_5_0() {
 	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/elasticsearch
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-	FEAT_ENV=feature_elasticsearch_env
+	FEAT_ENV_CALLBACK=feature_elasticsearch_env
 
-	FEAT_BUNDLE_LIST=
+	FEAT_BUNDLE_ITEM=
 }
 
 function feature_elasticsearch_install_binary() {

@@ -24,9 +24,9 @@ function feature_nginx_1_7_11() {
 	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/sbin/nginx
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/sbin
-	FEAT_ENV=
+	FEAT_ENV_CALLBACK=
 	
-	FEAT_BUNDLE_LIST=
+	FEAT_BUNDLE_ITEM=
 }
 
 # depend on zlib
@@ -48,7 +48,7 @@ function feature_nginx_install_source() {
 	AUTO_INSTALL_FLAG_PREFIX=
 	AUTO_INSTALL_FLAG_POSTFIX=
 
-	__feature_apply_source_callback
+	__feature_callback
 
 
 	__auto_install "configure" "nginx" "$FEAT_SOURCE_URL_FILENAME" "$FEAT_SOURCE_URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "DEST_ERASE STRIP"

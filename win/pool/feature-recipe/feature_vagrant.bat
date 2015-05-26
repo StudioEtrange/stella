@@ -28,9 +28,9 @@ goto :eof
 	set "FEAT_INSTALL_ROOT=!FEAT_INSTALL_ROOT!\bin\vagrant"
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\vagrant"
 	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\bin"
-	set FEAT_ENV=
+	set FEAT_ENV_CALLBACK=
 	
-	set FEAT_BUNDLE_LIST=
+	set FEAT_BUNDLE_ITEM=
 goto :eof
 
 

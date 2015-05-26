@@ -25,9 +25,9 @@ function feature_spark_1_3_0_HADOOP_2_4() {
 	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/spark-shell
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin:"$FEAT_INSTALL_ROOT"/sbin
-	FEAT_ENV=
+	FEAT_ENV_CALLBACK=
 	
-	FEAT_BUNDLE_LIST=
+	FEAT_BUNDLE_ITEM=
 }
 
 function feature_spark_1_3_1_HADOOP_2_4() {
@@ -44,9 +44,9 @@ function feature_spark_1_3_1_HADOOP_2_4() {
 	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/spark-shell
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin:"$FEAT_INSTALL_ROOT"/sbin
-	FEAT_ENV=
+	FEAT_ENV_CALLBACK=
 	
-	FEAT_BUNDLE_LIST=
+	FEAT_BUNDLE_ITEM=
 }
 
 function feature_spark_install_binary() {

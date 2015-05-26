@@ -47,9 +47,9 @@ function feature_oracle-jdk_8u45() {
 	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/java"
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
-	FEAT_ENV=feature_oraclesejdk_env
+	FEAT_ENV_CALLBACK=feature_oraclesejdk_env
 	
-	FEAT_BUNDLE_LIST=
+	FEAT_BUNDLE_ITEM=
 }
 
 function feature_oracle-jdk_7u80() {
@@ -78,9 +78,9 @@ function feature_oracle-jdk_7u80() {
 	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST=$FEAT_INSTALL_ROOT/bin/java
 	FEAT_SEARCH_PATH=$FEAT_INSTALL_ROOT/bin
-	FEAT_ENV=feature_oraclesejdk_env
+	FEAT_ENV_CALLBACK=feature_oraclesejdk_env
 	
-	FEAT_BUNDLE_LIST=
+	FEAT_BUNDLE_ITEM=
 }
 
 

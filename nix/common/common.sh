@@ -290,25 +290,25 @@ function __copy_folder_content_into() {
 function __get_resource() {
 	local OPT="$5"
 	OPT="$OPT GET"
-	__resource $1 $2 $3 $4 $OPT
+	__resource "$1" "$2" "$3" "$4" "$OPT"
 }
 
 function __update_resource() {
 	local OPT="$5"
 	OPT="$OPT UPDATE"
-	__resource $1 $2 $3 $4 $OPT
+	__resource "$1" "$2" "$3" "$4" "$OPT"
 }
 
 function __delete_resource() {
 	local OPT="$5"
 	OPT="$OPT DELETE"
-	__resource $1 $2 $3 $4 $OPT
+	__resource "$1" "$2" "$3" "$4" "$OPT"
 }
 
 function __revert_resource() {
 	local OPT="$5"
 	OPT="$OPT REVERT"
-	__resource $1 $2 $3 $4 $OPT
+	__resource "$1" "$2" "$3" "$4" "$OPT"
 }
 
 function __resource() {

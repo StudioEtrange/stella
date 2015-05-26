@@ -42,33 +42,30 @@ goto :eof
 		call :feature_inspect !FEAT_SCHEMA_SELECTED!
 		if "!TEST_FEATURE!"=="1" (
 
-			if "!FEAT_BUNDLE!"=="TRUE" (
+			if not "!FEAT_BUNDLE!"=="" (
 				set "save_opt_hidden_feature=!_opt_hidden_feature!"
-				set "save_FEAT_INSTALL_ROOT=!FEAT_INSTALL_ROOT!"		
-				set "FEAT_BUNDLE_EMBEDDED_PATH=!save_FEAT_INSTALL_ROOT!"
-				
-				for %%p in (!FEAT_BUNDLE_LIST!) do (
+				REM set "save_FEAT_INSTALL_ROOT=!FEAT_INSTALL_ROOT!"		
+				REM set "FEAT_BUNDLE_PATH=!save_FEAT_INSTALL_ROOT!"
+				set "FEAT_BUNDLE_MODE=!FEAT_BUNDLE!"
+
+				for %%p in (!FEAT_BUNDLE_ITEM!) do (
 					call :feature_init %%p "HIDDEN"
 				)
-				set "FEAT_BUNDLE_EMBEDDED_PATH="
+				set "FEAT_BUNDLE_MODE="
 
 				REM compute bundle variables
 				call :internal_feature_context %_SCHEMA%
 				if not "!save_opt_hidden_feature!"=="ON" set "FEATURE_LIST_ENABLED=!FEATURE_LIST_ENABLED! !FEAT_NAME!#!FEAT_VERSION!"
 				if not "!FEAT_SEARCH_PATH!"=="" set "PATH=!FEAT_SEARCH_PATH!;!PATH!"
-				if not "!FEAT_ENV!"=="" (
-					call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :!FEAT_ENV!
-				)
-
+	
 			) else (
 
 				if not "!_opt_hidden_feature!"=="ON" set "FEATURE_LIST_ENABLED=!FEATURE_LIST_ENABLED! !FEAT_NAME!#!FEAT_VERSION!"
 				if not "!FEAT_SEARCH_PATH!"=="" set "PATH=!FEAT_SEARCH_PATH!;!PATH!"
+			)
 
-				if not "!FEAT_ENV!"=="" (
-					call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :!FEAT_ENV!
-				)
-		
+			for %%p in (!FEAT_ENV_CALLBACK!) do (
+				call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :%%p
 			)
 
 		)
@@ -91,7 +88,7 @@ goto :eof
 	set "_tested="
 	set "_found="
 
-	if "!FEAT_BUNDLE_EMBEDDED_PATH!"=="" (
+	 if "!FEAT_BUNDLE_MODE!"=="" (
 
 		call :translate_schema !_SCHEMA! "__VAR_FEATURE_NAME" "__VAR_FEATURE_VER" "__VAR_FEATURE_ARCH"
 
@@ -145,20 +142,18 @@ goto :eof
 	set "_SCHEMA=!feature_inspect_ORIGINAL_SCHEMA!"
 
 	if not "!FEAT_SCHEMA_SELECTED!"=="" (
-		if "!FEAT_BUNDLE!"=="TRUE" (
+		if not "!FEAT_BUNDLE!"=="" (
 			set "_t=1"
-			set "save_FEAT_INSTALL_ROOT=!FEAT_INSTALL_ROOT!"
+			set "FEAT_BUNDLE_MODE=!FEAT_BUNDLE!"
 			
-			set "FEAT_BUNDLE_EMBEDDED_PATH=!save_FEAT_INSTALL_ROOT!"
-			
-			for %%p in (!FEAT_BUNDLE_LIST!) do (
+			for %%p in (!FEAT_BUNDLE_ITEM!) do (
 				set "TEST_FEATURE=0"
 				call :feature_inspect %%p
 				if "!TEST_FEATURE!"=="0" (
 					set "_t=0"
 				)
 			)
-			set "FEAT_BUNDLE_EMBEDDED_PATH="
+			set "FEAT_BUNDLE_MODE="
 
 			call :internal_feature_context %_SCHEMA%
 			set "TEST_FEATURE=!_t!"
@@ -211,8 +206,24 @@ goto :eof
 	)
 
 	if "!TEST_FEATURE!"=="1" (
-		echo Remove !FEAT_NAME! version !FEAT_VERSION! from !FEAT_INSTALL_ROOT!
-		call %STELLA_COMMON%\common.bat :del_folder !FEAT_INSTALL_ROOT!
+
+		if not "!FEAT_BUNDLE!"=="" (
+			echo Remove bundle !FEAT_NAME! version !FEAT_VERSION!
+			call %STELLA_COMMON%\common.bat :del_folder !FEAT_INSTALL_ROOT!
+
+			set "FEAT_BUNDLE_MODE=!FEAT_BUNDLE!"
+			for %%p in (!FEAT_BUNDLE_ITEM!) do (
+				call :feature_remove %%p "HIDDEN"
+			)
+			set "FEAT_BUNDLE_MODE="
+
+			REM compute bundle variables
+			call :internal_feature_context %_SCHEMA%
+			
+		) else (
+			echo Remove !FEAT_NAME! version !FEAT_VERSION! from !FEAT_INSTALL_ROOT!
+			call %STELLA_COMMON%\common.bat :del_folder !FEAT_INSTALL_ROOT!
+		)
 	)
 
 	if "%_opt_internal_feature%"=="ON" (
@@ -279,32 +290,32 @@ goto :eof
 		)
 
 		if "!TEST_FEATURE!"=="0" (
-			if not exist !FEAT_INSTALL_ROOT! mkdir !FEAT_INSTALL_ROOT!
 
-			if not "!FEAT_BUNDLE_LIST!"=="" (
-				set "save_FORCE=%FORCE%"
-				set "save_FEAT_INSTALL_ROOT=!FEAT_INSTALL_ROOT!"
-				set "FORCE=0"
+			if not exist "!FEAT_INSTALL_ROOT!" mkdir "!FEAT_INSTALL_ROOT!"
 
-				set "FEAT_BUNDLE_EMBEDDED_PATH="
-				set " _flag_hidden="
-				if "!FEAT_BUNDLE!"=="TRUE" (
-					set "FEAT_BUNDLE_EMBEDDED_PATH=!save_FEAT_INSTALL_ROOT!"
-					set "_flag_hidden=HIDDEN"
+			if not "!FEAT_BUNDLE!"=="" (
+				set "FEAT_BUNDLE_MODE=!FEAT_BUNDLE!"
+				if not "!FEAT_BUNDLE_ITEM!"=="" (
+					set "save_FORCE=%FORCE%"
+					set "FORCE=0"
+
+					if "!FEAT_BUNDLE_MODE!"=="LIST" (
+						set " _flag_hidden="
+					) else (
+						set "_flag_hidden=HIDDEN"
+					)
+					
+					for %%p in (!FEAT_BUNDLE_ITEM!) do (
+						call :feature_install %%p "!_OPT! !_flag_hidden!"
+					)
+							
+					set "FORCE=!save_FORCE!"
+					
 				)
-
-				for %%p in (!FEAT_BUNDLE_LIST!) do (
-					call :feature_install %%p "!_OPT! !_flag_hidden!"
-				)
-				set "FEAT_BUNDLE_EMBEDDED_PATH="
-				
-				set "FORCE=!save_FORCE!"
+				set "FEAT_BUNDLE_MODE="
 				call :internal_feature_context %_SCHEMA%
-
-				REM only called for a bundle
-				call :feature_apply_binary_callback
-				call :feature_apply_source_callback
-
+				REM automatic call of callback
+				call :feature_callback
 			) else (
 				echo Installing !FEAT_NAME! version !FEAT_VERSION! in !FEAT_INSTALL_ROOT!
 				call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :feature_!FEAT_NAME!_install_!FEAT_SCHEMA_FLAVOUR!
@@ -396,16 +407,25 @@ goto :eof
 goto :eof
 
 
-:feature_apply_source_callback
-	for %%p in (!FEAT_SOURCE_CALLBACK!) do (
-		call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :%%p
-	)
-goto :eof
+:feature_callback
+	if not "!FEAT_BUNDLE!"=="" (
+		for %%p in (!FEAT_BUNDLE_CALLBACK!) do (
+			call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :%%p
+		)
+	) else (
+		
+		if "!FEAT_SCHEMA_FLAVOUR!"=="source" (
+			for %%p in (!FEAT_SOURCE_CALLBACK!) do (
+				call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :%%p
+			)
+		)
 
+		if "!FEAT_SCHEMA_FLAVOUR!"=="binary" (
+			for %%p in (!FEAT_BINARY_CALLBACK!) do (
+				call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :%%p
+			)
+		)
 
-:feature_apply_binary_callback
-	for %%p in (!FEAT_BINARY_CALLBACK!) do (
-		call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :%%p
 	)
 goto :eof
 
@@ -422,9 +442,6 @@ goto :eof
 	set "FEAT_SCHEMA_OS_RESTRICTION="
 
 
-	if not "%_SCHEMA%"=="" (
-		call :select_schema !_SCHEMA! "FEAT_SCHEMA_SELECTED"
-	)
 	
 	set "FEAT_NAME="
 	set "FEAT_LIST_SCHEMA="
@@ -434,47 +451,80 @@ goto :eof
 	set "FEAT_VERSION="
 	set "FEAT_SOURCE_URL="
 	set "FEAT_SOURCE_URL_FILENAME="
+	set "FEAT_SOURCE_URL_PROTOCOL="
 	set "FEAT_SOURCE_CALLBACK="
 	set "FEAT_BINARY_URL="
 	set "FEAT_BINARY_URL_FILENAME="
+	set "FEAT_BINARY_URL_PROTOCOL="
 	set "FEAT_BINARY_CALLBACK="
 	set "FEAT_DEPENDENCIES="
 	set "FEAT_INSTALL_TEST="
 	set "FEAT_INSTALL_ROOT="
 	set "FEAT_SEARCH_PATH="
-	set "FEAT_ENV="
-	set "FEAT_BUNDLE_LIST="
-	REM TRUE / FALSE
+	set "FEAT_ENV_CALLBACK="
+	set "FEAT_BUNDLE_ITEM="
+	set "FEAT_BUNDLE_CALLBACK="
+	REM MERGE / NESTED / LIST
 	set "FEAT_BUNDLE="
+
+	if not "!_SCHEMA!"=="" (
+		call :select_schema !_SCHEMA! "FEAT_SCHEMA_SELECTED"
+	)
 
 	if not "!FEAT_SCHEMA_SELECTED!"=="" (
 		
 		call :translate_schema !FEAT_SCHEMA_SELECTED! "TMP_FEAT_SCHEMA_NAME" "TMP_FEAT_SCHEMA_VERSION" "FEAT_ARCH" "FEAT_SCHEMA_FLAVOUR" "FEAT_SCHEMA_OS_RESTRICTION"
 
-		REM set install root
-		if "!FEAT_BUNDLE_EMBEDDED_PATH!"=="" (
+		REM set install root (FEAT_INSTALL_ROOT)	
+		if "!FEAT_BUNDLE_MODE!"=="" (
 			if not "!FEAT_ARCH!"=="" (
 				set "FEAT_INSTALL_ROOT=!STELLA_APP_FEATURE_ROOT!\!TMP_FEAT_SCHEMA_NAME!\!TMP_FEAT_SCHEMA_VERSION!@!FEAT_ARCH!"
 			) else (
 				set "FEAT_INSTALL_ROOT=!STELLA_APP_FEATURE_ROOT!\!TMP_FEAT_SCHEMA_NAME!\!TMP_FEAT_SCHEMA_VERSION!"
 			)
-
 		) else (
-			set "FEAT_INSTALL_ROOT=!FEAT_BUNDLE_EMBEDDED_PATH!"
+			if "!FEAT_BUNDLE_MODE!"=="MERGE" (
+				set "FEAT_INSTALL_ROOT=!FEAT_BUNDLE_PATH!"
+			)
+			if "!FEAT_BUNDLE_MODE!"=="NESTED" (
+				set "FEAT_INSTALL_ROOT=!FEAT_BUNDLE_PATH!\!TMP_FEAT_SCHEMA_NAME!"
+			)
+			if "!FEAT_BUNDLE_MODE!"=="LIST" (
+				if not "!FEAT_ARCH!"=="" (
+					set "FEAT_INSTALL_ROOT=!STELLA_APP_FEATURE_ROOT!\!TMP_FEAT_SCHEMA_NAME!\!TMP_FEAT_SCHEMA_VERSION!@!FEAT_ARCH!"
+				) else (
+					set "FEAT_INSTALL_ROOT=!STELLA_APP_FEATURE_ROOT!\!TMP_FEAT_SCHEMA_NAME!\!TMP_FEAT_SCHEMA_VERSION!"
+				)
+			)
 		)
+	
 
 		REM grab feature info
 		call %STELLA_FEATURE_RECIPE%\feature_!TMP_FEAT_SCHEMA_NAME!.bat :feature_!TMP_FEAT_SCHEMA_NAME!
 		call %STELLA_FEATURE_RECIPE%\feature_!TMP_FEAT_SCHEMA_NAME!.bat :feature_!TMP_FEAT_SCHEMA_NAME!_!TMP_FEAT_SCHEMA_VERSION!
 
-		REM set url dependending on arch
+		REM bundle path
+		if not "!FEAT_BUNDLE!"=="" (
+			if "!FEAT_BUNDLE!"=="LIST" (
+				set FEAT_BUNDLE_PATH=
+			) else (
+				set "FEAT_BUNDLE_PATH=!FEAT_INSTALL_ROOT!"
+			)
+		)
 
+		REM set url dependending on arch
 		if not "!FEAT_ARCH!"=="" (
 			set "_tmp=FEAT_BINARY_URL_!FEAT_ARCH!"
-			for /F  %%a in ('echo !_tmp!') do set "FEAT_BINARY_URL=!%%a!"
+			for /F %%a in ('echo !_tmp!') do set "FEAT_BINARY_URL=!%%a!"
 
 			set "_tmp=FEAT_BINARY_URL_FILENAME_!FEAT_ARCH!"
-			for /F  %%a in ('echo !_tmp!') do set "FEAT_BINARY_URL_FILENAME=!%%a!"
+			for /F %%a in ('echo !_tmp!') do set "FEAT_BINARY_URL_FILENAME=!%%a!"
+
+			set "_tmp=FEAT_BINARY_URL_PROTOCOL_!FEAT_ARCH!"
+			for /F %%a in ('echo !_tmp!') do set "FEAT_BINARY_URL_PROTOCOL=!%%a!"
+
+			set "_tmp=FEAT_BUNDLE_ITEM_!FEAT_ARCH!"
+			for /F %%a in ('echo !_tmp!') do set "FEAT_BUNDLE_ITEM=!%%a!"
 		)
 	)
 
@@ -500,7 +550,6 @@ goto :eof
 	for %%a in (%__STELLA_FEATURE_LIST%) do (
 		if "%%a"=="!_TR_FEATURE_NAME!" set "_official=1"
 	)
-
 
 	if "%_official%"=="1" (
 

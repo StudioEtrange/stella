@@ -35,9 +35,9 @@ goto :eof
 	set "FEAT_INSTALL_ROOT=!FEAT_INSTALL_ROOT!\ruby-2.0.0-p451-mingw32"
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\ruby.exe"
 	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\bin"
-	set FEAT_ENV=feature_ruby_env
+	set FEAT_ENV_CALLBACK=feature_ruby_env
 
-	set FEAT_BUNDLE_LIST=
+	set FEAT_BUNDLE_ITEM=
 goto :eof
 
 
@@ -56,9 +56,9 @@ goto :eof
 	set "FEAT_INSTALL_ROOT=!FEAT_INSTALL_ROOT!\ruby-1.9.3-p545-i386-mingw32"
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\ruby.exe"
 	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\bin"
-	set FEAT_ENV=feature_ruby_env
+	set FEAT_ENV_CALLBACK=feature_ruby_env
 
-	set FEAT_BUNDLE_LIST=
+	set FEAT_BUNDLE_ITEM=
 goto :eof
 
 

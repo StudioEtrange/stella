@@ -34,9 +34,9 @@ goto :eof
 	set FEAT_DEPENDENCIES=
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\devkitvars.bat"
 	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\bin;!FEAT_INSTALL_ROOT!\mingw\bin"
-	set FEAT_ENV=feature_rubydevkit_env
+	set FEAT_ENV_CALLBACK=feature_rubydevkit_env
 
-	set FEAT_BUNDLE_LIST=
+	set FEAT_BUNDLE_ITEM=
 goto :eof
 
 
@@ -54,9 +54,9 @@ goto :eof
 	set FEAT_DEPENDENCIES=
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\devkitvars.bat"
 	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\bin;!FEAT_INSTALL_ROOT!\mingw\bin"
-	set FEAT_ENV=feature_rubydevkit_env
+	set FEAT_ENV_CALLBACK=feature_rubydevkit_env
 
-	set FEAT_BUNDLE_LIST=
+	set FEAT_BUNDLE_ITEM=
 goto :eof
 
 

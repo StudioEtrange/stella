@@ -23,9 +23,9 @@ function feature_m4_1_4_17() {
 	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/m4
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-	FEAT_ENV=
+	FEAT_ENV_CALLBACK=
 	
-	FEAT_BUNDLE_LIST=
+	FEAT_BUNDLE_ITEM=
 }
 
 function feature_m4_install_source() {

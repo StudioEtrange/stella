@@ -25,9 +25,9 @@ goto :eof
 	set FEAT_DEPENDENCIES=
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\spark-shell"
 	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\bin;!FEAT_INSTALL_ROOT!\sbin"
-	set FEAT_ENV=
+	set FEAT_ENV_CALLBACK=
 	
-	set "FEAT_BUNDLE_LIST="
+	set "FEAT_BUNDLE_ITEM="
 goto :eof
 
 :feature_spark_1_3_1_HADOOP_2_4
@@ -44,9 +44,9 @@ goto :eof
 	set FEAT_DEPENDENCIES=
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\spark-shell"
 	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\bin;!FEAT_INSTALL_ROOT!\sbin"
-	set FEAT_ENV=
+	set FEAT_ENV_CALLBACK=
 	
-	set FEAT_BUNDLE_LIST=
+	set FEAT_BUNDLE_ITEM=
 goto :eof
 
 :feature_spark_install_binary

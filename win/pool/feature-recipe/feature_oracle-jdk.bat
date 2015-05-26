@@ -34,9 +34,9 @@ goto :eof
 	set FEAT_DEPENDENCIES=
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\java.exe"
 	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\bin"
-	set "FEAT_ENV=feature_oraclesejdk_env"
+	set "FEAT_ENV_CALLBACK=feature_oraclesejdk_env"
 	
-	set FEAT_BUNDLE_LIST=
+	set FEAT_BUNDLE_ITEM=
 goto :eof
 
 :feature_oracle-jdk_7u80
@@ -53,9 +53,9 @@ goto :eof
 	set FEAT_DEPENDENCIES=
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\java.exe"
 	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\bin"
-	set "FEAT_ENV=feature_oraclesejdk_env"
+	set "FEAT_ENV_CALLBACK=feature_oraclesejdk_env"
 	
-	set FEAT_BUNDLE_LIST=
+	set FEAT_BUNDLE_ITEM=
 goto :eof
 
 

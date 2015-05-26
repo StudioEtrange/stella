@@ -24,9 +24,9 @@ function feature_autoconf_2_69() {
 	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/autoconf
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-	FEAT_ENV=
+	FEAT_ENV_CALLBACK=
 
-	FEAT_BUNDLE_LIST=
+	FEAT_BUNDLE_ITEM=
 }
 
 function feature_autoconf_2_69_patch() {
@@ -44,7 +44,7 @@ function feature_autoconf_install_source() {
 	AUTO_INSTALL_FLAG_POSTFIX=
 
 	
-	__feature_apply_source_callback
+	__feature_callback
 
 	__auto_install "configure" "autoconf" "$FEAT_SOURCE_URL_FILENAME" "$FEAT_SOURCE_URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
 }

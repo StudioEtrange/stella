@@ -24,9 +24,9 @@ function feature_automake_1_14() {
 	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/automake
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-	FEAT_ENV=
+	FEAT_ENV_CALLBACK=
 	
-	FEAT_BUNDLE_LIST=
+	FEAT_BUNDLE_ITEM=
 }
 
 function feature_automake_1_14_patch() {
@@ -42,7 +42,7 @@ function feature_automake_install_source() {
 	AUTO_INSTALL_FLAG_POSTFIX=
 
 	
-	__feature_apply_source_callback
+	__feature_callback
 
 	__auto_install "configure" "automake" "$FEAT_SOURCE_URL_FILENAME" "$FEAT_SOURCE_URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
 }

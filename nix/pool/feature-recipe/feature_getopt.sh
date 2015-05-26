@@ -27,9 +27,9 @@ function feature_getopt_1_1_6() {
 	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/getopt
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-	FEAT_ENV=
+	FEAT_ENV_CALLBACK=
 	
-	FEAT_BUNDLE_LIST=
+	FEAT_BUNDLE_ITEM=
 }
 
 # depend on gettext ?
@@ -50,7 +50,7 @@ function feature_getopt_install_source() {
 
 	__download_uncompress "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_FILENAME" "$SRC_DIR" "DEST_ERASE STRIP"
 
-	__feature_apply_source_callback
+	__feature_callback
 	
 	cd "$SRC_DIR"
 	make

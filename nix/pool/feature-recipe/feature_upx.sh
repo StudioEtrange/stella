@@ -23,9 +23,9 @@ function feature_upx_3_91() {
 	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/upx
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-	FEAT_ENV=
+	FEAT_ENV_CALLBACK=
 	
-	FEAT_BUNDLE_LIST=
+	FEAT_BUNDLE_ITEM=
 }
 
 
@@ -35,7 +35,7 @@ function feature_ucl_link() {
 
 	__feature_inspect ucl
 	if [ "$TEST_FEATURE" == "0" ]; then
-		echo " ** ERROR : depend on lib upx"
+		echo " ** ERROR : depend on lib ucl"
 		return
 	fi
 	export UPX_UCLDIR="$FEAT_INSTALL_ROOT"
@@ -57,7 +57,7 @@ function feature_upx_install_source() {
 
 	__download_uncompress "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_FILENAME" "$SRC_DIR" "DEST_ERASE STRIP"
 
-	__feature_apply_source_callback
+	__feature_callback
 
 	# can not build doc
 	sed -i".old" '/-C doc/d' "$SRC_DIR/Makefile"

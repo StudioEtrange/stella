@@ -3,45 +3,39 @@ call %*
 goto :eof
 
 
-REM TODO : do not work ==> need gcc for gonative when building go
+REM TODO : not finished
 
 :feature_go-buildchain-bundle
 	set "FEAT_NAME=go-buildchain-bundle"
 	set "FEAT_LIST_SCHEMA=1_4_2"
 	set "FEAT_DEFAULT_VERSION=1_4_2"
 	set FEAT_DEFAULT_ARCH=
-	set FEAT_DEFAULT_FLAVOUR=
 
-	set "FEAT_BUNDLE=TRUE"
+	set "FEAT_BUNDLE=NESTED"
 goto :eof
 
 :feature_go-buildchain-bundle_1_4_2
 	set "FEAT_VERSION=1_4_2"
-	set "BUILDCHAIN_GO_VERSION=1.4.2"
-	set FEAT_SOURCE_URL=
-	set FEAT_SOURCE_URL_FILENAME=
-	set FEAT_SOURCE_CALLBACK=
-	set FEAT_BINARY_URL=
-	set FEAT_BINARY_URL_FILENAME=
-	set FEAT_BINARY_CALLBACK=feature_prepare_toolchain
-
-	set FEAT_DEPENDENCIES=
-	set FEAT_INSTALL_TEST=
-	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\_WORKSPACE_\bin"
-	set FEAT_ENV=feature_go-buildchain-bundle_set_env
 	
-	REM BUNDLE ITEM LIST
-	set "FEAT_BUNDLE_LIST=go#1_4_2"
+	set "FEAT_BUNDLE_ITEM=go#1_4_2"
+
+	set FEAT_ENV_CALLBACK=feature_buildchain_setenv
+	set "FEAT_BUNDLE_CALLBACK=feature_buildchain_setenv feature_prepare_toolchain"
+
+	REM need gcc
+	set FEAT_DEPENDENCIES=
+	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\_WORKSPACE_\bin"
+
+	set "BUILDCHAIN_GO_VERSION=1.4.2"
 goto :eof
 
 
-:feature_go-buildchain-bundle_set_env
+:feature_buildchain_setenv
 	set "GOPATH=!FEAT_INSTALL_ROOT!\_WORKSPACE_"
 goto :eof
 
 :feature_prepare_toolchain
 	set "PATH=!FEAT_SEARCH_PATH!;%PATH%"
-	call :feature_go-buildchain-bundle_set_env
 
 
 	echo ** install godep

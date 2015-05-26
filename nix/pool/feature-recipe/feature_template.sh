@@ -34,9 +34,9 @@ function feature_template_0_0_1() {
 	
 	FEAT_INSTALL_TEST=$FEAT_INSTALL_ROOT/bin/foo
 	FEAT_SEARCH_PATH=$FEAT_INSTALL_ROOT/bin
-	FEAT_ENV=feature_template_env
+	FEAT_ENV_CALLBACK=feature_template_env
 
-	FEAT_BUNDLE_LIST=
+	FEAT_BUNDLE_ITEM=
 }
 
 function feature_template_patch_0_0_1 () {
@@ -50,7 +50,7 @@ function feature_template_install_source() {
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-build"
 
-	__feature_apply_source_callback
+	__feature_callback
 
 	__download_uncompress "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_FILENAME" "$SRC_DIR" "DEST_ERASE STRIP"
 	
@@ -65,7 +65,7 @@ function feature_template_install_binary() {
 	SRC_DIR=
 	BUILD_DIR=
 
-	__feature_apply_binary_callback
+	__feature_callback
 
 	__download_uncompress "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_FILENAME" "$INSTALL_DIR" "DEST_ERASE STRIP"
 

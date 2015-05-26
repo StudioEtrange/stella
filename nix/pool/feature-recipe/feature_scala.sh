@@ -31,9 +31,9 @@ function feature_scala_2_11_6() {
 	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/scala
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-	FEAT_ENV=feature_scala_env
+	FEAT_ENV_CALLBACK=feature_scala_env
 
-	FEAT_BUNDLE_LIST=
+	FEAT_BUNDLE_ITEM=
 }
 
 

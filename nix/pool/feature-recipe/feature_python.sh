@@ -26,9 +26,9 @@ function feature_python_2_7_9() {
 	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/python
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/lib
-	FEAT_ENV=
+	FEAT_ENV_CALLBACK=
 	
-	FEAT_BUNDLE_LIST=
+	FEAT_BUNDLE_ITEM=
 }
 
 function feature_python_install_source() {
