@@ -8,8 +8,7 @@ call %~dp0\stella-link.bat :include
 :: arguments
 set "params=param1:"param1 param2""
 set "options=-f: -opt1:"#default_val val1 val2 val3""
-
-call %STELLA_COMMON%\argopt.bat :argopt %*
+call %STELLA_API%argparse %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
 if "%ARGOPT_FLAG_HELP%"=="1" goto :usage
 

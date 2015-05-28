@@ -80,9 +80,6 @@ set "HG=hg"
 set "MVN=mvn"
 set "CURL=curl"
 set "NPM=npm"
-:: PROXY
-call %STELLA_COMMON%\common-network.bat :init_proxy
-
 
 :: VIRTUALIZATION ----------------------
 set "VIRTUAL_WORK_ROOT=%STELLA_APP_WORK_ROOT%\virtual"
@@ -105,7 +102,7 @@ set VIRTUAL_DEFAULT_HYPERVISOR=virtualbox
 
 :: INTERNAL LIST ---------------------------------------------
 set "__STELLA_DISTRIB_LIST=ubuntu64_13_10 debian64_7_5 centos64_6_5 archlinux boot2docker"
-set "__STELLA_FEATURE_LIST=mingw-w64 go-buildchain-bundle go docker-bundle docker-client docker-machine oracle-jdk maven spark nikpeviewer dependencywalker conemu goconfig-cli ninja jom cmake packer perl ruby rubydevkit nasm python vagrant openssh wget unzip sevenzip patch gnumake"
+set "__STELLA_FEATURE_LIST=nginx mingw-w64 go-buildchain-bundle go docker-bundle docker-client docker-machine oracle-jdk maven spark nikpeviewer dependencywalker conemu goconfig-cli ninja jom cmake packer perl ruby rubydevkit nasm python vagrant openssh wget unzip sevenzip patch gnumake"
 
 :: API ---------------------------------------------
 set "STELLA_API_COMMON_PUBLIC=trim argparse is_path_abs get_resource delete_resource update_resource revert_resource download_uncompress del_folder copy_folder_content_into fork run_admin mercurial_project_version git_project_version"

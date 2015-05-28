@@ -7,6 +7,9 @@ goto :eof
 
 :init_stella_env
 	call %STELLA_COMMON%\common-feature.bat :feature_init_installed
+
+	:: PROXY
+	call %STELLA_COMMON%\common-network.bat :init_proxy
 goto :eof
 
 

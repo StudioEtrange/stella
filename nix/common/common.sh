@@ -263,6 +263,8 @@ function __abs_to_rel_path() {
 
 function __init_stella_env() {
 	__feature_init_installed
+	# PROXY
+	__init_proxy
 }
 
 

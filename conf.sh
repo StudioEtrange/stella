@@ -85,8 +85,6 @@ STELLA_INTERNAL_TEMP_DIR=$STELLA_INTERNAL_WORK_ROOT/temp
 # OTHERS ---------------------------------------------
 FEATURE_LIST_ENABLED=
 VERBOSE_MODE=0
-# PROXY
-__init_proxy
 
 # VIRTUALIZATION ------------------------------------------
 VIRTUAL_WORK_ROOT="$STELLA_APP_WORK_ROOT/virtual"
@@ -108,7 +106,7 @@ VIRTUAL_DEFAULT_HYPERVISOR=virtualbox
 
 # INTERNAL LIST---------------------------------------------
 __STELLA_DISTRIB_LIST="ubuntu64_13_10 debian64_7_5 centos64_6_5 archlinux boot2docker"
-__STELLA_FEATURE_LIST="oracle-jdk smartmontools python zlib socat gnu-netcat maven spark sbt scala docker-compose docker-machine jq wget ninja cmake packer autotools-bundle perl gettext getopt ucl upx elasticsearch kibana nginx ngrok go pcre libtool m4 automake autoconf"
+__STELLA_FEATURE_LIST="go-buildchain-bundle oracle-jdk smartmontools python zlib socat gnu-netcat maven spark sbt scala docker-compose docker-machine jq wget ninja cmake packer autotools-bundle perl gettext getopt ucl upx elasticsearch kibana nginx ngrok go pcre libtool m4 automake autoconf"
 
 # API ---------------------------------------------
 STELLA_API_COMMON_PUBLIC="daemonize rel_to_abs_path is_abs argparse get_filename_from_string \

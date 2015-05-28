@@ -4,6 +4,7 @@ goto :eof
 
 REM Recipe for Oracle Java SE Development Kit
 REM http://stackoverflow.com/questions/1619662/how-can-i-get-the-latest-jre-jdk-as-a-zip-file-rather-than-exe-or-msi-installe
+REM http://stackoverflow.com/a/27028869
 
 :feature_oracle-jdk
 	set "FEAT_NAME=oracle-jdk"
@@ -72,6 +73,23 @@ goto :eof
 	call %STELLA_COMMON%\common.bat :uncompress "!FEAT_INSTALL_ROOT!\tools.zip" "!FEAT_INSTALL_ROOT!" ""
 
 	del /q "!FEAT_INSTALL_ROOT!\tools.zip"
+
+	cd /D !FEAT_INSTALL_ROOT!
+	for /r %%f in (*) do call :unpack %%f
+
+
+goto:eof
+
+REM http://stackoverflow.com/a/27028869
+:unpack
+	if NOT "%~x1" == ".pack" goto :eof
+	set _FOLDER=%~p1
+
+	REM set PWD=%CD%
+	pushd %_FOLDER%
+	echo Unpacking %~nx1
+	"!FEAT_INSTALL_ROOT!\bin\unpack200.exe" %~nx1 %~n1.jar
+	popd
 goto :eof
 
 

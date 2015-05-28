@@ -205,7 +205,7 @@ else if (section) { // and if (!modify)
             }
         }
     }
-    fatal(section + ' not found in ' + inifile);
+    //fatal(section + ' not found in ' + inifile);
 }
 else { // if (item) and nothing else
     for (var i=0; i<data.length; i++) {

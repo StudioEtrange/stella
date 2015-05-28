@@ -436,18 +436,18 @@ function __feature_reinit_installed() {
 function __feature_callback() {
 	local p
 
-	if [ ! "$FEAT_BUNDLE"=="" ]; then
+	if [ ! "$FEAT_BUNDLE" == "" ]; then
 		for p in $FEAT_BUNDLE_CALLBACK; do
 			$p
 		done
 	else
 
-		if [ "$FEAT_SCHEMA_FLAVOUR"=="source" ]; then
+		if [ "$FEAT_SCHEMA_FLAVOUR" == "source" ]; then
 			for p in $FEAT_SOURCE_CALLBACK; do
 				$p
 			done
 		fi
-		if [ "$FEAT_SCHEMA_FLAVOUR"=="binary" ]; then
+		if [ "$FEAT_SCHEMA_FLAVOUR" == "binary" ]; then
 			for p in $FEAT_BINARY_CALLBACK; do
 				$p
 			done
