@@ -26,6 +26,7 @@ function __feature_init() {
 	done
 
 	__internal_feature_context $_SCHEMA
+	
 
 	_flag=0
 	local a
@@ -39,15 +40,17 @@ function __feature_init() {
 
 			if [ ! "$FEAT_BUNDLE" == "" ]; then
 				local p	
-			
+				local save_FEAT_SCHEMA_SELECTED=$FEAT_SCHEMA_SELECTED
+
 				FEAT_BUNDLE_MODE=$FEAT_BUNDLE
 				for p in $FEAT_BUNDLE_ITEM; do	
 					__feature_init $p "HIDDEN"
 				done
 				FEAT_BUNDLE_MODE=
 
-				# compute bundle variables
-				__internal_feature_context $_SCHEMA
+				# re-compute bundle variables
+				FEAT_SCHEMA_SELECTED=$save_FEAT_SCHEMA_SELECTED
+				__internal_feature_context $FEAT_SCHEMA_SELECTED
 				if [ ! "$_opt_hidden_feature" == "ON" ]; then
 					FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $FEAT_NAME#$FEAT_VERSION"
 				fi
@@ -77,6 +80,7 @@ function __feature_init() {
 		fi
 
 	fi
+	
 }
 
 
@@ -99,7 +103,7 @@ function __feature_match_installed() {
 
 	if [ "$FEAT_BUNDLE_MODE" == "" ]; then
 
-		__translate_schema "$_SCHEMA" "__VAR_FEATURE_NAME" "__VAR_FEATURE_VER" "__VAR_FEATURE_ARCH"
+		__translate_schema "$_SCHEMA" "__VAR_FEATURE_NAME" "__VAR_FEATURE_VER" "__VAR_FEATURE_ARCH" "__VAR_FEATURE_FLAVOUR"
 
 
 		[ ! "$__VAR_FEATURE_VER" == "" ] && _tested=$__VAR_FEATURE_VER
@@ -107,13 +111,13 @@ function __feature_match_installed() {
 
 		if [ -d "$STELLA_APP_FEATURE_ROOT/$__VAR_FEATURE_NAME" ]; then
 			# for each detected version
-			for v in  "$STELLA_APP_FEATURE_ROOT"/"$__VAR_FEATURE_NAME"/*; do
+			for _f in  "$STELLA_APP_FEATURE_ROOT"/"$__VAR_FEATURE_NAME"/*; do
 				if [ "$_tested" == "" ]; then
-					_found=$v
+					_found=$_f
 				else
-					case $v in
+					case $_f in
 						*"$_tested"*)
-							_found=$v
+							_found=$_f
 						;;
 						*);;
 					esac
@@ -122,7 +126,9 @@ function __feature_match_installed() {
 		fi
 
 		if [ ! "$_found" == "" ]; then
-			__internal_feature_context "$__VAR_FEATURE_NAME"#"$(__get_filename_from_string $_found)"
+			# we fix the found version with the flavour of the requested schema
+			[ ! "$__VAR_FEATURE_FLAVOUR" == "" ] && __internal_feature_context "$__VAR_FEATURE_NAME"#"$(__get_filename_from_string $_found)"/"$__VAR_FEATURE_FLAVOUR"
+			[ "$__VAR_FEATURE_FLAVOUR" == "" ] && __internal_feature_context "$__VAR_FEATURE_NAME"#"$(__get_filename_from_string $_found)"
 		else
 			# empty info values
 			__internal_feature_context
@@ -140,13 +146,14 @@ function __feature_match_installed() {
 function __feature_inspect() {
 	local _SCHEMA=$1
 	TEST_FEATURE=0
-	
+
 	__feature_match_installed $_SCHEMA
 
 	if [ ! "$FEAT_SCHEMA_SELECTED" == "" ]; then
 		if [ ! "$FEAT_BUNDLE" == "" ]; then
 			local p
 			local _t=1
+			local save_FEAT_SCHEMA_SELECTED=$FEAT_SCHEMA_SELECTED
 			
 			
 			FEAT_BUNDLE_MODE="$FEAT_BUNDLE"
@@ -156,8 +163,8 @@ function __feature_inspect() {
 				[ "$TEST_FEATURE" == "0" ] && _t=0
 			done
 			FEAT_BUNDLE_MODE=
-
-			__internal_feature_context $_SCHEMA
+			FEAT_SCHEMA_SELECTED=$save_FEAT_SCHEMA_SELECTED
+			__internal_feature_context $FEAT_SCHEMA_SELECTED
 			TEST_FEATURE=$_t
 			if [ "$TEST_FEATURE" == "1" ]; then
 				[ "$VERBOSE_MODE" == "0" ] || echo " ** BUNDLE Detected in $save_FEAT_INSTALL_ROOT"
@@ -222,14 +229,15 @@ function __feature_remove() {
 			echo " ** Remove bundle $FEAT_NAME version $FEAT_VERSION"
 			__del_folder $FEAT_INSTALL_ROOT
 
+			local save_FEAT_SCHEMA_SELECTED=$FEAT_SCHEMA_SELECTED
 			FEAT_BUNDLE_MODE="$FEAT_BUNDLE"
 			for p in $FEAT_BUNDLE_ITEM; do
 				__feature_remove $p "HIDDEN"
 				
 			done
 			FEAT_BUNDLE_MODE=
-
-			__internal_feature_context $_SCHEMA
+			FEAT_SCHEMA_SELECTED=$save_FEAT_SCHEMA_SELECTED
+			__internal_feature_context $FEAT_SCHEMA_SELECTED
 
 		else
 			echo " ** Remove $FEAT_NAME version $FEAT_VERSION from $FEAT_INSTALL_ROOT"
@@ -274,7 +282,7 @@ function __feature_install() {
 		local a
 
 		__internal_feature_context $_SCHEMA
-
+		
 		if [ ! "$FEAT_SCHEMA_SELECTED" == "" ]; then
 
 			if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" == "" ]; then
@@ -304,14 +312,45 @@ function __feature_install() {
 				__feature_inspect $FEAT_SCHEMA_SELECTED
 			fi
 
+
 			if [ "$TEST_FEATURE" == "0" ]; then
+
 
 				mkdir -p $FEAT_INSTALL_ROOT
 
+				# dependencies
+				save_FORCE=$FORCE
+				FORCE=0
+				local dep
+				local _f_dep=0
+				local save_FEAT_SCHEMA_SELECTED=$FEAT_SCHEMA_SELECTED
+
+				if [ "$FEAT_SCHEMA_FLAVOUR" == "source" ]; then
+					for dep in $FEAT_SOURCE_DEPENDENCIES; do
+						echo "Installing dependency $dep"
+						__feature_install $dep
+						_f_dep=1
+					done
+				fi
+
+				if [ "$FEAT_SCHEMA_FLAVOUR" == "binary" ]; then
+					for dep in $FEAT_BINARY_DEPENDENCIES; do
+						echo "Installing dependency $dep"
+						__feature_install $dep
+						_f_dep=1
+					done
+				fi
+				FORCE=$save_FORCE
+
+				FEAT_SCHEMA_SELECTED=$save_FEAT_SCHEMA_SELECTED
+				[ "$_f_dep" == "1" ] && __internal_feature_context $FEAT_SCHEMA_SELECTED
+
+				# Bundle
 				if [ ! "$FEAT_BUNDLE" == "" ]; then
 					FEAT_BUNDLE_MODE=$FEAT_BUNDLE
+					local save_FEAT_SCHEMA_SELECTED=$FEAT_SCHEMA_SELECTED
 					if [ ! "$FEAT_BUNDLE_ITEM" == "" ]; then
-						local save_FORCE=$FORCE
+						save_FORCE=$FORCE
 					
 						FORCE=0
 
@@ -322,6 +361,7 @@ function __feature_install() {
 							_flag_hidden="HIDDEN"
 						fi
 
+						
 						local p
 						for p in $FEAT_BUNDLE_ITEM; do
 							__feature_install $p "$_OPT $_flag_hidden"
@@ -331,7 +371,8 @@ function __feature_install() {
 						
 					fi
 					FEAT_BUNDLE_MODE=
-					__internal_feature_context $_SCHEMA
+					FEAT_SCHEMA_SELECTED=$save_FEAT_SCHEMA_SELECTED
+					__internal_feature_context $FEAT_SCHEMA_SELECTED
 					# automatic call of callback
 					__feature_callback
 				else
@@ -345,6 +386,7 @@ function __feature_install() {
 					__feature_init "$FEAT_SCHEMA_SELECTED" $_OPT
 				else
 					echo "** Error while installing feature $FEAT_SCHEMA_SELECTED"
+					#__del_folder $FEAT_INSTALL_ROOT
 					# Sometimes current directory is lost by the system
 					cd $STELLA_APP_ROOT
 				fi
@@ -477,10 +519,12 @@ function __internal_feature_context() {
 	FEAT_SOURCE_URL=
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
+	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_SOURCE_CALLBACK=
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
+	FEAT_BINARY_DEPENDENCIES=
 	FEAT_BINARY_CALLBACK=
 	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST=
@@ -546,6 +590,8 @@ function __internal_feature_context() {
 			FEAT_BINARY_URL_PROTOCOL=${!_tmp}
 			_tmp="FEAT_BUNDLE_ITEM_$FEAT_ARCH"
 			FEAT_BUNDLE_ITEM=${!_tmp}
+			_tmp="FEAT_BINARY_DEPENDENCIES_$FEAT_ARCH"
+			FEAT_BINARY_DEPENDENCIES=${!_tmp}
 		fi
 
 

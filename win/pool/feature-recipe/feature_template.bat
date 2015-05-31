@@ -18,8 +18,11 @@ goto :eof
 
 	set "FEAT_VERSION=1_0_0"
 
-	REM Dependencies (not yet implemented)
-	set FEAT_DEPENDENCIES=
+	REM Dependencies
+	set FEAT_SOURCE_DEPENDENCIES=
+	set FEAT_BINARY_DEPENDENCIES=
+	set FEAT_BINARY_DEPENDENCIES_x86=
+	set FEAT_BINARY_DEPENDENCIES_x64=
 
 	REM Properties for SOURCE flavour
 	set "FEAT_SOURCE_URL=http://foo.com/template-1_0_0-src.zip"

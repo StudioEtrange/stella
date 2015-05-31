@@ -3,10 +3,9 @@ call %*
 goto :eof
 
 
-REM TODO : not finished
 
-:feature_go-buildchain-bundle
-	set "FEAT_NAME=go-buildchain-bundle"
+:feature_go-crosscompile-chain
+	set "FEAT_NAME=go-crosscompile-chain"
 	set "FEAT_LIST_SCHEMA=1_4_2"
 	set "FEAT_DEFAULT_VERSION=1_4_2"
 	set FEAT_DEFAULT_ARCH=
@@ -14,7 +13,7 @@ REM TODO : not finished
 	set "FEAT_BUNDLE=NESTED"
 goto :eof
 
-:feature_go-buildchain-bundle_1_4_2
+:feature_go-crosscompile-chain_1_4_2
 	set "FEAT_VERSION=1_4_2"
 	
 	REM need gcc
@@ -25,8 +24,8 @@ goto :eof
 	set FEAT_ENV_CALLBACK=feature_buildchain_setenv
 	set "FEAT_BUNDLE_CALLBACK=feature_buildchain_setenv feature_prepare_toolchain"
 
-	set FEAT_INSTALL_TEST=
-	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\_WORKSPACE_\bin"
+	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT:\_GONATIVE_TOOLCHAIN_\go\pkg\windows_386\go\parser.a"
+	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\_WORKSPACE_\bin;!FEAT_INSTALL_ROOT!\_GONATIVE_TOOLCHAIN_\go\bin"
 
 	set "BUILDCHAIN_GO_VERSION=1.4.2"
 goto :eof
@@ -34,6 +33,13 @@ goto :eof
 
 :feature_buildchain_setenv
 	set "GOPATH=!FEAT_INSTALL_ROOT!\_WORKSPACE_"
+
+	echo ** GOLANG cross-compile environment
+	echo    ** Restore your dependencies - from folder containing Godeps :
+	echo       godep restore
+	echo    ** Cross-compile your project from source
+	echo       gox -verbose -osarch=windows/386 windows/amd64 linux/386 linux/amd64 darwin/386 darwin/amd64 ^<PATH_TO_PROJECT_ROOT^|PROJECT_NAME in your GOPATH^>
+
 goto :eof
 
 :feature_prepare_toolchain

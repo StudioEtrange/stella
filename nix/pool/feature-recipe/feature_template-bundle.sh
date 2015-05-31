@@ -23,8 +23,11 @@ function feature_template-bundle_1_0_0() {
 
 	FEAT_VERSION=1_0_0
 
-	# Dependencies (not yet implemented)
-	FEAT_DEPENDENCIES=
+	# Dependencies
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES_x86=
+	FEAT_BINARY_DEPENDENCIES_x64=
 
 	# Properties for bundle
 	FEAT_BUNDLE_ITEM=

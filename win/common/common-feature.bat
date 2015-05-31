@@ -44,8 +44,8 @@ goto :eof
 
 			if not "!FEAT_BUNDLE!"=="" (
 				set "save_opt_hidden_feature=!_opt_hidden_feature!"
-				REM set "save_FEAT_INSTALL_ROOT=!FEAT_INSTALL_ROOT!"		
-				REM set "FEAT_BUNDLE_PATH=!save_FEAT_INSTALL_ROOT!"
+				set "save_FEAT_SCHEMA_SELECTED_0=!FEAT_SCHEMA_SELECTED!"		
+
 				set "FEAT_BUNDLE_MODE=!FEAT_BUNDLE!"
 
 				for %%p in (!FEAT_BUNDLE_ITEM!) do (
@@ -53,8 +53,9 @@ goto :eof
 				)
 				set "FEAT_BUNDLE_MODE="
 
-				REM compute bundle variables
-				call :internal_feature_context %_SCHEMA%
+				REM re-compute bundle variables
+				set "FEAT_SCHEMA_SELECTED=!save_FEAT_SCHEMA_SELECTED_0!"
+				call :internal_feature_context !FEAT_SCHEMA_SELECTED!
 				if not "!save_opt_hidden_feature!"=="ON" set "FEATURE_LIST_ENABLED=!FEATURE_LIST_ENABLED! !FEAT_NAME!#!FEAT_VERSION!"
 				if not "!FEAT_SEARCH_PATH!"=="" set "PATH=!FEAT_SEARCH_PATH!;!PATH!"
 	
@@ -90,7 +91,7 @@ goto :eof
 
 	 if "!FEAT_BUNDLE_MODE!"=="" (
 
-		call :translate_schema !_SCHEMA! "__VAR_FEATURE_NAME" "__VAR_FEATURE_VER" "__VAR_FEATURE_ARCH"
+		call :translate_schema !_SCHEMA! "__VAR_FEATURE_NAME" "__VAR_FEATURE_VER" "__VAR_FEATURE_ARCH" "__VAR_FEATURE_FLAVOUR"
 
 		
 		if not "!__VAR_FEATURE_VER!"=="" (
@@ -101,22 +102,26 @@ goto :eof
 		)
 		if exist "!STELLA_APP_FEATURE_ROOT!\!__VAR_FEATURE_NAME!" (
 			REM for each detected version
-			for /D %%V in ( !STELLA_APP_FEATURE_ROOT!\!__VAR_FEATURE_NAME!\* ) do (
-				set "_ver=%%~nxV"
+			for /D %%F in ( !STELLA_APP_FEATURE_ROOT!\!__VAR_FEATURE_NAME!\* ) do (
+				set "_f=%%~nxF"
 
 				if "!_tested!"=="" (
-					set "_found=!_ver!"
+					set "_found=!_f!"
 				) else (
-					call %STELLA_COMMON%\common.bat :match_exp ".*!_tested!.*" "!_ver!"
+					call %STELLA_COMMON%\common.bat :match_exp ".*!_tested!.*" "!_f!"
 					if "!_match_exp!"=="TRUE" (
-						set "_found=!_ver!"
+						set "_found=!_f!"
 					)
 				)
 			)
 		)
 
 		if not "!_found!"=="" (
-			call :internal_feature_context "!__VAR_FEATURE_NAME!#!_found!"
+			if not "!__VAR_FEATURE_FLAVOUR!"=="" (
+				call :internal_feature_context "!__VAR_FEATURE_NAME!#!_found!/!__VAR_FEATURE_FLAVOUR!"
+			) else (
+				call :internal_feature_context "!__VAR_FEATURE_NAME!#!_found!"
+			)	
 		) else (
 			REM empty info values
 			call :internal_feature_context
@@ -146,6 +151,7 @@ goto :eof
 			set "_t=1"
 			set "FEAT_BUNDLE_MODE=!FEAT_BUNDLE!"
 			
+			set "save_FEAT_SCHEMA_SELECTED_1=!FEAT_SCHEMA_SELECTED!"
 			for %%p in (!FEAT_BUNDLE_ITEM!) do (
 				set "TEST_FEATURE=0"
 				call :feature_inspect %%p
@@ -154,8 +160,8 @@ goto :eof
 				)
 			)
 			set "FEAT_BUNDLE_MODE="
-
-			call :internal_feature_context %_SCHEMA%
+			set "FEAT_SCHEMA_SELECTED=!save_FEAT_SCHEMA_SELECTED_1!"
+			call :internal_feature_context !FEAT_SCHEMA_SELECTED!
 			set "TEST_FEATURE=!_t!"
 		) else (
 			if "!FEAT_INSTALL_TEST!"=="" (
@@ -211,14 +217,16 @@ goto :eof
 			echo Remove bundle !FEAT_NAME! version !FEAT_VERSION!
 			call %STELLA_COMMON%\common.bat :del_folder !FEAT_INSTALL_ROOT!
 
+			set "save_FEAT_SCHEMA_SELECTED_2=!FEAT_SCHEMA_SELECTED!"
 			set "FEAT_BUNDLE_MODE=!FEAT_BUNDLE!"
 			for %%p in (!FEAT_BUNDLE_ITEM!) do (
 				call :feature_remove %%p "HIDDEN"
 			)
 			set "FEAT_BUNDLE_MODE="
+			set "FEAT_SCHEMA_SELECTED=!save_FEAT_SCHEMA_SELECTED_2!"
 
 			REM compute bundle variables
-			call :internal_feature_context %_SCHEMA%
+			call :internal_feature_context !FEAT_SCHEMA_SELECTED!
 			
 		) else (
 			echo Remove !FEAT_NAME! version !FEAT_VERSION! from !FEAT_INSTALL_ROOT!
@@ -293,8 +301,35 @@ goto :eof
 
 			if not exist "!FEAT_INSTALL_ROOT!" mkdir "!FEAT_INSTALL_ROOT!"
 
+			REM dependencies
+			set "save_FORCE=%FORCE%"
+			set "FORCE=0"
+			set "save_FEAT_SCHEMA_SELECTED_3=!FEAT_SCHEMA_SELECTED!"
+
+			set _f_dep=0
+			if "!FEAT_SCHEMA_FLAVOUR!"=="source" (
+				for %%p in (!FEAT_SOURCE_DEPENDENCIES!) do (
+					echo Installing dependency %%p
+					call :feature_install %%p
+					set _f_dep=1
+				)
+			)
+
+			if "!FEAT_SCHEMA_FLAVOUR!"=="binary" (
+				for %%p in (!FEAT_BINARY_DEPENDENCIES!) do (
+					echo Installing dependency %%p
+					call :feature_install %%p
+					set _f_dep=1
+				)
+			)
+			set "FORCE=!save_FORCE!"
+			set "FEAT_SCHEMA_SELECTED=!save_FEAT_SCHEMA_SELECTED_3!"
+			if "!_f_dep!"=="1" call :internal_feature_context !FEAT_SCHEMA_SELECTED!
+
+			REM bundle
 			if not "!FEAT_BUNDLE!"=="" (
 				set "FEAT_BUNDLE_MODE=!FEAT_BUNDLE!"
+				set "save_FEAT_SCHEMA_SELECTED_4=!FEAT_SCHEMA_SELECTED!"
 				if not "!FEAT_BUNDLE_ITEM!"=="" (
 					set "save_FORCE=%FORCE%"
 					set "FORCE=0"
@@ -304,7 +339,7 @@ goto :eof
 					) else (
 						set "_flag_hidden=HIDDEN"
 					)
-					
+						
 					for %%p in (!FEAT_BUNDLE_ITEM!) do (
 						call :feature_install %%p "!_OPT! !_flag_hidden!"
 					)
@@ -313,7 +348,8 @@ goto :eof
 					
 				)
 				set "FEAT_BUNDLE_MODE="
-				call :internal_feature_context %_SCHEMA%
+				set "FEAT_SCHEMA_SELECTED=!save_FEAT_SCHEMA_SELECTED_4!"
+				call :internal_feature_context !FEAT_SCHEMA_SELECTED!
 				REM automatic call of callback
 				call :feature_callback
 			) else (
@@ -452,10 +488,12 @@ goto :eof
 	set "FEAT_SOURCE_URL="
 	set "FEAT_SOURCE_URL_FILENAME="
 	set "FEAT_SOURCE_URL_PROTOCOL="
+	set "FEAT_SOURCE_DEPENDENCIES="
 	set "FEAT_SOURCE_CALLBACK="
 	set "FEAT_BINARY_URL="
 	set "FEAT_BINARY_URL_FILENAME="
 	set "FEAT_BINARY_URL_PROTOCOL="
+	set "FEAT_BINARY_DEPENDENCIES="
 	set "FEAT_BINARY_CALLBACK="
 	set "FEAT_DEPENDENCIES="
 	set "FEAT_INSTALL_TEST="
@@ -525,6 +563,9 @@ goto :eof
 
 			set "_tmp=FEAT_BUNDLE_ITEM_!FEAT_ARCH!"
 			for /F %%a in ('echo !_tmp!') do set "FEAT_BUNDLE_ITEM=!%%a!"
+
+			set "_tmp=FEAT_BINARY_DEPENDENCIES_!FEAT_ARCH!"
+			for /F %%a in ('echo !_tmp!') do set "FEAT_BINARY_DEPENDENCIES=!%%a!"
 		)
 	)
 

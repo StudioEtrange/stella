@@ -14,30 +14,29 @@ goto :eof
 
 :feature_goconfig-cli_snapshot
 	set "FEAT_VERSION=snapshot"
+	set "FEAT_SOURCE_DEPENDENCIES="
+	set FEAT_BINARY_DEPENDENCIES=
 
 	set FEAT_SOURCE_URL=
 	set FEAT_SOURCE_URL_FILENAME=
-	set FEAT_SOURCE_CALLBACK=
-	set "FEAT_BINARY_URL=%STELLA_ARTEFACT_URL%/win/goconfig-cli/goconfig-cli.exe"
-	set "FEAT_BINARY_URL_FILENAME=goconfig-cli.exe"
-	set FEAT_BINARY_CALLBACK=
+	set FEAT_SOURCE_URL_PROTOCOL=
 
-	set FEAT_DEPENDENCIES=
-	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\goconfig-cli.exe"
-	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!"
+	set "FEAT_BINARY_URL=%STELLA_ARTEFACT_URL%/win/goconfig-cli/goconfig-cli.exe"
+	set "FEAT_BINARY_URL_FILENAME="
+	set "FEAT_BINARY_URL_PROTOCOL=HTTP"
+
+	set FEAT_SOURCE_CALLBACK=
+	set FEAT_BINARY_CALLBACK=
 	set FEAT_ENV_CALLBACK=
 	
-	set FEAT_BUNDLE_ITEM=
+	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\goconfig-cli.exe"
+	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!"
+
 goto :eof
 
 
 :feature_goconfig-cli_install_binary
-	set "INSTALL_DIR=!FEAT_INSTALL_ROOT!"
-	set SRC_DIR=
-	set BUILD_DIR=
-
-	call %STELLA_COMMON%\common.bat :download "%FEAT_BINARY_URL%" "%FEAT_BINARY_URL_FILENAME%" "%INSTALL_DIR%"
-		
+	call %STELLA_COMMON%\common.bat :get_resource "!FEAT_NAME!" "!FEAT_BINARY_URL!" "!FEAT_BINARY_URL_PROTOCOL!" "!FEAT_INSTALL_ROOT!" "DEST_ERASE STRIP"
 goto :eof
 
 

@@ -89,8 +89,10 @@ goto:eof
 :enable_proxy
 	set "_name=%~1"
 	call %STELLA_COMMON%\common.bat :add_key "%STELLA_ROOT%\.stella-env" "STELLA_PROXY" "ACTIVE" "%_name%"
+	call :init_proxy
 goto:eof
 
 :disable_proxy
 	call :enable_proxy
+	echo STELLA Proxy Disabled
 goto:eof

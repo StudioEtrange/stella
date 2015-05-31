@@ -43,7 +43,7 @@ function feature_go_install_source() {
 	__download_uncompress "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_FILENAME" "$INSTALL_DIR" "DEST_ERASE STRIP"
 	
 	
-	# GOOS and GOARCH are selected xith the current system
+	# GOOS and GOARCH are selected with the current system
 	#GOOS
 	#GOARCH=amd64 or 386 or arm
 

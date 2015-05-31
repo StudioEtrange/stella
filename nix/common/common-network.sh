@@ -32,6 +32,9 @@ function __init_proxy() {
 		https_proxy="$STELLA_HTTPS_PROXY"
 		http_proxy="$STELLA_HTTP_PROXY"
 
+		export https_proxy="$STELLA_HTTPS_PROXY"
+		export http_proxy="$STELLA_HTTP_PROXY"
+
 		echo "STELLA Proxy Active : $STELLA_PROXY_ACTIVE [ $STELLA_PROXY_HOST:$STELLA_PROXY_PORT ]"
 
 
@@ -113,9 +116,11 @@ function __register_proxy() {
 function __enable_proxy() {
 	local _name=$1
 	__add_key "$STELLA_ROOT/.stella-env" "STELLA_PROXY" "ACTIVE" "$_name"
+	__init_proxy
 }
 
 function __disable_proxy() {
 	__enable_proxy
+	echo "STELLA Proxy Disabled"
 }
 fi

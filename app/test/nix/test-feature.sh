@@ -39,6 +39,13 @@ function test__translate_schema_1() {
 			&& [ "$TR_FEATURE_FLAVOUR" == "" ] && result=OK || result=ERROR
 	echo "$_test => $TR_FEATURE_NAME#$TR_FEATURE_VER@$TR_FEATURE_ARCH/$TR_FEATURE_FLAVOUR:$TR_FEATURE_OS_RESTRICTION"
 
+	_test="kibana/source"
+	[ ! "$result" == "ERROR" ] && __translate_schema "$_test" "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR" "TR_FEATURE_OS_RESTRICTION" \
+			&& [ "$TR_FEATURE_OS_RESTRICTION" == "" ] \
+			&& [ "$TR_FEATURE_VER" == "" ] && [ "$TR_FEATURE_NAME" == "kibana" ] && [ "$TR_FEATURE_ARCH" == "" ] \
+			&& [ "$TR_FEATURE_FLAVOUR" == "source" ] && result=OK || result=ERROR
+	echo "$_test => $TR_FEATURE_NAME#$TR_FEATURE_VER@$TR_FEATURE_ARCH/$TR_FEATURE_FLAVOUR:$TR_FEATURE_OS_RESTRICTION"
+
 
 	log "test__translate_schema_1" "$result" "test __translate_schema"
 
@@ -200,10 +207,10 @@ test__translate_schema_1
 # rm -Rf $STELLA_APP_FEATURE_ROOT
 # mkdir -p $STELLA_APP_FEATURE_ROOT
 
-echo "******* test__info_feature ********"
-test__info_feature
-rm -Rf $STELLA_APP_FEATURE_ROOT
-mkdir -p $STELLA_APP_FEATURE_ROOT
+# echo "******* test__info_feature ********"
+# test__info_feature
+# rm -Rf $STELLA_APP_FEATURE_ROOT
+# mkdir -p $STELLA_APP_FEATURE_ROOT
 
 # echo "******* test__install_feature_1 ********"
 # test__install_feature_1
@@ -220,8 +227,8 @@ mkdir -p $STELLA_APP_FEATURE_ROOT
 # rm -Rf $STELLA_APP_FEATURE_ROOT
 # mkdir -p $STELLA_APP_FEATURE_ROOT
 
-echo "******* test__remove_feature ********"
-test__remove_feature
-rm -Rf $STELLA_APP_FEATURE_ROOT
-mkdir -p $STELLA_APP_FEATURE_ROOT
+# echo "******* test__remove_feature ********"
+# test__remove_feature
+# rm -Rf $STELLA_APP_FEATURE_ROOT
+# mkdir -p $STELLA_APP_FEATURE_ROOT
 	

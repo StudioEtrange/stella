@@ -790,7 +790,7 @@ REM TODO alternative with http://godoc.org/github.com/Unknwon/goconfig (OR try h
 	set "_VAL=%~4"
 	
 	if not exist "%_FILE%" > "%_FILE%" echo(
-	>nul goconfig-cli addkey "%_FILE%" "%_SECTION%" "%_KEY%" "%_VAL%"
+	>nul goconfig-cli setkey "%_FILE%" "%_SECTION%" "%_KEY%" "%_VAL%"
 goto :eof
 
 :get_key_2
