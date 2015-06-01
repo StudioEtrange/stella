@@ -6,7 +6,7 @@ goto :eof
 
 :feature_conemu
 	set "FEAT_NAME=conemu"
-	set "FEAT_LIST_SCHEMA=preview150307a/binary"
+	set "FEAT_LIST_SCHEMA=preview150307a:binary"
 	set "FEAT_DEFAULT_VERSION=preview150307a"
 	set FEAT_DEFAULT_ARCH=
 	set "FEAT_DEFAULT_FLAVOUR=binary"

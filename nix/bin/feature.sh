@@ -9,7 +9,7 @@ function usage() {
 	echo "List of commands"
 	echo " o-- Feature management :"
 	echo " L     install required : install minimal required features for Stella"
-	echo " L     install <feature schema|required> : install a feature. schema = feature_name[#version][@arch][/binary|source][:os_restriction]"
+	echo " L     install <feature schema|required> : install a feature. schema = feature_name[#version][@arch][:binary|source][/os_restriction][\os_exclusion]"
 	echo " L     remove <feature schema> : remove a feature"
 	echo " L     list <all|feature name|active> : list all available features OR available versions of a feature OR current active features"
 }

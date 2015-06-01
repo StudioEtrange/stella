@@ -5,7 +5,7 @@ goto :eof
 
 :feature_spark
 	set "FEAT_NAME=spark"
-	set "FEAT_LIST_SCHEMA=1_3_0_HADOOP_2_4/binary 1_3_1_HADOOP_2_4/binary"
+	set "FEAT_LIST_SCHEMA=1_3_0_HADOOP_2_4:binary 1_3_1_HADOOP_2_4:binary"
 	set "FEAT_DEFAULT_VERSION=1_3_1_HADOOP_2_4"
 	set FEAT_DEFAULT_ARCH=
 	set "FEAT_DEFAULT_FLAVOUR=binary"

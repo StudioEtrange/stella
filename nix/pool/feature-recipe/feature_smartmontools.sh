@@ -5,7 +5,7 @@ _SMARTMONTOOLS_INCLUDED_=1
 
 function feature_smartmontools() {
 	FEAT_NAME=smartmontools
-	FEAT_LIST_SCHEMA="6_3/source"
+	FEAT_LIST_SCHEMA="6_3:source"
 	FEAT_DEFAULT_VERSION=6_3
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"

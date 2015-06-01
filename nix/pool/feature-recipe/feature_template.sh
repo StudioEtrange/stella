@@ -4,7 +4,7 @@ _TEMPLATE_INCLUDED_=1
 
 function feature_template() {
 	FEAT_NAME=template
-	FEAT_LIST_SCHEMA="1_0_0@x64/binary 1_0_0@x86/binary"
+	FEAT_LIST_SCHEMA="1_0_0@x64:binary 1_0_0@x86:binary"
 	FEAT_DEFAULT_VERSION=1_0_0
 	FEAT_DEFAULT_ARCH=x64
 	FEAT_DEFAULT_FLAVOUR="binary"

@@ -5,7 +5,7 @@ _UCL_INCLUDED_=1
 
 function feature_ucl() {
 	FEAT_NAME=ucl
-	FEAT_LIST_SCHEMA="1_03/source"
+	FEAT_LIST_SCHEMA="1_03:source"
 	FEAT_DEFAULT_VERSION=1_03
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"

@@ -5,7 +5,7 @@ goto :eof
 
 :feature_nginx
 	set "FEAT_NAME=nginx"
-	set "FEAT_LIST_SCHEMA=1_9_1/binary"
+	set "FEAT_LIST_SCHEMA=1_9_1:binary"
 	set "FEAT_DEFAULT_VERSION=1_9_1"
 	set FEAT_DEFAULT_ARCH=
 	set "FEAT_DEFAULT_FLAVOUR=binary"

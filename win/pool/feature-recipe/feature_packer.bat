@@ -5,7 +5,7 @@ goto :eof
 
 :feature_packer
 	set "FEAT_NAME=packer"
-	set "FEAT_LIST_SCHEMA=0_7_5@x64/binary 0_7_5@x86/binary"
+	set "FEAT_LIST_SCHEMA=0_7_5@x64:binary 0_7_5@x86:binary"
 	set "FEAT_DEFAULT_VERSION=0_7_5"
 	set "FEAT_DEFAULT_ARCH=x64"
 	set "FEAT_DEFAULT_FLAVOUR=binary"

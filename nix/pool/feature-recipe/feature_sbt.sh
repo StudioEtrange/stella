@@ -5,7 +5,7 @@ _SBT_INCLUDED_=1
 
 function feature_sbt() {
 	FEAT_NAME=sbt
-	FEAT_LIST_SCHEMA="0_13_7/binary"
+	FEAT_LIST_SCHEMA="0_13_7:binary"
 	FEAT_DEFAULT_VERSION=0_13_7
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"

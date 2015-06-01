@@ -5,7 +5,7 @@ _CMAKE_INCLUDED_=1
 function feature_cmake() {
 
 	FEAT_NAME=cmake
-	FEAT_LIST_SCHEMA="2_8_12/source 2_8_12/binary 3_2_2/binary 3_2_2/source"
+	FEAT_LIST_SCHEMA="2_8_12:source 2_8_12:binary 3_2_2:binary 3_2_2:source"
 	FEAT_DEFAULT_VERSION=2_8_12
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"

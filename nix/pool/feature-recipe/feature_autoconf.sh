@@ -4,7 +4,7 @@ _AUTOCONF_INCLUDED_=1
 
 function feature_autoconf() {
 	FEAT_NAME=autoconf
-	FEAT_LIST_SCHEMA="2_69/source"
+	FEAT_LIST_SCHEMA="2_69:source"
 	FEAT_DEFAULT_VERSION=2_69
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"

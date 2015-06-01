@@ -6,7 +6,7 @@ goto :eof
 
 :feature_gnumake
 	set "FEAT_NAME=gnumake"
-	set "FEAT_LIST_SCHEMA=3_81/binary"
+	set "FEAT_LIST_SCHEMA=3_81:binary"
 	set "FEAT_DEFAULT_VERSION=3_81"
 	set FEAT_DEFAULT_ARCH=
 	set "FEAT_DEFAULT_FLAVOUR=binary"
@@ -19,7 +19,7 @@ goto :eof
 	set FEAT_SOURCE_URL=
 	set FEAT_SOURCE_URL_FILENAME=
 	set FEAT_SOURCE_CALLBACK=
-	set "FEAT_BINARY_URL=http://downloads.sourceforge.net/project/gnuwin32/make/3.81/make-3.81-bin.zip http://sourceforge.net/projects/gnuwin32/files/make/3.81/make-3.81-dep.zip"
+	set "FEAT_BINARY_URL=http://downloads.sourceforge.net/project/gnuwin32/make/3.81/make-3.81-bin.zip http:/:sourceforge.net/projects/gnuwin32/files/make/3.81/make-3.81-dep.zip"
 	set "FEAT_BINARY_URL_FILENAME=_AUTO_"
 	set FEAT_BINARY_CALLBACK=
 

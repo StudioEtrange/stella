@@ -5,7 +5,7 @@ goto :eof
 
 :feature_docker-client
 	set "FEAT_NAME=docker-client"
-	set "FEAT_LIST_SCHEMA=1_6_0@x64/binary 1_6_0@x86/binary"
+	set "FEAT_LIST_SCHEMA=1_6_0@x64:binary 1_6_0@x86:binary"
 	set "FEAT_DEFAULT_VERSION=1_6_0"
 	set "FEAT_DEFAULT_ARCH=x64"
 	set "FEAT_DEFAULT_FLAVOUR=binary"

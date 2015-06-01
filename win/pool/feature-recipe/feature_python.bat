@@ -7,7 +7,7 @@ REM 		and Python 3.4 and later include pip by default
 
 :feature_python
 	set "FEAT_NAME=python"
-	set "FEAT_LIST_SCHEMA=2_7_10@x64/binary 2_7_10@x86/binary"
+	set "FEAT_LIST_SCHEMA=2_7_10@x64:binary 2_7_10@x86:binary"
 	set "FEAT_DEFAULT_VERSION=2_7_10"
 	set "FEAT_DEFAULT_ARCH=x64"
 	set "FEAT_DEFAULT_FLAVOUR=binary"

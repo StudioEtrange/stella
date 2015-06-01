@@ -6,7 +6,7 @@ goto :eof
 
 :feature_jom
 	set "FEAT_NAME=jom"
-	set "FEAT_LIST_SCHEMA=1_0_13/binary"
+	set "FEAT_LIST_SCHEMA=1_0_13:binary"
 	set "FEAT_DEFAULT_VERSION=1_0_13"
 	set FEAT_DEFAULT_ARCH=
 	set "FEAT_DEFAULT_FLAVOUR=binary"

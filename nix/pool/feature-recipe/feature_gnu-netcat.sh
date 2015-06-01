@@ -5,7 +5,7 @@ _GNUNETCAT_INCLUDED_=1
 
 function feature_gnu-netcat() {
 	FEAT_NAME=gnu-netcat
-	FEAT_LIST_SCHEMA="0_7_1/source"
+	FEAT_LIST_SCHEMA="0_7_1:source"
 	FEAT_DEFAULT_VERSION=0_7_1
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
@@ -14,7 +14,7 @@ function feature_gnu-netcat() {
 function feature_gnu-netcat_0_7_1() {
 	FEAT_VERSION=0_7_1
 
-	FEAT_SOURCE_URL=http://sourceforge.net/projects/netcat/files/netcat/0.7.1/netcat-0.7.1.tar.gz
+	FEAT_SOURCE_URL=http:/:sourceforge.net/projects/netcat/files/netcat/0.7.1/netcat-0.7.1.tar.gz
 	FEAT_SOURCE_URL_FILENAME=netcat-0.7.1.tar.gz
 	FEAT_SOURCE_CALLBACK=
 	FEAT_BINARY_URL=

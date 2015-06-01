@@ -3,7 +3,7 @@ _UPX_INCLUDED_=1
 
 function feature_upx() {
 	FEAT_NAME=upx
-	FEAT_LIST_SCHEMA="3_91/source"
+	FEAT_LIST_SCHEMA="3_91:source"
 	FEAT_DEFAULT_VERSION=3_91
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"

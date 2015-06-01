@@ -5,7 +5,7 @@ goto :eof
 
 :feature_goconfig-cli
 	set "FEAT_NAME=goconfig-cli"
-	set "FEAT_LIST_SCHEMA=snapshot/binary"
+	set "FEAT_LIST_SCHEMA=snapshot:binary"
 	set "FEAT_DEFAULT_VERSION=snapshot"
 	set FEAT_DEFAULT_ARCH=
 	set "FEAT_DEFAULT_FLAVOUR=binary"

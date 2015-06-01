@@ -4,7 +4,7 @@ goto :eof
 
 :feature_docker-swarm
 	set "FEAT_NAME=docker-swarm"
-	set "FEAT_LIST_SCHEMA=1_6_0/source 1_6_0/source"
+	set "FEAT_LIST_SCHEMA=1_6_0:source 1_6_0:source"
 	set "FEAT_DEFAULT_VERSION=1_6_0"
 	set "FEAT_DEFAULT_ARCH="
 	set "FEAT_DEFAULT_FLAVOUR=source"

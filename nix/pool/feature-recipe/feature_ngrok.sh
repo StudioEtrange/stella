@@ -4,7 +4,7 @@ _NGROK_INCLUDED_=1
 
 function feature_ngrok() {
 	FEAT_NAME=ngrok
-	FEAT_LIST_SCHEMA="stable@x86/binary stable@x64/binary"
+	FEAT_LIST_SCHEMA="stable@x86:binary stable@x64:binary"
 	FEAT_DEFAULT_VERSION=stable
 	FEAT_DEFAULT_ARCH=x64
 	FEAT_DEFAULT_FLAVOUR="binary"

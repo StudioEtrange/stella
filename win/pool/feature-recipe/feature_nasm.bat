@@ -5,7 +5,7 @@ goto :eof
 
 :feature_nasm
 	set "FEAT_NAME=nasm"
-	set "FEAT_LIST_SCHEMA=2_11/binary"
+	set "FEAT_LIST_SCHEMA=2_11:binary"
 	set "FEAT_DEFAULT_VERSION=2_11"
 	set "FEAT_DEFAULT_ARCH="
 	set "FEAT_DEFAULT_FLAVOUR=binary"

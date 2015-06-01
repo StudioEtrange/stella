@@ -7,7 +7,7 @@ _GETOPT_INCLUDED_=1
 function feature_getopt() {
 
 	FEAT_NAME=getopt
-	FEAT_LIST_SCHEMA="1_1_6/source"
+	FEAT_LIST_SCHEMA="1_1_6:source"
 	FEAT_DEFAULT_VERSION=1_1_6
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"

@@ -5,7 +5,7 @@ goto :eof
 
 :feature_socat
 	set "FEAT_NAME=socat"
-	set "FEAT_LIST_SCHEMA=1_7_2_1/binary"
+	set "FEAT_LIST_SCHEMA=1_7_2_1:binary"
 	set "FEAT_DEFAULT_VERSION=1_7_2_1"
 	set FEAT_DEFAULT_ARCH=
 	set "FEAT_DEFAULT_FLAVOUR=binary"

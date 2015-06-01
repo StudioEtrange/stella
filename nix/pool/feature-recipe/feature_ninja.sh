@@ -5,7 +5,7 @@ _NINJA_INCLUDED_=1
 function feature_ninja() {
 
 	FEAT_NAME=ninja
-	FEAT_LIST_SCHEMA="last_release/source"
+	FEAT_LIST_SCHEMA="last_release:source"
 	FEAT_DEFAULT_VERSION=last_release
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"

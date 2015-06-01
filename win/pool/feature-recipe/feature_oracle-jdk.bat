@@ -8,7 +8,7 @@ REM http://stackoverflow.com/a/27028869
 
 :feature_oracle-jdk
 	set "FEAT_NAME=oracle-jdk"
-	set "FEAT_LIST_SCHEMA=8u45@x86/binary 8u45@x64/binary 7u80@x86/binary 7u80@x64/binary"
+	set "FEAT_LIST_SCHEMA=8u45@x86:binary 8u45@x64:binary 7u80@x86:binary 7u80@x64:binary"
 	set "FEAT_DEFAULT_VERSION=8u45"
 	set "FEAT_DEFAULT_ARCH=x64"
 	set "FEAT_DEFAULT_FLAVOUR=binary"

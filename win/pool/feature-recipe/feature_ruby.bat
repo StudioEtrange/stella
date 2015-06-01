@@ -6,7 +6,7 @@ goto :eof
 
 :feature_ruby
 	set "FEAT_NAME=ruby"
-	set "FEAT_LIST_SCHEMA=2_0_0@x64/binary 2_0_0@x86/binary 1_9_3@x86/binary"
+	set "FEAT_LIST_SCHEMA=2_0_0@x64:binary 2_0_0@x86:binary 1_9_3@x86:binary"
 	set "FEAT_DEFAULT_VERSION=2_0_0"
 	set "FEAT_DEFAULT_ARCH=x86"
 	set "FEAT_DEFAULT_FLAVOUR=binary"

@@ -6,7 +6,7 @@ goto :eof
 
 :feature_dependencywalker
 	set "FEAT_NAME=dependencywalker"
-	set "FEAT_LIST_SCHEMA=2_2@x64/binary 2_2@x86/binary"
+	set "FEAT_LIST_SCHEMA=2_2@x64:binary 2_2@x86:binary"
 	set "FEAT_DEFAULT_VERSION=2_2"
 	set "FEAT_DEFAULT_ARCH=x64"
 	set "FEAT_DEFAULT_FLAVOUR=binary"

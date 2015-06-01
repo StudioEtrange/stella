@@ -18,33 +18,40 @@ function test__translate_schema_1() {
 	result=OK
 	
 
-	_test="wget:ubuntu#1_2@x86/source"
-	[ ! "$result" == "ERROR" ] && __translate_schema "$_test" "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR" "TR_FEATURE_OS_RESTRICTION" \
-			&& [ "$TR_FEATURE_OS_RESTRICTION" == "ubuntu" ] \
+	_test="wget/ubuntu#1_2@x86:source"
+	[ ! "$result" == "ERROR" ] && __translate_schema "$_test" "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR" "TR_FEATURE_OS_RESTRICTION" "TR_FEATURE_OS_EXCLUSION" \
+			&& [ "$TR_FEATURE_OS_RESTRICTION" == "ubuntu" ] && [ "$TR_FEATURE_OS_EXCLUSION" == "" ] \
 			&& [ "$TR_FEATURE_VER" == "1_2" ] && [ "$TR_FEATURE_NAME" == "wget" ] && [ "$TR_FEATURE_ARCH" == "x86" ] \
 			&& [ "$TR_FEATURE_FLAVOUR" == "source" ] && result=OK || result=ERROR
-	echo "$_test => $TR_FEATURE_NAME#$TR_FEATURE_VER@$TR_FEATURE_ARCH/$TR_FEATURE_FLAVOUR:$TR_FEATURE_OS_RESTRICTION"
+	echo "$_test => $TR_FEATURE_NAME#$TR_FEATURE_VER@$TR_FEATURE_ARCH:$TR_FEATURE_FLAVOUR/$TR_FEATURE_OS_RESTRICTION\\$TR_FEATURE_OS_EXCLUSION"
 
-	_test="wget/source@x86:ubuntu#1_2"
-	[ ! "$result" == "ERROR" ] && __translate_schema "$_test" "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR" "TR_FEATURE_OS_RESTRICTION" \
-			&& [ "$TR_FEATURE_OS_RESTRICTION" == "ubuntu" ] \
+	_test="wget:source@x86/ubuntu#1_2"
+	[ ! "$result" == "ERROR" ] && __translate_schema "$_test" "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR" "TR_FEATURE_OS_RESTRICTION" "TR_FEATURE_OS_EXCLUSION" \
+			&& [ "$TR_FEATURE_OS_RESTRICTION" == "ubuntu" ] && [ "$TR_FEATURE_OS_EXCLUSION" == "" ] \
 			&& [ "$TR_FEATURE_VER" == "1_2" ] && [ "$TR_FEATURE_NAME" == "wget" ] && [ "$TR_FEATURE_ARCH" == "x86" ] \
 			&& [ "$TR_FEATURE_FLAVOUR" == "source" ] && result=OK || result=ERROR
-	echo "$_test => $TR_FEATURE_NAME#$TR_FEATURE_VER@$TR_FEATURE_ARCH/$TR_FEATURE_FLAVOUR:$TR_FEATURE_OS_RESTRICTION"
+	echo "$_test => $TR_FEATURE_NAME#$TR_FEATURE_VER@$TR_FEATURE_ARCH:$TR_FEATURE_FLAVOUR/$TR_FEATURE_OS_RESTRICTION\\$TR_FEATURE_OS_EXCLUSION"
 
 	_test="wget"
-	[ ! "$result" == "ERROR" ] && __translate_schema "$_test" "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR" "TR_FEATURE_OS_RESTRICTION" \
-			&& [ "$TR_FEATURE_OS_RESTRICTION" == "" ] \
+	[ ! "$result" == "ERROR" ] && __translate_schema "$_test" "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR" "TR_FEATURE_OS_RESTRICTION" "TR_FEATURE_OS_EXCLUSION" \
+			&& [ "$TR_FEATURE_OS_RESTRICTION" == "" ] && [ "$TR_FEATURE_OS_EXCLUSION" == "" ] \
 			&& [ "$TR_FEATURE_VER" == "" ] && [ "$TR_FEATURE_NAME" == "wget" ] && [ "$TR_FEATURE_ARCH" == "" ] \
 			&& [ "$TR_FEATURE_FLAVOUR" == "" ] && result=OK || result=ERROR
-	echo "$_test => $TR_FEATURE_NAME#$TR_FEATURE_VER@$TR_FEATURE_ARCH/$TR_FEATURE_FLAVOUR:$TR_FEATURE_OS_RESTRICTION"
+	echo "$_test => $TR_FEATURE_NAME#$TR_FEATURE_VER@$TR_FEATURE_ARCH:$TR_FEATURE_FLAVOUR/$TR_FEATURE_OS_RESTRICTION\\$TR_FEATURE_OS_EXCLUSION"
 
-	_test="kibana/source"
-	[ ! "$result" == "ERROR" ] && __translate_schema "$_test" "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR" "TR_FEATURE_OS_RESTRICTION" \
-			&& [ "$TR_FEATURE_OS_RESTRICTION" == "" ] \
+	_test="kibana:source"
+	[ ! "$result" == "ERROR" ] && __translate_schema "$_test" "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR" "TR_FEATURE_OS_RESTRICTION" "TR_FEATURE_OS_EXCLUSION" \
+			&& [ "$TR_FEATURE_OS_RESTRICTION" == "" ] && [ "$TR_FEATURE_OS_EXCLUSION" == "" ] \
 			&& [ "$TR_FEATURE_VER" == "" ] && [ "$TR_FEATURE_NAME" == "kibana" ] && [ "$TR_FEATURE_ARCH" == "" ] \
 			&& [ "$TR_FEATURE_FLAVOUR" == "source" ] && result=OK || result=ERROR
-	echo "$_test => $TR_FEATURE_NAME#$TR_FEATURE_VER@$TR_FEATURE_ARCH/$TR_FEATURE_FLAVOUR:$TR_FEATURE_OS_RESTRICTION"
+	echo "$_test => $TR_FEATURE_NAME#$TR_FEATURE_VER@$TR_FEATURE_ARCH:$TR_FEATURE_FLAVOUR/$TR_FEATURE_OS_RESTRICTION\\$TR_FEATURE_OS_EXCLUSION"
+
+	_test="kibana:source\windows"
+	[ ! "$result" == "ERROR" ] && __translate_schema "$_test" "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR" "TR_FEATURE_OS_RESTRICTION" "TR_FEATURE_OS_EXCLUSION" \
+			&& [ "$TR_FEATURE_OS_RESTRICTION" == "" ] && [ "$TR_FEATURE_OS_EXCLUSION" == "windows" ] \
+			&& [ "$TR_FEATURE_VER" == "" ] && [ "$TR_FEATURE_NAME" == "kibana" ] && [ "$TR_FEATURE_ARCH" == "" ] \
+			&& [ "$TR_FEATURE_FLAVOUR" == "source" ] && result=OK || result=ERROR
+	echo "$_test => $TR_FEATURE_NAME#$TR_FEATURE_VER@$TR_FEATURE_ARCH:$TR_FEATURE_FLAVOUR/$TR_FEATURE_OS_RESTRICTION\\$TR_FEATURE_OS_EXCLUSION"
 
 
 	log "test__translate_schema_1" "$result" "test __translate_schema"
@@ -77,7 +84,7 @@ function test__info_feature() {
 
 
 function test__install_feature_0() {
-	_test="packer#0_6_0@x86/binary"
+	_test="packer#0_6_0@x86:binary"
 	__feature_install $_test
 	__feature_inspect $_test
 	[ "$TEST_FEATURE" == "1" ] && [ "$FEAT_NAME" == "packer" ] && [ "$FEAT_VERSION" == "0_6_0" ] && [ "$FEAT_ARCH" == "x86" ] && \
@@ -143,7 +150,7 @@ function test__install_feature_2() {
 
 
 function test__install_feature_3() {
-	_test="wget/source"
+	_test="wget:source"
 	__feature_catalog_info $_test
 	local def_ver=$FEAT_VERSION
 	local def_arch=$FEAT_ARCH

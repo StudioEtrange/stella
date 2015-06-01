@@ -6,7 +6,7 @@ _PYTHON_INCLUDED_=1
 function feature_python() {
 
 	FEAT_NAME=python
-	FEAT_LIST_SCHEMA="2_7_9/source"
+	FEAT_LIST_SCHEMA="2_7_9:source"
 	FEAT_DEFAULT_VERSION=2_7_9
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"

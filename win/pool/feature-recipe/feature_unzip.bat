@@ -6,7 +6,7 @@ goto :eof
 
 :feature_unzip
 	set "FEAT_NAME=unzip"
-	set "FEAT_LIST_SCHEMA=5_51_1/binary"
+	set "FEAT_LIST_SCHEMA=5_51_1:binary"
 	set "FEAT_DEFAULT_VERSION=5_51_1"
 	set "FEAT_DEFAULT_ARCH="
 	set "FEAT_DEFAULT_FLAVOUR=binary"

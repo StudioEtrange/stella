@@ -127,7 +127,7 @@ function __feature_match_installed() {
 
 		if [ ! "$_found" == "" ]; then
 			# we fix the found version with the flavour of the requested schema
-			[ ! "$__VAR_FEATURE_FLAVOUR" == "" ] && __internal_feature_context "$__VAR_FEATURE_NAME"#"$(__get_filename_from_string $_found)"/"$__VAR_FEATURE_FLAVOUR"
+			[ ! "$__VAR_FEATURE_FLAVOUR" == "" ] && __internal_feature_context "$__VAR_FEATURE_NAME"#"$(__get_filename_from_string $_found)":"$__VAR_FEATURE_FLAVOUR"
 			[ "$__VAR_FEATURE_FLAVOUR" == "" ] && __internal_feature_context "$__VAR_FEATURE_NAME"#"$(__get_filename_from_string $_found)"
 		else
 			# empty info values
@@ -213,6 +213,13 @@ function __feature_remove() {
 		fi
 	fi
 
+
+	if [ ! "$FEAT_SCHEMA_OS_EXCLUSION" == "" ]; then
+		if [ "$FEAT_SCHEMA_OS_EXCLUSION" == "$STELLA_CURRENT_OS" ]; then
+			return
+		fi
+	fi
+
 	local _save_app_feature_root=
 	if [ "$_opt_internal_feature" == "ON" ]; then
 		_save_app_feature_root=$STELLA_APP_FEATURE_ROOT
@@ -287,13 +294,22 @@ function __feature_install() {
 
 		__internal_feature_context $_SCHEMA
 		
+		if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" == "" ]; then
+			if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" == "$STELLA_CURRENT_OS" ]; then
+				echo " $_SCHEMA not installed on $STELLA_CURRENT_OS"
+				return
+			fi
+		fi
+		if [ ! "$FEAT_SCHEMA_OS_EXCLUSION" == "" ]; then
+			if [ "$FEAT_SCHEMA_OS_EXCLUSION" == "$STELLA_CURRENT_OS" ]; then
+				echo " $_SCHEMA not installed on $STELLA_CURRENT_OS"
+				return
+			fi
+		fi
+
 		if [ ! "$FEAT_SCHEMA_SELECTED" == "" ]; then
 
-			if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" == "" ]; then
-				if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" == "$STELLA_CURRENT_OS" ]; then
-					return
-				fi
-			fi
+			
 
 			local _save_app_feature_root=
 			if [ "$_opt_internal_feature" == "ON" ]; then
@@ -501,7 +517,7 @@ function __feature_callback() {
 	fi
 }
 
-
+# init feature context (properties, variables, ...)
 function __internal_feature_context() {
 	local _SCHEMA=$1
 
@@ -512,7 +528,7 @@ function __internal_feature_context() {
 	FEAT_SCHEMA_SELECTED=
 	FEAT_SCHEMA_FLAVOUR=
 	FEAT_SCHEMA_OS_RESTRICTION=
-
+	FEAT_SCHEMA_OS_EXCLUSION=
 
 	FEAT_NAME=
 	FEAT_LIST_SCHEMA=
@@ -540,13 +556,11 @@ function __internal_feature_context() {
 	# MERGE / NESTED / LIST
 	FEAT_BUNDLE=
 	
-
-	[ ! "$_SCHEMA" == "" ] && __select_schema $_SCHEMA "FEAT_SCHEMA_SELECTED"
+	# TODO we call translate_schema inside select_official_schema, so double call
+	[ ! "$_SCHEMA" == "" ] && __select_official_schema $_SCHEMA "FEAT_SCHEMA_SELECTED"
 
 	if [ ! "$FEAT_SCHEMA_SELECTED" == "" ]; then
-		
-		__translate_schema $FEAT_SCHEMA_SELECTED "TMP_FEAT_SCHEMA_NAME" "TMP_FEAT_SCHEMA_VERSION" "FEAT_ARCH" "FEAT_SCHEMA_FLAVOUR" "FEAT_SCHEMA_OS_RESTRICTION"
-
+		__translate_schema $FEAT_SCHEMA_SELECTED "TMP_FEAT_SCHEMA_NAME" "TMP_FEAT_SCHEMA_VERSION" "FEAT_ARCH" "FEAT_SCHEMA_FLAVOUR" "FEAT_SCHEMA_OS_RESTRICTION" "FEAT_SCHEMA_OS_EXCLUSION"
 		# set install root (FEAT_INSTALL_ROOT)
 		if [ "$FEAT_BUNDLE_MODE" == "" ]; then
 			if [ ! "$FEAT_ARCH" == "" ]; then
@@ -597,16 +611,18 @@ function __internal_feature_context() {
 			_tmp="FEAT_BINARY_DEPENDENCIES_$FEAT_ARCH"
 			FEAT_BINARY_DEPENDENCIES=${!_tmp}
 		fi
-
+	else
+		# we grab only os option
+		__translate_schema $_SCHEMA "NONE" "NONE" "NONE" "NONE" "FEAT_SCHEMA_OS_RESTRICTION" "FEAT_SCHEMA_OS_EXCLUSION"
 
 	fi
 }
 
 
 
-
+# select an official schema
 # pick a feature schema by filling some values with default one
-function __select_schema() {
+function __select_official_schema() {
 	local _SCHEMA=$1
 	local _RESULT_SCHEMA=$2
 
@@ -615,7 +631,7 @@ function __select_schema() {
 
  	[ ! "$_RESULT_SCHEMA" == "" ] && unset -v $_RESULT_SCHEMA
 
-	__translate_schema "$_SCHEMA" "_TR_FEATURE_NAME" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR"
+	__translate_schema "$_SCHEMA" "_TR_FEATURE_NAME" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR" "_TR_FEATURE_OS_RESTRICTION" "_TR_FEATURE_OS_EXCLUSION"
 
 
 	local _official=0
@@ -638,15 +654,19 @@ function __select_schema() {
 
 		_FILLED_SCHEMA="$_TR_FEATURE_NAME"#"$_TR_FEATURE_VER"
 		[ ! "$_TR_FEATURE_ARCH" == "" ] && _FILLED_SCHEMA="$_FILLED_SCHEMA"@"$_TR_FEATURE_ARCH"
-		[ ! "$_TR_FEATURE_FLAVOUR" == "" ] && _FILLED_SCHEMA="$_FILLED_SCHEMA"/"$_TR_FEATURE_FLAVOUR"
+		[ ! "$_TR_FEATURE_FLAVOUR" == "" ] && _FILLED_SCHEMA="$_FILLED_SCHEMA":"$_TR_FEATURE_FLAVOUR"
 		
+		# ADDING OS restriction and OS exclusion
+		_OS_OPTION=
+		[ ! "$_TR_FEATURE_OS_RESTRICTION" == "" ] && _OS_OPTION="$_OS_OPTION/$_TR_FEATURE_OS_RESTRICTION"
+		[ ! "$_TR_FEATURE_OS_EXCLUSION" == "" ] && _OS_OPTION="$_OS_OPTION"\\\\"$_TR_FEATURE_OS_EXCLUSION"
+
 		# check filled schema exists
-		
 		local _flag=0
 		local l
 		for l in $FEAT_LIST_SCHEMA; do
 			if [ "$_TR_FEATURE_NAME"#"$l" == "$_FILLED_SCHEMA" ]; then
-				[ ! "$_RESULT_SCHEMA" == "" ] && eval $_RESULT_SCHEMA=$_FILLED_SCHEMA
+				[ ! "$_RESULT_SCHEMA" == "" ] && eval $_RESULT_SCHEMA=$_FILLED_SCHEMA$_OS_OPTION
 			fi
 		done
 	fi
@@ -655,10 +675,10 @@ function __select_schema() {
 
 
 # split schema properties
-# feature schema name[#version][@arch][/flavour][:os_restriction] in any order
+# feature schema name[#version][@arch][:flavour][/os_restriction][\os_exclusion] in any order
 #				@arch could be x86 or x64
-#				/flavour could be binary or source
-# example: wget:ubuntu#1_2@x86/source
+#				:flavour could be binary or source
+# example: wget/ubuntu#1_2@x86:source wget/ubuntu#1_2@x86:source\macos
 function __translate_schema() {
 	local _schema=$1
 
@@ -667,37 +687,46 @@ function __translate_schema() {
 	local _VAR_FEATURE_ARCH=$4
 	local _VAR_FEATURE_FLAVOUR=$5
 	local _VAR_FEATURE_OS_RESTRICTION=$6
+	local _VAR_FEATURE_OS_EXCLUSION=$7
 
 	[ ! "$_VAR_FEATURE_NAME" == "" ] && unset -v $_VAR_FEATURE_NAME
 	[ ! "$_VAR_FEATURE_VER" == "" ] && unset -v $_VAR_FEATURE_VER
 	[ ! "$_VAR_FEATURE_ARCH" == "" ] && unset -v $_VAR_FEATURE_ARCH
 	[ ! "$_VAR_FEATURE_FLAVOUR" == "" ] && unset -v $_VAR_FEATURE_FLAVOUR
 	[ ! "$_VAR_FEATURE_OS_RESTRICTION" == "" ] && unset -v $_VAR_FEATURE_OS_RESTRICTION
+	[ ! "$_VAR_FEATURE_OS_EXCLUSION" == "" ] && unset -v $_VAR_FEATURE_OS_EXCLUSION
 
 	local _char=
 
 
 	_char=":"
 	if [ -z "${_schema##*$_char*}" ]; then
-		[ ! "$_VAR_FEATURE_OS_RESTRICTION" == "" ] && eval $_VAR_FEATURE_OS_RESTRICTION=$(echo $_schema | cut -d':' -f 2 | cut -d'#' -f 1 | cut -d'@' -f 1 | cut -d'/' -f 1)
-	fi
-
-	_char="#"
-	if [ -z "${_schema##*$_char*}" ]; then
-		[ ! "$_VAR_FEATURE_VER" == "" ] && eval $_VAR_FEATURE_VER=$(echo $_schema | cut -d'#' -f 2 | cut -d':' -f 1 | cut -d'@' -f 1 | cut -d'/' -f 1)
-	fi
-
-	_char="@"
-	if [ -z "${_schema##*$_char*}" ]; then
-		[ ! "$_VAR_FEATURE_ARCH" == "" ] && eval $_VAR_FEATURE_ARCH=$(echo $_schema | cut -d'@' -f 2 | cut -d':' -f 1 | cut -d'#' -f 1 | cut -d'/' -f 1)
+		[ ! "_VAR_FEATURE_FLAVOUR" == "" ] && eval $_VAR_FEATURE_FLAVOUR=$(echo $_schema | cut -d':' -f 2 | cut -d'\' -f 1 | cut -d'#' -f 1 | cut -d'@' -f 1 | cut -d'/' -f 1)
 	fi
 
 	_char="/"
 	if [ -z "${_schema##*$_char*}" ]; then
-		[ ! "$_VAR_FEATURE_FLAVOUR" == "" ] && eval $_VAR_FEATURE_FLAVOUR=$(echo $_schema | cut -d'/' -f 2 | cut -d':' -f 1 | cut -d'#' -f 1 | cut -d'@' -f 1)
+		[ ! "$_VAR_FEATURE_OS_RESTRICTION" == "" ] && eval $_VAR_FEATURE_OS_RESTRICTION=$(echo $_schema | cut -d'/' -f 2 | cut -d'\' -f 1 | cut -d':' -f 1 | cut -d'#' -f 1 | cut -d'@' -f 1)
 	fi
 
-	[ ! "$_VAR_FEATURE_NAME" == "" ] && eval $_VAR_FEATURE_NAME=$(echo $_schema | cut -d'/' -f 1 | cut -d':' -f 1 | cut -d'#' -f 1 | cut -d'@' -f 1)
+	_char='\\'
+	if [ -z "${_schema##*\\*}" ]; then
+		[ ! "$_VAR_FEATURE_OS_EXCLUSION" == "" ] && eval $_VAR_FEATURE_OS_EXCLUSION=$(echo $_schema | cut -d'\' -f 2 | cut -d':' -f 1 | cut -d'#' -f 1 | cut -d'@' -f 1 | cut -d'/' -f 1)
+	fi
+
+	_char="#"
+	if [ -z "${_schema##*$_char*}" ]; then
+		[ ! "$_VAR_FEATURE_VER" == "" ] && eval $_VAR_FEATURE_VER=$(echo $_schema | cut -d'#' -f 2 | cut -d'\' -f 1 | cut -d':' -f 1 | cut -d'@' -f 1 | cut -d'/' -f 1)
+	fi
+
+	_char="@"
+	if [ -z "${_schema##*$_char*}" ]; then
+		[ ! "$_VAR_FEATURE_ARCH" == "" ] && eval $_VAR_FEATURE_ARCH=$(echo $_schema | cut -d'@' -f 2 | cut -d'\' -f 1 | cut -d':' -f 1 | cut -d'#' -f 1 | cut -d'/' -f 1)
+	fi
+
+	
+
+	[ ! "$_VAR_FEATURE_NAME" == "" ] && eval $_VAR_FEATURE_NAME=$(echo $_schema | cut -d'/' -f 1 | cut -d'\' -f 1 | cut -d':' -f 1 | cut -d'#' -f 1 | cut -d'@' -f 1)
 }
 
 

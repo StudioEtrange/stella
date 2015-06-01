@@ -5,7 +5,7 @@ goto :eof
 
 :feature_patch
 	set "FEAT_NAME=patch"
-	set "FEAT_LIST_SCHEMA=2_5_9/binary"
+	set "FEAT_LIST_SCHEMA=2_5_9:binary"
 	set "FEAT_DEFAULT_VERSION=2_5_9"
 	set "FEAT_DEFAULT_ARCH="
 	set "FEAT_DEFAULT_FLAVOUR=binary"

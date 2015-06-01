@@ -5,7 +5,7 @@ goto :eof
 
 :feature_maven
 	set "FEAT_NAME=maven"
-	set "FEAT_LIST_SCHEMA=3_3_3/binary"
+	set "FEAT_LIST_SCHEMA=3_3_3:binary"
 	set "FEAT_DEFAULT_VERSION=3_3_3"
 	set FEAT_DEFAULT_ARCH=
 	set "FEAT_DEFAULT_FLAVOUR=binary"
@@ -20,7 +20,8 @@ goto :eof
 
 :feature_maven_3_3_3
 	set "FEAT_VERSION=3_3_3"
-	set FEAT_DEPENDENCIES=
+	set FEAT_SOURCE_DEPENDENCIES=
+	set FEAT_BINARY_DEPENDENCIES=
 
 	set FEAT_SOURCE_URL=
 	set FEAT_SOURCE_URL_FILENAME=

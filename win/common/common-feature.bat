@@ -90,9 +90,7 @@ goto :eof
 	set "_found="
 
 	 if "!FEAT_BUNDLE_MODE!"=="" (
-
 		call :translate_schema !_SCHEMA! "__VAR_FEATURE_NAME" "__VAR_FEATURE_VER" "__VAR_FEATURE_ARCH" "__VAR_FEATURE_FLAVOUR"
-
 		
 		if not "!__VAR_FEATURE_VER!"=="" (
 			set "_tested=!__VAR_FEATURE_VER!"
@@ -118,7 +116,7 @@ goto :eof
 
 		if not "!_found!"=="" (
 			if not "!__VAR_FEATURE_FLAVOUR!"=="" (
-				call :internal_feature_context "!__VAR_FEATURE_NAME!#!_found!/!__VAR_FEATURE_FLAVOUR!"
+				call :internal_feature_context "!__VAR_FEATURE_NAME!#!_found!:!__VAR_FEATURE_FLAVOUR!"
 			) else (
 				call :internal_feature_context "!__VAR_FEATURE_NAME!#!_found!"
 			)	
@@ -203,6 +201,10 @@ goto :eof
 			if not "!FEAT_SCHEMA_OS_RESTRICTION!"=="!STELLA_CURRENT_OS!" goto :eof
 	)
 
+	if not "!FEAT_SCHEMA_OS_EXCLUSION!"=="" (
+			if "!FEAT_SCHEMA_OS_EXCLUSION!"=="!STELLA_CURRENT_OS!" goto :eof
+	)
+
 	if "%_opt_internal_feature%"=="ON" (
 		set "_save_app_feature_root=!STELLA_APP_FEATURE_ROOT!"
 		set "STELLA_APP_FEATURE_ROOT=!STELLA_INTERNAL_FEATURE_ROOT!"
@@ -277,6 +279,21 @@ goto :eof
 
 	call :internal_feature_context !_SCHEMA!
 
+
+	if not "!FEAT_SCHEMA_OS_RESTRICTION!"=="" (
+		if not "!FEAT_SCHEMA_OS_RESTRICTION!"=="!STELLA_CURRENT_OS!" (
+			echo !_SCHEMA! not installed on !STELLA_CURRENT_OS!
+			goto :eof
+		)
+	)
+
+	if not "!FEAT_SCHEMA_OS_EXCLUSION!"=="" (
+		if "!FEAT_SCHEMA_OS_EXCLUSION!"=="!STELLA_CURRENT_OS!" (
+			echo !_SCHEMA! not installed on !STELLA_CURRENT_OS!
+			goto :eof
+		)
+	)
+
 	if not "!FEAT_SCHEMA_SELECTED!"=="" (
 		if "%_opt_internal_feature%"=="ON" (
 			set "_save_app_feature_root=!STELLA_APP_FEATURE_ROOT!"
@@ -293,9 +310,7 @@ goto :eof
 			call %STELLA_COMMON%\common-app.bat :add_app_feature !_SCHEMA!
 		)
 
-		if not "!FEAT_SCHEMA_OS_RESTRICTION!"=="" (
-			if not "!FEAT_SCHEMA_OS_RESTRICTION!"=="!STELLA_CURRENT_OS!" goto :eof
-		)
+		
 
 		if "%FORCE%"=="1" (
 			set TEST_FEATURE=0
@@ -390,7 +405,6 @@ goto :eof
 		echo ** Error unknow feature !_SCHEMA!
 	)
 	
-
 goto :eof
 
 
@@ -472,6 +486,7 @@ goto :eof
 	)
 goto :eof
 
+REM init feature context (properties, variables, ...)
 :internal_feature_context
 	set "_SCHEMA=%~1"
 	set "feature_context_ORIGINAL_SCHEMA=%~1"
@@ -483,6 +498,7 @@ goto :eof
 	set "FEAT_SCHEMA_SELECTED="
 	set "FEAT_SCHEMA_FLAVOUR="
 	set "FEAT_SCHEMA_OS_RESTRICTION="
+	set "FEAT_SCHEMA_OS_EXCLUSION="
 
 
 	
@@ -513,12 +529,13 @@ goto :eof
 	set "FEAT_BUNDLE="
 
 	if not "!_SCHEMA!"=="" (
-		call :select_schema !_SCHEMA! "FEAT_SCHEMA_SELECTED"
+		REM TODO we call translate_schema inside select_official_schema, so double call
+		call :select_official_schema !_SCHEMA! "FEAT_SCHEMA_SELECTED"
 	)
 
 	if not "!FEAT_SCHEMA_SELECTED!"=="" (
-		
-		call :translate_schema !FEAT_SCHEMA_SELECTED! "TMP_FEAT_SCHEMA_NAME" "TMP_FEAT_SCHEMA_VERSION" "FEAT_ARCH" "FEAT_SCHEMA_FLAVOUR" "FEAT_SCHEMA_OS_RESTRICTION"
+
+		call :translate_schema "!FEAT_SCHEMA_SELECTED!" "TMP_FEAT_SCHEMA_NAME" "TMP_FEAT_SCHEMA_VERSION" "FEAT_ARCH" "FEAT_SCHEMA_FLAVOUR" "FEAT_SCHEMA_OS_RESTRICTION" "FEAT_SCHEMA_OS_EXCLUSION"
 
 		REM set install root (FEAT_INSTALL_ROOT)	
 		if "!FEAT_BUNDLE_MODE!"=="" (
@@ -574,17 +591,23 @@ goto :eof
 			set "_tmp=FEAT_BINARY_DEPENDENCIES_!FEAT_ARCH!"
 			for /F %%a in ('echo !_tmp!') do set "FEAT_BINARY_DEPENDENCIES=!%%a!"
 		)
+	) else (
+		REM we grab only os option
+		call :translate_schema !_SCHEMA! "NONE" "NONE" "NONE" "NONE" "FEAT_SCHEMA_OS_RESTRICTION" "FEAT_SCHEMA_OS_EXCLUSION"
 	)
 
 	set "_SCHEMA=!feature_context_ORIGINAL_SCHEMA!"
 goto :eof
 
 
-
-
-:select_schema
+REM select an official schema
+REM pick a feature schema by filling some values with default one
+:select_official_schema
 	set "_SCHEMA=%~1"
+	set "feature_select_schema_ORIGINAL_SCHEMA=%~1"
 	set "_RESULT_SCHEMA=%~2"
+
+	
 
 	set "_FILLED_SCHEMA="
 
@@ -592,7 +615,7 @@ goto :eof
 		set "!_RESULT_SCHEMA!="
 	)
 
- 	call :translate_schema "!_SCHEMA!" "_TR_FEATURE_NAME" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR"
+ 	call :translate_schema "!_SCHEMA!" "_TR_FEATURE_NAME" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR" "_TR_FEATURE_OS_RESTRICTION" "_TR_FEATURE_OS_EXCLUSION"
 
 	set "_official=0"
 	for %%a in (%__STELLA_FEATURE_LIST%) do (
@@ -621,28 +644,39 @@ goto :eof
 			set "_FILLED_SCHEMA=!_FILLED_SCHEMA!@!_TR_FEATURE_ARCH!"
 		)
 		if not "!_TR_FEATURE_FLAVOUR!"=="" ( 
-			set "_FILLED_SCHEMA=!_FILLED_SCHEMA!/!_TR_FEATURE_FLAVOUR!"
+			set "_FILLED_SCHEMA=!_FILLED_SCHEMA!:!_TR_FEATURE_FLAVOUR!"
 		)
 		
+		REM ADDING OS restriction and OS exclusion
+		set _OS_OPTION=
+		if not "!_TR_FEATURE_OS_RESTRICTION!"=="" ( 
+			set "_OS_OPTION=!_OS_OPTION!/!_TR_FEATURE_OS_RESTRICTION!"
+		)
+		if not "!_TR_FEATURE_OS_EXCLUSION!"=="" ( 
+			set "_OS_OPTION=!_OS_OPTION!\!_TR_FEATURE_OS_EXCLUSION!"
+		)
+
+
 		REM check filled schema exists
-		set "_flag=0"
 		for %%l in (!FEAT_LIST_SCHEMA!) do (
 			if "!_TR_FEATURE_NAME!#%%l"=="!_FILLED_SCHEMA!" (
 				if not "!_RESULT_SCHEMA!"=="" (
-					set "!_RESULT_SCHEMA!=!_FILLED_SCHEMA!"
+					set "!_RESULT_SCHEMA!=!_FILLED_SCHEMA!!_OS_OPTION!"
 				)
 			)
 		)
 	)
+
+	set "_SCHEMA=!feature_select_schema_ORIGINAL_SCHEMA!"
 goto:eof
 
 
 
 
-REM feature schema name[#version][@arch][/flavour][:os_restriction] in any order
+REM feature schema name[#version][@arch][:flavour][/os_restriction][\os_exclusion] in any order
 REM				@arch could be x86 or x64
-REM				/flavour could be binary or source
-REM example: wget:ubuntu#1_2@x86/source
+REM				:flavour could be binary or source
+REM example: wget/ubuntu#1_2@x86:source wget/ubuntu#1_2@x86:source\macos
 :translate_schema
 	set "_trans_schema=%~1"
 
@@ -651,6 +685,7 @@ REM example: wget:ubuntu#1_2@x86/source
 	set "_VAR_FEATURE_ARCH=%~4"
 	set "_VAR_FEATURE_FLAVOUR=%~5"
 	set "_VAR_FEATURE_OS_RESTRICTION=%~6"
+	set "_VAR_FEATURE_OS_EXCLUSION=%~7"
 
 	
 	set "!_VAR_FEATURE_NAME!="
@@ -658,61 +693,84 @@ REM example: wget:ubuntu#1_2@x86/source
 	if not "!_VAR_FEATURE_ARCH!"=="" set "!_VAR_FEATURE_ARCH!="
 	if not "!_VAR_FEATURE_FLAVOUR!"=="" set "!_VAR_FEATURE_FLAVOUR!="
 	if not "!_VAR_FEATURE_OS_RESTRICTION!"=="" set "!_VAR_FEATURE_OS_RESTRICTION!="
+	if not "!_VAR_FEATURE_OS_EXCLUSION!"=="" set "!_VAR_FEATURE_OS_EXCLUSION!="
 
 	set "_tmp="
 	set "_tmp=!_trans_schema::="^&REM :!
 	set "_tmp=!_tmp:#="^&REM #!
 	set "_tmp=!_tmp:@="^&REM @!
 	set "_tmp=!_tmp:/="^&REM /!
+	set "_tmp=!_tmp:\="^&REM \!
 	set "%_VAR_FEATURE_NAME%=!_tmp!"
 
+
+
 	REM :
-	if not "!_VAR_FEATURE_OS_RESTRICTION!"=="" (
-		set "_tmp="
+	set "_tmp="
+	if not "!_VAR_FEATURE_FLAVOUR!"=="" (
 		if not "x!_trans_schema::=!"=="x!_trans_schema!" (
 			set "_tmp=!_trans_schema:*:=!"
 			set "_tmp=!_tmp:#="^&REM #!
 			set "_tmp=!_tmp:@="^&REM @!
 			set "_tmp=!_tmp:/="^&REM /!
-			set "%_VAR_FEATURE_OS_RESTRICTION%=!_tmp!"
-		)
-	)
-
-	REM #
-	if not "!_VAR_FEATURE_VER!"=="" (
-		set "_tmp="
-		if not "x!_trans_schema:#=!"=="x!_trans_schema!" (
-			set "_tmp=!_trans_schema:*#=!"
-			set "_tmp=!_tmp::="^&REM :!
-			set "_tmp=!_tmp:@="^&REM @!
-			set "_tmp=!_tmp:/="^&REM /!
-			set "%_VAR_FEATURE_VER%=!_tmp!"
-		)
-	)
-
-	REM @
-	if not "!_VAR_FEATURE_ARCH!"=="" (
-		set "_tmp="
-		if not "x!_trans_schema:@=!"=="x!_trans_schema!" (
-			set "_tmp=!_trans_schema:*@=!"
-			set "_tmp=!_tmp::="^&REM :!
-			set "_tmp=!_tmp:#="^&REM #!
-			set "_tmp=!_tmp:/="^&REM /!
-			set "%_VAR_FEATURE_ARCH%=!_tmp!"
+			set "_tmp=!_tmp:\="^&REM \!
+			set "%_VAR_FEATURE_FLAVOUR%=!_tmp!"
 		)
 	)
 
 	REM /
+	set "_tmp="
 	if not "!_VAR_FEATURE_OS_RESTRICTION!"=="" (
-		set "_tmp="
 		if not "x!_trans_schema:/=!"=="x!_trans_schema!" (
 			set "_tmp=!_trans_schema:*/=!"
 			set "_tmp=!_tmp::="^&REM :!
 			set "_tmp=!_tmp:#="^&REM #!
 			set "_tmp=!_tmp:@="^&REM @!
-			set "%_VAR_FEATURE_FLAVOUR%=!_tmp!"
+			set "_tmp=!_tmp:\="^&REM \!
+			set "%_VAR_FEATURE_OS_RESTRICTION%=!_tmp!"
 		)
 	)
+
+	REM \
+	set "_tmp="
+	if not "!_VAR_FEATURE_OS_EXCLUSION!"=="" (
+		if not "x!_trans_schema:\=!"=="x!_trans_schema!" (
+			set "_tmp=!_trans_schema:*\=!"
+			set "_tmp=!_tmp:#="^&REM #!
+			set "_tmp=!_tmp:@="^&REM @!
+			set "_tmp=!_tmp:/="^&REM /!
+			set "_tmp=!_tmp::="^&REM :!
+			set "%_VAR_FEATURE_OS_EXCLUSION%=!_tmp!"
+		)
+	)
+	
+
+	REM #
+	set "_tmp="
+	if not "!_VAR_FEATURE_VER!"=="" (
+		if not "x!_trans_schema:#=!"=="x!_trans_schema!" (
+			set "_tmp=!_trans_schema:*#=!"
+			set "_tmp=!_tmp::="^&REM :!
+			set "_tmp=!_tmp:@="^&REM @!
+			set "_tmp=!_tmp:/="^&REM /!
+			set "_tmp=!_tmp:\="^&REM \!
+			set "%_VAR_FEATURE_VER%=!_tmp!"
+		)
+	)
+
+	REM @
+	set "_tmp="
+	if not "!_VAR_FEATURE_ARCH!"=="" (
+		if not "x!_trans_schema:@=!"=="x!_trans_schema!" (
+			set "_tmp=!_trans_schema:*@=!"
+			set "_tmp=!_tmp::="^&REM :!
+			set "_tmp=!_tmp:#="^&REM #!
+			set "_tmp=!_tmp:/="^&REM /!
+			set "_tmp=!_tmp:\="^&REM \!
+			set "%_VAR_FEATURE_ARCH%=!_tmp!"
+		)
+	)
+
 goto :eof
 
 

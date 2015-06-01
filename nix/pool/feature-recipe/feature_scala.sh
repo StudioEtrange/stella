@@ -5,7 +5,7 @@ _SCALA_INCLUDED_=1
 
 function feature_scala() {
 	FEAT_NAME=scala
-	FEAT_LIST_SCHEMA="2_11_6/binary"
+	FEAT_LIST_SCHEMA="2_11_6:binary"
 	FEAT_DEFAULT_VERSION=2_11_6
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"

@@ -6,7 +6,7 @@ _GETTEXT_INCLUDED_=1
 function feature_gettext() {
 
 	FEAT_NAME=gettext
-	FEAT_LIST_SCHEMA="0_19_4/source"
+	FEAT_LIST_SCHEMA="0_19_4:source"
 	FEAT_DEFAULT_VERSION=0_19_4
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"

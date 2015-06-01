@@ -5,7 +5,7 @@ goto :eof
 
 :feature_go
 	set "FEAT_NAME=go"
-	set "FEAT_LIST_SCHEMA=1_4_2@x64/binary 1_4_2@x86/binary"
+	set "FEAT_LIST_SCHEMA=1_4_2@x64:binary 1_4_2@x86:binary"
 	set "FEAT_DEFAULT_VERSION=1_4_2"
 	set "FEAT_DEFAULT_ARCH=x64"
 	set "FEAT_DEFAULT_FLAVOUR=binary"

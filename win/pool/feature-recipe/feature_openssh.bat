@@ -6,7 +6,7 @@ goto :eof
 
 :feature_openssh
 	set "FEAT_NAME=openssh"
-	set "FEAT_LIST_SCHEMA=6_6@x64/binary 6_6@x86/binary 6_8@x64/binary 6_8@x86/binary"
+	set "FEAT_LIST_SCHEMA=6_6@x64:binary 6_6@x86:binary 6_8@x64:binary 6_8@x86:binary"
 	set "FEAT_DEFAULT_VERSION=6_8"
 	set "FEAT_DEFAULT_ARCH=x64"
 	set "FEAT_DEFAULT_FLAVOUR=binary"

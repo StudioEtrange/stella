@@ -129,7 +129,7 @@ if "%DOMAIN%"=="virtual" goto :end
 	echo		app search path : print current system search path
 	echo	* feature management :
 	echo 		feature install required : install required features for Stella
-	echo 		feature install ^<feature schema^> : install a feature. schema = feature_name[#version][@arch][/binary^|source][:os_restriction]
+	echo 		feature install ^<feature schema^> : install a feature. schema = feature_name[#version][@arch][:binary^|source][/os_restriction][\os_exclusion]
 	echo 		feature remove ^<feature schema^> : remove a feature
 	echo 		feature list ^<all^|feature name^|active^>: list all available features OR available version of a feature OR current active features
 	echo	* virtual management :

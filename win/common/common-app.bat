@@ -25,23 +25,26 @@ goto :eof
 	set "_SCHEMA=%~2"
 	set "_app_feature_list="
 
-	call %STELLA_COMMON%\common-feature.bat :translate_schema "!_SCHEMA!" "_TR_FEATURE_NAME" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR"  "_TR_FEATURE_OS_RESTRICTION"
+	call %STELLA_COMMON%\common-feature.bat :translate_schema "!_SCHEMA!" "_TR_FEATURE_NAME" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR" "_TR_FEATURE_OS_RESTRICTION" "_TR_FEATURE_OS_EXCLUSION"
 
 	set _flag_add_app_feature=0
 	if exist "%_STELLA_APP_PROPERTIES_FILE%" (
 		if "!STELLA_APP_FEATURE_LIST!"=="" (
 			if "%_MODE%"=="ADD" set "_app_feature_list=!_app_feature_list! !_SCHEMA!"
 		) else (
+			REM scan if feature exist in app feature list
 			for %%F in (!STELLA_APP_FEATURE_LIST!) do (
 				
-				call %STELLA_COMMON%\common-feature.bat :translate_schema "%%F" "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR"  "TR_FEATURE_OS_RESTRICTION"
+				call %STELLA_COMMON%\common-feature.bat :translate_schema "%%F" "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR" "TR_FEATURE_OS_RESTRICTION" "TR_FEATURE_OS_EXCLUSION"
 	
-				if "!_TR_FEATURE_OS_RESTRICTION!"=="!TR_FEATURE_OS_RESTRICTION!" (
-					if "!_TR_FEATURE_VER!"=="!TR_FEATURE_VER!" (
-						if "!_TR_FEATURE_NAME!"=="!TR_FEATURE_NAME!" (
-							if "!_TR_FEATURE_ARCH!"=="!TR_FEATURE_ARCH!" (
-								if "!_TR_FEATURE_FLAVOUR!"=="!TR_FEATURE_FLAVOUR!" (
-									set _flag_add_app_feature=1
+				if "!_TR_FEATURE_OS_EXCLUSION!"=="!TR_FEATURE_OS_EXCLUSION!" (
+					if "!_TR_FEATURE_OS_RESTRICTION!"=="!TR_FEATURE_OS_RESTRICTION!" (
+						if "!_TR_FEATURE_VER!"=="!TR_FEATURE_VER!" (
+							if "!_TR_FEATURE_NAME!"=="!TR_FEATURE_NAME!" (
+								if "!_TR_FEATURE_ARCH!"=="!TR_FEATURE_ARCH!" (
+									if "!_TR_FEATURE_FLAVOUR!"=="!TR_FEATURE_FLAVOUR!" (
+										set _flag_add_app_feature=1
+									)
 								)
 							)
 						)
@@ -88,14 +91,14 @@ REM install a feature listed in app feature list. Look for matching version in a
 :get_feature
 	set "_SCHEMA=%~1"
 
-	call %STELLA_COMMON%\common-feature.bat :translate_schema "!_SCHEMA!" "_TR_FEATURE_NAME" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR"  "_TR_FEATURE_OS_RESTRICTION"
+	call %STELLA_COMMON%\common-feature.bat :translate_schema "!_SCHEMA!" "_TR_FEATURE_NAME" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR"  "_TR_FEATURE_OS_RESTRICTION" "_TR_FEATURE_OS_EXCLUSION"
 	
 	set _flag_get_feature=1
 
 	if not "!STELLA_APP_FEATURE_LIST!"=="" (
 		for %%F in (!STELLA_APP_FEATURE_LIST!) do (
 			
-			call %STELLA_COMMON%\common-feature.bat :translate_schema "%%F" "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR"  "TR_FEATURE_OS_RESTRICTION"
+			call %STELLA_COMMON%\common-feature.bat :translate_schema "%%F" "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR"  "TR_FEATURE_OS_RESTRICTION" "TR_FEATURE_OS_EXCLUSION"
 			
 			set _flag_get_feature=1
 			if not "%_TR_FEATURE_NAME%"=="%TR_FEATURE_NAME%" (

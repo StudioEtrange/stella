@@ -19,7 +19,7 @@ function usage() {
 	echo " L     app search path : print current system search path"
 	echo " o-- feature management :"
 	echo " L     feature install required : install required features for Stella"
-	echo " L     feature install <feature schema> : install a feature. schema = feature_name[#version][@arch][/binary|source][:os_restriction]"
+	echo " L     feature install <feature schema> : install a feature. schema = feature_name[#version][@arch][:binary|source][/os_restriction][\os_exclusion]"
 	echo " L     feature remove <feature schema> : remove a feature"
 	echo " L     feature list <all|feature name|active> : list all available feature OR available versions of a feature OR current active features"
 	echo " o-- virtual management (experimental) :"

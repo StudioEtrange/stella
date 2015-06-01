@@ -6,7 +6,7 @@ goto :eof
 
 :feature_rubydevkit
 	set "FEAT_NAME=rubydevkit"
-	set "FEAT_LIST_SCHEMA=4_7_2@x64/binary 4_7_2@x86/binary 4_5_2@x86/binary"
+	set "FEAT_LIST_SCHEMA=4_7_2@x64:binary 4_7_2@x86:binary 4_5_2@x86:binary"
 	set "FEAT_DEFAULT_VERSION=4_7_2"
 	set "FEAT_DEFAULT_ARCH=x86"
 	set "FEAT_DEFAULT_FLAVOUR=binary"

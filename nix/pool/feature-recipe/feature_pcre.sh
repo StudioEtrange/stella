@@ -6,7 +6,7 @@ _PCRE_INCLUDED_=1
 function feature_pcre() {
 
 	FEAT_NAME=pcre
-	FEAT_LIST_SCHEMA="8_36/source"
+	FEAT_LIST_SCHEMA="8_36:source"
 	FEAT_DEFAULT_VERSION=8_36
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"

@@ -6,7 +6,7 @@ goto :eof
 
 :feature_ninja
 	set "FEAT_NAME=ninja"
-	set "FEAT_LIST_SCHEMA=last_release/source"
+	set "FEAT_LIST_SCHEMA=last_release:source"
 	set "FEAT_DEFAULT_VERSION=last_release"
 	set FEAT_DEFAULT_ARCH=
 	set "FEAT_DEFAULT_FLAVOUR=source"

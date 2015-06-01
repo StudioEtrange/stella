@@ -6,7 +6,7 @@ goto :eof
 
 :feature_nikpeviewer
 	set "FEAT_NAME=nikpeviewer"
-	set "FEAT_LIST_SCHEMA=0_21@x86/binary"
+	set "FEAT_LIST_SCHEMA=0_21@x86:binary"
 	set "FEAT_DEFAULT_VERSION=0_21"
 	set "FEAT_DEFAULT_ARCH=x86"
 	set "FEAT_DEFAULT_FLAVOUR=binary"

@@ -5,7 +5,7 @@ _GO_INCLUDED_=1
 function feature_go() {
 
 	FEAT_NAME=go
-	FEAT_LIST_SCHEMA="1_4_2/source"
+	FEAT_LIST_SCHEMA="1_4_2:source"
 	FEAT_DEFAULT_VERSION=1_4_2
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"

@@ -4,7 +4,7 @@ _AUTOMAKE_INCLUDED_=1
 
 function feature_automake() {
 	FEAT_NAME=automake
-	FEAT_LIST_SCHEMA="1_14/source"
+	FEAT_LIST_SCHEMA="1_14:source"
 	FEAT_DEFAULT_VERSION=1_14
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"

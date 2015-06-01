@@ -5,7 +5,7 @@ _NGINX_INCLUDED_=1
 
 function feature_nginx() {
 	FEAT_NAME=nginx
-	FEAT_LIST_SCHEMA="1_7_11/source"
+	FEAT_LIST_SCHEMA="1_7_11:source"
 	FEAT_DEFAULT_VERSION=1_7_11
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"

@@ -5,7 +5,7 @@ goto :eof
 
 :feature_wget
 	set "FEAT_NAME=wget"
-	set "FEAT_LIST_SCHEMA=1_11_4/binary"
+	set "FEAT_LIST_SCHEMA=1_11_4:binary"
 	set "FEAT_DEFAULT_VERSION=1_11_4"
 	set "FEAT_DEFAULT_ARCH="
 	set "FEAT_DEFAULT_FLAVOUR=binary"

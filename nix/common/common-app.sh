@@ -240,7 +240,7 @@ function __app_feature() {
 
 	local _flag=0
 
-	__translate_schema $_SCHEMA "_TR_FEATURE_NAME" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR" "_TR_FEATURE_OS_RESTRICTION"
+	__translate_schema $_SCHEMA "_TR_FEATURE_NAME" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR" "_TR_FEATURE_OS_RESTRICTION" "_TR_FEATURE_OS_EXCLUSION"
 
 
 	if [ -f "$_STELLA_APP_PROPERTIES_FILE" ]; then
@@ -248,18 +248,19 @@ function __app_feature() {
 		if [ "$STELLA_APP_FEATURE_LIST" == "" ]; then
 			[ "$_MODE" == "ADD" ] && _APP_FEATURE_LIST="$_APP_FEATURE_LIST $_SCHEMA"
 		else
-
+			# scan if feature exist in app feature list
 			for f in $STELLA_APP_FEATURE_LIST; do
 
-				__translate_schema $f "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR" "TR_FEATURE_OS_RESTRICTION"
+				__translate_schema $f "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR" "TR_FEATURE_OS_RESTRICTION" "TR_FEATURE_OS_EXCLUSION"
 
-
-				if [ "$_TR_FEATURE_OS_RESTRICTION" == "$TR_FEATURE_OS_RESTRICTION" ]; then
-					if [ "$_TR_FEATURE_VER" == "$TR_FEATURE_VER" ]; then
-						if [ "$_TR_FEATURE_NAME" == "$TR_FEATURE_NAME" ]; then
-							if [ "$_TR_FEATURE_ARCH" == "$TR_FEATURE_ARCH" ]; then
-								if [ "$_TR_FEATURE_FLAVOUR" == "$TR_FEATURE_FLAVOUR" ]; then
-									_flag=1
+				if [ "$_TR_FEATURE_OS_EXCLUSION" == "$TR_FEATURE_OS_EXCLUSION" ]; then
+					if [ "$_TR_FEATURE_OS_RESTRICTION" == "$TR_FEATURE_OS_RESTRICTION" ]; then
+						if [ "$_TR_FEATURE_VER" == "$TR_FEATURE_VER" ]; then
+							if [ "$_TR_FEATURE_NAME" == "$TR_FEATURE_NAME" ]; then
+								if [ "$_TR_FEATURE_ARCH" == "$TR_FEATURE_ARCH" ]; then
+									if [ "$_TR_FEATURE_FLAVOUR" == "$TR_FEATURE_FLAVOUR" ]; then
+										_flag=1
+									fi
 								fi
 							fi
 						fi
@@ -302,13 +303,13 @@ function __get_feature() {
 
 	local _flag=0
 
-	__translate_schema $_SCHEMA "_TR_FEATURE_NAME" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR" "_TR_FEATURE_OS_RESTRICTION"
+	__translate_schema $_SCHEMA "_TR_FEATURE_NAME" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR" "_TR_FEATURE_OS_RESTRICTION" "_TR_FEATURE_OS_EXCLUSION"
 
 	if [ ! "$STELLA_APP_FEATURE_LIST" == "" ]; then
 		
 		for f in $STELLA_APP_FEATURE_LIST; do
 
-			__translate_schema $f "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR" "TR_FEATURE_OS_RESTRICTION"
+			__translate_schema $f "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR" "TR_FEATURE_OS_RESTRICTION" "TR_FEATURE_OS_EXCLUSION"
 
 			_flag=1
 			[ ! "$_TR_FEATURE_NAME" == "$TR_FEATURE_NAME" ] && _flag=0

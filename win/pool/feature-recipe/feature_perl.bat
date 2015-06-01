@@ -4,7 +4,7 @@ goto :eof
 
 :feature_perl
 	set "FEAT_NAME=perl"
-	set "FEAT_LIST_SCHEMA=5_18_2@x64/binary 5_18_2@x86/binary"
+	set "FEAT_LIST_SCHEMA=5_18_2@x64:binary 5_18_2@x86:binary"
 	set "FEAT_DEFAULT_VERSION=5_18_2"
 	set "FEAT_DEFAULT_ARCH=x64"
 	set "FEAT_DEFAULT_FLAVOUR=binary"

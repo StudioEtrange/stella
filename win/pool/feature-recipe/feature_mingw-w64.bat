@@ -10,11 +10,11 @@ REM build from sourcee
 REM https://ffmpeg.zeranoe.com/blog/?cat=4
 
 REM official website : http://mingw-w64.yaxm.org/doku.php/start
-REM download url from mingw-builds from : http://sourceforge.net/projects/mingw-w64/
+REM download url from mingw-builds from : http:/:sourceforge.net/projects/mingw-w64/
 
 :feature_mingw-w64
 	set "FEAT_NAME=mingw-w64"
-	set "FEAT_LIST_SCHEMA=mingw4_gcc4_9_2@x64/binary mingw4_gcc4_9_2@x86/binary"
+	set "FEAT_LIST_SCHEMA=mingw4_gcc4_9_2@x64:binary mingw4_gcc4_9_2@x86:binary"
 	set "FEAT_DEFAULT_VERSION=mingw4_gcc4_9_2"
 	set "FEAT_DEFAULT_ARCH=x64"
 	set "FEAT_DEFAULT_FLAVOUR=binary"

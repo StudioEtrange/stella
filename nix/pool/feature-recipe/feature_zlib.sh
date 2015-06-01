@@ -5,7 +5,7 @@ _ZLIB_INCLUDED_=1
 
 function feature_zlib() {
 	FEAT_NAME=zlib
-	FEAT_LIST_SCHEMA="1_2_8/source"
+	FEAT_LIST_SCHEMA="1_2_8:source"
 	FEAT_DEFAULT_VERSION=1_2_8
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"

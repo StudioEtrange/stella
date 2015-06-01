@@ -4,7 +4,7 @@ _GOCONFIGCLI_INCLUDED_=1
 
 function feature_goconfig-cli() {
 	FEAT_NAME="goconfig-cli"
-	FEAT_LIST_SCHEMA="snapshot/binary snapshot/source"
+	FEAT_LIST_SCHEMA="snapshot:binary snapshot:source"
 	FEAT_DEFAULT_VERSION="snapshot"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"

@@ -5,7 +5,7 @@ goto :eof
 
 :feature_docker-machine
 	set "FEAT_NAME=docker-machine"
-	set "FEAT_LIST_SCHEMA=0_2_0@x64/binary 0_2_0@x86/binary"
+	set "FEAT_LIST_SCHEMA=0_2_0@x64:binary 0_2_0@x86:binary"
 	set "FEAT_DEFAULT_VERSION=0_2_0"
 	set "FEAT_DEFAULT_ARCH=x64"
 	set "FEAT_DEFAULT_FLAVOUR=binary"

@@ -4,7 +4,7 @@ goto :eof
 
 :feature_cmake
 	set "FEAT_NAME=cmake"
-	set "FEAT_LIST_SCHEMA=3_1_2@x86/binary 2_8_12@x86/binary"
+	set "FEAT_LIST_SCHEMA=3_1_2@x86:binary 2_8_12@x86:binary"
 	set "FEAT_DEFAULT_VERSION=3_1_2"
 	set "FEAT_DEFAULT_ARCH=x86"
 	set "FEAT_DEFAULT_FLAVOUR=binary"
