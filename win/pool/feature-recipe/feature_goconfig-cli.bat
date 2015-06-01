@@ -14,7 +14,7 @@ goto :eof
 
 :feature_goconfig-cli_snapshot
 	set "FEAT_VERSION=snapshot"
-	set "FEAT_SOURCE_DEPENDENCIES="
+	set FEAT_SOURCE_DEPENDENCIES=
 	set FEAT_BINARY_DEPENDENCIES=
 
 	set FEAT_SOURCE_URL=

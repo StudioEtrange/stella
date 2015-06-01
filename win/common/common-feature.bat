@@ -163,6 +163,13 @@ goto :eof
 			set "FEAT_SCHEMA_SELECTED=!save_FEAT_SCHEMA_SELECTED_1!"
 			call :internal_feature_context !FEAT_SCHEMA_SELECTED!
 			set "TEST_FEATURE=!_t!"
+			if "!TEST_FEATURE!"=="1" (
+				if not "!FEAT_INSTALL_TEST!"=="" (
+					if not exist "!FEAT_INSTALL_TEST!" (
+						set "TEST_FEATURE=0"
+					)
+				)
+			)
 		) else (
 			if "!FEAT_INSTALL_TEST!"=="" (
 				set "TEST_FEATURE=1"

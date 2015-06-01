@@ -167,7 +167,11 @@ function __feature_inspect() {
 			__internal_feature_context $FEAT_SCHEMA_SELECTED
 			TEST_FEATURE=$_t
 			if [ "$TEST_FEATURE" == "1" ]; then
-				[ "$VERBOSE_MODE" == "0" ] || echo " ** BUNDLE Detected in $save_FEAT_INSTALL_ROOT"
+				if [ ! "$FEAT_INSTALL_TEST" == "" ]; then
+					if [ ! -f "$FEAT_INSTALL_TEST" ]; then
+						TEST_FEATURE=0
+					fi
+				fi
 			fi
 		else
 			if [ "$FEAT_INSTALL_TEST" == "" ]; then

@@ -403,7 +403,7 @@ goto :eof
 		echo ** !_text! resource : %NAME%
 	)
 
-	
+
 	if "!_opt_get!"=="ON" (
 		if "%FORCE%"=="1" (
 			if "!_opt_merge!"=="OFF" (
@@ -442,7 +442,7 @@ goto :eof
 
 
 		set _FLAG=1
-		if "%_TEST%"=="1" (
+		if "!_TEST!"=="1" (
 			if "!_opt_revert!"=="ON" (
 				echo REVERT Not supported with HTTP_ZIP protocol
 				set _FLAG=0
@@ -467,7 +467,7 @@ goto :eof
 			)
 		)
 
-		if "%_TEST%"=="2" (
+		if "!_TEST!"=="2" (
 			if "!_opt_strip!"=="ON" echo STRIP option not supported
 			if "!_opt_revert!"=="ON" (
 				echo REVERT Not supported with HTTP_ZIP protocol
@@ -490,7 +490,7 @@ goto :eof
 			)
 		)
 
-		if "%_TEST%"=="3" (
+		if "!_TEST!"=="3" (
 			if "!_opt_strip!"=="ON" echo STRIP option not supported
 			if "!_opt_merge!"=="ON" echo MERGE option not supported
 			if exist "%FINAL_DESTINATION%" (
@@ -519,8 +519,8 @@ goto :eof
 			if "!_opt_merge!"=="ON" echo 1 > "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
 		)
 		if "%PROTOCOL%"=="HTTP" (
-			:: HTTP protocol use always merge by default : because it never erase destination folder
-			:: the flag file will be setted only if we pass the option MERGE
+			REM HTTP protocol use always merge by default : because it never erase destination folder
+			REM the flag file will be setted only if we pass the option MERGE
 			if "!_opt_get!"=="ON" call :download "%URI%" "!_download_filename!" "%FINAL_DESTINATION%"
 			if "!_opt_merge!"=="ON" echo 1 > "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
 		)
@@ -637,7 +637,7 @@ goto :eof
 	)
 	
 	
-	if "%_opt_dest_erase%"=="ON" if exist "%UNZIP_DIR%" call :del_folder "%UNZIP_DIR%"
+	if "!_opt_dest_erase!"=="ON" if exist "%UNZIP_DIR%" call :del_folder "%UNZIP_DIR%"
 	if not exist "%UNZIP_DIR%" mkdir "%UNZIP_DIR%"
 
 	echo ** Uncompress %FILE_PATH% in %UNZIP_DIR%
@@ -701,21 +701,21 @@ goto :eof
 		
 		cd /D "%STELLA_APP_TEMP_DIR%\%_FILENAME%"
 
-		:: we strip folder only if there is one folder at the root
+		REM we strip folder only if there is one folder at the root
 		set "_only_one_folder_exist=NONE"
 		for /D %%i in (*) do (
 			if "!_only_one_folder_exist!"=="NONE" (
 				set "_only_one_folder_exist=TRUE"
 			) else (
-				:: there is more than one folder
+				REM there is more than one folder
 				set "_only_one_folder_exist=FALSE"
 			)
-			:: check if a file exist
+			REM check if a file exist
 			for %%j in (*) do set "_only_one_folder_exist=FALSE"
 		)
 		if "!_only_one_folder_exist!"=="TRUE" (
 			for /D %%i in (*) do (
-				::for /D %%i in (*) do xcopy /q /y /e /i %%i "%UNZIP_DIR%"
+				REM for /D %%i in (*) do xcopy /q /y /e /i %%i "%UNZIP_DIR%"
 				cd /D %%i
 				for /D %%j in (*) do move /y %%j "%UNZIP_DIR%\"
 				for %%j in (*) do move /y %%j "%UNZIP_DIR%\"

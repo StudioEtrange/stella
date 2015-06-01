@@ -17,21 +17,22 @@ goto :eof
 	set "FEAT_VERSION=1_4_2"
 	
 	REM need gcc
-	set FEAT_DEPENDENCIES=
+	set FEAT_SOURCE_DEPENDENCIES=
+	set FEAT_BINARY_DEPENDENCIES=
 
 	set "FEAT_BUNDLE_ITEM=go#1_4_2"
 
-	set FEAT_ENV_CALLBACK=feature_buildchain_setenv
-	set "FEAT_BUNDLE_CALLBACK=feature_buildchain_setenv feature_prepare_toolchain"
+	set FEAT_ENV_CALLBACK=feature_crosscompilechain_setenv
+	set "FEAT_BUNDLE_CALLBACK=feature_crosscompilechain_setenv feature_gocrosscompilechain_toolchain"
 
-	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT:\_GONATIVE_TOOLCHAIN_\go\pkg\windows_386\go\parser.a"
+	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\_GONATIVE_TOOLCHAIN_\go\pkg\darwin_amd64\go\parser.a"
 	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\_WORKSPACE_\bin;!FEAT_INSTALL_ROOT!\_GONATIVE_TOOLCHAIN_\go\bin"
 
 	set "BUILDCHAIN_GO_VERSION=1.4.2"
 goto :eof
 
 
-:feature_buildchain_setenv
+:feature_crosscompilechain_setenv
 	set "GOPATH=!FEAT_INSTALL_ROOT!\_WORKSPACE_"
 
 	echo ** GOLANG cross-compile environment
@@ -42,7 +43,7 @@ goto :eof
 
 goto :eof
 
-:feature_prepare_toolchain
+:feature_gocrosscompilechain_toolchain
 	set "PATH=!FEAT_SEARCH_PATH!;%PATH%"
 
 

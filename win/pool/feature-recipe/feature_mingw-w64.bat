@@ -25,8 +25,15 @@ goto :eof
 :feature_mingw-w64_mingw4_gcc4_9_2
 	set "FEAT_VERSION=mingw4_gcc4_9_2"
 
+	REM Dependencies
+	set FEAT_SOURCE_DEPENDENCIES=
+	set FEAT_BINARY_DEPENDENCIES=
+
 	REM dwarf is 32bit only, seh is 64bit only, sjlj works with 32 / 64
 	set MINGW_EXCEPTION=sjlj
+	if "!FEAT_ARCH!"=="x64" set MINGW_EXCEPTION=seh
+	if "!FEAT_ARCH!"=="x86" set MINGW_EXCEPTION=dwarf
+
 	REM win32 or posix
 	set MINGW_THREADS=win32
 	set MINGW_GCC_VERSION=4.9.2
@@ -56,10 +63,7 @@ goto :eof
 	set FEAT_SOURCE_CALLBACK=
 	set FEAT_BINARY_CALLBACK=
 	REM automatic callback each time feature is initialized, to init env var
-	set FEAT_ENV_CALLBACK=feature_mingw-w64_setenv
-
-	REM Dependencies (not yet implemented)
-	set FEAT_DEPENDENCIES=
+	set FEAT_ENV_CALLBACK=
 
 	REM File to test if feature is installed
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\gcc.exe"
@@ -69,9 +73,6 @@ goto :eof
 
 goto :eof
 
-:feature_mingw-w64_setenv
-	set "VAR=VALUE"
-goto :eof
 
 :feature_mingw-w64_install_binary
 	call %STELLA_COMMON%\common.bat :get_resource "!FEAT_NAME!" "!FEAT_BINARY_URL!" "!FEAT_BINARY_URL_PROTOCOL!" "!FEAT_INSTALL_ROOT!" "DEST_ERASE STRIP"
