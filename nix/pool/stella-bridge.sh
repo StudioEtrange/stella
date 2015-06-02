@@ -14,51 +14,6 @@ if [ "$STELLA_CURRENT_RUNNING_DIR" == "" ]; then
      STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "." )" && pwd )"
 fi
 
-function ___rel_to_abs_path() {
-	local _rel_path=$1
-	local _abs_root_path=$2
-
-
-	case $_rel_path in
-		/*)
-			# path is already absolute
-			echo "$_rel_path"
-			;;
-		*)
-			if [ "$_abs_root_path" == "" ]; then
-				# relative to current path
-				if [ -f "$_rel_path" ]; then
-					echo "$(cd "$_rel_path" && pwd )"
-				else
-					echo "$_rel_path"
-				fi
-			else
-				# relative to a given absolute path
-				if [ -f "$_abs_root_path/$_rel_path" ]; then
-					echo "$(cd "$_abs_root_path/$_rel_path" && pwd )"
-				else
-					echo "$_abs_root_path/$_rel_path"
-				fi
-			fi
-			;;
-	esac
-}
-
-function __get_stella() {
-	local _ver=$1
-	local _path=$2
-
-	if [ "$_ver" == "git" ]; then
-		git clone https://github.com/StudioEtrange/stella "$_path"
-	else
-		mkdir -p "$_path" 
-		curl -L -o "$_path"/$stella-nix-"$_ver".gz.sh $__STELLA_URL/dist/$_ver/stella-nix-"$_ver".tar.gz.run
-		chmod +x "$_path"/$stella-nix-"$_ver".gz.run
-		./"$_path"/$stella-nix-"$_ver".gz.run
-		rm -f "$_path"/$stella-nix-"$_ver".gz.run
-	fi
-}
-
 
 # Install stella in standalone ------------------
 function standalone() {
@@ -72,7 +27,6 @@ function standalone() {
 	fi
 
 	source "$_STELLA_INSTALL_PATH/conf.sh"
-	
 	__ask_install_system_requirements
 }
 
@@ -132,6 +86,53 @@ function bootstrap() {
 		__ask_init_app
 	fi
 
+}
+
+# VARIOUS FUNCTION ------------------
+
+function ___rel_to_abs_path() {
+	local _rel_path=$1
+	local _abs_root_path=$2
+
+
+	case $_rel_path in
+		/*)
+			# path is already absolute
+			echo "$_rel_path"
+			;;
+		*)
+			if [ "$_abs_root_path" == "" ]; then
+				# relative to current path
+				if [ -f "$_rel_path" ]; then
+					echo "$(cd "$_rel_path" && pwd )"
+				else
+					echo "$_rel_path"
+				fi
+			else
+				# relative to a given absolute path
+				if [ -f "$_abs_root_path/$_rel_path" ]; then
+					echo "$(cd "$_abs_root_path/$_rel_path" && pwd )"
+				else
+					echo "$_abs_root_path/$_rel_path"
+				fi
+			fi
+			;;
+	esac
+}
+
+function __get_stella() {
+	local _ver=$1
+	local _path=$2
+
+	if [ "$_ver" == "git" ]; then
+		git clone https://github.com/StudioEtrange/stella "$_path"
+	else
+		mkdir -p "$_path" 
+		curl -L -o "$_path"/$stella-nix-"$_ver".gz.sh $__STELLA_URL/dist/$_ver/stella-nix-"$_ver".tar.gz.run
+		chmod +x "$_path"/$stella-nix-"$_ver".gz.run
+		./"$_path"/$stella-nix-"$_ver".gz.run
+		rm -f "$_path"/$stella-nix-"$_ver".gz.run
+	fi
 }
 
 

@@ -83,9 +83,9 @@ Install some brew formulas
 
 ### Linked or Nested Applications
 
-* If a stella application is launched by another stella application, the second one will automaticly share the stella installation of the first one. [Nix only -- TODO stella-link.bat]
+* If a stella application is launched by another stella application, the second one will automaticly share the stella installation of the first one.
 
-* At launch, a stella application will look for a stella installation according to its stella-link file. But if at this location it found a stella application instead, it will look for a stella installation according to the last one. [Nix only -- TODO stella-link.bat]
+* At launch, a stella application will look for a stella installation according to its stella-link file. But if at this location it found a stella application instead, it will look for a stella installation according to the last one.
 
 * There is an API function link_app that could be use to link a stella application to a specific stella installation (by default to the current one)
 

@@ -1,33 +1,24 @@
+@setlocal enableExtensions enableDelayedExpansion
 @echo off
-if not "%~1"==":bootstrap" if not "%~1"==":standalone" (
-	@setlocal enableExtensions enableDelayedExpansion
-	set _STELLA_CURRENT_FILE_DIR=%~dp0
-	set _STELLA_CURRENT_FILE_DIR=%_STELLA_CURRENT_FILE_DIR:~0,-1%
-	if "%STELLA_CURRENT_RUNNING_DIR%"=="" set STELLA_CURRENT_RUNNING_DIR=%cd%
 
-	set "ACTION=%~1"
-	set "PROVIDED_PATH=%~2"
-) else (
-	set _STELLA_CURRENT_FILE_DIR=%~dp0
-	set _STELLA_CURRENT_FILE_DIR=%_STELLA_CURRENT_FILE_DIR:~0,-1%
-	if "%STELLA_CURRENT_RUNNING_DIR%"=="" set STELLA_CURRENT_RUNNING_DIR=%cd%
-
-	set "ACTION=%~1"
-	set "PROVIDED_PATH=%~2"
 	
-	call %*
-	goto :eof
-)
+set _STELLA_CURRENT_FILE_DIR=%~dp0
+set _STELLA_CURRENT_FILE_DIR=%_STELLA_CURRENT_FILE_DIR:~0,-1%
+if "%STELLA_CURRENT_RUNNING_DIR%"=="" set STELLA_CURRENT_RUNNING_DIR=%cd%
+
+set "ACTION=%~1"
+set "PROVIDED_PATH=%~2"
+
 
 
 REM Usage :
 
 REM stella-bridge.bat standalone [install path]
-REM	call stella-bridge.bat :standalone [install path]
+REM	call stella-bridge.bat standalone [install path]
 REM			--- path where to install STELLA the system. If not provided use .\stella by default
 
 REM stella-bridge.bat bootstrap [install path]
-REM	call stella-bridge.bat :bootstrap [install path]
+REM	call stella-bridge.bat bootstrap [install path]
 REM  		--- absolute or relative to app path where to install STELLA the system. If not provided, use setted value in link file (.-stella-link.bat) or in .\stella by default
 REM		 		after installing stella, it will set the project for use stella (if not already done)
 
@@ -53,15 +44,15 @@ goto :eof
 
 REM install stella in standalone------------------
 :standalone
-	if "%PROVIDED_PATH%"=="" (
-		set "PROVIDED_PATH=%STELLA_CURRENT_RUNNING_DIR%\stella"
+	if "!PROVIDED_PATH!"=="" (
+		set "PROVIDED_PATH=!STELLA_CURRENT_RUNNING_DIR!\stella"
 	)
 
-	call :___rel_to_abs_path "_stella_install_path" "%PROVIDED_PATH%" "%STELLA_CURRENT_RUNNING_DIR%"
+	call :___rel_to_abs_path "_STELLA_INSTALL_PATH" "!PROVIDED_PATH!" "!STELLA_CURRENT_RUNNING_DIR!"
 
-	call :get_stella "git" "!_stella_install_path!"
+	call :get_stella "git" "!_STELLA_INSTALL_PATH!"
 	
-	call "!_stella_install_path!\conf.bat"
+	call "!_STELLA_INSTALL_PATH!\conf.bat"
 	call %STELLA_COMMON%\common-app.bat :ask_install_system_requirements
 goto :eof
 
@@ -76,13 +67,13 @@ REM Bootstrap a stella project ------------------
 	set IS_STELLA_JUST_INSTALLED=FALSE
 
 	if "%PROVIDED_PATH%"=="" (
-		set "PROVIDED_PATH=%STELLA_CURRENT_RUNNING_DIR%\stella"
+		set "PROVIDED_PATH=!STELLA_CURRENT_RUNNING_DIR!\stella"
 	)
 
 	REM Check if PROJECT in current dir is linked to STELLA -------------------------
-	if exist "%STELLA_CURRENT_RUNNING_DIR%\stella-link.bat" (
+	if exist "!STELLA_CURRENT_RUNNING_DIR!\stella-link.bat" (
 		set IS_STELLA_LINK_FILE=TRUE
-		call %STELLA_CURRENT_RUNNING_DIR%\stella-link.bat :nothing
+		call "!STELLA_CURRENT_RUNNING_DIR!\stella-link.bat" nothing
 		if not "!STELLA_ROOT!"=="" (
 			if exist "!STELLA_ROOT!\stella.bat" (
 				set IS_STELLA_LINKED=TRUE
@@ -90,26 +81,26 @@ REM Bootstrap a stella project ------------------
 		)
 	)
 
-	if "%IS_STELLA_LINKED%"=="TRUE" (
+	if "!IS_STELLA_LINKED!"=="TRUE" (
 		echo ** This app/project is  linked to a STELLA installation located in !STELLA_ROOT!	
 		call "!STELLA_ROOT!\conf.bat"
 	) else (
 
 		REM Try to determine install path of STELLA
-		if "%IS_STELLA_LINK_FILE%"=="TRUE" (
+		if "!IS_STELLA_LINK_FILE!"=="TRUE" (
 			REM install STELLA into STELLA_ROOT defined in link file
-			call :___rel_to_abs_path "_stella_install_path" "!STELLA_ROOT!" "%STELLA_CURRENT_RUNNING_DIR%"
+			call :___rel_to_abs_path "_STELLA_INSTALL_PATH" "!STELLA_ROOT!" "!STELLA_CURRENT_RUNNING_DIR!"
 		) else (
 			REM install STELLA into default path
-			call :___rel_to_abs_path "_stella_install_path" "%PROVIDED_PATH%" "%STELLA_CURRENT_RUNNING_DIR%"
+			call :___rel_to_abs_path "_STELLA_INSTALL_PATH" "!PROVIDED_PATH!" "!STELLA_CURRENT_RUNNING_DIR!"
 		)
 
-		if not exist "!_stella_install_path!\stella.bat" (
-			call :get_stella "git" "!_stella_install_path!"
+		if not exist "!_STELLA_INSTALL_PATH!\stella.bat" (
+			call :get_stella "git" "!_STELLA_INSTALL_PATH!"
 			set IS_STELLA_JUST_INSTALLED=TRUE
 		)
 	
-		call "!_stella_install_path!\conf.bat"
+		call "!_STELLA_INSTALL_PATH!\conf.bat"
 	)	
 	
 	if "!IS_STELLA_JUST_INSTALLED!"=="TRUE" (
@@ -166,6 +157,4 @@ goto :eof
 goto :eof
 
 @echo on
-	if not "%~1"==":bootstrap" if not "%~1"==":standalone" (
-	@endlocal
-)
+@endlocal

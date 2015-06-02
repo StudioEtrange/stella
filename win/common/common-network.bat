@@ -49,24 +49,24 @@ REM ---------------- SHIM FUNCTIONS -----------------------------
 
 :proxy_override
 
-:: curl
+REM curl
 if "!STELLA_PROXY_USER!"=="" set "CURL=!CURL! -x !STELLA_PROXY_HOST!:!STELLA_PROXY_PORT!"
 if not "!STELLA_PROXY_USER!"=="" set "CURL=!CURL! -x !STELLA_PROXY_HOST!:!STELLA_PROXY_PORT! --proxy-user !STELLA_PROXY_USER!:!STELLA_PROXY_PASS!"
 
-:: wget
-:: use of http_proxy env var
+REM wget
+REM use of http_proxy env var
 
-:: hg
+REM hg
 set "HG=!HG! --config http_proxy.host=!STELLA_PROXY_HOST!:!STELLA_PROXY_PORT! --config http_proxy.user=!STELLA_PROXY_USER! --config http_proxy.passwd=!STELLA_PROXY_PASS!"
 
-:: git
-:: use of http_proxy env var
+REM git
+REM use of http_proxy env var
 
-:: mvn
+REM mvn
 if "!STELLA_PROXY_USER!"=="" set "MVN=!MVN! -DproxyActive=true  -DproxyId=!STELLA_PROXY_ACTIVE! -DproxyHost=!STELLA_PROXY_HOST! -DproxyPort=!STELLA_PROXY_PORT!"
 if not "!STELLA_PROXY_USER!"=="" set "MVN=!MVN! -DproxyActive=true  -DproxyId=!STELLA_PROXY_ACTIVE! -DproxyHost=!STELLA_PROXY_HOST! -DproxyPort=!STELLA_PROXY_PORT! -DproxyUsername=!STELLA_PROXY_USER! -DproxyPassword=!STELLA_PROXY_PASS!"
 
-:: npm
+REM npm
 REM	command npm --https-proxy="$HTTPS_PROXY" --http-proxy="$HTTP_PROXY" "$@"	
 	
 goto :eof

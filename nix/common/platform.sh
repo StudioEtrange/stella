@@ -46,7 +46,7 @@ function __get_os_from_distro() {
 			echo "windows"
 			;;
 		*)
-			echo "unknown"
+			echo "linuxgeneric"
 			;;
 	esac	
 }
@@ -162,9 +162,16 @@ function __override_platform_command() {
 # by OS
 function __stella_env_ubuntu() {
 	echo " ** INFO : Needs sudouser rights" 
-	sudo apt-get -y install mercurial unzip p7zip-full git wget
+	sudo apt-get -y install unzip p7zip-full git wget
 	sudo apt-get -y install bison util-linux build-essential gcc-multilib g++-multilib g++ pkg-config
 }
+
+function __stella_env_debian() {
+	echo " ** INFO : Needs sudouser rights" 
+	sudo apt-get -y install unzip p7zip-full git wget
+	sudo apt-get -y install bison util-linux build-essential gcc-multilib g++-multilib g++ pkg-config
+}
+
 
 function __stella_env_macos() {
 	
@@ -184,11 +191,6 @@ function __stella_env_macos() {
 	brew install p7zip
 }
 
-function __stella_env_debian() {
-	echo " ** INFO : Needs sudouser rights" 
-	sudo apt-get -y install mercurial unzip p7zip-full git wget
-	sudo apt-get -y install bison util-linux build-essential gcc-multilib g++-multilib g++ pkg-config
-}
 
 
 
@@ -208,7 +210,6 @@ function __stella_system_requirement_by_os() {
 			__stella_env_macos
 			;;
 		*)
-			echo "OS unknown"
 			;;
 	esac	
 }
@@ -224,10 +225,8 @@ function __stella_features_requirement_by_os() {
 		debian)
 			;;
 		macos)
-			# TODO feature getopt ? instead of macport ?
 			;;
 		*)
-			echo "OS unknown"
 			;;
 	esac	
 }

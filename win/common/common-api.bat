@@ -61,13 +61,13 @@ REM connect api function to another stella application context
 	set "saveSTELLA_APP_ROOT=!STELLA_APP_ROOT!"
 	set "STELLA_APP_ROOT="
     set "__STELLA_CONFIGURED__="
-    call %_approot%\stella-link.bat :include
+    call %_approot%\stella-link.bat include
 goto :eof
 
 REM reconnect api to current stella application
 :api_disconnect
 	set "STELLA_APP_ROOT="
     set "__STELLA_CONFIGURED__="
-    call %saveSTELLA_APP_ROOT%\stella-link.bat :include
+    call %saveSTELLA_APP_ROOT%\stella-link.bat include
 goto :eof
 
