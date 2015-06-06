@@ -37,7 +37,7 @@ STELLA_DIST_URL="$STELLA_URL/dist"
 
 # STELLA INCLUDE ---------------------------------------------
 
-source $STELLA_COMMON/libscreenfetch.sh
+source $STELLA_COMMON/screenfetch-dev
 source $STELLA_COMMON/platform.sh
 source $STELLA_COMMON/common.sh
 source $STELLA_COMMON/common-feature.sh
@@ -106,7 +106,7 @@ VIRTUAL_DEFAULT_HYPERVISOR=virtualbox
 
 # INTERNAL LIST---------------------------------------------
 __STELLA_DISTRIB_LIST="ubuntu64_13_10 debian64_7_5 centos64_6_5 archlinux boot2docker"
-__STELLA_FEATURE_LIST="goconfig-cli go-crosscompile-chain go-build-chain oracle-jdk smartmontools python zlib socat gnu-netcat maven spark sbt scala docker-compose docker-machine jq wget ninja cmake packer autotools-bundle perl gettext getopt ucl upx elasticsearch kibana nginx ngrok go pcre libtool m4 automake autoconf"
+__STELLA_FEATURE_LIST="pure-getopt goconfig-cli go-crosscompile-chain go-build-chain oracle-jdk smartmontools python zlib socat gnu-netcat maven spark sbt scala docker-compose docker-machine jq wget ninja cmake packer autotools-bundle perl gettext getopt ucl upx elasticsearch kibana nginx ngrok go pcre libtool m4 automake autoconf"
 
 # API ---------------------------------------------
 STELLA_API_COMMON_PUBLIC="daemonize rel_to_abs_path is_abs argparse get_filename_from_string \

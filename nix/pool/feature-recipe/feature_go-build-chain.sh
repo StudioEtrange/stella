@@ -33,8 +33,11 @@ function feature_go-build-chain_1_4_2() {
 
 function feature_go_buildchain_setenv() {
 	GOPATH="$FEAT_INSTALL_ROOT/_WORKSPACE_"
+	GOROOT="$FEAT_INSTALL_ROOT/go"
 
 	echo " ** GOLANG build environment"
+	echo " GOROOT = $GOROOT"
+	echo " GOPATH = $GOPATH"
 	echo "   ** Restore your dependencies - from folder containing Godeps :"
 	echo "      godep restore"
 }

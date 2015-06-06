@@ -14,7 +14,7 @@ goto :eof
 :feature_docker-swarm_1_6_0
 	set "FEAT_VERSION=1_6_0"
 
-	set FEAT_SOURCE_DEPENDENCIES=
+	set FEAT_SOURCE_DEPENDENCIES="go-build-chain#1_4_2"
 	set FEAT_BINARY_DEPENDENCIES=
 
 	set "FEAT_SOURCE_URL=https://github.com/docker/swarm/archive/v0.2.0.zip"

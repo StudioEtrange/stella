@@ -35,8 +35,11 @@ goto :eof
 
 :feature_go_buildchain_setenv
 	set "GOPATH=!FEAT_INSTALL_ROOT!\_WORKSPACE_"
-
+	set "GOROOT=!FEAT_INSTALL_ROOT!\go"
+	
 	echo ** GOLANG build environment
+	echo GOROOT = !GOROOT!
+	echo GOPATH = !GOPATH!
 	echo   ** Restore your dependencies - from folder containing Godeps :
 	echo      godep restore
 goto :eof

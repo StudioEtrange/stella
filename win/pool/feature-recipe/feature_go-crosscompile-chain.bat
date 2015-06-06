@@ -36,6 +36,8 @@ goto :eof
 	set "GOPATH=!FEAT_INSTALL_ROOT!\_WORKSPACE_"
 
 	echo ** GOLANG cross-compile environment
+	echo GOROOT = !GOROOT!
+	echo GOPATH = !GOPATH!
 	echo    ** Restore your dependencies - from folder containing Godeps :
 	echo       godep restore
 	echo    ** Cross-compile your project from source

@@ -148,7 +148,7 @@ function __override_platform_command() {
 	fi
 
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-		GETOPT_CMD="$(brew --prefix)/opt/gnu-getopt/bin/getopt"
+		GETOPT_CMD=PURE_BASH
 	else
 		GETOPT_CMD=getopt
 	fi
@@ -157,85 +157,119 @@ function __override_platform_command() {
 }
 
 
-# INIT STELLA -------------
-
-# by OS
-function __stella_env_ubuntu() {
-	echo " ** INFO : Needs sudouser rights" 
-	sudo apt-get -y install unzip p7zip-full git wget
-	sudo apt-get -y install bison util-linux build-essential gcc-multilib g++-multilib g++ pkg-config
-}
-
-function __stella_env_debian() {
-	echo " ** INFO : Needs sudouser rights" 
-	sudo apt-get -y install unzip p7zip-full git wget
-	sudo apt-get -y install bison util-linux build-essential gcc-multilib g++-multilib g++ pkg-config
-}
-
-
-function __stella_env_macos() {
-	
-	echo " ** Check Homebrew"
-	if which brew 2> /dev/null; then
-    	local _brewLocation=`which brew`
-    	local _appLocation=`brew --prefix`
-    	echo "Homebrew is installed in $_brewLocation"
-    	echo "Homebrew apps are run from $_appLocation"
-	else
-   		echo "** Can't find Homebrew, so install it"
-   		ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-	fi
-
-	echo " ** Install system requirements with brew"
-	brew install gnu-getopt
-	brew install p7zip
-}
-
-
-
-
-
-function __stella_system_requirement_by_os() {
-	local _os=$1
-
-	echo "** Install Stella system requirements for $_os"
-	case $_os in
-		ubuntu)
-			__stella_env_ubuntu
-			;;
-		debian)
-			__stella_env_debian
-			;;
-		macos)
-			__stella_env_macos
-			;;
-		*)
-			;;
-	esac	
-}
-
-
-
-function __stella_features_requirement_by_os() {
-	local _os=$1
-	echo "** Install required features for $_os"
-	case $_os in
-		ubuntu)
-			;;
-		debian)
-			;;
-		macos)
-			;;
-		*)
-			;;
-	esac	
-}
-
+# REQUIREMENTS STELLA -------------
 
 function __stella_requirement() {
-	__stella_system_requirement_by_os $STELLA_CURRENT_OS
-	__stella_features_requirement_by_os $STELLA_CURRENT_OS
+	__install_minimal_system_requirement
+	__install_minimal_feature_requirement
 }
+
+function __install_minimal_system_requirement() {
+	case $STELLA_CURRENT_OS in
+		*);;
+	esac
+}
+
+function __install_minimal_feature_requirement() {
+	case $STELLA_CURRENT_OS in
+		*);;
+	esac
+}
+
+
+function __require() {
+	local _file=$1
+	local _OPT=$2
+
+	# OPTIONS
+	# MANDATORY : will stop execution if requirement is not found
+	# OPTIONAL : will not exit if requirement is not found
+
+	_opt_mandatory=OFF
+	_opt_optional=ON
+	for o in $_OPT; do
+		[ "$o" == "MANDATORY" ] && _opt_mandatory=ON
+		[ "$o" == "OPTIONAL" ] && _opt_optional=ON
+	done
+
+	if [[ ! -n `which $_file 2> /dev/null` ]]; then
+		echo "****** WARN $_file is missing ******"
+		if [ "$_opt_mandatory" == "ON" ]; then
+			echo "****** ERROR Please install $_file and re-launch your app"
+			exit 1
+		fi
+	fi
+}
+
+
+function __install_system_requirement() {
+	local _id_list=$1
+
+	case $STELLA_CURRENT_OS in
+		ubuntu|debian)
+				__install_system_requirement_deb "$_id_list"
+			;;
+		macos)
+				__install_system_requirement_macos "$_id_list"
+			;;
+	esac
+}
+
+function __install_system_requirement_deb() {
+	local _id_list=$1
+
+	for _id in $_id_list; do
+		case $_id in
+			git) sudo apt-get -y install git
+				;;
+			7z) sudo apt-get -y install p7zip-full
+				;;
+			unzip)
+				sudo apt-get -y install unzip
+				;;
+			wget) sudo apt-get -y install wget
+				;;
+			build)
+				sudo apt-get -y install bison util-linux build-essential gcc-multilib g++-multilib g++ pkg-config
+				;;
+		esac
+	done
+}
+
+function __install_system_requirement_macos() {
+	local _id_list=$1
+
+	for _id in $_id_list; do
+		case $_id in
+			7z) brew install p7zip
+				;;
+			brew)
+				echo " ** Check Homebrew"
+				if which brew 2> /dev/null; then
+			    	local _brewLocation=`which brew`
+			    	local _appLocation=`brew --prefix`
+			    	echo "Homebrew is installed in $_brewLocation"
+			    	echo "Homebrew apps are run from $_appLocation"
+				else
+			   		echo "** Can't find Homebrew, so install it"
+			   		ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+				fi
+			;;
+		esac
+	done
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 #TODO
 # from https://github.com/darkoperator/MSF-Installer/blob/master/msf_install.sh

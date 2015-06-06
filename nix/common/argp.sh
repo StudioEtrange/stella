@@ -1,6 +1,7 @@
 #!/usr/bin/env bash 
 # -*- shell-script -*-
 
+
 # Copyright (C) 2008-2013 Bob Hepple
 #               2014 StudioEtrange
 #
@@ -228,6 +229,7 @@ If POSIXLY_CORRECT is set, then option parsing will end on the first
 non-option argument (eg like ssh(1)).
 
 GETOPT_CMD is an env variable we can choose a getopt command instead of default getopt
+if GETOPT_CMD equal PURE_BASH, then a pure bash getopt implementation from Aron Griffis is used (https://github.com/agriffis/pure-getopt)
 
 
 ###############################################################################
@@ -1661,6 +1663,13 @@ try_c_version() {
         exec argp "$@"
     }
 }
+
+
+if [[ "$GETOPT_CMD" == "PURE_BASH" ]]; then
+  # include pure-getopt from Aron Griffis https://github.com/agriffis/pure-getopt
+  source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/getopt.bash"
+  GETOPT_CMD=getopt
+fi
 
 try_c_version "$@"
 check_bash

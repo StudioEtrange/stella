@@ -31,7 +31,7 @@ function usage() {
 	echo " o-- various :"
 	echo " L     stella api list : list public functions of stella api"
 	echo " L     stella bootstrap env : launch a shell with all stella env var setted"
-	echo " L     stella install dep : install all features and systems requirements for the current OS ($STELLA_CURRENT_OS)"
+	echo " L     stella install dep : install all features and systems requirements if any, for the current OS ($STELLA_CURRENT_OS)"
 	echo " o-- network management :"
 	echo " L     proxy on <name> : active proxy"
 	echo " L     proxy off now : disable proxy"

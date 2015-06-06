@@ -576,8 +576,10 @@ function __uncompress() {
 	echo " ** Uncompress $FILE_PATH in $UNZIP_DIR"
 
 	cd "$UNZIP_DIR"
+
 	case "$FILE_PATH" in
 		*.zip)
+			__require unzip
 			[ "$_opt_strip" == "OFF" ] && unzip -a -o "$FILE_PATH"
 			[ "$_opt_strip" == "ON" ] && __unzip-strip "$FILE_PATH" "$UNZIP_DIR"
 			;;
@@ -590,6 +592,7 @@ function __uncompress() {
 			[ "$_opt_strip" == "ON" ] && tar xvf "$FILE_PATH" --strip-components=1
 			;;
 		*.7z)
+			__require 7z
 			[ "$_opt_strip" == "OFF" ] && 7z x "$FILE_PATH" -y -o"$UNZIP_DIR"
 			[ "$_opt_strip" == "ON" ] && __sevenzip-strip "$FILE_PATH" "$UNZIP_DIR"
 			;;

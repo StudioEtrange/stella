@@ -1,9 +1,22 @@
 @echo off
 call %*
 goto :eof
-::--------------------------------------------------------
-::-- Functions
-::---------------
+
+
+REM DISTRIB/OS/PLATFORM INFO ---------------------------
+
+REM NOTE :
+REM classification :
+REM 	platform <--- os <---- distrib
+REM 		example :
+REM			linux <----- ubuntu <---- ubuntu 14.04
+REM			linux <----- centos <---- centos 6
+REM			windows <--- windows <---- windows 7
+REM suffix platform :
+REM 	each platform have a suffix
+REM		example :
+REM			windows <---> win
+REM			linux <---> linux
 
 :get_os_from_distro
 	set _return_var=%~1
@@ -151,14 +164,39 @@ goto :eof
 goto :eof
 
 
-:: INIT OS PACKAGES --------------
+REM REQUIREMENTS STELLA -------------
+
+:require
+	set _file=%~1
+	set "__OPT=%~2"
+	
+	REM OPTIONS
+	REM MANDATORY : will stop execution if requirement is not found
+	REM OPTIONAL : will not exit if requirement is not found
+	
+	set _opt_mandatory=OFF
+	set _opt_optional=ON
+	for %%O in (%__OPT%) do (
+		if "%%O"=="MANDATORY" set _opt_mandatory=ON
+		if "%%O"=="OPTIONAL" set _opt_optional=ON
+	)
+
+	where /q "%_file%"
+
+	if not "%ERRORLEVEL%"=="0" (
+		echo ****** WARN %_file% is missing ******
+		if "!_opt_mandatory!"=="ON" (
+			echo ****** ERROR Please install %_file% and re-launch your app
+			call %STELLA_COMMON%\common.bat :fork "!STELLA_APP_NAME!" "!STELLA_CURRENT_RUNNING_DIR!" "echo ****** ERROR Please install %_file% and re-launch your app" "DETACH"
+		)
+	)
+goto:eof
 
 :__stella_system_requirement_by_os
 	set _os=%~1
 	
 	echo ** Install Stella system requirements for %_os%
 goto :eof
-
 
 
 :__stella_features_requirement_by_os
