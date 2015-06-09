@@ -352,10 +352,13 @@ goto :eof
 	)
 	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_stella_root" "%_stella_root%" "%_approot%"
 
+	call %STELLA_COMMON%\common.bat :get_stella_version "_s_ver" "LONG"
+	
 	> "!_approot!\stella-link.bat.temp" ECHO(@if not "%%~1"=="include" if not "%%~1"=="chaining" if not "%%~1"=="nothing" setlocal enableExtensions enableDelayedExpansion
 	>> "!_approot!\stella-link.bat.temp" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%~dp0
 	>> "!_approot!\stella-link.bat.temp" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%_STELLA_LINK_CURRENT_FILE_DIR:~0,-1%%
 	>> "!_approot!\stella-link.bat.temp" ECHO(@set STELLA_ROOT=%%_STELLA_LINK_CURRENT_FILE_DIR%%\!_stella_root!
+	>> "!_approot!\stella-link.bat.temp" ECHO(@set STELLA_DEP_VERSION=!_s_ver!
 
 	copy /b "!_approot!\stella-link.bat.temp"+"%STELLA_TEMPLATE%\sample-stella-link.bat" "!_approot!\stella-link.bat"
 
@@ -397,10 +400,13 @@ goto :eof
 	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_cachedir" "!_cachedir!" "!_approot!"
 	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_stella_root" "%STELLA_ROOT%" "!_approot!"
 
+	call %STELLA_COMMON%\common.bat :get_stella_version "_s_ver" "LONG"
+
 	> "!_approot!\stella-link.bat.temp" ECHO(@if not "%%~1"=="include" if not "%%~1"=="chaining" if not "%%~1"=="nothing" setlocal enableExtensions enableDelayedExpansion
 	>> "!_approot!\stella-link.bat.temp" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%~dp0
 	>> "!_approot!\stella-link.bat.temp" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%_STELLA_LINK_CURRENT_FILE_DIR:~0,-1%%
 	>> "!_approot!\stella-link.bat.temp" ECHO(@set STELLA_ROOT=%%_STELLA_LINK_CURRENT_FILE_DIR%%\!_stella_root!
+	>> "!_approot!\stella-link.bat.temp" ECHO(@set STELLA_DEP_VERSION=!_s_ver!
 
 	copy /b "!_approot!\stella-link.bat.temp"+"%STELLA_TEMPLATE%\sample-stella-link.bat" "!_approot!\stella-link.bat"
 
@@ -582,13 +588,7 @@ goto :eof
 
 
 
-:ask_install_requirements
-	set /p input="Do you wish to auto-install requirements for stella ? [Y/n] "
-	if not "%input%"=="n" (
-		call %STELLA_COMMON%\platform.bat :__stella_requirement
-		@echo off
-	)
-goto :eof
+
 
 :ask_init_app
 	set /p input="Do you wish to init your stella app (create properties files, link app to stella...) ? [Y/n] "

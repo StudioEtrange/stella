@@ -166,6 +166,31 @@ goto :eof
 
 REM REQUIREMENTS STELLA -------------
 
+:ask_install_requirements
+	set /p input="Do you wish to auto-install requirements for stella ? [Y/n] "
+	if not "%input%"=="n" (
+		call :__stella_requirement
+		@echo off
+	)
+goto :eof
+
+:__stella_requirement
+	call :__install_minimal_system_requirement
+	call :__install_minimal_feature_requirement
+goto :eof
+
+:__install_minimal_system_requirement
+	
+goto :eof
+
+:__install_minimal_feature_requirement
+	call %STELLA_COMMON%\common-feature.bat :feature_install unzip#5_51_1 "HIDDEN INTERNAL"
+	call %STELLA_COMMON%\common-feature.bat :feature_install wget#1_11_4 "HIDDEN INTERNAL"
+	call %STELLA_COMMON%\common-feature.bat :feature_install sevenzip#9_38 "HIDDEN INTERNAL"
+	REM call %STELLA_COMMON%\common-feature.bat :feature_install goconfig-cli#snapshot "HIDDEN INTERNAL"
+goto :eof
+
+
 :require
 	set _file=%~1
 	set "__OPT=%~2"
@@ -192,25 +217,3 @@ REM REQUIREMENTS STELLA -------------
 	)
 goto:eof
 
-:__stella_system_requirement_by_os
-	set _os=%~1
-	
-	echo ** Install Stella system requirements for %_os%
-goto :eof
-
-
-:__stella_features_requirement_by_os
-	set _os=%~1
-
-	echo ** Install required features for %_os%
-	
-	call %STELLA_COMMON%\common-feature.bat :feature_install unzip#5_51_1 "HIDDEN INTERNAL"
-	call %STELLA_COMMON%\common-feature.bat :feature_install wget#1_11_4 "HIDDEN INTERNAL"
-	call %STELLA_COMMON%\common-feature.bat :feature_install sevenzip#9_38 "HIDDEN INTERNAL"
-	REM call %STELLA_COMMON%\common-feature.bat :feature_install goconfig-cli#snapshot "HIDDEN INTERNAL"
-goto :eof
-
-:__stella_requirement
-	call :__stella_system_requirement_by_os %STELLA_CURRENT_OS%
-	call :__stella_features_requirement_by_os %STELLA_CURRENT_OS%
-goto  :eof

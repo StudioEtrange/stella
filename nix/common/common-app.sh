@@ -47,10 +47,13 @@ function __link_app() {
 
 	[ "$_stella_root" == "" ] && _stella_root=$STELLA_ROOT
 	_stella_root=$(__abs_to_rel_path "$_stella_root" "$_approot")
+	
+	_s_ver=$(__get_stella_version "LONG")
 
 	echo "#!/bin/bash" >$_approot/stella-link.sh.temp
 	echo "_STELLA_LINK_CURRENT_FILE_DIR=\"\$( cd \"\$( dirname \"\${BASH_SOURCE[0]}\" )\" && pwd )\"" >>$_approot/stella-link.sh.temp
 	echo "export STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$_approot/stella-link.sh.temp
+	echo "STELLA_DEP_VERSION=$_s_ver" >>$_approot/stella-link.sh.temp
 
 	cat $_approot/stella-link.sh.temp $STELLA_TEMPLATE/sample-stella-link.sh > $_approot/stella-link.sh
 	chmod +x $_approot/stella-link.sh
@@ -84,11 +87,17 @@ function __init_app() {
 	_workroot=$(__abs_to_rel_path "$_workroot" "$_approot")
 	_cachedir=$(__abs_to_rel_path "$_cachedir" "$_approot")
 	_stella_root=$(__abs_to_rel_path "$STELLA_ROOT" "$_approot")
+	
+	_s_ver=$(__get_stella_version "LONG")
 
 	echo "#!/bin/bash" >$_approot/stella-link.sh.temp
 	echo "_STELLA_LINK_CURRENT_FILE_DIR=\"\$( cd \"\$( dirname \"\${BASH_SOURCE[0]}\" )\" && pwd )\"" >>$_approot/stella-link.sh.temp
 	echo "export STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$_approot/stella-link.sh.temp
+	echo "STELLA_DEP_VERSION=$_s_ver" >>$_approot/stella-link.sh.temp
 	
+
+
+
 	cat $_approot/stella-link.sh.temp $STELLA_TEMPLATE/sample-stella-link.sh > $_approot/stella-link.sh
 	chmod +x $_approot/stella-link.sh
 	rm -f $_approot/stella-link.sh.temp
@@ -560,17 +569,6 @@ function __setup_env() {
 
 
 
-function __ask_install_requirements() {
-	echo "Do you wish to auto-install requirements for stella (may ask for sudo password)?"
-	select yn in "Yes" "No"; do
-	    case $yn in
-	        Yes )
-				__stella_requirement
-				break;;
-	        No ) break;;
-	    esac
-	done
-}
 
 function __ask_init_app() {
 		echo "Do you wish to init your stella app (create properties files, link app to stella...) ?"

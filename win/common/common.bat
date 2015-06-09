@@ -951,12 +951,17 @@ goto :eof
 
 	if "%_OPT%"=="" set _OPT=SHORT
 
-	if exist "%STELLA_ROOT%\VERSION" (
-		for /f %%_v in ("%STELLA_ROOT%\VERSION") do (
-			set "%_result_var_git_project_version%=!_v!"
-		)
+	if exist "%STELLA_ROOT%\.git" (
+		call :git_project_version "_git_version" "%STELLA_ROOT%" "%_OPT%"
+		set "%_result_var_get_stella_version%=git-!_git_version!"
 	) else (
-		call :git_project_version "%_result_var_get_stella_version%" "%STELLA_ROOT%" "%_OPT%"
+		if exist "%STELLA_ROOT%\VERSION" (
+			for /f %%_v in ("%STELLA_ROOT%\VERSION") do (
+				set "%_result_var_git_project_version%=!_v!"
+			)
+		) else (
+			set "%_result_var_git_project_version%=unknown"
+		)
 	)
 goto :eof
 

@@ -53,7 +53,7 @@ REM install stella in standalone------------------
 	call :get_stella "git" "!_STELLA_INSTALL_PATH!"
 	
 	call "!_STELLA_INSTALL_PATH!\conf.bat"
-	call %STELLA_COMMON%\common-app.bat :ask_install_system_requirements
+	call %STELLA_COMMON%\common-app.bat :ask_install_requirements
 goto :eof
 
 
@@ -96,7 +96,11 @@ REM Bootstrap a stella project ------------------
 		)
 
 		if not exist "!_STELLA_INSTALL_PATH!\stella.bat" (
-			call :get_stella "git" "!_STELLA_INSTALL_PATH!"
+			if not "!STELLA_DEP_VERSION!"=="" (
+				call :get_stella "!STELLA_DEP_VERSION!" "!_STELLA_INSTALL_PATH!"
+			) else (
+				call :get_stella "git" "!_STELLA_INSTALL_PATH!"
+			)
 			set IS_STELLA_JUST_INSTALLED=TRUE
 		)
 	

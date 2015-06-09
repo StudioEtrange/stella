@@ -159,6 +159,19 @@ function __override_platform_command() {
 
 # REQUIREMENTS STELLA -------------
 
+function __ask_install_requirements() {
+	echo "Do you wish to auto-install requirements for stella (may ask for sudo password)?"
+	select yn in "Yes" "No"; do
+	    case $yn in
+	        Yes )
+				__stella_requirement
+				break;;
+	        No ) break;;
+	    esac
+	done
+}
+
+
 function __stella_requirement() {
 	__install_minimal_system_requirement
 	__install_minimal_feature_requirement

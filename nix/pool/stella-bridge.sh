@@ -27,7 +27,7 @@ function standalone() {
 	fi
 
 	source "$_STELLA_INSTALL_PATH/conf.sh"
-	__ask_install_system_requirements
+	__ask_install_requirements
 }
 
 
@@ -69,7 +69,11 @@ function bootstrap() {
 		fi
 
 		if [ ! -f "$_STELLA_INSTALL_PATH/stella.sh" ]; then
-			__get_stella "git" "$_STELLA_INSTALL_PATH"
+			if [ ! "$STELLA_DEP_VERSION" == "" ]; then 
+				__get_stella "$STELLA_DEP_VERSION" "$_STELLA_INSTALL_PATH"
+			else
+				__get_stella "git" "$_STELLA_INSTALL_PATH"
+			fi
 			IS_STELLA_JUST_INSTALLED="TRUE"
 
 		fi

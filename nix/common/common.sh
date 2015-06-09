@@ -50,10 +50,12 @@ function __get_stella_version() {
 		OPT=SHORT
 	fi
 
-	if [ -f "$STELLA_ROOT/VERSION" ]; then
+	if [ -f "$STELLA_ROOT/.git" ]; then
+		echo $(__git_project_version "$STELLA_ROOT" "$OPT")
+	elif [ -f "$STELLA_ROOT/VERSION" ]; then
 		cat "$STELLA_ROOT/VERSION"
 	else
-		echo $(__git_project_version "$STELLA_ROOT" "$OPT")
+		echo "unknown"
 	fi
 }
 
