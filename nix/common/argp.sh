@@ -30,6 +30,9 @@
 #          * check validity of parameter (foo.sh parameter -option)
 #          * remove generation of man page
 #          * lot of tweaks
+#          * getopt command is now a parameter, 
+#                and could be a pure bash implementation  if we choose "PURE_BASH"
+#                from Aron Griffis https://github.com/agriffis/pure-getopt
 # TODO : refactoring of read_xml
 ARGP_argp_sh_usage() {
     cat <<"EOF"

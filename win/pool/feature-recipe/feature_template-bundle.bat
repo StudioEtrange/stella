@@ -41,7 +41,7 @@ goto :eof
 	set FEAT_BUNDLE_CALLBACK=
 
 		
-	REM File to test if feature is installed
+	REM List of files to test if feature is installed
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\template-bundle.exe"
 
 	REM PATH to add to system PATH

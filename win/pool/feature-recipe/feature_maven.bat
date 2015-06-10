@@ -20,6 +20,7 @@ goto :eof
 
 :feature_maven_3_3_3
 	set "FEAT_VERSION=3_3_3"
+	
 	set FEAT_SOURCE_DEPENDENCIES=
 	set FEAT_BINARY_DEPENDENCIES=
 

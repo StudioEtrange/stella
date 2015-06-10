@@ -48,11 +48,14 @@ function __link_app() {
 	[ "$_stella_root" == "" ] && _stella_root=$STELLA_ROOT
 	_stella_root=$(__abs_to_rel_path "$_stella_root" "$_approot")
 	
-	_s_ver=$(__get_stella_version "LONG")
+	_s_ver=$(__get_stella_version "LONG" "$_stella_root")
+	_s_flavour="OFFICIAL"
+	[ -d "$_stella_root/.git" ] && _s_flavour="GIT"
 
 	echo "#!/bin/bash" >$_approot/stella-link.sh.temp
 	echo "_STELLA_LINK_CURRENT_FILE_DIR=\"\$( cd \"\$( dirname \"\${BASH_SOURCE[0]}\" )\" && pwd )\"" >>$_approot/stella-link.sh.temp
 	echo "export STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$_approot/stella-link.sh.temp
+	echo "STELLA_DEP_FLAVOUR=$_s_flavour" >>$_approot/stella-link.sh.temp
 	echo "STELLA_DEP_VERSION=$_s_ver" >>$_approot/stella-link.sh.temp
 
 	cat $_approot/stella-link.sh.temp $STELLA_TEMPLATE/sample-stella-link.sh > $_approot/stella-link.sh
@@ -89,10 +92,13 @@ function __init_app() {
 	_stella_root=$(__abs_to_rel_path "$STELLA_ROOT" "$_approot")
 	
 	_s_ver=$(__get_stella_version "LONG")
+	_s_flavour="OFFICIAL"
+	[ -d "$_stella_root/.git" ] && _s_flavour="GIT"
 
 	echo "#!/bin/bash" >$_approot/stella-link.sh.temp
 	echo "_STELLA_LINK_CURRENT_FILE_DIR=\"\$( cd \"\$( dirname \"\${BASH_SOURCE[0]}\" )\" && pwd )\"" >>$_approot/stella-link.sh.temp
 	echo "export STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$_approot/stella-link.sh.temp
+	echo "STELLA_DEP_FLAVOUR=$_s_flavour" >>$_approot/stella-link.sh.temp
 	echo "STELLA_DEP_VERSION=$_s_ver" >>$_approot/stella-link.sh.temp
 	
 

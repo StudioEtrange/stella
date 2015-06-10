@@ -12,7 +12,8 @@ function feature_upx() {
 function feature_upx_3_91() {
 	FEAT_VERSION=3_91
 	# TODO : mandatory dep on ucl
-	FEAT_DEPENDENCIES=
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://upx.sourceforge.net/download/upx-3.91-src.tar.bz2
 	FEAT_SOURCE_URL_FILENAME=upx-3.91-src.tar.bz2

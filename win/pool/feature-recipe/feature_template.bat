@@ -49,7 +49,7 @@ goto :eof
 
 	
 
-	REM File to test if feature is installed
+	REM List of files to test if feature is installed
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\template.exe"
 	REM PATH to add to system PATH
 	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\bin"

@@ -13,7 +13,8 @@ function feature_zlib() {
 
 function feature_zlib_1_2_8() {
 	FEAT_VERSION=1_2_8
-	FEAT_DEPENDENCIES=
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://zlib.net/zlib-1.2.8.tar.gz
 	FEAT_SOURCE_URL_FILENAME=zlib-1.2.8.tar.gz

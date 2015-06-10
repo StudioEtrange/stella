@@ -50,7 +50,7 @@ REM install stella in standalone------------------
 
 	call :___rel_to_abs_path "_STELLA_INSTALL_PATH" "!PROVIDED_PATH!" "!STELLA_CURRENT_RUNNING_DIR!"
 
-	call :get_stella "git" "!_STELLA_INSTALL_PATH!"
+	call :get_stella "GIT" "LATEST" "!_STELLA_INSTALL_PATH!"
 	
 	call "!_STELLA_INSTALL_PATH!\conf.bat"
 	call %STELLA_COMMON%\common-app.bat :ask_install_requirements
@@ -96,10 +96,8 @@ REM Bootstrap a stella project ------------------
 		)
 
 		if not exist "!_STELLA_INSTALL_PATH!\stella.bat" (
-			if not "!STELLA_DEP_VERSION!"=="" (
-				call :get_stella "!STELLA_DEP_VERSION!" "!_STELLA_INSTALL_PATH!"
-			) else (
-				call :get_stella "git" "!_STELLA_INSTALL_PATH!"
+			if not "!STELLA_DEP_FLAVOUR!"=="" (
+				call :get_stella "!STELLA_DEP_FLAVOUR!" "!STELLA_DEP_VERSION!" "!_STELLA_INSTALL_PATH!"
 			)
 			set IS_STELLA_JUST_INSTALLED=TRUE
 		)
@@ -120,15 +118,24 @@ goto :eof
 
 REM Various functions ------------------
 :get_stella
-	set "_ver=%~1"
-	set "_path=%~2"
+	REM OFFICIAL or GIT
+	set "_flavour=%~1"
+	REM a specific version or LATEST
+	set "_ver=%~2"
+	set "_path=%~3"
 
-	if "%_ver%"=="git" (
+	if "%_flavour%"=="GIT" (
 		git clone https://github.com/StudioEtrange/stella "%_path%"
-	) else (
+		if not "%_ver%"=="" if not "%_ver%"=="LATEST" (
+			cd /D "%_path%"
+			git checkout %_ver%
+		) 
+	)
+
+	if "%_flavour%"=="OFFICIAL" (
 		pushd
-		if not exist %_path% mkdir %_path%
-		cd /d %_path%
+		if not exist "%_path%" mkdir "%_path%"
+		cd /D "%_path%"
 		powershell -Command "(New-Object Net.WebClient).DownloadFile('http://"%__STELLA_URL%"/dist/%_ver%/stella-win-"%_ver%".7z.exe', 'stella-win-"%_ver%".zip.exe')"
 		popd
 	)

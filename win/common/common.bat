@@ -322,16 +322,19 @@ goto :eof
 	set "NAME=%~1"
 	set "URI=%~2"
 	set "PROTOCOL=%~3"
+	REM FINAL_DESTINATION is the folder inside which one the resource will be put
 	set "FINAL_DESTINATION=%~4"
 	REM DO NOT USE * in NAME
 	REM option should passed as one string "OPT1 OPT2"
 	REM 	"MERGE" for merge in FINAL_DESTINATION
 	REM 	"STRIP" for remove root folder and copy content of root folder in FINAL_DESTINATION
+	REM 	"FORCE_NAME" force name of downloaded file
+	REM 	"GET" get resource (action by default)
 	REM 	"UPDATE" pull and update resource (only for HG or GIT)
 	REM 	"REVERT" complete revert of the resource (only for HG or GIT)
-	REM 	"FORCE_NAME" force name of downloaded file
 	REM 	"DELETE" delete resource
 	REM  	"VERSION" retrieve specific version (only for HG or GIT) when GET or UPDATE
+	REM 	"DEST_ERASE" when GET, will erase FINAL_DESTINATION first
 	SET "OPT=%~5"
 
 	set "_name_legal=%NAME::=%"
@@ -348,6 +351,7 @@ goto :eof
 
 	:: operation is GET by default
 	set _opt_get=ON
+	set _opt_dest_erase=OFF
 	set _opt_delete=OFF
 	set _opt_update=OFF
 	set _opt_revert=OFF
@@ -371,6 +375,7 @@ goto :eof
 				if "%%O"=="REVERT" set _opt_revert=ON
 				if "%%O"=="DELETE" set _opt_delete=ON
 				if "%%O"=="FORCE_NAME" set _opt_force_name=ON
+				if "%%O"=="DEST_ERASE" set _opt_dest_erase=ON
 			)
 		)
 			
@@ -413,6 +418,15 @@ goto :eof
 				del /q/f "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
 			)
 		)
+
+		if "!_opt_dest_erase!"=="ON" (
+			if "!_opt_merge!"=="OFF" (
+				call :del_folder "%FINAL_DESTINATION%"
+			)
+			if "!_opt_merge!"=="ON" (
+				del /q/f "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
+			)
+		)
 	)
 
 	if "!_opt_delete!"=="ON" (
@@ -434,23 +448,28 @@ goto :eof
 
 		set _TEST=0
 		if "%PROTOCOL%"=="HTTP_ZIP" set _TEST=1
+		if "%PROTOCOL%"=="FILE_ZIP" set _TEST=1
+
 		if "%PROTOCOL%"=="HTTP" set _TEST=2
+		if "%PROTOCOL%"=="FILE" set _TEST=2
+
 		if "%PROTOCOL%"=="HG" set _TEST=3
 		if "%PROTOCOL%"=="GIT" set _TEST=3
-		if "%PROTOCOL%"=="FILE" set _TEST=2
-		if "%PROTOCOL%"=="FILE_ZIP" set _TEST=1
+		
+
 
 
 		set _FLAG=1
 		if "!_TEST!"=="1" (
 			if "!_opt_revert!"=="ON" (
-				echo REVERT Not supported with HTTP_ZIP protocol
+				echo REVERT Not supported with this protocol
 				set _FLAG=0
 			)
 			if "!_opt_update!"=="ON" (
-				echo UPDATE Not supported with HTTP_ZIP protocol
+				echo UPDATE Not supported with this protocol
 				set _FLAG=0
 			)
+
 			if exist "%FINAL_DESTINATION%" (
 				if "!_opt_get!"=="ON" (
 					if "!_opt_merge!"=="ON" (
@@ -470,11 +489,11 @@ goto :eof
 		if "!_TEST!"=="2" (
 			if "!_opt_strip!"=="ON" echo STRIP option not supported
 			if "!_opt_revert!"=="ON" (
-				echo REVERT Not supported with HTTP_ZIP protocol
+				echo REVERT Not supported with this protocol
 				set _FLAG=0
 			)
 			if "!_opt_update!"=="ON" (
-				echo UPDATE Not supported with HTTP_ZIP protocol
+				echo UPDATE Not supported with this protocol
 				set _FLAG=0
 			)
 			
@@ -520,7 +539,7 @@ goto :eof
 		)
 		if "%PROTOCOL%"=="HTTP" (
 			REM HTTP protocol use always merge by default : because it never erase destination folder
-			REM the flag file will be setted only if we pass the option MERGE
+			REM but the 'merged' flag file will be created only if we pass the option MERGE
 			if "!_opt_get!"=="ON" call :download "%URI%" "!_download_filename!" "%FINAL_DESTINATION%"
 			if "!_opt_merge!"=="ON" echo 1 > "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
 		)
@@ -625,7 +644,7 @@ goto :eof
 
 	REM OPTIONS
 	REM 	DEST_ERASE
-	REM 		delete destination folder
+	REM 		first, delete unzip folder
 	REM 	STRIP
 	REM 		delete first level folders in archive
 	
@@ -942,22 +961,29 @@ goto :eof
 :: VARIOUS ---------------------------------------
 :get_stella_version
 	set "_result_var_get_stella_version=%~1"
-	set "_OPT=%~2"
+	set "_mode=%~2"
+	set "_stella_root_=%~3"
 	
 	
-	REM option
+	REM MODE
 	REM 	"LONG" long version
 	REM 	"SHORT" short version
 
-	if "%_OPT%"=="" set _OPT=SHORT
+	if "%_mode%"=="" (
+		set _mode=SHORT
+	)
 
-	if exist "%STELLA_ROOT%\.git" (
-		call :git_project_version "_git_version" "%STELLA_ROOT%" "%_OPT%"
-		set "%_result_var_get_stella_version%=git-!_git_version!"
+	if "%_stella_root_%"=="" (
+		set "_stella_root_=!STELLA_ROOT!"
+	)
+
+	if exist "!_stella_root_!\.git" (
+		call :git_project_version "_git_version" "!_stella_root_!" "!_mode!"
+		set "%_result_var_get_stella_version%=!_git_version!"
 	) else (
-		if exist "%STELLA_ROOT%\VERSION" (
-			for /f %%_v in ("%STELLA_ROOT%\VERSION") do (
-				set "%_result_var_git_project_version%=!_v!"
+		if exist "!_stella_root_!\VERSION" (
+			for /f %%v in ("!_stella_root_!\VERSION") do (
+				set "%_result_var_git_project_version%=%%v"
 			)
 		) else (
 			set "%_result_var_git_project_version%=unknown"

@@ -33,12 +33,12 @@ goto :eof
 
 	call :internal_feature_context "!_SCHEMA!"
 
-	set "flag=0"
+	set "_flag=0"
 	for %%a in (!FEATURE_LIST_ENABLED!) do (
 		if "!FEAT_NAME!#!FEAT_VERSION!"=="%%a" set _flag=1
 	)
 
-	if "%_flag%"=="0" (
+	if "!_flag!"=="0" (
 		call :feature_inspect !FEAT_SCHEMA_SELECTED!
 		if "!TEST_FEATURE!"=="1" (
 
@@ -163,17 +163,18 @@ goto :eof
 			set "TEST_FEATURE=!_t!"
 			if "!TEST_FEATURE!"=="1" (
 				if not "!FEAT_INSTALL_TEST!"=="" (
-					if not exist "!FEAT_INSTALL_TEST!" (
-						set "TEST_FEATURE=0"
+					for %%f in (!FEAT_INSTALL_TEST!) do (
+						if not exist "%%f" (
+							set "TEST_FEATURE=0"
+						)
 					)
 				)
 			)
-		) else (
-			if "!FEAT_INSTALL_TEST!"=="" (
-				set "TEST_FEATURE=1"
-			) else (
-				if exist "!FEAT_INSTALL_TEST!" (
-					set "TEST_FEATURE=1"
+		) else (	
+			set "TEST_FEATURE=1"
+			for %%f in (!FEAT_INSTALL_TEST!) do (
+				if not exist "%%f" (
+					set "TEST_FEATURE=0"
 				)
 			)
 		)
@@ -273,7 +274,7 @@ goto :eof
 	)
 
 	if "!_SCHEMA!"=="required" (
-		call %STELLA_COMMON%\platform.bat :__stella_features_requirement_by_os %STELLA_CURRENT_OS%
+		call %STELLA_COMMON%\platform.bat :__install_minimal_feature_requirement
 		goto :eof
 	)
 

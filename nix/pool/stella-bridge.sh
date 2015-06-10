@@ -23,7 +23,7 @@ function standalone() {
 	_STELLA_INSTALL_PATH=$(___rel_to_abs_path "$PROVIDED_PATH" "$STELLA_CURRENT_RUNNING_DIR")
 
 	if [ ! -f "$_STELLA_INSTALL_PATH/stella.sh" ]; then
-		__get_stella "git" "$_STELLA_INSTALL_PATH"
+		__get_stella "GIT" "LATEST" "$_STELLA_INSTALL_PATH"
 	fi
 
 	source "$_STELLA_INSTALL_PATH/conf.sh"
@@ -69,10 +69,8 @@ function bootstrap() {
 		fi
 
 		if [ ! -f "$_STELLA_INSTALL_PATH/stella.sh" ]; then
-			if [ ! "$STELLA_DEP_VERSION" == "" ]; then 
-				__get_stella "$STELLA_DEP_VERSION" "$_STELLA_INSTALL_PATH"
-			else
-				__get_stella "git" "$_STELLA_INSTALL_PATH"
+			if [ ! "$STELLA_DEP_FLAVOUR" == "" ]; then 
+				__get_stella "$STELLA_DEP_FLAVOUR" "$STELLA_DEP_VERSION" "$_STELLA_INSTALL_PATH"
 			fi
 			IS_STELLA_JUST_INSTALLED="TRUE"
 
@@ -125,12 +123,23 @@ function ___rel_to_abs_path() {
 }
 
 function __get_stella() {
-	local _ver=$1
-	local _path=$2
+	# OFFICIAL or GIT
+	local _flavour=$1
+	# a specific version or LATEST
+	local _ver=$2
+	local _path=$3
 
-	if [ "$_ver" == "git" ]; then
+	if [ "$_flavour" == "GIT" ]; then
 		git clone https://github.com/StudioEtrange/stella "$_path"
-	else
+		if [ ! "$_ver" == "" ]; then
+			if [ ! "$_ver" == "LATEST" ]; then
+				cd "$_path"
+				git checkout $_ver
+			fi
+		fi
+	fi
+
+	if [ "$_flavour" == "OFFICIAL" ]; then
 		mkdir -p "$_path" 
 		curl -L -o "$_path"/$stella-nix-"$_ver".gz.sh $__STELLA_URL/dist/$_ver/stella-nix-"$_ver".tar.gz.run
 		chmod +x "$_path"/$stella-nix-"$_ver".gz.run

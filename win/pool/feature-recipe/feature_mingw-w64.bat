@@ -25,7 +25,6 @@ goto :eof
 :feature_mingw-w64_mingw4_gcc4_9_2
 	set "FEAT_VERSION=mingw4_gcc4_9_2"
 
-	REM Dependencies
 	set FEAT_SOURCE_DEPENDENCIES=
 	set FEAT_BINARY_DEPENDENCIES=
 
@@ -42,12 +41,10 @@ goto :eof
 	REM package revision
 	set MINGW_ZIP_REVISION=2
 
-	REM Properties for SOURCE flavour
 	set FEAT_SOURCE_URL=
 	set FEAT_SOURCE_URL_FILENAME=
 	set FEAT_SOURCE_URL_PROTOCOL=
-	
-	REM Properties for BINARY flavour
+
 	set FEAT_BINARY_URL=
 	set FEAT_BINARY_URL_FILENAME=
 	set FEAT_BINARY_URL_PROTOCOL=
@@ -58,16 +55,11 @@ goto :eof
 	set "FEAT_BINARY_URL_FILENAME_x64="
 	set "FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP"
 
-	REM callback are list of functions
-	REM manual callback (with feature_callback)
 	set FEAT_SOURCE_CALLBACK=
 	set FEAT_BINARY_CALLBACK=
-	REM automatic callback each time feature is initialized, to init env var
 	set FEAT_ENV_CALLBACK=
 
-	REM File to test if feature is installed
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\gcc.exe"
-	REM PATH to add to system PATH
 	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\bin"
 	
 

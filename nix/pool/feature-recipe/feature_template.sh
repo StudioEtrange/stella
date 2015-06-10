@@ -47,7 +47,7 @@ function feature_template_1_0_0() {
 	# automatic callback each time feature is initialized, to init env var
 	FEAT_ENV_CALLBACK=feature_template_setenv
 	
-	# File to test if feature is installed
+	# List of files to test if feature is installed
 	FEAT_INSTALL_TEST=$FEAT_INSTALL_ROOT/bin/template
 	# PATH to add to system PATH
 	FEAT_SEARCH_PATH=$FEAT_INSTALL_ROOT/bin

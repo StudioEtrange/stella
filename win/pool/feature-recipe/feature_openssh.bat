@@ -15,43 +15,55 @@ goto :eof
 
 :feature_openssh_6_6
 	set "FEAT_VERSION=6_6"
+	
+	set FEAT_SOURCE_DEPENDENCIES=
+	set FEAT_BINARY_DEPENDENCIES=
 
 	set FEAT_SOURCE_URL=
 	set FEAT_SOURCE_URL_FILENAME=
-	set FEAT_SOURCE_CALLBACK=
+	set FEAT_SOURCE_URL_PROTOCOL=
+
 	set "FEAT_BINARY_URL_x64=http://www.mls-software.com/files/installer_source_files.661p1-3.zip"
 	set "FEAT_BINARY_URL_FILENAME_x64=installer_source_files.661p1-3.zip"
+	set "FEAT_BINARY_URL_PROTOCOL_x64="
 	set "FEAT_BINARY_URL_x86=http://www.mls-software.com/files/installer_source_files.661p1-3.zip"
 	set "FEAT_BINARY_URL_FILENAME_x86=installer_source_files.661p1-3.zip"
-	set FEAT_BINARY_CALLBACK=
+	set "FEAT_BINARY_URL_PROTOCOL_x86="
 
-	set FEAT_DEPENDENCIES=
+	set FEAT_SOURCE_CALLBACK=
+	set FEAT_BINARY_CALLBACK=
+	set FEAT_ENV_CALLBACK=
+
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\ssh.exe"
 	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\bin"
-	set FEAT_ENV_CALLBACK=
+
 	
-	set FEAT_BUNDLE_ITEM=
 goto :eof
 
 
 :feature_openssh_6_8
 	set "FEAT_VERSION=6_8"
 
+	set FEAT_SOURCE_DEPENDENCIES=
+	set FEAT_BINARY_DEPENDENCIES=
+
 	set FEAT_SOURCE_URL=
 	set FEAT_SOURCE_URL_FILENAME=
-	set FEAT_SOURCE_CALLBACK=
+	set FEAT_SOURCE_URL_PROTOCOL=
+
 	set "FEAT_BINARY_URL_x64=http://www.mls-software.com/files/installer_source_files.68p1-1.zip"
 	set "FEAT_BINARY_URL_FILENAME_x64=installer_source_files.68p1-1.zip"
+	set "FEAT_BINARY_URL_PROTOCOL_x64="
 	set "FEAT_BINARY_URL_x86=http://www.mls-software.com/files/installer_source_files.68p1-1.zip"
 	set "FEAT_BINARY_URL_FILENAME_x86=installer_source_files.68p1-1.zip"
-	set FEAT_BINARY_CALLBACK=
+	set "FEAT_BINARY_URL_PROTOCOL_x86="
 
-	set FEAT_DEPENDENCIES=
+	set FEAT_SOURCE_CALLBACK=
+	set FEAT_BINARY_CALLBACK=
+	set FEAT_ENV_CALLBACK=
+
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\ssh.exe"
 	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\bin"
-	set FEAT_ENV_CALLBACK=
-	
-	set FEAT_BUNDLE_ITEM=
 goto :eof
 
 

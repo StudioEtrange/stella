@@ -46,10 +46,12 @@ goto :eof
 
 :feature_oracle-jdk_7u80
 	set "FEAT_VERSION=7u80"
-
+	set FEAT_SOURCE_DEPENDENCIES=
+	set FEAT_BINARY_DEPENDENCIES=
+	
 	set FEAT_SOURCE_URL=
 	set FEAT_SOURCE_URL_FILENAME=
-	set FEAT_SOURCE_CALLBACK=	
+	set FEAT_SOURCE_CALLBACK=
 	set "FEAT_BINARY_URL_x64=http://download.oracle.com/otn-pub/java/jdk/7u80-b15/jdk-7u80-windows-x64.exe"
 	set "FEAT_BINARY_URL_FILENAME_x64=jdk-7u80-windows-x64.exe"
 	set FEAT_BINARY_URL_PROTOCOL_x64=

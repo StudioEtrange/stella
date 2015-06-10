@@ -168,20 +168,21 @@ function __feature_inspect() {
 			TEST_FEATURE=$_t
 			if [ "$TEST_FEATURE" == "1" ]; then
 				if [ ! "$FEAT_INSTALL_TEST" == "" ]; then
-					if [ ! -f "$FEAT_INSTALL_TEST" ]; then
-						TEST_FEATURE=0
-					fi
+					for f in $FEAT_INSTALL_TEST; do
+						if [ ! -f "$f" ]; then
+							TEST_FEATURE=0
+						fi
+					done
 				fi
 			fi
 		else
-			if [ "$FEAT_INSTALL_TEST" == "" ]; then
-				TEST_FEATURE=1
-			else
-				if [ -f "$FEAT_INSTALL_TEST" ]; then
-					TEST_FEATURE=1
+			TEST_FEATURE=1
+			for f in $FEAT_INSTALL_TEST; do
+				if [ ! -f "$f" ]; then
+					TEST_FEATURE=0
 					[ "$VERBOSE_MODE" == "0" ] || echo " ** FEATURE Detected in $FEAT_INSTALL_ROOT"
 				fi
-			fi
+			done
 		fi
 	else
 		__feature_catalog_info $_SCHEMA
@@ -286,7 +287,7 @@ function __feature_install() {
 	done
 
 	if [ "$_SCHEMA" == "required" ]; then
-		__stella_features_requirement_by_os $STELLA_CURRENT_OS
+		__install_minimal_feature_requirement
 	else
 
 		local _flag=0

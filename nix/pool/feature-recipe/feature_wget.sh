@@ -12,7 +12,9 @@ function feature_wget() {
 
 function feature_wget_1_15() {
 	FEAT_VERSION=1_15
-	FEAT_DEPENDENCIES=
+	
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://ftp.gnu.org/gnu/wget/wget-1.15.tar.gz
 	FEAT_SOURCE_URL_FILENAME=wget-1.15.tar.gz

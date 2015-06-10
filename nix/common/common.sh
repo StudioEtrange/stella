@@ -40,20 +40,23 @@ function __trim() {
 }
 
 function __get_stella_version() {
-	local OPT="$1"
+	local MODE="$1"
+	local _stella_root_="$2"
 	
 	# option
 	# 	"LONG" long version
 	# 	"SHORT" short
 
-	if [ "$OPT" == "" ]; then
-		OPT=SHORT
+	if [ "$MODE" == "" ]; then
+		MODE=SHORT
 	fi
 
-	if [ -f "$STELLA_ROOT/.git" ]; then
-		echo $(__git_project_version "$STELLA_ROOT" "$OPT")
-	elif [ -f "$STELLA_ROOT/VERSION" ]; then
-		cat "$STELLA_ROOT/VERSION"
+	[ "$_stella_root_" == "" ] && _stella_root_="$STELLA_ROOT"
+
+	if [ -d "$_stella_root_/.git" ]; then
+		echo $(__git_project_version "$_stella_root_" "$MODE")
+	elif [ -f "$_stella_root_/VERSION" ]; then
+		cat "$_stella_root_/VERSION"
 	else
 		echo "unknown"
 	fi
@@ -319,16 +322,19 @@ function __resource() {
 	local NAME=$1
 	local URI=$2
 	local PROTOCOL=$3
+	# FINAL_DESTINATION is the folder inside which one the resource will be put
 	local FINAL_DESTINATION=$4
 	local OPT="$5"
 	# option should passed as one string "OPT1 OPT2"
 	# 	"MERGE" for merge in FINAL_DESTINATION
 	# 	"STRIP" for remove root folder and copy content of root folder in FINAL_DESTINATION
+	# 	"FORCE_NAME" force name of downloaded file
+	# 	"GET" get resource (action by default)
 	# 	"UPDATE" pull and update resource (only for HG or GIT)
 	# 	"REVERT" complete revert of the resource (only for HG or GIT)
-	# 	"FORCE_NAME" force name of downloaded file
 	# 	"DELETE" delete resource
-	# 	"VERSION" retrieve specific version (only for HG or GIT) when GET or UPDATE
+	#  	"VERSION" retrieve specific version (only for HG or GIT) when GET or UPDATE
+	#	"DEST_ERASE" when GET, will erase FINAL_DESTINATION first
 	# TODO : remove illegal characters in NAME. NAME is used in flag file name when merging
 
 	local _opt_merge=OFF
@@ -339,6 +345,7 @@ function __resource() {
 	local _opt_revert=OFF
 	local _opt_force_name=OFF
 	local _opt_version=OFF
+	local _opt_dest_erase=OFF
 	local _checkout_version=
 	local _download_filename=_AUTO_
 	for o in $OPT; do 
@@ -352,6 +359,7 @@ function __resource() {
 			else
 				[ "$o" == "VERSION" ] && _opt_version=ON
 				[ "$o" == "MERGE" ] && _opt_merge=ON
+				[ "$o" == "DEST_ERASE" ] && _opt_dest_erase=ON
 				[ "$o" == "STRIP" ] && _opt_strip=ON
 				[ "$o" == "FORCE_NAME" ] && _opt_force_name=ON
 				if [ "$o" == "DELETE" ]; then _opt_delete=ON;  _opt_revert=OFF;  _opt_get=OFF; _opt_update=OFF; fi
@@ -370,6 +378,10 @@ function __resource() {
 	#[ "$FORCE" ] && rm -Rf $FINAL_DESTINATION
 	if [ "$_opt_get" == "ON" ]; then
 		if [ "$FORCE" ]; then
+			[ "$_opt_merge" == "OFF" ] && rm -Rf "$FINAL_DESTINATION"
+			[ "$_opt_merge" == "ON" ] && rm -f "$FINAL_DESTINATION/._MERGED_$NAME"
+		fi
+		if [ "$_opt_dest_erase" == "ON" ]; then
 			[ "$_opt_merge" == "OFF" ] && rm -Rf "$FINAL_DESTINATION"
 			[ "$_opt_merge" == "ON" ] && rm -f "$FINAL_DESTINATION/._MERGED_$NAME"
 		fi
@@ -450,7 +462,7 @@ function __resource() {
 				;;
 			HTTP)
 				# HTTP protocol use always merge by default : because it never erase destination folder
-				# the flag file will be setted only if we pass the option MERGE
+				# but the 'merged' flag file will be created only if we pass the option MERGE
 				[ "$_opt_get" == "ON" ] && __download "$URI" "$_download_filename" "$FINAL_DESTINATION"
 				[ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
