@@ -7,14 +7,14 @@
 _CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 _CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
 
-rm -rf $_CURRENT_FILE_DIR/stella-release-workspace
 
 current_stella=$_STELLA_LINK_CURRENT_FILE_DIR/../../../stella
 if [ ! -f "$current_stella/stella.sh" ]; then
 	mkdir -p "$_CURRENT_FILE_DIR/stella-release-workspace"
 	cd "$_CURRENT_FILE_DIR/stella-release-workspace"
 	git clone https://github.com/StudioEtrange/stella
-
+	cd stella
+	git pull
 	current_stella="$_CURRENT_FILE_DIR/stella-release-workspace/stella"
 fi
 

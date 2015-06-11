@@ -265,8 +265,8 @@ case $ACTION in
 		fi
 		;;
 	stella-release)
-		$0 stella-items --upload --version="$VER"
-		$0 stella-dist --upload --version="$VER"
+		$0 stella-items --upload --ver="$VER"
+		$0 stella-dist --upload --ver="$VER"
 		;;
 	*)
 		echo "use option --help for help"
