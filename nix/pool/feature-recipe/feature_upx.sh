@@ -45,6 +45,17 @@ function feature_ucl_link() {
 	export UPX_UCLDIR="$FEAT_INSTALL_ROOT"
 	ln -fs $FEAT_INSTALL_ROOT/lib/libucl.a $FEAT_INSTALL_ROOT/libucl.a
 
+	
+
+
+	__feature_inspect zlib
+	if [ "$TEST_FEATURE" == "0" ]; then
+		echo " ** ERROR : depend on lib zlib"
+		return
+	fi
+	AUTO_INSTALL_FLAG_PREFIX="CFLAGS=-I$FEAT_INSTALL_ROOT/include LDFLAGS=-L$FEAT_INSTALL_ROOT/lib/libz.a"
+
+
 	FEAT_SCHEMA_SELECTED=$save_FEAT_SCHEMA_SELECTED
 	__internal_feature_context $FEAT_SCHEMA_SELECTED
 
