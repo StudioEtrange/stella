@@ -3,3 +3,4 @@ VERSION
 workspace/
 cache/
 .stella-env
+.stella-ftp-credentials

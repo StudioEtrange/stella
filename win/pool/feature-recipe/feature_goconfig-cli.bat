@@ -22,7 +22,7 @@ goto :eof
 	set FEAT_SOURCE_URL_FILENAME=
 	set FEAT_SOURCE_URL_PROTOCOL=
 
-	set "FEAT_BINARY_URL=%STELLA_ARTEFACT_URL%/win/goconfig-cli/goconfig-cli.exe"
+	set "FEAT_BINARY_URL=%STELLA_ARTEFACT_URL%/goconfig-cli/goconfig-cli.exe"
 	set "FEAT_BINARY_URL_FILENAME="
 	set "FEAT_BINARY_URL_PROTOCOL=HTTP"
 

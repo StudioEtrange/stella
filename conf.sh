@@ -23,9 +23,9 @@ STELLA_TEMPLATE="$STELLA_POOL/template"
 
 # URL PATHS ---------------------------------------------
 STELLA_URL="http://stella.sh"
-STELLA_POOL_URL="$STELLA_URL/pool/nix"
-STELLA_FEATURE_RECIPE_URL="$STELLA_POOL_URL/feature-recipe"
-STELLA_ARTEFACT_URL="$STELLA_POOL_URL/artefact"
+STELLA_POOL_URL="$STELLA_URL/pool"
+STELLA_ARTEFACT_URL="$STELLA_POOL_URL/nix/artefact"
+STELLA_FEATURE_RECIPE_URL="$STELLA_POOL_URL/nix/feature-recipe"
 STELLA_DIST_URL="$STELLA_URL/dist"
 
 # SITE SCHEMA

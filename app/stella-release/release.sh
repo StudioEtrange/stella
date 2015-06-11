@@ -4,33 +4,32 @@ _CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
 source $_CURRENT_FILE_DIR/stella-link.sh include
 
 
-STELLA_FTP_HOST=ftp.cluster002.ovh.net
-STELLA_FTP_ROOT=$STELLA_FTP_HOST/stella
+$STELLA_API get_app_property "FTP" "HOST"
+$STELLA_API get_app_property "FTP" "ROOT"
 
-STELLA_ADMIN=$STELLA_APPLICATION/admin
+STELLA_FTP_HOST=$FTP_HOST
+STELLA_FTP_ROOT=$STELLA_FTP_HOST/$FTP_ROOT
+STELLA_FTP_CREDENTIALS=$STELLA_ROOT/.stella-ftp-credentials
+
+STELLA_RELEASE_POOL=$STELLA_APPLICATION/stella-release/pool
 
 function usage() {
 	echo "USAGE :"
 	echo "----------------"
 	echo "List of commands"
 	echo " o-- Release management :"
-	echo " L     dist [--upload] : pack all stella distribution package for each platform"
-	echo " L     items : push all stella items on distant web repository"
-	echo " L     dep : download dependencies for this tool"
-
+	echo " L     stella-release : do a complete stella release and artefact publication, and upload them"
+	echo " L     stella-dist [--upload] : prepare a pack of all stella distribution package for each platform, and may upload them"
+	echo " L     stella-items [--upload] : prepare all stella artifact, and may upload them"
+	echo " L     install : download dependencies for this tool"
 }
 
 
 # ----------- Main functions ----------------
 
 function stella_items_release() {
-
-
-	__copy_folder_content_into "$STELLA_ADMIN/pool" "$STELLA_APP_WORK_ROOT/output/pool"
-
+	$STELLA_API copy_folder_content_into "$STELLA_RELEASE_POOL" "$STELLA_APP_WORK_ROOT/output/pool"
 	#pack_goconfig-cli
-
-	
 }
 
 
@@ -102,7 +101,7 @@ function pack_stella() {
 	
 
 	if [ "$_opt_auto_extract" == "ON" ]; then
-		__make_targz_sfx_shell "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz.run "TARGZ"
+		$STELLA_API make_targz_sfx_shell "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz.run "TARGZ"
 	fi
 
  	# DISTRIBUTIONS PACKAGE FOR WIN SYSTEM WITH 7Z
@@ -127,14 +126,14 @@ function pack_stella() {
 	esac
 
 	if [ "$_opt_auto_extract" == "ON" ]; then
-		__make_targz_sfx_shell "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".7z "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".zip.exe win "7Z"
+		$STELLA_API make_targz_sfx_shell "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".7z "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".zip.exe win "7Z"
 	fi
 }
 
 
 # -------------------- STELLA ITEM packaging -------------------------------
 
-# TODO review
+# TODO review -- use feature recipe ?
 function pack_goconfig-cli() {
 	# Need Go
 	GOPATH="$STELLA_APP_WORK_ROOT/go"
@@ -148,10 +147,10 @@ function pack_goconfig-cli() {
 	GOPATH="$GOPATH" go get github.com/laher/goxc
 	GOPATH="$GOPATH" "$GOPATH"/bin/goxc -tasks-=package
 
-	mkdir -p "$STELLA_APP_WORK_ROOT/$STELLA_POOL_PATH"/win/repository/goconfig-cli/
-	cp "$GOPATH"/bin/goconfig-cli-xc/snapshot/windows_386/goconfig-cli.exe "$STELLA_APP_WORK_ROOT/$STELLA_POOL_PATH"/win/repository/goconfig-cli/
+	mkdir -p "$STELLA_APP_WORK_ROOT/output/pool/win/artefact/goconfig-cli"
+	cp "$GOPATH"/bin/goconfig-cli-xc/snapshot/windows_386/goconfig-cli.exe "$STELLA_APP_WORK_ROOT/output/pool/win/artefact/goconfig-cli/"
 
-	upx "$STELLA_APP_WORK_ROOT/$STELLA_POOL_PATH"/win/repository/goconfig-cli/goconfig-cli.exe
+	upx "$STELLA_APP_WORK_ROOT/output/pool/win/artefact/goconfig-cli/goconfig-cli.exe"
 }
 
 
@@ -175,7 +174,7 @@ function __ftp_push_file() {
 	local _local_target=$1
 	local _ftp_target=$2/
 
-	curl --ftp-create-dirs --netrc-file $HOME/stella_credentials -T $_local_target ftp://$STELLA_FTP_ROOT/$_ftp_target
+	curl --ftp-create-dirs --netrc-file $STELLA_FTP_CREDENTIALS -T $_local_target ftp://$STELLA_FTP_ROOT/$_ftp_target
 }
 
 function __ftp_push_directory_recurse() {
@@ -191,30 +190,29 @@ function __ftp_push_directory_recurse() {
 
 # ARGUMENTS -----------------------------------------------------------------------------------
 PARAMETERS="
-ACTION=						'action' 			a						'dep dist items'					action.
+ACTION=						'action' 			a						'install stella-release stella-dist stella-items'					action.
 "
 OPTIONS="
 UPLOAD=''                   'u'    		''            		b     		0     		'1'           			upload.
 "
 
-__argparse "$0" "$OPTIONS" "$PARAMETERS" "Release management" "$(usage)" "" "$@"
+$STELLA_API argparse "$0" "$OPTIONS" "$PARAMETERS" "Release management" "$(usage)" "" "$@"
 
 # common initializations
-__init_stella_env
+#__init_stella_env
 
 # MAIN -----------------------------------------------------------------------------------
 
-
+rm -Rf $STELLA_APP_WORK_ROOT/output
 mkdir -p $STELLA_APP_WORK_ROOT/output
 
-# TODO : delete ftp respository first
 
 case $ACTION in
-	dep)
+	install)
 		$STELLA_API get_features
-		__copy_folder_content_into "$STELLA_ADMIN/pool/common/sfx_for_7z" "$STELLA_APP_CACHE_DIR"
+		$STELLA_API copy_folder_content_into "$STELLA_RELEASE_POOL/common/sfx_for_7z" "$STELLA_APP_CACHE_DIR"
 		;;
-    dist)
+    stella-dist)
 		rm -Rf $STELLA_APP_WORK_ROOT/output/dist
 		mkdir -p $STELLA_APP_WORK_ROOT/output/dist
 		stella_lib_release nix "AUTO_EXTRACT"
@@ -222,11 +220,18 @@ case $ACTION in
 		stella_lib_release all "AUTO_EXTRACT"
 		[ "$UPLOAD" == "1" ] && upload_ftp "$STELLA_APP_WORK_ROOT/output/dist" "dist/$version"
 		;;
-	items)
+	stella-items)
 		rm -Rf $STELLA_APP_WORK_ROOT/output/pool
 		mkdir -p $STELLA_APP_WORK_ROOT/output/pool
 		stella_items_release
-		[ "$UPLOAD" == "1" ] && upload_ftp "$STELLA_APP_WORK_ROOT/output/pool" "pool"
+		if [ "$UPLOAD" == "1" ]; then
+			# TODO : erase pool folder first
+			upload_ftp "$STELLA_APP_WORK_ROOT/output/pool" "pool"
+		fi
+		;;
+	stella-release)
+		$0 stella-items --upload
+		$0 stella-dist --upload
 		;;
 	*)
 		echo "use option --help for help"

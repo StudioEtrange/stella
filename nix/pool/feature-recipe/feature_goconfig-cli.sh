@@ -21,7 +21,7 @@ function feature_goconfig-cli_snapshot() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	FEAT_BINARY_URL="$STELLA_ARTEFACT_URL/nix/goconfig-cli/goconfig-cli"
+	FEAT_BINARY_URL="$STELLA_ARTEFACT_URL/goconfig-cli/goconfig-cli"
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL="HTTP"
 

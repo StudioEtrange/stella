@@ -120,9 +120,13 @@ REM Various functions ------------------
 :get_stella
 	REM OFFICIAL or GIT
 	set "_flavour=%~1"
-	REM a specific version or LATEST
+	REM a specific version or LATEST (for latest stable) or SNAPSHOT (for current dev)
 	set "_ver=%~2"
 	set "_path=%~3"
+
+	if "!_ver!"=="" (
+		set "_ver=LATEST"
+	)
 
 	if "!_flavour!"=="GIT" (
 		where /q git
@@ -134,7 +138,7 @@ REM Various functions ------------------
 
 	if "!_flavour!"=="GIT" (
 		git clone https://github.com/StudioEtrange/stella "%_path%"
-		if not "!_ver!"=="" if not "!_ver!"=="LATEST" (
+		if not "!_ver!"=="" if not "!_ver!"=="SNAPSHOT" if not "!_ver!"=="LATEST" (
 			cd /D "%_path%"
 			git checkout !_ver!
 		) 
@@ -144,6 +148,10 @@ REM Various functions ------------------
 		if "!_ver!"=="LATEST" (
 			set "_ver=latest"
 		)
+		if "!_ver!"=="SNAPSHOT" (
+			set "_ver=snapshot"
+		)
+
 		pushd
 		if not exist "%_path%" mkdir "%_path%"
 		cd /D "%_path%"
