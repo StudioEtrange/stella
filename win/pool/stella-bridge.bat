@@ -50,7 +50,7 @@ REM install stella in standalone------------------
 
 	call :___rel_to_abs_path "_STELLA_INSTALL_PATH" "!PROVIDED_PATH!" "!STELLA_CURRENT_RUNNING_DIR!"
 
-	call :get_stella "GIT" "LATEST" "!_STELLA_INSTALL_PATH!"
+	call :get_stella "OFFICIAL" "LATEST" "!_STELLA_INSTALL_PATH!"
 	
 	call "!_STELLA_INSTALL_PATH!\conf.bat"
 	call %STELLA_COMMON%\common-app.bat :ask_install_requirements

@@ -14,25 +14,29 @@ function feature_getopt() {
 }
 
 function feature_getopt_1_1_6() {
-
 	FEAT_VERSION=1_1_6
+	# depend on gettext ?
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://frodo.looijaard.name/system/files/software/getopt/getopt-1.1.6.tar.gz
 	FEAT_SOURCE_URL_FILENAME=getopt-1.1.6.tar.gz
-	FEAT_SOURCE_CALLBACK=feature_getopt_1_1_6_patch
+	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
+
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
-	FEAT_BINARY_CALLBACK=
+	FEAT_BINARY_URL_PROTOCOL=
 
-	FEAT_DEPENDENCIES=
+	FEAT_SOURCE_CALLBACK=feature_getopt_1_1_6_patch
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/getopt
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-	FEAT_ENV_CALLBACK=
-	
-	FEAT_BUNDLE_ITEM=
+
 }
 
-# depend on gettext ?
+
 
 function feature_getopt_1_1_6_patch() {
 	# https://github.com/Homebrew/homebrew/blob/master/Library/Formula/gnu-getopt.rb
@@ -47,8 +51,7 @@ function feature_getopt_install_source() {
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	BUILD_DIR=
 
-
-	__download_uncompress "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_FILENAME" "$SRC_DIR" "DEST_ERASE STRIP"
+	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 	__feature_callback
 	

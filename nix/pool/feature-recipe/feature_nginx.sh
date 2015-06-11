@@ -13,7 +13,9 @@ function feature_nginx() {
 
 function feature_nginx_1_7_11() {
 	FEAT_VERSION=1_7_11
-	FEAT_DEPENDENCIES=
+	
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://nginx.org/download/nginx-1.7.11.tar.gz
 	FEAT_SOURCE_URL_FILENAME=nginx-1.7.11.tar.gz

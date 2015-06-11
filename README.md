@@ -57,26 +57,11 @@ _NOTE : You dont really need this, because all previous installation methods wil
 
 	./stella.sh stella install dep
 
-* Manually install :
-
-	apt-get -y install mercurial unzip p7zip-full git wget
-	apt-get -y install bison util-linux build-essential gcc-multilib g++-multilib g++ pkg-config
-
 ### MacOS requirements
 
 * Auto install :
 
 	./stella.sh stella install dep
-
-* Manually installed : 
-
-Install HomeBrew [HomeBrew website](http://brew.sh)
-
-	ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-
-Install some brew formulas
-
-	brew install gnu-getopt p7zip
 
 
 ## Advanced Usage

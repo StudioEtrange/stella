@@ -12,12 +12,14 @@ function feature_cmake() {
 }
 
 function feature_cmake_2_8_12() {
-
 	FEAT_VERSION=2_8_12
+	# TODO  ** NEED : cURL-7.32.0, libarchive-3.1.2 and expat-2.1.0
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://www.cmake.org/files/v2.8/cmake-2.8.12.2.tar.gz
 	FEAT_SOURCE_URL_FILENAME=cmake-2.8.12.2.tar.gz
-	FEAT_SOURCE_CALLBACK=
+
 	FEAT_BINARY_URL=
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		FEAT_BINARY_URL=http://www.cmake.org/files/v2.8/cmake-2.8.12.2-Darwin64-universal.tar.gz
@@ -28,25 +30,21 @@ function feature_cmake_2_8_12() {
 		FEAT_BINARY_URL_FILENAME=cmake-2.8.12.2-Linux-i386.tar.gz
 	fi
 
-	# TODO  ** NEED : cURL-7.32.0, libarchive-3.1.2 and expat-2.1.0
-	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/cmake
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-	FEAT_ENV_CALLBACK=
-	
-	FEAT_BUNDLE_ITEM=
-}
+
 
 
 
 
 function feature_cmake_3_2_2() {
-
 	FEAT_VERSION=3_2_2
+	# TODO  ** NEED : cURL-7.32.0, libarchive-3.1.2 and expat-2.1.0
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://www.cmake.org/files/v3.2/cmake-3.2.2.tar.gz
-	FEAT_SOURCE_URL_FILENAME=cmake-3.2.2.tar.gz
-	FEAT_SOURCE_CALLBACK=
+	FEAT_SOURCE_URL_FILENAME
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		FEAT_BINARY_URL=http://www.cmake.org/files/v3.2/cmake-3.2.2-Darwin-x86_64.tar.gz
 		FEAT_BINARY_URL_FILENAME=cmake-3.2.2-Darwin-x86_64.tar.gz
@@ -55,13 +53,10 @@ function feature_cmake_3_2_2() {
 		FEAT_BINARY_URL=http://www.cmake.org/files/v3.2/cmake-3.2.2-Linux-x86_64.tar.gz
 		FEAT_BINARY_URL_FILENAME=cmake-3.2.2-Linux-x86_64.tar.gz
 	fi
-	# TODO  ** NEED : cURL-7.32.0, libarchive-3.1.2 and expat-2.1.0
-	FEAT_DEPENDENCIES=
 	
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/cmake
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-	
-	FEAT_BUNDLE_ITEM=
+
 }
 
 function feature_cmake_install_source() {

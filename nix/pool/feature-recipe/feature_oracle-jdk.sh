@@ -20,7 +20,9 @@ function feature_oraclesejdk_env() {
 
 function feature_oracle-jdk_8u45() {
 	FEAT_VERSION=8u45
-	FEAT_DEPENDENCIES=
+
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=
 	FEAT_SOURCE_URL_FILENAME=
@@ -61,7 +63,9 @@ function feature_oracle-jdk_8u45() {
 
 function feature_oracle-jdk_7u80() {
 	FEAT_VERSION=7u80
-	FEAT_DEPENDENCIES=
+
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=
 	FEAT_SOURCE_URL_FILENAME=

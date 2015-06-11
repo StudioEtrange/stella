@@ -13,6 +13,7 @@ function feature_goconfig-cli() {
 
 function feature_goconfig-cli_snapshot() {
 	FEAT_VERSION="snapshot"
+	
 	FEAT_SOURCE_DEPENDENCIES="go-build-chain#1_4_2"
 	FEAT_BINARY_DEPENDENCIES=
 

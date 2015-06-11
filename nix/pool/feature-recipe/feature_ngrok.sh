@@ -12,10 +12,12 @@ function feature_ngrok() {
 
 function feature_ngrok_stable() {
 	FEAT_VERSION=stable
+	
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=
 	FEAT_SOURCE_URL_FILENAME=
-	FEAT_SOURCE_CALLBACK=
 	
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		FEAT_BINARY_URL_x64="https://api.equinox.io/1/Applications/ap_pJSFC5wQYkAyI0FIVwKYs9h1hW/Updates/Asset/ngrok.zip?channel=stable&os=darwin&arch=amd64"
@@ -32,15 +34,14 @@ function feature_ngrok_stable() {
 		FEAT_BINARY_URL_x86="https://api.equinox.io/1/Applications/ap_pJSFC5wQYkAyI0FIVwKYs9h1hW/Updates/Asset/ngrok.zip?channel=stable&os=linux&arch=386"
 		FEAT_BINARY_URL_FILENAME_x86=ngrok_linux_386.zip
 	fi
-	FEAT_BINARY_CALLBACK=
 
-	FEAT_DEPENDENCIES=
+	FEAT_SOURCE_CALLBACK=
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/ngrok
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
-	FEAT_ENV_CALLBACK=
-	
-	FEAT_BUNDLE_ITEM=
 }
 
 

@@ -5,30 +5,32 @@ _NINJA_INCLUDED_=1
 function feature_ninja() {
 
 	FEAT_NAME=ninja
-	FEAT_LIST_SCHEMA="last_release:source"
-	FEAT_DEFAULT_VERSION=last_release
+	FEAT_LIST_SCHEMA="snapshot:source"
+	FEAT_DEFAULT_VERSION=snapshot
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_ninja_last_release() {
-
-	FEAT_VERSION=last_release
-
-	FEAT_SOURCE_URL=https://github.com/martine/ninja/archive/release.zip
-	FEAT_SOURCE_URL_FILENAME=ninja-release.zip
-	FEAT_SOURCE_CALLBACK=
-	FEAT_BINARY_URL=
-	FEAT_BINARY_URL_FILENAME=
-	FEAT_BINARY_CALLBACK=
+function feature_ninja_snapshot() {
+	FEAT_VERSION=snapshot
 
 	# TODO echo " ** NEED : python"
-	FEAT_DEPENDENCIES=
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL=https://github.com/martine/ninja/archive/release.zip
+	FEAT_SOURCE_URL_FILENAME=ninja-snapshot.zip
+
+	FEAT_BINARY_URL=
+	FEAT_BINARY_URL_FILENAME=
+
+	FEAT_SOURCE_CALLBACK=
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/ninja
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
-	FEAT_ENV_CALLBACK=
-	
-	FEAT_BUNDLE_ITEM=
+
 }
 
 function feature_ninja_install_source() {

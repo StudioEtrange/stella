@@ -13,7 +13,9 @@ function feature_socat() {
 
 function feature_socat_1_7_3_0() {
 	FEAT_VERSION=1_7_3_0
-	FEAT_DEPENDENCIES=
+	
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://www.dest-unreach.org/socat/download/socat-1.7.3.0.tar.gz
 	FEAT_SOURCE_URL_FILENAME=socat-1.7.3.0.tar.gz

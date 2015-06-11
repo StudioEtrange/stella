@@ -197,7 +197,37 @@ function __require() {
 	# OPTIONS
 	# MANDATORY : will stop execution if requirement is not found
 	# OPTIONAL : will not exit if requirement is not found
+	# SPECIFIC : will check for a specific requirement (not just test a file)
+	_opt_mandatory=OFF
+	_opt_optional=ON
+	_opt_specific=OFF
+	for o in $_OPT; do
+		[ "$o" == "MANDATORY" ] && _opt_mandatory=ON
+		[ "$o" == "OPTIONAL" ] && _opt_optional=ON
+		[ "$o" == "SPECIFIC" ] && _opt_specific=ON
+	done
 
+	if [ "$_opt_specific" == "ON" ]; then
+		__require_specific $_file $_OPT
+	else
+		if [[ ! -n `which $_file 2> /dev/null` ]]; then
+			echo "****** WARN $_file is missing ******"
+			if [ "$_opt_mandatory" == "ON" ]; then
+				echo "****** ERROR Please install $_file and re-launch your app"
+				exit 1
+			fi
+		fi
+	fi
+}
+
+# TODO not finished
+function __require_specific() {
+	local _requirement=$1
+	local _OPT=$2
+
+	# OPTIONS
+	# MANDATORY : will stop execution if requirement is not found
+	# OPTIONAL : will not exit if requirement is not found
 	_opt_mandatory=OFF
 	_opt_optional=ON
 	for o in $_OPT; do
@@ -205,13 +235,29 @@ function __require() {
 		[ "$o" == "OPTIONAL" ] && _opt_optional=ON
 	done
 
-	if [[ ! -n `which $_file 2> /dev/null` ]]; then
-		echo "****** WARN $_file is missing ******"
-		if [ "$_opt_mandatory" == "ON" ]; then
-			echo "****** ERROR Please install $_file and re-launch your app"
-			exit 1
-		fi
-	fi
+	case $_requirement in 
+		build-system)
+			
+			case $STELLA_CURRENT_OS in
+				macos)
+					# from https://github.com/darkoperator/MSF-Installer/blob/master/msf_install.sh
+					# http://docs.python-guide.org/en/latest/starting/install/osx/
+					PKGS=`pkgutil --pkgs`
+					if [[ $PKGS =~ com.apple.pkg.Xcode ]]; then
+						echo " ** Xcode detected"
+					else
+						echo " ** WARN Xcode not detected"
+						[ "$_opt_mandatory" == "ON" ] && exit 1
+					fi
+					if [[ $PKGS =~ com.apple.pkg.DeveloperToolsCLI || $PKGS =~ com.apple.pkg.CLTools_Executables ]]; then
+						echo " ** Command Line Development Tools is intalled"
+					else
+						echo " ** WARN Command Line Development Tools not intalled"
+					fi
+					;;
+			esac
+		;;
+	esac
 }
 
 
@@ -242,7 +288,7 @@ function __install_system_requirement_deb() {
 				;;
 			wget) sudo apt-get -y install wget
 				;;
-			build)
+			build-system)
 				sudo apt-get -y install bison util-linux build-essential gcc-multilib g++-multilib g++ pkg-config
 				;;
 		esac

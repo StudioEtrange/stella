@@ -14,7 +14,9 @@ function feature_kibana() {
 
 function feature_kibana_3_1_2() {
 	FEAT_VERSION=3_1_2
-	FEAT_DEPENDENCIES=
+	
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://download.elasticsearch.org/kibana/kibana/kibana-3.1.2.tar.gz
 	FEAT_SOURCE_URL_FILENAME=kibana-3.1.2.tar.gz
@@ -36,7 +38,9 @@ function feature_kibana_3_1_2() {
 
 function feature_kibana_4_0_0() {
 	FEAT_VERSION=4_0_0
-	FEAT_DEPENDENCIES=
+	
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=
 	FEAT_SOURCE_URL_FILENAME=
@@ -65,7 +69,9 @@ function feature_kibana_4_0_0() {
 
 function feature_kibana_4_0_1() {
 	FEAT_VERSION=4_0_1
-	FEAT_DEPENDENCIES=
+	
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=
 	FEAT_SOURCE_URL_FILENAME=

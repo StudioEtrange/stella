@@ -12,7 +12,10 @@ function feature_docker-machine() {
 
 function feature_docker-machine_0_2_0() {
 	FEAT_VERSION=0_2_0
-	FEAT_DEPENDENCIES=
+	
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+	
 
 	FEAT_SOURCE_URL=
 	FEAT_SOURCE_URL_FILENAME=

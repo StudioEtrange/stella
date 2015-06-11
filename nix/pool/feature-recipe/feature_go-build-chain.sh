@@ -17,7 +17,8 @@ function feature_go-build-chain_1_4_2() {
 	FEAT_VERSION=1_4_2
 	
 	# need gcc
-	FEAT_DEPENDENCIES=
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_BUNDLE_ITEM="go#1_4_2"
 

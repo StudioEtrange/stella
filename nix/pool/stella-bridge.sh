@@ -23,7 +23,7 @@ function standalone() {
 	_STELLA_INSTALL_PATH=$(___rel_to_abs_path "$PROVIDED_PATH" "$STELLA_CURRENT_RUNNING_DIR")
 
 	if [ ! -f "$_STELLA_INSTALL_PATH/stella.sh" ]; then
-		__get_stella "GIT" "LATEST" "$_STELLA_INSTALL_PATH"
+		__get_stella "OFFICIAL" "LATEST" "$_STELLA_INSTALL_PATH"
 	fi
 
 	source "$_STELLA_INSTALL_PATH/conf.sh"

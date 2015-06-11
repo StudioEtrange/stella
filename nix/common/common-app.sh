@@ -46,11 +46,13 @@ function __link_app() {
 	_approot=$(__rel_to_abs_path $_approot $STELLA_CURRENT_RUNNING_DIR)
 
 	[ "$_stella_root" == "" ] && _stella_root=$STELLA_ROOT
-	_stella_root=$(__abs_to_rel_path "$_stella_root" "$_approot")
-	
+	[ "$(__is_abs "$_stella_root")" == "FALSE" ] && _stella_root=$(__rel_to_abs_path "$_stella_root" "$_approot")
+
 	_s_ver=$(__get_stella_version "LONG" "$_stella_root")
 	_s_flavour="OFFICIAL"
 	[ -d "$_stella_root/.git" ] && _s_flavour="GIT"
+
+	_stella_root=$(__abs_to_rel_path "$_stella_root" "$_approot")
 
 	echo "#!/bin/bash" >$_approot/stella-link.sh.temp
 	echo "_STELLA_LINK_CURRENT_FILE_DIR=\"\$( cd \"\$( dirname \"\${BASH_SOURCE[0]}\" )\" && pwd )\"" >>$_approot/stella-link.sh.temp
@@ -85,15 +87,17 @@ function __init_app() {
 
 	[ "$(__is_abs "$_workroot")" == "FALSE" ] && _workroot=$(__rel_to_abs_path "$_workroot" "$_approot")
 	[ "$(__is_abs "$_cachedir")" == "FALSE" ] && _cachedir=$(__rel_to_abs_path "$_cachedir" "$_approot")
-	[ "$(__is_abs "$_stella_root")" == "FALSE" ] && _stella_root=$(__rel_to_abs_path "$STELLA_ROOT" "$_approot")
+	# [ "$(__is_abs "$_stella_root")" == "FALSE" ] && _stella_root=$(__rel_to_abs_path "$STELLA_ROOT" "$_approot")
+
+	_s_ver=$(__get_stella_version "LONG")
+	_s_flavour="OFFICIAL"
+	[ -d "$STELLA_ROOT/.git" ] && _s_flavour="GIT"
 
 	_workroot=$(__abs_to_rel_path "$_workroot" "$_approot")
 	_cachedir=$(__abs_to_rel_path "$_cachedir" "$_approot")
 	_stella_root=$(__abs_to_rel_path "$STELLA_ROOT" "$_approot")
 	
-	_s_ver=$(__get_stella_version "LONG")
-	_s_flavour="OFFICIAL"
-	[ -d "$_stella_root/.git" ] && _s_flavour="GIT"
+
 
 	echo "#!/bin/bash" >$_approot/stella-link.sh.temp
 	echo "_STELLA_LINK_CURRENT_FILE_DIR=\"\$( cd \"\$( dirname \"\${BASH_SOURCE[0]}\" )\" && pwd )\"" >>$_approot/stella-link.sh.temp
@@ -145,6 +149,12 @@ function __get_all_properties() {
 		__get_infra_properties "$_properties_file" "$STELLA_INFRA_LIST"
 		__get_env_properties "$_properties_file" "$STELLA_ENV_LIST"
 	fi
+}
+
+function __get_app_property() {
+	local _SECTION=$1
+	local _KEY=$2
+	__get_key "$_STELLA_APP_PROPERTIES_FILE" "$_SECTION" "$_KEY" "PREFIX"
 }
 
 function __get_data_properties() {

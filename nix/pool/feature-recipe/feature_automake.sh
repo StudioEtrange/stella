@@ -12,19 +12,17 @@ function feature_automake() {
 
 function feature_automake_1_14() {
 	FEAT_VERSION=1_14
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://ftp.gnu.org/gnu/automake/automake-1.14.tar.gz
 	FEAT_SOURCE_URL_FILENAME=automake-1.14.tar.gz
 	FEAT_SOURCE_CALLBACK=feature_automake_1_14_patch
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
-	FEAT_BINARY_CALLBACK=
 
-
-	FEAT_DEPENDENCIES=
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/automake
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-	FEAT_ENV_CALLBACK=
 
 }
 

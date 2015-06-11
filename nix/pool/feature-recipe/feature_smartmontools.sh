@@ -13,19 +13,24 @@ function feature_smartmontools() {
 
 function feature_smartmontools_6_3() {
 	FEAT_VERSION=6_3
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://downloads.sourceforge.net/project/smartmontools/smartmontools/6.3/smartmontools-6.3.tar.gz
 	FEAT_SOURCE_URL_FILENAME=smartmontools-6.3.tar.gz
-	FEAT_SOURCE_CALLBACK=
+	FEAT_SOURCE_URL_PROTOCOL=
+
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
+	FEAT_BINARY_URL_PROTOCOL=
+	
+	FEAT_SOURCE_CALLBACK=
 	FEAT_BINARY_CALLBACK=
-
-	FEAT_DEPENDENCIES=
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/sbin/smartctl
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/sbin
 	FEAT_ENV_CALLBACK=
 
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/sbin/smartctl
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/sbin
+	
 }
 
 

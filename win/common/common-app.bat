@@ -346,15 +346,18 @@ goto :eof
 
 	call %STELLA_COMMON%\common.bat :rel_to_abs_path "_approot" "!_approot!" "%STELLA_CURRENT_RUNNING_DIR%"
 
-	call %STELLA_COMMON%\common.bat :is_path_abs "IS_ABS" "%_stella_root%"
+	call %STELLA_COMMON%\common.bat :is_path_abs "IS_ABS" "!_stella_root!"
 	if "%IS_ABS%"=="FALSE" (
-		call %STELLA_COMMON%\common.bat :rel_to_abs_path "_stella_root" "%_stella_root%" "%_approot%"
+		call %STELLA_COMMON%\common.bat :rel_to_abs_path "_stella_root" "!_stella_root!" "%_approot%"
 	)
-	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_stella_root" "%_stella_root%" "%_approot%"
-
 	call %STELLA_COMMON%\common.bat :get_stella_version "_s_ver" "LONG" "!_stella_root!"
 	set "_s_flavour=OFFICIAL"
 	if exist "!_stella_root!\.git" set "_s_flavour=GIT"
+
+
+	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_stella_root" "!_stella_root!" "%_approot%"
+
+	
 
 	> "!_approot!\stella-link.bat.temp" ECHO(@if not "%%~1"=="include" if not "%%~1"=="chaining" if not "%%~1"=="nothing" setlocal enableExtensions enableDelayedExpansion
 	>> "!_approot!\stella-link.bat.temp" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%~dp0
@@ -394,18 +397,19 @@ goto :eof
 	if "%IS_ABS%"=="FALSE" (
 		call %STELLA_COMMON%\common.bat :rel_to_abs_path "_cachedir" "!_cachedir!" "!_approot!"
 	)
-	call %STELLA_COMMON%\common.bat :is_path_abs "IS_ABS" "%STELLA_ROOT%"
-	if "%IS_ABS%"=="FALSE" (
-		call %STELLA_COMMON%\common.bat :rel_to_abs_path "_stella_root" "%STELLA_ROOT%" "!_approot!"
-	)
+	REM call %STELLA_COMMON%\common.bat :is_path_abs "IS_ABS" "%STELLA_ROOT%"
+	REM if "%IS_ABS%"=="FALSE" (
+	REM		call %STELLA_COMMON%\common.bat :rel_to_abs_path "_stella_root" "%STELLA_ROOT%" "!_approot!"
+	REM )
+	
+	call %STELLA_COMMON%\common.bat :get_stella_version "_s_ver" "LONG"
+	set "_s_flavour=OFFICIAL"
+	if exist "!STELLA_ROOT!\.git" set "_s_flavour=GIT"
 
 	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_workroot" "!_workroot!" "!_approot!"
 	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_cachedir" "!_cachedir!" "!_approot!"
 	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_stella_root" "%STELLA_ROOT%" "!_approot!"
 
-	call %STELLA_COMMON%\common.bat :get_stella_version "_s_ver" "LONG" "%STELLA_ROOT%"
-	set "_s_flavour=OFFICIAL"
-	if exist "!_stella_root!\.git" set "_s_flavour=GIT"
 
 	> "!_approot!\stella-link.bat.temp" ECHO(@if not "%%~1"=="include" if not "%%~1"=="chaining" if not "%%~1"=="nothing" setlocal enableExtensions enableDelayedExpansion
 	>> "!_approot!\stella-link.bat.temp" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%~dp0
@@ -463,6 +467,12 @@ goto :eof
 	call :get_infra_properties "%_properties_file%" "!STELLA_INFRA_LIST!"
 	call :get_env_properties "%_properties_file%" "!STELLA_ENV_LIST!"
 
+goto :eof
+
+:get_app_property
+	set "_SECTION=%~1"
+	set "_KEY=%~2"
+	call %STELLA_COMMON%\common.bat :get_key "!_STELLA_APP_PROPERTIES_FILE!" "!_SECTION!" "!_KEY!" "PREFIX"
 goto :eof
 
 :get_data_properties

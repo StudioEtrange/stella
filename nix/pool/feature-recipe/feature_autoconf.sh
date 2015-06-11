@@ -12,19 +12,18 @@ function feature_autoconf() {
 
 function feature_autoconf_2_69() {
 	FEAT_VERSION=2_69
+	# TODO NEED : perl 5.6 and M4
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://ftp.gnu.org/gnu/autoconf/autoconf-2.69.tar.gz
 	FEAT_SOURCE_URL_FILENAME=autoconf-2.69.tar.gz
 	FEAT_SOURCE_CALLBACK=feature_autoconf_2_69_patch
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
-	FEAT_BINARY_CALLBACK=
-
-	# TODO NEED : perl 5.6 and M4
-	FEAT_DEPENDENCIES=
+	
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/autoconf
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-	FEAT_ENV_CALLBACK=
 
 }
 

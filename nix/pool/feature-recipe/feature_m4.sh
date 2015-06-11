@@ -12,7 +12,9 @@ function feature_m4() {
 
 function feature_m4_1_4_17() {
 	FEAT_VERSION=1_4_17
-	FEAT_DEPENDENCIES=
+	
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://mirrors.ibiblio.org/gnu/ftp/gnu/m4/m4-1.4.17.tar.gz
 	FEAT_SOURCE_URL_FILENAME=m4-1.4.17.tar.gz

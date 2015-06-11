@@ -12,6 +12,7 @@ function feature_maven() {
 }
 
 function feature_maven_env() {
+	M2_HOME=$FEAT_INSTALL_ROOT
 	export M2_HOME=$FEAT_INSTALL_ROOT
 }
 
@@ -19,6 +20,7 @@ function feature_maven_env() {
 
 function feature_maven_3_3_1() {
 	FEAT_VERSION=3_3_1
+	
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
