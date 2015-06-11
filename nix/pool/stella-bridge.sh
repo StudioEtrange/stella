@@ -81,7 +81,7 @@ function bootstrap() {
 	fi
 
 	if [ "$IS_STELLA_JUST_INSTALLED" == "TRUE" ]; then
-		__ask_install_requirements
+		__stella_requirement
 	fi
 
 	if [ "$IS_STELLA_LINK_FILE" == "FALSE" ]; then

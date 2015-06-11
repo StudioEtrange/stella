@@ -13,14 +13,15 @@ STELLA_FTP_CREDENTIALS=$STELLA_ROOT/.stella-ftp-credentials
 
 STELLA_RELEASE_POOL=$STELLA_APPLICATION/stella-release/pool
 
+# TODO : version not implemented
 function usage() {
 	echo "USAGE :"
 	echo "----------------"
 	echo "List of commands"
 	echo " o-- Release management :"
-	echo " L     stella-release : do a complete stella release and artefact publication, and upload them"
-	echo " L     stella-dist [--upload] : prepare a pack of all stella distribution package for each platform, and may upload them"
-	echo " L     stella-items [--upload] : prepare all stella artifact, and may upload them"
+	echo " L     stella-release [--ver=<version>] : do a complete stella release and artefact publication, and upload them"
+	echo " L     stella-dist [--upload] [--ver=<version>] : prepare a pack of all stella distribution package for each platform, and may upload them"
+	echo " L     stella-items [--upload]  [--ver=<version>] : prepare all stella artifact, and may upload them"
 	echo " L     install : download dependencies for this tool"
 }
 
@@ -79,22 +80,26 @@ function pack_stella() {
 		[ "$o" == "AUTO_EXTRACT" ] && _opt_auto_extract=ON
 	done
 
+
 	# DISTRIBUTIONS PACKAGE FOR NIX SYSTEM WITH tar.gz
 	case $_platform in
 		win)
 			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./cache/" --exclude "./workspace/" --exclude "./temp/" --exclude "./app/" \
+			--exclude ".*" \
 			--exclude "./nix/" --exclude "*.sh" \
 			-f "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz -C "$STELLA_ROOT/.."  "$(basename $STELLA_ROOT)"
 		;;
 
 		nix)
 			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./cache/" --exclude "./workspace/" --exclude "./temp/" --exclude "./app/" \
+			--exclude ".*" \
 			--exclude "./win/" --exclude "*.bat" \
 			-f "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz -C "$STELLA_ROOT/.."  "$(basename $STELLA_ROOT)"
 		;;
 
 		all)
 			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./cache/" --exclude "./workspace/" --exclude "./temp/" --exclude "./app/" \
+			--exclude ".*" \
 			-f "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz -C "$STELLA_ROOT/.."  "$(basename $STELLA_ROOT)"
 		;;
 	esac
@@ -108,19 +113,19 @@ function pack_stella() {
 	case $_platform in
 		win)
 			7z a -t7z "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".7z \
-			-xr\!"*DS_Store" -xr0\!"stella/.stella-env" -xr\!".git" -xr\!"*.gitignore*" -xr0\!"stella/cache" -xr0\!"stella/workspace" -xr0\!"stella/temp" -xr0\!"stella/app" \
+			-xr\!"*DS_Store" -xr0\!"stella/.stella-env" -xr\!".*" -xr\!".git" -xr\!"*.gitignore*" -xr0\!"stella/cache" -xr0\!"stella/workspace" -xr0\!"stella/temp" -xr0\!"stella/app" \
 			-xr0\!"stella/nix" -xr\!"*.sh" \
 			"$STELLA_ROOT"
 		;;
 		nix)
 			7z a -t7z "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".7z \
-			-xr\!"*DS_Store" -xr0\!"stella/.stella-env" -xr\!".git" -xr\!"*.gitignore*" -xr0\!"stella/cache" -xr0\!"stella/workspace" -xr0\!"stella/temp" -xr0\!"stella/app" \
+			-xr\!"*DS_Store" -xr0\!"stella/.stella-env" -xr\!".*" -xr\!".git" -xr\!"*.gitignore*" -xr0\!"stella/cache" -xr0\!"stella/workspace" -xr0\!"stella/temp" -xr0\!"stella/app" \
 			-xr0\!"stella/win" -xr\!"*.bat" \
 			"$STELLA_ROOT"
 		;;
 		all)
 			7z a -t7z "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".7z \
-			-xr\!"*DS_Store" -xr0\!"stella/.stella-env" -xr\!".git" -xr\!"*.gitignore*" -xr0\!"stella/cache" -xr0\!"stella/workspace" -xr0\!"stella/temp" -xr0\!"stella/app" \
+			-xr\!"*DS_Store" -xr0\!"stella/.stella-env" -xr\!".*" -xr\!".git" -xr\!"*.gitignore*" -xr0\!"stella/cache" -xr0\!"stella/workspace" -xr0\!"stella/temp" -xr0\!"stella/app" \
 			"$STELLA_ROOT"
 		;;
 	esac
@@ -194,6 +199,7 @@ ACTION=						'action' 			a						'install stella-release stella-dist stella-items
 "
 OPTIONS="
 UPLOAD=''                   'u'    		''            		b     		0     		'1'           			upload.
+VER='CURRENT' 					'' 			'version'				s 			0			''					release a specific version
 "
 
 $STELLA_API argparse "$0" "$OPTIONS" "$PARAMETERS" "Release management" "$(usage)" "" "$@"
