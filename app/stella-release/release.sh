@@ -11,7 +11,7 @@ STELLA_FTP_HOST=$FTP_HOST
 STELLA_FTP_ROOT=$STELLA_FTP_HOST/$FTP_ROOT
 STELLA_FTP_CREDENTIALS=$STELLA_ROOT/.stella-ftp-credentials
 
-STELLA_RELEASE_POOL=$STELLA_APPLICATION/stella-release/pool
+
 
 # TODO : version not implemented
 function usage() {
@@ -19,7 +19,7 @@ function usage() {
 	echo "----------------"
 	echo "List of commands"
 	echo " o-- Release management :"
-	echo " L     stella-release [--ver=<version>] : do a complete stella release and artefact publication, and upload them"
+	echo " L     stella-release [--ver=<version>] : do a complete stella release with artefact of current version (or a specific version), and upload them"
 	echo " L     stella-dist [--upload] [--ver=<version>] : prepare a pack of all stella distribution package for each platform, and may upload them"
 	echo " L     stella-items [--upload]  [--ver=<version>] : prepare all stella artifact, and may upload them"
 	echo " L     install : download dependencies for this tool"
@@ -29,6 +29,21 @@ function usage() {
 # ----------- Main functions ----------------
 
 function stella_items_release() {
+	local _wanted_version=$1
+
+	if [ "$_wanted_version" == "CURRENT" ]; then
+		_stella_root_="$STELLA_ROOT"
+	else
+		rm -Rf "$STELLA_APP_WORK_ROOT/stella"
+		cd  "$STELLA_APP_WORK_ROOT/stella"
+		git clone https://github.com/StudioEtrange/stella
+		git checkout $_wanted_version
+		
+		_stella_root_="$STELLA_APP_WORK_ROOT/stella/stella"
+	fi
+
+	STELLA_RELEASE_POOL=$_stella_root_/app/stella-release/pool
+	
 	$STELLA_API copy_folder_content_into "$STELLA_RELEASE_POOL" "$STELLA_APP_WORK_ROOT/output/pool"
 	#pack_goconfig-cli
 }
@@ -36,17 +51,30 @@ function stella_items_release() {
 
 function stella_lib_release() {
 	local _platform=$1
-	local _opt="$2"
+	local _wanted_version=$2
+	local _opt="$3"
 
 	local release_filename
+	local _stella_root_
 
 	local _opt_auto_extract=OFF # make a self uncompress archive
 	for o in $_opt; do 
 		[ "$o" == "AUTO_EXTRACT" ] && _opt_auto_extract=ON
 	done
 
-	version=$(__get_stella_version "LONG")
-	echo $version > "$STELLA_ROOT/VERSION"
+	if [ "$_wanted_version" == "CURRENT" ]; then
+		_stella_root_="$STELLA_ROOT"
+	else
+		rm -Rf "$STELLA_APP_WORK_ROOT/stella"
+		cd  "$STELLA_APP_WORK_ROOT/stella"
+		git clone https://github.com/StudioEtrange/stella
+		git checkout $_wanted_version
+		
+		_stella_root_="$STELLA_APP_WORK_ROOT/stella/stella"
+	fi
+
+	version=$(__get_stella_version "LONG" "$_stella_root_")
+	echo $version > "$_stella_root_/VERSION"
 
 	case $_platform in
 		win)
@@ -60,11 +88,11 @@ function stella_lib_release() {
 			;;
 	esac
 
-	pack_stella "$_platform" "$release_filename" "$_opt"
+	pack_stella "$_platform" "$release_filename" "$_stella_root_" "$_opt"
 
 	
 
-	rm -f "$STELLA_ROOT/VERSION"
+	rm -f "$_stella_root_/VERSION"
 }
 
 
@@ -73,7 +101,8 @@ function stella_lib_release() {
 function pack_stella() {
 	local _platform=$1
 	local _release_filename=$2
-	local _opt="$3"
+	local _stella_root_=$3
+	local _opt="$4"
 
 	local _opt_auto_extract=OFF # make a self uncompress archive
 	for o in $_opt; do 
@@ -87,20 +116,20 @@ function pack_stella() {
 			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./cache/" --exclude "./workspace/" --exclude "./temp/" --exclude "./app/" \
 			--exclude ".*" \
 			--exclude "./nix/" --exclude "*.sh" \
-			-f "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz -C "$STELLA_ROOT/.."  "$(basename $STELLA_ROOT)"
+			-f "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz -C "$_stella_root_/.."  "$(basename $_stella_root_)"
 		;;
 
 		nix)
 			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./cache/" --exclude "./workspace/" --exclude "./temp/" --exclude "./app/" \
 			--exclude ".*" \
 			--exclude "./win/" --exclude "*.bat" \
-			-f "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz -C "$STELLA_ROOT/.."  "$(basename $STELLA_ROOT)"
+			-f "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz -C "$_stella_root_/.."  "$(basename $_stella_root_)"
 		;;
 
 		all)
 			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./cache/" --exclude "./workspace/" --exclude "./temp/" --exclude "./app/" \
 			--exclude ".*" \
-			-f "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz -C "$STELLA_ROOT/.."  "$(basename $STELLA_ROOT)"
+			-f "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz -C "$_stella_root_/.."  "$(basename $_stella_root_)"
 		;;
 	esac
 	
@@ -115,18 +144,18 @@ function pack_stella() {
 			7z a -t7z "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".7z \
 			-xr\!"*DS_Store" -xr0\!"stella/.stella-env" -xr\!".*" -xr\!".git" -xr\!"*.gitignore*" -xr0\!"stella/cache" -xr0\!"stella/workspace" -xr0\!"stella/temp" -xr0\!"stella/app" \
 			-xr0\!"stella/nix" -xr\!"*.sh" \
-			"$STELLA_ROOT"
+			"$_stella_root_"
 		;;
 		nix)
 			7z a -t7z "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".7z \
 			-xr\!"*DS_Store" -xr0\!"stella/.stella-env" -xr\!".*" -xr\!".git" -xr\!"*.gitignore*" -xr0\!"stella/cache" -xr0\!"stella/workspace" -xr0\!"stella/temp" -xr0\!"stella/app" \
 			-xr0\!"stella/win" -xr\!"*.bat" \
-			"$STELLA_ROOT"
+			"$_stella_root_"
 		;;
 		all)
 			7z a -t7z "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".7z \
 			-xr\!"*DS_Store" -xr0\!"stella/.stella-env" -xr\!".*" -xr\!".git" -xr\!"*.gitignore*" -xr0\!"stella/cache" -xr0\!"stella/workspace" -xr0\!"stella/temp" -xr0\!"stella/app" \
-			"$STELLA_ROOT"
+			"$_stella_root_"
 		;;
 	esac
 
@@ -216,28 +245,28 @@ mkdir -p $STELLA_APP_WORK_ROOT/output
 case $ACTION in
 	install)
 		$STELLA_API get_features
-		$STELLA_API copy_folder_content_into "$STELLA_RELEASE_POOL/common/sfx_for_7z" "$STELLA_APP_CACHE_DIR"
+		$STELLA_API copy_folder_content_into "$STELLA_APPLICATION/stella-release/pool/common/sfx_for_7z" "$STELLA_APP_CACHE_DIR"
 		;;
     stella-dist)
 		rm -Rf $STELLA_APP_WORK_ROOT/output/dist
 		mkdir -p $STELLA_APP_WORK_ROOT/output/dist
-		stella_lib_release nix "AUTO_EXTRACT"
-		stella_lib_release win "AUTO_EXTRACT"
-		stella_lib_release all "AUTO_EXTRACT"
+		stella_lib_release nix "$VER" "AUTO_EXTRACT"
+		stella_lib_release win "$VER" "AUTO_EXTRACT"
+		stella_lib_release all "$VER" "AUTO_EXTRACT"
 		[ "$UPLOAD" == "1" ] && upload_ftp "$STELLA_APP_WORK_ROOT/output/dist" "dist/$version"
 		;;
 	stella-items)
 		rm -Rf $STELLA_APP_WORK_ROOT/output/pool
 		mkdir -p $STELLA_APP_WORK_ROOT/output/pool
-		stella_items_release
+		stella_items_release "$VER"
 		if [ "$UPLOAD" == "1" ]; then
 			# TODO : erase pool folder first
 			upload_ftp "$STELLA_APP_WORK_ROOT/output/pool" "pool"
 		fi
 		;;
 	stella-release)
-		$0 stella-items --upload
-		$0 stella-dist --upload
+		$0 stella-items --upload --version="$VER"
+		$0 stella-dist --upload --version="$VER"
 		;;
 	*)
 		echo "use option --help for help"
