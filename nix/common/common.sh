@@ -886,7 +886,7 @@ function __argparse(){
 	ARGP="
 	--HEADER--
 	ARGP_PROG=$PROGNAME
-	ARGP_DELETE=quiet verbose
+	ARGP_DELETE=quiet verbose version
 	ARGP_VERSION=$STELLA_APP_NAME
 	ARGP_OPTION_SEP=:
 	ARGP_SHORT=$SHORT_DESCRIPTION

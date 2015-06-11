@@ -18,6 +18,7 @@ fi
 
 ver=$1
 
+$current_stella/app/stella-release/release.sh install
 $current_stella/app/stella-release/release.sh stella-release --ver=$ver
 
 echo "** END **"

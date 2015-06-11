@@ -289,7 +289,8 @@ function __install_system_requirement_deb() {
 			wget) sudo apt-get -y install wget
 				;;
 			build-system)
-				sudo apt-get -y install bison util-linux build-essential gcc-multilib g++-multilib g++ pkg-config
+				#sudo apt-get -y install bison util-linux build-essential gcc-multilib g++-multilib g++ pkg-config
+				sudo apt-get -y install build-essential gcc-multilib g++-multilib
 				;;
 		esac
 	done

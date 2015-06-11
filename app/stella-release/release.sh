@@ -228,7 +228,7 @@ ACTION=						'action' 			a						'install stella-release stella-dist stella-items
 "
 OPTIONS="
 UPLOAD=''                   'u'    		''            		b     		0     		'1'           			upload.
-VER='CURRENT' 					'' 			'version'				s 			0			''					release a specific version
+VER='CURRENT' 				'' 			'version'			s 			0			''					release a specific version
 "
 
 $STELLA_API argparse "$0" "$OPTIONS" "$PARAMETERS" "Release management" "$(usage)" "" "$@"
