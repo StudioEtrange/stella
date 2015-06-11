@@ -554,7 +554,7 @@ function __compress() {
 			fi
 			;;
 		ZIP)
-			# TODO
+			echo "TODO: *********** ZIP NOT IMPLEMENTED"
 			;;
 		TAR*)
 				[ -d "$_target" ] && tar -c -v -z -f "$_output_archive" -C "$_target/.." "$(basename $_target)"

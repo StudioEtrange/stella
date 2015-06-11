@@ -130,6 +130,13 @@ function __get_stella() {
 	local _path=$3
 
 	if [ "$_flavour" == "GIT" ]; then
+		if [[ ! -n `which git 2> /dev/null` ]]; then
+			echo "*** git not present on this system. Trying to get stella from official website"
+			_flavour=OFFICIAL
+		fi
+	fi
+
+	if [ "$_flavour" == "GIT" ]; then
 		git clone https://github.com/StudioEtrange/stella "$_path"
 		if [ ! "$_ver" == "" ]; then
 			if [ ! "$_ver" == "LATEST" ]; then
@@ -141,10 +148,16 @@ function __get_stella() {
 
 	if [ "$_flavour" == "OFFICIAL" ]; then
 		mkdir -p "$_path" 
+		[ "$_ver" == "LATEST" ] && _ver=latest
+
 		curl -L -o "$_path"/$stella-nix-"$_ver".gz.sh $__STELLA_URL/dist/$_ver/stella-nix-"$_ver".tar.gz.run
-		chmod +x "$_path"/$stella-nix-"$_ver".gz.run
-		./"$_path"/$stella-nix-"$_ver".gz.run
-		rm -f "$_path"/$stella-nix-"$_ver".gz.run
+		if [ -f "$_path"/$stella-nix-"$_ver".gz.run ]; then		
+			chmod +x "$_path"/$stella-nix-"$_ver".gz.run
+			./"$_path"/$stella-nix-"$_ver".gz.run
+			rm -f "$_path"/$stella-nix-"$_ver".gz.run
+		else
+			echo "*** ERROR stella $_flavour version $_ver not found"
+		fi
 	fi
 }
 

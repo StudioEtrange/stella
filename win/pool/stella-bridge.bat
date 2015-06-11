@@ -124,19 +124,30 @@ REM Various functions ------------------
 	set "_ver=%~2"
 	set "_path=%~3"
 
-	if "%_flavour%"=="GIT" (
+	if "!_flavour!"=="GIT" (
+		where /q git
+		if not "%ERRORLEVEL%"=="0" (
+			echo *** git not present on this system. Trying to get stella from official website
+			set "_flavour=OFFICIAL"
+		)
+	)
+
+	if "!_flavour!"=="GIT" (
 		git clone https://github.com/StudioEtrange/stella "%_path%"
-		if not "%_ver%"=="" if not "%_ver%"=="LATEST" (
+		if not "!_ver!"=="" if not "!_ver!"=="LATEST" (
 			cd /D "%_path%"
-			git checkout %_ver%
+			git checkout !_ver!
 		) 
 	)
 
-	if "%_flavour%"=="OFFICIAL" (
+	if "!_flavour!"=="OFFICIAL" (
+		if "!_ver!"=="LATEST" (
+			set "_ver=latest"
+		)
 		pushd
 		if not exist "%_path%" mkdir "%_path%"
 		cd /D "%_path%"
-		powershell -Command "(New-Object Net.WebClient).DownloadFile('http://"%__STELLA_URL%"/dist/%_ver%/stella-win-"%_ver%".7z.exe', 'stella-win-"%_ver%".zip.exe')"
+		powershell -Command "(New-Object Net.WebClient).DownloadFile('http://"%__STELLA_URL%"/dist/!_ver!/stella-win-"!_ver!".zip.exe', 'stella-win-"!_ver!".zip.exe')"
 		popd
 	)
 
