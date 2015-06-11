@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # USE with crontab or with download
-# cron.sh [<CURRENT|version>]
-
+# bootstrap-release.sh [<CURRENT|version>]
+# example :
+# 	curl -sSL https://raw.githubusercontent.com/StudioEtrange/stella/app/stella-release/bootstrap.sh | bash
 _CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 _CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
 
