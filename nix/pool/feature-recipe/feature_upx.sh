@@ -54,7 +54,7 @@ function feature_ucl_link() {
 		return
 	fi
 	ZLIB_ROOT=$FEAT_INSTALL_ROOT
-	# we make a ling so that only the static version of zlib is found and use (instead of dynamic version)
+	# we make a link so that only the static version of zlib is found and used (instead of dynamic version)
 	ln -fs $FEAT_INSTALL_ROOT/lib/libz.a $FEAT_INSTALL_ROOT/libz.a
 
 	FEAT_SCHEMA_SELECTED=$save_FEAT_SCHEMA_SELECTED

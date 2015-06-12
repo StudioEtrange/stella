@@ -10,7 +10,9 @@ $STELLA_API get_app_property "FTP" "ROOT"
 
 STELLA_FTP_HOST=$FTP_HOST
 STELLA_FTP_ROOT=$STELLA_FTP_HOST/$FTP_ROOT
-STELLA_FTP_CREDENTIALS=$STELLA_ROOT/.stella-ftp-credentials
+STELLA_FTP_CREDENTIALS=
+[ -f "$STELLA_ROOT/.stella-ftp-credentials"] && STELLA_FTP_CREDENTIALS=$STELLA_ROOT/.stella-ftp-credentials
+[ -f "$HOME/.stella-ftp-credentials"] && STELLA_FTP_CREDENTIALS=$HOME/.stella-ftp-credentials
 
 
 
@@ -22,7 +24,7 @@ function usage() {
 	echo " o-- Release management :"
 	echo " L     stella-release [--ver=<version>] : do a complete stella release with artefact of current version (or a specific version), and upload them"
 	echo " L     stella-dist [--upload] [--ver=<version>] : prepare a pack of all stella distribution package for each platform, and may upload them"
-	echo " L     stella-items [--upload]  [--ver=<version>] : prepare all stella artifact, and may upload them"
+	echo " L     stella-items [--upload] : prepare all stella artifact (from the current version), and may upload them"
 	echo " L     install : download dependencies for this tool"
 }
 
@@ -31,6 +33,8 @@ function usage() {
 
 function stella_items_release() {
 	local _wanted_version=$1
+	# we only pick artefact from current version
+	_wanted_version=CURRENT
 
 	if [ "$_wanted_version" == "CURRENT" ]; then
 		_stella_root_="$STELLA_ROOT"
@@ -259,14 +263,16 @@ case $ACTION in
 	stella-items)
 		rm -Rf $STELLA_APP_WORK_ROOT/output/pool
 		mkdir -p $STELLA_APP_WORK_ROOT/output/pool
-		stella_items_release "$VER"
+		#stella_items_release "$VER"
+		stella_items_release
 		if [ "$UPLOAD" == "1" ]; then
 			# TODO : erase pool folder first
 			upload_ftp "$STELLA_APP_WORK_ROOT/output/pool" "pool"
 		fi
 		;;
 	stella-release)
-		$0 stella-items --upload --ver="$VER"
+		#$0 stella-items --upload --ver="$VER"
+		$0 stella-items --upload
 		$0 stella-dist --upload --ver="$VER"
 		;;
 	*)
