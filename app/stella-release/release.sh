@@ -213,7 +213,7 @@ function upload_ftp() {
 function __ftp_push_file() {
 	local _local_target=$1
 	local _ftp_target=$2/
-
+	echo " ** push $_local_target"
 	curl --ftp-create-dirs --netrc-file $STELLA_FTP_CREDENTIALS -T $_local_target ftp://$STELLA_FTP_ROOT/$_ftp_target
 }
 
@@ -221,6 +221,7 @@ function __ftp_push_directory_recurse() {
 	local _local_target=$1
 	local _ftp_target=$2
 	local f=
+	echo " ** push folder $_local_target"
 
 	for f in  "$_local_target"/*; do
 		[ -d "$f" ] && __ftp_push_directory_recurse "$f" "$_ftp_target/$(basename $f)"
