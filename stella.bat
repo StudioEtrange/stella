@@ -6,7 +6,7 @@ call %~dp0\conf.bat
 
 
 :: arguments
-set "params=domain:"app feature virtual stella proxy" action:"on off register search remove link bootstrap api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature setup-env install list create-env run-env stop-env destroy-env info-env create-box get-box" id:"_ANY_""
+set "params=domain:"app feature virtual stella proxy" action:"version on off register search remove link bootstrap api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature setup-env install list create-env run-env stop-env destroy-env info-env create-box get-box" id:"_ANY_""
 set "options=-f: -vcpu:_ANY_ -vmem:_ANY_ -head: -login: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_ -stellaroot:_ANY_ -samples: -proxyhost:_ANY_ -proxyport:_ANY_ -proxyuser:_ANY_ -proxypass:_ANY_"
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
@@ -58,6 +58,19 @@ if "%DOMAIN%"=="stella" (
 	if "%ACTION%"=="bootstrap" (
 		if "%id%"=="env" (
 			call %STELLA_COMMON%\common.bat :bootstrap_stella_env
+			goto :end
+		)
+	)
+
+	if "%ACTION%"=="version" (
+		if "%id%"=="long" (
+			call %STELLA_COMMON%\common.bat :get_stella_version "VAR" "LONG"
+			echo !VAR!
+			goto :end
+		)
+		if "%id%"=="short" (
+			call %STELLA_COMMON%\common.bat :get_stella_version "VAR" "SHORT"
+			echo !VAR!
 			goto :end
 		)
 	)
@@ -142,6 +155,7 @@ if "%DOMAIN%"=="virtual" goto :end
 	echo 		api list all : list public functions of stella api
 	echo		stella bootstrap env : launch a shell with all stella env var setted
 	echo		stella install dep : install all features and systems requirements for the current OS (%STELLA_CURRENT_OS%)
+	echo		stella version ^<long^|short^> : print stella version
 	echo	* network management :
 	echo 	    proxy on ^<name^> : active this proxy
 	echo 	    proxy off now : active this proxy

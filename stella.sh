@@ -32,6 +32,7 @@ function usage() {
 	echo " L     stella api list : list public functions of stella api"
 	echo " L     stella bootstrap env : launch a shell with all stella env var setted"
 	echo " L     stella install dep : install all features and systems requirements if any, for the current OS ($STELLA_CURRENT_OS)"
+	echo " L     stella version <long|short> : print stella version"
 	echo " o-- network management :"
 	echo " L     proxy on <name> : active proxy"
 	echo " L     proxy off now : disable proxy"
@@ -44,7 +45,7 @@ function usage() {
 # arguments
 PARAMETERS="
 DOMAIN=                          'domain'     		a           'app feature virtual stella proxy'         										   				Action domain.
-ACTION=                         'action'   					a           'search remove on off register link api bootstrap install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature setup-env install list create-env run-env stop-env destroy-env create-box get-box'         	Action to compute.
+ACTION=                         'action'   					a           'version search remove on off register link api bootstrap install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature setup-env install list create-env run-env stop-env destroy-env create-box get-box'         	Action to compute.
 ID=							 ''								s 			'' 						Feature ID or Data or Assets or Env or Distrib ID.
 "
 OPTIONS="
@@ -140,6 +141,15 @@ if [ "$DOMAIN" == "stella" ]; then
 	if [ "$ACTION" == "install" ]; then
 		if [ "$ID" == "dep" ]; then
 			__stella_requirement
+		fi
+	fi
+
+	if [ "$ACTION" == "version" ]; then
+		if [ "$ID" == "long" ]; then
+			__get_stella_version "LONG"
+		fi
+		if [ "$ID" == "short" ]; then
+			__get_stella_version "SHORT"
 		fi
 	fi
 fi
