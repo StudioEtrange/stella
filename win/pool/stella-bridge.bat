@@ -138,7 +138,7 @@ REM Various functions ------------------
 
 	if "!_flavour!"=="GIT" (
 		git clone https://github.com/StudioEtrange/stella "%_path%"
-		if not "!_ver!"=="" if not "!_ver!"=="SNAPSHOT" if not "!_ver!"=="LATEST" (
+		if not "!_ver!"=="SNAPSHOT" if not "!_ver!"=="LATEST" (
 			cd /D "%_path%"
 			git checkout !_ver!
 		) 

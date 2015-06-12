@@ -122,7 +122,7 @@ function pack_stella() {
 			tar -c -v -z --exclude ".*" --exclude "./cache/" --exclude "./workspace/" --exclude "./temp/" --exclude "./app/" \
 			--exclude "./nix/" \
 			--exclude "*.sh" \
-			-f "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz -C "$_stella_root_/.."  "$(basename $_stella_root_)"
+			-f "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz -C "$_stella_root_/.."  "${_stella_root_%%.*}"
 		;;
 
 		nix)
@@ -154,13 +154,13 @@ function pack_stella() {
 		;;
 		nix)
 			7z a -t7z "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".7z \
-			-xr\!"*DS_Store" -xr0\!"stella/.stella-env" -xr\!".*" -xr\!".git" -xr\!"*.gitignore*" -xr0\!"stella/cache" -xr0\!"stella/workspace" -xr0\!"stella/temp" -xr0\!"stella/app" \
+			-xr\!".*" -xr0\!"stella/cache" -xr0\!"stella/workspace" -xr0\!"stella/temp" -xr0\!"stella/app" \
 			-xr0\!"stella/win" -xr\!"*.bat" \
 			"$_stella_root_"
 		;;
 		all)
 			7z a -t7z "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".7z \
-			-xr\!"*DS_Store" -xr0\!"stella/.stella-env" -xr\!".*" -xr\!".git" -xr\!"*.gitignore*" -xr0\!"stella/cache" -xr0\!"stella/workspace" -xr0\!"stella/temp" -xr0\!"stella/app" \
+			-xr\!".*" -xr0\!"stella/cache" -xr0\!"stella/workspace" -xr0\!"stella/temp" -xr0\!"stella/app" \
 			"$_stella_root_"
 		;;
 	esac
