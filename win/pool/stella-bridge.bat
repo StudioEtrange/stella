@@ -124,6 +124,10 @@ REM Various functions ------------------
 	set "_ver=%~2"
 	set "_path=%~3"
 
+	if "!_flavour!"=="" (
+		set "_flavour=OFFICIAL"
+	)
+
 	if "!_ver!"=="" (
 		set "_ver=LATEST"
 	)
@@ -155,7 +159,7 @@ REM Various functions ------------------
 		pushd
 		if not exist "%_path%" mkdir "%_path%"
 		cd /D "%_path%"
-		powershell -Command "(New-Object Net.WebClient).DownloadFile('http://"%__STELLA_URL%"/dist/!_ver!/stella-win-"!_ver!".zip.exe', 'stella-win-"!_ver!".zip.exe')"
+		powershell -Command "(New-Object Net.WebClient).DownloadFile('http://"%__STELLA_URL%"/dist/!_ver!/stella-all-"!_ver!".zip.exe', 'stella-all-"!_ver!".zip.exe')"
 		popd
 	)
 

@@ -129,6 +129,8 @@ function __get_stella() {
 	local _ver=$2
 	local _path=$3
 
+
+	[ "$_flavour" == "" ] && _ver=OFFICIAL
 	[ "$_ver" == "" ] && _ver=LATEST
 
 	if [ "$_flavour" == "GIT" ]; then
@@ -153,11 +155,11 @@ function __get_stella() {
 		[ "$_ver" == "LATEST" ] && _ver=latest
 		[ "$_ver" == "SNAPSHOT" ] && _ver=snapshot
 
-		curl -L -o "$_path"/$stella-nix-"$_ver".gz.sh $__STELLA_URL/dist/$_ver/stella-nix-"$_ver".tar.gz.run
-		if [ -f "$_path"/$stella-nix-"$_ver".gz.run ]; then		
-			chmod +x "$_path"/$stella-nix-"$_ver".gz.run
-			./"$_path"/$stella-nix-"$_ver".gz.run
-			rm -f "$_path"/$stella-nix-"$_ver".gz.run
+		curl -L -o "$_path"/$stella-all-"$_ver".gz.sh $__STELLA_URL/dist/$_ver/stella-all-"$_ver".tar.gz.run
+		if [ -f "$_path"/$stella-all-"$_ver".gz.run ]; then		
+			chmod +x "$_path"/$stella-all-"$_ver".gz.run
+			./"$_path"/$stella-all-"$_ver".gz.run
+			rm -f "$_path"/$stella-all-"$_ver".gz.run
 		else
 			echo "*** ERROR stella $_flavour version $_ver not found"
 		fi

@@ -122,20 +122,19 @@ function pack_stella() {
 			tar -c -v -z --exclude ".*" --exclude "./cache/" --exclude "./workspace/" --exclude "./temp/" --exclude "./app/" \
 			--exclude "./nix/" \
 			--exclude "*.sh" \
-			-f "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz -C "$_stella_root_/.."  "${_stella_root_##*/}"
+			-f "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz -C "$_stella_root_/.." "${_stella_root_##*/}"
 		;;
 
 		nix)
-			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./cache/" --exclude "./workspace/" --exclude "./temp/" --exclude "./app/" \
-			--exclude ".*" \
-			--exclude "./win/" --exclude "*.bat" \
-			-f "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz -C "$_stella_root_/.."  "$(basename $_stella_root_)"
+			tar -c -v -z --exclude ".*" --exclude "./cache/" --exclude "./workspace/" --exclude "./temp/" --exclude "./app/" \
+			--exclude "./win/" \
+			--exclude "*.bat" \
+			-f "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz -C "$_stella_root_/.." "${_stella_root_##*/}"
 		;;
 
 		all)
-			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./cache/" --exclude "./workspace/" --exclude "./temp/" --exclude "./app/" \
-			--exclude ".*" \
-			-f "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz -C "$_stella_root_/.."  "$(basename $_stella_root_)"
+			tar -c -v -z --exclude ".*" --exclude "./cache/" --exclude "./workspace/" --exclude "./temp/" --exclude "./app/" \
+			-f "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz -C "$_stella_root_/.." "${_stella_root_##*/}"
 		;;
 	esac
 	
