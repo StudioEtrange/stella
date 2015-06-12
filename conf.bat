@@ -111,6 +111,7 @@ set "STELLA_API_APP_PUBLIC=get_app_property get_active_path link_app get_data ge
 set "STELLA_API_FEATURE_PUBLIC=feature_remove feature_catalog_info feature_install feature_install_list feature_init list_active_features feature_reinit_installed feature_inspect"
 set "STELLA_API_VIRTUAL_PUBLIC="
 set "STELLA_API_BUILD_PUBLIC=is_import_or_static_lib"
+set "STELLA_API_PLATFORM_PUBLIC=require"
 
 set "STELLA_API=%STELLA_COMMON%\common-api.bat :api_proxy+"
 

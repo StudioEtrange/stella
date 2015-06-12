@@ -11,8 +11,8 @@ $STELLA_API get_app_property "FTP" "ROOT"
 STELLA_FTP_HOST=$FTP_HOST
 STELLA_FTP_ROOT=$STELLA_FTP_HOST/$FTP_ROOT
 STELLA_FTP_CREDENTIALS=
-[ -f "$STELLA_ROOT/.stella-ftp-credentials"] && STELLA_FTP_CREDENTIALS=$STELLA_ROOT/.stella-ftp-credentials
-[ -f "$HOME/.stella-ftp-credentials"] && STELLA_FTP_CREDENTIALS=$HOME/.stella-ftp-credentials
+[ -f "$STELLA_ROOT/.stella-ftp-credentials" ] && STELLA_FTP_CREDENTIALS=$STELLA_ROOT/.stella-ftp-credentials
+[ -f "$HOME/.stella-ftp-credentials" ] && STELLA_FTP_CREDENTIALS=$HOME/.stella-ftp-credentials
 
 
 
@@ -114,6 +114,7 @@ function pack_stella() {
 		[ "$o" == "AUTO_EXTRACT" ] && _opt_auto_extract=ON
 	done
 
+	$STELLA_API require "7z" "MANDATORY"
 
 	# DISTRIBUTIONS PACKAGE FOR NIX SYSTEM WITH tar.gz
 	case $_platform in

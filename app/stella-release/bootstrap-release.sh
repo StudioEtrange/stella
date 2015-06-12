@@ -4,6 +4,8 @@
 # bootstrap-release.sh [<CURRENT|version>]
 # example :
 # 	curl -sSL https://raw.githubusercontent.com/StudioEtrange/stella/master/app/stella-release/bootstrap-release.sh | bash
+# requirement:
+#	7z
 _CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 _CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
 

@@ -106,7 +106,7 @@ VIRTUAL_DEFAULT_HYPERVISOR=virtualbox
 
 # INTERNAL LIST---------------------------------------------
 __STELLA_DISTRIB_LIST="ubuntu64_13_10 debian64_7_5 centos64_6_5 archlinux boot2docker"
-__STELLA_FEATURE_LIST="goconfig-cli go-crosscompile-chain go-build-chain oracle-jdk smartmontools python zlib socat gnu-netcat maven spark sbt scala docker-compose docker-machine jq wget ninja cmake packer autotools-bundle perl gettext getopt ucl upx elasticsearch kibana nginx ngrok go pcre libtool m4 automake autoconf"
+__STELLA_FEATURE_LIST="sevenzip goconfig-cli go-crosscompile-chain go-build-chain oracle-jdk smartmontools python zlib socat gnu-netcat maven spark sbt scala docker-compose docker-machine jq wget ninja cmake packer autotools-bundle perl gettext getopt ucl upx elasticsearch kibana nginx ngrok go pcre libtool m4 automake autoconf"
 
 # API ---------------------------------------------
 STELLA_API_COMMON_PUBLIC="uncompress daemonize rel_to_abs_path is_abs argparse get_filename_from_string \
@@ -118,6 +118,7 @@ STELLA_API_APP_PUBLIC="get_app_property get_active_path link_app get_data get_as
 STELLA_API_FEATURE_PUBLIC="feature_remove feature_catalog_info feature_install feature_install_list feature_init list_active_features feature_reinit_installed feature_inspect"
 STELLA_API_VIRTUAL_PUBLIC=""
 STELLA_API_BUILD_PUBLIC="fix_rpath_darwin fix_linked_lib_darwin fix_dynamiclib_install_name_darwin fix_dynamiclib_install_name_darwin_by_rootname fix_dynamiclib_install_name_darwin_by_folder"
+STELLA_API_PLATFORM_PUBLIC="require"
 
 STELLA_API_RETURN_FUNCTION="get_active_path rel_to_abs_path trim is_abs mercurial_project_version git_project_version get_stella_version list_active_features get_filename_from_string get_key"
 STELLA_API=__api_proxy
