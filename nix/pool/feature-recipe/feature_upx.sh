@@ -53,8 +53,9 @@ function feature_ucl_link() {
 		echo " ** ERROR : depend on lib zlib"
 		return
 	fi
-	AUTO_INSTALL_FLAG_PREFIX="CFLAGS=-I$FEAT_INSTALL_ROOT/include LDFLAGS=-L$FEAT_INSTALL_ROOT/lib/libz.a"
-
+	ZLIB_ROOT=$FEAT_INSTALL_ROOT
+	# we make a ling so that only the static version of zlib is found and use (instead of dynamic version)
+	ln -fs $FEAT_INSTALL_ROOT/lib/libz.a $FEAT_INSTALL_ROOT/libz.a
 
 	FEAT_SCHEMA_SELECTED=$save_FEAT_SCHEMA_SELECTED
 	__internal_feature_context $FEAT_SCHEMA_SELECTED
@@ -78,7 +79,8 @@ function feature_upx_install_source() {
 	sed -i".old" '/-C doc/d' "$SRC_DIR/Makefile"
 
 	cd "$SRC_DIR"
-	make all
+    CPPFLAGS="-I$ZLIB_ROOT/include" LDFLAGS="-L$ZLIB_ROOT -lz" make all
+
 
 	if [ -f "$SRC_DIR/src/upx.out" ]; then
 		mkdir -p "$INSTALL_DIR/bin"
