@@ -119,7 +119,7 @@ function pack_stella() {
 	# DISTRIBUTIONS PACKAGE FOR NIX SYSTEM WITH tar.gz
 	case $_platform in
 		win)
-			tar -c -v -z --exclude "*DS_Store" --exclude ".git/" --exclude "*.gitignore*" --exclude "./cache/" --exclude "./workspace/" --exclude "./temp/" --exclude "./app/" \
+			tar -c -v -z --exclude "*DS_Store" --exclude "./cache/" --exclude "./workspace/" --exclude "./temp/" --exclude "./app/" \
 			--exclude ".*" \
 			--exclude "./nix/" --exclude "*.sh" \
 			-f "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz -C "$_stella_root_/.."  "$(basename $_stella_root_)"
@@ -148,7 +148,7 @@ function pack_stella() {
 	case $_platform in
 		win)
 			7z a -t7z "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".7z \
-			-xr\!"*DS_Store" -xr0\!"stella/.stella-env" -xr\!".*" -xr\!".git" -xr\!"*.gitignore*" -xr0\!"stella/cache" -xr0\!"stella/workspace" -xr0\!"stella/temp" -xr0\!"stella/app" \
+			-xr\!".*" -xr0\!"stella/cache" -xr0\!"stella/workspace" -xr0\!"stella/temp" -xr0\!"stella/app" \
 			-xr0\!"stella/nix" -xr\!"*.sh" \
 			"$_stella_root_"
 		;;
