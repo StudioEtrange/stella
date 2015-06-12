@@ -119,9 +119,9 @@ function pack_stella() {
 	# DISTRIBUTIONS PACKAGE FOR NIX SYSTEM WITH tar.gz
 	case $_platform in
 		win)
-			tar -c -v -z --exclude "*DS_Store" --exclude "./cache/" --exclude "./workspace/" --exclude "./temp/" --exclude "./app/" \
-			--exclude ".*" \
-			--exclude "./nix/" --exclude "*.sh" \
+			tar -c -v -z --exclude ".*" --exclude "./cache/" --exclude "./workspace/" --exclude "./temp/" --exclude "./app/" \
+			--exclude "./nix/" \
+			--exclude "*.sh" \
 			-f "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz -C "$_stella_root_/.."  "$(basename $_stella_root_)"
 		;;
 
