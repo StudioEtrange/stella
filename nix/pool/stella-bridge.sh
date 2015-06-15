@@ -23,7 +23,7 @@ function standalone() {
 	_STELLA_INSTALL_PATH=$(___rel_to_abs_path "$PROVIDED_PATH" "$STELLA_CURRENT_RUNNING_DIR")
 
 	if [ ! -f "$_STELLA_INSTALL_PATH/stella.sh" ]; then
-		__get_stella "OFFICIAL" "LATEST" "$_STELLA_INSTALL_PATH"
+		__get_stella "$_STELLA_INSTALL_PATH" "STABLE" "LATEST"
 	fi
 
 	source "$_STELLA_INSTALL_PATH/conf.sh"
@@ -69,11 +69,8 @@ function bootstrap() {
 		fi
 
 		if [ ! -f "$_STELLA_INSTALL_PATH/stella.sh" ]; then
-			if [ ! "$STELLA_DEP_FLAVOUR" == "" ]; then 
-				__get_stella "$STELLA_DEP_FLAVOUR" "$STELLA_DEP_VERSION" "$_STELLA_INSTALL_PATH"
-			fi
+			__get_stella  "$_STELLA_INSTALL_PATH" "$STELLA_DEP_FLAVOUR" "$STELLA_DEP_VERSION" "$_STELLA_INSTALL_PATH"
 			IS_STELLA_JUST_INSTALLED="TRUE"
-
 		fi
 		
 		source "$_STELLA_INSTALL_PATH/conf.sh"
@@ -123,11 +120,12 @@ function ___rel_to_abs_path() {
 }
 
 function __get_stella() {
+	local _path=$1
 	# STABLE or DEV
-	local _flavour=$1
+	local _flavour=$2
 	# a specific version or LATEST (for latest)
-	local _ver=$2
-	local _path=$3
+	local _ver=$3
+
 
 
 	[ "$_flavour" == "" ] && _ver=STABLE

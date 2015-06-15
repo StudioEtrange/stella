@@ -50,8 +50,10 @@ REM install stella in standalone------------------
 
 	call :___rel_to_abs_path "_STELLA_INSTALL_PATH" "!PROVIDED_PATH!" "!STELLA_CURRENT_RUNNING_DIR!"
 
-	call :get_stella "OFFICIAL" "LATEST" "!_STELLA_INSTALL_PATH!"
-	
+	if not exist "!_STELLA_INSTALL_PATH!\stella.bat" (
+		call :get_stella "!_STELLA_INSTALL_PATH!" "STABLE" "LATEST"
+	)
+
 	call "!_STELLA_INSTALL_PATH!\conf.bat"
 	call %STELLA_COMMON%\platform.bat :ask_install_requirements
 goto :eof
@@ -96,9 +98,7 @@ REM Bootstrap a stella project ------------------
 		)
 
 		if not exist "!_STELLA_INSTALL_PATH!\stella.bat" (
-			if not "!STELLA_DEP_FLAVOUR!"=="" (
-				call :get_stella "!STELLA_DEP_FLAVOUR!" "!STELLA_DEP_VERSION!" "!_STELLA_INSTALL_PATH!"
-			)
+			call :get_stella "!_STELLA_INSTALL_PATH!" "!STELLA_DEP_FLAVOUR!" "!STELLA_DEP_VERSION!"
 			set IS_STELLA_JUST_INSTALLED=TRUE
 		)
 	
@@ -118,11 +118,12 @@ goto :eof
 
 REM Various functions ------------------
 :get_stella
+	set "_path=%~1"
 	REM STABLE or DEV
-	set "_flavour=%~1"
+	set "_flavour=%~2"
 	REM a specific version or LATEST (for latest stable)
-	set "_ver=%~2"
-	set "_path=%~3"
+	set "_ver=%~3"
+
 
 	if "!_flavour!"=="" (
 		set "_flavour=STABLE"
@@ -153,7 +154,7 @@ REM Various functions ------------------
 		if "!_ver!"=="LATEST" (
 			set "_ver=latest"
 		)
-		
+
 		pushd
 		if not exist "%_path%" mkdir "%_path%"
 		cd /D "%_path%"
