@@ -16,7 +16,6 @@ function usage() {
 	echo " L     app get-feature <all|feature schema> : install all features defined in app properties file or install a matching one"
 	echo " L     app setup-env <env id|all> : download, build, deploy and run virtual environment based on app properties"
 	echo " L     app link <app-path> [--stellaroot=<path>] : link an app to a specific stella path"
-	echo " L     app search path : print current system search path"
 	echo " o-- feature management :"
 	echo " L     feature install required : install required features for Stella"
 	echo " L     feature install <feature schema> : install a feature. schema = feature_name[#version][@arch][:binary|source][/os_restriction][\os_exclusion]"
@@ -32,7 +31,8 @@ function usage() {
 	echo " L     stella api list : list public functions of stella api"
 	echo " L     stella bootstrap env : launch a shell with all stella env var setted"
 	echo " L     stella install dep : install all features and systems requirements if any, for the current OS ($STELLA_CURRENT_OS)"
-	echo " L     stella version <long|short> : print stella version"
+	echo " L     stella version print : print stella version"
+	echo " L     stella search path : print current system search path"
 	echo " o-- network management :"
 	echo " L     proxy on <name> : active proxy"
 	echo " L     proxy off now : disable proxy"
@@ -145,12 +145,19 @@ if [ "$DOMAIN" == "stella" ]; then
 	fi
 
 	if [ "$ACTION" == "version" ]; then
-		if [ "$ID" == "long" ]; then
-			__get_stella_version "LONG"
+		if [ "$ID" == "print" ]; then
+			v1=$(__get_stella_flavour)
+			v2=$(__get_stella_version)
+			echo $v1 -- $v2
 		fi
-		if [ "$ID" == "short" ]; then
-			__get_stella_version "SHORT"
-		fi
+		
+	fi
+
+
+	if [ "$ACTION" == "search" ]; then
+	    if [ "$ID" == "path" ]; then
+	        echo $(__get_active_path)
+	    fi
 	fi
 fi
 

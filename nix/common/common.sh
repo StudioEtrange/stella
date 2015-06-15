@@ -18,6 +18,9 @@ function __daemonize() {
 
 }
 
+function __get_active_path() {
+	echo "$PATH"
+}
 
 function __bootstrap_stella_env() {
 	export PS1="[stella] \u@\h|\W>"
@@ -40,26 +43,40 @@ function __trim() {
 }
 
 function __get_stella_version() {
-	local MODE="$1"
-	local _stella_root_="$2"
-	
-	# option
-	# 	"LONG" long version
-	# 	"SHORT" short
-
-	if [ "$MODE" == "" ]; then
-		MODE=SHORT
-	fi
+	local _stella_root_="$1"
 
 	[ "$_stella_root_" == "" ] && _stella_root_="$STELLA_ROOT"
 
-	if [ -d "$_stella_root_/.git" ]; then
-		echo $(__git_project_version "$_stella_root_" "$MODE")
-	elif [ -f "$_stella_root_/VERSION" ]; then
-		cat "$_stella_root_/VERSION"
-	else
-		echo "unknown"
-	fi
+	_s_flavour=$(__get_stella_flavour "$_stella_root_")
+
+	case "$_s_flavour" in
+		STABLE)
+				cat "$_stella_root_/VERSION"
+		;;
+
+		DEV)
+				echo $(__git_project_version "$_stella_root_" "LONG")
+		;;
+
+		*)
+				echo "unknown"
+		;;
+
+	esac
+}
+
+
+# return STABLE or DEV
+function __get_stella_flavour() {
+	local _stella_root_="$1"
+	[ "$_stella_root_" == "" ] && _stella_root_="$STELLA_ROOT"
+
+	local _s_flavour=
+
+	[ -f "$_stella_root_/VERSION" ] && _s_flavour="STABLE"
+	[ -d "$_stella_root_/.git" ] && _s_flavour="DEV"
+
+	echo $_s_flavour
 }
 
 

@@ -3,6 +3,12 @@ _CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 _CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
 source $_CURRENT_FILE_DIR/stella-link.sh include
 
+
+#				 			without			official		github		github 
+#				.git		.git 			site http		git 		http
+#	STABLE 		-----		  X 				X 			----		 X
+#	DEV			  X 		----			   ----			 X 			----
+
 # need build-system on host, because of some source dependencies
 
 $STELLA_API get_app_property "FTP" "HOST"
@@ -54,7 +60,8 @@ function stella_items_release() {
 }
 
 
-function stella_lib_release() {
+# make a stable release from a specific (or current) version from git
+function stella_stable_release() {
 	local _platform=$1
 	local _wanted_version=$2
 	local _opt="$3"
@@ -78,7 +85,7 @@ function stella_lib_release() {
 		_stella_root_="$STELLA_APP_WORK_ROOT/stella/stella"
 	fi
 
-	version=$(__get_stella_version "LONG" "$_stella_root_")
+	version=$(__git_project_version "$_stella_root_" "LONG")
 	echo $version > "$_stella_root_/VERSION"
 
 	case $_platform in
@@ -256,9 +263,9 @@ case $ACTION in
     stella-dist)
 		rm -Rf $STELLA_APP_WORK_ROOT/output/dist
 		mkdir -p $STELLA_APP_WORK_ROOT/output/dist
-		stella_lib_release nix "$VER" "AUTO_EXTRACT"
-		stella_lib_release win "$VER" "AUTO_EXTRACT"
-		stella_lib_release all "$VER" "AUTO_EXTRACT"
+		stella_stable_release nix "$VER" "AUTO_EXTRACT"
+		stella_stable_release win "$VER" "AUTO_EXTRACT"
+		stella_stable_release all "$VER" "AUTO_EXTRACT"
 		[ "$UPLOAD" == "1" ] && upload_ftp "$STELLA_APP_WORK_ROOT/output/dist" "dist/$version"
 		;;
 	stella-items)

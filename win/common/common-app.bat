@@ -6,9 +6,7 @@ goto :eof
 REM APP RESSOURCES & ENV MANAGEMENT ---------------
 
 
-:get_active_path
-	set "%~1=!PATH!"
-goto:eof
+
 
 :add_app_feature
 	set "_SCHEMA=%~1"
@@ -350,10 +348,9 @@ goto :eof
 	if "%IS_ABS%"=="FALSE" (
 		call %STELLA_COMMON%\common.bat :rel_to_abs_path "_stella_root" "!_stella_root!" "%_approot%"
 	)
-	call %STELLA_COMMON%\common.bat :get_stella_version "_s_ver" "LONG" "!_stella_root!"
-	set "_s_flavour=OFFICIAL"
-	if exist "!_stella_root!\.git" set "_s_flavour=GIT"
 
+	call %STELLA_COMMON%\common.bat :get_stella_flavour "_s_flavour" "!_stella_root!"
+	call %STELLA_COMMON%\common.bat :get_stella_version "_s_ver" "!_stella_root!"
 
 	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_stella_root" "!_stella_root!" "%_approot%"
 
@@ -402,9 +399,9 @@ goto :eof
 	REM		call %STELLA_COMMON%\common.bat :rel_to_abs_path "_stella_root" "%STELLA_ROOT%" "!_approot!"
 	REM )
 	
-	call %STELLA_COMMON%\common.bat :get_stella_version "_s_ver" "LONG"
-	set "_s_flavour=OFFICIAL"
-	if exist "!STELLA_ROOT!\.git" set "_s_flavour=GIT"
+	call %STELLA_COMMON%\common.bat :get_stella_flavour "_s_flavour" "!_stella_root!"
+	call %STELLA_COMMON%\common.bat :get_stella_version "_s_ver" "!_stella_root!"
+
 
 	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_workroot" "!_workroot!" "!_approot!"
 	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_cachedir" "!_cachedir!" "!_approot!"

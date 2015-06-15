@@ -118,44 +118,42 @@ goto :eof
 
 REM Various functions ------------------
 :get_stella
-	REM OFFICIAL or GIT
+	REM STABLE or DEV
 	set "_flavour=%~1"
-	REM a specific version or LATEST (for latest stable) or SNAPSHOT (for current dev)
+	REM a specific version or LATEST (for latest stable)
 	set "_ver=%~2"
 	set "_path=%~3"
 
 	if "!_flavour!"=="" (
-		set "_flavour=OFFICIAL"
+		set "_flavour=STABLE"
 	)
 
 	if "!_ver!"=="" (
 		set "_ver=LATEST"
 	)
 
-	if "!_flavour!"=="GIT" (
+	if "!_flavour!"=="DEV" (
 		where /q git
 		if not "%ERRORLEVEL%"=="0" (
-			echo *** git not present on this system. Trying to get stella from official website
-			set "_flavour=OFFICIAL"
+			echo *** git not present on this system. Trying to get the last stable version
+			set "_flavour=STABLE"
+			set "_ver=LATEST"
 		)
 	)
 
-	if "!_flavour!"=="GIT" (
+	if "!_flavour!"=="DEV" (
 		git clone https://github.com/StudioEtrange/stella "%_path%"
-		if not "!_ver!"=="SNAPSHOT" if not "!_ver!"=="LATEST" (
+		if not "!_ver!"=="LATEST" (
 			cd /D "%_path%"
 			git checkout !_ver!
 		) 
 	)
 
-	if "!_flavour!"=="OFFICIAL" (
+	if "!_flavour!"=="STABLE" (
 		if "!_ver!"=="LATEST" (
 			set "_ver=latest"
 		)
-		if "!_ver!"=="SNAPSHOT" (
-			set "_ver=snapshot"
-		)
-
+		
 		pushd
 		if not exist "%_path%" mkdir "%_path%"
 		cd /D "%_path%"

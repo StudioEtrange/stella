@@ -123,37 +123,36 @@ function ___rel_to_abs_path() {
 }
 
 function __get_stella() {
-	# OFFICIAL or GIT
+	# STABLE or DEV
 	local _flavour=$1
-	# a specific version or LATEST (for latest stable) or SNAPSHOT (for current dev)
+	# a specific version or LATEST (for latest)
 	local _ver=$2
 	local _path=$3
 
 
-	[ "$_flavour" == "" ] && _ver=OFFICIAL
+	[ "$_flavour" == "" ] && _ver=STABLE
 	[ "$_ver" == "" ] && _ver=LATEST
 
-	if [ "$_flavour" == "GIT" ]; then
+	if [ "$_flavour" == "DEV" ]; then
 		if [[ ! -n `which git 2> /dev/null` ]]; then
-			echo "*** git not present on this system. Trying to get stella from official website"
-			_flavour=OFFICIAL
+			echo "*** git not present on this system. Trying to get the last stable version"
+			_flavour=STABLE
+			_ver=LATEST
 		fi
 	fi
 
-	if [ "$_flavour" == "GIT" ]; then
+	if [ "$_flavour" == "DEV" ]; then
 		git clone https://github.com/StudioEtrange/stella "$_path"
 		if [ ! "$_ver" == "LATEST" ]; then
-			if [ ! "$_ver" == "SNAPSHOT" ]; then
 				cd "$_path"
 				git checkout $_ver
 			fi
 		fi
 	fi
 
-	if [ "$_flavour" == "OFFICIAL" ]; then
+	if [ "$_flavour" == "STABLE" ]; then
 		mkdir -p "$_path" 
 		[ "$_ver" == "LATEST" ] && _ver=latest
-		[ "$_ver" == "SNAPSHOT" ] && _ver=snapshot
 
 		curl -L -o "$_path"/$stella-all-"$_ver".gz.sh $__STELLA_URL/dist/$_ver/stella-all-"$_ver".tar.gz.run
 		if [ -f "$_path"/$stella-all-"$_ver".gz.run ]; then		

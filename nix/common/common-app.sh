@@ -6,9 +6,7 @@ _STELLA_COMMON_APP_INCLUDED_=1
 
 # APP RESSOURCES & ENV MANAGEMENT ---------------
 
-function __get_active_path() {
-	echo "$PATH"
-}
+
 
 # ARG 1 optional : specify an app path
 # return properties file path
@@ -48,10 +46,9 @@ function __link_app() {
 	[ "$_stella_root" == "" ] && _stella_root=$STELLA_ROOT
 	[ "$(__is_abs "$_stella_root")" == "FALSE" ] && _stella_root=$(__rel_to_abs_path "$_stella_root" "$_approot")
 
-	_s_ver=$(__get_stella_version "LONG" "$_stella_root")
-	_s_flavour="OFFICIAL"
-	[ -d "$_stella_root/.git" ] && _s_flavour="GIT"
-
+	_s_ver=$(__get_stella_version "$_stella_root")
+	_s_flavour=$(__get_stella_flavour "$_stella_root")
+	
 	_stella_root=$(__abs_to_rel_path "$_stella_root" "$_approot")
 
 	echo "#!/bin/bash" >$_approot/stella-link.sh.temp
@@ -89,10 +86,10 @@ function __init_app() {
 	[ "$(__is_abs "$_cachedir")" == "FALSE" ] && _cachedir=$(__rel_to_abs_path "$_cachedir" "$_approot")
 	# [ "$(__is_abs "$_stella_root")" == "FALSE" ] && _stella_root=$(__rel_to_abs_path "$STELLA_ROOT" "$_approot")
 
-	_s_ver=$(__get_stella_version "LONG")
-	_s_flavour="OFFICIAL"
-	[ -d "$STELLA_ROOT/.git" ] && _s_flavour="GIT"
 
+	_s_ver=$(__get_stella_version "$_stella_root")
+	_s_flavour=$(__get_stella_flavour "$_stella_root")
+	
 	_workroot=$(__abs_to_rel_path "$_workroot" "$_approot")
 	_cachedir=$(__abs_to_rel_path "$_cachedir" "$_approot")
 	_stella_root=$(__abs_to_rel_path "$STELLA_ROOT" "$_approot")

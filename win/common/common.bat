@@ -13,7 +13,9 @@ goto :eof
 goto :eof
 
 
-
+:get_active_path
+	set "%~1=!PATH!"
+goto:eof
 
 :argparse
 	call %STELLA_COMMON%\argopt.bat :argopt %*
@@ -961,34 +963,48 @@ goto :eof
 :: VARIOUS ---------------------------------------
 :get_stella_version
 	set "_result_var_get_stella_version=%~1"
-	set "_mode=%~2"
-	set "_stella_root_=%~3"
-	
-	
-	REM MODE
-	REM 	"LONG" long version
-	REM 	"SHORT" short version
-
-	if "%_mode%"=="" (
-		set _mode=SHORT
-	)
+	set "_stella_root_=%~2"
 
 	if "%_stella_root_%"=="" (
 		set "_stella_root_=!STELLA_ROOT!"
 	)
 
-	if exist "!_stella_root_!\.git" (
-		call :git_project_version "_git_version" "!_stella_root_!" "!_mode!"
+	call :get_stella_flavour "_S_FLAVOUR" "!_stella_root_!"
+
+	set "%_result_var_get_stella_version%=unknown"
+
+	if "!_S_FLAVOUR!"=="DEV" (
+		call :git_project_version "_git_version" "!_stella_root_!" "LONG"
 		set "%_result_var_get_stella_version%=!_git_version!"
-	) else (
-		if exist "!_stella_root_!\VERSION" (
-			for /f %%v in ("!_stella_root_!\VERSION") do (
-				set "%_result_var_git_project_version%=%%v"
-			)
-		) else (
-			set "%_result_var_git_project_version%=unknown"
+	)
+
+	if "!_S_FLAVOUR!"=="STABLE" (
+		for /f %%v in ("!_stella_root_!\VERSION") do (
+			set "%_result_var_get_stella_version%=%%v"
 		)
 	)
+
+goto :eof
+
+REM return STABLE or DEV
+:get_stella_flavour
+	set "_result_var_get_stella_flavour=%~1"
+	set "_stella_root_=%~2"
+
+	if "%_stella_root_%"=="" (
+		set "_stella_root_=!STELLA_ROOT!"
+	)
+
+	set "%_result_var_get_stella_flavour%="
+
+	if exist "!_stella_root_!\.git" (
+		set "%_result_var_get_stella_flavour%=DEV"
+	) else (
+		if exist "!_stella_root_!\VERSION" (
+			set "%_result_var_get_stella_flavour%=STABLE"
+		)
+	)
+	
 goto :eof
 
 

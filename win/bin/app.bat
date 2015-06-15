@@ -5,7 +5,7 @@ call %~dp0\..\..\conf.bat
 
 
 :: arguments
-set "params=action:"search link init get-data get-data-pack get-assets get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack setup-env get-feature" id:"_ANY_""
+set "params=action:"link init get-data get-data-pack get-assets get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack setup-env get-feature" id:"_ANY_""
 set "options=-f: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_ -stellaroot:_ANY_ -samples:"
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
@@ -46,15 +46,6 @@ if not "%ACTION%"=="init" (
 		goto :end
 	)
 )
-
-if "%ACTION%"=="search" (
-	if "%id%"=="path" (
-		call %STELLA_COMMON%\common-app.bat :get_active_path "_TMP"
-		if not "!_TMP!"=="" echo !_TMP!
-	)
-	goto :end
-)
-
 
 if "%ACTION%"=="link" (
 	call %STELLA_COMMON%\common-app.bat :link_app "%id%" "!-stellaroot!"

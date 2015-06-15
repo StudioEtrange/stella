@@ -63,17 +63,23 @@ if "%DOMAIN%"=="stella" (
 	)
 
 	if "%ACTION%"=="version" (
-		if "%id%"=="long" (
-			call %STELLA_COMMON%\common.bat :get_stella_version "VAR" "LONG"
-			echo !VAR!
+		if "%id%"=="print" (
+			call %STELLA_COMMON%\common.bat :get_stella_flavour "VAR1"
+			call %STELLA_COMMON%\common.bat :get_stella_version "VAR2"
+			echo !VAR1! -- !VAR2!
 			goto :end
 		)
-		if "%id%"=="short" (
-			call %STELLA_COMMON%\common.bat :get_stella_version "VAR" "SHORT"
-			echo !VAR!
-			goto :end
-		)
+		
 	)
+
+	if "%ACTION%"=="search" (
+		if "%id%"=="path" (
+			call %STELLA_COMMON%\common.bat :get_active_path "_TMP"
+			if not "!_TMP!"=="" echo !_TMP!
+		)
+		goto :end
+	)
+
 )
 if "%DOMAIN%"=="api" goto :end
 
@@ -139,7 +145,6 @@ if "%DOMAIN%"=="virtual" goto :end
 	echo 		app get-feature ^<all^|feature schema^> : install all features defined in app properties file or install a matching one
 	echo 		app setup-env ^<env id^|all^> : download, build, deploy and run virtual environment based on app properties
 	echo		app link ^<app-path^> [-stellaroot=^<path^>] : link an app to a specific stella path
-	echo		app search path : print current system search path
 	echo	* feature management :
 	echo 		feature install required : install required features for Stella
 	echo 		feature install ^<feature schema^> : install a feature. schema = feature_name[#version][@arch][:binary^|source][/os_restriction][\os_exclusion]
@@ -155,7 +160,8 @@ if "%DOMAIN%"=="virtual" goto :end
 	echo 		api list all : list public functions of stella api
 	echo		stella bootstrap env : launch a shell with all stella env var setted
 	echo		stella install dep : install all features and systems requirements for the current OS (%STELLA_CURRENT_OS%)
-	echo		stella version ^<long^|short^> : print stella version
+	echo		stella version print : print stella version
+	echo		stella search path : print current system search path
 	echo	* network management :
 	echo 	    proxy on ^<name^> : active this proxy
 	echo 	    proxy off now : active this proxy
