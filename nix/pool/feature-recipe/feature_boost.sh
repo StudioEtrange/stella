@@ -47,17 +47,17 @@ function feature_boost_install_source() {
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 
-	local without-lib=python,mpi
+	local without_lib=python,mpi
 
 	# The context library is implemented as x86_64 ASM, so it
     # won't build on PPC or 32-bit builds
     if [ ! "$STELLA_CPU_ARCH" == "64" ]; then
-    	without-lib="$without-lib",context,coroutine
+    	without_lib="$without_lib",context,coroutine
     fi
 
 	cd "$SRC_DIR"
-	./bootstrap.sh --prefix="$INSTALL_DIR" --libdir="$INSTALL_DIR/lib" --includedir="$INSTALL_DIR/include" --without-icu --without-libraries="$without-lib"
-    ./b2 --prefix="$INSTALL_DIR" --libdir="$INSTALL_DIR/lib" --includedir="$INSTALL_DIR/include" -d2 --layout=tagged install threading=multi,single link=shared,static
+	./bootstrap.sh --prefix="$INSTALL_DIR" --libdir="$INSTALL_DIR/lib" --includedir="$INSTALL_DIR/include" --without-icu --without-libraries="$without_lib"
+    ./b2 --prefix="$INSTALL_DIR" --libdir="$INSTALL_DIR/lib" --includedir="$INSTALL_DIR/include" -d2 -j$STELLA_NB_CPU --layout=tagged install threading=multi,single link=shared,static
 
     __del_folder "$SRC_DIR"
 
