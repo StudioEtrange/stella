@@ -20,7 +20,6 @@ function feature_cmake_2_8_12() {
 	FEAT_SOURCE_URL=http://www.cmake.org/files/v2.8/cmake-2.8.12.2.tar.gz
 	FEAT_SOURCE_URL_FILENAME=cmake-2.8.12.2.tar.gz
 
-	FEAT_BINARY_URL=
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		FEAT_BINARY_URL=http://www.cmake.org/files/v2.8/cmake-2.8.12.2-Darwin64-universal.tar.gz
 		FEAT_BINARY_URL_FILENAME=cmake-2.8.12.2-Darwin64-universal.tar.gz
@@ -33,8 +32,11 @@ function feature_cmake_2_8_12() {
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/cmake
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 
+	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+		FILE_APP="CMake 2.8-12.app"
+	fi
 
-
+}
 
 
 function feature_cmake_3_2_2() {
@@ -44,7 +46,8 @@ function feature_cmake_3_2_2() {
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://www.cmake.org/files/v3.2/cmake-3.2.2.tar.gz
-	FEAT_SOURCE_URL_FILENAME
+	FEAT_SOURCE_URL_FILENAME=make-3.2.2.tar.gz
+
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		FEAT_BINARY_URL=http://www.cmake.org/files/v3.2/cmake-3.2.2-Darwin-x86_64.tar.gz
 		FEAT_BINARY_URL_FILENAME=cmake-3.2.2-Darwin-x86_64.tar.gz
@@ -57,6 +60,9 @@ function feature_cmake_3_2_2() {
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/cmake
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 
+	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+		FILE_APP="CMake.app"
+	fi
 }
 
 function feature_cmake_install_source() {
@@ -94,10 +100,10 @@ function feature_cmake_install_binary() {
 	__download_uncompress "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_FILENAME" "$INSTALL_DIR" "DEST_ERASE STRIP"
 	
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-		ln -s "$FEAT_INSTALL_ROOT"/CMake.app/Contents/bin "$FEAT_INSTALL_ROOT"/bin
-		ln -s "$FEAT_INSTALL_ROOT"/CMake.app/Contents/doc "$FEAT_INSTALL_ROOT"/doc
-		ln -s "$FEAT_INSTALL_ROOT"/CMake.app/Contents/man "$FEAT_INSTALL_ROOT"/man
-		ln -s "$FEAT_INSTALL_ROOT"/CMake.app/Contents/share "$FEAT_INSTALL_ROOT"/share
+		ln -s "$FEAT_INSTALL_ROOT"/"$FILE_APP"/Contents/bin "$FEAT_INSTALL_ROOT"/bin
+		ln -s "$FEAT_INSTALL_ROOT"/"$FILE_APP"/Contents/doc "$FEAT_INSTALL_ROOT"/doc
+		ln -s "$FEAT_INSTALL_ROOT"/"$FILE_APP"/Contents/man "$FEAT_INSTALL_ROOT"/man
+		ln -s "$FEAT_INSTALL_ROOT"/"$FILE_APP"/Contents/share "$FEAT_INSTALL_ROOT"/share
 	fi	
 }
 

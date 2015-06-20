@@ -6,8 +6,8 @@ call %~dp0\conf.bat
 
 
 :: arguments
-set "params=domain:"app feature virtual stella proxy" action:"version on off register search remove link bootstrap api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature setup-env install list create-env run-env stop-env destroy-env info-env create-box get-box" id:"_ANY_""
-set "options=-f: -vcpu:_ANY_ -vmem:_ANY_ -head: -login: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_ -stellaroot:_ANY_ -samples: -proxyhost:_ANY_ -proxyport:_ANY_ -proxyuser:_ANY_ -proxypass:_ANY_"
+set "params=domain:"app feature stella proxy" action:"version on off register search remove link bootstrap api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature install list" id:"_ANY_""
+set "options=-f: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_ -stellaroot:_ANY_ -samples: -proxyhost:_ANY_ -proxyport:_ANY_ -proxyuser:_ANY_ -proxypass:_ANY_"
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
 if "%ARGOPT_FLAG_HELP%"=="1" goto :usage
@@ -115,23 +115,6 @@ if "%DOMAIN%"=="proxy" (
 if "%DOMAIN%"=="proxy" goto :end
 
 
-REM --------------- VIRTUAL ----------------------------
-if "%DOMAIN%"=="virtual" (
-	set "_virtual_options="
-	if not "%-vcpu%"=="" set "_virtual_options=!_virtual_options! -vcpu=%-vcpu%"
-	if not "%-vmem%"=="" set "_virtual_options=!_virtual_options! -vmem=%-vmem%"
-	if "%-head%"=="1" set "_virtual_options=!_virtual_options! -head"
-	if "%-login%"=="1" set "_virtual_options=!_virtual_options! -login"
-
-	if "%-f%"=="1" set "_virtual_options=!_virtual_options! -f"
-	
-	call %STELLA_BIN%\virtual.bat %ACTION% %id% !_virtual_options!
-	@echo off
-	goto :end
-)
-if "%DOMAIN%"=="virtual" goto :end
-
-
 
 :usage
 	echo USAGE :
@@ -150,12 +133,6 @@ if "%DOMAIN%"=="virtual" goto :end
 	echo 		feature install ^<feature schema^> : install a feature. schema = feature_name[#version][@arch][:binary^|source][/os_restriction][\os_exclusion]
 	echo 		feature remove ^<feature schema^> : remove a feature
 	echo 		feature list ^<all^|feature name^|active^>: list all available features OR available version of a feature OR current active features
-	echo	* virtual management :
-	echo 		virtual create-env ^<env id#distrib id^> [-head] [-vmem=xxxx] [-vcpu=xx] : create a new environment from a generic box prebuilt with a specific distribution
-	echo		virtual run-env ^<env id^> [-login] : manage environment
-	echo		virtual stop-env^|destroy-env ^<env id^> : manage environment
-	echo 		virtual create-box^|get-box ^<distrib id^> : manage generic boxes built with a specific distribution
-	echo 		virtual list ^<box^|env^|distrib^>
 	echo	* various :
 	echo 		api list all : list public functions of stella api
 	echo		stella bootstrap env : launch a shell with all stella env var setted

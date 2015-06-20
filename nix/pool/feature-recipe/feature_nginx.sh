@@ -14,6 +14,7 @@ function feature_nginx() {
 function feature_nginx_1_7_11() {
 	FEAT_VERSION=1_7_11
 	
+	# depend on zlib
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -23,7 +24,7 @@ function feature_nginx_1_7_11() {
 
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
-	FEAT_BINARY_URL_PROTOCOL
+	FEAT_BINARY_URL_PROTOCOL=
 
 	FEAT_SOURCE_CALLBACK=feature_nginx_get_pcre
 	FEAT_BINARY_CALLBACK=
@@ -34,7 +35,7 @@ function feature_nginx_1_7_11() {
 
 }
 
-# depend on zlib
+
 
 
 function feature_nginx_get_pcre() {

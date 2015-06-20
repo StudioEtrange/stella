@@ -83,7 +83,101 @@ function __fix_dynamiclib_install_name_darwin_by_folder() {
 
 
 
+# TODO - to finish
+# simple test with boost lib : _check_lib "$STELLA_APP_WORK_ROOT/feature_darwin/macos/boost/1_58_0/lib/*.dylib"
+function _check_lib() {
+	local _path=$1
 
+	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+		for files in $1; do
+			if [ -f "$files" ]; then
+				# check rpath
+				echo "** $files : Checking RPATH value"
+				test=`objdump -p $files | grep -E "RPATH\s*\.:?|RPATH.*:\.:?"`
+				[ $VERBOSE_MODE -gt 0 ] && objdump -p $files | grep RPATH
+				if [ "$test" == "" ]; then
+					echo "** WARN checking RPATH value" "warning : RPATH value '.' is missing"
+				else
+					echo "** OK"
+				fi
+
+				# check dynamic link at runtime
+				echo "** $files : Checking dynamic linking at runtime"
+				_CUR_DIR=`pwd`
+				cd "$DEST/lib$BUILD_SUFFIX"
+				test=`ldd $files | grep "not found"`
+				cd $_CUR_DIR
+				[ $VERBOSE_MODE -gt 0 ] && ldd $files
+				if [ ! "$test" == "" ]; then
+					echo "** WARN checking missing dynamic library at runtime" "$test"
+				else
+					echo "** OK"
+				fi
+			fi
+		done
+	fi
+
+	# https://github.com/auriamg/macdylibbundler (PACKAGING TOOL)
+	# https://mikeash.com/pyblog/friday-qa-2009-11-06-linking-and-install-names.html (explain search path)
+	# http://matthew-brett.github.io/docosx/mac_runtime_link.html (explain search path)
+	# http://www.kitware.com/blog/home/post/510 (CMAKE and RPATH)
+	# Print out dynamic libraries loaded at runtime when launching a program :
+	# 		DYLD_PRINT_LIBRARIES=y program
+	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+		for files in $1; do
+			if [ -f "$files" ]; then
+				echo
+				echo "** Analysing $files"
+				# check rpath
+				#  otool -l 
+				printf %s "*** Checking RPATH values : "
+				test=`otool -l $files | grep -E "LC_RPATH" -A2 | grep -E "path\s\.\s"`
+				[ $VERBOSE_MODE -gt 0 ] && otool -l $files | grep path
+				_err=0
+				if [ "$test" == "" ]; then
+					printf %s "-- WARN RPATH value '.' is missing"
+					_err=1
+				fi
+				test=`otool -l $files | grep -E "LC_RPATH" -A2 | grep -E "path\s@loader_path/"`
+				[ $VERBOSE_MODE -gt 0 ] && otool -l $files | grep path
+				if [ "$test" == "" ]; then
+					printf %s " -- WARN RPATH value '@loader_path/' is missing"
+					_err=1
+				fi
+				[ "$_err" == "0" ] && printf "-- OK"
+				echo
+
+
+				# check ID/Install Name value
+				#  otool -l 
+				printf "*** Checking ID/Install Name value : "
+				test=`otool -l $files | grep -E "LC_ID_DYLIB" -A2 | grep -E "name\s@rpath/"`
+				[ $VERBOSE_MODE -gt 0 ] && otool -l $files | grep name
+				if [ "$test" == "" ]; then
+					printf %s "-- WARN ID/Install Name value '@rpath/' is missing"
+				else
+					printf %s "-- OK"
+				fi
+				echo
+
+				# check dynamic link at runtime
+				echo "*** Checking missing dynamic library at runtime"
+				local linked_lib=
+				while read -r line ; do
+   					printf %s "====> checking linked lib : $line "
+   					# TODO replace with containing folder ?
+   					linked_lib="${line//@rpath/$DEST/lib$BUILD_SUFFIX}"
+   					if [ ! -f "$linked_lib" ]; then
+   						printf %s "-- WARN not found"
+   					else
+   						printf %s "-- OK"
+   					fi
+   					echo
+				done < <(otool -l $files | grep -E "LC_LOAD_DYLIB" -A2 | grep name | tr -s ' ' | cut -d ' ' -f 3)
+			fi
+		done
+	fi
+}
 
 
 
@@ -127,6 +221,9 @@ function __auto_build_install_configure() {
 	fi
 	
 }
+
+
+
 
 
 

@@ -21,12 +21,6 @@ function usage() {
 	echo " L     feature install <feature schema> : install a feature. schema = feature_name[#version][@arch][:binary|source][/os_restriction][\os_exclusion]"
 	echo " L     feature remove <feature schema> : remove a feature"
 	echo " L     feature list <all|feature name|active> : list all available feature OR available versions of a feature OR current active features"
-	echo " o-- virtual management (experimental) :"
-	echo " L     virtual create-env <env id#distrib id> [--head] [--vmem=xxxx] [--vcpu=xx] : create a new environment from a generic box prebuilt with a specific distribution"
-    echo " L     virtual run-env <env id> [--login] : manage environment"
-    echo " L     virtual stop-env|destroy-env <env id> : manage environment"
-    echo " L     virtual create-box|get-box <distrib id> : manage generic boxes built with a specific distribution"
-    echo " L     virtual list <env|box|distrib> : list existing available environment, box and distribution"
 	echo " o-- various :"
 	echo " L     stella api list : list public functions of stella api"
 	echo " L     stella bootstrap env : launch a shell with all stella env var setted"
@@ -44,8 +38,8 @@ function usage() {
 
 # arguments
 PARAMETERS="
-DOMAIN=                          'domain'     		a           'app feature virtual stella proxy'         										   				Action domain.
-ACTION=                         'action'   					a           'version search remove on off register link api bootstrap install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature setup-env install list create-env run-env stop-env destroy-env create-box get-box'         	Action to compute.
+DOMAIN=                          'domain'     		a           'app feature stella proxy'         										   				Action domain.
+ACTION=                         'action'   					a           'version search remove on off register link api bootstrap install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature install list'         	Action to compute.
 ID=							 ''								s 			'' 						Feature ID or Data or Assets or Env or Distrib ID.
 "
 OPTIONS="
@@ -54,10 +48,6 @@ APPROOT=''						'' 			'path'				s 			0			'' 						App path (default current)
 WORKROOT='' 					'' 			'path'				s 			0			''						Work app path (default equal to app path)
 CACHEDIR=''						'' 			'path'				s 			0			''						Cache folder path
 STELLAROOT=''                   ''          'path'              s           0           ''                      Stella path to link.
-VCPU=''							''			''					i 			0		''						Nb CPU attributed to the virtual env.
-VMEM=''							''			''					i 			0		''						Memory attributed to the virtual env.
-HEAD=''							''			''					b			0		'1'						Active hyperviser head.
-LOGIN=''						'l'			''					b			0		'1'						Autologin in env.
 SAMPLES=''                      ''         ''                  b           0       '1'                     Generate app samples.
 PROXYHOST='' 					'' 			'host'				s 			0			''					proxy host
 PROXYPORT='' 					'' 			'port'				s 			0			''					proxy port
@@ -162,28 +152,6 @@ if [ "$DOMAIN" == "stella" ]; then
 fi
 
 
-# --------------- VIRTUAL ----------------------------
-if [ "$DOMAIN" == "virtual" ]; then
-	_virtual_options=
-	if [ "$FORCE" == "1" ]; then
-		_virtual_options="$_virtual_options -f"
-	fi
-	if [ "$HEAD" == "1" ]; then
-		_virtual_options="$_virtual_options --head"
-	fi
-	if [ "$LOGIN" == "1" ]; then
-		_virtual_options="$_virtual_options -l"
-	fi
-	if [ ! "$VCPU" == "" ]; then
-		_virtual_options="$_virtual_options --vcpu=$VCPU"
-	fi
-	if [ ! "$VMEM" == "" ]; then
-		_virtual_options="$_virtual_options --vmem=$VMEM"
-	fi
-
-	$STELLA_BIN/virtual.sh $ACTION $ID $_virtual_options
-	
-fi
 
 
 

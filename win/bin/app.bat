@@ -5,7 +5,7 @@ call %~dp0\..\..\conf.bat
 
 
 :: arguments
-set "params=action:"link init get-data get-data-pack get-assets get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack setup-env get-feature" id:"_ANY_""
+set "params=action:"link init get-data get-data-pack get-assets get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature" id:"_ANY_""
 set "options=-f: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_ -stellaroot:_ANY_ -samples:"
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
@@ -126,14 +126,6 @@ if "%ACTION%"=="revert-assets" (
 )
 
 
-if "%ACTION%"=="setup-env" (
-	if "%id%"=="all" (
-		call %STELLA_COMMON%\common-app.bat :setup_all_env
-	) else (
-		call %STELLA_COMMON%\common-app.bat :setup_env "%id%"
-	)
-	goto :end
-)
 
 
 goto :usage
@@ -151,7 +143,6 @@ REM ------------------------------------ INTERNAL FUNCTIONS --------------------
 	echo 		%~n0 get-data^|get-assets^|delete-data^|delete-assets^|update-data^|update-assets^|revert-data^|revert-assets ^<list of data id^|list of assets id^>
 	echo 		%~n0 get-data-pack^|get-assets-pack^|delete-data-pack^|delete-assets-pack^|update-data-pack^|update-assets-pack^|revert-data-pack^|revert-assets-pack ^<data pack name^|assets pack name^>
 	echo 		%~n0 app get-feature ^<all^|feature schema^> : install all features defined in app properties file or install a matching one
-	echo 		%~n0 setup-env ^<env id^|all^> : download, build, deploy and run virtual environment based on app properties
 	echo		%~n0 link ^<app-path^> [-stellaroot=^<path^>] : link an app to a specific stella path
 	echo		search path : print current system search path
 goto :end

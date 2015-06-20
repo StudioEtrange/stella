@@ -90,16 +90,22 @@ function __get_platform_suffix() {
 }
 
 function __set_current_platform_info() {
-	# Linux
-	if [[ -n `which lscpu 2> /dev/null` ]]; then
-		STELLA_HOST_CPU=`lscpu | awk 'NR== 1 {print $2}'`
-	# Darwin
-	elif [[ -n `which sysctl 2> /dev/null` ]]; then
-		STELLA_HOST_CPU=`sysctl hw 2> /dev/null | egrep -i 'hw.machine' | awk '{print $NF}'`
-	else
-		STELLA_HOST_CPU="cannot determine cpu"
-	fi
+	
 
+	
+
+
+
+	
+
+
+
+	detectdistro
+	STELLA_CURRENT_OS=$(__get_os_from_distro "$distro")
+	STELLA_CURRENT_PLATFORM=$(__get_platform_from_os "$STELLA_CURRENT_OS")
+	STELLA_CURRENT_PLATFORM_SUFFIX=$(__get_platform_suffix "$STELLA_CURRENT_PLATFORM")
+
+	
 	# linux
 	if [[ -n `which nproc 2> /dev/null` ]]; then
 		STELLA_NB_CPU=`nproc`
@@ -111,14 +117,46 @@ function __set_current_platform_info() {
 	fi
 
 
-	detectdistro
-	STELLA_CURRENT_OS=$(__get_os_from_distro "$distro")
-	STELLA_CURRENT_PLATFORM=$(__get_platform_from_os "$STELLA_CURRENT_OS")
-	STELLA_CURRENT_PLATFORM_SUFFIX=$(__get_platform_suffix "$STELLA_CURRENT_PLATFORM")
+	# http://stackoverflow.com/questions/246007/how-to-determine-whether-a-given-linux-is-32-bit-or-64-bit
+	# http://stackoverflow.com/a/10140985
+	# http://unix.stackexchange.com/a/24772
 
+	# CPU 64Bits capable
+	# Linux
+	if [[ -n `which lscpu 2> /dev/null` ]]; then
+		_cpu=`lscpu | awk 'NR== 1 {print $2}' | grep 64`
+		if [ "$_cpu" == "" ]; then
+			STELLA_CPU_ARCH=32
+		else
+			STELLA_CPU_ARCH=64
+		fi
+
+	# Darwin
+	elif [[ -n `which sysctl 2> /dev/null` ]]; then
+		_cpu=`sysctl hw.cpu64bit_capable | egrep -i 'hw.cpu64bit_capable' | awk '{print $NF}'`
+		STELLA_CPU_ARCH=32
+		[ "$_cpu" == "1" ] && STELLA_CPU_ARCH=64
+	else
+		STELLA_CPU_ARCH=
+	fi
+
+
+	if [ "$(uname -m | grep 64)" == "" ]; then
+		STELLA_KERNEL_ARCH=32
+	else
+		STELLA_KERNEL_ARCH=64
+	fi
+
+	# The getconf LONG_BIT get the default bit size of the C library
+	STELLA_C_ARCH=$(getconf LONG_BIT)
+	STELLA_USERSPACE_ARCH=unknown
 	
-	
+
+
+
 	__override_platform_command
+
+
 
 
 

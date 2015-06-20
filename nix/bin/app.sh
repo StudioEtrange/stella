@@ -11,7 +11,6 @@ function usage() {
     echo " L     get-data|get-assets|update-data|update-assets|revert-data|revert-assets|delete-data|delete-assets <list of data id|list of assets id>"
     echo " L     get-data-pack|get-assets-pack|update-data-pack|update-assets-pack|revert-data-pack|revert-assets-pack|delete-data-pack|delete-assets-pack <data pack name|assets pack name>"
     echo " L     get-feature <all|feature schema> : install all features defined in app properties file or install a matching one"
-    echo " L     setup-env <env id|all> : download, build, deploy and run virtual environment based on app properties"
     echo " L     link stella <app-path> [--stellaroot=<path>] : link an app to a specific stella path"
 
 }
@@ -21,7 +20,7 @@ function usage() {
 
 # MAIN ------------------------
 PARAMETERS="
-ACTION=                         'action'                    a           'link init get-data get-assets delete-data delete-assets update-data update-assets revert-data revert-assets setup-env get-feature get-data-pack get-assets-pack update-data-pack update-assets-pack revert-data-pack revert-assets-pack'            Action to compute.
+ACTION=                         'action'                    a           'link init get-data get-assets delete-data delete-assets update-data update-assets revert-data revert-assets get-feature get-data-pack get-assets-pack update-data-pack update-assets-pack revert-data-pack revert-assets-pack'            Action to compute.
 ID=                          ''                             s           ''                      Data or Assets or Env ID or Application name.
 "
 OPTIONS="
@@ -110,13 +109,7 @@ else
         revert-assets)
             __revert_assets $ID
             ;;
-        setup-env)
-            if [ "$ID" == "all" ]; then
-                __setup_all_env
-            else
-                __setup_env $ID
-            fi
-            ;;
+        
         *)
             echo "use option --help for help"
             ;;
