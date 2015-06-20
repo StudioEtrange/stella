@@ -85,24 +85,6 @@ STELLA_INTERNAL_TEMP_DIR=$STELLA_INTERNAL_WORK_ROOT/temp
 FEATURE_LIST_ENABLED=
 VERBOSE_MODE=0
 
-# VIRTUALIZATION ------------------------------------------
-VIRTUAL_WORK_ROOT="$STELLA_APP_WORK_ROOT/virtual"
-VIRTUAL_TEMPLATE_ROOT="$VIRTUAL_WORK_ROOT/template"
-VIRTUAL_ENV_ROOT="$VIRTUAL_WORK_ROOT/env"
-
-VIRTUAL_INTERNAL_ROOT="$STELLA_ROOT/common/virtual"
-VIRTUAL_INTERNAL_TEMPLATE_ROOT="$VIRTUAL_INTERNAL_ROOT/template"
-VIRTUAL_CONF_FILE="$VIRTUAL_INTERNAL_ROOT/virtual.ini"
-
-PACKER_CMD=packer
-VAGRANT_CMD=vagrant
-
-export PACKER_STELLA_APP_CACHE_DIR="$STELLA_APP_CACHE_DIR"
-
-# choose a default hypervisor for packer and vagrant
-# vmware or virtualbox
-VIRTUAL_DEFAULT_HYPERVISOR=virtualbox
-
 # INTERNAL LIST---------------------------------------------
 __STELLA_FEATURE_LIST="ant boost boost-build sevenzip goconfig-cli go-crosscompile-chain go-build-chain oracle-jdk smartmontools python zlib socat gnu-netcat maven spark sbt scala docker-compose docker-machine jq wget ninja cmake packer autotools-bundle perl gettext getopt ucl upx elasticsearch kibana nginx ngrok go pcre libtool m4 automake autoconf"
 

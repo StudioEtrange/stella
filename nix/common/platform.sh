@@ -113,7 +113,7 @@ function __set_current_platform_info() {
 	elif [[ -n `which sysctl 2> /dev/null` ]]; then
 		STELLA_NB_CPU=`sysctl hw.ncpu 2> /dev/null | awk '{print $NF}'`
 	else
-		STELLA_NB_CPU=0
+		STELLA_NB_CPU=1
 	fi
 
 

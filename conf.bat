@@ -81,24 +81,6 @@ set "MVN=mvn"
 set "CURL=curl"
 set "NPM=npm"
 
-:: VIRTUALIZATION ----------------------
-set "VIRTUAL_WORK_ROOT=%STELLA_APP_WORK_ROOT%\virtual"
-set "VIRTUAL_TEMPLATE_ROOT=%VIRTUAL_WORK_ROOT%\template"
-set "VIRTUAL_ENV_ROOT=%VIRTUAL_WORK_ROOT%\env"
-
-set "VIRTUAL_INTERNAL_ROOT=%STELLA_ROOT%\common\virtual"
-set "VIRTUAL_INTERNAL_TEMPLATE_ROOT=%VIRTUAL_INTERNAL_ROOT%\template"
-set "VIRTUAL_CONF_FILE=%VIRTUAL_INTERNAL_ROOT%\virtual.ini"
-
-set PACKER_CMD=packer
-set VAGRANT_CMD=vagrant
-
-set "PACKER_STELLA_APP_CACHE_DIR=%STELLA_APP_CACHE_DIR%"
-
-:: choose a default hypervisor for packer and vagrant
-:: vmware or virtualbox
-set VIRTUAL_DEFAULT_HYPERVISOR=virtualbox
-
 
 :: INTERNAL LIST ---------------------------------------------
 set "__STELLA_FEATURE_LIST=git docker-swarm socat nginx mingw-w64 go-build-chain go-crosscompile-chain go docker-bundle docker-client docker-machine oracle-jdk maven spark nikpeviewer dependencywalker conemu goconfig-cli ninja jom cmake packer perl ruby rubydevkit nasm python vagrant openssh wget unzip sevenzip patch gnumake"
