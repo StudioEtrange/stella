@@ -3,6 +3,7 @@ _BOOST_INCLUDED_=1
 
 
 # https://github.com/Homebrew/homebrew/blob/master/Library/Formula/boost.rb
+# Note for windows : http://stackoverflow.com/questions/7282645/how-to-build-boost-iostreams-with-gzip-and-bzip2-support-on-windows
 
 function feature_boost() {
 	FEAT_NAME=boost
@@ -18,7 +19,7 @@ function feature_boost_1_58_0() {
 
 	# do NOT depend on Boost.Build
 	# Boost build is own embedded version of Boost.Build. If we do not want thaht, precise --with-bjam=<path> when building
-	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_SOURCE_DEPENDENCIES="zlib bzip2"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://downloads.sourceforge.net/project/boost/boost/1.58.0/boost_1_58_0.tar.bz2
@@ -29,7 +30,7 @@ function feature_boost_1_58_0() {
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
 
-	FEAT_SOURCE_CALLBACK=
+	FEAT_SOURCE_CALLBACK="feature_boost_dep"
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
@@ -39,6 +40,34 @@ function feature_boost_1_58_0() {
 }
 
 
+#http://www.boost.org/doc/libs/1_58_0/libs/iostreams/doc/installation.html
+function feature_boost_dep() {
+
+	save_FEAT_SCHEMA_SELECTED=$FEAT_SCHEMA_SELECTED
+
+	__feature_inspect bzip2
+	if [ "$TEST_FEATURE" == "0" ]; then
+		echo " ** ERROR : depend on bzip2"
+		return
+	fi
+	BZIP2_LIBPATH="$FEAT_INSTALL_ROOT/lib"
+	BZIP2_INCLUDE="$FEAT_INSTALL_ROOT/include"
+	
+	
+
+
+	__feature_inspect zlib
+	if [ "$TEST_FEATURE" == "0" ]; then
+		echo " ** ERROR : depend on lib zlib"
+		return
+	fi
+	ZLIB_LIBPATH="$FEAT_INSTALL_ROOT/lib"
+	ZLIB_INCLUDE="$FEAT_INSTALL_ROOT/include"
+	
+	FEAT_SCHEMA_SELECTED=$save_FEAT_SCHEMA_SELECTED
+	__internal_feature_context $FEAT_SCHEMA_SELECTED
+
+}
 
 function feature_boost_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
@@ -55,11 +84,19 @@ function feature_boost_install_source() {
     	without_lib="$without_lib",context,coroutine
     fi
 
+    # http://www.boost.org/doc/libs/1_58_0/libs/iostreams/doc/installation.html
+    __feature_callback
+
 	cd "$SRC_DIR"
-	./bootstrap.sh --prefix="$INSTALL_DIR" --libdir="$INSTALL_DIR/lib" --includedir="$INSTALL_DIR/include" --without-icu --without-libraries="$without_lib"
-    ./b2 --prefix="$INSTALL_DIR" --libdir="$INSTALL_DIR/lib" --includedir="$INSTALL_DIR/include" -d2 -j$STELLA_NB_CPU --layout=tagged install threading=multi,single link=shared,static
+	./bootstrap.sh --prefix="$INSTALL_DIR" --libdir="$INSTALL_DIR/lib" --includedir="$INSTALL_DIR/include" --without-icu --with-iostreams --without-libraries="$without_lib"
+    ./b2 --prefix="$INSTALL_DIR" --libdir="$INSTALL_DIR/lib" --includedir="$INSTALL_DIR/include" -d2 -j$STELLA_NB_CPU --layout=tagged install threading=multi,single link=shared,static \
+		-sBZIP2_INCLUDE="$BZIP2_INCLUDE" -sBZIP2_LIBPATH="$BZIP2_LIBPATH" -sZLIB_INCLUDE="$ZLIB_INCLUDE" -sZLIB_LIBPATH="$ZLIB_LIBPATH"
+    
+	./b2 tools/bcp --prefix="$INSTALL_DIR" --libdir="$INSTALL_DIR/lib" --includedir="$INSTALL_DIR/include" -d2 -j$STELLA_NB_CPU install
+    
 
     __del_folder "$SRC_DIR"
+
 
 }
 

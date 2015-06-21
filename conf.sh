@@ -86,7 +86,7 @@ FEATURE_LIST_ENABLED=
 VERBOSE_MODE=0
 
 # INTERNAL LIST---------------------------------------------
-__STELLA_FEATURE_LIST="ant boost boost-build sevenzip goconfig-cli go-crosscompile-chain go-build-chain oracle-jdk smartmontools python zlib socat gnu-netcat maven spark sbt scala docker-compose docker-machine jq wget ninja cmake packer autotools-bundle perl gettext getopt ucl upx elasticsearch kibana nginx ngrok go pcre libtool m4 automake autoconf"
+__STELLA_FEATURE_LIST="bzip2 ant boost boost-build sevenzip goconfig-cli go-crosscompile-chain go-build-chain oracle-jdk smartmontools python zlib socat gnu-netcat maven spark sbt scala docker-compose docker-machine jq wget ninja cmake packer autotools-bundle perl gettext getopt ucl upx elasticsearch kibana nginx ngrok go pcre libtool m4 automake autoconf"
 
 # API ---------------------------------------------
 STELLA_API_COMMON_PUBLIC="get_active_path uncompress daemonize rel_to_abs_path is_abs argparse get_filename_from_string \
