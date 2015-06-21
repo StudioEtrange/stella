@@ -4,6 +4,7 @@ _BOOST_INCLUDED_=1
 
 # https://github.com/Homebrew/homebrew/blob/master/Library/Formula/boost.rb
 # Note for windows : http://stackoverflow.com/questions/7282645/how-to-build-boost-iostreams-with-gzip-and-bzip2-support-on-windows
+# Built without boost.python, for boost.python see : https://github.com/Homebrew/homebrew/blob/master/Library/Formula/boost-python.rb
 
 function feature_boost() {
 	FEAT_NAME=boost
@@ -35,7 +36,7 @@ function feature_boost_1_58_0() {
 	FEAT_ENV_CALLBACK=
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libboost_wave.a
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/lib
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 
 }
 
@@ -61,7 +62,9 @@ function feature_boost_dep() {
 		echo " ** ERROR : depend on lib zlib"
 		return
 	fi
-	ZLIB_LIBPATH="$FEAT_INSTALL_ROOT/lib"
+	# we make a link so that only the static version of zlib is found and used (instead of dynamic version)
+	ln -fs $FEAT_INSTALL_ROOT/lib/libz.a $FEAT_INSTALL_ROOT/libz.a
+	ZLIB_LIBPATH="$FEAT_INSTALL_ROOT"
 	ZLIB_INCLUDE="$FEAT_INSTALL_ROOT/include"
 	
 	FEAT_SCHEMA_SELECTED=$save_FEAT_SCHEMA_SELECTED
@@ -84,16 +87,16 @@ function feature_boost_install_source() {
     	without_lib="$without_lib",context,coroutine
     fi
 
-    # http://www.boost.org/doc/libs/1_58_0/libs/iostreams/doc/installation.html
     __feature_callback
 
 	cd "$SRC_DIR"
-	./bootstrap.sh --prefix="$INSTALL_DIR" --libdir="$INSTALL_DIR/lib" --includedir="$INSTALL_DIR/include" --without-icu --with-iostreams --without-libraries="$without_lib"
+	./bootstrap.sh --prefix="$INSTALL_DIR" --libdir="$INSTALL_DIR/lib" --includedir="$INSTALL_DIR/include" --without-icu --without-libraries="$without_lib"
     ./b2 --prefix="$INSTALL_DIR" --libdir="$INSTALL_DIR/lib" --includedir="$INSTALL_DIR/include" -d2 -j$STELLA_NB_CPU --layout=tagged install threading=multi,single link=shared,static \
 		-sBZIP2_INCLUDE="$BZIP2_INCLUDE" -sBZIP2_LIBPATH="$BZIP2_LIBPATH" -sZLIB_INCLUDE="$ZLIB_INCLUDE" -sZLIB_LIBPATH="$ZLIB_LIBPATH"
     
-	./b2 tools/bcp --prefix="$INSTALL_DIR" --libdir="$INSTALL_DIR/lib" --includedir="$INSTALL_DIR/include" -d2 -j$STELLA_NB_CPU install
-    
+	./b2 tools/bcp -d2 -j$STELLA_NB_CPU install link=static
+	mkdir -p "$INSTALL_DIR/bin"
+    cp -f ./dist/bin/bcp "$INSTALL_DIR/bin/"
 
     __del_folder "$SRC_DIR"
 
