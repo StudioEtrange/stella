@@ -81,6 +81,11 @@ _
 
 Then app2.sh will use the same stella folder than app1.sh
 
+* You can re-link an app to your stella version with command line
+
+-
+	./stella/stella.sh app link ./your-app
+
 * Two nested or linked stella applications will share the same cache folder. The first running cache stella application will be used.
 
 * From app1 you can use STELLA API functions connected to another app2 (means : in the context of app2)

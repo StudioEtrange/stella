@@ -33,13 +33,18 @@ function feature_boost_1_58_0() {
 
 	FEAT_SOURCE_CALLBACK="feature_boost_dep"
 	FEAT_BINARY_CALLBACK=
-	FEAT_ENV_CALLBACK=
+	FEAT_ENV_CALLBACK="boost_set_env"
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libboost_wave.a
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+	FEAT_SEARCH_PATH=
 
 }
 
+
+function boost_set_env() {
+	BOOST_ROOT="$FEAT_INSTALL_ROOT"
+	export 	BOOST_ROOT="$FEAT_INSTALL_ROOT"
+}
 
 #http://www.boost.org/doc/libs/1_58_0/libs/iostreams/doc/installation.html
 function feature_boost_dep() {
@@ -94,10 +99,6 @@ function feature_boost_install_source() {
     ./b2 --prefix="$INSTALL_DIR" --libdir="$INSTALL_DIR/lib" --includedir="$INSTALL_DIR/include" -d2 -j$STELLA_NB_CPU --layout=tagged install threading=multi,single link=shared,static \
 		-sBZIP2_INCLUDE="$BZIP2_INCLUDE" -sBZIP2_LIBPATH="$BZIP2_LIBPATH" -sZLIB_INCLUDE="$ZLIB_INCLUDE" -sZLIB_LIBPATH="$ZLIB_LIBPATH"
     
-	./b2 tools/bcp -d2 -j$STELLA_NB_CPU install link=static
-	mkdir -p "$INSTALL_DIR/bin"
-    cp -f ./dist/bin/bcp "$INSTALL_DIR/bin/"
-
     __del_folder "$SRC_DIR"
 
 

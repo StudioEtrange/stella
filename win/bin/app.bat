@@ -40,17 +40,19 @@ if "%ACTION%"=="init" (
 	goto :end
 )
 
-if not "%ACTION%"=="init" (
+if "%ACTION%"=="link" (
+	call %STELLA_COMMON%\common-app.bat :link_app "%id%" "!-stellaroot!"
+	goto :end
+)
+
+if not "%ACTION%"=="init" if not "%ACTION%"=="link" (
 	if not exist "%_STELLA_APP_PROPERTIES_FILE%" (
 		echo ** ERROR properties file does not exist
 		goto :end
 	)
 )
 
-if "%ACTION%"=="link" (
-	call %STELLA_COMMON%\common-app.bat :link_app "%id%" "!-stellaroot!"
-	goto :end
-)
+
 
 if "%ACTION%"=="get-feature" (
 	if "%id%"=="all" (

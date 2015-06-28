@@ -57,65 +57,69 @@ if [ "$ACTION" == "init" ]; then
 
 else
 
-    if [ ! -f "$_STELLA_APP_PROPERTIES_FILE" ]; then
-        echo "** ERROR properties file does not exist"
-        exit
-    fi
-
-    case $ACTION in
-        link)
-            __link_app "$ID" "$STELLAROOT"
-            ;;
-        get-feature)
-            if [ "$ID" == "all" ]; then
-                __get_features
-            else
-                __get_feature "$ID"
-            fi
-            ;;
-        get-data)
-            __get_data $ID
-            ;;
-        get-data-pack)
-            __get_data_pack $ID
-            ;;
-        get-assets)
-            __get_assets $ID
-            ;;
-        get-assets-pack)
-            __get_assets_pack $ID
-            ;;
-        delete-data)
-            __delete_data $ID
-            ;;
-        delete-assets)
-            __delete_assets $ID
-            ;;
-        delete-data-pack)
-            __delete_data_pack $ID
-            ;;
-        delete-assets-pack)
-            __delete_assets_pack $ID
-            ;;
-        udpate-data)
-            __update_data $ID
-            ;;
-        update-assets)
-            __update_assets $ID
-            ;;
-        revert-data)
-            __revert_data $ID
-            ;;
-        revert-assets)
-            __revert_assets $ID
-            ;;
+    if [ "$ACTION" == "link" ]; then
+        __link_app "$ID" "$STELLAROOT"
         
-        *)
-            echo "use option --help for help"
-            ;;
-    esac
-fi
+    else
 
+
+        if [ ! -f "$_STELLA_APP_PROPERTIES_FILE" ]; then
+            echo "** ERROR properties file does not exist"
+            exit
+        fi
+
+        case $ACTION in
+            
+            get-feature)
+                if [ "$ID" == "all" ]; then
+                    __get_features
+                else
+                    __get_feature "$ID"
+                fi
+                ;;
+            get-data)
+                __get_data $ID
+                ;;
+            get-data-pack)
+                __get_data_pack $ID
+                ;;
+            get-assets)
+                __get_assets $ID
+                ;;
+            get-assets-pack)
+                __get_assets_pack $ID
+                ;;
+            delete-data)
+                __delete_data $ID
+                ;;
+            delete-assets)
+                __delete_assets $ID
+                ;;
+            delete-data-pack)
+                __delete_data_pack $ID
+                ;;
+            delete-assets-pack)
+                __delete_assets_pack $ID
+                ;;
+            udpate-data)
+                __update_data $ID
+                ;;
+            update-assets)
+                __update_assets $ID
+                ;;
+            revert-data)
+                __revert_data $ID
+                ;;
+            revert-assets)
+                __revert_assets $ID
+                ;;
+            
+            *)
+                echo "use option --help for help"
+                ;;
+        esac
+    fi
+fi
 
 
 echo "** END **"
