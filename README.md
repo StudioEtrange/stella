@@ -66,6 +66,15 @@ _NOTE : You dont really need this, because all previous installation methods wil
 
 ## Advanced Usage
 
+### stella link
+
+* Each stella application have a stella-link file. It is link to a stella version and a stella path. If you want to recreate this file, you should do
+
+-
+	./stella/stella.sh app link ./your-app
+
+
+
 ### Linked or Nested Applications
 
 * If a stella application is launched by another stella application, the second one will automaticly share the stella installation of the first one.
@@ -80,11 +89,6 @@ _
 	$STELLA_API link_app $STELLA_APP_WORK_ROOT/app2
 
 Then app2.sh will use the same stella folder than app1.sh
-
-* You can re-link an app to your stella version with command line
-
--
-	./stella/stella.sh app link ./your-app
 
 * Two nested or linked stella applications will share the same cache folder. The first running cache stella application will be used.
 
