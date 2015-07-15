@@ -25,16 +25,15 @@ function feature_docker-machine_0_2_0() {
 		FEAT_BINARY_URL_x86=https://github.com/docker/machine/releases/download/v0.2.0/docker-machine_darwin-386
 		FEAT_BINARY_URL_FILENAME_x86=docker-machine_darwin-386-0_2_0
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP
-
 		FEAT_BINARY_URL_x64=https://github.com/docker/machine/releases/download/v0.2.0/docker-machine_darwin-amd64
 		FEAT_BINARY_URL_FILENAME_x64=docker-machine_darwin-amd64-0_2_0
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
 	fi
+
 	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
 		FEAT_BINARY_URL_x86=https://github.com/docker/machine/releases/download/v0.2.0/docker-machine_linux-386
 		FEAT_BINARY_URL_FILENAME_x86=docker-machine_linux-386-0_2_0
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP
-
 		FEAT_BINARY_URL_x64=https://github.com/docker/machine/releases/download/v0.2.0/docker-machine_linux-amd64
 		FEAT_BINARY_URL_FILENAME_x64=docker-machine_linux-amd64-0_2_0
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP

@@ -63,8 +63,7 @@ function feature_docker-compose_1_3_1() {
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		FEAT_BINARY_URL_x86=
 		FEAT_BINARY_URL_FILENAME_x86=
-		FEAT_BINARY_URL_PROTOCOL_x86=
-		
+		FEAT_BINARY_URL_PROTOCOL_x86=	
 		FEAT_BINARY_URL_x64=https://github.com/docker/compose/releases/download/1.3.1/docker-compose-Darwin-x86_64
 		FEAT_BINARY_URL_FILENAME_x64=docker-compose-Darwin-x86_64-1_3_1
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
@@ -73,8 +72,7 @@ function feature_docker-compose_1_3_1() {
 	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
 		FEAT_BINARY_URL_x86=
 		FEAT_BINARY_URL_FILENAME_x86=
-		FEAT_BINARY_URL_PROTOCOL_x86=
-		
+		FEAT_BINARY_URL_PROTOCOL_x86=	
 		FEAT_BINARY_URL_x64=https://github.com/docker/compose/releases/download/1.3.1/docker-compose-Linux-x86_64
 		FEAT_BINARY_URL_FILENAME_x64=docker-compose-Linux-x86_64-1_3_1
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
