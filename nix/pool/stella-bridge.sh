@@ -142,9 +142,8 @@ function __get_stella() {
 	if [ "$_flavour" == "DEV" ]; then
 		git clone https://github.com/StudioEtrange/stella "$_path"
 		if [ ! "$_ver" == "LATEST" ]; then
-				cd "$_path"
-				git checkout $_ver
-			fi
+			cd "$_path"
+			git checkout $_ver
 		fi
 	fi
 
