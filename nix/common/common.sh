@@ -831,6 +831,8 @@ function __ini_file() {
 	# http://stackoverflow.com/questions/407523/escape-a-string-for-a-sed-replace-pattern
 	_SECTION_NAME=$_SECTION
 	_SECTION=$(echo $_SECTION | sed -e 's/[]\/$*.^|[]/\\&/g')
+	_VALUE=$(echo "$_VALUE" | sed -e 's/\\/\\\\/g')
+	_KEY=$(echo "$_KEY" | sed -e 's/\\/\\\\/g')
 
 	tp=$(mktmp)
 
