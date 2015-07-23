@@ -8,7 +8,7 @@ function usage() {
 	echo "USAGE :"
 	echo "----------------"
 	echo "o-- foo management :"
-	echo "L     foo run"
+	echo "L     foo run [--opt=<string>]"
 	echo "o-- general management :"
 	echo "L     env install|uninstall : deploy/undeploy this app"
 }
@@ -20,6 +20,7 @@ ID=												'' 					a				'install uninstall run'
 "
 OPTIONS="
 FORCE=''				   'f'		  ''					b			0		'1'					  Force.
+OPT='default_val' 						'' 			'string'				s 			0			''		  Sample option.
 "
 $STELLA_API argparse "$0" "$OPTIONS" "$PARAMETERS" "foo" "$(usage)" "APPARG" "$@"
 
@@ -30,7 +31,7 @@ $STELLA_API argparse "$0" "$OPTIONS" "$PARAMETERS" "foo" "$(usage)" "APPARG" "$@
 if [ "$DOMAIN" == "foo" ]; then
 
 	if [ "$ID" == "run" ]; then
-		ls
+		echo $OPT
 	fi
 fi
 
