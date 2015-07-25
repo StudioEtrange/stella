@@ -112,9 +112,9 @@ function feature_oracle-jdk_install_binary() {
 	
 	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
 		if [ ! -f "$STELLA_APP_CACHE_DIR/$FEAT_BINARY_URL_FILENAME" ]; then
-			wget --no-cookies --no-check-certificate --header Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie "$FEAT_BINARY_URL" -O "$STELLA_APP_CACHE_DIR%/$FEAT_BINARY_URL_FILENAME"
+			wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "$FEAT_BINARY_URL" -O "$STELLA_APP_CACHE_DIR/$FEAT_BINARY_URL_FILENAME"
 		fi
-		__uncompress "$STELLA_APP_CACHE_DIR/$FEAT_BINARY_URL_FILENAME" "$FEAT_INSTALL_ROOT" "DEST_ERASE"
+		__uncompress "$STELLA_APP_CACHE_DIR/$FEAT_BINARY_URL_FILENAME" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP"
 	fi
 	
 
