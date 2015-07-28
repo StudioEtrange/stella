@@ -34,7 +34,7 @@ function feature_ambari_2_1_0() {
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/getopt"
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
 
-	_AMBARI_NEW_VERSION=2.1.0
+	_AMBARI_NEW_VERSION=2.1.0.0
 }
 
 
@@ -49,9 +49,12 @@ function feature_ambari_install_source() {
 
 	npm install -g brunch@1.7.17
 	
+	cd "$SRC_DIR/ambari-metrics"
+	mvn versions:set -DnewVersion=$_AMBARI_NEW_VERSION
+
 	cd "$SRC_DIR"
 	mvn versions:set -DnewVersion=$_AMBARI_NEW_VERSION
-	mvn -B package -DskipTests
+	mvn -T 1.5C -B install -DskipTests
 	#mvn test
 
 	#cd "$SRC_DIR/ambari-metrics"
