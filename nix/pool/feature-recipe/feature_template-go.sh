@@ -17,7 +17,7 @@ function feature_template-go_snapshot() {
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL="https://github.com/pborman/getopt/archive/master.zip"
-	FEAT_SOURCE_URL_FILENAME="go-getopt-snapshot.zip"
+	FEAT_SOURCE_URL_FILENAME="master.zip"
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
 	FEAT_BINARY_URL=
@@ -40,6 +40,11 @@ function feature_template-go_install_source() {
 	BUILD_DIR=
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP FORCE_NAME $FEAT_SOURCE_URL_FILENAME"
+
+	# get dependencies
+	cd "$SRC_DIR"
+	cd Godeps
+	GOPATH="$INSTALL_DIR" godep restore
 
 	cd "$INSTALL_DIR"
 	GOPATH="$INSTALL_DIR" go install getopt
