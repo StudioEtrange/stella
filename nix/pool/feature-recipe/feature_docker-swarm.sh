@@ -4,15 +4,15 @@ _DOCKERSWARM_INCLUDED_=1
 
 function feature_docker-swarm() {
 	FEAT_NAME="docker-swarm"
-	FEAT_LIST_SCHEMA="0.3.0:source"
-	FEAT_DEFAULT_VERSION="0.3.0"
+	FEAT_LIST_SCHEMA="0_3_0:source"
+	FEAT_DEFAULT_VERSION="0_3_0"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
 
-function feature_docker-swarm_0.3.0() {
-	FEAT_VERSION="0.3.0"
+function feature_docker-swarm_0_3_0() {
+	FEAT_VERSION="0_3_0"
 	FEAT_SOURCE_DEPENDENCIES="go-build-chain#1_4_2"
 	FEAT_BINARY_DEPENDENCIES=
 
