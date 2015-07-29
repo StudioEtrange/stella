@@ -38,14 +38,10 @@ function feature_perl_5_18_2() {
 function feature_perl_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	BUILD_DIR=
 
-	AUTO_INSTALL_FLAG_PREFIX=
-	AUTO_INSTALL_FLAG_POSTFIX=
-
+	
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
-	# __download_uncompress "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_FILENAME" "$SRC_DIR" "DEST_ERASE STRIP"
 
 	cd "$SRC_DIR"
 
@@ -54,7 +50,7 @@ function feature_perl_install_source() {
                   -Dpager="/usr/bin/less -isR"  \
                   -Duseshrplib
 
-	make
+	make -j$STELLA_NB_CPU
 	# test are too long
 	# make test
 	make install && __del_folder $SRC_DIR

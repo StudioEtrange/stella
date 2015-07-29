@@ -40,9 +40,6 @@ function feature_go_1_4_2() {
 
 function feature_go_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
-	SRC_DIR=
-	BUILD_DIR=
-
 
 	AUTO_INSTALL_FLAG_PREFIX=
 	AUTO_INSTALL_FLAG_POSTFIX=

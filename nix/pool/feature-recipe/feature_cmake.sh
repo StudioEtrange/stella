@@ -82,7 +82,7 @@ function feature_cmake_install_source() {
 	$SRC_DIR/bootstrap --prefix="$INSTALL_DIR"
 	#cmake "$SRC_DIR" -DTEMPLATE_INSTALL_PREFIX="$INSTALL_DIR"
 	#make -j$BUILD_JOB 
-	make
+	make -j$STELLA_NB_CPU
 	make install
 
 	__del_folder "$SRC_DIR"
@@ -92,12 +92,8 @@ function feature_cmake_install_source() {
 
 
 function feature_cmake_install_binary() {
-	
-	INSTALL_DIR="$FEAT_INSTALL_ROOT"
-	SRC_DIR=
-	BUILD_DIR=
 
-	__download_uncompress "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_FILENAME" "$INSTALL_DIR" "DEST_ERASE STRIP"
+	__download_uncompress "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_FILENAME" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP"
 	
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		ln -s "$FEAT_INSTALL_ROOT"/"$FILE_APP"/Contents/bin "$FEAT_INSTALL_ROOT"/bin

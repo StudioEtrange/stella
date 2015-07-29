@@ -2,7 +2,7 @@ if [ ! "$_SEVENZIP_INCLUDED_" == "1" ]; then
 _SEVENZIP_INCLUDED_=1
 
 
-
+#TODO do not work yet
 function feature_sevenzip() {
 	FEAT_NAME=sevenzip
 	FEAT_LIST_SCHEMA="9_20_1:source"
@@ -36,7 +36,6 @@ function feature_sevenzip_9_20_1() {
 function feature_sevenzip_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	BUILD_DIR=""
 
 	__download_uncompress "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_FILENAME" "$SRC_DIR" "DEST_ERASE STRIP"
 

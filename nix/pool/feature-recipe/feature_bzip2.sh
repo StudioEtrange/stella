@@ -15,8 +15,6 @@ function feature_bzip2_1_0_6() {
 	FEAT_VERSION=1_0_6
 
 
-	# do NOT depend on Boost.Build
-	# Boost build is own embedded version of Boost.Build. If we do not want thaht, precise --with-bjam=<path> when building
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -42,14 +40,14 @@ function feature_bzip2_1_0_6() {
 function feature_bzip2_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
+	
+	AUTO_INSTALL_CONF_FLAG_PREFIX=
+	AUTO_INSTALL_CONF_FLAG_POSTFIX=	
+	AUTO_INSTALL_BUILD_FLAG_PREFIX=
+	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
-	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
-
-	cd "$SRC_DIR"
-	make
-	make install PREFIX="$INSTALL_DIR"
-  
-    __del_folder "$SRC_DIR"
+	__auto_install "bzip2" "$FEAT_SOURCE_URL_FILENAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "$INSTALL_DIR" "NO_CONFIG BUILD_TOOL make"
+	
 
 }
 

@@ -35,9 +35,7 @@ function feature_ninja_snapshot() {
 
 function feature_ninja_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
-	SRC_DIR=
-	BUILD_DIR=
-
+	
 	__download_uncompress "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_FILENAME" "$INSTALL_DIR" "DEST_ERASE STRIP"
 
 	cd "$INSTALL_DIR"

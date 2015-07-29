@@ -18,7 +18,7 @@ function feature_automake_1_14() {
 
 	FEAT_SOURCE_URL=http://ftp.gnu.org/gnu/automake/automake-1.14.tar.gz
 	FEAT_SOURCE_URL_FILENAME=automake-1.14.tar.gz
-	FEAT_SOURCE_URL_PROTOCOL=
+	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
@@ -34,21 +34,24 @@ function feature_automake_1_14() {
 }
 
 function feature_automake_1_14_patch() {
-	AUTO_INSTALL_FLAG_POSTFIX="--docdir=$INSTALL_DIR/share/doc/automake-1.14"
+	AUTO_INSTALL_CONF_FLAG_POSTFIX="--docdir=$INSTALL_DIR/share/doc/automake-1.14"
 }
 
 function feature_automake_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-build"
 	
-	AUTO_INSTALL_FLAG_PREFIX=
-	AUTO_INSTALL_FLAG_POSTFIX=
+	
+	AUTO_INSTALL_CONF_FLAG_PREFIX=
+	AUTO_INSTALL_CONF_FLAG_POSTFIX=	
+	AUTO_INSTALL_BUILD_FLAG_PREFIX=
+	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
-	
 	__feature_callback
 
-	__auto_install "configure" "automake" "$FEAT_SOURCE_URL_FILENAME" "$FEAT_SOURCE_URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
+
+	__auto_install "automake" "$FEAT_SOURCE_URL_FILENAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "$INSTALL_DIR" "CONF_TOOL configure BUILD_TOOL make"
+	
 }
 
 fi

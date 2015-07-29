@@ -1,7 +1,7 @@
 if [ ! "$_PYTHON_INCLUDED_" == "1" ]; then 
 _PYTHON_INCLUDED_=1
 
-# EXPERIMENTAL NOT FINISHED
+# Python 2.7.9 and later (on the python2 series), and Python 3.4 and later include PIP by default (http://pip.readthedocs.org/en/latest/installing.html#pip-included-with-python)
 
 function feature_python() {
 
@@ -31,14 +31,14 @@ function feature_python_2_7_9() {
 	FEAT_ENV_CALLBACK=
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/python
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/lib
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 
 }
 
 function feature_python_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-build"
+	#BUILD_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-build"
 
 	# depend on openssl
 
@@ -53,7 +53,14 @@ function feature_python_install_source() {
  #                          --enable-pythongrep-libbz2 \
  #                          --enable-jit"
 
-	__auto_install "configure" "python" "$FEAT_SOURCE_URL_FILENAME" "$FEAT_SOURCE_URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "DEST_ERASE STRIP"
+
+	AUTO_INSTALL_CONF_FLAG_PREFIX=
+	AUTO_INSTALL_CONF_FLAG_POSTFIX=
+	AUTO_INSTALL_BUILD_FLAG_PREFIX=
+	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
+
+	__auto_install "python" "$FEAT_SOURCE_URL_FILENAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "$INSTALL_DIR" "CONF_TOOL configure BUILD_TOOL make"
+
 
 }
 

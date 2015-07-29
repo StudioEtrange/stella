@@ -72,7 +72,6 @@ function feature_template_install_binary() {
 function feature_template_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-build"
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP"
 
@@ -82,6 +81,22 @@ function feature_template_install_source() {
 
 	make
 	make install && __del_folder $SRC_DIR
+}
+
+function feature_template_install_source() {
+	INSTALL_DIR="$FEAT_INSTALL_ROOT"
+	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
+	
+
+	AUTO_INSTALL_CONF_FLAG_PREFIX=
+	AUTO_INSTALL_CONF_FLAG_POSTFIX=
+	AUTO_INSTALL_BUILD_FLAG_PREFIX=
+	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
+
+	__feature_callback
+
+	__auto_install "template" "$FEAT_SOURCE_URL_FILENAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "$INSTALL_DIR" "CONF_TOOL configure BUILD_TOOL make"
+
 }
 
 

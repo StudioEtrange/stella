@@ -37,14 +37,12 @@ function feature_gettext_0_19_4() {
 
 function feature_gettext_install_source() {
 	
-	# out of tree build do not work
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	BUILD_DIR="$SRC_DIR"
+	
 
-
-	AUTO_INSTALL_FLAG_PREFIX=
-	AUTO_INSTALL_FLAG_POSTFIX="--disable-dependency-tracking \
+	AUTO_INSTALL_CONF_FLAG_PREFIX=
+	AUTO_INSTALL_CONF_FLAG_POSTFIX="--disable-dependency-tracking \
                           --disable-silent-rules \
                           --disable-debug \
                           --with-included-gettext \
@@ -58,9 +56,11 @@ function feature_gettext_install_source() {
                           --without-cvs\
                           --without-xz"
 
+	AUTO_INSTALL_BUILD_FLAG_PREFIX=
+	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
-	__auto_install "configure" "gettext" "$FEAT_SOURCE_URL_FILENAME" "$FEAT_SOURCE_URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "DEST_ERASE STRIP"
-
+	__auto_install "gettext" "$FEAT_SOURCE_URL_FILENAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "$INSTALL_DIR" "CONF_TOOL configure BUILD_TOOL make"
+	
 }
 
 fi

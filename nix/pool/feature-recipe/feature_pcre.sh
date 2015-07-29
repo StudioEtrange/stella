@@ -38,11 +38,10 @@ function feature_pcre_8_36() {
 function feature_pcre_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-build"
+	
 
-
-	AUTO_INSTALL_FLAG_PREFIX=
-	AUTO_INSTALL_FLAG_POSTFIX="--disable-dependency-tracking \
+	AUTO_INSTALL_CONF_FLAG_PREFIX=
+	AUTO_INSTALL_CONF_FLAG_POSTFIX="--disable-dependency-tracking \
                           --enable-utf8 \
                           --enable-pcre8 \
                           --enable-pcre16 \
@@ -52,8 +51,11 @@ function feature_pcre_install_source() {
                           --enable-pcregrep-libbz2 \
                           --enable-jit"
 
-	__auto_install "configure" "pcre" "$FEAT_SOURCE_URL_FILENAME" "$FEAT_SOURCE_URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "DEST_ERASE STRIP"
+	AUTO_INSTALL_BUILD_FLAG_PREFIX=
+	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
+	__auto_install "pcre" "$FEAT_SOURCE_URL_FILENAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "$INSTALL_DIR" "CONF_TOOL configure BUILD_TOOL make"
+	
 }
 
 

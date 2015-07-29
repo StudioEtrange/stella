@@ -21,19 +21,24 @@ function __init_proxy() {
 		eval STELLA_PROXY_USER=$(echo '$STELLA_PROXY_'$STELLA_PROXY_ACTIVE'_PROXY_USER')
 		if [ "$STELLA_PROXY_USER" == "" ]; then
 			STELLA_HTTP_PROXY=http://$STELLA_PROXY_HOST:$STELLA_PROXY_PORT
-			STELLA_HTTPS_PROXY=https://$STELLA_PROXY_HOST:$STELLA_PROXY_PORT
+			STELLA_HTTPS_PROXY=http://$STELLA_PROXY_HOST:$STELLA_PROXY_PORT
 		else
 			eval STELLA_PROXY_PASS=$(echo '$STELLA_PROXY_'$STELLA_PROXY_ACTIVE'_PROXY_PASS')
 
 			STELLA_HTTP_PROXY=http://$STELLA_PROXY_USER:$STELLA_PROXY_PASS@$STELLA_PROXY_HOST:$STELLA_PROXY_PORT
-			STELLA_HTTPS_PROXY=https://$STELLA_PROXY_USER:$STELLA_PROXY_PASS$STELLA_PROXY_HOST:$STELLA_PROXY_PORT
+			STELLA_HTTPS_PROXY=http://$STELLA_PROXY_USER:$STELLA_PROXY_PASS$STELLA_PROXY_HOST:$STELLA_PROXY_PORT
 		fi
 
 		https_proxy="$STELLA_HTTPS_PROXY"
 		http_proxy="$STELLA_HTTP_PROXY"
-
 		export https_proxy="$STELLA_HTTPS_PROXY"
 		export http_proxy="$STELLA_HTTP_PROXY"
+
+		HTTPS_PROXY="$https_proxy"
+		HTTP_PROXY="$http_proxy"
+		export HTTPS_PROXY="$https_proxy"
+		export HTTP_PROXY="$http_proxy"
+
 
 		echo "STELLA Proxy Active : $STELLA_PROXY_ACTIVE [ $STELLA_PROXY_HOST:$STELLA_PROXY_PORT ]"
 
@@ -83,7 +88,7 @@ function __proxy_override() {
 	}
 
 	function npm() {
-		command npm --https-proxy="$HTTPS_PROXY" --http-proxy="$HTTP_PROXY" "$@"	
+		command npm --https-proxy="$STELLA_HTTPS_PROXY" --proxy="$STELLA_HTTP_PROXY" "$@"	
 	}
 
 	function brew() {

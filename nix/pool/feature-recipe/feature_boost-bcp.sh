@@ -1,7 +1,7 @@
 if [ ! "$_BOOSTBCP_INCLUDED_" == "1" ]; then 
 _BOOSTBCP_INCLUDED_=1
 
-# for mort information see feature boost
+# for more information see feature boost
 
 function feature_boost-bcp() {
 	FEAT_NAME=boost-bcp

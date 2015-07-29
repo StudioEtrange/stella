@@ -16,7 +16,7 @@ function feature_ambari() {
 function feature_ambari_2_1_0() {
 	FEAT_VERSION="2_1_0"
 	# need python
-	FEAT_SOURCE_DEPENDENCIES="maven#3_0_5:binary oracle-jdk#7u80@x64:binary nodejs#0_10_31@x64:binary"
+	FEAT_SOURCE_DEPENDENCIES="python#2_7_9:source maven#3_0_5:binary oracle-jdk#7u80@x64:binary nodejs#0_10_31@x64:binary"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL="http://www.apache.org/dist/ambari/ambari-2.1.0/apache-ambari-2.1.0-src.tar.gz"
@@ -43,9 +43,7 @@ function feature_ambari_install_source() {
 	SRC_DIR="$FEAT_INSTALL_ROOT/src"
 	BUILD_DIR=
 
-	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP FORCE_NAME $FEAT_SOURCE_URL_FILENAME"
-
-	 
+	#__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP FORCE_NAME $FEAT_SOURCE_URL_FILENAME"
 
 	npm install -g brunch@1.7.17
 	
@@ -54,7 +52,8 @@ function feature_ambari_install_source() {
 
 	cd "$SRC_DIR"
 	mvn versions:set -DnewVersion=$_AMBARI_NEW_VERSION
-	mvn -T 1.5C -B install -DskipTests
+	# do not parallelize with mvn -T 1.5C 
+	mvn -B install -DskipTests
 	#mvn test
 
 	#cd "$SRC_DIR/ambari-metrics"

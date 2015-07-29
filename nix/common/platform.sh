@@ -156,10 +156,6 @@ function __set_current_platform_info() {
 
 	__override_platform_command
 
-
-
-
-
 }
 
 

@@ -556,6 +556,8 @@ function __internal_feature_context() {
 	FEAT_BUNDLE_CALLBACK=
 	# MERGE / NESTED / LIST
 	FEAT_BUNDLE=
+
+
 	
 	# TODO we call translate_schema inside select_official_schema, so double call
 	[ ! "$_SCHEMA" == "" ] && __select_official_schema $_SCHEMA "FEAT_SCHEMA_SELECTED"

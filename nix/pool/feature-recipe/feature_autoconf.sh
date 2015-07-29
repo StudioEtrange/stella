@@ -18,9 +18,17 @@ function feature_autoconf_2_69() {
 
 	FEAT_SOURCE_URL=http://ftp.gnu.org/gnu/autoconf/autoconf-2.69.tar.gz
 	FEAT_SOURCE_URL_FILENAME=autoconf-2.69.tar.gz
-	FEAT_SOURCE_CALLBACK=feature_autoconf_2_69_patch
+	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
+
+
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
+	FEAT_BINARY_URL_PROTOCOL=
+
+	FEAT_SOURCE_CALLBACK=feature_autoconf_2_69_patch
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
 	
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/autoconf
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
@@ -29,22 +37,23 @@ function feature_autoconf_2_69() {
 
 function feature_autoconf_2_69_patch() {
 	#TODO : really need this ?
-	#AUTO_INSTALL_FLAG_POSTFIX="--docdir=$INSTALL_DIR/share/doc/automake-1.14"
-	AUTO_INSTALL_FLAG_POSTFIX=
+	#AUTO_INSTALL_CONF_FLAG_POSTFIX="--docdir=$INSTALL_DIR/share/doc/automake-1.14"
+	AUTO_INSTALL_CONF_FLAG_POSTFIX=
 }
 
 function feature_autoconf_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-build"
 	
-	AUTO_INSTALL_FLAG_PREFIX=
-	AUTO_INSTALL_FLAG_POSTFIX=
+	AUTO_INSTALL_CONF_FLAG_PREFIX=
+	AUTO_INSTALL_CONF_FLAG_POSTFIX=	
+	AUTO_INSTALL_BUILD_FLAG_PREFIX=
+	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
-	
 	__feature_callback
 
-	__auto_install "configure" "autoconf" "$FEAT_SOURCE_URL_FILENAME" "$FEAT_SOURCE_URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
+	__auto_install "autoconf" "$FEAT_SOURCE_URL_FILENAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "$INSTALL_DIR" "CONF_TOOL configure BUILD_TOOL make"
+	
 }
 
 fi
