@@ -16,7 +16,7 @@ function feature_getopt() {
 function feature_getopt_1_1_6() {
 	FEAT_VERSION=1_1_6
 	# depend on gettext ?
-	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_SOURCE_DEPENDENCIES="gettext#0_19_4:source"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://frodo.looijaard.name/system/files/software/getopt/getopt-1.1.6.tar.gz
@@ -41,9 +41,14 @@ function feature_getopt_1_1_6() {
 function feature_getopt_1_1_6_patch() {
 	# https://github.com/Homebrew/homebrew/blob/master/Library/Formula/gnu-getopt.rb
 
-	__feature_inspect gettext
-	sed -i .bak 's,^\(CPPFLAGS=.*\),\1 '"-I$FEAT_INSTALL_ROOT/include"',' $SRC_DIR/Makefile
-	sed -i .bak 's,^\(LDFLAGS=.*\),\1 '"-L$FEAT_INSTALL_ROOT/lib -lintl"',' $SRC_DIR/Makefile
+	__link_library "gettext" "intl" "GET_C_CXX_FLAGS _c_cxx_flags GET_LINK_FLAGS _link_flags"
+	
+	
+	#sed -i .bak 's,^\(CPPFLAGS=.*\),\1 '"-I$FEAT_INSTALL_ROOT/include"',' $SRC_DIR/Makefile
+	#sed -i .bak 's,^\(LDFLAGS=.*\),\1 '"-L$FEAT_INSTALL_ROOT/lib -lintl"',' $SRC_DIR/Makefile
+
+	sed -i .bak 's,^\(CPPFLAGS=.*\),\1 '"$_c_cxx_flags"',' $SRC_DIR/Makefile
+	sed -i .bak 's,^\(LDFLAGS=.*\),\1 '"$_link_flags"',' $SRC_DIR/Makefile
 }
 
 function feature_getopt_install_source() {
@@ -55,7 +60,7 @@ function feature_getopt_install_source() {
 	__feature_callback
 	
 	cd "$SRC_DIR"
-	make
+	make -j$STELLA_NB_CPU
 	make prefix="$INSTALL_DIR" mandir=man install && __del_folder $SRC_DIR
 }
 

@@ -140,6 +140,19 @@ function __feature_match_installed() {
 
 }
 
+
+# save context before calling __feature_inspect, in case we use it inside a schema context
+function __push_schema_context() {
+	__push_schema_context_TEST_FEATURE=$TEST_FEATURE
+	__push_schema_context_FEAT_SCHEMA_SELECTED=$FEAT_SCHEMA_SELECTED
+}
+# load context before calling __feature_inspect, in case we use it inside a schema context
+function __pop_schema_context() {
+	FEAT_SCHEMA_SELECTED=$__push_schema_context_FEAT_SCHEMA_SELECTED
+	__internal_feature_context $FEAT_SCHEMA_SELECTED
+	TEST_FEATURE=$__push_schema_context_TEST_FEATURE
+}
+
 # test if a feature is installed
 # AND retrieve informations based on actually installed feature (looking inside STELLA_APP_FEATURE_ROOT) OR from feature recipe if not installed
 # do not use default values from feature recipe to search installed feature
@@ -187,6 +200,7 @@ function __feature_inspect() {
 	else
 		__feature_catalog_info $_SCHEMA
 	fi
+
 }
 
 
@@ -557,7 +571,7 @@ function __internal_feature_context() {
 	# MERGE / NESTED / LIST
 	FEAT_BUNDLE=
 
-
+	[ "$_SCHEMA" == "" ] && return
 	
 	# TODO we call translate_schema inside select_official_schema, so double call
 	[ ! "$_SCHEMA" == "" ] && __select_official_schema $_SCHEMA "FEAT_SCHEMA_SELECTED"

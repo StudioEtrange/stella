@@ -2,6 +2,9 @@ if [ ! "$_NGINX_INCLUDED_" == "1" ]; then
 _NGINX_INCLUDED_=1
 
 
+# NOTE : build from source depend on zlib, openssl, pcre
+# for zlib and openssl : will use system installed version OR built by nginx makefile (see auto/options file : --with-zlib=SOURCE_DIR --with-openssl=SOURCE_DIR)
+# for pcre : built by nginx makefile (see auto/options file : --with-pcre=SOURCE_DIR)
 
 function feature_nginx() {
 	FEAT_NAME=nginx
@@ -14,7 +17,6 @@ function feature_nginx() {
 function feature_nginx_1_7_11() {
 	FEAT_VERSION=1_7_11
 	
-	# depend on zlib
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -26,7 +28,7 @@ function feature_nginx_1_7_11() {
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
 
-	FEAT_SOURCE_CALLBACK=feature_nginx_get_pcre
+	FEAT_SOURCE_CALLBACK="feature_nginx_get_pcre"
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
@@ -51,7 +53,7 @@ function feature_nginx_install_source() {
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src/nginx"
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
-	AUTO_INSTALL_CONF_FLAG_POSTFIX=	
+	AUTO_INSTALL_CONF_FLAG_POSTFIX=
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
@@ -60,7 +62,7 @@ function feature_nginx_install_source() {
 	# out of tree build do not work
 	__auto_install "nginx" "$FEAT_SOURCE_URL_FILENAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD CONF_TOOL configure BUILD_TOOL make"
 	
-
+	rm -Rf "$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 }
 
 

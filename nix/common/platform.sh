@@ -90,14 +90,6 @@ function __get_platform_suffix() {
 }
 
 function __set_current_platform_info() {
-	
-
-	
-
-
-
-	
-
 
 
 	detectdistro
@@ -150,12 +142,15 @@ function __set_current_platform_info() {
 	# The getconf LONG_BIT get the default bit size of the C library
 	STELLA_C_ARCH=$(getconf LONG_BIT)
 	STELLA_USERSPACE_ARCH=unknown
-	
-
-
 
 	__override_platform_command
 
+}
+
+
+function __get_macos_version() {
+	#echo $(sw_vers -productVersion)
+	echo $(sw_vers -productVersion | awk -F '.' '{print $1 "." $2}')
 }
 
 

@@ -15,18 +15,18 @@ function feature_python() {
 function feature_python_2_7_9() {
 	FEAT_VERSION=2_7_9
 	
-	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 openssl#1_0_2d"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://www.python.org/ftp/python/2.7.9/Python-2.7.9.tgz
 	FEAT_SOURCE_URL_FILENAME=Python-2.7.9.tgz
-	FEAT_SOURCE_URL_PROTOCOL=
+	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
 
-	FEAT_SOURCE_CALLBACK=
+	FEAT_SOURCE_CALLBACK=feature_python_link
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
@@ -35,32 +35,40 @@ function feature_python_2_7_9() {
 
 }
 
+function feature_python_link() {
+	__link_library "zlib" "z"
+	__link_library "openssl" "ssl crypto"
+}
+
+
 function feature_python_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	#BUILD_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-build"
 
-	# depend on openssl
-
-	# AUTO_INSTALL_FLAG_PREFIX=
 	# AUTO_INSTALL_FLAG_POSTFIX="--disable-dependency-tracking \
  #                          --enable-utf8 \
- #                          --enable-python8 \
- #                          --enable-python16 \
- #                          --enable-python32 \
- #                          --enable-unicode-properties \
- #                          --enable-pythongrep-libz \
- #                          --enable-pythongrep-libbz2 \
- #                          --enable-jit"
+ #							--enable-ipv6"
+	#--with-ensurepip=install # build pip from pip source included into python source BUT need openssl
 
+	__feature_callback
 
+	#AUTO_INSTALL_CONF_FLAG_PREFIX="CPPFLAGS=\"-I$ZLIB_ROOT/include\" LDFLAGS=\"-L$ZLIB_ROOT -lz\""
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
-	AUTO_INSTALL_CONF_FLAG_POSTFIX=
+	AUTO_INSTALL_CONF_FLAG_POSTFIX="--enable-utf8 \
+									--enable-shared"
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
-	__auto_install "python" "$FEAT_SOURCE_URL_FILENAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "$INSTALL_DIR" "CONF_TOOL configure BUILD_TOOL make"
+	# fix min macos version, information needed for building python
+	[ "$STELLA_CURRENT_OS" == "macos" ] && __set_build_mode MACOSX_DEPLOYMENT_TARGET $(__get_macos_version)
 
+	__auto_install "python" "$FEAT_SOURCE_URL_FILENAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD CONF_TOOL configure BUILD_TOOL make"
+
+	# install last pip/setuptools
+	__get_resource "get-pip" "https://bootstrap.pypa.io/get-pip.py" "HTTP" "$FEAT_INSTALL_ROOT/pip"
+	cd "$FEAT_INSTALL_ROOT/pip"
+	"$FEAT_INSTALL_ROOT/bin/python" get-pip.py
+	rm -Rf "$FEAT_INSTALL_ROOT/pip"
 
 }
 

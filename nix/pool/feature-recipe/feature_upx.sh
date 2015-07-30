@@ -35,31 +35,10 @@ function feature_upx_3_91() {
 
 function feature_ucl_link() {
 
-	save_FEAT_SCHEMA_SELECTED=$FEAT_SCHEMA_SELECTED
-
-	__feature_inspect ucl
-	if [ "$TEST_FEATURE" == "0" ]; then
-		echo " ** ERROR : depend on lib ucl"
-		return
-	fi
-	export UPX_UCLDIR="$FEAT_INSTALL_ROOT"
-	ln -fs $FEAT_INSTALL_ROOT/lib/libucl.a $FEAT_INSTALL_ROOT/libucl.a
-
+	__link_library "ucl" "ucl" "FORCE_STATIC"
+	__link_library "zlib" "z" "FORCE_STATIC"
 	
-
-
-	__feature_inspect zlib
-	if [ "$TEST_FEATURE" == "0" ]; then
-		echo " ** ERROR : depend on lib zlib"
-		return
-	fi
-	ZLIB_ROOT=$FEAT_INSTALL_ROOT
-	# we make a link so that only the static version of zlib is found and used (instead of dynamic version)
-	ln -fs $FEAT_INSTALL_ROOT/lib/libz.a $FEAT_INSTALL_ROOT/libz.a
-
-	FEAT_SCHEMA_SELECTED=$save_FEAT_SCHEMA_SELECTED
-	__internal_feature_context $FEAT_SCHEMA_SELECTED
-
+	
 }
 
 function feature_upx_install_source() {
@@ -75,7 +54,11 @@ function feature_upx_install_source() {
 	sed -i".old" '/-C doc/d' "$SRC_DIR/Makefile"
 
 	cd "$SRC_DIR"
-    CPPFLAGS="-I$ZLIB_ROOT/include" LDFLAGS="-L$ZLIB_ROOT -lz" make all
+	__set_standard_build_flags
+	# upx Makefile use CPPFLAGS
+	CPPFLAGS=$CXXFLAGS
+	make all
+	#CPPFLAGS="-I$ZLIB_ROOT/include" LDFLAGS="-L$ZLIB_ROOT -lz" make all
 
 
 	if [ -f "$SRC_DIR/src/upx.out" ]; then
