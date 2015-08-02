@@ -15,7 +15,7 @@ function feature_python() {
 function feature_python_2_7_9() {
 	FEAT_VERSION=2_7_9
 	
-	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 openssl#1_0_2d"
+	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 FORCE_ORIGIN_STELLA openssl#1_0_2d"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://www.python.org/ftp/python/2.7.9/Python-2.7.9.tgz
@@ -35,9 +35,11 @@ function feature_python_2_7_9() {
 
 }
 
+
+
 function feature_python_link() {
-	__link_library "zlib" "z"
-	__link_library "openssl" "ssl crypto"
+	__link_feature_library "zlib#1_2_8" "z"
+	__link_feature_library "FORCE_ORIGIN_STELLA openssl#1_0_2d"
 }
 
 
@@ -52,9 +54,10 @@ function feature_python_install_source() {
 
 	__feature_callback
 
-	#AUTO_INSTALL_CONF_FLAG_PREFIX="CPPFLAGS=\"-I$ZLIB_ROOT/include\" LDFLAGS=\"-L$ZLIB_ROOT -lz\""
+
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
-	AUTO_INSTALL_CONF_FLAG_POSTFIX="--enable-utf8 \
+	AUTO_INSTALL_CONF_FLAG_POSTFIX="--disable-dependency-tracking \
+									--enable-utf8 \
 									--enable-shared"
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=

@@ -14,7 +14,7 @@ function feature_socat() {
 function feature_socat_1_7_3_0() {
 	FEAT_VERSION=1_7_3_0
 	
-	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_SOURCE_DEPENDENCIES="openssl#1_0_2d"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://www.dest-unreach.org/socat/download/socat-1.7.3.0.tar.gz
@@ -25,7 +25,7 @@ function feature_socat_1_7_3_0() {
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
 	
-	FEAT_SOURCE_CALLBACK=
+	FEAT_SOURCE_CALLBACK=feature_socat_link
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
@@ -34,7 +34,9 @@ function feature_socat_1_7_3_0() {
 	
 }
 
-
+function feature_socat_link() {
+	__link_feature_library "openssl#1_0_2d"
+}
 
 function feature_socat_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
@@ -43,9 +45,12 @@ function feature_socat_install_source() {
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
 	AUTO_INSTALL_CONF_FLAG_POSTFIX=
+	#AUTO_INSTALL_CONF_FLAG_POSTFIX="--disable-dependency-tracking"
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
+	__feature_callback
+	
 	__auto_install "socat" "$FEAT_SOURCE_URL_FILENAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "$INSTALL_DIR" "CONF_TOOL configure BUILD_TOOL make"
 
 

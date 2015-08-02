@@ -15,7 +15,7 @@ function feature_pcre() {
 function feature_pcre_8_36() {
 	FEAT_VERSION=8_36
 
-	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 bzip2"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://downloads.sourceforge.net/project/pcre/pcre/8.36/pcre-8.36.tar.bz2
@@ -26,13 +26,18 @@ function feature_pcre_8_36() {
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
 
-	FEAT_SOURCE_CALLBACK=
+	FEAT_SOURCE_CALLBACK=feature_pcre_link
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libpcre.a
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/lib
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 
+}
+
+function feature_pcre_link() {
+	__link_feature_library "zlib#1_2_8"
+	__link_feature_library "bzip2"
 }
 
 function feature_pcre_install_source() {
@@ -53,6 +58,8 @@ function feature_pcre_install_source() {
 
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
+
+	__feature_callback
 
 	__auto_install "pcre" "$FEAT_SOURCE_URL_FILENAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "$INSTALL_DIR" "CONF_TOOL configure BUILD_TOOL make"
 	

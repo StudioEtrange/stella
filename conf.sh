@@ -87,7 +87,28 @@ VERBOSE_MODE=0
 
 
 # INTERNAL LIST---------------------------------------------
-__STELLA_FEATURE_LIST="libsquish openssl ambari docker-swarm nodejs foma boost-bcp bzip2 ant boost boost-build sevenzip goconfig-cli go-crosscompile-chain go-build-chain oracle-jdk smartmontools python zlib socat gnu-netcat maven spark sbt scala docker-compose docker-machine jq wget ninja cmake packer autotools-bundle perl gettext getopt ucl upx elasticsearch kibana nginx ngrok go pcre libtool m4 automake autoconf"
+__STELLA_FEATURE_LIST=
+for recipe in "$STELLA_FEATURE_RECIPE"/*.sh; do
+	recipe=$(basename "$recipe")
+	recipe=${recipe#feature_}
+	recipe=${recipe%.sh}
+	__STELLA_FEATURE_LIST="$__STELLA_FEATURE_LIST $recipe"
+done
+
+
+
+# BUILD SYSTEM---------------------------------------------
+# Define linking mode. 
+# have an effect only for feature linked with __link_feature_libray (do not ovveride specific FORCE_STATIC or FORCE_DYNAMIC)
+# DEFAULT | STATIC | DYNAMIC
+STELLA_BUILD_DEFAULT_LINK_MODE="DEFAULT"
+# default configure tool
+STELLA_BUILD_DEFAULT_CONF_TOOL="configure"
+# default build tool
+STELLA_BUILD_DEFAULT_BUILD_TOOL="make"
+# these features will be considered present on the system
+# have an effect only for feature declared in FEAT_SOURCE_DEPENDENCIES, FEAT_BINARY_DEPENDENCIES or passed to  __link_feature_libray
+STELLA_BUILD_DEP_FROM_SYSTEM="openssl python"
 
 # API ---------------------------------------------
 STELLA_API_COMMON_PUBLIC="get_active_path uncompress daemonize rel_to_abs_path is_abs argparse get_filename_from_string \

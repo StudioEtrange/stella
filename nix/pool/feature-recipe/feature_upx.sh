@@ -11,8 +11,8 @@ function feature_upx() {
 
 function feature_upx_3_91() {
 	FEAT_VERSION=3_91
-	# TODO : mandatory dep on ucl and on zlib
-	FEAT_SOURCE_DEPENDENCIES="zlib ucl"
+
+	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 ucl#1_03"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://upx.sourceforge.net/download/upx-3.91-src.tar.bz2
@@ -35,8 +35,8 @@ function feature_upx_3_91() {
 
 function feature_ucl_link() {
 
-	__link_library "ucl" "ucl" "FORCE_STATIC"
-	__link_library "zlib" "z" "FORCE_STATIC"
+	__link_feature_library "ucl#1_03" "ucl" "FORCE_STATIC"
+	__link_feature_library "zlib#1_2_8" "z" "FORCE_STATIC"
 	
 	
 }
@@ -55,8 +55,7 @@ function feature_upx_install_source() {
 
 	cd "$SRC_DIR"
 	__set_standard_build_flags
-	# upx Makefile use CPPFLAGS
-	CPPFLAGS=$CXXFLAGS
+	
 	make all
 	#CPPFLAGS="-I$ZLIB_ROOT/include" LDFLAGS="-L$ZLIB_ROOT -lz" make all
 

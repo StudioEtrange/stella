@@ -20,7 +20,7 @@ function feature_boost_1_58_0() {
 
 	# do NOT depend on Boost.Build
 	# Boost build is own embedded version of Boost.Build. If we do not want thaht, precise --with-bjam=<path> when building
-	FEAT_SOURCE_DEPENDENCIES="zlib bzip2"
+	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 bzip2"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://downloads.sourceforge.net/project/boost/boost/1.58.0/boost_1_58_0.tar.bz2
@@ -49,31 +49,17 @@ function boost_set_env() {
 #http://www.boost.org/doc/libs/1_58_0/libs/iostreams/doc/installation.html
 function feature_boost_dep() {
 
-	save_FEAT_SCHEMA_SELECTED=$FEAT_SCHEMA_SELECTED
 
-	__feature_inspect bzip2
-	if [ "$TEST_FEATURE" == "0" ]; then
-		echo " ** ERROR : depend on bzip2"
-		return
-	fi
-	BZIP2_LIBPATH="$FEAT_INSTALL_ROOT/lib"
-	BZIP2_INCLUDE="$FEAT_INSTALL_ROOT/include"
+	__link_feature_library "bzip2" "bz2" "GET_FOLDER _bzip2 NO_SET_FLAGS"
+
+	BZIP2_LIBPATH="$_bzip2_LIB"
+	BZIP2_INCLUDE="$_bzip2_INCLUDE"
 	
 	
+	__link_feature_library "zlib#1_2_8" "z" "GET_FOLDER _zlib NO_SET_FLAGS"
 
-
-	__feature_inspect zlib
-	if [ "$TEST_FEATURE" == "0" ]; then
-		echo " ** ERROR : depend on lib zlib"
-		return
-	fi
-	# we make a link so that only the static version of zlib is found and used (instead of dynamic version)
-	ln -fs $FEAT_INSTALL_ROOT/lib/libz.a $FEAT_INSTALL_ROOT/libz.a
-	ZLIB_LIBPATH="$FEAT_INSTALL_ROOT"
-	ZLIB_INCLUDE="$FEAT_INSTALL_ROOT/include"
-	
-	FEAT_SCHEMA_SELECTED=$save_FEAT_SCHEMA_SELECTED
-	__internal_feature_context $FEAT_SCHEMA_SELECTED
+	ZLIB_LIBPATH="$_zlib_LIB"
+	ZLIB_INCLUDE="$_zlib_INCLUDE"
 
 }
 

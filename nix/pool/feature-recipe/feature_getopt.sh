@@ -41,14 +41,14 @@ function feature_getopt_1_1_6() {
 function feature_getopt_1_1_6_patch() {
 	# https://github.com/Homebrew/homebrew/blob/master/Library/Formula/gnu-getopt.rb
 
-	__link_library "gettext" "intl" "GET_C_CXX_FLAGS _c_cxx_flags GET_LINK_FLAGS _link_flags"
+	__link_feature_library "gettext" "intl" "GET_FLAGS _gettext NO_SET_FLAGS"
 	
 	
 	#sed -i .bak 's,^\(CPPFLAGS=.*\),\1 '"-I$FEAT_INSTALL_ROOT/include"',' $SRC_DIR/Makefile
 	#sed -i .bak 's,^\(LDFLAGS=.*\),\1 '"-L$FEAT_INSTALL_ROOT/lib -lintl"',' $SRC_DIR/Makefile
 
-	sed -i .bak 's,^\(CPPFLAGS=.*\),\1 '"$_c_cxx_flags"',' $SRC_DIR/Makefile
-	sed -i .bak 's,^\(LDFLAGS=.*\),\1 '"$_link_flags"',' $SRC_DIR/Makefile
+	sed -i .bak 's,^\(CPPFLAGS=.*\),\1 '"$_gettext_CPP_FLAGS"',' $SRC_DIR/Makefile
+	sed -i .bak 's,^\(LDFLAGS=.*\),\1 '"$_gettext_LINK_FLAGS"',' $SRC_DIR/Makefile
 }
 
 function feature_getopt_install_source() {

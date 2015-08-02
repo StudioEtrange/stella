@@ -68,6 +68,7 @@ function __auto_install() {
 	
 
 	# get source code
+	#TODO remove FILE_NAME arg from __auto_install, and make __auto_install arg aligned to __get_resource, and pass OPT to __get_resource
 	__get_resource "$NAME" "$URL" "$PROTOCOL" "$SOURCE_DIR" "STRIP FORCE_NAME $FILE_NAME"
 	
 
@@ -96,7 +97,7 @@ function __auto_install_env() {
 
 	# configure tool
 	local _flag_configure=
-	local CONFIG_TOOL=configure
+	local CONFIG_TOOL=$STELLA_BUILD_DEFAULT_CONF_TOOL
 	# specific build arch
 	local _flag_arch=
 	local _opt_arch=
@@ -169,10 +170,10 @@ function __auto_configure() {
 	OPT="$4"
 	# build tool
 	local _flag_build=
-	local BUILD_TOOL=make
+	local BUILD_TOOL=$STELLA_BUILD_DEFAULT_BUILD_TOOL
 	# configure tool
 	local _flag_configure=
-	local CONFIG_TOOL=configure
+	local CONFIG_TOOL=$STELLA_BUILD_DEFAULT_CONF_TOOL
 	# debug mode (default : FALSE)
 	local _debug=
 	
@@ -198,7 +199,6 @@ function __auto_configure() {
 			chmod +x "$AUTO_SOURCE_DIR/configure"
 
 			if [ "$AUTO_INSTALL_CONF_FLAG_PREFIX" == "" ]; then
-				#CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" \
 				"$AUTO_SOURCE_DIR/configure" --prefix="$AUTO_INSTALL_DIR" $AUTO_INSTALL_CONF_FLAG_POSTFIX
 			else
 				eval $(echo $AUTO_INSTALL_CONF_FLAG_PREFIX) "$AUTO_SOURCE_DIR/configure" --prefix="$AUTO_INSTALL_DIR" $AUTO_INSTALL_CONF_FLAG_POSTFIX
@@ -258,7 +258,7 @@ function __auto_build() {
 	local _opt_parallelize=ON
 	# build tool
 	local _flag_build=
-	local BUILD_TOOL=make
+	local BUILD_TOOL=$STELLA_BUILD_DEFAULT_BUILD_TOOL
 	# debug mode (default : FALSE)
 	local _debug=
 	# configure step activation (default : TRUE)
@@ -450,6 +450,7 @@ function __check_lib() {
 function __reset_build_flags() {
 	# these are default build flags for everything (cmake, make, ...)
 	STELLA_C_CXX_FLAGS=
+	STELLA_CPP_FLAGS=
 	#STELLA_DYNAMIC_LINK_FLAGS=
 	#STELLA_STATIC_LINK_FLAGS=
 	STELLA_LINK_FLAGS=
@@ -510,8 +511,7 @@ function __set_standard_build_flags() {
 	# flags to pass to the C++ compiler.
 	export CXXFLAGS="$STELLA_C_CXX_FLAGS"
 	# flags to pass to the C preprocessor. Used when compiling C and C++ (Used to pass -Iinclude_folder)
-	# but for safety, we use only CFLAGS and CXXFLAGS in case of CPPFLAGS is not used
-	export CPPFLAGS=
+	export CPPFLAGS="$STELLA_CPP_FLAGS"
 	# flags to pass to the linker
 	#export LDFLAGS="$STELLA_STATIC_LINK_FLAGS $STELLA_DYNAMIC_LINK_FLAGS"
 	export LDFLAGS="$STELLA_LINK_FLAGS"
@@ -519,27 +519,64 @@ function __set_standard_build_flags() {
 
 
 
+function __dep_choose_origin() {
+	local _SCHEMA="$1"
+	__translate_schema "$_SCHEMA" "_CHOOSE_ORIGIN_FEATURE_NAME"
 
-function __link_library() {
+	local _origin="STELLA"
+	for u in $STELLA_BUILD_DEP_FROM_SYSTEM; do
+		[ "$u" == "$_CHOOSE_ORIGIN_FEATURE_NAME" ] && _origin="SYSTEM"
+	done
+
+	echo $_origin
+}
+
+function __link_feature_library() {
 	local SCHEMA="$1"
-	# libraries name to use with -l arg (so without libprefix) -- you can specify several libraries
+	# libraries name to use with -l arg (so without libprefix) -- you can specify several libraries OR no library at all. so -l flag will not be setted, only -L will be setted
 	local LIBS_NAME="$2"
 	local OPT="$3"
-	# FORCE_STATIC FORCE_DYNAMIC FORCE_LIB_FOLDER xxxx FORCE_INCLUDE_FOLDER xxxxx GET_C_CXX_FLAGS xxxx GET_LINK_FLAGS xxx
+	# FORCE_STATIC -- force link to static version of lib (by isolating it)
+	# FORCE_DYNAMIC -- force link to dynamic version of lib (by isolating it) 
+	# FORCE_LIB_FOLDER <path> -- folder prefix where lib resides, default "/lib"
+	# FORCE_INCLUDE_FOLDER <path> -- folder prefix where include resides, default "/include"
+	# GET_FLAGS <prefix> -- init prefix_C_CXX_FLAGS, prefix_CPP_FLAGS, prefix_LINK_FLAGS with correct flags
+	# GET_FOLDER <prefix> -- init prefix_ROOT, prefix_LIB, prefix_BIN, prefix_INCLUDE witch correct path
+	# NO_SET_FLAGS -- do not set stella build system flags
 	
-	local C_CXX_FLAGS=
-	local LINK_FLAGS=
+	local _C_CXX_FLAGS=
+	local _CPP_FLAGS=
+	local _LINK_FLAGS=
 
-	local _flag_c_cxx_var=OFF
-	local _var_c_cxx_flags=
-	local _flag_link_var=OFF
-	local _var_link_flags=
+	local _ROOT=
+	local _BIN=
+	local _LIB=
+	local _INCLUDE=
+	
+	local _folders=OFF
+	local _var_folders=
+	local _flags=OFF
+	local _var_flags=
 	local _opt_flavour=
 	local _flag_lib_folder=OFF
 	local _lib_folder=lib
 	local _flag_include_folder=OFF
 	local _include_folder=include
+	local _opt_set_flags=ON
 	
+	# default linking mode
+	case "$STELLA_BUILD_DEFAULT_LINK_MODE" in 
+		DEFAULT)
+			_opt_flavour=
+			;;
+		DYNAMIC)
+			_opt_flavour="FORCE_DYNAMIC"
+			;;
+		STATIC)
+			_opt_flavour="FORCE_STATIC"
+			;;
+	esac
+
 	for o in $OPT; do 
 		[ "$o" == "FORCE_STATIC" ] && _opt_flavour=$o
 		[ "$o" == "FORCE_DYNAMIC" ] && _opt_flavour=$o
@@ -547,11 +584,37 @@ function __link_library() {
 		[ "$o" == "FORCE_LIB_FOLDER" ] && _flag_lib_folder=ON
 		[ "$_flag_include_folder" == "ON" ] && _include_folder=$o && _flag_include_folder=OFF
 		[ "$o" == "FORCE_INCLUDE_FOLDER" ] && _flag_include_folder=ON
-		[ "$_flag_c_cxx_var" == "ON" ] && _var_c_cxx_flags=$o && _flag_c_cxx_var=OFF
-		[ "$o" == "GET_C_CXX_FLAGS" ] && _flag_c_cxx_var=ON
-		[ "$_flag_link_var" == "ON" ] && _var_link_flags=$o && _flag_link_var=OFF
-		[ "$o" == "GET_LINK_FLAGS" ] && _flag_link_var=ON
+		#[ "$_flag_c_cxx_var" == "ON" ] && _var_c_cxx_flags=$o && _flag_c_cxx_var=OFF
+		#[ "$o" == "GET_C_CXX_FLAGS" ] && _flag_c_cxx_var=ON
+		#[ "$_flag_link_var" == "ON" ] && _var_link_flags=$o && _flag_link_var=OFF
+		#[ "$o" == "GET_LINK_FLAGS" ] && _flag_link_var=ON
+		[ "$_flags" == "ON" ] && _var_flags=$o && _flags=OFF
+		[ "$o" == "GET_FLAGS" ] && _flags=ON
+		[ "$_folders" == "ON" ] && _var_folders=$o && _folders=OFF
+		[ "$o" == "GET_FOLDER" ] && _folders=ON
+		[ "$o" == "NO_SET_FLAGS" ] && _opt_set_flags=OFF
 	done	
+
+
+	# check origin for this schema
+	local _origin
+	case "$SCHEMA" in
+		FORCE_ORIGIN_STELLA*)
+				_origin="STELLA"
+				SCHEMA=${SCHEMA#FORCE_ORIGIN_STELLA}
+				;;
+		FORCE_ORIGIN_SYSTEM*)
+				_origin="SYSTEM"
+				SCHEMA=${SCHEMA#FORCE_ORIGIN_SYSTEM}
+				;;
+		*)
+				_origin="$(__dep_choose_origin $SCHEMA)";;
+	esac
+	
+	if [ "$_origin" == "SYSTEM" ]; then
+		echo "We do not link against STELLA version of $SCHEMA, but from SYSTEM."
+		return
+	fi
 
 
 	# inspect required lib through schema
@@ -590,12 +653,21 @@ function __link_library() {
 		done
 	fi
 
+	# root folder
+	_ROOT="$REQUIRED_LIB_ROOT"
+	# bin folder
+	_BIN="$REQUIRED_LIB_ROOT/bin"
+	# include folder
+	_INCLUDE="$REQUIRED_LIB_ROOT/$_include_folder"
+
 	# includes used during build
-	C_CXX_FLAGS="-I$REQUIRED_LIB_ROOT/$_include_folder"
+	_CPP_FLAGS="-I$_INCLUDE"
 	
+	# lib folder
+	[ ! "$_flag_lib_isolation" == "TRUE" ] && _LIB="$REQUIRED_LIB_ROOT/$_lib_folder"
+	[ "$_flag_lib_isolation" == "TRUE" ] && _LIB="$LIB_DEP_FOLDER"
 	# search path of libraries during build
-	[ ! "$_flag_lib_isolation" == "TRUE" ] && LINK_FLAGS="-L$REQUIRED_LIB_ROOT/$_lib_folder"
-	[ "$_flag_lib_isolation" == "TRUE" ] && LINK_FLAGS="-L$LIB_DEP_FOLDER"
+	_LINK_FLAGS="-L$_LIB"
 
 	for l in $LIBS_NAME; do
 		LINK_FLAGS="$LINK_FLAGS -l$l"
@@ -604,20 +676,50 @@ function __link_library() {
 
 
 	# set results
-	STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS $C_CXX_FLAGS"
-	STELLA_LINK_FLAGS="$LINK_FLAGS $STELLA_LINK_FLAGS"
-
-	if [ ! "$_var_c_cxx_flags" == "" ]; then
-		eval $_var_c_cxx_flags=\"$C_CXX_FLAGS\"
+	if [ "$_opt_set_flags" == "ON" ]; then
+		STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS $_C_CXX_FLAGS"
+		STELLA_CPP_FLAGS="$STELLA_CPP_FLAGS $_CPP_FLAGS"
+		STELLA_LINK_FLAGS="$_LINK_FLAGS $STELLA_LINK_FLAGS"
 	fi
-	if [ ! "$_var_link_flags" == "" ]; then
-		eval $_var_link_flags=\"$LINK_FLAGS\"
+	if [ ! "$_var_flags" == "" ]; then
+		eval "$_var_flags"_C_CXX_FLAGS=\"$_C_CXX_FLAGS\"
+		eval "$_var_flags"_CPP_FLAGS=\"$_CPP_FLAGS\"
+		eval "$_var_flags"_LINK_FLAGS=\"$_LINK_FLAGS\"
 	fi
+	if [ ! "$_var_folders" == "" ]; then
+		eval "$_var_folders"_ROOT=\"$_ROOT\"
+		eval "$_var_folders"_LIB=\"$_LIB\"
+		eval "$_var_folders"_INCLUDE=\"$_INCLUDE\"
+		eval "$_var_folders"_BIN=\"$_BIN\"
+	fi
+	#if [ ! "$_var_c_cxx_flags" == "" ]; then
+	#	eval $_var_c_cxx_flags=\"$_C_CXX_FLAGS\"
+	#fi
+	#if [ ! "$_var_link_flags" == "" ]; then
+	#	eval $_var_link_flags=\"_$_LINK_FLAGS\"
+	#fi
 }
 
 
 
 function __set_build_mode() {
+
+	# STATIC/DYNAMIC LINK -----------------------------------------------------------------
+	# 
+	# force build system to force a linking mode when it is possible
+	if [ "$1" == "FORCE_LINK" ]; then
+		case $2 in
+			STATIC)
+				STELLA_BUILD_DEFAULT_LINK_MODE="STATIC"
+				;;
+			DYNAMIC)
+				STELLA_BUILD_DEFAULT_LINK_MODE="DYNAMIC"
+				;;
+			DEFAULT)
+				STELLA_BUILD_DEFAULT_LINK_MODE="DEFAULT"
+				;;
+		esac
+	fi
 
 
 

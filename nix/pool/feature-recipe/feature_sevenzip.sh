@@ -18,7 +18,7 @@ function feature_sevenzip_9_20_1() {
 
 	FEAT_SOURCE_URL=https://downloads.sourceforge.net/project/p7zip/p7zip/9.20.1/p7zip_9.20.1_src_all.tar.bz2
 	FEAT_SOURCE_URL_FILENAME=p7zip_9.20.1_src_all.tar.bz2
-	FEAT_SOURCE_URL_PROTOCOL=
+	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 	
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
@@ -37,11 +37,12 @@ function feature_sevenzip_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
-	__download_uncompress "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_FILENAME" "$SRC_DIR" "DEST_ERASE STRIP"
+	__get_resource "sevenzip" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
+	#__download_uncompress "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_FILENAME" "$SRC_DIR" "DEST_ERASE STRIP"
 
 	cd "$SRC_DIR"
     make all3
-    make DEST_HOME=$FEAT_INSTALL_ROOT install
+    make DEST_HOME="$INSTALL_DIR" install
 
     #TODO do not work yet -- use specific makefile for each OS, see https://github.com/Homebrew/homebrew/blob/master/Library/Formula/p7zip.rb
 }

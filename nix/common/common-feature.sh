@@ -280,6 +280,7 @@ function __feature_remove() {
 
 }
 
+
 function __feature_install_list() {
 	local _list=$1
 
@@ -354,36 +355,44 @@ function __feature_install() {
 				mkdir -p $FEAT_INSTALL_ROOT
 
 				# dependencies
-				save_FORCE=$FORCE
-				FORCE=0
 				local dep
 				local _f_dep=0
-				local save_FEAT_SCHEMA_SELECTED=$FEAT_SCHEMA_SELECTED
+				#local save_FEAT_SCHEMA_SELECTED=$FEAT_SCHEMA_SELECTED
+				local _origin=
+				local _force_origin=
+				local _dependencies=
+				[ "$FEAT_SCHEMA_FLAVOUR" == "source" ] && _dependencies="$FEAT_SOURCE_DEPENDENCIES"
+				[ "$FEAT_SCHEMA_FLAVOUR" == "binary" ] && _dependencies="$FEAT_BINARY_DEPENDENCIES"
+				[ ! "$_dependencies" == "" ] && __push_schema_context
+				save_FORCE=$FORCE
+				FORCE=0
 
-				if [ "$FEAT_SCHEMA_FLAVOUR" == "source" ]; then
-					for dep in $FEAT_SOURCE_DEPENDENCIES; do
+				for dep in $_dependencies; do
+					[ "$dep" == "FORCE_ORIGIN_STELLA" ] && _force_origin="STELLA" && continue
+					[ "$dep" == "FORCE_ORIGIN_SYSTEM" ] && _force_origin="SYSTEM" && continue
+					[ "$_force_origin" == "" ] && _origin="$(__dep_choose_origin $dep)" || _origin="$_force_origin"
+					if [ "$_origin" == "STELLA" ]; then
 						echo "Installing dependency $dep"
 						__feature_install $dep
+						if [ "$TEST_FEATURE" == "0" ]; then
+							echo "** Error while installing dependency feature $FEAT_SCHEMA_SELECTED"
+						fi
 						_f_dep=1
-					done
-				fi
-
-				if [ "$FEAT_SCHEMA_FLAVOUR" == "binary" ]; then
-					for dep in $FEAT_BINARY_DEPENDENCIES; do
-						echo "Installing dependency $dep"
-						__feature_install $dep
-						_f_dep=1
-					done
-				fi
+					fi
+					[ "$_origin" == "SYSTEM" ] && echo "Using dependency $dep from SYSTEM."
+				done
+				
+				[ "$_f_dep" == "1" ] && __pop_schema_context
 				FORCE=$save_FORCE
 
-				FEAT_SCHEMA_SELECTED=$save_FEAT_SCHEMA_SELECTED
-				[ "$_f_dep" == "1" ] && __internal_feature_context $FEAT_SCHEMA_SELECTED
+				#FEAT_SCHEMA_SELECTED=$save_FEAT_SCHEMA_SELECTED
+				#[ "$_f_dep" == "1" ] && __internal_feature_context $FEAT_SCHEMA_SELECTED
 
 				# Bundle
 				if [ ! "$FEAT_BUNDLE" == "" ]; then
 					FEAT_BUNDLE_MODE=$FEAT_BUNDLE
-					local save_FEAT_SCHEMA_SELECTED=$FEAT_SCHEMA_SELECTED
+					#local save_FEAT_SCHEMA_SELECTED=$FEAT_SCHEMA_SELECTED
+					__push_schema_context
 					if [ ! "$FEAT_BUNDLE_ITEM" == "" ]; then
 						save_FORCE=$FORCE
 					
@@ -406,8 +415,9 @@ function __feature_install() {
 						
 					fi
 					FEAT_BUNDLE_MODE=
-					FEAT_SCHEMA_SELECTED=$save_FEAT_SCHEMA_SELECTED
-					__internal_feature_context $FEAT_SCHEMA_SELECTED
+					#FEAT_SCHEMA_SELECTED=$save_FEAT_SCHEMA_SELECTED
+					#__internal_feature_context $FEAT_SCHEMA_SELECTED
+					__pop_schema_context
 					# automatic call of callback
 					__feature_callback
 				else

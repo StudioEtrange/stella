@@ -334,6 +334,9 @@ goto :eof
 				for %%p in (!FEAT_SOURCE_DEPENDENCIES!) do (
 					echo Installing dependency %%p
 					call :feature_install %%p
+					if "!TEST_FEATURE!"=="0" (
+						echo ** Error while installing dependency feature !FEAT_SCHEMA_SELECTED!
+					)
 					set _f_dep=1
 				)
 			)
@@ -342,6 +345,9 @@ goto :eof
 				for %%p in (!FEAT_BINARY_DEPENDENCIES!) do (
 					echo Installing dependency %%p
 					call :feature_install %%p
+					if "!TEST_FEATURE!"=="0" (
+						echo ** Error while installing dependency feature !FEAT_SCHEMA_SELECTED!
+					)
 					set _f_dep=1
 				)
 			)

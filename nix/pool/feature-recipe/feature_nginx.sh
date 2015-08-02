@@ -17,7 +17,7 @@ function feature_nginx() {
 function feature_nginx_1_7_11() {
 	FEAT_VERSION=1_7_11
 	
-	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 openssl#1_0_2d"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://nginx.org/download/nginx-1.7.11.tar.gz
@@ -28,7 +28,7 @@ function feature_nginx_1_7_11() {
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
 
-	FEAT_SOURCE_CALLBACK="feature_nginx_get_pcre"
+	FEAT_SOURCE_CALLBACK="feature_nginx_link feature_nginx_get_pcre"
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
@@ -37,7 +37,10 @@ function feature_nginx_1_7_11() {
 
 }
 
-
+function feature_nginx_link() {
+	__link_feature_library "openssl#1_0_2d"
+	__link_feature_library "zlib#1_2_8"
+}
 
 
 function feature_nginx_get_pcre() {
@@ -54,6 +57,7 @@ function feature_nginx_install_source() {
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
 	AUTO_INSTALL_CONF_FLAG_POSTFIX=
+	#AUTO_INSTALL_CONF_FLAG_POSTFIX="--disable-dependency-tracking"
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 

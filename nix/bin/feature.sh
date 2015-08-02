@@ -53,7 +53,7 @@ case $ACTION in
 	list)
 		case $ID in
 			all)
-				echo "required all $__STELLA_FEATURE_LIST"
+				echo "all required -- $__STELLA_FEATURE_LIST"
 				;;
 			active)
 				echo $(__list_active_features)

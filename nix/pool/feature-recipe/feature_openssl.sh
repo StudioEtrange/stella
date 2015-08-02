@@ -26,13 +26,18 @@ function feature_openssl_1_0_2d() {
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
 
-	FEAT_SOURCE_CALLBACK=
+	FEAT_SOURCE_CALLBACK=feature_openssl_link
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/openssl
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 
+}
+
+function feature_openssl_link() {
+	# zlib dependencies
+	__link_feature_library "zlib#1_2_8" "z" "GET_FLAGS _zlib FORCE_STATIC NO_SET_FLAGS"
 }
 
 
@@ -62,16 +67,15 @@ function feature_openssl_install_source() {
 		[ "$ARCH" == "x64" ] && OPENSSL_PLATFORM=linux-x86_64
 	fi
 
-	# zlib dependencies
-	__link_library "zlib" "z" "GET_C_CXX_FLAGS _c_cxx_flags GET_LINK_FLAGS _link_flags"
+	__feature_callback
 	
 
 	# configure --------------------------------
 	# http://stackoverflow.com/questions/16601895/how-can-one-build-openssl-on-ubuntu-with-a-specific-version-of-zlib
 	# zlib zlib-dynamic --with-zlib-lib and --with-zlib-include do not work properly to link openssl against a specific zlib version
-	# 		zlib-dynamic --with-zlib-lib="$ZLIB_ROOT/lib" --with-zlib-include="$ZLIB_ROOT/include" \
+	# 		so we use direct flag -Ixxx -Lxxx -lxxx, with zlib before (in this case use "zlib" either when linking static or dynamic)
 	perl "Configure" $OPENSSL_OPT \
-		$_c_cxx_flags $_link_flags \
+		zlib $_zlib_CPP_FLAGS $_zlib_C_CXX_FLAGS $_zlib_LINK_FLAGS \
 		--openssldir=$INSTALL_DIR/etc/ssl --libdir=lib --prefix=$INSTALL_DIR \
 		$OPENSSL_PLATFORM
 

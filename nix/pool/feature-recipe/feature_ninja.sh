@@ -15,14 +15,16 @@ function feature_ninja_snapshot() {
 	FEAT_VERSION=snapshot
 
 	# TODO echo " ** NEED : python"
-	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_SOURCE_DEPENDENCIES="python#2_7_9"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://github.com/martine/ninja/archive/release.zip
 	FEAT_SOURCE_URL_FILENAME=ninja-snapshot.zip
+	FEAT_SOURCE_URL_PROTOCOL=
 
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
+	FEAT_BINARY_URL_PROTOCOL=
 
 	FEAT_SOURCE_CALLBACK=
 	FEAT_BINARY_CALLBACK=
