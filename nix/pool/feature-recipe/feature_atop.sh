@@ -45,7 +45,7 @@ function feature_atop_install_source() {
 
 	cd "$SRC_DIR"
 	make all
-	#__auto_install "atop" "$FEAT_SOURCE_URL_FILENAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "$INSTALL_DIR" "CONFIG_TOOL configure BUILD_TOOL make SOURCE_KEEP"
+	#__auto_build "atop" "$FEAT_SOURCE_URL_FILENAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "$INSTALL_DIR" "CONFIG_TOOL configure BUILD_TOOL make SOURCE_KEEP"
 	
 
 }

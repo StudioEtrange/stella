@@ -9,7 +9,7 @@ goto :eof
 	set "FEAT_DEFAULT_VERSION=1_0_0"
 	set "FEAT_DEFAULT_ARCH=x64"
 
-	REM should be empty or MERGE or NESTED or LIST
+	REM should be MERGE or NESTED or LIST
 	REM NESTED : each item will be installed inside the bundle path in a separate directory
 	REM MERGE : each item will be installed in the bundle path
 	REM LIST : this bundle is just a list of item that will be installed normally

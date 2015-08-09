@@ -35,7 +35,7 @@ function feature_libpng_1_6_17() {
 }
 
 function feature_libpng_link() {
-	__link_feature_library "zlib#1_2_8"
+	__link_feature_library "zlib#1_2_8" "" "FORCE_DYNAMIC"
 }
 
 
@@ -50,7 +50,9 @@ function feature_libpng_install_source() {
 
 	__feature_callback
 
-	__auto_install "libpng" "$FEAT_SOURCE_URL_FILENAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "$INSTALL_DIR" "CONFIG_TOOL configure BUILD_TOOL make"
+	__auto_build "libpng" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "$INSTALL_DIR" "CONFIG_TOOL configure BUILD_TOOL make"
+	
+
 	
 
 }

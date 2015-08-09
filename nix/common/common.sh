@@ -86,8 +86,7 @@ function __get_stella_flavour() {
 # To get: filename.tar.gz (like basename)	
 # base = ${file%%.*}
 # To get: filename
-# ext = ${file#*.}
-# To get: tar.gz
+
 
 function __get_path_from_string() {
 	echo ${1%/*}
@@ -101,6 +100,13 @@ function __get_filename_from_url() {
 	local _AFTER_SLASH
 	_AFTER_SLASH=${1##*/}
 	echo ${_AFTER_SLASH%%\?*}
+}
+
+function __get_extension_from_string() {
+	local _AFTER_DOT
+	_AFTER_DOT=${1##*\.}
+	echo $_AFTER_DOT
+	#echo ${_AFTER_DOT%%\?*}
 }
 
 

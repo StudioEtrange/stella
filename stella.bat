@@ -7,12 +7,11 @@ call %~dp0\conf.bat
 
 :: arguments
 set "params=domain:"app feature stella proxy" action:"version on off register search remove link bootstrap api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature install list" id:"_ANY_""
-set "options=-f: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_ -stellaroot:_ANY_ -samples: -proxyhost:_ANY_ -proxyport:_ANY_ -proxyuser:_ANY_ -proxypass:_ANY_"
+set "options=-f: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_ -stellaroot:_ANY_ -samples: -proxyhost:_ANY_ -proxyport:_ANY_ -proxyuser:_ANY_ -proxypass:_ANY_ -depforce: -depignore:"
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
 if "%ARGOPT_FLAG_HELP%"=="1" goto :usage
 
-::set ARCH=%-arch%
 set FORCE=%-f%
 
 
@@ -88,6 +87,8 @@ REM --------------- FEATURE ----------------------------
 if "%DOMAIN%"=="feature" (
 	set "_feature_options="
 	if "%-f%"=="1" set "_feature_options=!_feature_options! -f"
+	if "%-depforce%"=="1" set "_feature_options=!_feature_options! -depforce"
+	if "%-depignore%"=="1" set "_feature_options=!_feature_options! -depignore"
 	
 	call %STELLA_BIN%\feature.bat %ACTION% %id% !_feature_options!
 	@echo off
@@ -130,7 +131,7 @@ if "%DOMAIN%"=="proxy" goto :end
 	echo		app link ^<app-path^> [-stellaroot=^<path^>] : link an app to a specific stella path
 	echo	* feature management :
 	echo 		feature install required : install required features for Stella
-	echo 		feature install ^<feature schema^> : install a feature. schema = feature_name[#version][@arch][:binary^|source][/os_restriction][\os_exclusion]
+	echo 		feature install ^<feature schema^> [-depforce] [-depignore] : install a feature. [-depforce] will force to reinstall all dependencies. [-depignore] will ignore dependencies. schema = feature_name[#version][@arch][:binary^|source][/os_restriction][\os_exclusion]
 	echo 		feature remove ^<feature schema^> : remove a feature
 	echo 		feature list ^<all^|feature name^|active^>: list all available features OR available version of a feature OR current active features
 	echo	* various :

@@ -18,7 +18,7 @@ function usage() {
 	echo " L     app link <app-path> [--stellaroot=<path>] : link an app to a specific stella path"
 	echo " o-- feature management :"
 	echo " L     feature install required : install required features for Stella"
-	echo " L     feature install <feature schema> : install a feature. schema = feature_name[#version][@arch][:binary|source][/os_restriction][\os_exclusion]"
+	echo " L     feature install <feature schema> [--depforce] [--depignore] : install a feature. [--depforce] will force to reinstall all dependencies. [--depignore] will ignore dependencies. schema = feature_name[#version][@arch][:binary|source][/os_restriction][\os_exclusion]"
 	echo " L     feature remove <feature schema> : remove a feature"
 	echo " L     feature list <all|feature name|active> : list all available feature OR available versions of a feature OR current active features"
 	echo " o-- various :"
@@ -53,7 +53,9 @@ SAMPLES=''                      ''         ''                  b           0    
 PROXYHOST='' 					'' 			'host'				s 			0			''					proxy host
 PROXYPORT='' 					'' 			'port'				s 			0			''					proxy port
 PROXYUSER='' 					'' 			'user'				s 			0			''					proxy user
-PROXYPASS='' 					'' 			'password'				s 			0			''					proxy password
+PROXYPASS='' 					'' 			'password'			s 			0			''					proxy password
+DEPFORCE=''						''    		''            		b     		0     		'1'           			Force reinstallation of all dependencies.
+DEPIGNORE=''					''    		''            		b     		0     		'1'           		Will not process any dependencies.
 "
 
 __argparse "$0" "$OPTIONS" "$PARAMETERS" "Lib Stella" "$(usage)" "" "$@"

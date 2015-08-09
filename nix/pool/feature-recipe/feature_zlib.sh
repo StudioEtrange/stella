@@ -29,7 +29,6 @@ function feature_zlib_1_2_8() {
 	FEAT_ENV_CALLBACK=
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libz.a
-	#FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/lib
 	FEAT_SEARCH_PATH=
 	
 }
@@ -46,8 +45,10 @@ function feature_zlib_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
 	# out of tree build do not work
-	__auto_install "zlib" "$FEAT_SOURCE_URL_FILENAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD CONF_TOOL configure BUILD_TOOL make"
+	__auto_build "zlib" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD CONF_TOOL configure BUILD_TOOL make"
 
+
+	
 }
 
 

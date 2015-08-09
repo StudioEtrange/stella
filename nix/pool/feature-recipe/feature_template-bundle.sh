@@ -8,7 +8,7 @@ function feature_template-bundle() {
 	FEAT_DEFAULT_VERSION=1_0_0
 	FEAT_DEFAULT_ARCH=x64
 
-	# should be empty or MERGE or NESTED or LIST
+	# should be MERGE or NESTED or LIST
 	# NESTED : each item will be installed inside the bundle path in a separate directory
 	# MERGE : each item will be installed in the bundle path
 	# LIST : this bundle is just a list of item that will be installed normally

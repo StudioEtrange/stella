@@ -66,6 +66,8 @@ function feature_upx_install_source() {
 		__del_folder "$SRC_DIR"
 	fi
 
+	__test_build "$INSTALL_DIR"
+
 }
 
 

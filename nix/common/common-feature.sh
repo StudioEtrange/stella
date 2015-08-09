@@ -40,7 +40,8 @@ function __feature_init() {
 
 			if [ ! "$FEAT_BUNDLE" == "" ]; then
 				local p	
-				local save_FEAT_SCHEMA_SELECTED=$FEAT_SCHEMA_SELECTED
+
+				__push_schema_context
 
 				FEAT_BUNDLE_MODE=$FEAT_BUNDLE
 				for p in $FEAT_BUNDLE_ITEM; do	
@@ -48,28 +49,17 @@ function __feature_init() {
 				done
 				FEAT_BUNDLE_MODE=
 
-				# re-compute bundle variables
-				FEAT_SCHEMA_SELECTED=$save_FEAT_SCHEMA_SELECTED
-				__internal_feature_context $FEAT_SCHEMA_SELECTED
-				if [ ! "$_opt_hidden_feature" == "ON" ]; then
-					FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $FEAT_NAME#$FEAT_VERSION"
-				fi
-				if [ ! "$FEAT_SEARCH_PATH" == "" ]; then
-					PATH="$FEAT_SEARCH_PATH:$PATH"
-				fi
-				
-			else
-
-				
-				if [ ! "$_opt_hidden_feature" == "ON" ]; then
-					FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $FEAT_NAME#$FEAT_VERSION"
-				fi
-				if [ ! "$FEAT_SEARCH_PATH" == "" ]; then
-					PATH="$FEAT_SEARCH_PATH:$PATH"
-				fi
-
-				
+				__pop_schema_context
 			fi
+		
+			if [ ! "$_opt_hidden_feature" == "ON" ]; then
+				FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $FEAT_NAME#$FEAT_VERSION"
+			fi
+			if [ ! "$FEAT_SEARCH_PATH" == "" ]; then
+				PATH="$FEAT_SEARCH_PATH:$PATH"
+			fi
+			
+		
 
 			local c
 			for c in $FEAT_ENV_CALLBACK; do
@@ -101,6 +91,7 @@ function __feature_match_installed() {
 	local _tested=
 	local _found=
 
+	# we are NOT inside a bundle, because FEAT_BUNDLE_MODE is NOT set
 	if [ "$FEAT_BUNDLE_MODE" == "" ]; then
 
 		__translate_schema "$_SCHEMA" "__VAR_FEATURE_NAME" "__VAR_FEATURE_VER" "__VAR_FEATURE_ARCH" "__VAR_FEATURE_FLAVOUR"
@@ -166,8 +157,7 @@ function __feature_inspect() {
 		if [ ! "$FEAT_BUNDLE" == "" ]; then
 			local p
 			local _t=1
-			local save_FEAT_SCHEMA_SELECTED=$FEAT_SCHEMA_SELECTED
-			
+			__push_schema_context
 			
 			FEAT_BUNDLE_MODE="$FEAT_BUNDLE"
 			for p in $FEAT_BUNDLE_ITEM; do
@@ -176,8 +166,7 @@ function __feature_inspect() {
 				[ "$TEST_FEATURE" == "0" ] && _t=0
 			done
 			FEAT_BUNDLE_MODE=
-			FEAT_SCHEMA_SELECTED=$save_FEAT_SCHEMA_SELECTED
-			__internal_feature_context $FEAT_SCHEMA_SELECTED
+			__pop_schema_context
 			TEST_FEATURE=$_t
 			if [ "$TEST_FEATURE" == "1" ]; then
 				if [ ! "$FEAT_INSTALL_TEST" == "" ]; then
@@ -255,16 +244,14 @@ function __feature_remove() {
 			echo " ** Remove bundle $FEAT_NAME version $FEAT_VERSION"
 			__del_folder $FEAT_INSTALL_ROOT
 
-			local save_FEAT_SCHEMA_SELECTED=$FEAT_SCHEMA_SELECTED
+			__push_schema_context
+			
 			FEAT_BUNDLE_MODE="$FEAT_BUNDLE"
 			for p in $FEAT_BUNDLE_ITEM; do
 				__feature_remove $p "HIDDEN"
-				
 			done
 			FEAT_BUNDLE_MODE=
-			FEAT_SCHEMA_SELECTED=$save_FEAT_SCHEMA_SELECTED
-			__internal_feature_context $FEAT_SCHEMA_SELECTED
-
+			__pop_schema_context
 		else
 			echo " ** Remove $FEAT_NAME version $FEAT_VERSION from $FEAT_INSTALL_ROOT"
 			__del_folder $FEAT_INSTALL_ROOT
@@ -293,12 +280,18 @@ function __feature_install() {
 	local _SCHEMA=$1
 	local _OPT="$2"
 
+	
+
 	local o
 	local _opt_internal_feature=OFF
 	local _opt_hidden_feature=OFF
+	local _opt_ignore_dep=OFF
+	local _opt_force_reinstall_dep=0
 	for o in $_OPT; do 
 		[ "$o" == "INTERNAL" ] && _opt_internal_feature=ON
 		[ "$o" == "HIDDEN" ] && _opt_hidden_feature=ON
+		[ "$o" == "DEP_FORCE" ] && _opt_force_reinstall_dep=1
+		[ "$o" == "DEP_IGNORE" ] && _opt_ignore_dep=ON
 	done
 
 	if [ "$_SCHEMA" == "required" ]; then
@@ -355,48 +348,50 @@ function __feature_install() {
 				mkdir -p $FEAT_INSTALL_ROOT
 
 				# dependencies
-				local dep
-				local _f_dep=0
-				#local save_FEAT_SCHEMA_SELECTED=$FEAT_SCHEMA_SELECTED
-				local _origin=
-				local _force_origin=
-				local _dependencies=
-				[ "$FEAT_SCHEMA_FLAVOUR" == "source" ] && _dependencies="$FEAT_SOURCE_DEPENDENCIES"
-				[ "$FEAT_SCHEMA_FLAVOUR" == "binary" ] && _dependencies="$FEAT_BINARY_DEPENDENCIES"
-				[ ! "$_dependencies" == "" ] && __push_schema_context
-				save_FORCE=$FORCE
-				FORCE=0
+				if [ "$_opt_ignore_dep" == "OFF" ]; then
+					local dep
+					local _f_dep=0
+					local _origin=
+					local _force_origin=
+					local _dependencies=
+					[ "$FEAT_SCHEMA_FLAVOUR" == "source" ] && _dependencies="$FEAT_SOURCE_DEPENDENCIES"
+					[ "$FEAT_SCHEMA_FLAVOUR" == "binary" ] && _dependencies="$FEAT_BINARY_DEPENDENCIES"
+					[ ! "$_dependencies" == "" ] && __push_schema_context
+					save_FORCE=$FORCE
+					FORCE=$_opt_force_reinstall_dep
 
-				for dep in $_dependencies; do
-					[ "$dep" == "FORCE_ORIGIN_STELLA" ] && _force_origin="STELLA" && continue
-					[ "$dep" == "FORCE_ORIGIN_SYSTEM" ] && _force_origin="SYSTEM" && continue
-					[ "$_force_origin" == "" ] && _origin="$(__dep_choose_origin $dep)" || _origin="$_force_origin"
-					if [ "$_origin" == "STELLA" ]; then
-						echo "Installing dependency $dep"
-						__feature_install $dep
-						if [ "$TEST_FEATURE" == "0" ]; then
-							echo "** Error while installing dependency feature $FEAT_SCHEMA_SELECTED"
+					for dep in $_dependencies; do
+						[ "$dep" == "FORCE_ORIGIN_STELLA" ] && _force_origin="STELLA" && continue
+						[ "$dep" == "FORCE_ORIGIN_SYSTEM" ] && _force_origin="SYSTEM" && continue
+						[ "$_force_origin" == "" ] && _origin="$(__dep_choose_origin $dep)" || _origin="$_force_origin"
+						if [ "$_origin" == "STELLA" ]; then
+							echo "Installing dependency $dep"
+							__feature_install $dep "$_OPT HIDDEN"
+							if [ "$TEST_FEATURE" == "0" ]; then
+								echo "** Error while installing dependency feature $FEAT_SCHEMA_SELECTED"
+							fi
+							_f_dep=1
 						fi
-						_f_dep=1
-					fi
-					[ "$_origin" == "SYSTEM" ] && echo "Using dependency $dep from SYSTEM."
-				done
-				
-				[ "$_f_dep" == "1" ] && __pop_schema_context
-				FORCE=$save_FORCE
-
-				#FEAT_SCHEMA_SELECTED=$save_FEAT_SCHEMA_SELECTED
-				#[ "$_f_dep" == "1" ] && __internal_feature_context $FEAT_SCHEMA_SELECTED
+						[ "$_origin" == "SYSTEM" ] && echo "Using dependency $dep from SYSTEM."
+					done
+					
+					[ "$_f_dep" == "1" ] && __pop_schema_context
+					FORCE=$save_FORCE
+				fi
 
 				# Bundle
 				if [ ! "$FEAT_BUNDLE" == "" ]; then
 					FEAT_BUNDLE_MODE=$FEAT_BUNDLE
-					#local save_FEAT_SCHEMA_SELECTED=$FEAT_SCHEMA_SELECTED
 					__push_schema_context
 					if [ ! "$FEAT_BUNDLE_ITEM" == "" ]; then
 						save_FORCE=$FORCE
 					
 						FORCE=0
+
+						# should be  MERGE or NESTED or LIST
+						# NESTED : each item will be installed inside the bundle path in a separate directory
+						# MERGE : each item will be installed in the bundle path
+						# LIST : this bundle is just a list of item that will be installed normally
 
 						local _flag_hidden
 						if [ "$FEAT_BUNDLE_MODE" == "LIST" ]; then
@@ -415,13 +410,13 @@ function __feature_install() {
 						
 					fi
 					FEAT_BUNDLE_MODE=
-					#FEAT_SCHEMA_SELECTED=$save_FEAT_SCHEMA_SELECTED
-					#__internal_feature_context $FEAT_SCHEMA_SELECTED
+
 					__pop_schema_context
 					# automatic call of callback
 					__feature_callback
 				else
 					echo " ** Installing $FEAT_NAME version $FEAT_VERSION in $FEAT_INSTALL_ROOT"
+					[ "$FEAT_SCHEMA_FLAVOUR" == "source" ] && __start_build_session
 					feature_"$FEAT_NAME"_install_"$FEAT_SCHEMA_FLAVOUR"
 				fi
 
@@ -774,7 +769,7 @@ function __texinfo() {
 	AUTO_INSTALL_FLAG_POSTFIX=
 
 	
-	__auto_install "configure" "texinfo" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
+	__auto_build "configure" "texinfo" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
 
 }
 
@@ -791,7 +786,7 @@ function __bc() {
 	AUTO_INSTALL_FLAG_PREFIX=
 	AUTO_INSTALL_FLAG_POSTFIX=
 	
-	__auto_install "configure" "bc" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
+	__auto_build "configure" "bc" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
 }
 
 function __file5() {
@@ -805,7 +800,7 @@ function __file5() {
 	AUTO_INSTALL_FLAG_PREFIX=
 	AUTO_INSTALL_FLAG_POSTFIX="--disable-static"
 
-	__auto_install "configure" "file" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
+	__auto_build "configure" "file" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
 
 }
 
@@ -821,7 +816,7 @@ function __m4() {
 	AUTO_INSTALL_FLAG_PREFIX=
 	AUTO_INSTALL_FLAG_POSTFIX=
 
-	__auto_install "configure" "m4" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
+	__auto_build "configure" "m4" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
 }
 
 function __binutils() {
@@ -838,7 +833,7 @@ function __binutils() {
   	--with-sysroot=${CLFS} --with-lib-path=/tools/lib --disable-nls \
   	--disable-static --enable-64-bit-bfd"
 
-	__auto_install "configure" "binutils" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
+	__auto_build "configure" "binutils" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
 }
 
 
