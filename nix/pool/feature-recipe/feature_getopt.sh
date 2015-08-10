@@ -62,6 +62,8 @@ function feature_getopt_install_source() {
 	cd "$SRC_DIR"
 	make -j$STELLA_NB_CPU
 	make prefix="$INSTALL_DIR" mandir=man install && __del_folder $SRC_DIR
+
+	__test_build "$INSTALL_DIR"
 }
 
 

@@ -126,6 +126,8 @@ STELLA_BUILD_DEFAULT_CONF_TOOL="configure"
 # default build tool -- can not be changed at runtime, may broke lot of feature recipe
 STELLA_BUILD_DEFAULT_BUILD_TOOL="make"
 
+# first buid engine reset
+__reset_build_env
 # API ---------------------------------------------
 STELLA_API_COMMON_PUBLIC="get_active_path uncompress daemonize rel_to_abs_path is_abs argparse get_filename_from_string \
 get_resource delete_resource update_resource revert_resource download_uncompress copy_folder_content_into del_folder \

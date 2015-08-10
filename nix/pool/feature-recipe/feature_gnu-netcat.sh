@@ -17,7 +17,7 @@ function feature_gnu-netcat_0_7_1() {
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
-	FEAT_SOURCE_URL=http:/:sourceforge.net/projects/netcat/files/netcat/0.7.1/netcat-0.7.1.tar.gz
+	FEAT_SOURCE_URL=http://sourceforge.net/projects/netcat/files/netcat/0.7.1/netcat-0.7.1.tar.gz
 	FEAT_SOURCE_URL_FILENAME=netcat-0.7.1.tar.gz
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 

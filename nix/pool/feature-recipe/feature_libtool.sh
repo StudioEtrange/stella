@@ -18,7 +18,7 @@ function feature_libtool_2_4_2() {
 
 	FEAT_SOURCE_URL=http://ftp.gnu.org/gnu/libtool/libtool-2.4.2.tar.gz
 	FEAT_SOURCE_URL_FILENAME=libtool-2.4.2.tar.gz
-	FEAT_SOURCE_URL_PROTOCOL=
+	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 	
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=

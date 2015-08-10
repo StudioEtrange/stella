@@ -361,9 +361,21 @@ function __feature_install() {
 					FORCE=$_opt_force_reinstall_dep
 
 					for dep in $_dependencies; do
-						[ "$dep" == "FORCE_ORIGIN_STELLA" ] && _force_origin="STELLA" && continue
-						[ "$dep" == "FORCE_ORIGIN_SYSTEM" ] && _force_origin="SYSTEM" && continue
-						[ "$_force_origin" == "" ] && _origin="$(__dep_choose_origin $dep)" || _origin="$_force_origin"
+						if [ "$dep" == "FORCE_ORIGIN_STELLA" ]; then
+							_force_origin="STELLA"
+							continue
+						fi
+						if [ "$dep" == "FORCE_ORIGIN_SYSTEM" ]; then 
+							_force_origin="SYSTEM"
+							continue
+						fi
+
+						if [ "$_force_origin" == "" ]; then
+							_origin="$(__dep_choose_origin $dep)"
+						else 
+							_origin="$_force_origin"
+						fi
+
 						if [ "$_origin" == "STELLA" ]; then
 							echo "Installing dependency $dep"
 							__feature_install $dep "$_OPT HIDDEN"

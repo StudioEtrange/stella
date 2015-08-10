@@ -387,7 +387,8 @@ function __link_feature_library() {
 				SCHEMA=${SCHEMA#FORCE_ORIGIN_SYSTEM}
 				;;
 		*)
-				_origin="$(__dep_choose_origin $SCHEMA)";;
+				_origin="$(__dep_choose_origin $SCHEMA)"
+				;;
 	esac
 	
 	if [ "$_origin" == "SYSTEM" ]; then
@@ -578,9 +579,6 @@ function __apply_build_env() {
 	__set_build_env RELOCATE $STELLA_BUILD_RELOCATE
 	__set_build_env MACOSX_DEPLOYMENT_TARGET $STELLA_BUILD_MACOSX_DEPLOYMENT_TARGET
 	__set_build_env DARWIN_STDLIB $STELLA_BUILD_DARWIN_STDLIB
-
-	#__set_build_env DEP_FROM_SYSTEM "$STELLA_BUILD_DEP_FROM_SYSTEM"
-	#__set_build_env RELOCATE_RPATH "$STELLA_BUILD_RELOCATE_RPATH"
 
 
 
