@@ -42,7 +42,7 @@ function feature_template_1_0_0() {
 
 	# callback are list of functions
 	# manual callback (with feature_callback)
-	FEAT_SOURCE_CALLBACK=
+	FEAT_SOURCE_CALLBACK=feature_template_source_callback
 	FEAT_BINARY_CALLBACK=
 	# automatic callback each time feature is initialized, to init env var
 	FEAT_ENV_CALLBACK=feature_template_setenv
@@ -69,6 +69,12 @@ function feature_template_install_binary() {
 
 
 
+
+# ---------------------------------------------------------------------------------------------------------------------------
+function feature_template_source_callback() {
+	echo
+}
+
 function feature_template_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
@@ -79,9 +85,32 @@ function feature_template_install_source() {
 
 	cd "$SRC_DIR"
 
-	make
+	make -j$STELLA_NB_CPU
 	make install && __del_folder $SRC_DIR
 }
+
+
+
+function feature_template_install_source() {
+	INSTALL_DIR="$FEAT_INSTALL_ROOT"
+	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
+
+	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP"
+
+	__feature_callback
+	__link_feature_library "zlib#1_2_8" "z" "FORCE_DYNAMIC"
+
+	__set_build_mode "OPTIMIZATION" "1"
+	__apply_build_env
+
+	cd "$SRC_DIR"
+
+	make -j$STELLA_NB_CPU
+	make install && __del_folder $SRC_DIR
+
+	__inspect_build "$INSTALL_DIR"
+}
+
 
 function feature_template_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
@@ -94,6 +123,9 @@ function feature_template_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
 	__feature_callback
+
+
+	__set_build_mode "OPTIMIZATION" "1"
 
 	__auto_build "template" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "$INSTALL_DIR" "CONF_TOOL configure BUILD_TOOL make"
 

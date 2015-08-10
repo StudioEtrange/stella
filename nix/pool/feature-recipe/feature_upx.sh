@@ -1,6 +1,8 @@
 if [ ! "$_UPX_INCLUDED_" == "1" ]; then 
 _UPX_INCLUDED_=1
 
+# OK
+
 function feature_upx() {
 	FEAT_NAME=upx
 	FEAT_LIST_SCHEMA="3_91:source"
@@ -36,7 +38,7 @@ function feature_upx_3_91() {
 function feature_ucl_link() {
 
 	__link_feature_library "ucl#1_03" "ucl" "FORCE_STATIC"
-	__link_feature_library "zlib#1_2_8" "z" "FORCE_STATIC"
+	__link_feature_library "zlib#1_2_8" "z" "FORCE_DYNAMIC"
 	
 	
 }
@@ -45,20 +47,18 @@ function feature_upx_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
-
-	__download_uncompress "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_FILENAME" "$SRC_DIR" "DEST_ERASE STRIP"
-
+	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
+	
 	__feature_callback
 
 	# can not build doc
 	sed -i".old" '/-C doc/d' "$SRC_DIR/Makefile"
 
 	cd "$SRC_DIR"
-	__set_standard_build_flags
-	
-	make all
-	#CPPFLAGS="-I$ZLIB_ROOT/include" LDFLAGS="-L$ZLIB_ROOT -lz" make all
+	#__set_standard_build_flags
+	__apply_build_env
 
+	make all
 
 	if [ -f "$SRC_DIR/src/upx.out" ]; then
 		mkdir -p "$INSTALL_DIR/bin"
@@ -66,7 +66,7 @@ function feature_upx_install_source() {
 		__del_folder "$SRC_DIR"
 	fi
 
-	__test_build "$INSTALL_DIR"
+	__inspect_build "$INSTALL_DIR"
 
 }
 

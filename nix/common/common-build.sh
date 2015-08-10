@@ -36,7 +36,7 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 #				LAUNCH BUILD TOOL
 #				__launch_build
 
-#				__test_build
+#				__inspect_build
 #						call __fix_built_files 
 #						call __check_built_files
 
@@ -93,7 +93,7 @@ function __auto_build() {
 	[ "$_opt_configure" == "OFF" ] && _opt_out_of_tree_build=OFF
 
 
-	echo " ** Auto-installing $NAME in $INSTALL_DIR $STELLA_CURRENT_OS"
+	echo " ** Auto-building $NAME in $INSTALL_DIR for $STELLA_CURRENT_OS"
 
 
 	# folder stuff
@@ -124,7 +124,7 @@ function __auto_build() {
 		[ ! "$_opt_build_keep" == "ON" ] && rm -Rf "$BUILD_DIR"
 	fi
 
-	__test_build "$INSTALL_DIR"
+	__inspect_build "$INSTALL_DIR"
 
 	echo " ** Done"
 
@@ -143,10 +143,10 @@ function __launch_configure() {
 	OPT="$4"
 	# build tool
 	local _flag_build=
-	local BUILD_TOOL=$STELLA_BUILD_DEFAULT_BUILD_TOOL
+	local BUILD_TOOL=$STELLA_BUILD_BUILDTOOL_DEFAULT
 	# configure tool
 	local _flag_configure=
-	local CONFIG_TOOL=$STELLA_BUILD_DEFAULT_CONF_TOOL
+	local CONFIG_TOOL=$STELLA_BUILD_CONFTOOL_DEFAULT
 	# debug mode (default : FALSE)
 	local _debug=
 	
@@ -564,7 +564,8 @@ function __apply_build_env() {
 
 	# configure tool
 	local _flag_configure=
-	local CONFIG_TOOL=$STELLA_BUILD_DEFAULT_CONF_TOOL
+	# by default will set standard build flags
+	local CONFIG_TOOL=
 	
 	for o in $OPT; do 
 		[ "$_flag_configure" == "ON" ] && CONFIG_TOOL=$o && _flag_configure=
@@ -581,8 +582,8 @@ function __apply_build_env() {
 	__set_build_env DARWIN_STDLIB $STELLA_BUILD_DARWIN_STDLIB
 
 
-
 	# set flags -------------
+	# by default will set standard build flags
 	case $CONFIG_TOOL in
 		*)
 			__set_standard_build_flags
@@ -770,7 +771,9 @@ function __set_build_env() {
 	fi
 
 	# set OPTIMIZATION -----------------------------------------------------------------
-	[ "$1" == "OPTIMIZATION" ] && STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS -O$STELLA_BUILD_OPTIMIZATION"
+	if [ "$1" == "OPTIMIZATION" ]; then
+		[ ! "$2" == "" ] && STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS -O$STELLA_BUILD_OPTIMIZATION"
+	fi
 
 	# ARCH -----------------------------------------------------------------
 	# Setting flags for a specific arch
@@ -929,7 +932,7 @@ function __set_build_env() {
 
 
 # CHECK BUILD ------------------------------------------------------------------------------------------------------------------------------
-function __test_build() {
+function __inspect_build() {
 	local folder="$1"
 
 	[ "$1" == "" ] && return
@@ -956,7 +959,7 @@ function __check_built_files() {
 				;;
 				darwin)
 					# test if file is a binary Mach-O file (binary, shared lib or static lib)
-					if [ ! "$(otool -h "$f" | grep Mach)" == "" ]; then
+					if [ ! "$(otool -h "$f" 2>/dev/null | grep Mach)" == "" ]; then
 						if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
 							[ ! "$(__get_extension_from_string $f)" == "a" ] && __check_rpath_darwin "$f"
 							[ "$(__get_extension_from_string $f)" == "dylib" ] && __check_install_name_darwin "$f"
@@ -1042,12 +1045,19 @@ function __check_install_name_darwin() {
 	local t		
 
 	printf "*** Checking ID/Install Name value : "
-	t=`otool -l $_file | grep -E "LC_ID_DYLIB" -A2 | grep -E "name\s@rpath/"`
-	[ $VERBOSE_MODE -gt 0 ] && otool -l $_file | grep name
+
+	t=`otool -l $_file | grep -E "LC_ID_DYLIB" -A2`
 	if [ "$t" == "" ]; then
-		printf %s " WARN ID/Install Name prefix '@rpath/' is missing"
+		echo
+		echo " *** WARN $_file do not have any install name (LC_ID_DYLIB field)"
 	else
-		printf %s " OK"
+		t=`otool -l $_file | grep -E "LC_ID_DYLIB" -A2 | grep -E "name\s@rpath/"`
+		[ $VERBOSE_MODE -gt 0 ] && otool -l $_file | grep name
+		if [ "$t" == "" ]; then
+			printf %s " WARN ID/Install Name prefix '@rpath/' is missing"
+		else
+			printf %s " OK"
+		fi
 	fi
 	echo
 }
@@ -1062,15 +1072,33 @@ function __check_dynamic_linking_darwin() {
 
 	echo "*** Checking missing dynamic library at runtime"
 	
+	local _rpath=
+	while read -r line; do
+		_rpath="$_rpath $line"
+	done <<< "$(otool -l "$_file" | grep -E "LC_RPATH" -A2 | grep path | tr -s ' ' | cut -d ' ' -f 3)"
+
+
+	local _match_rpath=
 	while read -r line ; do
 			printf %s "====> checking linked lib : $line "
-			# TODO test with all rpath values in order ?
-			linked_lib="${line//@rpath/$DEST/lib$BUILD_SUFFIX}"
-			if [ ! -f "$linked_lib" ]; then
-				printf %s "-- WARN not found"
+			
+			if [ -z "${line##*@rpath*}" ]; then
+				_match_rpath=
+				for p in $_rpath; do
+					linked_lib="${line/@rpath/$p}"
+					if [ -f "$linked_lib" ]; then
+						printf %s "-- OK -- rpath [$p] ==> $linked_lib"
+						_match_rpath=1
+						break
+					fi
+				done
 			else
-				printf %s "-- OK"
+				if [ -f "$linked_lib" ]; then
+					printf %s "-- OK"
+					_match_rpath=1
+				fi 
 			fi
+			[ "$_match_rpath" == "" ] && printf %s "-- WARN not found"
 			echo
 	done < <(otool -l $_file | grep -E "LC_LOAD_DYLIB" -A2 | grep name | tr -s ' ' | cut -d ' ' -f 3)
 
@@ -1099,8 +1127,10 @@ function __fix_built_files() {
 				;;
 				darwin)
 					# test if file is a binary Mach-O file (binary, shared lib or static lib)
-					if [ ! "$(otool -h "$f" | grep Mach)" == "" ]; then
+					if [ ! "$(otool -h "$f" 2>/dev/null | grep Mach)" == "" ]; then
 						if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
+							# fix write permission
+							chmod +w "$f"
 							[ "$(__get_extension_from_string $f)" == "dylib" ] && __fix_dynamiclib_install_name_darwin "$f"
 							[ ! "$(__get_extension_from_string $f)" == "a" ] && __fix_linked_lib_darwin "$f"
 							[ ! "$(__get_extension_from_string $f)" == "a" ] && __fix_add_rpath_darwin "$f"
@@ -1176,6 +1206,8 @@ function __fix_linked_lib_darwin() {
 
 	local _linked_lib_list=
 
+	local _flag_existing_rpath=
+
 	while read -r line; do
 		_linked_lib_list="$_linked_lib_list $line"
 		
@@ -1183,16 +1215,23 @@ function __fix_linked_lib_darwin() {
 	done <<< "$(otool -l "$_file" | grep -E "LC_LOAD_DYLIB" -A2 | grep "$STELLA_APP_FEATURE_ROOT" | tr -s ' ' | cut -d ' ' -f 3)"
 
 	for l in $_linked_lib_list; do
+
 		_filename=$(__get_filename_from_string $_file)
 		_new_load_dylib="$(__get_path_from_string $l)"
 		_linked_lib_filename="$(__get_filename_from_string $l)"
 		
 		echo "** Fixing $_filename linked to $_linked_lib_filename shared lib from stella"
+		
 		echo "*** setting LOAD_DYLIB to @rpath/$_linked_lib_filename"
-		echo "*** adding RPATH value $_new_load_dylib"
-
 		install_name_tool -change "$l" "@rpath/$_linked_lib_filename" "$_file"
-		install_name_tool -add_rpath "$_new_load_dylib" "$_file"
+
+		echo "*** adding RPATH value $_new_load_dylib"
+		_flag_existing_rpath=0
+		while read -r line; do
+			[ "$line" == "$_new_load_dylib" ] && _flag_existing_rpath=1
+		done <<< "$(otool -l "$_file" | grep -E "LC_RPATH" -A2 | grep path | tr -s ' ' | cut -d ' ' -f 3)"
+		
+		[ "$_flag_existing_rpath" == "0" ] && install_name_tool -add_rpath "$_new_load_dylib" "$_file"
 
 	done
 
@@ -1205,10 +1244,18 @@ function __fix_linked_lib_darwin() {
 function __fix_dynamiclib_install_name_darwin() {
 	local _lib=$1
 	
-	echo "** Fixing install_name for $1"
+	local _new_install_name
+	local _original_install_name
+
+	echo "** Fixing install_name for $_lib"
 
 	_original_install_name=$(otool -l $_lib | grep -E "LC_ID_DYLIB" -A2 | grep name | tr -s ' ' | cut -d ' ' -f 3)
 
+	if [ "$_original_install_name" == "" ]; then
+		echo " ** WARN $_lib do not have any install name (LC_ID_DYLIB field)"
+		return
+	fi
+				
 	case $_original_install_name in
 		@rpath*)
 		;;

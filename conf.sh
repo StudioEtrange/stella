@@ -108,6 +108,8 @@ STELLA_BUILD_DEP_FROM_SYSTEM_DEFAULT="openssl python"
 # parallelize build (except specificied unparallelized one)
 # ON | OFF
 __set_build_mode_default "PARALLELIZE" "ON"
+# compiler optimization
+__set_build_mode_default "OPTIMIZATION" "2"
 # rellocatable shared libraries
 # without this, you will not enable to move from another system any binary (executable or shared libs) linked to stella shared libs
 # everything will be sticked to your stella shared lib installation path
@@ -122,9 +124,9 @@ STELLA_BUILD_RELOCATE_RPATH_DEFAULT="../lib"
 [ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && STELLA_BUILD_RELOCATE_RPATH_DEFAULT="../lib @loader_path/../lib"
 # http://industriousone.com/topic/linking-linux FOR LINUX
 # default configure tool -- can not be changed at runtime, may broke lot of feature recipe
-STELLA_BUILD_DEFAULT_CONF_TOOL="configure"
+STELLA_BUILD_CONFTOOL_DEFAULT="configure"
 # default build tool -- can not be changed at runtime, may broke lot of feature recipe
-STELLA_BUILD_DEFAULT_BUILD_TOOL="make"
+STELLA_BUILD_BUILDTOOL_DEFAULT="make"
 
 # first buid engine reset
 __reset_build_env

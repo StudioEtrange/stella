@@ -2,6 +2,7 @@ if [ ! "$_SMARTMONTOOLS_INCLUDED_" == "1" ]; then
 _SMARTMONTOOLS_INCLUDED_=1
 
 
+# OK
 
 function feature_smartmontools() {
 	FEAT_NAME=smartmontools
@@ -43,6 +44,8 @@ function feature_smartmontools_install_source() {
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="--disable-dependency-tracking"
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
+
+	
 
 	__auto_build "smartmontools" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "$INSTALL_DIR" "CONF_TOOL configure BUILD_TOOL make"
 

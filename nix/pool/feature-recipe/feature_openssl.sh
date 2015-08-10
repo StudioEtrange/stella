@@ -68,7 +68,10 @@ function feature_openssl_install_source() {
 	fi
 
 	__feature_callback
-	
+
+	# NOTE : On darwin openssl lib in lib/engines folder does not have LC_ID_DYLIB -- I dont knwo why - so I disable relocate mode
+	__set_build_mode "RELOCATE" "OFF"
+	__apply_build_env
 
 	# configure --------------------------------
 	# http://stackoverflow.com/questions/16601895/how-can-one-build-openssl-on-ubuntu-with-a-specific-version-of-zlib
@@ -91,6 +94,8 @@ function feature_openssl_install_source() {
 
 	# clean --------------------------------
 	rm -Rf $SRC_DIR
+
+	__inspect_build "$INSTALL_DIR"
 }
 
 

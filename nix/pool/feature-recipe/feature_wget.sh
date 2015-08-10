@@ -1,6 +1,8 @@
 if [ ! "$_WGET_INCLUDED_" == "1" ]; then 
 _WGET_INCLUDED_=1
 
+# OK
+
 
 function feature_wget() {
 	FEAT_NAME=wget

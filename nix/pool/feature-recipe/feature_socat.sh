@@ -1,7 +1,7 @@
 if [ ! "$_SOCAT_INCLUDED_" == "1" ]; then 
 _SOCAT_INCLUDED_=1
 
-
+# OK
 
 function feature_socat() {
 	FEAT_NAME=socat

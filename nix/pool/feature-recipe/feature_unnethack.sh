@@ -1,6 +1,8 @@
 if [ ! "$_UNNETHACK_INCLUDED_" == "1" ]; then 
 _UNNETHACK_INCLUDED_=1
 
+# OK
+
 
 function feature_unnethack() {
 	FEAT_NAME=unnethack
@@ -14,6 +16,7 @@ function feature_unnethack() {
 function feature_unnethack_5_1_0() {
 	FEAT_VERSION=unnethack_5_1_0
 	
+	# depend on ncurses
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
