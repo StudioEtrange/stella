@@ -43,16 +43,16 @@ __init_stella_env
 if [ "$ACTION" == "init" ]; then
 
     if [ "$APPROOT" == "" ]; then
-        APPROOT=$STELLA_CURRENT_RUNNING_DIR/$ID
+        APPROOT="$STELLA_CURRENT_RUNNING_DIR/$ID"
     fi
     if [ "$WORKROOT" == "" ]; then
-        WORKROOT=$APPROOT
+        WORKROOT="$APPROOT/workspace"
     fi
     if [ "$CACHEDIR" == "" ]; then
-        CACHEDIR=$WORKROOT/cache
+        CACHEDIR="$APPROOT/cache"
     fi
 
-    __init_app $ID $APPROOT $WORKROOT $CACHEDIR
+    __init_app "$ID" "$APPROOT" "$WORKROOT" "$CACHEDIR"
     [ "$SAMPLES" ] && __create_app_samples $APPROOT
 
 else
