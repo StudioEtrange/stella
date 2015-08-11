@@ -8,7 +8,7 @@ function feature_cmake() {
 	FEAT_LIST_SCHEMA="2_8_12:source 2_8_12:binary 3_2_2:binary 3_2_2:source"
 	FEAT_DEFAULT_VERSION=2_8_12
 	FEAT_DEFAULT_ARCH=
-	FEAT_DEFAULT_FLAVOUR="source"
+	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
 function feature_cmake_2_8_12() {
@@ -33,7 +33,7 @@ function feature_cmake_2_8_12() {
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-		FILE_APP="CMake 2.8-12.app"
+		CMAKE_FILE_APP="CMake 2.8-12.app"
 	fi
 
 }
@@ -61,7 +61,7 @@ function feature_cmake_3_2_2() {
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-		FILE_APP="CMake.app"
+		CMAKE_FILE_APP="CMake.app"
 	fi
 }
 
@@ -96,10 +96,10 @@ function feature_cmake_install_binary() {
 	__download_uncompress "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_FILENAME" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP"
 	
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-		ln -s "$FEAT_INSTALL_ROOT"/"$FILE_APP"/Contents/bin "$FEAT_INSTALL_ROOT"/bin
-		ln -s "$FEAT_INSTALL_ROOT"/"$FILE_APP"/Contents/doc "$FEAT_INSTALL_ROOT"/doc
-		ln -s "$FEAT_INSTALL_ROOT"/"$FILE_APP"/Contents/man "$FEAT_INSTALL_ROOT"/man
-		ln -s "$FEAT_INSTALL_ROOT"/"$FILE_APP"/Contents/share "$FEAT_INSTALL_ROOT"/share
+		ln -s "$FEAT_INSTALL_ROOT"/"$CMAKE_FILE_APP"/Contents/bin "$FEAT_INSTALL_ROOT"/bin
+		ln -s "$FEAT_INSTALL_ROOT"/"$CMAKE_FILE_APP"/Contents/doc "$FEAT_INSTALL_ROOT"/doc
+		ln -s "$FEAT_INSTALL_ROOT"/"$CMAKE_FILE_APP"/Contents/man "$FEAT_INSTALL_ROOT"/man
+		ln -s "$FEAT_INSTALL_ROOT"/"$CMAKE_FILE_APP"/Contents/share "$FEAT_INSTALL_ROOT"/share
 	fi	
 }
 

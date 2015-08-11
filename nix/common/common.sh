@@ -38,9 +38,17 @@ SCRIPT
 }
 
 # trim whitespace
-function __trim() {
+function __trim2() {
 	echo $(echo "$1" | sed -e 's/^ *//' -e 's/ *$//')
 }
+
+function __trim() {
+    local var="$*"
+    var="${var#"${var%%[![:space:]]*}"}"   # remove leading whitespace characters
+    var="${var%"${var##*[![:space:]]}"}"   # remove trailing whitespace characters
+    echo -n "$var"
+}
+
 
 function __get_stella_version() {
 	local _stella_root_="$1"
@@ -400,10 +408,10 @@ function __resource() {
 
 	#[ "$FORCE" ] && rm -Rf $FINAL_DESTINATION
 	if [ "$_opt_get" == "ON" ]; then
-		if [ "$FORCE" ]; then
-			[ "$_opt_merge" == "OFF" ] && rm -Rf "$FINAL_DESTINATION"
-			[ "$_opt_merge" == "ON" ] && rm -f "$FINAL_DESTINATION/._MERGED_$NAME"
-		fi
+		#if [ "$FORCE" ]; then
+		#	[ "$_opt_merge" == "OFF" ] && rm -Rf "$FINAL_DESTINATION"
+		#	[ "$_opt_merge" == "ON" ] && rm -f "$FINAL_DESTINATION/._MERGED_$NAME"
+		#fi
 		if [ "$_opt_dest_erase" == "ON" ]; then
 			[ "$_opt_merge" == "OFF" ] && rm -Rf "$FINAL_DESTINATION"
 			[ "$_opt_merge" == "ON" ] && rm -f "$FINAL_DESTINATION/._MERGED_$NAME"

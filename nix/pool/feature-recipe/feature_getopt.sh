@@ -43,12 +43,15 @@ function feature_getopt_1_1_6_patch() {
 
 	__link_feature_library "gettext" "intl" "GET_FLAGS _gettext NO_SET_FLAGS"
 	
-	
 	#sed -i .bak 's,^\(CPPFLAGS=.*\),\1 '"-I$FEAT_INSTALL_ROOT/include"',' $SRC_DIR/Makefile
 	#sed -i .bak 's,^\(LDFLAGS=.*\),\1 '"-L$FEAT_INSTALL_ROOT/lib -lintl"',' $SRC_DIR/Makefile
 
-	sed -i .bak 's,^\(CPPFLAGS=.*\),\1 '"$_gettext_CPP_FLAGS"',' $SRC_DIR/Makefile
-	sed -i .bak 's,^\(LDFLAGS=.*\),\1 '"$_gettext_LINK_FLAGS"',' $SRC_DIR/Makefile
+	export _gettext_CPP_FLAGS="$_gettext_CPP_FLAGS"
+	export _gettext_LINK_FLAGS="$_gettext_LINK_FLAGS"
+
+	sed -i .bak 's,^\(CPPFLAGS=.*\),\1 $(_gettext_CPP_FLAGS),' "$SRC_DIR/Makefile"
+	sed -i .bak 's,^\(LDFLAGS=.*\),\1 $(_gettext_LINK_FLAGS),' "$SRC_DIR/Makefile"
+
 }
 
 function feature_getopt_install_source() {
@@ -59,13 +62,14 @@ function feature_getopt_install_source() {
 
 	__feature_callback
 	
-	__apply_build_env
+	AUTO_INSTALL_CONF_FLAG_PREFIX=
+	AUTO_INSTALL_CONF_FLAG_POSTFIX=
+	AUTO_INSTALL_BUILD_FLAG_PREFIX=
+	AUTO_INSTALL_BUILD_FLAG_POSTFIX="mandir=man"
 
-	cd "$SRC_DIR"
-	make -j$STELLA_NB_CPU
-	make prefix="$INSTALL_DIR" mandir=man install && __del_folder $SRC_DIR
 
-	__inspect_build "$INSTALL_DIR"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_CONFIG BUILD_TOOL make"
+
 }
 
 

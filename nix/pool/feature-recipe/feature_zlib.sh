@@ -38,6 +38,8 @@ function feature_zlib_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	
+	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
+
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
 	# Note : this will build shared AND static
@@ -46,7 +48,7 @@ function feature_zlib_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
 	# out of tree build do not work
-	__auto_build "zlib" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD CONF_TOOL configure BUILD_TOOL make"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD CONFIG_TOOL configure BUILD_TOOL make"
 
 
 	

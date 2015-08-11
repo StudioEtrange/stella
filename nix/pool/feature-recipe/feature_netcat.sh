@@ -1,17 +1,17 @@
-if [ ! "$_GNUNETCAT_INCLUDED_" == "1" ]; then 
-_GNUNETCAT_INCLUDED_=1
+if [ ! "$_NETCAT_INCLUDED_" == "1" ]; then 
+_NETCAT_INCLUDED_=1
 
 
 
-function feature_gnu-netcat() {
-	FEAT_NAME=gnu-netcat
+function feature_netcat() {
+	FEAT_NAME=netcat
 	FEAT_LIST_SCHEMA="0_7_1:source"
 	FEAT_DEFAULT_VERSION=0_7_1
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_gnu-netcat_0_7_1() {
+function feature_netcat_0_7_1() {
 	FEAT_VERSION=0_7_1
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -35,16 +35,19 @@ function feature_gnu-netcat_0_7_1() {
 
 
 
-function feature_gnu-netcat_install_source() {
+function feature_netcat_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	
+	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
+
+
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
 	AUTO_INSTALL_CONF_FLAG_POSTFIX=
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
-	__auto_build "gnu-netcat" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "$INSTALL_DIR" "CONF_TOOL configure BUILD_TOOL make"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "CONFIG_TOOL configure BUILD_TOOL make"
 
 }
 

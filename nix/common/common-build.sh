@@ -13,18 +13,17 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 # START BUILD SESSION
 #	__start_build_session (reset everything to default values or empty)
 
+#		GET SOURCE CODE
+#		__get_resource
+
 # 		SET CUSTOM BUILD MODE
 #		__set_build_mode ARCH x86
 #
 #		LINK BUILD TO OTHER LIBRARY
 #		__link_feature_library
 
-
-
 #		AUTOMATIC BUILD
 #		__auto_build
-#				GET SOURCE CODE
-#				__get_resource
 
 #				SET BUILD ENV AND FLAGS
 #				__apply_build_env
@@ -51,9 +50,9 @@ function __start_build_session() {
 function __auto_build() {
 	
 	local NAME
-	local FILE_NAME
-	local URL
-	local PROTOCOL
+	#local FILE_NAME
+	#local URL
+	#local PROTOCOL
 	local SOURCE_DIR
 	local BUILD_DIR
 	local INSTALL_DIR
@@ -61,12 +60,12 @@ function __auto_build() {
 
 
 	NAME="$1"
-	FILE_NAME=_AUTO_
-	URL="$2"
-	PROTOCOL="$3"
-	SOURCE_DIR="$4"
-	INSTALL_DIR="$5"
-	OPT="$6"
+	#FILE_NAME=_AUTO_
+	#URL="$2"
+	#PROTOCOL="$3"
+	SOURCE_DIR="$2"
+	INSTALL_DIR="$3"
+	OPT="$4"
 	# DEBUG SOURCE_KEEP BUILD_KEEP UNPARALLELIZE NO_CONFIG CONFIG_TOOL xxxx NO_BUILD BUILD_TOOL xxxx ARCH xxxx NO_OUT_OF_TREE_BUILD
 
 	# keep source code after build (default : FALSE)
@@ -80,10 +79,10 @@ function __auto_build() {
 	# build from another folder (default : TRUE)
 	local _opt_out_of_tree_build=ON
 
-
 	for o in $OPT; do 
 		[ "$o" == "SOURCE_KEEP" ] && _opt_source_keep=ON
 		[ "$o" == "BUILD_KEEP" ] && _opt_build_keep=ON
+		#[ "$o" == "NO_DL_SOURCE" ] && _opt_get_resource=OFF
 		[ "$o" == "NO_CONFIG" ] && _opt_configure=OFF
 		[ "$o" == "NO_BUILD" ] && _opt_build=OFF
 		[ "$o" == "NO_OUT_OF_TREE_BUILD" ] && _opt_out_of_tree_build=OFF
@@ -93,25 +92,18 @@ function __auto_build() {
 	[ "$_opt_configure" == "OFF" ] && _opt_out_of_tree_build=OFF
 
 
-	echo " ** Auto-building $NAME in $INSTALL_DIR for $STELLA_CURRENT_OS"
-
+	echo " ** Auto-building $NAME into $INSTALL_DIR for $STELLA_CURRENT_OS"
 
 	# folder stuff
 	BUILD_DIR="$SOURCE_DIR"
 	[ "$_opt_out_of_tree_build" == "ON" ] && BUILD_DIR="$(dirname $SOURCE_DIR)/$(basename $SOURCE_DIR)-build"
-	if [ "$FORCE" == "1" ]; then
-		[ "$_opt_out_of_tree_build" == "ON" ] && rm -Rf "$BUILD_DIR"
-	fi
+
 	mkdir -p "$INSTALL_DIR"
-	
 
-	# get source code
-	__get_resource "$NAME" "$URL" "$PROTOCOL" "$SOURCE_DIR" "STRIP $OPT"
 	
-
 	# set build env
 	__apply_build_env "$OPT"
-	
+
 	# launch process
 	[ "$_opt_configure" == "ON" ] && __launch_configure "$SOURCE_DIR" "$INSTALL_DIR" "$BUILD_DIR" "$OPT"
 	[ "$_opt_build" == "ON" ] && __launch_build "$SOURCE_DIR" "$INSTALL_DIR" "$BUILD_DIR" "$OPT"
@@ -143,10 +135,11 @@ function __launch_configure() {
 	OPT="$4"
 	# build tool
 	local _flag_build=
-	local BUILD_TOOL=$STELLA_BUILD_BUILDTOOL_DEFAULT
+	local BUILD_TOOL=
 	# configure tool
 	local _flag_configure=
-	local CONFIG_TOOL=$STELLA_BUILD_CONFTOOL_DEFAULT
+	local CONFIG_TOOL=
+
 	# debug mode (default : FALSE)
 	local _debug=
 	
@@ -157,6 +150,23 @@ function __launch_configure() {
 		[ "$o" == "BUILD_TOOL" ] && _flag_build=ON
 		[ "$o" == "DEBUG" ] && _debug=ON
 	done
+
+	# autoselect conf tool
+	if [ "$CONFIG_TOOL" == "" ]; then
+		CONFIG_TOOL=configure
+		if [[ -n `which cmake 2> /dev/null` ]]; then
+			CONFIG_TOOL=cmake
+		fi
+	fi
+	# autoselect build tool
+	if [ "$BUILD_TOOL" == "" ]; then
+		BUILD_TOOL=make
+		if [ "$CONFIG_TOOL" == "cmake" ]; then
+			if [[ -n `which ninja 2> /dev/null` ]]; then
+				BUILD_TOOL=ninja
+			fi
+		fi
+	fi
 
 	mkdir -p "$AUTO_BUILD_DIR"
 	cd "$AUTO_BUILD_DIR"
@@ -195,8 +205,9 @@ function __launch_configure() {
 				-DCMAKE_BUILD_TYPE=Release \
 				-DCMAKE_INSTALL_PREFIX="$AUTO_INSTALL_DIR" \
 				-DINSTALL_BIN_DIR="$AUTO_INSTALL_DIR/bin" -DINSTALL_LIB_DIR="$AUTO_INSTALL_DIR/lib" \
+				-DCMAKE_LIBRARY_PATH="$CMAKE_LIBRARY_PATH" -DCMAKE_INCLUDE_PATH="$CMAKE_INCLUDE_PATH" \
 				-G "$CMAKE_GENERATOR" $AUTO_INSTALL_CONF_FLAG_POSTFIX
-				# -DCMAKE_MODULE_PATH="$CMAKE_MODULE_PATH" -DCMAKE_LIBRARY_PATH="$CMAKE_LIBRARY_PATH" -DCMAKE_INCLUDE_PATH="$CMAKE_INCLUDE_PATH"
+
 				# -DLIB_SUFFIX=$BUILD_SUFFIX -DCMAKE_DEBUG_POSTFIX=$DEBUG_POSTFIX
 			else
 				eval $(echo $AUTO_INSTALL_CONF_FLAG_PREFIX) cmake "$_debug" "$AUTO_SOURCE_DIR" \
@@ -206,10 +217,10 @@ function __launch_configure() {
 				-DCMAKE_BUILD_TYPE=Release \
 				-DCMAKE_INSTALL_PREFIX="$AUTO_INSTALL_DIR" \
 				-DINSTALL_BIN_DIR="$AUTO_INSTALL_DIR/bin" -DINSTALL_LIB_DIR="$AUTO_INSTALL_DIR/lib" \
+				-DCMAKE_LIBRARY_PATH="$CMAKE_LIBRARY_PATH" -DCMAKE_INCLUDE_PATH="$CMAKE_INCLUDE_PATH" \
 				-G "$CMAKE_GENERATOR" $AUTO_INSTALL_CONF_FLAG_POSTFIX
-				# -DCMAKE_MODULE_PATH="$CMAKE_MODULE_PATH" -DCMAKE_LIBRARY_PATH="$CMAKE_LIBRARY_PATH" -DCMAKE_INCLUDE_PATH="$CMAKE_INCLUDE_PATH"
+				
 				# -DLIB_SUFFIX=$BUILD_SUFFIX -DCMAKE_DEBUG_POSTFIX=$DEBUG_POSTFIX
-
 			fi
 		;;
 
@@ -231,18 +242,40 @@ function __launch_build() {
 	local _opt_parallelize=$STELLA_BUILD_PARALLELIZE
 	# build tool
 	local _flag_build=
-	local BUILD_TOOL=$STELLA_BUILD_BUILD_TOOL_DEFAULT
+	local BUILD_TOOL=
+	# configure tool
+	local _flag_configure=
+	local CONFIG_TOOL=
 	# debug mode (default : FALSE)
 	local _debug=
 	# configure step activation (default : TRUE)
 	local _opt_configure=ON
 
-	for o in $OPT; do 
+	for o in $OPT; do
+		[ "$_flag_configure" == "ON" ] && CONFIG_TOOL=$o && _flag_configure=
+		[ "$o" == "CONFIG_TOOL" ] && _flag_configure=ON
 		[ "$_flag_build" == "ON" ] && BUILD_TOOL=$o && _flag_build=
 		[ "$o" == "BUILD_TOOL" ] && _flag_build=ON
 		[ "$o" == "DEBUG" ] && _debug=ON
 		[ "$o" == "NO_CONFIG" ] && _opt_configure=OFF
 	done
+
+	# autoselect conf tool
+	if [ "$CONFIG_TOOL" == "" ]; then
+		CONFIG_TOOL=configure
+		if [[ -n `which cmake 2> /dev/null` ]]; then
+			CONFIG_TOOL=cmake
+		fi
+	fi
+	# autoselect build tool
+	if [ "$BUILD_TOOL" == "" ]; then
+		BUILD_TOOL=make
+		if [ "$CONFIG_TOOL" == "cmake" ]; then
+			if [[ -n `which ninja 2> /dev/null` ]]; then
+				BUILD_TOOL=ninja
+			fi
+		fi
+	fi
 
 	# FLAGs
 	# AUTO_INSTALL_BUILD_FLAG_PREFIX
@@ -261,30 +294,66 @@ function __launch_build() {
 			if [ "$AUTO_INSTALL_BUILD_FLAG_PREFIX" == "" ]; then
 				if [ "$_opt_configure" == "ON" ]; then
 					make $_debug $_FLAG_PARALLEL \
+					$AUTO_INSTALL_BUILD_FLAG_POSTFIX
+					
+					make $_debug \
 					$AUTO_INSTALL_BUILD_FLAG_POSTFIX \
-					install
+					install 
 				else
+					#make $_debug $_FLAG_PARALLEL \
+					#CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" \
+					#PREFIX="$AUTO_INSTALL_DIR" $AUTO_INSTALL_BUILD_FLAG_POSTFIX
+					
 					make $_debug $_FLAG_PARALLEL \
-					CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" \
-					PREFIX="$AUTO_INSTALL_DIR" $AUTO_INSTALL_BUILD_FLAG_POSTFIX \
+					PREFIX="$AUTO_INSTALL_DIR" prefix="$AUTO_INSTALL_DIR" \
+					$AUTO_INSTALL_BUILD_FLAG_POSTFIX
+
+					#make $_debug \
+					#CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" \
+					#PREFIX="$AUTO_INSTALL_DIR" $AUTO_INSTALL_BUILD_FLAG_POSTFIX \
+					#install
+					make $_debug \
+					PREFIX="$AUTO_INSTALL_DIR" prefix="$AUTO_INSTALL_DIR" \
+					$AUTO_INSTALL_BUILD_FLAG_POSTFIX \
 					install
 				fi
 			else
 				if [ "$_opt_configure" == "ON" ]; then
-					eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) make $_FLAG_PARALLEL \
+					eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) make $_debug $_FLAG_PARALLEL \
+					$AUTO_INSTALL_BUILD_FLAG_POSTFIX
+
+					eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) make $_debug \
 					$AUTO_INSTALL_BUILD_FLAG_POSTFIX \
 					install
 				else
-					eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) make $_FLAG_PARALLEL \
-					CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" \
-					PREFIX="$AUTO_INSTALL_DIR" $AUTO_INSTALL_BUILD_FLAG_POSTFIX \
+					#eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) make $_debug  $_FLAG_PARALLEL \
+					#CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" \
+					#PREFIX="$AUTO_INSTALL_DIR" $AUTO_INSTALL_BUILD_FLAG_POSTFIX
+
+					eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) make $_debug $_FLAG_PARALLEL \
+					PREFIX="$AUTO_INSTALL_DIR" prefix="$AUTO_INSTALL_DIR" \
+					$AUTO_INSTALL_BUILD_FLAG_POSTFIX
+
+					#eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) make $_debug \
+					#CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" \
+					#PREFIX="$AUTO_INSTALL_DIR" $AUTO_INSTALL_BUILD_FLAG_POSTFIX \
+					#install
+
+					eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) make $_debug \
+					PREFIX="$AUTO_INSTALL_DIR" prefix="$AUTO_INSTALL_DIR" \
+					$AUTO_INSTALL_BUILD_FLAG_POSTFIX \
 					install
 				fi
 			fi
 		;;
 
 		ninja)
-			[ "$_opt_parallelize" == "OFF" ] && _FLAG_PARALLEL="-j1"
+			if [ "$_opt_parallelize" == "OFF" ]; then
+				_FLAG_PARALLEL="-j1"
+			else
+				# ninja is auto parallelized
+				_FLAG_PARALLEL=
+			fi
 			[ "$_debug" == "ON" ] && _debug="-v"
 			if [ "$AUTO_INSTALL_BUILD_FLAG_PREFIX" == "" ]; then
 				ninja $_debug $_FLAG_PARALLEL $AUTO_INSTALL_BUILD_FLAG_POSTFIX
@@ -474,9 +543,17 @@ function __link_feature_library() {
 
 	# set results
 	if [ "$_opt_set_flags" == "ON" ]; then
-		STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS $_C_CXX_FLAGS"
-		STELLA_CPP_FLAGS="$STELLA_CPP_FLAGS $_CPP_FLAGS"
-		STELLA_LINK_FLAGS="$_LINK_FLAGS $STELLA_LINK_FLAGS"
+		LINKED_LIBS_C_CXX_FLAGS="$LINKED_LIBS_C_CXX_FLAGS $_C_CXX_FLAGS"
+		LINKED_LIBS_CPP_FLAGS="$LINKED_LIBS_CPP_FLAGS $_CPP_FLAGS"
+		LINKED_LIBS_LINK_FLAGS="$LINKED_LIBS_CPP_FLAGS $_CPP_FLAGS"
+		#STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS $_C_CXX_FLAGS"
+		#STELLA_CPP_FLAGS="$STELLA_CPP_FLAGS $_CPP_FLAGS"
+		#STELLA_LINK_FLAGS="$_LINK_FLAGS $STELLA_LINK_FLAGS"
+
+		LINKED_LIBS_CMAKE_LIBRARY_PATH="$LINKED_LIBS_CMAKE_LIBRARY_PATH $_LIB"
+		LINKED_LIBS_CMAKE_INCLUDE_PATH="$LINKED_LIBS_CMAKE_INCLUDE_PATH $_INCLUDE"
+		#export CMAKE_LIBRARY_PATH="$_LIB"
+		#export CMAKE_INCLUDE_PATH="$_INCLUDE"
 	fi
 
 	
@@ -529,6 +606,13 @@ function __reset_build_env() {
 	STELLA_CMAKE_RPATH=
 	STELLA_CMAKE_RPATH_DARWIN=
 
+	# LINKED LIBRARIES
+	LINKED_LIBS_C_CXX_FLAGS=
+	LINKED_LIBS_CPP_FLAGS=
+	LINKED_LIBS_LINK_FLAGS=
+	LINKED_LIBS_CMAKE_LIBRARY_PATH=
+	LINKED_LIBS_CMAKE_INCLUDE_PATH=
+
 	# BUILD MODE
 	STELLA_BUILD_RELOCATE="$STELLA_BUILD_RELOCATE_DEFAULT"
 	STELLA_BUILD_RELOCATE_RPATH="$STELLA_BUILD_RELOCATE_RPATH_DEFAULT"
@@ -572,6 +656,9 @@ function __apply_build_env() {
 		[ "$o" == "CONFIG_TOOL" ] && _flag_configure=ON
 	done
 	
+	
+
+	# set env
 	__set_build_env ARCH $STELLA_BUILD_ARCH
 	__set_build_env CPU_INSTRUCTION_SCOPE $STELLA_BUILD_CPU_INSTRUCTION_SCOPE
 	__set_build_env OPTIMIZATION $STELLA_BUILD_OPTIMIZATION
@@ -581,22 +668,29 @@ function __apply_build_env() {
 	__set_build_env MACOSX_DEPLOYMENT_TARGET $STELLA_BUILD_MACOSX_DEPLOYMENT_TARGET
 	__set_build_env DARWIN_STDLIB $STELLA_BUILD_DARWIN_STDLIB
 
+	# trim list
+	STELLA_BUILD_RELOCATE_RPATH="$(__trim $STELLA_BUILD_RELOCATE_RPATH)"
+	STELLA_C_CXX_FLAGS="$(__trim $STELLA_C_CXX_FLAGS)"
+	STELLA_CPP_FLAGS="$(__trim $STELLA_CPP_FLAGS)"
+	STELLA_LINK_FLAGS="$(__trim $STELLA_LINK_FLAGS)"
 
 	# set flags -------------
 	# by default will set standard build flags
 	case $CONFIG_TOOL in
-		*)
-			__set_standard_build_flags
-		;;
 		cmake)
 			__set_cmake_build_flags
 		;;
+		*)
+			__set_standard_build_flags
+		;;
+
 	esac
 
 }
 
 # set flags and env for CMAKE
 function __set_cmake_build_flags() {
+
 
 	# install_name management
 	# For other conf tool than cmake
@@ -639,12 +733,17 @@ function __set_cmake_build_flags() {
 	# Linker flags to be used to create executables
 	CMAKE_EXE_LINKER_FLAGS="$STELLA_LINK_FLAGS"
 
-	STELLA_CMAKE_EXTRA_FLAGS="$STELLA_CMAKE_EXTRA_FLAGS"
+	# Linked libraries
+	LINKED_LIBS_CMAKE_LIBRARY_PATH="$(__trim $LINKED_LIBS_CMAKE_LIBRARY_PATH)"
+	LINKED_LIBS_CMAKE_INCLUDE_PATH="$(__trim LINKED_LIBS_CMAKE_INCLUDE_PATH)"
+	export CMAKE_LIBRARY_PATH="$LINKED_LIBS_CMAKE_LIBRARY_PATH"
+	export CMAKE_INCLUDE_PATH="$LINKED_LIBS_CMAKE_INCLUDE_PATH"
+	# -DCMAKE_MODULE_PATH="$CMAKE_MODULE_PATH" 
 
 	# save rpath related flags
 	[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && STELLA_CMAKE_EXTRA_FLAGS="$STELLA_CMAKE_EXTRA_FLAGS $STELLA_CMAKE_RPATH $STELLA_CMAKE_RPATH_BUILD_PHASE $STELLA_CMAKE_RPATH_INSTALL_PHASE"
 	[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && STELLA_CMAKE_EXTRA_FLAGS="$STELLA_CMAKE_EXTRA_FLAGS $STELLA_CMAKE_RPATH $STELLA_CMAKE_RPATH_DARWIN $STELLA_CMAKE_RPATH_BUILD_PHASE $STELLA_CMAKE_RPATH_INSTALL_PHASE"
-	
+	STELLA_CMAKE_EXTRA_FLAGS="$(__trim $STELLA_CMAKE_EXTRA_FLAGS)"
 }
 
 
@@ -664,6 +763,15 @@ function __set_standard_build_flags() {
 		done
 	fi
 	
+
+	# ADD linked libraries flags
+	LINKED_LIBS_C_CXX_FLAGS="$(__trim $LINKED_LIBS_C_CXX_FLAGS)"
+	LINKED_LIBS_CPP_FLAGS="$(__trim $LINKED_LIBS_CPP_FLAGS)"
+	LINKED_LIBS_LINK_FLAGS="$(__trim $LINKED_LIBS_LINK_FLAGS)"
+
+	STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS $LINKED_LIBS_C_CXX_FLAGS"
+	STELLA_CPP_FLAGS="$STELLA_CPP_FLAGS $LINKED_LIBS_CPP_FLAGS"
+	STELLA_LINK_FLAGS="$LINKED_LIBS_LINK_FLAGS $STELLA_LINK_FLAGS"
 
 
  	# flags to pass to the C compiler.
@@ -961,7 +1069,7 @@ function __check_built_files() {
 					# test if file is a binary Mach-O file (binary, shared lib or static lib)
 					if [ ! "$(otool -h "$f" 2>/dev/null | grep Mach)" == "" ]; then
 						if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
-							[ ! "$(__get_extension_from_string $f)" == "a" ] && __check_rpath_darwin "$f"
+							[ ! "$(__get_extension_from_string $f)" == "a" ] && __check_additional_rpath_darwin "$f"
 							[ "$(__get_extension_from_string $f)" == "dylib" ] && __check_install_name_darwin "$f"
 							[ ! "$(__get_extension_from_string $f)" == "a" ] && __check_dynamic_linking_darwin "$f"
 						fi
@@ -1015,7 +1123,7 @@ function __check_dynamic_linking_linux() {
 
 
 # test if additional rpath are present
-function __check_rpath_darwin() {
+function __check_additional_rpath_darwin() {
 	local _file=$1
 	local t
 
@@ -1066,7 +1174,7 @@ function __check_install_name_darwin() {
 # Print out dynamic libraries loaded at runtime when launching a program :
 # 		DYLD_PRINT_LIBRARIES=y program
 function __check_dynamic_linking_darwin() {
-	local _file=$1
+	local _file="$1"
 	local line=
 	local linked_lib=
 
@@ -1079,15 +1187,22 @@ function __check_dynamic_linking_darwin() {
 
 
 	local _match_rpath=
+	local loader_path="$(__get_path_from_string "$_file")"
+	local original_rpath_value=
 	while read -r line ; do
 			printf %s "====> checking linked lib : $line "
-			
+
 			if [ -z "${line##*@rpath*}" ]; then
 				_match_rpath=
 				for p in $_rpath; do
+					original_rpath_value="$p"
+					#replace @loader_path
+					if [ -z "${p##*@loader_path*}" ]; then
+						p="${p/@loader_path/$loader_path}"
+					fi
 					linked_lib="${line/@rpath/$p}"
 					if [ -f "$linked_lib" ]; then
-						printf %s "-- OK -- rpath [$p] ==> $linked_lib"
+						printf %s "-- OK -- [$original_rpath_value] ==> $linked_lib"
 						_match_rpath=1
 						break
 					fi
@@ -1133,7 +1248,7 @@ function __fix_built_files() {
 							chmod +w "$f"
 							[ "$(__get_extension_from_string $f)" == "dylib" ] && __fix_dynamiclib_install_name_darwin "$f"
 							[ ! "$(__get_extension_from_string $f)" == "a" ] && __fix_linked_lib_darwin "$f"
-							[ ! "$(__get_extension_from_string $f)" == "a" ] && __fix_add_rpath_darwin "$f"
+							[ ! "$(__get_extension_from_string $f)" == "a" ] && __fix_additional_rpath_darwin "$f"
 						fi
 					fi
 				;;
@@ -1152,9 +1267,9 @@ function __fix_built_files() {
 
 
 # rpath ------------------------------
-# fix rpath value by adding additionnal rpath values
+# fix rpath value by adding additional rpath values
 #		reorder all rpath values
-function __fix_add_rpath_darwin() {
+function __fix_additional_rpath_darwin() {
 	local _file=$1
 
 	local msg=
@@ -1208,11 +1323,15 @@ function __fix_linked_lib_darwin() {
 
 	local _flag_existing_rpath=
 
+	# get existing linked lib with an absolute path
 	while read -r line; do
-		_linked_lib_list="$_linked_lib_list $line"
-		
-		
-	done <<< "$(otool -l "$_file" | grep -E "LC_LOAD_DYLIB" -A2 | grep "$STELLA_APP_FEATURE_ROOT" | tr -s ' ' | cut -d ' ' -f 3)"
+		if [ "$(__is_abs "$line")" == "TRUE" ]; then
+			[ -f "$line" ] && _linked_lib_list="$_linked_lib_list $line"
+		fi
+	done <<< "$(otool -l "$_file" | grep -E "LC_LOAD_DYLIB" -A2 | tr -s ' ' | cut -d ' ' -f 3)"
+
+	# fix only stella linked libs with absolute path
+	#done <<< "$(otool -l "$_file" | grep -E "LC_LOAD_DYLIB" -A2 | grep "$STELLA_APP_FEATURE_ROOT" | tr -s ' ' | cut -d ' ' -f 3)"
 
 	for l in $_linked_lib_list; do
 
@@ -1231,8 +1350,9 @@ function __fix_linked_lib_darwin() {
 			[ "$line" == "$_new_load_dylib" ] && _flag_existing_rpath=1
 		done <<< "$(otool -l "$_file" | grep -E "LC_RPATH" -A2 | grep path | tr -s ' ' | cut -d ' ' -f 3)"
 		
-		[ "$_flag_existing_rpath" == "0" ] && install_name_tool -add_rpath "$_new_load_dylib" "$_file"
-
+		if [ "$_flag_existing_rpath" == "0" ]; then
+			install_name_tool -add_rpath "$_new_load_dylib" "$_file"
+		fi
 	done
 
 }
@@ -1247,7 +1367,7 @@ function __fix_dynamiclib_install_name_darwin() {
 	local _new_install_name
 	local _original_install_name
 
-	echo "** Fixing install_name for $_lib"
+	
 
 	_original_install_name=$(otool -l $_lib | grep -E "LC_ID_DYLIB" -A2 | grep name | tr -s ' ' | cut -d ' ' -f 3)
 
@@ -1261,6 +1381,7 @@ function __fix_dynamiclib_install_name_darwin() {
 		;;
 
 		*)
+			echo "** Fixing install_name for $_lib"
 			_new_install_name=@rpath/$(__get_filename_from_string $_original_install_name)
 			install_name_tool -id "$_new_install_name" $_lib
 		;;

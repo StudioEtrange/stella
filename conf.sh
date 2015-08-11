@@ -123,10 +123,6 @@ STELLA_BUILD_RELOCATE_RPATH_DEFAULT="../lib"
 [ "$STELLA_CURRENT_PLATFORM" == "linux" ] && STELLA_BUILD_RELOCATE_RPATH_DEFAULT="../lib \$ORIGIN/../lib"
 [ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && STELLA_BUILD_RELOCATE_RPATH_DEFAULT="../lib @loader_path/../lib"
 # http://industriousone.com/topic/linking-linux FOR LINUX
-# default configure tool -- can not be changed at runtime, may broke lot of feature recipe
-STELLA_BUILD_CONFTOOL_DEFAULT="configure"
-# default build tool -- can not be changed at runtime, may broke lot of feature recipe
-STELLA_BUILD_BUILDTOOL_DEFAULT="make"
 
 # first buid engine reset
 __reset_build_env
