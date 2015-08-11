@@ -61,6 +61,7 @@ set "HG=!HG! --config http_proxy.host=!STELLA_PROXY_HOST!:!STELLA_PROXY_PORT! --
 
 REM git
 REM use of http_proxy env var
+REM configuration file .gitconfig in home directory override http_proxy env
 
 REM mvn
 if "!STELLA_PROXY_USER!"=="" set "MVN=!MVN! -DproxyActive=true  -DproxyId=!STELLA_PROXY_ACTIVE! -DproxyHost=!STELLA_PROXY_HOST! -DproxyPort=!STELLA_PROXY_PORT!"

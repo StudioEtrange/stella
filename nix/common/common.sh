@@ -79,7 +79,7 @@ function __get_stella_flavour() {
 	local _stella_root_="$1"
 	[ "$_stella_root_" == "" ] && _stella_root_="$STELLA_ROOT"
 
-	local _s_flavour=
+	local _s_flavour=unknown
 
 	[ -f "$_stella_root_/VERSION" ] && _s_flavour="STABLE"
 	[ -d "$_stella_root_/.git" ] && _s_flavour="DEV"

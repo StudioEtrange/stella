@@ -14,7 +14,7 @@ if "%ARGOPT_FLAG_HELP%"=="1" goto :usage
 
 
 
-echo OPT1 = %-opt1%
+echo OPT = %-opt%
 
 
 

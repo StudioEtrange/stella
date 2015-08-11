@@ -995,7 +995,7 @@ REM return STABLE or DEV
 		set "_stella_root_=!STELLA_ROOT!"
 	)
 
-	set "%_result_var_get_stella_flavour%="
+	set "%_result_var_get_stella_flavour%=unknown"
 
 	if exist "!_stella_root_!\.git" (
 		set "%_result_var_get_stella_flavour%=DEV"
