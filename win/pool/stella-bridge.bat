@@ -55,7 +55,7 @@ REM install stella in standalone------------------
 	)
 
 	call "!_STELLA_INSTALL_PATH!\conf.bat"
-	call %STELLA_COMMON%\platform.bat :ask_install_requirements
+	call %STELLA_COMMON%\common-platform.bat :ask_install_requirements
 goto :eof
 
 
@@ -106,7 +106,7 @@ REM Bootstrap a stella project ------------------
 	)	
 	
 	if "!IS_STELLA_JUST_INSTALLED!"=="TRUE" (
-		call %STELLA_COMMON%\platform.bat :__stella_requirement
+		call %STELLA_COMMON%\common-platform.bat :__stella_requirement
 	)
 	if "!IS_STELLA_LINK_FILE!"=="FALSE" (
 		call %STELLA_COMMON%\common-app.bat :ask_init_app

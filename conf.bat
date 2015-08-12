@@ -26,7 +26,7 @@ set STELLA_DIST_URL=%STELLA_URL%/dist
 
 
 :: GATHER PLATFORM INFO  -------------
-call %STELLA_COMMON%\platform.bat :set_current_platform_info
+call %STELLA_COMMON%\common-platform.bat :set_current_platform_info
 
 :: GATHER CURRENT APP INFO  -------------
 set STELLA_APP_PROPERTIES_FILENAME=stella.properties

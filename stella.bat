@@ -49,7 +49,7 @@ if "%DOMAIN%"=="stella" (
 
 	if "%ACTION%"=="install" (
 		if "%id%"=="dep" (
-			call %STELLA_COMMON%\platform.bat :__stella_requirement
+			call %STELLA_COMMON%\common-platform.bat :__stella_requirement
 			goto :end
 		)
 	)

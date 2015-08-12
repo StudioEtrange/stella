@@ -276,7 +276,7 @@ goto :eof
 	)
 
 	REM if "!_SCHEMA!"=="required" (
-	REM	call %STELLA_COMMON%\platform.bat :__install_minimal_feature_requirement
+	REM	call %STELLA_COMMON%\common-platform.bat :__install_minimal_feature_requirement
 	REM 	goto :eof
 	REM )
 

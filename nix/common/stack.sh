@@ -3,26 +3,17 @@ _STELLA_STACK_INCLUDED_=1
 # inspired from Example 26-14. Emulating a push-down stack 
 # http://www.linuxtopia.org/online_books/advanced_bash_scripting_guide/arrays.html
 
-
-#BP=100            #  Base Pointer of stack array.
-                  #  Begin at element 100.
-
+# Stack Pointer
 _STELLA_STACK_SP=0
-#SP=$BP            #  Stack Pointer.
-                  #  Initialize it to "base" (bottom) of stack.
 
-#Data=             #  Contents of stack location.  
-                  #  Must use global variable,
-                  #+ because of limitation on function return range.
-
+# Stack
 declare -a _STELLA_STACK_
 
 
-__stack_push()            # Push item on stack.
-{
-	if [ -z "$1" ]    # Nothing to push?
-	then
-	  return
+__stack_push() {
+	# Nothing to push?
+	if [ -z "$1" ]; then
+		return
 	fi
 
 	_STELLA_STACK_SP=$(( _STELLA_STACK_SP + 1 ))
@@ -31,19 +22,15 @@ __stack_push()            # Push item on stack.
 	return
 }
 
-__stack_pop()                    # Pop item off stack.
-{
-	local Data=                    # Empty out data item.
+__stack_pop() {
+	local data=
 
-	if [ "$_STELLA_STACK_SP" -eq "0" ]   # Stack empty?
-	then
-	  echo
-	else                      #  This also keeps SP from getting past 100,
-	                         #+ i.e., prevents a runaway stack.
-
-	Data="${_STELLA_STACK_[$_STELLA_STACK_SP]}"
-	_STELLA_STACK_SP=$(( _STELLA_STACK_SP - 1 ))
-	echo $Data
+	if [ "$_STELLA_STACK_SP" -eq "0" ]; then
+	 	echo
+	else
+		data="${_STELLA_STACK_[$_STELLA_STACK_SP]}"
+		_STELLA_STACK_SP=$(( _STELLA_STACK_SP - 1 ))
+		echo $Data
 	fi
 }
 

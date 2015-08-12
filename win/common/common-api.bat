@@ -38,7 +38,7 @@ goto :eof
 
 	for %%F in (%STELLA_API_PLATFORM_PUBLIC%) do (
 		if "%%F"=="%FUNC_NAME%" (
-			call %STELLA_COMMON%\platform.bat :%FUNC_NAME% %*
+			call %STELLA_COMMON%\common-platform.bat :%FUNC_NAME% %*
 			goto :eof
 		)
 	)

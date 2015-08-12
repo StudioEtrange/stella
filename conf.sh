@@ -39,7 +39,7 @@ STELLA_DIST_URL="$STELLA_URL/dist"
 
 source $STELLA_COMMON/screenfetch-dev
 source $STELLA_COMMON/stack.sh
-source $STELLA_COMMON/platform.sh
+source $STELLA_COMMON/common-platform.sh
 source $STELLA_COMMON/common.sh
 source $STELLA_COMMON/common-feature.sh
 source $STELLA_COMMON/common-app.sh
