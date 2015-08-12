@@ -191,29 +191,3 @@ goto :eof
 goto :eof
 
 
-:require
-	set _file=%~1
-	set "__OPT=%~2"
-	
-	REM OPTIONS
-	REM MANDATORY : will stop execution if requirement is not found
-	REM OPTIONAL : will not exit if requirement is not found
-	
-	set _opt_mandatory=OFF
-	set _opt_optional=ON
-	for %%O in (%__OPT%) do (
-		if "%%O"=="MANDATORY" set _opt_mandatory=ON
-		if "%%O"=="OPTIONAL" set _opt_optional=ON
-	)
-
-	where /q "%_file%"
-
-	if not "%ERRORLEVEL%"=="0" (
-		echo ****** WARN %_file% is missing ******
-		if "!_opt_mandatory!"=="ON" (
-			echo ****** ERROR Please install %_file% and re-launch your app
-			call %STELLA_COMMON%\common.bat :fork "!STELLA_APP_NAME!" "!STELLA_CURRENT_RUNNING_DIR!" "echo ****** ERROR Please install %_file% and re-launch your app" "DETACH"
-		)
-	)
-goto:eof
-

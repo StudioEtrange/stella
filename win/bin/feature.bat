@@ -54,7 +54,6 @@ goto :usage
    	echo ----------------
 	echo List of commands
    	echo	* feature management :
-	echo 		%~n0 install required : install required features for Stella
 	echo 		%~n0 install ^<feature schema^> [-depforce] [-depignore] : install a feature. [-depforce] will force to reinstall all dependencies. [-depignore] will ignore dependencies. schema = feature_name[#version][@arch][:binary^|source][/os_restriction][\os_exclusion]
 	echo 		%~n0 remove ^<feature schema^> : remove a feature
 	echo 		%~n0 list ^<all^|feature name^|active^>: list all available feature OR available version of a feature OR current active features

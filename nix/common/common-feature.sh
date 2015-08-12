@@ -131,8 +131,6 @@ function __feature_match_installed() {
 
 }
 
-#[ "$(stack_exists stack_feature)" == "0" ] && stack_new stack_feature
-
 # save context before calling __feature_inspect, in case we use it inside a schema context
 function __push_schema_context_old() {
 	__push_schema_context_TEST_FEATURE=$TEST_FEATURE
@@ -147,13 +145,11 @@ function __pop_schema_context_old() {
 # save context before calling __feature_inspect, in case we use it inside a schema context
 function __push_schema_context() {
 	__stack_push "$TEST_FEATURE"
-	#echo PUSHPUSHPUSHPUSHPUSHPUSHPUSH $FEAT_SCHEMA_SELECTED
 	__stack_push "$FEAT_SCHEMA_SELECTED"
 }
 # load context before calling __feature_inspect, in case we use it inside a schema context
 function __pop_schema_context() {
 	FEAT_SCHEMA_SELECTED=$(__stack_pop)
-	#echo POPPOPPOPPOPPOPPOPPOPPOP $FEAT_SCHEMA_SELECTED
 	__internal_feature_context $FEAT_SCHEMA_SELECTED
 	TEST_FEATURE=$(__stack_pop)
 }
@@ -310,9 +306,9 @@ function __feature_install() {
 		[ "$o" == "DEP_IGNORE" ] && _opt_ignore_dep=ON
 	done
 
-	if [ "$_SCHEMA" == "required" ]; then
-		__install_minimal_feature_requirement
-	else
+	#if [ "$_SCHEMA" == "required" ]; then
+	#	__install_minimal_feature_requirement
+	#else
 
 		local _flag=0
 		local a
@@ -477,7 +473,7 @@ function __feature_install() {
 		else
 			echo " ** Error unknow feature $_SCHEMA"
 		fi
-	fi
+	#fi
 }
 
 

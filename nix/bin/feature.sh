@@ -8,7 +8,6 @@ function usage() {
 	echo "----------------"
 	echo "List of commands"
 	echo " o-- Feature management :"
-	echo " L     install required : install minimal required features for Stella"
 	echo " L     install <feature schema> [--depforce] [--depignore] : install a feature. [--depforce] will force to reinstall all dependencies.[--depignore] will ignore dependencies. schema = feature_name[#version][@arch][:binary|source][/os_restriction][\os_exclusion]"
 	echo " L     remove <feature schema> : remove a feature"
 	echo " L     list <all|feature name|active> : list all available features OR available versions of a feature OR current active features"
@@ -43,12 +42,7 @@ case $ACTION in
 		;;
     install)
 		case $ID in
-			required)
-				__stella_features_requirement_by_os $STELLA_CURRENT_OS
-				;;
-
 			*)
-				
 				[ "$DEPFORCE" == "1" ] && _OPT="$_OPT DEP_FORCE"
 				[ "$DEPIGNORE" == "1" ] && _OPT="$_OPT DEP_IGNORE"
 				__feature_install $ID "$_OPT"
@@ -58,7 +52,8 @@ case $ACTION in
 	list)
 		case $ID in
 			all)
-				echo "all required -- $__STELLA_FEATURE_LIST"
+				#echo "all required -- $__STELLA_FEATURE_LIST"
+				echo "all -- $__STELLA_FEATURE_LIST"
 				;;
 			active)
 				echo $(__list_active_features)

@@ -679,10 +679,11 @@ function __download() {
 
 
 	if [ ! -f "$STELLA_APP_CACHE_DIR/$FILE_NAME" ]; then
-		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-			curl -kSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL"
-		else
+
+		if [[ -n `which wget 2> /dev/null` ]]; then
 			wget "$URL" -O "$STELLA_APP_CACHE_DIR/$FILE_NAME" --no-check-certificate || rm -f "$STELLA_APP_CACHE_DIR/$FILE_NAME"
+		else
+			curl -fkSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL"
 		fi
 	else
 		echo " ** Already downloaded"

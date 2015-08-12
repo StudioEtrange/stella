@@ -96,6 +96,8 @@ for recipe in "$STELLA_FEATURE_RECIPE"/*.sh; do
 	__STELLA_FEATURE_LIST="$__STELLA_FEATURE_LIST $recipe"
 done
 
+# list of available installable system package
+__STELLA_SYS_PACKAGE_LIST="brew build-chain-standard 7z"
 
 
 # BUILD SYSTEM---------------------------------------------

@@ -17,7 +17,6 @@ function usage() {
 	echo " L     app setup-env <env id|all> : download, build, deploy and run virtual environment based on app properties"
 	echo " L     app link <app-path> [--stellaroot=<path>] : link an app to a specific stella path"
 	echo " o-- feature management :"
-	echo " L     feature install required : install required features for Stella"
 	echo " L     feature install <feature schema> [--depforce] [--depignore] : install a feature. [--depforce] will force to reinstall all dependencies. [--depignore] will ignore dependencies. schema = feature_name[#version][@arch][:binary|source][/os_restriction][\os_exclusion]"
 	echo " L     feature remove <feature schema> : remove a feature"
 	echo " L     feature list <all|feature name|active> : list all available feature OR available versions of a feature OR current active features"
@@ -31,6 +30,11 @@ function usage() {
 	echo " L     proxy on <name> : active proxy"
 	echo " L     proxy off now : disable proxy"
 	echo " L     proxy register <name> --proxyhost=<host> --proxyport=<port> [--proxyuser=<string> --proxypass=<string>] : register this proxy"
+	echo " o-- system package management : WARN This will affect your system"
+	echo " L     sys install <package name> : install  a system package"
+	echo " L     sys remove <package name> : remove a system package"
+	echo " L     sys list <all> : list all available system package name"
+	
 
 }
 
@@ -39,7 +43,7 @@ function usage() {
 
 # arguments
 PARAMETERS="
-DOMAIN=                          'domain'     		a           'app feature stella proxy'         										   				Action domain.
+DOMAIN=                          'domain'     		a           'app feature stella proxy sys'         										   				Action domain.
 ACTION=                         'action'   					a           'version search remove on off register link api bootstrap install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature install list'         	Action to compute.
 ID=							 ''								s 			'' 						Feature ID or Data or Assets or Env or Distrib ID.
 "
@@ -94,6 +98,21 @@ if [ "$DOMAIN" == "feature" ]; then
 	fi
 	$STELLA_BIN/feature.sh $ACTION $ID $_feature_options
 
+fi
+
+
+# --------------- SYS ----------------------------
+if [ "$DOMAIN" == "sys" ]; then
+	__init_stella_env
+	if [ "$ACTION" == "install" ]; then
+		__install_"$ID"
+	fi
+	if [ "$ACTION" == "remove" ]; then
+		__remove_"$ID"
+	fi
+	if [ "$ACTION" == "list" ]; then
+		echo "$__STELLA_SYS_PACKAGE_LIST"
+	fi
 fi
 
 

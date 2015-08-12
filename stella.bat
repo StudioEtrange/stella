@@ -130,7 +130,6 @@ if "%DOMAIN%"=="proxy" goto :end
 	echo 		app setup-env ^<env id^|all^> : download, build, deploy and run virtual environment based on app properties
 	echo		app link ^<app-path^> [-stellaroot=^<path^>] : link an app to a specific stella path
 	echo	* feature management :
-	echo 		feature install required : install required features for Stella
 	echo 		feature install ^<feature schema^> [-depforce] [-depignore] : install a feature. [-depforce] will force to reinstall all dependencies. [-depignore] will ignore dependencies. schema = feature_name[#version][@arch][:binary^|source][/os_restriction][\os_exclusion]
 	echo 		feature remove ^<feature schema^> : remove a feature
 	echo 		feature list ^<all^|feature name^|active^>: list all available features OR available version of a feature OR current active features

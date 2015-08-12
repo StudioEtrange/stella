@@ -187,7 +187,6 @@ function __override_platform_command() {
 
 
 # REQUIREMENTS STELLA -------------
-
 function __ask_install_requirements() {
 	echo "Do you wish to auto-install requirements for stella (may ask for sudo password)?"
 	select yn in "Yes" "No"; do
@@ -219,74 +218,74 @@ function __install_minimal_feature_requirement() {
 }
 
 
-function __require() {
-	local _file=$1
-	local _OPT=$2
 
-	# OPTIONS
-	# MANDATORY : will stop execution if requirement is not found
-	# OPTIONAL : will not exit if requirement is not found
-	# SPECIFIC : will check for a specific requirement (not just test a file)
-	_opt_mandatory=OFF
-	_opt_optional=ON
-	_opt_specific=OFF
-	for o in $_OPT; do
-		[ "$o" == "MANDATORY" ] && _opt_mandatory=ON
-		[ "$o" == "OPTIONAL" ] && _opt_optional=ON
-		[ "$o" == "SPECIFIC" ] && _opt_specific=ON
+# PACKAGE SYSTEM ----------------------------
+
+function __install_system() {
+	local _package="$1"
+	local _package_manager="$(__get_current_package_manager)"
+
+	__install_"$_package"
+}
+
+function __get_current_package_manager() {
+	local _package_manager=
+
+	local p=
+	local plist=
+
+	case $STELLA_CURRENT_PLATFORM in
+		linux)
+				plist="agt-get yum"
+			;;
+		darwin)
+				plist="brew"
+			;;
+	esac
+
+	for p in $plist; do
+		if [[ -n `which $p 2> /dev/null` ]]; then
+			_package_manager="$p"
+			break
+		fi	
 	done
 
-	if [ "$_opt_specific" == "ON" ]; then
-		__require_specific $_file $_OPT
+	echo "$_package_manager"
+}
+
+# --------- SYSTEM RECIPES--------
+function __install_brew() {
+	echo " ** Install Homebrew on your system"
+
+	__download "https://raw.githubusercontent.com/Homebrew/install/master/install" "brew-install.rb" "$STELLA_APP_TEMP_DIR"
+	
+	ruby "$STELLA_APP_TEMP_DIR/brew-install.rb"
+	rm -f "$STELLA_APP_CACHE_DIR/brew-install.rb"
+	
+
+	echo " ** Check Homebrew"
+	if [[ -n `which brew 2> /dev/null` ]]; then
+		echo " ** brew doctor"
+		brew doctor
+		local _brewLocation=`which brew`
+		local _appLocation=`brew --prefix`
+		echo " ** -------------- **"
+		echo "Homebrew is installed in $_brewLocation"
+		echo "Homebrew apps are run from $_appLocation"
 	else
-		if [[ ! -n `which $_file 2> /dev/null` ]]; then
-			echo "****** WARN $_file is missing ******"
-			if [ "$_opt_mandatory" == "ON" ]; then
-				echo "****** ERROR Please install $_file and re-launch your app"
-				exit 1
-			fi
-		fi
+		echo " ** Error while installing Homebrew"	
 	fi
 }
+function __remove_brew() {
+	echo " ** Remove Homebrew from your system"
 
-# TODO not finished
-function __require_specific() {
-	local _requirement=$1
-	local _OPT=$2
+	rm -rf /usr/local/Cellar /usr/local/.git 2>/dev/null
+	brew cleanup 2>/dev/null
 
-	# OPTIONS
-	# MANDATORY : will stop execution if requirement is not found
-	# OPTIONAL : will not exit if requirement is not found
-	_opt_mandatory=OFF
-	_opt_optional=ON
-	for o in $_OPT; do
-		[ "$o" == "MANDATORY" ] && _opt_mandatory=ON
-		[ "$o" == "OPTIONAL" ] && _opt_optional=ON
-	done
-
-	case $_requirement in 
-		build-system)
-			
-			case $STELLA_CURRENT_OS in
-				macos)
-					# from https://github.com/lockfale/msf-installer/blob/master/msf_install.sh
-					# http://docs.python-guide.org/en/latest/starting/install/osx/
-					PKGS=`pkgutil --pkgs`
-					if [[ $PKGS =~ com.apple.pkg.Xcode ]]; then
-						echo " ** Xcode detected"
-					else
-						echo " ** WARN Xcode not detected"
-						[ "$_opt_mandatory" == "ON" ] && exit 1
-					fi
-					if [[ $PKGS =~ com.apple.pkg.DeveloperToolsCLI || $PKGS =~ com.apple.pkg.CLTools_Executables ]]; then
-						echo " ** Command Line Development Tools is intalled"
-					else
-						echo " ** WARN Command Line Development Tools not intalled"
-					fi
-					;;
-			esac
-		;;
-	esac
+	__download "https://raw.githubusercontent.com/Homebrew/install/master/uninstall" "brew-uninstall.rb" "$STELLA_APP_TEMP_DIR"
+		
+	ruby "$STELLA_APP_TEMP_DIR/brew-uninstall.rb"
+	rm -f "$STELLA_APP_CACHE_DIR/brew-uninstall.rb"
 }
 
 
@@ -294,106 +293,86 @@ function __require_specific() {
 
 
 
+function __install_build-chain-standard() {
+	echo " ** Install build-chain-standard on your system"
+	local _package_manager=
 
-function __install_system_requirement() {
-	local _id_list=$1
+	if [ "$STELLA_CURRENT_OS" == "macos" ]; then
+		# from https://github.com/lockfale/msf-installer/blob/master/msf_install.sh
+		# http://docs.python-guide.org/en/latest/starting/install/osx/
+		local PKGS=`pkgutil --pkgs`
+		if [[ $PKGS =~ com.apple.pkg.Xcode ]]; then
+			echo " ** Xcode detected"
+		else
+			echo " ** WARN Xcode not detected. Install it from the Apple AppStore."
+		fi
+		if [[ $PKGS =~ com.apple.pkg.DeveloperToolsCLI || $PKGS =~ com.apple.pkg.CLTools_Executables ]]; then
+			echo " ** Command Line Development Tools is already intalled"
+		else
+			echo " ** WARN Command Line Development Tools not intalled"
+		fi
 
-	case $STELLA_CURRENT_OS in
-		ubuntu|debian)
-				__install_system_requirement_deb "$_id_list"
-			;;
-		macos)
-				__install_system_requirement_macos "$_id_list"
-			;;
-	esac
-}
-
-function __install_system_requirement_deb() {
-	local _id_list=$1
-
-	for _id in $_id_list; do
-		case $_id in
-			git) sudo apt-get -y install git
-				;;
-			7z) sudo apt-get -y install p7zip-full
-				;;
-			unzip)
-				sudo apt-get -y install unzip
-				;;
-			wget) sudo apt-get -y install wget
-				;;
-			build-system)
+	else
+		_package_manager="$(__get_current_package_manager)"
+		case $_package_manager in
+			apt-get)
 				#sudo apt-get -y install bison util-linux build-essential gcc-multilib g++-multilib g++ pkg-config
 				sudo apt-get -y install build-essential gcc-multilib g++-multilib
 				;;
-		esac
-	done
-}
-
-function __install_system_requirement_macos() {
-	local _id_list=$1
-
-	for _id in $_id_list; do
-		case $_id in
-			7z) brew install p7zip
+			*)	echo " ** WARN : dont know how to install it"
 				;;
-			brew)
-				echo " ** Check Homebrew"
-				if which brew 2> /dev/null; then
-			    	local _brewLocation=`which brew`
-			    	local _appLocation=`brew --prefix`
-			    	echo "Homebrew is installed in $_brewLocation"
-			    	echo "Homebrew apps are run from $_appLocation"
-				else
-			   		echo "** Can't find Homebrew, so install it"
-			   		ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-				fi
-			;;
 		esac
-	done
+	fi
+}
+function __remove_build-chain-standard() {
+	if [ "$STELLA_CURRENT_OS" == "macos" ]; then
+		echo " ** Remove Xcode and Command Line Development Tools by hand"
+	else
+		_package_manager="$(__get_current_package_manager)"
+		case $_package_manager in
+			apt-get)
+				sudo apt-get -y purge build-essential gcc-multilib g++-multilib
+				;;
+			*)	echo " ** WARN : dont know how to remove it"
+				;;
+		esac
+	fi
+
 }
 
 
 
 
 
+function __install_7z() {
+	echo " ** Install 7z on your system"
 
+	local _package_manager="$(__get_current_package_manager)"
+	case $_package_manager in
+		apt-get)
+			sudo apt-get -y install p7zip-full
+			;;
+		brew)
+			brew install p7zip
+			;;
+		*)	echo " ** WARN : dont know how to install it"
+			;;
+	esac
+}
+function __remove_7z() {
+	echo " ** Remove 7z from your system"
 
-
-
-
-
-
-
-#TODO
-# from https://github.com/darkoperator/MSF-Installer/blob/master/msf_install.sh
-# http://docs.python-guide.org/en/latest/starting/install/osx/
-function check_dependencies_macos
-{
-    # Get a list of all the packages installed on the system
-    PKGS=`pkgutil --pkgs`
-    print_status "Verifying that Development Tools and Java are installed:"
-    if [[ $PKGS =~ 'com.apple.pkg.JavaForMacOSX' || $PKGS =~ com.oracle.jdk* ]] ; then
-        print_good "Java is installed."
-    else
-        print_error "Java is not installed on this system."
-        print_error "Run the command java in Terminal and install Java"
-        exit 1
-    fi
-
-    if [[ $PKGS =~ com.apple.pkg.Xcode ]] ; then
-        print_good "Xcode is installed."
-    else
-        print_error "Xcode is not installed on this system. Install from the Apple AppStore."
-        exit 1
-    fi
-
-    if [[ $PKGS =~ com.apple.pkg.DeveloperToolsCLI || $PKGS =~ com.apple.pkg.CLTools_Executables ]] ; then
-        print_good "Command Line Development Tools is intalled."
-    else
-        print_error "Command Line Development Tools is not installed on this system."
-        exit 1
-    fi
+	local _package_manager="$(__get_current_package_manager)"
+	case $_package_manager in
+		apt-get)
+			sudo apt-get -y purge p7zip-full
+			;;
+		brew)
+			brew uninstall p7zip
+			;;
+		*)	echo " ** WARN : dont know how to remove it"
+			;;
+	esac
 }
 
 

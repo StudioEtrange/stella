@@ -92,13 +92,13 @@ function __proxy_override() {
 	}
 
 	function brew() {
-				# export HTTPS_PROXY="$HTTP_PROXY"
-				# export HTTP_PROXY="$HTTP_PROXY"
-				# export http_proxy="$HTTP_PROXY"
-				# export ALL_PROXY="$HTTP_PROXY"
-			# export https_proxy="$STELLA_HTTPS_PROXY"
-			# export http_proxy="$STELLA_HTTPS_PROXY" 
-			https_proxy="$STELLA_HTTPS_PROXY"  http_proxy="$STELLA_HTTP_PROXY" command brew "$@"
+			# export HTTPS_PROXY="$HTTP_PROXY"
+			# export HTTP_PROXY="$HTTP_PROXY"
+			# export http_proxy="$HTTP_PROXY"
+			# export ALL_PROXY="$HTTP_PROXY"
+		# export https_proxy="$STELLA_HTTPS_PROXY"
+		# export http_proxy="$STELLA_HTTPS_PROXY" 
+		https_proxy="$STELLA_HTTPS_PROXY"  http_proxy="$STELLA_HTTP_PROXY" command brew "$@"
 	}
 
 }
