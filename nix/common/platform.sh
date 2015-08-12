@@ -269,7 +269,7 @@ function __require_specific() {
 			
 			case $STELLA_CURRENT_OS in
 				macos)
-					# from https://github.com/darkoperator/MSF-Installer/blob/master/msf_install.sh
+					# from https://github.com/lockfale/msf-installer/blob/master/msf_install.sh
 					# http://docs.python-guide.org/en/latest/starting/install/osx/
 					PKGS=`pkgutil --pkgs`
 					if [[ $PKGS =~ com.apple.pkg.Xcode ]]; then

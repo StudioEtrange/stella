@@ -18,6 +18,7 @@ function feature_python_2_7_9() {
 	FEAT_VERSION=2_7_9
 	
 	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 FORCE_ORIGIN_STELLA openssl#1_0_2d"
+
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://www.python.org/ftp/python/2.7.9/Python-2.7.9.tgz
@@ -40,7 +41,7 @@ function feature_python_2_7_9() {
 
 
 function feature_python_link() {
-	__link_feature_library "zlib#1_2_8" "z"
+	__link_feature_library "zlib#1_2_8" "z" "FORCE_STATIC"
 	__link_feature_library "FORCE_ORIGIN_STELLA openssl#1_0_2d"
 }
 
@@ -49,21 +50,21 @@ function feature_python_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
-	# AUTO_INSTALL_FLAG_POSTFIX="--disable-dependency-tracking \
- #                          --enable-utf8 \
- #							--enable-ipv6"
-	#--with-ensurepip=install # build pip from pip source included into python source BUT need openssl
+	
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 
 	__feature_callback
 
+	# auto relocate failed, because adding rpath do not have enough rpath in headers
+	# error message :
+	# "because larger updated load commands do not fit (the program must be relinked, and you may need to use -headerpad or -headerpad_max_install_names)"
+	__set_build_mode "RELOCATE" "OFF"
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
-	AUTO_INSTALL_CONF_FLAG_POSTFIX="--disable-dependency-tracking \
-									--enable-utf8 \
-									--enable-shared"
+	AUTO_INSTALL_CONF_FLAG_POSTFIX="--enable-shared"
+	#--with-ensurepip=install # build pip from pip source included into python source BUT need openssl
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
@@ -71,7 +72,8 @@ function feature_python_install_source() {
 	# TODO
 	[ "$STELLA_CURRENT_OS" == "macos" ] && __set_build_mode MACOSX_DEPLOYMENT_TARGET $(__get_macos_version)
 
-	__auto_build "$FEAT_NAME" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD CONFIG_TOOL configure BUILD_TOOL make"
+
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD CONFIG_TOOL configure BUILD_TOOL make"
 
 	# install last pip/setuptools
 	__get_resource "get-pip" "https://bootstrap.pypa.io/get-pip.py" "HTTP" "$FEAT_INSTALL_ROOT/pip"

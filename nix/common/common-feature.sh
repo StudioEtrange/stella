@@ -131,18 +131,34 @@ function __feature_match_installed() {
 
 }
 
+#[ "$(stack_exists stack_feature)" == "0" ] && stack_new stack_feature
 
 # save context before calling __feature_inspect, in case we use it inside a schema context
-function __push_schema_context() {
+function __push_schema_context_old() {
 	__push_schema_context_TEST_FEATURE=$TEST_FEATURE
 	__push_schema_context_FEAT_SCHEMA_SELECTED=$FEAT_SCHEMA_SELECTED
 }
 # load context before calling __feature_inspect, in case we use it inside a schema context
-function __pop_schema_context() {
+function __pop_schema_context_old() {
 	FEAT_SCHEMA_SELECTED=$__push_schema_context_FEAT_SCHEMA_SELECTED
 	__internal_feature_context $FEAT_SCHEMA_SELECTED
 	TEST_FEATURE=$__push_schema_context_TEST_FEATURE
 }
+# save context before calling __feature_inspect, in case we use it inside a schema context
+function __push_schema_context() {
+	__stack_push "$TEST_FEATURE"
+	#echo PUSHPUSHPUSHPUSHPUSHPUSHPUSH $FEAT_SCHEMA_SELECTED
+	__stack_push "$FEAT_SCHEMA_SELECTED"
+}
+# load context before calling __feature_inspect, in case we use it inside a schema context
+function __pop_schema_context() {
+	FEAT_SCHEMA_SELECTED=$(__stack_pop)
+	#echo POPPOPPOPPOPPOPPOPPOPPOP $FEAT_SCHEMA_SELECTED
+	__internal_feature_context $FEAT_SCHEMA_SELECTED
+	TEST_FEATURE=$(__stack_pop)
+}
+
+#    echo "Got $top"
 
 # test if a feature is installed
 # AND retrieve informations based on actually installed feature (looking inside STELLA_APP_FEATURE_ROOT) OR from feature recipe if not installed
@@ -350,17 +366,18 @@ function __feature_install() {
 				# dependencies
 				if [ "$_opt_ignore_dep" == "OFF" ]; then
 					local dep
-					local _f_dep=0
+
 					local _origin=
 					local _force_origin=
 					local _dependencies=
 					[ "$FEAT_SCHEMA_FLAVOUR" == "source" ] && _dependencies="$FEAT_SOURCE_DEPENDENCIES"
 					[ "$FEAT_SCHEMA_FLAVOUR" == "binary" ] && _dependencies="$FEAT_BINARY_DEPENDENCIES"
-					[ ! "$_dependencies" == "" ] && __push_schema_context
+					
 					save_FORCE=$FORCE
 					FORCE=$_opt_force_reinstall_dep
 
 					for dep in $_dependencies; do
+						
 						if [ "$dep" == "FORCE_ORIGIN_STELLA" ]; then
 							_force_origin="STELLA"
 							continue
@@ -377,17 +394,17 @@ function __feature_install() {
 						fi
 
 						if [ "$_origin" == "STELLA" ]; then
-							echo "Installing dependency $dep"
+							__push_schema_context
 							__feature_install $dep "$_OPT HIDDEN"
 							if [ "$TEST_FEATURE" == "0" ]; then
 								echo "** Error while installing dependency feature $FEAT_SCHEMA_SELECTED"
 							fi
-							_f_dep=1
+							__pop_schema_context
 						fi
 						[ "$_origin" == "SYSTEM" ] && echo "Using dependency $dep from SYSTEM."
+						
 					done
 					
-					[ "$_f_dep" == "1" ] && __pop_schema_context
 					FORCE=$save_FORCE
 				fi
 

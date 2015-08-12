@@ -328,6 +328,7 @@ goto :eof
 
 			REM dependencies
 			if "!IGNORE_DEP!"=="OFF" (
+				REM TODO see unix implementation : stack call is inside dependencies loop
 				set "save_FORCE=%FORCE%"
 				set "FORCE=!_opt_force_reinstall_dep!"
 				set "save_FEAT_SCHEMA_SELECTED_3=!FEAT_SCHEMA_SELECTED!"
@@ -336,10 +337,12 @@ goto :eof
 				if "!FEAT_SCHEMA_FLAVOUR!"=="source" (
 					for %%p in (!FEAT_SOURCE_DEPENDENCIES!) do (
 						echo Installing dependency %%p
+						REM TODO put stack call HERE
 						call :feature_install %%p "!_OPT! HIDDEN"
 						if "!TEST_FEATURE!"=="0" (
 							echo ** Error while installing dependency feature !FEAT_SCHEMA_SELECTED!
 						)
+						REM TODO put stack call HERE
 						set _f_dep=1
 					)
 				)
@@ -347,10 +350,12 @@ goto :eof
 				if "!FEAT_SCHEMA_FLAVOUR!"=="binary" (
 					for %%p in (!FEAT_BINARY_DEPENDENCIES!) do (
 						echo Installing dependency %%p
+						REM TODO put stack call HERE
 						call :feature_install %%p "!_OPT! HIDDEN"
 						if "!TEST_FEATURE!"=="0" (
 							echo ** Error while installing dependency feature !FEAT_SCHEMA_SELECTED!
 						)
+						REM TODO put stack call HERE
 						set _f_dep=1
 					)
 				)

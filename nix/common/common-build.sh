@@ -548,7 +548,7 @@ function __link_feature_library() {
 	if [ "$_opt_set_flags" == "ON" ]; then
 		LINKED_LIBS_C_CXX_FLAGS="$LINKED_LIBS_C_CXX_FLAGS $_C_CXX_FLAGS"
 		LINKED_LIBS_CPP_FLAGS="$LINKED_LIBS_CPP_FLAGS $_CPP_FLAGS"
-		LINKED_LIBS_LINK_FLAGS="$LINKED_LIBS_CPP_FLAGS $_CPP_FLAGS"
+		LINKED_LIBS_LINK_FLAGS="$LINKED_LIBS_LINK_FLAGS $_LINK_FLAGS"
 		#STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS $_C_CXX_FLAGS"
 		#STELLA_CPP_FLAGS="$STELLA_CPP_FLAGS $_CPP_FLAGS"
 		#STELLA_LINK_FLAGS="$_LINK_FLAGS $STELLA_LINK_FLAGS"
@@ -1071,11 +1071,14 @@ function __check_built_files() {
 				darwin)
 					# test if file is a binary Mach-O file (binary, shared lib or static lib)
 					if [ ! "$(otool -h "$f" 2>/dev/null | grep Mach)" == "" ]; then
+						echo
+						echo "** Analysing $f"
 						if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
 							[ ! "$(__get_extension_from_string $f)" == "a" ] && __check_additional_rpath_darwin "$f"
 							[ "$(__get_extension_from_string $f)" == "dylib" ] && __check_install_name_darwin "$f"
-							[ ! "$(__get_extension_from_string $f)" == "a" ] && __check_dynamic_linking_darwin "$f"
+							#[ "$(__get_extension_from_string $f)" == "so" ] && __check_install_name_darwin "$f"
 						fi
+						[ ! "$(__get_extension_from_string $f)" == "a" ] && __check_dynamic_linking_darwin "$f"
 					fi
 				;;
 			esac
@@ -1130,8 +1133,8 @@ function __check_additional_rpath_darwin() {
 	local _file=$1
 	local t
 
-	echo
-	echo "** Analysing $_file"
+	
+	
 
 	# check additional rpath values of exexcutable binary and shared lib
 	#  otool -l 
@@ -1189,14 +1192,15 @@ function __check_dynamic_linking_darwin() {
 	done <<< "$(otool -l "$_file" | grep -E "LC_RPATH" -A2 | grep path | tr -s ' ' | cut -d ' ' -f 3)"
 
 
-	local _match_rpath=
+	local _match=
 	local loader_path="$(__get_path_from_string "$_file")"
 	local original_rpath_value=
 	while read -r line ; do
 			printf %s "====> checking linked lib : $line "
-
+			_match=
+			
 			if [ -z "${line##*@rpath*}" ]; then
-				_match_rpath=
+
 				for p in $_rpath; do
 					original_rpath_value="$p"
 					#replace @loader_path
@@ -1206,17 +1210,17 @@ function __check_dynamic_linking_darwin() {
 					linked_lib="${line/@rpath/$p}"
 					if [ -f "$linked_lib" ]; then
 						printf %s "-- OK -- [$original_rpath_value] ==> $linked_lib"
-						_match_rpath=1
+						_match=1
 						break
 					fi
 				done
 			else
-				if [ -f "$linked_lib" ]; then
+				if [ -f "$line" ]; then
 					printf %s "-- OK"
-					_match_rpath=1
+					_match=1
 				fi 
 			fi
-			[ "$_match_rpath" == "" ] && printf %s "-- WARN not found"
+			[ "$_match" == "" ] && printf %s "-- WARN not found"
 			echo
 	done < <(otool -l $_file | grep -E "LC_LOAD_DYLIB" -A2 | grep name | tr -s ' ' | cut -d ' ' -f 3)
 
@@ -1235,29 +1239,31 @@ function __fix_built_files() {
 	local opt="$2"
 
 	
+	if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
+		for f in  "$folder"/*; do
+			[ -d "$f" ] && __fix_built_files "$f" "$opt"
+			if [ -f "$f" ]; then
+				case $STELLA_CURRENT_PLATFORM in 
+					linux)
+						echo "TODO"
+					;;
+					darwin)
+						# test if file is a binary Mach-O file (binary, shared lib or static lib)
+						if [ ! "$(otool -h "$f" 2>/dev/null | grep Mach)" == "" ]; then
+							
+								# fix write permission
+								chmod +w "$f"
+								[ "$(__get_extension_from_string $f)" == "dylib" ] && __fix_dynamiclib_install_name_darwin "$f"
+								#[ "$(__get_extension_from_string $f)" == "so" ] && __fix_dynamiclib_install_name_darwin "$f"
+								[ ! "$(__get_extension_from_string $f)" == "a" ] && __fix_linked_lib_darwin "$f"
+								[ ! "$(__get_extension_from_string $f)" == "a" ] && __fix_additional_rpath_darwin "$f"
 
-	for f in  "$folder"/*; do
-		[ -d "$f" ] && __fix_built_files "$f" "$opt"
-		if [ -f "$f" ]; then
-			case $STELLA_CURRENT_PLATFORM in 
-				linux)
-					echo "TODO"
-				;;
-				darwin)
-					# test if file is a binary Mach-O file (binary, shared lib or static lib)
-					if [ ! "$(otool -h "$f" 2>/dev/null | grep Mach)" == "" ]; then
-						if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
-							# fix write permission
-							chmod +w "$f"
-							[ "$(__get_extension_from_string $f)" == "dylib" ] && __fix_dynamiclib_install_name_darwin "$f"
-							[ ! "$(__get_extension_from_string $f)" == "a" ] && __fix_linked_lib_darwin "$f"
-							[ ! "$(__get_extension_from_string $f)" == "a" ] && __fix_additional_rpath_darwin "$f"
 						fi
-					fi
-				;;
-			esac
-		fi
-	done
+					;;
+				esac
+			fi
+		done
+	fi
 
 
 
