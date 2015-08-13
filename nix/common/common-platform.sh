@@ -304,12 +304,20 @@ function __install_build-chain-standard() {
 		if [[ $PKGS =~ com.apple.pkg.Xcode ]]; then
 			echo " ** Xcode detected"
 		else
-			echo " ** WARN Xcode not detected. Install it from the Apple AppStore."
+			echo " ** WARN Xcode not detected."
+			echo " It is NOT mandatory but you may want to install it from the Apple AppStore"
+			echo " or download it from https://developer.apple.com/downloads."
+			# difference between appstore and download site
+			# http://apple.stackexchange.com/questions/62201/download-xcode-from-developer-site-vs-install-from-app-store
+
+			# TODO make a separate script to install xcode
+			# http://stackoverflow.com/questions/4081568/downloading-xcode-with-wget-or-curl
 		fi
 		if [[ $PKGS =~ com.apple.pkg.DeveloperToolsCLI || $PKGS =~ com.apple.pkg.CLTools_Executables ]]; then
 			echo " ** Command Line Development Tools is already intalled"
 		else
-			echo " ** WARN Command Line Development Tools not intalled"
+			echo " ** WARN Command Line Development Tools not intalled. See https://developer.apple.com/downloads"
+			xcode-select --install
 		fi
 
 	else
@@ -331,7 +339,7 @@ function __remove_build-chain-standard() {
 		_package_manager="$(__get_current_package_manager)"
 		case $_package_manager in
 			apt-get)
-				sudo apt-get -y purge build-essential gcc-multilib g++-multilib
+				sudo apt-get -y autoremove --purge build-essential gcc-multilib g++-multilib
 				;;
 			*)	echo " ** WARN : dont know how to remove it"
 				;;
@@ -365,7 +373,7 @@ function __remove_7z() {
 	local _package_manager="$(__get_current_package_manager)"
 	case $_package_manager in
 		apt-get)
-			sudo apt-get -y purge p7zip-full
+			sudo apt-get -y autoremove --purge p7zip-full
 			;;
 		brew)
 			brew uninstall p7zip

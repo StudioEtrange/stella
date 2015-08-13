@@ -30,10 +30,14 @@ function usage() {
 	echo " L     proxy on <name> : active proxy"
 	echo " L     proxy off now : disable proxy"
 	echo " L     proxy register <name> --proxyhost=<host> --proxyport=<port> [--proxyuser=<string> --proxypass=<string>] : register this proxy"
+	echo " o-- env management :"
+	echo " L     shell local set"
+	echo " L     shell local new"
+	echo " L     shell docker <docker-id> : need docker installed on your system"
 	echo " o-- system package management : WARN This will affect your system"
 	echo " L     sys install <package name> : install  a system package"
 	echo " L     sys remove <package name> : remove a system package"
-	echo " L     sys list <all> : list all available system package name"
+	echo " L     sys list all : list all available system package name"
 	
 
 }
