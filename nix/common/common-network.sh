@@ -52,12 +52,9 @@ function __init_proxy() {
 # ---------------- SHIM FUNCTIONS -----------------------------
 function __proxy_override() {
 	
-	
 
-	function wget() {
-		echo $(command wget --execute "$@")
-	}
-
+	#wget
+	#use env var
 
 	# http_proxy = http://votre_proxy:port_proxy/
 	# proxy_user = votre_user_proxy

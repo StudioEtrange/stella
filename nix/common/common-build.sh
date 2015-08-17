@@ -444,7 +444,7 @@ function __link_feature_library() {
 		[ "$_folders" == "ON" ] && _var_folders=$o && _folders=OFF
 		[ "$o" == "GET_FOLDER" ] && _folders=ON
 		[ "$o" == "NO_SET_FLAGS" ] && _opt_set_flags=OFF
-	done	
+	done
 
 
 	# check origin for this schema
@@ -883,7 +883,7 @@ function __set_build_env() {
 
 	# set OPTIMIZATION -----------------------------------------------------------------
 	if [ "$1" == "OPTIMIZATION" ]; then
-		[ ! "$2" == "" ] && STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS -O$STELLA_BUILD_OPTIMIZATION"
+		[ ! "$2" == "" ] && STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS -O$2"
 	fi
 
 	# ARCH -----------------------------------------------------------------
@@ -1185,7 +1185,8 @@ function __check_dynamic_linking_darwin() {
 	local linked_lib=
 
 	echo "*** Checking missing dynamic library at runtime"
-	
+	#pushd "$(__get_path_from_string "$_file")"
+ 
 	local _rpath=
 	while read -r line; do
 		_rpath="$_rpath $line"
@@ -1224,6 +1225,7 @@ function __check_dynamic_linking_darwin() {
 			echo
 	done < <(otool -l $_file | grep -E "LC_LOAD_DYLIB" -A2 | grep name | tr -s ' ' | cut -d ' ' -f 3)
 
+	#popd
 
 }
 
@@ -1236,12 +1238,11 @@ function __check_dynamic_linking_darwin() {
 # FIX BUILD -----------------------------
 function __fix_built_files() {
 	local folder="$1"
-	local opt="$2"
-
+	
 	
 	if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
 		for f in  "$folder"/*; do
-			[ -d "$f" ] && __fix_built_files "$f" "$opt"
+			[ -d "$f" ] && __fix_built_files "$f"
 			if [ -f "$f" ]; then
 				case $STELLA_CURRENT_PLATFORM in 
 					linux)
@@ -1255,7 +1256,7 @@ function __fix_built_files() {
 								chmod +w "$f"
 								[ "$(__get_extension_from_string $f)" == "dylib" ] && __fix_dynamiclib_install_name_darwin "$f"
 								#[ "$(__get_extension_from_string $f)" == "so" ] && __fix_dynamiclib_install_name_darwin "$f"
-								[ ! "$(__get_extension_from_string $f)" == "a" ] && __fix_linked_lib_darwin "$f"
+								[ ! "$(__get_extension_from_string $f)" == "a" ] && __fix_linked_lib_darwin "$f" "ONLY_ABS_PATH"
 								[ ! "$(__get_extension_from_string $f)" == "a" ] && __fix_additional_rpath_darwin "$f"
 
 						fi
@@ -1321,6 +1322,16 @@ function __fix_additional_rpath_darwin() {
 # sometime, we have to do this because we did set the install_name of a lib after the build, but too late.
 function __fix_linked_lib_darwin() {
 	local _file=$1
+	local OPT="$2"
+
+	local _opt_abs_path=OFF
+	local _flag_filter=OFF
+	local _filter=
+	for o in $OPT; do 
+		[ "$o" == "ONLY_ABS_PATH" ] && _opt_abs_path=ON
+		[ "$_flag_filter" == "ON" ] && _filter=$o && _flag_filter=OFF
+		[ "$o" == "FILTER" ] && _flag_filter=ON
+	done	
 
 
 	local _new_load_dylib=
@@ -1332,15 +1343,16 @@ function __fix_linked_lib_darwin() {
 
 	local _flag_existing_rpath=
 
-	# get existing linked lib with an absolute path
+	# get existing linked lib
 	while read -r line; do
-		if [ "$(__is_abs "$line")" == "TRUE" ]; then
+		if [ "$_opt_abs_path" == "ON" ]; then
+			if [ "$(__is_abs "$line")" == "TRUE" ]; then
+				[ -f "$line" ] && _linked_lib_list="$_linked_lib_list $line"
+			fi
+		else
 			[ -f "$line" ] && _linked_lib_list="$_linked_lib_list $line"
 		fi
-	done <<< "$(otool -l "$_file" | grep -E "LC_LOAD_DYLIB" -A2 | tr -s ' ' | cut -d ' ' -f 3)"
-
-	# fix only stella linked libs with absolute path
-	#done <<< "$(otool -l "$_file" | grep -E "LC_LOAD_DYLIB" -A2 | grep "$STELLA_APP_FEATURE_ROOT" | tr -s ' ' | cut -d ' ' -f 3)"
+	done <<< "$(otool -l "$_file" | grep -E "LC_LOAD_DYLIB" -A2 | grep "$_filter" | tr -s ' ' | cut -d ' ' -f 3)"
 
 	for l in $_linked_lib_list; do
 
@@ -1348,7 +1360,7 @@ function __fix_linked_lib_darwin() {
 		_new_load_dylib="$(__get_path_from_string $l)"
 		_linked_lib_filename="$(__get_filename_from_string $l)"
 		
-		echo "** Fixing $_filename linked to $_linked_lib_filename shared lib from stella"
+		echo "** Fixing $_filename linked to $_linked_lib_filename shared lib"
 		
 		echo "*** setting LOAD_DYLIB to @rpath/$_linked_lib_filename"
 		install_name_tool -change "$l" "@rpath/$_linked_lib_filename" "$_file"

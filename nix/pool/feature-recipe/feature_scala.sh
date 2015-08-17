@@ -28,7 +28,7 @@ function feature_scala_2_11_6() {
 	FEAT_SOURCE_URL_PROTOCOL=
 
 	FEAT_BINARY_URL=http://downloads.typesafe.com/scala/2.11.6/scala-2.11.6.tgz
-	FEAT_BINARY_URL_FILENAME=cala-2.11.6.tgz
+	FEAT_BINARY_URL_FILENAME=scala-2.11.6.tgz
 	FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 
 	FEAT_SOURCE_CALLBACK=

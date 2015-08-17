@@ -30,10 +30,10 @@ function usage() {
 	echo " L     proxy on <name> : active proxy"
 	echo " L     proxy off now : disable proxy"
 	echo " L     proxy register <name> --proxyhost=<host> --proxyport=<port> [--proxyuser=<string> --proxypass=<string>] : register this proxy"
-	echo " o-- env management :"
-	echo " L     shell local set"
-	echo " L     shell local new"
-	echo " L     shell docker <docker-id> : need docker installed on your system"
+	echo " o-- bootstrap management :"
+	echo " L     boot stella shell"
+	echo " L     boot docker <docker-id>"
+	echo " L     boot shell docker <docker-id> : need docker installed on your system"
 	echo " o-- system package management : WARN This will affect your system"
 	echo " L     sys install <package name> : install  a system package"
 	echo " L     sys remove <package name> : remove a system package"
@@ -47,8 +47,8 @@ function usage() {
 
 # arguments
 PARAMETERS="
-DOMAIN=                          'domain'     		a           'app feature stella proxy sys'         										   				Action domain.
-ACTION=                         'action'   					a           'version search remove on off register link api bootstrap install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature install list'         	Action to compute.
+DOMAIN=                          'domain'     		a           'app feature stella proxy sys boot'         										   				Action domain.
+ACTION=                         'action'   					a           'docker stella version search remove on off register link api bootstrap install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature install list'         	Action to compute.
 ID=							 ''								s 			'' 						Feature ID or Data or Assets or Env or Distrib ID.
 "
 OPTIONS="
@@ -119,7 +119,19 @@ if [ "$DOMAIN" == "sys" ]; then
 	fi
 fi
 
+# --------------- BOOT ----------------------------
+if [ "$DOMAIN" == "boot" ]; then
+	__init_stella_env
+	if [ "$ACTION" == "stella" ]; then
+		if [ "$ID" == "shell" ]; then
+			__bootstrap_stella_env
+		fi
+	fi
 
+	if [ "$ACTION" == "docker" ]; then
+		docker run -v $STELLA_ROOT:/stella -it $ID bash 
+	fi
+fi
 
 # --------------- PROXY ----------------------------
 if [ "$DOMAIN" == "proxy" ]; then

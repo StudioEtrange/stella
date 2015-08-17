@@ -30,7 +30,6 @@ function feature_sevenzip_9_20_1() {
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libz.a
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/lib
-	
 }
 
 function feature_sevenzip_install_source() {
@@ -44,6 +43,7 @@ function feature_sevenzip_install_source() {
     make all3
     make DEST_HOME="$INSTALL_DIR" install
 
+    
     #TODO do not work yet -- use specific makefile for each OS, see https://github.com/Homebrew/homebrew/blob/master/Library/Formula/p7zip.rb
 }
 

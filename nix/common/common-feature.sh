@@ -151,7 +151,7 @@ function __push_schema_context() {
 function __pop_schema_context() {
 	FEAT_SCHEMA_SELECTED=$(__stack_pop)
 	__internal_feature_context $FEAT_SCHEMA_SELECTED
-	TEST_FEATURE=$(__stack_pop)
+	TEST_FEATURE="$(__stack_pop)"
 }
 
 #    echo "Got $top"
@@ -528,7 +528,7 @@ function __feature_init_installed() {
 	done
 
 	# TODO log
-	[ ! "$FEATURE_LIST_ENABLED" == "" ] && echo "** Features initialized : $FEATURE_LIST_ENABLED"
+	[ "$VERBOSE_MODE" == "1" ] && echo "** Features initialized : $FEATURE_LIST_ENABLED"
 }
 
 
@@ -600,6 +600,7 @@ function __internal_feature_context() {
 	FEAT_BUNDLE_CALLBACK=
 	# MERGE / NESTED / LIST
 	FEAT_BUNDLE=
+
 
 	[ "$_SCHEMA" == "" ] && return
 	

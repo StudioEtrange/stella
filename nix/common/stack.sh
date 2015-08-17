@@ -30,7 +30,7 @@ __stack_pop() {
 	else
 		data="${_STELLA_STACK_[$_STELLA_STACK_SP]}"
 		_STELLA_STACK_SP=$(( _STELLA_STACK_SP - 1 ))
-		echo $Data
+		echo $data
 	fi
 }
 
