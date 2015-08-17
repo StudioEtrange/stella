@@ -1,6 +1,8 @@
 if [ ! "$_STLPORT_INCLUDED_" == "1" ]; then 
 _STLPORT_INCLUDED_=1
 
+# TODO
+
 function feature_stlport() {
 
 	FEAT_NAME=stlport
@@ -45,11 +47,6 @@ function feature_stlport_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
-	# AUTO_INSTALL_FLAG_POSTFIX="--disable-dependency-tracking \
- #                          --enable-utf8 \
- #							--enable-ipv6"
-	#--with-ensurepip=install # build pip from pip source included into stlport source BUT need openssl
-
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 
@@ -63,8 +60,8 @@ function feature_stlport_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
-	# fix min macos version, information needed for building stlport
 	# TODO
+	# fix min macos version, information needed for building stlport
 	[ "$STELLA_CURRENT_OS" == "macos" ] && __set_build_mode MACOSX_DEPLOYMENT_TARGET $(__get_macos_version)
 
 	__auto_build "$FEAT_NAME" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD CONFIG_TOOL configure BUILD_TOOL make"

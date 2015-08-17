@@ -40,8 +40,6 @@ function feature_icu4c_install_source() {
 	
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
-	__set_build_mode "RELOCATE" "ON"
-
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
 	# --enable-rpath make binaries and shared libs correctly linked
@@ -50,7 +48,7 @@ function feature_icu4c_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
 	
-	__auto_build "$FEAT_NAME" "$SRC_DIR/source" "$INSTALL_DIR" "SOURCE_KEEP NO_OUT_OF_TREE_BUILD CONFIG_TOOL configure BUILD_TOOL make"
+	__auto_build "$FEAT_NAME" "$SRC_DIR/source" "$INSTALL_DIR" "CONFIG_TOOL configure BUILD_TOOL make"
 
 }
 

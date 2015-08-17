@@ -7,7 +7,7 @@ _DOCKER_INCLUDED_=1
 # consider to install it from your OS system package manager or by the provided method here http://docs.docker.com/
 
 # depending of the supporting state of your current OS,
-# this recipe will install a docker binary including a server mode and a client mode, or just the client mode
+# this recipe will install a docker binary which will be a server AND a client, or just a client, depending of your OS
 
 # this recipe is based on https://docs.docker.com/installation/binaries/
 
@@ -55,9 +55,9 @@ function feature_docker_install_binary() {
 	mv "$FEAT_INSTALL_ROOT"/"$FEAT_BINARY_URL_FILENAME" "$FEAT_INSTALL_ROOT"/docker
 
 	chmod +x "$FEAT_INSTALL_ROOT"/docker
-	[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && echo " On darwin, docker is in client mode only"
+	[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && echo " ** On darwin, docker is in client mode only"
 
-	echo " consider create a docker group, and add your user to this group"
+	echo " ** Consider create a docker group, and add your user to this group"
 }
 
 

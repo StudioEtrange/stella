@@ -57,7 +57,7 @@ function feature_python_install_source() {
 
 	__feature_callback
 
-	# auto relocate failed, because adding rpath do not have enough rpath in headers
+	# auto relocate failed, because adding rpath there is not enough rpath in headers
 	# error message :
 	# "because larger updated load commands do not fit (the program must be relinked, and you may need to use -headerpad or -headerpad_max_install_names)"
 	__set_build_mode "RELOCATE" "OFF"
