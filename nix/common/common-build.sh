@@ -479,7 +479,8 @@ function __link_feature_library() {
 			;;
 		FORCE_DYNAMIC)
 			LIB_DEP_FOLDER="$REQUIRED_LIB_ROOT/stella-dep/lib/dynamic"
-			[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && LIB_EXTENSION=".so"
+			# shared lib on linux extension could be .so or .so.X or .so.X.Y etc...
+			[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && LIB_EXTENSION=".so*"
 			[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && LIB_EXTENSION=".dylib"
 			_flag_lib_isolation=TRUE
 			;;
@@ -492,19 +493,20 @@ function __link_feature_library() {
 		local _new_install_name=
 		for f in "$REQUIRED_LIB_ROOT"/"$_lib_folder"/*"$LIB_EXTENSION"; do
 			# we cannot use symbolic link here, because of 'install_name' on darwin plaform : We have to change it, when we move lib
-			#ln -fs $f "$LIB_DEP_FOLDER"/$(basename $f)
-			target="$LIB_DEP_FOLDER/$(basename $f)"
-			cp -f $f "$target"
-			if [ ! "$_opt_flavour" == "FORCE_STATIC" ]; then
-				if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-					if [ "$(__get_extension_from_string $target)" == "dylib" ]; then
-						_original_install_name=$(otool -l $target | grep -E "LC_ID_DYLIB" -A2 | grep name | tr -s ' ' | cut -d ' ' -f 3)
-						[ "$STELLA_BUILD_RELOCATE" == "ON" ] && _new_install_name="@rpath/$(__get_filename_from_string $_original_install_name)"
-						[ "$STELLA_BUILD_RELOCATE" == "OFF" ] && _new_install_name="$LIB_DEP_FOLDER/$(__get_filename_from_string $_original_install_name)"
-						install_name_tool -id "$_new_install_name" "$target"
-					fi
-				fi
-			fi
+			ln -fs $f "$LIB_DEP_FOLDER"/$(basename $f)
+			#target="$LIB_DEP_FOLDER/$(basename $f)"
+			#cp -f $f "$target"
+			#if [ ! "$_opt_flavour" == "FORCE_STATIC" ]; then
+			#	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+			#		if [ "$(__get_extension_from_string $target)" == "dylib" ]; then
+			#			_original_install_name=$(otool -l $target | grep -E "LC_ID_DYLIB" -A2 | grep name | tr -s ' ' | cut -d ' ' -f 3)
+						# TODO -- conserve @rpath or absolute path !
+			#			[ "$STELLA_BUILD_RELOCATE" == "ON" ] && _new_install_name="@rpath/$(__get_filename_from_string $_original_install_name)"
+			#			[ "$STELLA_BUILD_RELOCATE" == "OFF" ] && _new_install_name="$LIB_DEP_FOLDER/$(__get_filename_from_string $_original_install_name)"
+			#			install_name_tool -id "$_new_install_name" "$target"
+			#		fi
+			#	fi
+			#fi
 		done
 	fi
 
@@ -1117,13 +1119,13 @@ function __check_built_files() {
 		if [ -f "$f" ]; then
 			case $STELLA_CURRENT_PLATFORM in 
 				linux)
-					echo "TODO"
 					if [ ! "$(objdump -p "$f" 2>/dev/null)" == "" ]; then
 						echo
 						echo "** Analysing $f"
 						if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
 							[ ! "$(__get_extension_from_string $f)" == "a" ] && __check_additional_rpath_linux "$f"
 						fi
+						[ ! "$(__get_extension_from_string $f)" == "a" ] && __check_dynamic_linking_linux "$f"
 					fi
 				;;
 				darwin)
@@ -1171,7 +1173,9 @@ function __check_additional_rpath_linux() {
 }
 
 # check dynamic link at runtime
-# TODO REVIEW
+# Print out dynamic libraries loaded at runtime when launching a program :
+# 		LD_TRACE_LOADED_OBJECTS=1 program
+# ldd might not work on symlink and other situations
 function __check_dynamic_linking_linux() {
 	local _file=$1
 	local t
