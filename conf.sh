@@ -97,7 +97,7 @@ for recipe in "$STELLA_FEATURE_RECIPE"/*.sh; do
 done
 
 # list of available installable system package
-__STELLA_SYS_PACKAGE_LIST="brew build-chain-standard 7z"
+__STELLA_SYS_PACKAGE_LIST="brew build-chain-standard 7z wget curl unzip"
 
 
 # BUILD SYSTEM---------------------------------------------
@@ -122,9 +122,10 @@ __set_build_mode_default "RELOCATE" "ON"
 # . is current running directory
 # $ORIGIN and @loader_path is directory of the file who wants to load a shared library
 # NOTE : '@loader_path' does not work, you have to write '@loader_path/.'
-STELLA_BUILD_RELOCATE_RPATH_DEFAULT="../lib"
-[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && STELLA_BUILD_RELOCATE_RPATH_DEFAULT="../lib \$ORIGIN/../lib"
-[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && STELLA_BUILD_RELOCATE_RPATH_DEFAULT="../lib @loader_path/../lib"
+# NOTE : $ORIGIN may have problem with cmake, see : http://www.cmake.org/pipermail/cmake/2008-January/019290.html
+#STELLA_BUILD_RELOCATE_RPATH_DEFAULT="../lib"
+#[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && STELLA_BUILD_RELOCATE_RPATH_DEFAULT='../lib $$ORIGIN/../lib'
+#[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && STELLA_BUILD_RELOCATE_RPATH_DEFAULT="../lib @loader_path/../lib"
 # http://industriousone.com/topic/linking-linux FOR LINUX
 
 # first buid engine reset

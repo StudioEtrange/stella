@@ -221,12 +221,6 @@ function __install_minimal_feature_requirement() {
 
 # PACKAGE SYSTEM ----------------------------
 
-function __install_system() {
-	local _package="$1"
-	local _package_manager="$(__get_current_package_manager)"
-
-	__install_"$_package"
-}
 
 function __get_current_package_manager() {
 	local _package_manager=
@@ -236,7 +230,7 @@ function __get_current_package_manager() {
 
 	case $STELLA_CURRENT_PLATFORM in
 		linux)
-				plist="agt-get yum"
+				plist="apt-get yum"
 			;;
 		darwin)
 				plist="brew"
@@ -253,8 +247,68 @@ function __get_current_package_manager() {
 	echo "$_package_manager"
 }
 
+
+function __sys_require() {
+	local _artefact=$1
+
+	if [[ ! -n `which $_artefact 2> /dev/null` ]]; then
+		echo " ** ERROR please install $_artefact on your system"
+		echo " ** try ./stella.sh sys install $_artefact"
+		exit 1
+	fi
+}
+
+
+function __sys_package_manager() {
+	# INSTALL or REMOVE
+	local _action="$1"
+	local _id="$2"
+	local _packages_list="$3"
+
+	echo " ** $_action $_id on your system"
+
+	local _package_manager="$(__get_current_package_manager)"
+
+
+	local _flag_package_manager=OFF
+	local _packages=
+	local _invert_filter=
+	for o in $_packages_list; do
+		[ "$o" == "|" ] && _flag_package_manager=OFF
+		[ "$_flag_package_manager" == "ON" ] && _packages="$_packages $o"
+		[ "$o" == "$_package_manager" ] && _flag_package_manager=ON
+	done
+
+	if [ "$_action" == "INSTALL" ]; then
+		case $_package_manager in
+			apt-get)
+				sudo apt-get update
+				sudo apt-get -y install $_packages
+				;;
+			brew)
+				brew install $_packages
+				;;
+			*)	echo " ** WARN : dont know how to install $_id"
+				;;
+		esac
+	fi
+	if [ "$_action" == "REMOVE" ]; then
+		case $_package_manager in
+			apt-get)
+				sudo apt-get update
+				sudo apt-get -y autoremove --purge $_packages
+				;;
+			brew)
+				brew uninstall $_packages
+				;;
+			*)	echo " ** WARN : dont know how to remove $_id"
+				;;
+		esac
+	fi
+}
+
 # --------- SYSTEM RECIPES--------
-function __install_brew() {
+function __sys_install_brew() {
 	echo " ** Install Homebrew on your system"
 
 	__download "https://raw.githubusercontent.com/Homebrew/install/master/install" "brew-install.rb" "$STELLA_APP_TEMP_DIR"
@@ -276,7 +330,7 @@ function __install_brew() {
 		echo " ** Error while installing Homebrew"	
 	fi
 }
-function __remove_brew() {
+function __sys_remove_brew() {
 	echo " ** Remove Homebrew from your system"
 
 	rm -rf /usr/local/Cellar /usr/local/.git 2>/dev/null
@@ -291,9 +345,7 @@ function __remove_brew() {
 
 
 
-
-
-function __install_build-chain-standard() {
+function __sys_install_build-chain-standard() {
 	echo " ** Install build-chain-standard on your system"
 	local _package_manager=
 
@@ -321,68 +373,46 @@ function __install_build-chain-standard() {
 		fi
 
 	else
-		_package_manager="$(__get_current_package_manager)"
-		case $_package_manager in
-			apt-get)
-				#sudo apt-get -y install bison util-linux build-essential gcc-multilib g++-multilib g++ pkg-config
-				sudo apt-get -y install build-essential gcc-multilib g++-multilib
-				;;
-			*)	echo " ** WARN : dont know how to install it"
-				;;
-		esac
+		#bison util-linux build-essential gcc-multilib g++-multilib g++ pkg-config
+		__sys_package_manager "INSTALL" "unzip" "apt-get build-essential gcc-multilib g++-multilib"
 	fi
 }
-function __remove_build-chain-standard() {
+function __sys_remove_build-chain-standard() {
 	if [ "$STELLA_CURRENT_OS" == "macos" ]; then
 		echo " ** Remove Xcode and Command Line Development Tools by hand"
 	else
-		_package_manager="$(__get_current_package_manager)"
-		case $_package_manager in
-			apt-get)
-				sudo apt-get -y autoremove --purge build-essential gcc-multilib g++-multilib
-				;;
-			*)	echo " ** WARN : dont know how to remove it"
-				;;
-		esac
+		__sys_package_manager "REMOVE" "unzip" "apt-get build-essential gcc-multilib g++-multilib"
 	fi
 
 }
 
 
 
-
-
-function __install_7z() {
-	echo " ** Install 7z on your system"
-
-	local _package_manager="$(__get_current_package_manager)"
-	case $_package_manager in
-		apt-get)
-			sudo apt-get -y install p7zip-full
-			;;
-		brew)
-			brew install p7zip
-			;;
-		*)	echo " ** WARN : dont know how to install it"
-			;;
-	esac
+function __sys_install_7z() {
+	__sys_package_manager "INSTALL" "7z" "apt-get p7zip-full | brew p7zip"
 }
-function __remove_7z() {
-	echo " ** Remove 7z from your system"
-
-	local _package_manager="$(__get_current_package_manager)"
-	case $_package_manager in
-		apt-get)
-			sudo apt-get -y autoremove --purge p7zip-full
-			;;
-		brew)
-			brew uninstall p7zip
-			;;
-		*)	echo " ** WARN : dont know how to remove it"
-			;;
-	esac
+function __sys_remove_7z() {
+	__sys_package_manager "REMOVE" "7z" "apt-get p7zip-full | brew p7zip"
 }
 
+function __sys_install_curl() {
+	__sys_package_manager "INSTALL" "curl" "apt-get curl | brew curl"
+}
+function __sys_remove_curl() {
+	__sys_package_manager "REMOVE" "curl" "apt-get curl | brew curl"	
+}
 
+function __sys_install_wget() {
+	__sys_package_manager "INSTALL" "wget" "apt-get wget | brew wget"
+}
+function __sys_remove_wget() {
+	__sys_package_manager "REMOVE" "wget" "apt-get wget | brew wget"	
+}
 
+function __sys_install_unzip() {
+	__sys_package_manager "INSTALL" "unzip" "apt-get unzip | brew unzip"
+}
+function __sys_remove_unzip() {
+	__sys_package_manager "REMOVE" "unzip" "apt-get unzip | brew unzip"
+}
 fi

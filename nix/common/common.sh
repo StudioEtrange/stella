@@ -626,7 +626,7 @@ function __uncompress() {
 
 	case "$FILE_PATH" in
 		*.zip)
-			__require unzip
+			__sys_require unzip
 			[ "$_opt_strip" == "OFF" ] && unzip -a -o "$FILE_PATH"
 			[ "$_opt_strip" == "ON" ] && __unzip-strip "$FILE_PATH" "$UNZIP_DIR"
 			;;
@@ -639,7 +639,7 @@ function __uncompress() {
 			[ "$_opt_strip" == "ON" ] && tar xvf "$FILE_PATH" --strip-components=1
 			;;
 		*.7z)
-			__require 7z
+			__sys_require 7z
 			[ "$_opt_strip" == "OFF" ] && 7z x "$FILE_PATH" -y -o"$UNZIP_DIR"
 			[ "$_opt_strip" == "ON" ] && __sevenzip-strip "$FILE_PATH" "$UNZIP_DIR"
 			;;
@@ -683,7 +683,11 @@ function __download() {
 		if [[ -n `which wget 2> /dev/null` ]]; then
 			wget "$URL" -O "$STELLA_APP_CACHE_DIR/$FILE_NAME" --no-check-certificate || rm -f "$STELLA_APP_CACHE_DIR/$FILE_NAME"
 		else
-			curl -fkSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL"
+			if [[ -n `which curl 2> /dev/null` ]]; then
+				curl -fkSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL"
+			else
+				__sys_require curl
+			fi
 		fi
 	else
 		echo " ** Already downloaded"

@@ -109,10 +109,10 @@ fi
 if [ "$DOMAIN" == "sys" ]; then
 	__init_stella_env
 	if [ "$ACTION" == "install" ]; then
-		__install_"$ID"
+		__sys_install_"$ID"
 	fi
 	if [ "$ACTION" == "remove" ]; then
-		__remove_"$ID"
+		__sys_remove_"$ID"
 	fi
 	if [ "$ACTION" == "list" ]; then
 		echo "$__STELLA_SYS_PACKAGE_LIST"
