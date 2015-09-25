@@ -40,6 +40,12 @@ function __init_proxy() {
 		export HTTP_PROXY="$http_proxy"
 
 
+		no_proxy="$STELLA_NO_PROXY"
+		NO_PROXY="$STELLA_NO_PROXY"
+		export no_proxy="$STELLA_NO_PROXY"
+		export NO_PROXY="$STELLA_NO_PROXY"
+
+
 		echo "STELLA Proxy Active : $STELLA_PROXY_ACTIVE [ $STELLA_PROXY_HOST:$STELLA_PROXY_PORT ]"
 
 
@@ -51,7 +57,6 @@ function __init_proxy() {
 
 # ---------------- SHIM FUNCTIONS -----------------------------
 function __proxy_override() {
-	
 
 	#wget
 	#use env var
@@ -62,14 +67,19 @@ function __proxy_override() {
 	# use_proxy = on
 	# wait = 15
 
+	# sudo do not preserve env var by default
+	function sudo() {
+		command sudo no_proxy="$STELLA_NO_PROXY" https_proxy="$STELLA_HTTPS_PROXY" http_proxy="$STELLA_HTTP_PROXY" "$@"
+	}
+
 	function curl() {
-		[ ! "$STELLA_PROXY_USER" == "" ] && echo $(command curl -x "$STELLA_PROXY_HOST:$STELLA_PROXY_PORT" --proxy-user "$STELLA_PROXY_USER:$STELLA_PROXY_PASS" "$@")
-		[ "$STELLA_PROXY_USER" == "" ] && echo $(command curl -x "$STELLA_PROXY_HOST:$STELLA_PROXY_PORT" "$@")
+		[ ! "$STELLA_PROXY_USER" == "" ] && echo $(command curl --noproxy $STELLA_NO_PROXY -x "$STELLA_PROXY_HOST:$STELLA_PROXY_PORT" --proxy-user "$STELLA_PROXY_USER:$STELLA_PROXY_PASS" "$@")
+		[ "$STELLA_PROXY_USER" == "" ] && echo $(command curl --noproxy $STELLA_NO_PROXY -x "$STELLA_PROXY_HOST:$STELLA_PROXY_PORT" "$@")
 	}
 
 
 	function git() {
-		https_proxy="$STELLA_HTTPS_PROXY" http_proxy="$STELLA_HTTP_PROXY" command git "$@"
+		no_proxy="$STELLA_NO_PROXY" https_proxy="$STELLA_HTTPS_PROXY" http_proxy="$STELLA_HTTP_PROXY" command git "$@"
 	}
 
 	function hg() {
@@ -77,9 +87,6 @@ function __proxy_override() {
 	}
 
 	function mvn() {
-
-		#export HTTPS_PROXY="$STELLA_HTTP_PROXY"
-		#export HTTP_PROXY="$STELLA_HTTP_PROXY"
 		[ ! "$STELLA_PROXY_USER" == "" ] && command mvn -DproxyActive=true -DproxyId="$STELLA_PROXY_ACTIVE" -DproxyHost="$STELLA_PROXY_HOST" -DproxyPort="$STELLA_PROXY_PORT" -DproxyUsername="$STELLA_PROXY_USER" -DproxyPassword="$STELLA_PROXY_PASS" "$@"
 		[ "$STELLA_PROXY_USER" == "" ] && command mvn -DproxyActive=true  -DproxyId="$STELLA_PROXY_ACTIVE" -DproxyHost="$STELLA_PROXY_HOST" -DproxyPort="$STELLA_PROXY_PORT" "$@"
 	}
@@ -89,13 +96,7 @@ function __proxy_override() {
 	}
 
 	function brew() {
-			# export HTTPS_PROXY="$HTTP_PROXY"
-			# export HTTP_PROXY="$HTTP_PROXY"
-			# export http_proxy="$HTTP_PROXY"
-			# export ALL_PROXY="$HTTP_PROXY"
-		# export https_proxy="$STELLA_HTTPS_PROXY"
-		# export http_proxy="$STELLA_HTTPS_PROXY" 
-		https_proxy="$STELLA_HTTPS_PROXY"  http_proxy="$STELLA_HTTP_PROXY" command brew "$@"
+		no_proxy="$STELLA_NO_PROXY" https_proxy="$STELLA_HTTPS_PROXY"  http_proxy="$STELLA_HTTP_PROXY" command brew "$@"
 	}
 
 }
@@ -124,5 +125,16 @@ function __enable_proxy() {
 function __disable_proxy() {
 	__enable_proxy
 	echo "STELLA Proxy Disabled"
+}
+
+function __no_proxy_for() {
+	local _ip=$1
+	
+	[ "$STELLA_NO_PROXY" == "" ] && STELLA_NO_PROXY="$_ip"
+	[ ! "$STELLA_NO_PROXY" == "" ] && STELLA_NO_PROXY="$STELLA_NO_PROXY,$_ip"
+
+	echo "STELLA Proxy bypassed for $STELLA_NO_PROXY"
+
+	__init_proxy
 }
 fi

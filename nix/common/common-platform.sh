@@ -249,11 +249,20 @@ function __get_current_package_manager() {
 
 
 function __sys_require() {
-	local _artefact=$1
+	local _artefact_list="$1"
+	local _artefact_bundle_name=$2
 
-	if [[ ! -n `which $_artefact 2> /dev/null` ]]; then
-		echo " ** ERROR please install $_artefact on your system"
-		echo " ** try ./stella.sh sys install $_artefact"
+	local _err=
+	for _artefact in $_artefact_list; do
+		if [[ ! -n `which $_artefact 2> /dev/null` ]]; then
+			_err=1
+		fi
+	done
+
+	if [ "$_err" == "1" ]; then
+		[ "$_artefact_bundle_name" == "" ] && _artefact_bundle_name="$_artefact_list"
+		echo " ** ERROR please install $_artefact_list on your system"
+		echo " ** try ./stella.sh sys install $_artefact_bundle_name"
 		exit 1
 	fi
 }
@@ -282,6 +291,10 @@ function __sys_package_manager() {
 	if [ "$_action" == "INSTALL" ]; then
 		case $_package_manager in
 			apt-get)
+export HTTPS_PROXY=$HTTPS_PROXY
+export HTTP_PROXY=$HTTP_PROXY
+echo $HTTPS_PROXY
+echo $HTTP_PROXY
 				sudo apt-get update
 				sudo apt-get -y install $_packages
 				;;

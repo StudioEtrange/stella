@@ -17,7 +17,7 @@ function usage() {
 	echo " L     app setup-env <env id|all> : download, build, deploy and run virtual environment based on app properties"
 	echo " L     app link <app-path> [--stellaroot=<path>] : link an app to a specific stella path"
 	echo " o-- feature management :"
-	echo " L     feature install <feature schema> [--depforce] [--depignore] : install a feature. [--depforce] will force to reinstall all dependencies. [--depignore] will ignore dependencies. schema = feature_name[#version][@arch][:binary|source][/os_restriction][\os_exclusion]"
+	echo " L     feature install <feature schema> [--depforce] [--depignore] [--export=<path>] [--portable=<path>] : install a feature. [--depforce] will force to reinstall all dependencies. [--depignore] will ignore dependencies. schema = feature_name[#version][@arch][:binary|source][/os_restriction][\os_exclusion]"
 	echo " L     feature remove <feature schema> : remove a feature"
 	echo " L     feature list <all|feature name|active> : list all available feature OR available versions of a feature OR current active features"
 	echo " o-- various :"
@@ -30,10 +30,11 @@ function usage() {
 	echo " L     proxy on <name> : active proxy"
 	echo " L     proxy off now : disable proxy"
 	echo " L     proxy register <name> --proxyhost=<host> --proxyport=<port> [--proxyuser=<string> --proxypass=<string>] : register this proxy"
-	echo " o-- bootstrap management :"
+	# TODO
+	echo " o-- bootstrap management [EXPERIMENTAL] :"
 	echo " L     boot stella shell"
-	echo " L     boot docker <docker-id>"
-	echo " L     boot shell docker <docker-id> : need docker installed on your system"
+	echo " L     boot docker <docker-id> [commands]"
+	echo " L     boot shell docker <docker-id> [commands] : need docker installed on your system"
 	echo " o-- system package management : WARN This will affect your system"
 	echo " L     sys install <package name> : install  a system package"
 	echo " L     sys remove <package name> : remove a system package"
@@ -64,6 +65,8 @@ PROXYUSER='' 					'' 			'user'				s 			0			''					proxy user
 PROXYPASS='' 					'' 			'password'			s 			0			''					proxy password
 DEPFORCE=''						''    		''            		b     		0     		'1'           			Force reinstallation of all dependencies.
 DEPIGNORE=''					''    		''            		b     		0     		'1'           		Will not process any dependencies.
+EXPORT=''                     ''          'path'              s           0           ''                      	Export feature to this dir.
+PORTABLE=''                   ''          'path'              s           0           ''                      Make a portable version of this feature in this dir
 "
 
 __argparse "$0" "$OPTIONS" "$PARAMETERS" "Lib Stella" "$(usage)" "" "$@"
@@ -100,6 +103,12 @@ if [ "$DOMAIN" == "feature" ]; then
 	if [ "$FORCE" == "1" ]; then
 		_feature_options="$_feature_options -f"
 	fi
+	if [ ! "$EXPORT" == "" ]; then
+		_feature_options="$_feature_options --export=$EXPORT"
+	fi
+	if [ ! "$PORTABLE" == "" ]; then
+		_feature_options="$_feature_options --portable=$PORTABLE"
+	fi
 	$STELLA_BIN/feature.sh $ACTION $ID $_feature_options
 
 fi
@@ -129,7 +138,7 @@ if [ "$DOMAIN" == "boot" ]; then
 	fi
 
 	if [ "$ACTION" == "docker" ]; then
-		docker run -v $STELLA_ROOT:/stella -it $ID bash 
+		docker run -v $STELLA_ROOT:/stella -it $ID
 	fi
 fi
 

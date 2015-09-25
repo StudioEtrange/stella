@@ -35,7 +35,7 @@ function feature_libpng_1_6_17() {
 }
 
 function feature_libpng_link() {
-	__link_feature_library "zlib#1_2_8" "" "FORCE_DYNAMIC"
+	__link_feature_library "zlib#1_2_8" "FORCE_DYNAMIC LIBS_NAME z EXPORT_DIR $FEAT_INSTALL_ROOT"
 }
 
 
@@ -46,7 +46,7 @@ function feature_libpng_install_source() {
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 
-	#__set_build_mode "RELOCATE" "OFF"
+	__set_build_mode "RELOCATE" "ON"
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
 	#AUTO_INSTALL_CONF_FLAG_POSTFIX="--disable-dependency-tracking"
@@ -56,7 +56,7 @@ function feature_libpng_install_source() {
 
 	__feature_callback
 
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "CONFIG_TOOL configure"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "CONFIG_TOOL configure SOURCE_KEEP BUILD_KEEP"
 	
 
 	

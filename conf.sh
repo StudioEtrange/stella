@@ -85,7 +85,7 @@ STELLA_INTERNAL_TEMP_DIR=$STELLA_INTERNAL_WORK_ROOT/temp
 # OTHERS ---------------------------------------------
 FEATURE_LIST_ENABLED=
 VERBOSE_MODE=0
-
+STELLA_NO_PROXY="localhost,127.0.0.1,localaddress,.localdomain.com"
 
 # INTERNAL LIST---------------------------------------------
 __STELLA_FEATURE_LIST=
@@ -114,19 +114,19 @@ __set_build_mode_default "PARALLELIZE" "ON"
 # compiler optimization
 __set_build_mode_default "OPTIMIZATION" "2"
 # rellocatable shared libraries
-# without this, you will not enable to move from another system any binary (executable or shared libs) linked to stella shared libs
+# you will not enable to move from another system any binary (executable or shared libs) linked to stella shared libs
 # everything will be sticked to your stella shared lib installation path
 # this will affect rpath values (and install_name for darwin)
-__set_build_mode_default "RELOCATE" "ON"
-# will add theses values as rpath (runtime search path) to binaries (executable and shared lib)
+__set_build_mode_default "RELOCATE" "OFF"
+
+
 # . is current running directory
 # $ORIGIN and @loader_path is directory of the file who wants to load a shared library
 # NOTE : '@loader_path' does not work, you have to write '@loader_path/.'
 # NOTE : $ORIGIN may have problem with cmake, see : http://www.cmake.org/pipermail/cmake/2008-January/019290.html
-#STELLA_BUILD_RELOCATE_RPATH_DEFAULT="../lib"
-#[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && STELLA_BUILD_RELOCATE_RPATH_DEFAULT='../lib $$ORIGIN/../lib'
-#[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && STELLA_BUILD_RELOCATE_RPATH_DEFAULT="../lib @loader_path/../lib"
-# http://industriousone.com/topic/linking-linux FOR LINUX
+STELLA_BUILD_RPATH_DEFAULT=""
+
+
 
 # first buid engine reset
 __reset_build_env

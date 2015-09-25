@@ -299,181 +299,224 @@ function __feature_install() {
 	local _opt_hidden_feature=OFF
 	local _opt_ignore_dep=OFF
 	local _opt_force_reinstall_dep=0
-	for o in $_OPT; do 
-		[ "$o" == "INTERNAL" ] && _opt_internal_feature=ON
+	local _flag_export=OFF
+	local _dir_export=
+	local _export_mode=OFF
+	local _flag_portable=OFF
+	local _dir_portable=
+	local _portable_mode=OFF
+	
+	for o in $_OPT; do
+		# INTERNAL : install feature inside stella root
+		[ "$o" == "INTERNAL" ] && _opt_internal_feature=ON && _export_mode=OFF
+		# HIDDEN : this feature will not be seen in list of active features and not added to current app properties
 		[ "$o" == "HIDDEN" ] && _opt_hidden_feature=ON
+		# DEP_FORCE : force reinstall all dependencies
 		[ "$o" == "DEP_FORCE" ] && _opt_force_reinstall_dep=1
+		# DEP_IGNORE : ignore installation step of all dependencies
 		[ "$o" == "DEP_IGNORE" ] && _opt_ignore_dep=ON
+		# EXPORT <dir> : will install feature in this specified root directory - so it will not be detected as active features
+		[ "$_flag_export" == "ON" ] && _dir_export="$o" && _export_mode=ON && _flag_export=OFF
+		[ "$o" == "EXPORT" ] && _flag_export=ON && _opt_internal_feature=OFF && _opt_hidden_feature=ON
+		# PORTABLE <dir> : will install feature in this specified root directory in a portable (=chroot) way - so it will not be detected as active features - and this folder will ship every dependencies
+		[ "$_flag_portable" == "ON" ] && _dir_portable="$o" && _portable_mode=ON && _flag_portable=OFF
+		[ "$o" == "PORTABLE" ] && _flag_portable=ON && _opt_internal_feature=OFF && _opt_hidden_feature=ON
 	done
 
-	#if [ "$_SCHEMA" == "required" ]; then
-	#	__install_minimal_feature_requirement
-	#else
 
-		local _flag=0
-		local a
 
-		__internal_feature_context $_SCHEMA
+
+	# EXPORT / PORTABLE MODE ------------------------------------
+	if [ "$_export_mode" == "ON" ]; then
+		FEAT_MODE_EXPORT_SCHEMA="$_SCHEMA"
+		_SCHEMA="mode-export#merge"
+
+		_save_app_feature_root="$STELLA_APP_FEATURE_ROOT"
+		STELLA_APP_FEATURE_ROOT="$_dir_export"
+	fi
+
+	if [ "$_portable_mode" == "ON" ]; then
+		FEAT_MODE_PORTABLE_SCHEMA="$_SCHEMA"
+		_SCHEMA="mode-portable#nested"
+
+		_save_app_feature_root="$STELLA_APP_FEATURE_ROOT"
+		STELLA_APP_FEATURE_ROOT="$_dir_portable"
+	fi
+
+
+
+	local _flag=0
+	local a
+
+	__internal_feature_context $_SCHEMA
+	
+	if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" == "" ]; then
+		if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" == "$STELLA_CURRENT_OS" ]; then
+			echo " $_SCHEMA not installed on $STELLA_CURRENT_OS"
+			return
+		fi
+	fi
+	if [ ! "$FEAT_SCHEMA_OS_EXCLUSION" == "" ]; then
+		if [ "$FEAT_SCHEMA_OS_EXCLUSION" == "$STELLA_CURRENT_OS" ]; then
+			echo " $_SCHEMA not installed on $STELLA_CURRENT_OS"
+			return
+		fi
+	fi
+
+	if [ ! "$FEAT_SCHEMA_SELECTED" == "" ]; then
+
 		
-		if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" == "" ]; then
-			if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" == "$STELLA_CURRENT_OS" ]; then
-				echo " $_SCHEMA not installed on $STELLA_CURRENT_OS"
-				return
-			fi
+
+		local _save_app_feature_root=
+		if [ "$_opt_internal_feature" == "ON" ]; then
+			_save_app_feature_root=$STELLA_APP_FEATURE_ROOT
+			STELLA_APP_FEATURE_ROOT=$STELLA_INTERNAL_FEATURE_ROOT
+			_save_app_cache_dir=$STELLA_APP_CACHE_DIR
+			STELLA_APP_CACHE_DIR=$STELLA_INTERNAL_CACHE_DIR
+			_save_app_temp_dir=$STELLA_APP_TEMP_DIR
+			STELLA_APP_TEMP_DIR=$STELLA_INTERNAL_TEMP_DIR
 		fi
-		if [ ! "$FEAT_SCHEMA_OS_EXCLUSION" == "" ]; then
-			if [ "$FEAT_SCHEMA_OS_EXCLUSION" == "$STELLA_CURRENT_OS" ]; then
-				echo " $_SCHEMA not installed on $STELLA_CURRENT_OS"
-				return
-			fi
+		
+		if [ ! "$_opt_hidden_feature" == "ON" ]; then
+			__add_app_feature $_SCHEMA
 		fi
 
-		if [ ! "$FEAT_SCHEMA_SELECTED" == "" ]; then
-
-			
-
-			local _save_app_feature_root=
-			if [ "$_opt_internal_feature" == "ON" ]; then
-				_save_app_feature_root=$STELLA_APP_FEATURE_ROOT
-				STELLA_APP_FEATURE_ROOT=$STELLA_INTERNAL_FEATURE_ROOT
-				_save_app_cache_dir=$STELLA_APP_CACHE_DIR
-				STELLA_APP_CACHE_DIR=$STELLA_INTERNAL_CACHE_DIR
-				_save_app_temp_dir=$STELLA_APP_TEMP_DIR
-				STELLA_APP_TEMP_DIR=$STELLA_INTERNAL_TEMP_DIR
-			fi
-			if [ ! "$_opt_hidden_feature" == "ON" ]; then
-				__add_app_feature $_SCHEMA
-			fi
-
-			
-			if [ "$FORCE" == "1" ]; then
-				TEST_FEATURE=0
-				__del_folder $FEAT_INSTALL_ROOT
-			else
-				__feature_inspect $FEAT_SCHEMA_SELECTED
-			fi
+		
+		if [ "$FORCE" == "1" ]; then
+			TEST_FEATURE=0
+			__del_folder $FEAT_INSTALL_ROOT
+		else
+			__feature_inspect $FEAT_SCHEMA_SELECTED
+		fi
 
 
-			if [ "$TEST_FEATURE" == "0" ]; then
+		if [ "$TEST_FEATURE" == "0" ]; then
 
 
-				mkdir -p $FEAT_INSTALL_ROOT
+			mkdir -p $FEAT_INSTALL_ROOT
 
-				# dependencies
-				if [ "$_opt_ignore_dep" == "OFF" ]; then
-					local dep
+			# dependencies
+			if [ "$_opt_ignore_dep" == "OFF" ]; then
+				local dep
 
-					local _origin=
-					local _force_origin=
-					local _dependencies=
-					[ "$FEAT_SCHEMA_FLAVOUR" == "source" ] && _dependencies="$FEAT_SOURCE_DEPENDENCIES"
-					[ "$FEAT_SCHEMA_FLAVOUR" == "binary" ] && _dependencies="$FEAT_BINARY_DEPENDENCIES"
+				local _origin=
+				local _force_origin=
+				local _dependencies=
+				[ "$FEAT_SCHEMA_FLAVOUR" == "source" ] && _dependencies="$FEAT_SOURCE_DEPENDENCIES"
+				[ "$FEAT_SCHEMA_FLAVOUR" == "binary" ] && _dependencies="$FEAT_BINARY_DEPENDENCIES"
+				
+				save_FORCE=$FORCE
+				FORCE=$_opt_force_reinstall_dep
+
+				for dep in $_dependencies; do
 					
+					if [ "$dep" == "FORCE_ORIGIN_STELLA" ]; then
+						_force_origin="STELLA"
+						continue
+					fi
+					if [ "$dep" == "FORCE_ORIGIN_SYSTEM" ]; then 
+						_force_origin="SYSTEM"
+						continue
+					fi
+
+					if [ "$_force_origin" == "" ]; then
+						_origin="$(__dep_choose_origin $dep)"
+					else 
+						_origin="$_force_origin"
+					fi
+
+					if [ "$_origin" == "STELLA" ]; then
+						__push_schema_context
+						__feature_install $dep "$_OPT HIDDEN"
+						if [ "$TEST_FEATURE" == "0" ]; then
+							echo "** Error while installing dependency feature $FEAT_SCHEMA_SELECTED"
+						fi
+						__pop_schema_context
+					fi
+					[ "$_origin" == "SYSTEM" ] && echo "Using dependency $dep from SYSTEM."
+					
+				done
+				
+				FORCE=$save_FORCE
+			fi
+
+			# Bundle
+			if [ ! "$FEAT_BUNDLE" == "" ]; then
+				FEAT_BUNDLE_MODE=$FEAT_BUNDLE
+				__push_schema_context
+				if [ ! "$FEAT_BUNDLE_ITEM" == "" ]; then
 					save_FORCE=$FORCE
-					FORCE=$_opt_force_reinstall_dep
+				
+					FORCE=0
 
-					for dep in $_dependencies; do
-						
-						if [ "$dep" == "FORCE_ORIGIN_STELLA" ]; then
-							_force_origin="STELLA"
-							continue
-						fi
-						if [ "$dep" == "FORCE_ORIGIN_SYSTEM" ]; then 
-							_force_origin="SYSTEM"
-							continue
-						fi
+					# should be  MERGE or NESTED or LIST
+					# NESTED : each item will be installed inside the bundle path in a separate directory
+					# MERGE : each item will be installed in the bundle path
+					# LIST : this bundle is just a list of item that will be installed normally
 
-						if [ "$_force_origin" == "" ]; then
-							_origin="$(__dep_choose_origin $dep)"
-						else 
-							_origin="$_force_origin"
-						fi
+					local _flag_hidden
+					if [ "$FEAT_BUNDLE_MODE" == "LIST" ]; then
+						_flag_hidden=
+					else
+						_flag_hidden="HIDDEN"
+					fi
 
-						if [ "$_origin" == "STELLA" ]; then
-							__push_schema_context
-							__feature_install $dep "$_OPT HIDDEN"
-							if [ "$TEST_FEATURE" == "0" ]; then
-								echo "** Error while installing dependency feature $FEAT_SCHEMA_SELECTED"
-							fi
-							__pop_schema_context
-						fi
-						[ "$_origin" == "SYSTEM" ] && echo "Using dependency $dep from SYSTEM."
-						
+					
+					local p
+					for p in $FEAT_BUNDLE_ITEM; do
+						__feature_install $p "$_OPT $_flag_hidden"
 					done
 					
 					FORCE=$save_FORCE
-				fi
-
-				# Bundle
-				if [ ! "$FEAT_BUNDLE" == "" ]; then
-					FEAT_BUNDLE_MODE=$FEAT_BUNDLE
-					__push_schema_context
-					if [ ! "$FEAT_BUNDLE_ITEM" == "" ]; then
-						save_FORCE=$FORCE
 					
-						FORCE=0
-
-						# should be  MERGE or NESTED or LIST
-						# NESTED : each item will be installed inside the bundle path in a separate directory
-						# MERGE : each item will be installed in the bundle path
-						# LIST : this bundle is just a list of item that will be installed normally
-
-						local _flag_hidden
-						if [ "$FEAT_BUNDLE_MODE" == "LIST" ]; then
-							_flag_hidden=
-						else
-							_flag_hidden="HIDDEN"
-						fi
-
-						
-						local p
-						for p in $FEAT_BUNDLE_ITEM; do
-							__feature_install $p "$_OPT $_flag_hidden"
-						done
-						
-						FORCE=$save_FORCE
-						
-					fi
-					FEAT_BUNDLE_MODE=
-
-					__pop_schema_context
-					# automatic call of callback
-					__feature_callback
-				else
-					echo " ** Installing $FEAT_NAME version $FEAT_VERSION in $FEAT_INSTALL_ROOT"
-					[ "$FEAT_SCHEMA_FLAVOUR" == "source" ] && __start_build_session
-					feature_"$FEAT_NAME"_install_"$FEAT_SCHEMA_FLAVOUR"
 				fi
+				FEAT_BUNDLE_MODE=
 
-				__feature_inspect $FEAT_SCHEMA_SELECTED
-				if [ "$TEST_FEATURE" == "1" ]; then
-					echo "** Feature $_SCHEMA is installed"
-					__feature_init "$FEAT_SCHEMA_SELECTED" $_OPT
-				else
-					echo "** Error while installing feature $FEAT_SCHEMA_SELECTED"
-					#__del_folder $FEAT_INSTALL_ROOT
-					# Sometimes current directory is lost by the system
-					cd $STELLA_APP_ROOT
-				fi
-				
+				__pop_schema_context
+				# automatic call of callback
+				__feature_callback
 			else
-				echo "** Feature $_SCHEMA already installed"
+				
+				echo " ** Installing $FEAT_NAME version $FEAT_VERSION in $FEAT_INSTALL_ROOT"
+				[ "$FEAT_SCHEMA_FLAVOUR" == "source" ] && __start_build_session $_OPT
+				feature_"$FEAT_NAME"_install_"$FEAT_SCHEMA_FLAVOUR"
+			fi
+
+			__feature_inspect $FEAT_SCHEMA_SELECTED
+			if [ "$TEST_FEATURE" == "1" ]; then
+				echo "** Feature $_SCHEMA is installed"
 				__feature_init "$FEAT_SCHEMA_SELECTED" $_OPT
+			else
+				echo "** Error while installing feature $FEAT_SCHEMA_SELECTED"
+				#__del_folder $FEAT_INSTALL_ROOT
+				# Sometimes current directory is lost by the system
+				cd $STELLA_APP_ROOT
 			fi
-
-
-
-			if [ "$_opt_internal_feature" == "ON" ]; then
-				STELLA_APP_FEATURE_ROOT=$_save_app_feature_root
-				STELLA_APP_CACHE_DIR=$_save_app_cache_dir
-				STELLA_APP_TEMP_DIR=$_save_app_temp_dir
-			fi
-
-
+			
 		else
-			echo " ** Error unknow feature $_SCHEMA"
+			echo "** Feature $_SCHEMA already installed"
+			__feature_init "$FEAT_SCHEMA_SELECTED" $_OPT
 		fi
-	#fi
+
+		if [ "$_export_mode" == "ON" ]; then
+			STELLA_APP_FEATURE_ROOT=$_save_app_feature_root
+		fi
+
+		if [ "$_portable_mode" == "ON" ]; then
+			STELLA_APP_FEATURE_ROOT=$_save_app_feature_root
+		fi
+		
+		if [ "$_opt_internal_feature" == "ON" ]; then
+			STELLA_APP_FEATURE_ROOT=$_save_app_feature_root
+			STELLA_APP_CACHE_DIR=$_save_app_cache_dir
+			STELLA_APP_TEMP_DIR=$_save_app_temp_dir
+		fi
+
+
+	else
+		echo " ** Error unknow feature $_SCHEMA"
+	fi
+
 }
 
 
@@ -662,7 +705,6 @@ function __internal_feature_context() {
 	else
 		# we grab only os option
 		__translate_schema $_SCHEMA "NONE" "NONE" "NONE" "NONE" "FEAT_SCHEMA_OS_RESTRICTION" "FEAT_SCHEMA_OS_EXCLUSION"
-
 	fi
 }
 
