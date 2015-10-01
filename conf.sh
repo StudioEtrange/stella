@@ -120,6 +120,8 @@ __set_build_mode_default "OPTIMIZATION" "2"
 __set_build_mode_default "RELOCATE" "OFF"
 
 
+
+
 # . is current running directory
 # $ORIGIN and @loader_path is directory of the file who wants to load a shared library
 # NOTE : '@loader_path' does not work, you have to write '@loader_path/.'

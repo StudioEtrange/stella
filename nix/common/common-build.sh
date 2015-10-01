@@ -98,35 +98,8 @@ function __auto_build() {
 		[ ! "$_opt_build_keep" == "ON" ] && rm -Rf "$BUILD_DIR"
 	fi
 
-	# relocatable mode
-	# Copy each linked feature into a folder stella-dep
-	# BEFORE building, so rpath values are setted with right path before building
-
-	if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
-		echo "** RELOCATION mode "
-		local LIB_TARGET_FOLDER="$INSTALL_DIR/stella-dep"
-		LINKED_LIBS_PATH="$(__trim $LINKED_LIBS_PATH)"
-		for j in $LINKED_LIBS_PATH; do
-			if [ "$(__is_abs $j)" == "TRUE" ]; then
-				echo "*** Moving dependencies from $j to $LIB_TARGET_FOLDER"
-				__copy_folder_content_into "$j" "$LIB_TARGET_FOLDER"
-				# copy dependencies of dependency
-				if [ -d "$j/../stella-dep" ]; then
-					echo "*** Moving dependencies of dependency from $j/../stella-dep to $LIB_TARGET_FOLDER"
-					__copy_folder_content_into "$j/../stella-dep" "$LIB_TARGET_FOLDER"
-				fi
-			fi
-		done
-		if [ ! "$LINKED_LIBS_PATH" == "" ]; then
-			if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-				for f in "$LIB_TARGET_FOLDER"/*".dylib"*; do		
-					[ -f "$f" ] && __fix_dynamiclib_install_name_darwin "$f" "RPATH"
-				done
-			fi
-			[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && __set_build_mode "RPATH" "ADD_FIRST" '$$ORIGIN/../stella-dep'
-			[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && __set_build_mode "RPATH" "ADD_FIRST" "@loader_path/../stella-dep"
-		fi
-	fi
+	# determine rpath values
+	__compute_rpath "$INSTALL_DIR"
 
 	# set build env
 	__apply_build_env "$OPT"
@@ -431,7 +404,7 @@ function __link_feature_library() {
 	# default mode
 	case "$STELLA_BUILD_LINK_MODE" in 
 		DEFAULT)
-			_opt_flavour=
+			_opt_flavour="DEFAULT"
 			;;
 		DYNAMIC)
 			_opt_flavour="FORCE_DYNAMIC"
@@ -517,18 +490,17 @@ function __link_feature_library() {
 			[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && LIB_EXTENSION=".so"
 			[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && LIB_EXTENSION=".dylib"
 			;;
-		*)	
+		DEFAULT)	
 			LIB_TARGET_FOLDER="$REQUIRED_LIB_ROOT/$_lib_folder"
 			;;
 	esac
 
 	if [ "$_flag_lib_isolation" == "TRUE" ]; then
-		echo "*** Isolate dependent libs to $LIB_TARGET_FOLDER"
+		echo "*** Isolate dependencies into $LIB_TARGET_FOLDER"
 		__del_folder "$LIB_TARGET_FOLDER"
-
-		#local _target=
-
+		echo "*** Copying items from $REQUIRED_LIB_ROOT/$_lib_folder to $LIB_TARGET_FOLDER"
 		__copy_folder_content_into "$REQUIRED_LIB_ROOT"/"$_lib_folder" "$LIB_TARGET_FOLDER" "*"$LIB_EXTENSION"*"
+
 		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 			for f in "$LIB_TARGET_FOLDER"/*".dylib"*; do	
 				if [ -f "$f" ]; then	
@@ -580,7 +552,7 @@ function __link_feature_library() {
 		LINKED_LIBS_CPP_FLAGS="$LINKED_LIBS_CPP_FLAGS $_CPP_FLAGS"
 		LINKED_LIBS_LINK_FLAGS="$LINKED_LIBS_LINK_FLAGS $_LINK_FLAGS"
 
-		LINKED_LIBS_PATH="$LINKED_LIBS_PATH $_LIB"
+		LINKED_LIBS_PATH="$LINKED_LIBS_PATH $_opt_flavour $_LIB"
 
 		LINKED_LIBS_CMAKE_LIBRARY_PATH="$LINKED_LIBS_CMAKE_LIBRARY_PATH:$_LIB"
 		LINKED_LIBS_CMAKE_INCLUDE_PATH="$LINKED_LIBS_CMAKE_INCLUDE_PATH:$_INCLUDE"
@@ -609,8 +581,77 @@ function __link_feature_library() {
 
 
 
+# determine RPATH values
+function __compute_rpath() {
+	local INSTALL_DIR="$1"
+
+	echo "** Computing RPATH values"
+	# BEFORE building, so rpath values are setted with correct path before building
 
 
+
+	# Copy each linked feature into a folder stella-dep
+	if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
+		echo "*** We are in RELOCATION mode !"
+		local LIB_TARGET_FOLDER="$INSTALL_DIR/stella-dep"
+		LINKED_LIBS_PATH="$(__trim $LINKED_LIBS_PATH)"
+		local _flavor=
+		local _cpt=0
+		for j in $LINKED_LIBS_PATH; do
+			if [ $(( _cpt % 2 )) -eq 0 ]; then
+				_flavor=$j
+				_cpt=$(( _cpt + 1 ))
+				continue
+			fi
+			if [ "$(__is_abs $j)" == "TRUE" ]; then
+				echo "*** Moving dependencies from $j to $LIB_TARGET_FOLDER"
+				__copy_folder_content_into "$j" "$LIB_TARGET_FOLDER"
+				# copy dependencies of dependency
+				if [ -d "$j/../stella-dep" ]; then
+					echo "*** Moving dependencies of dependency from $j/../stella-dep to $LIB_TARGET_FOLDER"
+					__copy_folder_content_into "$j/../stella-dep" "$LIB_TARGET_FOLDER"
+				fi
+			fi
+		done
+		if [ ! "$LINKED_LIBS_PATH" == "" ]; then
+			if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+				for f in "$LIB_TARGET_FOLDER"/*".dylib"*; do		
+					[ -f "$f" ] && __fix_dynamiclib_install_name_darwin "$f" "RPATH"
+				done
+			fi
+			# NOTE : $ORIGIN may have problem on some systems, see : http://www.cmake.org/pipermail/cmake/2008-January/019290.html
+			[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && __set_build_mode "RPATH" "ADD_FIRST" '$ORIGIN/../stella-dep'
+			[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && __set_build_mode "RPATH" "ADD_FIRST" "@loader_path/../stella-dep"
+		fi
+
+
+
+	else
+
+
+
+		# On darwin we do not use RPATH because lib are linked with path
+		# On Linux we must use RPATH because libs are linked without path
+		if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+			LINKED_LIBS_PATH="$(__trim $LINKED_LIBS_PATH)"
+			local _flavor=
+			local _cpt=0
+			for j in $LINKED_LIBS_PATH; do
+				if [ $(( _cpt % 2 )) -eq 0 ]; then
+					_flavor=$j
+					_cpt=$(( _cpt + 1 ))
+					continue
+				fi
+				if [ ! "$_flavor" == "FORCE_STATIC" ]; then
+					echo "** Adding RPATH $j"
+					__set_build_mode "RPATH" "ADD" "$j"
+				fi
+			done
+		fi
+	fi
+
+	echo "** RPATH setted : $STELLA_BUILD_RPATH"
+}
 
 
 
@@ -620,8 +661,8 @@ function __reset_build_env() {
 	# BUILD FLAGS
 	STELLA_C_CXX_FLAGS=
 	STELLA_CPP_FLAGS=
-	#STELLA_DYNAMIC_LINK_FLAGS=
-	#STELLA_STATIC_LINK_FLAGS=
+	STELLA_DYNAMIC_LINK_FLAGS=
+	STELLA_STATIC_LINK_FLAGS=
 	STELLA_LINK_FLAGS=
 	STELLA_CMAKE_EXTRA_FLAGS=
 	STELLA_CMAKE_RPATH_BUILD_PHASE=
@@ -748,9 +789,7 @@ function __set_cmake_build_flags() {
 		for r in $STELLA_BUILD_RPATH; do
 			_rpath="$r;$_rpath"
 		done
-		# for darwin, will add as rpath current project lib folder ( TODO : need this for linux too ?)
-		#[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && _rpath="$_rpath;\${CMAKE_INSTALL_PREFIX}/lib"
-
+		
 		# all phase
 		[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && __set_build_env "CMAKE_RPATH" "ALL_PHASE_USE_RPATH_DARWIN"
 		__set_build_env "CMAKE_RPATH" "ALL_PHASE_USE_RPATH"
@@ -762,29 +801,39 @@ function __set_cmake_build_flags() {
 		__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_USE_FINAL_RPATH"
 		#__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_NO_RPATH"
 		__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_ADD_FINAL_RPATH" "$_rpath"
-		# add dependent lib directories to rpath value. (do not need this, because we merge all dependent libs in the same relative folder stella-dep)
-		#__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_ADD_DEPENDENT_LIB"
 	else
 
 		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 			## force install_name with hard path
 			__set_build_env "CMAKE_RPATH" "ALL_PHASE_USE_RPATH" # -- we need this for forcing install_name
-			__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_DEFAULT_RPATH" # -- we need this for forcing install_name
+			__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_USE_FINAL_RPATH" # -- we need this for forcing install_name
 			# \${CMAKE_INSTALL_PREFIX}/lib is correct because when building we pass INSTALL_LIB_DIR with /lib
 			STELLA_CMAKE_EXTRA_FLAGS="$STELLA_CMAKE_EXTRA_FLAGS -DCMAKE_INSTALL_NAME_DIR=\${CMAKE_INSTALL_PREFIX}/lib"
+
+			# on darwin we dont need setting rpath values, because libs are linked with harcoded path
 		fi
 		if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-			__set_build_env "CMAKE_RPATH" "ALL_PHASE_NO_RPATH"
+			# on linux we need rpath values, for linked libs
+			local _rpath=
+			for r in $STELLA_BUILD_RPATH; do
+				_rpath="$r;$_rpath"
+			done
+
+			__set_build_env "CMAKE_RPATH" "ALL_PHASE_USE_RPATH"
 
 			# cmake build phase
 			__set_build_env "CMAKE_RPATH" "BUILD_PHASE_NO_RPATH"
 		
 			# cmake install phase
-			#__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_USE_FINAL_RPATH"
-			#__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_ADD_DEPENDENT_LIB"
-			__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_NO_RPATH"
+			__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_USE_FINAL_RPATH"
+			# add dependent lib directories to rpath value. (maybe redundant with rpath values computed in __compute_rpath)
+			__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_ADD_DEPENDENT_LIB"
+			__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_ADD_FINAL_RPATH" "$_rpath"
 		fi
 	fi
+
+	# RUNPATH / RPATH
+	[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && __set_build_env "RUNPATH_OVER_RPATH"
 
 	# CMAKE Flags
 	# note : 
@@ -792,19 +841,15 @@ function __set_cmake_build_flags() {
 	#	- list of environment variables read by cmake http://www.cmake.org/Wiki/CMake_Useful_Variables#Environment_Variables
 	CMAKE_C_FLAGS="$STELLA_C_CXX_FLAGS"
 	CMAKE_CXX_FLAGS="$STELLA_C_CXX_FLAGS"
-	#CMAKE_SHARED_LINKER_FLAGS="$STELLA_LINK_FLAGS"
-	#CMAKE_MODULE_LINKER_FLAGS="$STELLA_LINK_FLAGS"
-	#CMAKE_STATIC_LINKER_FLAGS="$STELLA_STATIC_LINK_FLAGS"
-	#CMAKE_EXE_LINKER_FLAGS="$STELLA_STATIC_LINK_FLAGS $STELLA_DYNAMIC_LINK_FLAGS"
-
+	
 	# Linker flags to be used to create shared libraries
-	CMAKE_SHARED_LINKER_FLAGS="$STELLA_LINK_FLAGS"
+	CMAKE_SHARED_LINKER_FLAGS="$STELLA_LINK_FLAGS $STELLA_DYNAMIC_LINK_FLAGS"
 	# Linker flags to be used to create module
-	CMAKE_MODULE_LINKER_FLAGS="$STELLA_LINK_FLAGS"
+	CMAKE_MODULE_LINKER_FLAGS="$STELLA_LINK_FLAGS $STELLA_DYNAMIC_LINK_FLAGS"
 	# Linker flags to be used to create static libraries
-	CMAKE_STATIC_LINKER_FLAGS="$STELLA_LINK_FLAGS"
+	CMAKE_STATIC_LINKER_FLAGS="$STELLA_LINK_FLAGS $STELLA_STATIC_LINK_FLAGS"
 	# Linker flags to be used to create executables
-	CMAKE_EXE_LINKER_FLAGS="$STELLA_LINK_FLAGS"
+	CMAKE_EXE_LINKER_FLAGS="$STELLA_LINK_FLAGS $STELLA_DYNAMIC_LINK_FLAGS"
 
 	# Linked libraries
 	LINKED_LIBS_CMAKE_LIBRARY_PATH="$(__trim $LINKED_LIBS_CMAKE_LIBRARY_PATH)"
@@ -815,7 +860,6 @@ function __set_cmake_build_flags() {
 
 	# save rpath related flags
 	[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && STELLA_CMAKE_EXTRA_FLAGS="$STELLA_CMAKE_EXTRA_FLAGS $STELLA_CMAKE_RPATH $STELLA_CMAKE_RPATH_BUILD_PHASE $STELLA_CMAKE_RPATH_INSTALL_PHASE"
-	#[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && STELLA_CMAKE_EXTRA_FLAGS="-DCMAKE_INSTALL_NAME_DIR=\${CMAKE_INSTALL_RPATH} $STELLA_CMAKE_EXTRA_FLAGS $STELLA_CMAKE_RPATH $STELLA_CMAKE_RPATH_DARWIN $STELLA_CMAKE_RPATH_BUILD_PHASE $STELLA_CMAKE_RPATH_INSTALL_PHASE"
 	[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && STELLA_CMAKE_EXTRA_FLAGS="$STELLA_CMAKE_EXTRA_FLAGS $STELLA_CMAKE_RPATH $STELLA_CMAKE_RPATH_DARWIN $STELLA_CMAKE_RPATH_BUILD_PHASE $STELLA_CMAKE_RPATH_INSTALL_PHASE"
 	
 	STELLA_CMAKE_EXTRA_FLAGS="$(__trim $STELLA_CMAKE_EXTRA_FLAGS)"
@@ -829,7 +873,10 @@ function __set_standard_build_flags() {
 
 	# RPATH Management
 	for r in $STELLA_BUILD_RPATH; do
+
 		if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+			# to avoid problem with $$ORIGIN -- only usefull with standard build tools (do not need this with cmake)
+			r=${r/\$ORIGIN/\$\$ORIGIN}
 			STELLA_LINK_FLAGS="$STELLA_LINK_FLAGS -Wl,-rpath='"$r"'"
 		fi
 		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then	
@@ -837,6 +884,8 @@ function __set_standard_build_flags() {
 		fi
 	done
 	
+	# RUNPATH / RPATH
+	[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && __set_build_env "RUNPATH_OVER_RPATH"
 
 	# ADD linked libraries flags
 	LINKED_LIBS_C_CXX_FLAGS="$(__trim $LINKED_LIBS_C_CXX_FLAGS)"
@@ -845,7 +894,7 @@ function __set_standard_build_flags() {
 
 	STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS $LINKED_LIBS_C_CXX_FLAGS"
 	STELLA_CPP_FLAGS="$STELLA_CPP_FLAGS $LINKED_LIBS_CPP_FLAGS"
-	STELLA_LINK_FLAGS="$LINKED_LIBS_LINK_FLAGS $STELLA_LINK_FLAGS"
+	STELLA_LINK_FLAGS="$LINKED_LIBS_LINK_FLAGS $STELLA_LINK_FLAGS $STELLA_DYNAMIC_LINK_FLAGS $STELLA_STATIC_LINK_FLAGS"
 
 
  	# flags to pass to the C compiler.
@@ -857,11 +906,11 @@ function __set_standard_build_flags() {
 	# flags to pass to the linker
 	#export LDFLAGS="$STELLA_STATIC_LINK_FLAGS $STELLA_DYNAMIC_LINK_FLAGS"
 	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-		# TODO experimental
+		# TODO experimental new flags
 		# https://sourceware.org/binutils/docs/ld/Options.html
 		# http://www.kaizou.org/2015/01/linux-libraries/
+		#export LDFLAGS="$STELLA_LINK_FLAGS"
 		export LDFLAGS="-Wl,--copy-dt-needed-entries -Wl,--as-needed -Wl,--no-allow-shlib-undefined -Wl,--no-undefined $STELLA_LINK_FLAGS"
-		export LDFLAGS="-Wl,--enable-new-dtags $LDFLAGS"
 	else
 		export LDFLAGS="$STELLA_LINK_FLAGS"
 	fi
@@ -882,6 +931,7 @@ function __set_build_mode_default() {
 	esac
 	
 }
+
 
 function __set_build_mode() {
 
@@ -946,9 +996,18 @@ function __set_build_mode() {
 	fi
 }
 
-# Translate build env to flags
+# settings compiler flags
 function __set_build_env() {
 
+
+	# RUNPATH/RPATH
+	# prefer setting RUNPATH over setting RPATH
+	# enable-new-dtags : http://blog.tremily.us/posts/rpath/
+	if [ "$1" == "RUNPATH_OVER_RPATH" ]; then
+		if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+			STELLA_DYNAMIC_LINK_FLAGS="$STELLA_DYNAMIC_LINK_FLAGS -Wl,--enable-new-dtags"
+		fi
+	fi
 
 	# CPU_INSTRUCTION_SCOPE -----------------------------------------------------------------
 	# http://sdf.org/~riley/blog/2014/10/30/march-mtune/
@@ -1088,9 +1147,6 @@ function __set_build_env() {
 	
 
 
-			INSTALL_PHASE_DEFAULT_RPATH)
-				STELLA_CMAKE_RPATH_INSTALL_PHASE="-DCMAKE_SKIP_INSTALL_RPATH=OFF" # DEFAULT : OFF
-				;;
 
 			INSTALL_PHASE_NO_RPATH)
 				STELLA_CMAKE_RPATH_INSTALL_PHASE="-DCMAKE_SKIP_INSTALL_RPATH=ON" # DEFAULT : OFF
@@ -1181,8 +1237,13 @@ function __check_built_files() {
 					if [ ! "$(objdump -p "$f" 2>/dev/null)" == "" ]; then
 						echo
 						echo "** Analysing $f"
-						[ ! "$(__get_extension_from_string $f)" == "a" ] && __check_rpath_linux "$f"
-						[ ! "$(__get_extension_from_string $f)" == "a" ] && __check_dynamic_linking_linux "$f"
+						if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
+							[ ! "$(__get_extension_from_string $f)" == "a" ] && __check_rpath_linux "$f" "REL_RPATH"
+							[ ! "$(__get_extension_from_string $f)" == "a" ] && __check_dynamic_linking_linux "$f"
+						else
+							[ ! "$(__get_extension_from_string $f)" == "a" ] && __check_rpath_linux "$f" "ABS_RPATH"
+							[ ! "$(__get_extension_from_string $f)" == "a" ] && __check_dynamic_linking_linux "$f"
+						fi
 						echo
 					fi
 				;;
@@ -1193,9 +1254,10 @@ function __check_built_files() {
 						echo "** Analysing $f"
 						if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
 							[ "$(__get_extension_from_string $f)" == "dylib" ] && __check_install_name_darwin "$f" "RPATH"
-							[ ! "$(__get_extension_from_string $f)" == "a" ] && __check_rpath_darwin "$f"
+							[ ! "$(__get_extension_from_string $f)" == "a" ] && __check_rpath_darwin "$f" "REL_RPATH"
 						else
 							[ "$(__get_extension_from_string $f)" == "dylib" ] && __check_install_name_darwin "$f" "PATH"
+							[ ! "$(__get_extension_from_string $f)" == "a" ] && __check_rpath_darwin "$f" "NO_RPATH"
 						fi
 
 						[ ! "$(__get_extension_from_string $f)" == "a" ] && __check_dynamic_linking_darwin "$f"
@@ -1210,42 +1272,79 @@ function __check_built_files() {
 # test rpath values
 function __check_rpath_linux() {
 	local _file=$1
+	local OPT="$2"
 	local t
 
-	# check rpath values of executable binary and shared lib
-	local _err=0
+	
+	# NO_RPATH -- must no have any rpath
+	# REL_RPATH -- rpath must be a relative path
+	# ABS_RPATH -- rpath must be an absolute path
+	local _no_rpath=OFF
+	local _rel_rpath=OFF
+	local _abs_rpath=OFF
+	for o in $OPT; do
+		[ "$o" == "NO_RPATH" ] && _no_rpath=ON
+		[ "$o" == "REL_RPATH" ] && _rel_rpath=ON && _abs_rpath=OFF
+		[ "$o" == "ABS_RPATH" ] && _rel_rpath=OFF && _abs_rpath=ON
+	done
+
 	
 	local _rpath_values
 
 	local _field="RPATH"
-	[ "$(objdump -p $_file | grep -E "$_field\s")" == "" ] && _field="RUNPATH"
+	[ "$(objdump -p $_file | grep -E "$_field\s" | tr -s ' ' | cut -d ' ' -f 3)" == "" ] && _field="RUNPATH"
 
-	IFS=':' read -ra _rpath_values <<< "$(objdump -p $_file | grep -E "$_field\s" | tr -s ' ' | cut -d ' ' -f 3)"
+	IFS=':' read -ra _rpath_values <<< $(objdump -p $_file | grep -E "$_field\s" | tr -s ' ' | cut -d ' ' -f 3)
 
-	echo "** RPATH values :"
-	if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
-		for i in "${_rpath_values[@]}"; do
-			printf %s "		$i"
-		 	[ $(__is_abs "$i") == "TRUE" ] && printf %s " -- WARN absolute path"
-		 	echo
-		done
+
+	if [ "$_no_rpath" == "ON" ];then
+		printf %s "*** Checking if there is no RPATH setted "
+		if [ "$_rpath_values" == "" ]; then
+			printf %s " -- OK"
+			echo
+		else
+			printf %s " -- WARN RPATH is setted"
+			echo
+			echo "*** List RPATH values in search order :"
+			echo $_rpath_values
+		fi
 	else
-		for i in "${_rpath_values[@]}"; do
-			echo "		$i"
+		for line in "${_rpath_values[@]}"; do
+			printf %s "*** Checking RPATH value : $line "
+			if [ "$_abs_rpath" == "ON" ]; then
+		 		if [ "$(__is_abs $line)" == "TRUE" ];then 
+		 			printf %s "-- is abs path : OK"
+		 		else
+		 			printf %s "-- is not an abs path : WARN"
+		 		fi
+		 	else
+			 	if [ "$_rel_rpath" == "ON" ]; then
+			 		if [ "$(__is_abs $line)" == "TRUE" ];then 
+			 			printf %s "-- is not a rel path : WARN"
+			 		else
+			 			printf %s "-- is rel path : OK"
+			 		fi
+			 	else
+			 		printf %s "-- OK"
+			 	fi
+			 fi
+		 	echo
 		done
 	fi
 
-	echo "** Checking missing RPATH : $r"
+	local _err=0
 	for r in $STELLA_BUILD_RPATH; do
-		printf %s "*** Checking RPATH value : $r"
+		
+		printf %s "*** Checking if setted RPATH value is missing : $r"
+	
 		for i in "${_rpath_values[@]}"; do
-		 	[ "$i" == "$r" ] && t=1
+			if [ "$i" == "$r" ]; then
+				 printf %s " -- OK"
+				 _err=1
+			fi
 		done
-		if [ "$t" == "" ]; then
-			printf %s " -- WARN RPATH value $r is missing"
-			_err=1
-		fi
-		[ "$_err" == "0" ] && printf %s " -- OK"
+		[ "$_err" == "0" ] && printf %s " -- WARN RPATH is missing"
+		_err=0
 		echo
 	done
 	
@@ -1275,32 +1374,77 @@ function __check_dynamic_linking_linux() {
 	else
 		printf %s "-- OK"
 	fi
+
 }
 
 
 # check wanted rpath values of exexcutable binary and shared lib
 function __check_rpath_darwin() {
 	local _file=$1
+	local OPT="$2"
 	local t
 	
-
-
-	local _err=0
-
-	echo "*** List RPATH values in search order :"
-	t=`otool -l $_file | grep -E "LC_RPATH" -A2 | grep -E "path "`
-	echo $t
-
-	for r in $STELLA_BUILD_RPATH; do
-		printf %s "*** Checking if setted RPATH value is missing : $r"
-		t=`otool -l $_file | grep -E "LC_RPATH" -A2 | grep -E "path $r \("`
-		if [ "$t" == "" ]; then
-			printf %s " -- WARN RPATH value $r is missing"
-			_err=1
-		fi
-		[ "$_err" == "0" ] && printf %s " -- OK"
-		echo
+	# NO_RPATH -- must no have any rpath
+	# REL_RPATH -- rpath must be a relative path
+	# ABS_RPATH -- rpath must be an absolute path
+	local _no_rpath=OFF
+	local _rel_rpath=OFF
+	local _abs_rpath=OFF
+	for o in $OPT; do
+		[ "$o" == "NO_RPATH" ] && _no_rpath=ON
+		[ "$o" == "REL_RPATH" ] && _rel_rpath=ON && _abs_rpath=OFF
+		[ "$o" == "ABS_RPATH" ] && _rel_rpath=OFF && _abs_rpath=ON
 	done
+
+
+	t=`otool -l $_file | grep -E "LC_RPATH" -A2 | grep -E "path "`
+	if [ "$_no_rpath" == "ON" ];then
+		printf %s "*** Checking if there is no RPATH setted "
+		if [ "$t" == "" ]; then
+			printf %s " -- OK"
+			echo
+		else
+			printf %s " -- WARN RPATH is setted"
+			echo
+			echo "*** List RPATH values in search order :"
+			echo $t
+		fi
+	else
+		while read -r line; do
+			printf %s "*** Checking RPATH value : $line "
+			if [ "$_abs_rpath" == "ON" ]; then
+		 		if [ "$(__is_abs $line)" == "TRUE" ];then 
+		 			printf %s "-- is abs path : OK"
+		 		else
+		 			printf %s "-- is not an abs path : WARN"
+		 		fi
+		 	else
+			 	if [ "$_rel_rpath" == "ON" ]; then
+			 		if [ "$(__is_abs $line)" == "TRUE" ];then 
+			 			printf %s "-- is not a rel path : WARN"
+			 		else
+			 			printf %s "-- is rel path : OK"
+			 		fi
+			 	else
+			 		printf %s "-- OK"
+			 	fi
+			 fi
+		 	echo
+		done <<< "$(otool -l "$_file" | grep -E "LC_RPATH" -A2 | grep path | tr -s ' ' | cut -d ' ' -f 3)"
+
+		local _err=0
+		for r in $STELLA_BUILD_RPATH; do
+			printf %s "*** Checking if setted RPATH value is missing : $r"
+			t=`otool -l $_file | grep -E "LC_RPATH" -A2 | grep -E "path $r \("`
+			if [ ! "$t" == "" ]; then
+				printf %s " -- OK"	
+				_err=1
+			fi
+			[ "$_err" == "0" ] && printf %s " -- WARN RPATH is missing"
+			_err=0
+			echo
+		done
+	fi
 
 
 }
@@ -1422,7 +1566,8 @@ function __fix_built_files() {
 		if [ -f "$f" ]; then
 			case $STELLA_CURRENT_PLATFORM in 
 				linux)
-					echo "TODO"
+					echo
+					#[ ! "$(__get_extension_from_string $f)" == "a" ] && __fix_linked_lib_linux "$f" "ONLY_ABS_PATH REL_RPATH EXCLUDE_FILTER /System/Library|/usr/lib"
 				;;
 				darwin)
 					# test if file is a binary Mach-O file (binary, shared lib or static lib)
@@ -1449,6 +1594,8 @@ function __fix_built_files() {
 
 }
 
+
+
 # MACOS -----  install_name, rpath, loader_path, executable_path
 # https://mikeash.com/pyblog/friday-qa-2009-11-06-linking-and-install-names.html
 
@@ -1456,7 +1603,7 @@ function __fix_built_files() {
 
 # rpath ------------------------------
 # fix rpath value by adding rpath values contained in list STELLA_BUILD_RPATH
-#		reorder all rpath values
+# and reorder all rpath values
 function __fix_rpath_darwin() {
 	local _file=$1
 
@@ -1496,7 +1643,7 @@ function __fix_rpath_darwin() {
 
 }
 
-# fix linked shared lib with hardcoded path  and replace them with @rpath/libname and adding rpath value 
+# fix linked shared lib by modifying LOAD_DYLIB and adding rpath values
 # sometimes, we have to do this because we did set the install_name of a lib after the build, but too late.
 # TODO should exclude linked lib with @rpath/lib
 function __fix_linked_lib_darwin() {
@@ -1505,7 +1652,7 @@ function __fix_linked_lib_darwin() {
 
 	# ONLY_ABS_PATH -- apply only to linked lib registered with an absolute path
 	# ABS_RPATH -- add an absolute rpath value to linked lib
-	# REL_RPATH -- add an absolute rpath value to linked lib
+	# REL_RPATH -- add a relative rpath value to linked lib
 	# EXCLUDE_FILTER -- ignore these linked libraries
 
 	local _opt_abs_path=OFF
@@ -1548,6 +1695,7 @@ function __fix_linked_lib_darwin() {
 	for l in $_linked_lib_list; do
 
 		_filename=$(__get_filename_from_string $_file)
+		
 		_new_load_dylib="$(__get_path_from_string $l)"
 		[ "$_rel_rpath" == "ON" ] && _new_load_dylib="@loader_path/$(__abs_to_rel_path $_new_load_dylib $(__get_path_from_string $_file))"
 		_linked_lib_filename="$(__get_filename_from_string $l)"
@@ -1556,6 +1704,7 @@ function __fix_linked_lib_darwin() {
 		
 		echo "*** setting LOAD_DYLIB : @rpath/$_linked_lib_filename"
 		install_name_tool -change "$l" "@rpath/$_linked_lib_filename" "$_file"
+
 
 		echo "*** adding RPATH value : $_new_load_dylib"
 		#__set_build_mode "RPATH" "ADD" "$_new_load_dylib"
@@ -1602,7 +1751,7 @@ function __fix_dynamiclib_install_name_darwin() {
 		@rpath*)
 			if [ "$_opt_path" == "ON" ]; then
 				_new_install_name="$(__get_path_from_string $_lib)/$(__get_filename_from_string $_original_install_name)"
-				echo "** Fixing install_name for $_lib with value : $_new_install_name"
+				echo "** Fixing install_name for $_lib with value : FROM $_original_install_name TO $_new_install_name"
 				install_name_tool -id "$_new_install_name" $_lib
 			fi
 		;;
@@ -1610,14 +1759,14 @@ function __fix_dynamiclib_install_name_darwin() {
 		*)
 			if [ "$_opt_rpath" == "ON" ]; then
 				_new_install_name="@rpath/$(__get_filename_from_string $_original_install_name)"
-				echo "** Fixing install_name for $_lib with value : $_new_install_name"
+				echo "** Fixing install_name for $_lib with value : FROM $_original_install_name TO $_new_install_name"
 				install_name_tool -id "$_new_install_name" $_lib
 			fi
 			if [ "$_opt_path" == "ON" ]; then
 				# location path is not the good one
 				if [ ! "$(dirname $_lib)" == "$(dirname $_original_install_name)" ]; then
 					_new_install_name="$(__get_path_from_string $_lib)/$(__get_filename_from_string $_original_install_name)"
-					echo "** Fixing install_name for $_lib with value : $_new_install_name"
+					echo "** Fixing install_name for $_lib with value : FROM $_original_install_name TO $_new_install_name"
 					install_name_tool -id "$_new_install_name" $_lib
 				fi
 			fi

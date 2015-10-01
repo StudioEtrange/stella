@@ -55,7 +55,7 @@ function feature_libpng_install_source() {
 
 	__feature_callback
 
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "CONFIG_TOOL cmake"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "CONFIG_TOOL configure"
 	
 
 	

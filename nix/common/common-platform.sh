@@ -291,10 +291,6 @@ function __sys_package_manager() {
 	if [ "$_action" == "INSTALL" ]; then
 		case $_package_manager in
 			apt-get)
-export HTTPS_PROXY=$HTTPS_PROXY
-export HTTP_PROXY=$HTTP_PROXY
-echo $HTTPS_PROXY
-echo $HTTP_PROXY
 				sudo apt-get update
 				sudo apt-get -y install $_packages
 				;;
@@ -359,10 +355,10 @@ function __sys_remove_brew() {
 
 
 function __sys_install_build-chain-standard() {
-	echo " ** Install build-chain-standard on your system"
 	local _package_manager=
 
 	if [ "$STELLA_CURRENT_OS" == "macos" ]; then
+		echo " ** Install build-chain-standard on your system"
 		# from https://github.com/lockfale/msf-installer/blob/master/msf_install.sh
 		# http://docs.python-guide.org/en/latest/starting/install/osx/
 		local PKGS=`pkgutil --pkgs`
@@ -387,14 +383,14 @@ function __sys_install_build-chain-standard() {
 
 	else
 		#bison util-linux build-essential gcc-multilib g++-multilib g++ pkg-config
-		__sys_package_manager "INSTALL" "unzip" "apt-get build-essential gcc-multilib g++-multilib"
+		__sys_package_manager "INSTALL" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib"
 	fi
 }
 function __sys_remove_build-chain-standard() {
 	if [ "$STELLA_CURRENT_OS" == "macos" ]; then
 		echo " ** Remove Xcode and Command Line Development Tools by hand"
 	else
-		__sys_package_manager "REMOVE" "unzip" "apt-get build-essential gcc-multilib g++-multilib"
+		__sys_package_manager "REMOVE" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib"
 	fi
 
 }

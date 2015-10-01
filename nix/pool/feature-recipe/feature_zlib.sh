@@ -36,7 +36,7 @@ function feature_zlib_1_2_8() {
 
 
 function toto() {
-	__link_feature_library "bzip2" "FORCE_DYNAMIC"
+	__link_feature_library "bzip2" "FORCE_STATIC"
 }
 
 function feature_zlib_install_source() {

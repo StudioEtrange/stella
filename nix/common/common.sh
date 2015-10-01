@@ -308,15 +308,16 @@ function __init_stella_env() {
 #FILE TOOLS----------------------------------------------
 #http://stackoverflow.com/a/17902999/5027535
 function __count_folder_item() {
-	local _path=$1
-	local _filter=$2
+	local _path="$1"
+	local _filter="$2"
 
 	if [ "$_filter" == "" ]; then
+
 		_filter="*"
 	fi
 
 	local files=$(shopt -s nullglob dotglob; echo $_path/$_filter)
-	echo ${#files}
+	echo ${#files[@]}
 
 }
 
@@ -327,11 +328,12 @@ function __del_folder() {
 
 # copy content of folder ARG1 into folder ARG2
 function __copy_folder_content_into() {
-	local filter=$3
+	local filter="$3"
 	if [ "$filter" == "" ]; then
 		filter="*"
 	fi
-	if [ $(__count_folder_item $1/$filter) -gt 0 ]; then
+	
+	if [ $(__count_folder_item $1 $filter) -gt 0 ]; then
 		mkdir -p $2
 		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 			cp -fa $1/$filter $2
