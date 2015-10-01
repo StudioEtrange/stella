@@ -368,27 +368,41 @@ goto :eof
 			REM bundle
 			if not "!FEAT_BUNDLE!"=="" (
 				set "FEAT_BUNDLE_MODE=!FEAT_BUNDLE!"
-				set "save_FEAT_SCHEMA_SELECTED_4=!FEAT_SCHEMA_SELECTED!"
+				
 				if not "!FEAT_BUNDLE_ITEM!"=="" (
-					set "save_FORCE=%FORCE%"
-					set "FORCE=0"
+
+					set "save_FEAT_SCHEMA_SELECTED_4=!FEAT_SCHEMA_SELECTED!"
+
+					if not "!FEAT_BUNDLE_MODE!"=="LIST" (
+						set "save_FORCE=%FORCE%"
+						set "FORCE=0"
+					)
 
 					if "!FEAT_BUNDLE_MODE!"=="LIST" (
 						set " _flag_hidden="
 					) else (
 						set "_flag_hidden=HIDDEN"
 					)
-						
+					
+					
+
 					for %%p in (!FEAT_BUNDLE_ITEM!) do (
 						call :feature_install %%p "!_OPT! !_flag_hidden!"
 					)
-							
-					set "FORCE=!save_FORCE!"
+					
+					
+
+					if not "!FEAT_BUNDLE_MODE!"=="LIST" (
+						set "FORCE=!save_FORCE!"
+					)
+
+					set "FEAT_SCHEMA_SELECTED=!save_FEAT_SCHEMA_SELECTED_4!"
+					call :internal_feature_context !FEAT_SCHEMA_SELECTED!
 					
 				)
 				set "FEAT_BUNDLE_MODE="
-				set "FEAT_SCHEMA_SELECTED=!save_FEAT_SCHEMA_SELECTED_4!"
-				call :internal_feature_context !FEAT_SCHEMA_SELECTED!
+				
+				
 				REM automatic call of callback
 				call :feature_callback
 			) else (

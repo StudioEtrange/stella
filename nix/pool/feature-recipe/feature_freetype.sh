@@ -38,9 +38,9 @@ function feature_freetype_2_6_0_patch() {
 }
 
 function feature_freetype_2_6_0_link() {
-	__link_feature_library "libpng#1_6_17" "" "FORCE_STATIC"
-	__link_feature_library "bzip2#1_0_6" "" "FORCE_STATIC"
-	__link_feature_library "zlib#1_2_8" "" "FORCE_DYNAMIC"
+	__link_feature_library "libpng#1_6_17" "FORCE_STATIC"
+	__link_feature_library "bzip2#1_0_6" "FORCE_STATIC"
+	__link_feature_library "zlib#1_2_8" "FORCE_DYNAMIC"
 }
 
 function feature_freetype_install_source() {

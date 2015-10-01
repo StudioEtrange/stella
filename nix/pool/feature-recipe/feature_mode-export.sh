@@ -3,15 +3,15 @@ _EXPORTMODE_INCLUDED_=1
 
 function feature_mode-export() {
 	FEAT_NAME="mode-export"
-	FEAT_LIST_SCHEMA="merge"
-	FEAT_DEFAULT_VERSION=merge
+	FEAT_LIST_SCHEMA="1"
+	FEAT_DEFAULT_VERSION=1
 	FEAT_DEFAULT_ARCH=
 
-	FEAT_BUNDLE=MERGE
+	FEAT_BUNDLE=LIST
 }
 
-function feature_mode-export_merge() {
-	FEAT_VERSION=merge
+function feature_mode-export_1() {
+	FEAT_VERSION=1
 	
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=

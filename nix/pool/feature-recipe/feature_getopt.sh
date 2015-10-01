@@ -41,7 +41,7 @@ function feature_getopt_1_1_6() {
 function feature_getopt_1_1_6_patch() {
 	# https://github.com/Homebrew/homebrew/blob/master/Library/Formula/gnu-getopt.rb
 
-	__link_feature_library "gettext" "intl" "GET_FLAGS _gettext NO_SET_FLAGS"
+	__link_feature_library "gettext" "LIBS_NAME intl GET_FLAGS _gettext NO_SET_FLAGS"
 	
 	#sed -i .bak 's,^\(CPPFLAGS=.*\),\1 '"-I$FEAT_INSTALL_ROOT/include"',' $SRC_DIR/Makefile
 	#sed -i .bak 's,^\(LDFLAGS=.*\),\1 '"-L$FEAT_INSTALL_ROOT/lib -lintl"',' $SRC_DIR/Makefile

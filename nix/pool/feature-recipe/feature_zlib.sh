@@ -14,7 +14,7 @@ function feature_zlib() {
 
 function feature_zlib_1_2_8() {
 	FEAT_VERSION=1_2_8
-	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_SOURCE_DEPENDENCIES=bzip2
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://zlib.net/zlib-1.2.8.tar.gz
@@ -25,13 +25,18 @@ function feature_zlib_1_2_8() {
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
 	
-	FEAT_SOURCE_CALLBACK=
+	FEAT_SOURCE_CALLBACK=toto
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libz.a
 	FEAT_SEARCH_PATH=
 	
+}
+
+
+function toto() {
+	__link_feature_library "bzip2" "FORCE_DYNAMIC"
 }
 
 function feature_zlib_install_source() {
@@ -47,11 +52,11 @@ function feature_zlib_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
+	__feature_callback
+
 	# out of tree build do not work
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD CONFIG_TOOL configure BUILD_TOOL make"
 
-
-	
 }
 
 

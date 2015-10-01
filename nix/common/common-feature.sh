@@ -132,29 +132,21 @@ function __feature_match_installed() {
 }
 
 # save context before calling __feature_inspect, in case we use it inside a schema context
-function __push_schema_context_old() {
-	__push_schema_context_TEST_FEATURE=$TEST_FEATURE
-	__push_schema_context_FEAT_SCHEMA_SELECTED=$FEAT_SCHEMA_SELECTED
-}
-# load context before calling __feature_inspect, in case we use it inside a schema context
-function __pop_schema_context_old() {
-	FEAT_SCHEMA_SELECTED=$__push_schema_context_FEAT_SCHEMA_SELECTED
-	__internal_feature_context $FEAT_SCHEMA_SELECTED
-	TEST_FEATURE=$__push_schema_context_TEST_FEATURE
-}
-# save context before calling __feature_inspect, in case we use it inside a schema context
 function __push_schema_context() {
 	__stack_push "$TEST_FEATURE"
 	__stack_push "$FEAT_SCHEMA_SELECTED"
+	#echo PUSH $FEAT_SCHEMA_SELECTED
+
 }
 # load context before calling __feature_inspect, in case we use it inside a schema context
 function __pop_schema_context() {
-	FEAT_SCHEMA_SELECTED=$(__stack_pop)
+	__stack_pop FEAT_SCHEMA_SELECTED
 	__internal_feature_context $FEAT_SCHEMA_SELECTED
-	TEST_FEATURE="$(__stack_pop)"
+	__stack_pop TEST_FEATURE
+	#echo POP $FEAT_SCHEMA_SELECTED
+	
 }
 
-#    echo "Got $top"
 
 # test if a feature is installed
 # AND retrieve informations based on actually installed feature (looking inside STELLA_APP_FEATURE_ROOT) OR from feature recipe if not installed
@@ -292,8 +284,6 @@ function __feature_install() {
 	local _SCHEMA=$1
 	local _OPT="$2"
 
-	
-
 	local o
 	local _opt_internal_feature=OFF
 	local _opt_hidden_feature=OFF
@@ -329,19 +319,25 @@ function __feature_install() {
 	# EXPORT / PORTABLE MODE ------------------------------------
 	if [ "$_export_mode" == "ON" ]; then
 		FEAT_MODE_EXPORT_SCHEMA="$_SCHEMA"
-		_SCHEMA="mode-export#merge"
+		_SCHEMA="mode-export"
 
-		_save_app_feature_root="$STELLA_APP_FEATURE_ROOT"
-		STELLA_APP_FEATURE_ROOT="$_dir_export"
+		local _save_app_feature_root="$STELLA_APP_FEATURE_ROOT"
+		STELLA_APP_FEATURE_ROOT="$(__rel_to_abs_path "$_dir_export")"
+		_OPT="${_OPT//EXPORT/__}"
 	fi
 
 	if [ "$_portable_mode" == "ON" ]; then
-		FEAT_MODE_PORTABLE_SCHEMA="$_SCHEMA"
-		_SCHEMA="mode-portable#nested"
+		FEAT_MODE_EXPORT_SCHEMA="$_SCHEMA"
+		_SCHEMA="mode-export"
 
-		_save_app_feature_root="$STELLA_APP_FEATURE_ROOT"
-		STELLA_APP_FEATURE_ROOT="$_dir_portable"
+		local _save_app_feature_root="$STELLA_APP_FEATURE_ROOT"
+		STELLA_APP_FEATURE_ROOT="$(__rel_to_abs_path "$_dir_portable")"
+		_OPT="${_OPT//PORTABLE/__}"
+
+		local _save_relocate_default_mode=$STELLA_BUILD_RELOCATE_DEFAULT
+		__set_build_mode_default "RELOCATE" "ON"
 	fi
+
 
 
 
@@ -350,6 +346,7 @@ function __feature_install() {
 
 	__internal_feature_context $_SCHEMA
 	
+
 	if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" == "" ]; then
 		if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" == "$STELLA_CURRENT_OS" ]; then
 			echo " $_SCHEMA not installed on $STELLA_CURRENT_OS"
@@ -381,10 +378,14 @@ function __feature_install() {
 			__add_app_feature $_SCHEMA
 		fi
 
-		
+
 		if [ "$FORCE" == "1" ]; then
 			TEST_FEATURE=0
-			__del_folder $FEAT_INSTALL_ROOT
+			if [ "$_export_mode" == "OFF" ]; then
+				if [ "$_portable_mode" == "OFF" ]; then
+					__del_folder $FEAT_INSTALL_ROOT
+				fi
+			fi
 		else
 			__feature_inspect $FEAT_SCHEMA_SELECTED
 		fi
@@ -392,10 +393,13 @@ function __feature_install() {
 
 		if [ "$TEST_FEATURE" == "0" ]; then
 
+			if [ "$_export_mode" == "OFF" ]; then
+				if [ "$_portable_mode" == "OFF" ]; then
+					mkdir -p "$FEAT_INSTALL_ROOT"
+				fi
+			fi
 
-			mkdir -p $FEAT_INSTALL_ROOT
-
-			# dependencies
+			# dependencies -----------------
 			if [ "$_opt_ignore_dep" == "OFF" ]; then
 				local dep
 
@@ -431,7 +435,7 @@ function __feature_install() {
 						if [ "$TEST_FEATURE" == "0" ]; then
 							echo "** Error while installing dependency feature $FEAT_SCHEMA_SELECTED"
 						fi
-						__pop_schema_context
+						__pop_schema_context	
 					fi
 					[ "$_origin" == "SYSTEM" ] && echo "Using dependency $dep from SYSTEM."
 					
@@ -440,14 +444,17 @@ function __feature_install() {
 				FORCE=$save_FORCE
 			fi
 
-			# Bundle
+			# bundle -----------------
 			if [ ! "$FEAT_BUNDLE" == "" ]; then
 				FEAT_BUNDLE_MODE=$FEAT_BUNDLE
-				__push_schema_context
-				if [ ! "$FEAT_BUNDLE_ITEM" == "" ]; then
-					save_FORCE=$FORCE
 				
-					FORCE=0
+				if [ ! "$FEAT_BUNDLE_ITEM" == "" ]; then
+					__push_schema_context
+
+					if [ ! "$FEAT_BUNDLE_MODE" == "LIST" ]; then
+						save_FORCE=$FORCE
+						FORCE=0
+					fi
 
 					# should be  MERGE or NESTED or LIST
 					# NESTED : each item will be installed inside the bundle path in a separate directory
@@ -461,18 +468,20 @@ function __feature_install() {
 						_flag_hidden="HIDDEN"
 					fi
 
-					
-					local p
-					for p in $FEAT_BUNDLE_ITEM; do
-						__feature_install $p "$_OPT $_flag_hidden"
+					local _item=
+					for _item in $FEAT_BUNDLE_ITEM; do
+						__feature_install $_item "$_OPT $_flag_hidden"
 					done
 					
-					FORCE=$save_FORCE
+					if [ ! "$FEAT_BUNDLE_MODE" == "LIST" ]; then
+						FORCE=$save_FORCE
+					fi
 					
+					__pop_schema_context
 				fi
 				FEAT_BUNDLE_MODE=
 
-				__pop_schema_context
+				
 				# automatic call of callback
 				__feature_callback
 			else
@@ -482,17 +491,20 @@ function __feature_install() {
 				feature_"$FEAT_NAME"_install_"$FEAT_SCHEMA_FLAVOUR"
 			fi
 
-			__feature_inspect $FEAT_SCHEMA_SELECTED
-			if [ "$TEST_FEATURE" == "1" ]; then
-				echo "** Feature $_SCHEMA is installed"
-				__feature_init "$FEAT_SCHEMA_SELECTED" $_OPT
-			else
-				echo "** Error while installing feature $FEAT_SCHEMA_SELECTED"
-				#__del_folder $FEAT_INSTALL_ROOT
-				# Sometimes current directory is lost by the system
-				cd $STELLA_APP_ROOT
+			if [ "$_export_mode" == "OFF" ]; then
+				if [ "$_portable_mode" == "OFF" ]; then
+					__feature_inspect $FEAT_SCHEMA_SELECTED
+					if [ "$TEST_FEATURE" == "1" ]; then
+						echo "** Feature $_SCHEMA is installed"
+						__feature_init "$FEAT_SCHEMA_SELECTED" $_OPT
+					else
+						echo "** Error while installing feature $FEAT_SCHEMA_SELECTED"
+						#__del_folder $FEAT_INSTALL_ROOT
+						# Sometimes current directory is lost by the system
+						cd $STELLA_APP_ROOT
+					fi
+				fi
 			fi
-			
 		else
 			echo "** Feature $_SCHEMA already installed"
 			__feature_init "$FEAT_SCHEMA_SELECTED" $_OPT
@@ -504,6 +516,7 @@ function __feature_install() {
 
 		if [ "$_portable_mode" == "ON" ]; then
 			STELLA_APP_FEATURE_ROOT=$_save_app_feature_root
+			__set_build_mode_default "RELOCATE" "$_save_relocate_default_mode"
 		fi
 		
 		if [ "$_opt_internal_feature" == "ON" ]; then

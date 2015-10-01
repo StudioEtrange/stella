@@ -37,7 +37,7 @@ function feature_wget_1_15() {
 
 function feature_wget_link() {
 	__link_feature_library "openssl#1_0_2d"
-	__link_feature_library "zlib#1_2_8" "z"
+	__link_feature_library "zlib#1_2_8" "LIBS_NAME z"
 }
 
 function feature_wget_install_source() {

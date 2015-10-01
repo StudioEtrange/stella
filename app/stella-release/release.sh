@@ -121,7 +121,7 @@ function pack_stella() {
 		[ "$o" == "AUTO_EXTRACT" ] && _opt_auto_extract=ON
 	done
 
-	$STELLA_API require "7z" "MANDATORY"
+	#$STELLA_API sys_require "7z"
 
 	# DISTRIBUTIONS PACKAGE FOR NIX SYSTEM WITH tar.gz
 	case $_platform in
@@ -172,7 +172,8 @@ function pack_stella() {
 	esac
 
 	if [ "$_opt_auto_extract" == "ON" ]; then
-		$STELLA_API make_targz_sfx_shell "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".7z "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".zip.exe win "7Z"
+		# TODO replace with __make_sevenzip_sfx_bin
+		#$STELLA_API make_targz_sfx_shell "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".7z "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".zip.exe win "7Z"
 	fi
 }
 

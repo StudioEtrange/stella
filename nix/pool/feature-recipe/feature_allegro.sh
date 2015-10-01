@@ -65,8 +65,8 @@ function feature_allegro_5_0_11() {
 }
 
 function feature_allegro_link() {
-	__link_feature_library "freetype#2_6_0" "" "GET_FOLDER freetype"
-	__link_feature_library "zlib#1_2_8" "" "FORCE_DYNAMIC"
+	__link_feature_library "freetype#2_6_0" "GET_FOLDER freetype"
+	__link_feature_library "zlib#1_2_8" "FORCE_DYNAMIC"
 	__link_feature_library "libpng#1_6_17"
 	__link_feature_library "jpeg#9_0_0"
 }

@@ -5,6 +5,7 @@ _STELLA_STACK_INCLUDED_=1
 
 # Stack Pointer
 _STELLA_STACK_SP=0
+# NOTE : position 0 on stack is always empty
 
 # Stack
 declare -a _STELLA_STACK_
@@ -12,9 +13,9 @@ declare -a _STELLA_STACK_
 
 __stack_push() {
 	# Nothing to push?
-	if [ -z "$1" ]; then
-		return
-	fi
+	#if [ -z "$1" ]; then
+	#	return
+	#fi
 
 	_STELLA_STACK_SP=$(( _STELLA_STACK_SP + 1 ))
 	_STELLA_STACK_[$_STELLA_STACK_SP]="$1"
@@ -30,10 +31,9 @@ __stack_pop() {
 	else
 		data="${_STELLA_STACK_[$_STELLA_STACK_SP]}"
 		_STELLA_STACK_SP=$(( _STELLA_STACK_SP - 1 ))
-		echo $data
+		#echo $data
+		eval "$1"=\"$data\"
 	fi
 }
-
-
 
 fi

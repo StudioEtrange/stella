@@ -124,6 +124,7 @@ __set_build_mode_default "RELOCATE" "OFF"
 # $ORIGIN and @loader_path is directory of the file who wants to load a shared library
 # NOTE : '@loader_path' does not work, you have to write '@loader_path/.'
 # NOTE : $ORIGIN may have problem with cmake, see : http://www.cmake.org/pipermail/cmake/2008-January/019290.html
+# TODO : NOT USED ?
 STELLA_BUILD_RPATH_DEFAULT=""
 
 
@@ -139,7 +140,7 @@ STELLA_API_API_PUBLIC="api_connect api_disconnect"
 STELLA_API_APP_PUBLIC="get_app_property link_app get_data get_assets get_data_pack get_assets_pack delete_data delete_assets delete_data_pack delete_assets_pack update_data update_assets revert_data revert_assets update_data_pack update_assets_pack revert_data_pack revert_assets_pack get_feature get_features"
 STELLA_API_FEATURE_PUBLIC="list_feature_version feature_remove feature_catalog_info feature_install feature_install_list feature_init list_active_features feature_reinit_installed feature_inspect"
 STELLA_API_BUILD_PUBLIC="fix_rpath_darwin fix_linked_lib_darwin fix_dynamiclib_install_name_darwin fix_dynamiclib_install_name_darwin_by_rootname fix_dynamiclib_install_name_darwin_by_folder"
-STELLA_API_PLATFORM_PUBLIC="require"
+STELLA_API_PLATFORM_PUBLIC="sys_require"
 
 STELLA_API_RETURN_FUNCTION="list_feature_version get_active_path rel_to_abs_path trim is_abs mercurial_project_version git_project_version get_stella_version list_active_features get_filename_from_string get_key"
 STELLA_API=__api_proxy

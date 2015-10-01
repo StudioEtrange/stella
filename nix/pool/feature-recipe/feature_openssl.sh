@@ -37,7 +37,7 @@ function feature_openssl_1_0_2d() {
 
 function feature_openssl_link() {
 	# zlib dependencies
-	__link_feature_library "zlib#1_2_8" "z" "GET_FLAGS _zlib FORCE_STATIC NO_SET_FLAGS"
+	__link_feature_library "zlib#1_2_8" "LIBS_NAME z GET_FLAGS _zlib FORCE_STATIC NO_SET_FLAGS"
 }
 
 

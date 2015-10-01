@@ -50,13 +50,12 @@ function boost_set_env() {
 function feature_boost_dep() {
 
 
-	__link_feature_library "bzip2" "bz2" "GET_FOLDER _bzip2 NO_SET_FLAGS"
+	__link_feature_library "bzip2" "LIBS_NAME bz2 GET_FOLDER _bzip2 NO_SET_FLAGS"
 
 	BZIP2_LIBPATH="$_bzip2_LIB"
 	BZIP2_INCLUDE="$_bzip2_INCLUDE"
 	
-	
-	__link_feature_library "zlib#1_2_8" "z" "GET_FOLDER _zlib NO_SET_FLAGS"
+	__link_feature_library "zlib#1_2_8" "GET_FOLDER _zlib NO_SET_FLAGS LIBS_NAME z"
 
 	ZLIB_LIBPATH="$_zlib_LIB"
 	ZLIB_INCLUDE="$_zlib_INCLUDE"

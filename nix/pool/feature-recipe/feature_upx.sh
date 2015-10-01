@@ -37,8 +37,8 @@ function feature_upx_3_91() {
 
 function feature_ucl_link() {
 
-	__link_feature_library "ucl#1_03" "ucl" "FORCE_STATIC"
-	__link_feature_library "zlib#1_2_8" "z" "FORCE_DYNAMIC"
+	__link_feature_library "ucl#1_03" "LIBS_NAME ucl FORCE_STATIC"
+	__link_feature_library "zlib#1_2_8" "LIBS_NAME z FORCE_DYNAMIC"
 	
 	
 }

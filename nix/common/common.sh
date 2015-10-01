@@ -306,21 +306,38 @@ function __init_stella_env() {
 
 
 #FILE TOOLS----------------------------------------------
+#http://stackoverflow.com/a/17902999/5027535
+function __count_folder_item() {
+	local _path=$1
+	local _filter=$2
+
+	if [ "$_filter" == "" ]; then
+		_filter="*"
+	fi
+
+	local files=$(shopt -s nullglob dotglob; echo $_path/$_filter)
+	echo ${#files}
+
+}
+
 function __del_folder() {
 	echo "** Deleting $1 folder"
 	[ -d $1 ] && rm -Rf $1
 }
+
 # copy content of folder ARG1 into folder ARG2
 function __copy_folder_content_into() {
 	local filter=$3
 	if [ "$filter" == "" ]; then
 		filter="*"
 	fi
-	mkdir -p $2
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-		cp -R $1/$filter $2
-	else
-		cp -R $1/$filter --target-directory=$2
+	if [ $(__count_folder_item $1/$filter) -gt 0 ]; then
+		mkdir -p $2
+		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+			cp -fa $1/$filter $2
+		else
+			cp -fa $1/$filter --target-directory=$2
+		fi
 	fi
 }
 
@@ -575,13 +592,13 @@ function __compress() {
 		7Z)
 			if [ -d "$_target" ]; then
 				cd "$_target/.."
-				7z a -t7z "$_output_archive".7z "$(basename $_target)"
-				mv "$_output_archive".7z "$_output_archive"
+				7z a -t7z "$_output_archive" "$(basename $_target)"
+				mv "$_output_archive" "$_output_archive"
 			fi
 			if [ -f "$_target" ]; then
 				cd "$(dirname $_target)"
 				7z a -t7z "$_output_archive" "$(basename $_target)"
-				mv "$_output_archive".7z "$_output_archive"
+				mv "$_output_archive" "$_output_archive"
 			fi
 			;;
 		ZIP)
@@ -631,12 +648,12 @@ function __uncompress() {
 			[ "$_opt_strip" == "ON" ] && __unzip-strip "$FILE_PATH" "$UNZIP_DIR"
 			;;
 		*.gz | *.tgz) 
-			[ "$_opt_strip" == "OFF" ] && tar xvf "$FILE_PATH"
-			[ "$_opt_strip" == "ON" ] && tar xvf "$FILE_PATH" --strip-components=1
+			[ "$_opt_strip" == "OFF" ] && tar xf "$FILE_PATH"
+			[ "$_opt_strip" == "ON" ] && tar xf "$FILE_PATH" --strip-components=1
 			;;
 		*.xz | *.bz2)
-			[ "$_opt_strip" == "OFF" ] && tar xvf "$FILE_PATH"
-			[ "$_opt_strip" == "ON" ] && tar xvf "$FILE_PATH" --strip-components=1
+			[ "$_opt_strip" == "OFF" ] && tar xf "$FILE_PATH"
+			[ "$_opt_strip" == "ON" ] && tar xf "$FILE_PATH" --strip-components=1
 			;;
 		*.7z)
 			__sys_require 7z

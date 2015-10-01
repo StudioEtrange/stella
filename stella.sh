@@ -22,7 +22,6 @@ function usage() {
 	echo " L     feature list <all|feature name|active> : list all available feature OR available versions of a feature OR current active features"
 	echo " o-- various :"
 	echo " L     stella api list : list public functions of stella api"
-	echo " L     stella bootstrap env : launch a shell with all stella env var setted"
 	echo " L     stella install dep : install all features and systems requirements if any, for the current OS ($STELLA_CURRENT_OS)"
 	echo " L     stella version print : print stella version"
 	echo " L     stella search path : print current system search path"
@@ -30,11 +29,9 @@ function usage() {
 	echo " L     proxy on <name> : active proxy"
 	echo " L     proxy off now : disable proxy"
 	echo " L     proxy register <name> --proxyhost=<host> --proxyport=<port> [--proxyuser=<string> --proxypass=<string>] : register this proxy"
-	# TODO
-	echo " o-- bootstrap management [EXPERIMENTAL] :"
-	echo " L     boot stella shell"
-	echo " L     boot docker <docker-id> [commands]"
-	echo " L     boot shell docker <docker-id> [commands] : need docker installed on your system"
+	echo " o-- bootstrap management :"
+	echo " L     boot stella shell : launch a shell with all stella env var setted"
+	echo " L     boot docker <docker-id> [commands] : launch a command on a docker container with stella mounted as /stella --  need docker installed on your system"
 	echo " o-- system package management : WARN This will affect your system"
 	echo " L     sys install <package name> : install  a system package"
 	echo " L     sys remove <package name> : remove a system package"
@@ -49,7 +46,7 @@ function usage() {
 # arguments
 PARAMETERS="
 DOMAIN=                          'domain'     		a           'app feature stella proxy sys boot'         										   				Action domain.
-ACTION=                         'action'   					a           'docker stella version search remove on off register link api bootstrap install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature install list'         	Action to compute.
+ACTION=                         'action'   					a           'docker stella version search remove on off register link api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature install list'         	Action to compute.
 ID=							 ''								s 			'' 						Feature ID or Data or Assets or Env or Distrib ID.
 "
 OPTIONS="
@@ -169,11 +166,7 @@ if [ "$DOMAIN" == "stella" ]; then
 		fi
 	fi
 
-	if [ "$ACTION" == "bootstrap" ]; then
-		if [ "$ID" == "env" ]; then
-			__bootstrap_stella_env
-		fi
-	fi
+	
 
 	if [ "$ACTION" == "install" ]; then
 		if [ "$ID" == "dep" ]; then
