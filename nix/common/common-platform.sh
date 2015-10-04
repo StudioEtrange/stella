@@ -201,23 +201,64 @@ function __ask_install_requirements() {
 
 
 function __stella_requirement() {
-	__install_minimal_system_requirement
-	__install_minimal_feature_requirement
-}
-
-function __install_minimal_system_requirement() {
-	case $STELLA_CURRENT_OS in
-		*);;
-	esac
-}
-
-function __install_minimal_feature_requirement() {
+	# __require "7z" "7z" "PREFER_SYSTEM"
 	case $STELLA_CURRENT_OS in
 		*);;
 	esac
 }
 
 
+
+# REQUIRE -------------------------
+
+function __require() {
+	local _artefact="$1" # binary to test
+	local _id="$2" # feature name or sys name for package manager
+	local _OPT="$3"
+
+	# OPTIONAL
+	# PREFER_SYSTEM
+	# PREFER_STELLA
+
+
+	local _opt_optional=OFF
+	local _opt_prefer_system=ON
+	local _opt_prefer_stella=OFF
+
+
+	for o in $_OPT; do 
+		[ "$o" == "OPTIONAL" ] && _opt_optional=ON
+		[ "$o" == "PREFER_SYSTEM" ] && _opt_prefer_system=ON && _opt_prefer_stella=OFF
+		[ "$o" == "PREFER_STELLA" ] && _opt_prefer_system=OFF && _opt_prefer_stella=ON
+	done
+
+
+	local _err=
+	if [[ ! -n `which $_artefact 2> /dev/null` ]]; then
+		_err=1
+	fi
+
+	if [ "$_err" == "1" ]; then
+		if [ "$_opt_optional" == "ON" ]; then
+			if [ "$_opt_prefer_system" == "ON" ]; then
+				echo "** WARN -- You should install $_artefact -- Try stella.sh sys install $_id OR your regular OS package manager"
+			fi
+			if [ "$_opt_prefer_stella" == "ON" ]; then
+				echo "** WARN -- You should install $_artefact -- Try stella.sh feature install $_id"
+			fi
+		else
+			if [ "$_opt_prefer_system" == "ON" ]; then
+				echo "** ERROR -- Please install $_artefact"
+				echo "** Try stella.sh sys install $_id OR your regular OS package manager"
+				exit 1
+			fi
+			if [ "$_opt_prefer_stella" == "ON" ]; then
+				__feature_install "$_id" "INTERNAL HIDDEN"
+			fi
+		fi
+	fi
+
+}
 
 # PACKAGE SYSTEM ----------------------------
 
@@ -247,25 +288,6 @@ function __get_current_package_manager() {
 	echo "$_package_manager"
 }
 
-
-function __sys_require() {
-	local _artefact_list="$1"
-	local _artefact_bundle_name=$2
-
-	local _err=
-	for _artefact in $_artefact_list; do
-		if [[ ! -n `which $_artefact 2> /dev/null` ]]; then
-			_err=1
-		fi
-	done
-
-	if [ "$_err" == "1" ]; then
-		[ "$_artefact_bundle_name" == "" ] && _artefact_bundle_name="$_artefact_list"
-		echo " ** ERROR please install $_artefact_list on your system"
-		echo " ** try ./stella.sh sys install $_artefact_bundle_name"
-		exit 1
-	fi
-}
 
 
 function __sys_package_manager() {

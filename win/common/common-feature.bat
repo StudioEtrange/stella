@@ -275,10 +275,7 @@ goto :eof
 		if "%%O"=="DEP_IGNORE" set _opt_ignore_dep=ON
 	)
 
-	REM if "!_SCHEMA!"=="required" (
-	REM	call %STELLA_COMMON%\common-platform.bat :__install_minimal_feature_requirement
-	REM 	goto :eof
-	REM )
+	
 
 	call :internal_feature_context !_SCHEMA!
 

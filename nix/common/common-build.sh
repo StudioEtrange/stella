@@ -60,7 +60,7 @@ function __auto_build() {
 	SOURCE_DIR="$2"
 	INSTALL_DIR="$3"
 	OPT="$4"
-	# DEBUG SOURCE_KEEP BUILD_KEEP UNPARALLELIZE NO_CONFIG CONFIG_TOOL xxxx NO_BUILD BUILD_TOOL xxxx ARCH xxxx NO_OUT_OF_TREE_BUILD
+	# DEBUG SOURCE_KEEP BUILD_KEEP UNPARALLELIZE NO_CONFIG CONFIG_TOOL xxxx NO_BUILD BUILD_TOOL xxxx ARCH xxxx NO_OUT_OF_TREE_BUILD NO_INSPECT_BUILD
 
 	# keep source code after build (default : FALSE)
 	local _opt_source_keep=
@@ -72,13 +72,15 @@ function __auto_build() {
 	local _opt_build=ON
 	# build from another folder (default : TRUE)
 	local _opt_out_of_tree_build=ON
-
+	# disable fix & check build (default : ON)
+	local _opt_inspect_build=ON
 	for o in $OPT; do 
 		[ "$o" == "SOURCE_KEEP" ] && _opt_source_keep=ON
 		[ "$o" == "BUILD_KEEP" ] && _opt_build_keep=ON
 		[ "$o" == "NO_CONFIG" ] && _opt_configure=OFF
 		[ "$o" == "NO_BUILD" ] && _opt_build=OFF
 		[ "$o" == "NO_OUT_OF_TREE_BUILD" ] && _opt_out_of_tree_build=OFF
+		[ "$o" == "NO_INSPECT_BUILD" ] && _opt_inspect_build=OFF
 	done
 
 	# can not build out of tree without configure first
@@ -96,6 +98,21 @@ function __auto_build() {
 	if [ "$_opt_out_of_tree_build" == "ON" ]; then
 		[ "$FORCE" == "1" ] && rm -Rf "$BUILD_DIR"
 		[ ! "$_opt_build_keep" == "ON" ] && rm -Rf "$BUILD_DIR"
+	fi
+
+
+	# requirements
+	__require "gcc" "build-chain-standard" "PREFER_SYSTEM"
+
+	# relocation mode
+	if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
+		echo "*** We are in RELOCATION mode !"
+		if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then 
+			__set_build_mode_default "RELOCATE" "OFF"
+			__require "patchelf" "patchelf" "PREFER_STELLA"
+			__set_build_mode_default "RELOCATE" "ON"
+			__set_build_mode "RELOCATE" "ON"
+		fi
 	fi
 
 	# determine rpath values
@@ -117,7 +134,7 @@ function __auto_build() {
 	fi
 
 	cd "$INSTALL_DIR"
-	__inspect_build "$INSTALL_DIR"
+	[ "$_opt_inspect_build" == "ON" ] && __inspect_build "$INSTALL_DIR"
 
 	echo " ** Done"
 
@@ -592,7 +609,7 @@ function __compute_rpath() {
 
 	# Copy each linked feature into a folder stella-dep
 	if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
-		echo "*** We are in RELOCATION mode !"
+
 		local LIB_TARGET_FOLDER="$INSTALL_DIR/stella-dep"
 		LINKED_LIBS_PATH="$(__trim $LINKED_LIBS_PATH)"
 		local _flavor=
@@ -914,6 +931,7 @@ function __set_standard_build_flags() {
 	else
 		export LDFLAGS="$STELLA_LINK_FLAGS"
 	fi
+
 }
 
 
@@ -1354,12 +1372,12 @@ function __check_rpath_linux() {
 # Print out dynamic libraries loaded at runtime when launching a program :
 # 		LD_TRACE_LOADED_OBJECTS=1 program
 # ldd might not work on symlink and other situations
-# TODO
+# TODO to finish
 function __check_dynamic_linking_linux() {
 	local _file=$1
 	local t
 
-	echo "*** linked library"
+
 	#readelf -d "$_file" | grep NEEDED | cut -d ')' -f2
 	#t=`ldd $_file | grep "=>"`
 	#echo $t
@@ -1566,7 +1584,11 @@ function __fix_built_files() {
 		if [ -f "$f" ]; then
 			case $STELLA_CURRENT_PLATFORM in 
 				linux)
-					echo
+					if [ ! "$(objdump -p "$f" 2>/dev/null)" == "" ]; then
+						if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
+							[ ! "$(__get_extension_from_string $f)" == "a" ] && __fix_rpath_linux "$f" "REL_RPATH"
+						fi
+					fi
 					#[ ! "$(__get_extension_from_string $f)" == "a" ] && __fix_linked_lib_linux "$f" "ONLY_ABS_PATH REL_RPATH EXCLUDE_FILTER /System/Library|/usr/lib"
 				;;
 				darwin)
@@ -1595,6 +1617,77 @@ function __fix_built_files() {
 }
 
 
+# rpath ------------------------------
+# fix rpath to rel path or abs path
+# NOT IMPLEMENTED : fix missing rpath values by adding rpath values contained in list STELLA_BUILD_RPATH
+function __fix_rpath_linux() {
+	local _file=$1
+	local _OPT="$2"
+
+	# REL_RPATH : transform all rpath values to relative path
+	# ABS_RPATH : transform all rpath values to absolute path
+
+	local _rel_rpath=ON
+	local _abs_rpath=OFF
+	for o in $OPT; do 
+		[ "$o" == "REL_RPATH" ] && _rel_rpath=ON && _abs_rpath=OFF
+		[ "$o" == "ABS_RPATH" ] && _rel_rpath=OFF && _abs_rpath=ON
+	done
+
+
+	local msg=
+	local _rpath_values=
+	local _new_rpath_values=
+	local _flag_change=
+	local _path=
+
+	# Transform existing RPATH
+	local _field="RPATH"
+	[ "$(objdump -p $_file | grep -E "$_field\s" | tr -s ' ' | cut -d ' ' -f 3)" == "" ] && _field="RUNPATH"
+
+	IFS=':' read -ra _rpath_values <<< $(objdump -p $_file | grep -E "$_field\s" | tr -s ' ' | cut -d ' ' -f 3)
+	
+	#_rpath_values=${_rpath_values/\$ORIGIN/\\\$ORIGIN}
+
+	for line in "${_rpath_values[@]}"; do
+		if [ "$_abs_rpath" == "ON" ]; then
+	 		if [ ! "$(__is_abs $line)" == "TRUE" ];then
+	 			[ ! "$_flag_change" == "1" ] && echo "*** Fixing RPATH for $_file"
+
+	 			_path="$(__rel_to_abs_path "$line" $(__get_path_from_string $_file))"
+	 			echo "====> Transform $line to abs path $_path"
+	 			
+	 			_new_rpath_values="$_new_rpath_values:$_path"
+	 			_flag_change=1
+	 		else
+	 			_new_rpath_values="$_new_rpath_values:$line"
+	 		fi
+	 	else
+		 	if [ "$_rel_rpath" == "ON" ]; then
+		 		if [ "$(__is_abs $line)" == "TRUE" ];then 
+		 			[ ! "$_flag_change" == "1" ] && echo "*** Fixing RPATH for $_file"
+		 			
+		 			_path="\$ORIGIN/$(__abs_to_rel_path "$line" $(__get_path_from_string $_file))"
+		 			echo "====> Transform $line to abs path : $_path"
+
+		 			_new_rpath_values="$_new_rpath_values:$_path"
+		 			_flag_change=1
+		 		else
+	 				_new_rpath_values="$_new_rpath_values:$line"	
+		 		fi
+		 	fi
+		 fi
+	done
+
+	if [ "$_flag_change" == "1" ]; then
+		patchelf --set-rpath "${_new_rpath_values#?}" "$_file"
+		echo
+	fi
+	# Add missing RPATH
+	# TODO ?
+
+}
+
 
 # MACOS -----  install_name, rpath, loader_path, executable_path
 # https://mikeash.com/pyblog/friday-qa-2009-11-06-linking-and-install-names.html
@@ -1602,7 +1695,7 @@ function __fix_built_files() {
 
 
 # rpath ------------------------------
-# fix rpath value by adding rpath values contained in list STELLA_BUILD_RPATH
+# fix missing rpath values by adding rpath values contained in list STELLA_BUILD_RPATH
 # and reorder all rpath values
 function __fix_rpath_darwin() {
 	local _file=$1
@@ -1639,7 +1732,7 @@ function __fix_rpath_darwin() {
 		fi
 	done
 
-	[ ! "$msg" == "" ] && echo "** Fixing rpath values for $_file $msg"
+	[ ! "$msg" == "" ] && echo "** Fixing missing rpath values for $_file $msg"
 
 }
 
@@ -1702,11 +1795,11 @@ function __fix_linked_lib_darwin() {
 		
 		echo "** Fixing $_filename linked to $_linked_lib_filename shared lib"
 		
-		echo "*** setting LOAD_DYLIB : @rpath/$_linked_lib_filename"
+		echo "====> setting LOAD_DYLIB : @rpath/$_linked_lib_filename"
 		install_name_tool -change "$l" "@rpath/$_linked_lib_filename" "$_file"
 
 
-		echo "*** adding RPATH value : $_new_load_dylib"
+		echo "====> Adding RPATH value : $_new_load_dylib"
 		#__set_build_mode "RPATH" "ADD" "$_new_load_dylib"
 		_flag_existing_rpath=0
 		while read -r line; do

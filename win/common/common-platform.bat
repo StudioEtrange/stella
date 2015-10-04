@@ -175,15 +175,6 @@ REM REQUIREMENTS STELLA -------------
 goto :eof
 
 :__stella_requirement
-	call :__install_minimal_system_requirement
-	call :__install_minimal_feature_requirement
-goto :eof
-
-:__install_minimal_system_requirement
-	
-goto :eof
-
-:__install_minimal_feature_requirement
 	call %STELLA_COMMON%\common-feature.bat :feature_install unzip#5_51_1 "HIDDEN INTERNAL"
 	call %STELLA_COMMON%\common-feature.bat :feature_install wget#1_11_4 "HIDDEN INTERNAL"
 	call %STELLA_COMMON%\common-feature.bat :feature_install sevenzip#9_38 "HIDDEN INTERNAL"

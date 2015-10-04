@@ -20,7 +20,7 @@ function usage() {
 # MAIN ------------------------
 PARAMETERS="
 ACTION=											'action' 			a						'remove install list'					Action to compute. 'install' install feature specified by name argument.
-ID= 											''					s 						'' 	Select feature to install. Use 'required' to install required features for Stella. 
+ID= 											''					s 						'' 	Select feature to install.
 "
 OPTIONS="
 FORCE=''                       	'f'    		''            		b     		0     		'1'           			Force operation.
@@ -56,7 +56,6 @@ case $ACTION in
 	list)
 		case $ID in
 			all)
-				#echo "all required -- $__STELLA_FEATURE_LIST"
 				echo "all -- $__STELLA_FEATURE_LIST"
 				;;
 			active)

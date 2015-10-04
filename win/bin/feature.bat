@@ -31,7 +31,7 @@ if "%action%"=="remove" (
 
 if "%action%"=="list" (
 	if "%id%"=="all" (
-		echo required all %__STELLA_FEATURE_LIST%
+		echo all %__STELLA_FEATURE_LIST%
 	) else (
 		if "%id%"=="active" (
 			call %STELLA_COMMON%\common-feature.bat :list_active_features _TMP

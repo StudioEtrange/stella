@@ -14,7 +14,7 @@ function feature_zlib() {
 
 function feature_zlib_1_2_8() {
 	FEAT_VERSION=1_2_8
-	FEAT_SOURCE_DEPENDENCIES=bzip2
+	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://zlib.net/zlib-1.2.8.tar.gz
@@ -25,7 +25,7 @@ function feature_zlib_1_2_8() {
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
 	
-	FEAT_SOURCE_CALLBACK=toto
+	FEAT_SOURCE_CALLBACK=
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
@@ -35,9 +35,6 @@ function feature_zlib_1_2_8() {
 }
 
 
-function toto() {
-	__link_feature_library "bzip2" "FORCE_STATIC"
-}
 
 function feature_zlib_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
