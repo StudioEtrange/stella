@@ -24,7 +24,7 @@ function feature_automake_1_14() {
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
 
-	FEAT_SOURCE_CALLBACK=feature_automake_1_14_patch
+	FEAT_SOURCE_CALLBACK=feature_automake_1_14_callback
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
@@ -33,7 +33,7 @@ function feature_automake_1_14() {
 
 }
 
-function feature_automake_1_14_patch() {
+function feature_automake_1_14_callback() {
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="--docdir=$INSTALL_DIR/share/doc/automake-1.14"
 }
 

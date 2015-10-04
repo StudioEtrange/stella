@@ -18,7 +18,7 @@ function feature_r() {
 function feature_r_3_2_2() {
 	FEAT_VERSION=3_2_2
 	
-	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 bzip2#1_0_6"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://cran.r-project.org/src/base/R-3/R-3.2.2.tar.gz
@@ -29,16 +29,19 @@ function feature_r_3_2_2() {
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
 
-	FEAT_SOURCE_CALLBACK=
+	FEAT_SOURCE_CALLBACK=feature_r_link
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/r
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-	
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/R.framework/Resources/bin/R
+	#FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/R.framework/Resources/bin # some files are in conflict with system files
+	FEAT_SEARCH_PATH=
 }
 
-
+function feature_r_link() {
+	__link_feature_library "zlib#1_2_8" "FORCE_DYNAMIC"
+	__link_feature_library "bzip2#1_0_6" "FORCE_DYNAMIC"
+}
 
 function feature_r_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
@@ -51,6 +54,8 @@ function feature_r_install_source() {
 	AUTO_INSTALL_CONF_FLAG_POSTFIX=
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
+
+	__feature_callback
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "CONFIG_TOOL configure BUILD_TOOL make"
 

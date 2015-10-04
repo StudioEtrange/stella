@@ -357,6 +357,7 @@ function __sys_install_brew() {
 		echo " ** -------------- **"
 		echo "Homebrew is installed in $_brewLocation"
 		echo "Homebrew apps are run from $_appLocation"
+
 	else
 		echo " ** Error while installing Homebrew"	
 	fi
@@ -372,8 +373,6 @@ function __sys_remove_brew() {
 	ruby "$STELLA_APP_TEMP_DIR/brew-uninstall.rb"
 	rm -f "$STELLA_APP_CACHE_DIR/brew-uninstall.rb"
 }
-
-
 
 
 function __sys_install_build-chain-standard() {
@@ -419,6 +418,14 @@ function __sys_remove_build-chain-standard() {
 
 
 
+function __sys_install_x11() {
+	brew install caskroom/cask/brew-cask
+	brew cask install xquartz
+}
+function __sys_remove_x11() {
+	brew cask uninstall xquartz
+}
+
 function __sys_install_7z() {
 	__sys_package_manager "INSTALL" "7z" "apt-get p7zip-full | brew p7zip"
 }
@@ -446,4 +453,14 @@ function __sys_install_unzip() {
 function __sys_remove_unzip() {
 	__sys_package_manager "REMOVE" "unzip" "apt-get unzip | brew unzip"
 }
+
+function __sys_install_cmake() {
+	__sys_package_manager "INSTALL" "cmake" "apt-get cmake | brew cmake"
+}
+function __sys_remove_cmake() {
+	__sys_package_manager "REMOVE" "cmake" "apt-get cmake | brew cmake"
+}
+
+
+
 fi

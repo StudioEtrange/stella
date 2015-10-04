@@ -49,7 +49,7 @@ function feature_ncurses_install_source() {
 			--with-shared           \
             --without-debug         \
             --enable-pc-files       \
-            --enable-widec"
+            --enable-widec" # wide encoding
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 

@@ -60,7 +60,7 @@ function __auto_build() {
 	SOURCE_DIR="$2"
 	INSTALL_DIR="$3"
 	OPT="$4"
-	# DEBUG SOURCE_KEEP BUILD_KEEP UNPARALLELIZE NO_CONFIG CONFIG_TOOL xxxx NO_BUILD BUILD_TOOL xxxx ARCH xxxx NO_OUT_OF_TREE_BUILD NO_INSPECT_BUILD
+	# DEBUG SOURCE_KEEP BUILD_KEEP UNPARALLELIZE NO_CONFIG CONFIG_TOOL xxxx NO_BUILD BUILD_TOOL xxxx ARCH xxxx NO_OUT_OF_TREE_BUILD NO_INSPECT_BUILD NO_INSTALL
 
 	# keep source code after build (default : FALSE)
 	local _opt_source_keep=
@@ -260,7 +260,8 @@ function __launch_build() {
 	local _debug=
 	# configure step activation (default : TRUE)
 	local _opt_configure=ON
-
+	# install step activation (default : TRUE)
+	local _opt_install=ON
 	for o in $OPT; do
 		[ "$_flag_configure" == "ON" ] && CONFIG_TOOL=$o && _flag_configure=
 		[ "$o" == "CONFIG_TOOL" ] && _flag_configure=ON
@@ -268,6 +269,8 @@ function __launch_build() {
 		[ "$o" == "BUILD_TOOL" ] && _flag_build=ON
 		[ "$o" == "DEBUG" ] && _debug=ON
 		[ "$o" == "NO_CONFIG" ] && _opt_configure=OFF
+		[ "$o" == "NO_INSTALL" ] && _opt_install=OFF
+
 	done
 
 	# autoselect conf tool
@@ -295,9 +298,11 @@ function __launch_build() {
 					make $_debug $_FLAG_PARALLEL \
 					$AUTO_INSTALL_BUILD_FLAG_POSTFIX
 					
-					make $_debug \
-					$AUTO_INSTALL_BUILD_FLAG_POSTFIX \
-					install 
+					if [ "$_opt_install" == "ON" ]; then
+						make $_debug \
+						$AUTO_INSTALL_BUILD_FLAG_POSTFIX \
+						install
+					fi
 				else
 					#make $_debug $_FLAG_PARALLEL \
 					#CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" \
@@ -307,23 +312,29 @@ function __launch_build() {
 					PREFIX="$AUTO_INSTALL_DIR" prefix="$AUTO_INSTALL_DIR" \
 					$AUTO_INSTALL_BUILD_FLAG_POSTFIX
 
-					#make $_debug \
-					#CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" \
-					#PREFIX="$AUTO_INSTALL_DIR" $AUTO_INSTALL_BUILD_FLAG_POSTFIX \
-					#install
-					make $_debug \
-					PREFIX="$AUTO_INSTALL_DIR" prefix="$AUTO_INSTALL_DIR" \
-					$AUTO_INSTALL_BUILD_FLAG_POSTFIX \
-					install
+					#if [ "$_opt_install" == "ON" ]; then
+						#make $_debug \
+						#CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" \
+						#PREFIX="$AUTO_INSTALL_DIR" $AUTO_INSTALL_BUILD_FLAG_POSTFIX \
+						#install
+					#fi
+					if [ "$_opt_install" == "ON" ]; then
+						make $_debug \
+						PREFIX="$AUTO_INSTALL_DIR" prefix="$AUTO_INSTALL_DIR" \
+						$AUTO_INSTALL_BUILD_FLAG_POSTFIX \
+						install
+					fi
 				fi
 			else
 				if [ "$_opt_configure" == "ON" ]; then
 					eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) make $_debug $_FLAG_PARALLEL \
 					$AUTO_INSTALL_BUILD_FLAG_POSTFIX
 
-					eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) make $_debug \
-					$AUTO_INSTALL_BUILD_FLAG_POSTFIX \
-					install
+					if [ "$_opt_install" == "ON" ]; then
+						eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) make $_debug \
+						$AUTO_INSTALL_BUILD_FLAG_POSTFIX \
+						install
+					fi
 				else
 					#eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) make $_debug  $_FLAG_PARALLEL \
 					#CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" \
@@ -332,16 +343,19 @@ function __launch_build() {
 					eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) make $_debug $_FLAG_PARALLEL \
 					PREFIX="$AUTO_INSTALL_DIR" prefix="$AUTO_INSTALL_DIR" \
 					$AUTO_INSTALL_BUILD_FLAG_POSTFIX
-
-					#eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) make $_debug \
-					#CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" \
-					#PREFIX="$AUTO_INSTALL_DIR" $AUTO_INSTALL_BUILD_FLAG_POSTFIX \
-					#install
-
-					eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) make $_debug \
-					PREFIX="$AUTO_INSTALL_DIR" prefix="$AUTO_INSTALL_DIR" \
-					$AUTO_INSTALL_BUILD_FLAG_POSTFIX \
-					install
+					
+					#if [ "$_opt_install" == "ON" ]; then
+						#eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) make $_debug \
+						#CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" \
+						#PREFIX="$AUTO_INSTALL_DIR" $AUTO_INSTALL_BUILD_FLAG_POSTFIX \
+						#install
+					#fi
+					if [ "$_opt_install" == "ON" ]; then
+						eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) make $_debug \
+						PREFIX="$AUTO_INSTALL_DIR" prefix="$AUTO_INSTALL_DIR" \
+						$AUTO_INSTALL_BUILD_FLAG_POSTFIX \
+						install
+					fi
 				fi
 			fi
 		;;
@@ -356,10 +370,10 @@ function __launch_build() {
 			[ "$_debug" == "ON" ] && _debug="-v"
 			if [ "$AUTO_INSTALL_BUILD_FLAG_PREFIX" == "" ]; then
 				ninja $_debug $_FLAG_PARALLEL $AUTO_INSTALL_BUILD_FLAG_POSTFIX
-				ninja $_debug $AUTO_INSTALL_BUILD_FLAG_POSTFIX install
+				[ "$_opt_install" == "ON" ] && ninja $_debug $AUTO_INSTALL_BUILD_FLAG_POSTFIX install
 			else
 				eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) ninja $_debug $_FLAG_PARALLEL $AUTO_INSTALL_BUILD_FLAG_POSTFIX
-				eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) ninja $_debug $AUTO_INSTALL_BUILD_FLAG_POSTFIX install
+				[ "$_opt_install" == "ON" ] && eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) ninja $_debug $AUTO_INSTALL_BUILD_FLAG_POSTFIX install
 			fi
 		;;
 
