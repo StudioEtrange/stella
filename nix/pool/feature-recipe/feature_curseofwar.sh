@@ -51,7 +51,7 @@ function feature_curseofwar_install_source() {
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
 	AUTO_INSTALL_CONF_FLAG_POSTFIX=
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
-	AUTO_INSTALL_BUILD_FLAG_POSTFIX="SDL=yes"
+	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
 	__feature_callback
 
@@ -86,7 +86,7 @@ function feature_curseofwar_install_source() {
 	echo "_CURRENT_FILE_DIR=\"\$( cd \"\$( dirname \"\${BASH_SOURCE[0]}\" )\" && pwd )\"" >>"$INSTALL_DIR/curseofwar-sdl.sh"
 	echo "_CURRENT_RUNNING_DIR=\"\$( cd \"\$( dirname \".\" )\" && pwd )\"" >>"$INSTALL_DIR/curseofwar-sdl.sh"
 	echo "cd \"\$_CURRENT_FILE_DIR\"" >>"$INSTALL_DIR/curseofwar-sdl.sh"
-	echo "curseofwar-sdl \$@" >>"$INSTALL_DIR/curseofwar-sdl.sh"
+	echo "$_CURRENT_FILE_DIR/curseofwar-sdl \$@" >>"$INSTALL_DIR/curseofwar-sdl.sh"
 	echo "cd \"\$_CURRENT_RUNNING_DIR\"" >>"$INSTALL_DIR/curseofwar-sdl.sh"
 	chmod +x "$INSTALL_DIR/curseofwar-sdl.sh"
 
