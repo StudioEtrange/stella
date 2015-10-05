@@ -97,8 +97,9 @@ for recipe in "$STELLA_FEATURE_RECIPE"/*.sh; do
 done
 
 # list of available installable system package
-[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && __STELLA_SYS_PACKAGE_LIST="brew x11 build-chain-standard 7z wget curl unzip cmake"
-[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && __STELLA_SYS_PACKAGE_LIST="build-chain-standard 7z wget curl unzip cmake"
+[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && __STELLA_SYS_PACKAGE_LIST="brew x11 build-chain-standard sevenzip wget curl unzip cmake"
+[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && __STELLA_SYS_PACKAGE_LIST="build-chain-standard sevenzip wget curl unzip cmake"
+
 
 
 # BUILD SYSTEM---------------------------------------------

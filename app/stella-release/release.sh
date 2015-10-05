@@ -121,7 +121,7 @@ function pack_stella() {
 		[ "$o" == "AUTO_EXTRACT" ] && _opt_auto_extract=ON
 	done
 
-	#$STELLA_API sys_require "7z"
+	#$STELLA_API sys_require "sevenzip"
 
 	# DISTRIBUTIONS PACKAGE FOR NIX SYSTEM WITH tar.gz
 	case $_platform in

@@ -1007,7 +1007,20 @@ REM return STABLE or DEV
 	
 goto :eof
 
+:: like basename in bash
+:basename
+	set "_path=%~1"
+	set "_result_basename=%~2"
 
+	for /F "delims=" %%A in ("!_path!\.") do set %_result_basename%=%%~nA
+goto :eof
+
+:dirname
+	set "_path=%~1"
+	set "_result_dirname=%~2"
+
+	for /F "delims=" %%A in ("!_path!\.") do set %_result_dirname%=%%~dpA
+goto :eof
 
 :: check if a "findstr windows regexp" can be found in a string
 :: by setting 
