@@ -61,6 +61,7 @@ function __auto_build() {
 	INSTALL_DIR="$3"
 	OPT="$4"
 	# DEBUG SOURCE_KEEP BUILD_KEEP UNPARALLELIZE NO_CONFIG CONFIG_TOOL xxxx NO_BUILD BUILD_TOOL xxxx ARCH xxxx NO_OUT_OF_TREE_BUILD NO_INSPECT_BUILD NO_INSTALL
+	# EXCLUDE_INSPECT
 
 	# keep source code after build (default : FALSE)
 	local _opt_source_keep=
@@ -116,7 +117,7 @@ function __auto_build() {
 	fi
 
 	# determine rpath values
-	__compute_rpath "$INSTALL_DIR"
+	__compute_mode "$INSTALL_DIR"
 
 	# set build env
 	__apply_build_env "$OPT"
@@ -134,7 +135,7 @@ function __auto_build() {
 	fi
 
 	cd "$INSTALL_DIR"
-	[ "$_opt_inspect_build" == "ON" ] && __inspect_build "$INSTALL_DIR"
+	[ "$_opt_inspect_build" == "ON" ] && __inspect_build "$INSTALL_DIR" "$OPT"
 
 	echo " ** Done"
 
@@ -612,14 +613,9 @@ function __link_feature_library() {
 
 
 
-# determine RPATH values
-function __compute_rpath() {
+# determine RPATH values and copy if necessary dependencies
+function __compute_mode() {
 	local INSTALL_DIR="$1"
-
-	echo "** Computing RPATH values"
-	# BEFORE building, so rpath values are setted with correct path before building
-
-
 
 	# Copy each linked feature into a folder stella-dep
 	if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
@@ -681,6 +677,8 @@ function __compute_rpath() {
 		fi
 	fi
 
+	# BEFORE building, so rpath values are setted with correct path before building
+	echo "** Computing RPATH values"
 	echo "** RPATH setted : $STELLA_BUILD_RPATH"
 }
 
@@ -857,7 +855,7 @@ function __set_cmake_build_flags() {
 		
 			# cmake install phase
 			__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_USE_FINAL_RPATH"
-			# add dependent lib directories to rpath value. (maybe redundant with rpath values computed in __compute_rpath)
+			# add dependent lib directories to rpath value. (maybe redundant with rpath values computed in __compute_mode)
 			__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_ADD_DEPENDENT_LIB"
 			__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_ADD_FINAL_RPATH" "$_rpath"
 		fi
@@ -1237,68 +1235,117 @@ function __get_install_name_darwin() {
 
 # CHECK BUILD ------------------------------------------------------------------------------------------------------------------------------
 function __inspect_build() {
-	local folder="$1"
+	local path="$1"
+	local OPT="$2"
+
+	[ "$1" == "" ] && return
+
+	# EXCLUDE_INSPECT -- ignore these files
+
+	local _filter
+	local _flag_filter=OFF
+	local _opt_filter=OFF
+
+
+	for o in $OPT; do 
+		[ "$_flag_filter" == "ON" ] && _filter=$o && _flag_filter=OFF
+		[ "$o" == "EXCLUDE_INSPECT" ] && _flag_filter=ON && _opt_filter=ON
+	done
+
+	if [ "$_opt_filter" == "ON" ]; then
+		if [ ! "$(echo $path | grep -E "$_filter")" == "" ]; then
+			return
+		fi
+	fi
+
+	local f=
+	if [ -d "$path" ]; then
+		for f in  "$path"/*; do
+			__inspect_build "$f" "$OPT"
+		done
+	fi
 
 	# TODO
 	# verify architecture of shared or static libs
 	#otool -hv -arch 
 
-	[ "$1" == "" ] && return
+	if [ -f "$path" ]; then
 
-	# fixing built files
-	echo " ** fixing build ----------------"
-	__fix_built_files "$folder"
+		# fixing built files
+		__fix_built_files "$path" "$OPT"
 
-	# checking built files
-	echo " ** checking build ----------------"
-	__check_built_files "$folder"
+		# checking built files
+		__check_built_files "$path" "$OPT"
+	fi
 }
 
 
 function __check_built_files() {
-	local folder="$1"
+	local path="$1"
+	local OPT="$2"
 
-	
-	#[ "$(basename $1)" == "stella-dep" ] && return
+	# EXCLUDE_INSPECT -- ignore these files
 
-	for f in  "$folder"/*; do
-		[ -d "$f" ] && __check_built_files "$f"
-		if [ -f "$f" ]; then
-			case $STELLA_CURRENT_PLATFORM in 
-				linux)
-					if [ ! "$(objdump -p "$f" 2>/dev/null)" == "" ]; then
-						echo
-						echo "** Analysing $f"
-						if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
-							[ ! "$(__get_extension_from_string $f)" == "a" ] && __check_rpath_linux "$f" "REL_RPATH"
-							[ ! "$(__get_extension_from_string $f)" == "a" ] && __check_dynamic_linking_linux "$f"
-						else
-							[ ! "$(__get_extension_from_string $f)" == "a" ] && __check_rpath_linux "$f" "ABS_RPATH"
-							[ ! "$(__get_extension_from_string $f)" == "a" ] && __check_dynamic_linking_linux "$f"
-						fi
-						echo
-					fi
-				;;
-				darwin)
-					# test if file is a binary Mach-O file (binary, shared lib or static lib)
-					if [ ! "$(otool -h "$f" 2>/dev/null | grep Mach)" == "" ]; then
-						echo
-						echo "** Analysing $f"
-						if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
-							[ "$(__get_extension_from_string $f)" == "dylib" ] && __check_install_name_darwin "$f" "RPATH"
-							[ ! "$(__get_extension_from_string $f)" == "a" ] && __check_rpath_darwin "$f" "REL_RPATH"
-						else
-							[ "$(__get_extension_from_string $f)" == "dylib" ] && __check_install_name_darwin "$f" "PATH"
-							[ ! "$(__get_extension_from_string $f)" == "a" ] && __check_rpath_darwin "$f" "NO_RPATH"
-						fi
+	local _filter=
+	local _flag_filter=OFF
+	local _opt_filter=OFF
 
-						[ ! "$(__get_extension_from_string $f)" == "a" ] && __check_dynamic_linking_darwin "$f"
-						echo
-					fi
-				;;
-			esac
-		fi
+
+	for o in $OPT; do 
+		[ "$_flag_filter" == "ON" ] && _filter=$o && _flag_filter=OFF
+		[ "$o" == "EXCLUDE_INSPECT" ] && _flag_filter=ON && _opt_filter=ON
 	done
+
+	if [ "$_opt_filter" == "ON" ]; then
+		if [ ! "$(echo $path | grep -E "$_filter")" == "" ]; then
+			return
+		fi
+	fi
+
+	local f=
+	if [ -d "$path" ]; then
+		for f in  "$path"/*; do
+			__check_built_files "$f" "$OPT"
+		done
+	fi
+	
+	if [ -f "$path" ]; then
+
+		case $STELLA_CURRENT_PLATFORM in 
+			linux)
+				if [ ! "$(objdump -p "$path" 2>/dev/null)" == "" ]; then
+					echo
+					echo "** Analysing $path"
+					if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
+						[ ! "$(__get_extension_from_string $path)" == "a" ] && __check_rpath_linux "$path" "REL_RPATH"
+						[ ! "$(__get_extension_from_string $path)" == "a" ] && __check_dynamic_linking_linux "$path"
+					else
+						[ ! "$(__get_extension_from_string $path)" == "a" ] && __check_rpath_linux "$path" "ABS_RPATH"
+						[ ! "$(__get_extension_from_string $path)" == "a" ] && __check_dynamic_linking_linux "$path"
+					fi
+					echo
+				fi
+			;;
+			darwin)
+				# test if file is a binary Mach-O file (binary, shared lib or static lib)
+				if [ ! "$(otool -h "$path" 2>/dev/null | grep Mach)" == "" ]; then
+					echo
+					echo "** Analysing $path"
+					if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
+						[ "$(__get_extension_from_string $path)" == "dylib" ] && __check_install_name_darwin "$path" "RPATH"
+						[ ! "$(__get_extension_from_string $path)" == "a" ] && __check_rpath_darwin "$path" "REL_RPATH"
+					else
+						[ "$(__get_extension_from_string $path)" == "dylib" ] && __check_install_name_darwin "$path" "PATH"
+						[ ! "$(__get_extension_from_string $path)" == "a" ] && __check_rpath_darwin "$path" "NO_RPATH"
+					fi
+
+					[ ! "$(__get_extension_from_string $path)" == "a" ] && __check_dynamic_linking_darwin "$path"
+					echo
+				fi
+			;;
+		esac
+	fi
+
 }
 
 # test rpath values
@@ -1591,38 +1638,66 @@ function __check_dynamic_linking_darwin() {
 
 # FIX BUILD -----------------------------
 function __fix_built_files() {
-	local folder="$1"
+	local path="$1"
+	local OPT="$2"
 	
-	for f in  "$folder"/*; do
-		[ -d "$f" ] && __fix_built_files "$f"
-		if [ -f "$f" ]; then
-			case $STELLA_CURRENT_PLATFORM in 
-				linux)
-					if [ ! "$(objdump -p "$f" 2>/dev/null)" == "" ]; then
-						if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
-							[ ! "$(__get_extension_from_string $f)" == "a" ] && __fix_rpath_linux "$f" "REL_RPATH"
-						fi
-					fi
-					#[ ! "$(__get_extension_from_string $f)" == "a" ] && __fix_linked_lib_linux "$f" "ONLY_ABS_PATH REL_RPATH EXCLUDE_FILTER /System/Library|/usr/lib"
-				;;
-				darwin)
-					# test if file is a binary Mach-O file (binary, shared lib or static lib)
-					if [ ! "$(otool -h "$f" 2>/dev/null | grep Mach)" == "" ]; then
-							# fix write permission
-							chmod +w "$f"
-							if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
-								[ "$(__get_extension_from_string $f)" == "dylib" ] && __fix_dynamiclib_install_name_darwin "$f" "RPATH"
-								#[ "$(__get_extension_from_string $f)" == "so" ] && __fix_dynamiclib_install_name_darwin "$f"
-								[ ! "$(__get_extension_from_string $f)" == "a" ] && __fix_linked_lib_darwin "$f" "ONLY_ABS_PATH REL_RPATH EXCLUDE_FILTER /System/Library|/usr/lib"
-								[ ! "$(__get_extension_from_string $f)" == "a" ] && __fix_rpath_darwin "$f"
-							else
-								[ "$(__get_extension_from_string $f)" == "dylib" ] && __fix_dynamiclib_install_name_darwin "$f" "PATH"
-							fi
-					fi
-				;;
-			esac
-		fi
+	# EXCLUDE_INSPECT -- ignore these files
+
+	local _filter=
+	local _flag_filter=OFF
+	local _opt_filter=OFF
+
+
+	for o in $OPT; do 
+		[ "$_flag_filter" == "ON" ] && _filter=$o && _flag_filter=OFF
+		[ "$o" == "EXCLUDE_INSPECT" ] && _flag_filter=ON && _opt_filter=ON
 	done
+
+	if [ "$_opt_filter" == "ON" ]; then
+		if [ ! "$(echo $path | grep -E "$_filter")" == "" ]; then
+			return
+		fi
+	fi
+
+	local f=
+	if [ -d "$path" ]; then
+		for f in  "$path"/*; do
+			__fix_built_files "$f" "$OPT"
+		done
+	fi
+	
+	if [ -f "$path" ]; then
+		case $STELLA_CURRENT_PLATFORM in 
+			linux)
+				if [ ! "$(objdump -p "$path" 2>/dev/null)" == "" ]; then
+					# fix write permission
+					chmod +w "$path"
+					if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
+						[ ! "$(__get_extension_from_string $path)" == "a" ] && __fix_rpath_linux "$path" "REL_RPATH"
+					fi
+				fi
+				#[ ! "$(__get_extension_from_string $path)" == "a" ] && __fix_linked_lib_linux "$path" "ONLY_ABS_PATH REL_RPATH EXCLUDE_FILTER /System/Library|/usr/lib"
+			;;
+			darwin)
+
+				# test if file is a binary Mach-O file (binary, shared lib or static lib)
+				#if [ ! "$(otool -h "$path" 2>/dev/null | grep Mach)" == "" ]; then
+				if [[ ! "$(otool -h "$path" 2>/dev/null)" =~  *Mach* ]]; then
+						# fix write permission
+						chmod +w "$path"
+						if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
+							[ "$(__get_extension_from_string $path)" == "dylib" ] && __fix_dynamiclib_install_name_darwin "$path" "RPATH"
+							#[ "$(__get_extension_from_string $path)" == "so" ] && __fix_dynamiclib_install_name_darwin "$path"
+							[ ! "$(__get_extension_from_string $path)" == "a" ] && __fix_linked_lib_darwin "$path" "ONLY_ABS_PATH REL_RPATH EXCLUDE_FILTER /System/Library|/usr/lib"
+							[ ! "$(__get_extension_from_string $path)" == "a" ] && __fix_rpath_darwin "$path"
+						else
+							[ "$(__get_extension_from_string $path)" == "dylib" ] && __fix_dynamiclib_install_name_darwin "$path" "PATH"
+						fi
+				fi
+			;;
+		esac
+	fi
+	
 
 
 

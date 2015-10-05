@@ -61,7 +61,6 @@ function feature_sdl_1_2_15() {
 function feature_sdl_1_2_15_callback() {
 
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ];then
-		# patch 
 		# Related ticket: https://bugzilla.libsdl.org/show_bug.cgi?id=2085
 		__get_resource "patch-sdl" "https://bugzilla-attachments.libsdl.org/attachment.cgi?id=1320" "HTTP" "$SRC_DIR" "FORCE_NAME patch-sdl1-1320.patch"
 		__get_resource "patch-sdl" "https://bugzilla-attachments.libsdl.org/attachment.cgi?id=1324" "HTTP" "$SRC_DIR" "FORCE_NAME patch-sdl1-1324.patch"

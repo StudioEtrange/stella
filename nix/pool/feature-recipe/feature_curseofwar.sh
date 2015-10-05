@@ -15,7 +15,7 @@ function feature_curseofwar() {
 function feature_curseofwar_1_2_0() {
 	FEAT_VERSION=1_2_0
 	
-	FEAT_SOURCE_DEPENDENCIES="sdl#1_2_15"
+	FEAT_SOURCE_DEPENDENCIES="sdl#1_2_15 ncurses#6_0"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://github.com/a-nikolaev/curseofwar/archive/v1.2.0.tar.gz
@@ -37,6 +37,11 @@ function feature_curseofwar_1_2_0() {
 
 function feature_curseofwar_link() {
 	__link_feature_library "sdl#1_2_15"
+	__link_feature_library "ncurses#6_0"
+	AUTO_INSTALL_CONF_FLAG_POSTFIX="$AUTO_INSTALL_CONF_FLAG_POSTFIX -DCURSES_NEED_NCURSES=TRUE"
+	# TODO : PATCH STELLA to use found curses libs by cmake
+	sed -i .bak 's,${COMMON_LIBS} ncurses,${COMMON_LIBS} ${CURSES_NCURSES_LIBRARY},' "$SRC_DIR/CMakeLists.txt"
+
 }
 
 
@@ -66,7 +71,6 @@ function feature_curseofwar_install_source() {
 	cp -f "$SRC_DIR/LICENSE" "$INSTALL_DIR/"
 	cp -f "$SRC_DIR/VERSION" "$INSTALL_DIR/"
 	cp -f "$SRC_DIR/CHANGELOG" "$INSTALL_DIR/"
-	cp -f "$SRC_DIR/INSTALL" "$INSTALL_DIR/"
 
 	# install binaries
 	cp -f "$SRC_DIR/curseofwar-sdl" "$INSTALL_DIR/"
@@ -92,7 +96,7 @@ function feature_curseofwar_install_source() {
 
 
 	__inspect_build "$INSTALL_DIR"
-	__del_folder "$SRC_DIR"
+	#__del_folder "$SRC_DIR"
 	
 
 }

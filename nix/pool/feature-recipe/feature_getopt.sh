@@ -49,6 +49,7 @@ function feature_getopt_1_1_6_patch() {
 	export _gettext_CPP_FLAGS="$_gettext_CPP_FLAGS"
 	export _gettext_LINK_FLAGS="$_gettext_LINK_FLAGS"
 
+	# TODO : PATCH STELLA
 	sed -i .bak 's,^\(CPPFLAGS=.*\),\1 $(_gettext_CPP_FLAGS),' "$SRC_DIR/Makefile"
 	sed -i .bak 's,^\(LDFLAGS=.*\),\1 $(_gettext_LINK_FLAGS),' "$SRC_DIR/Makefile"
 
