@@ -97,7 +97,7 @@ for recipe in "$STELLA_FEATURE_RECIPE"/*.sh; do
 done
 
 # list of available installable system package
-__STELLA_SYS_PACKAGE_LIST="brew build-chain-standard 7z wget curl unzip"
+__STELLA_SYS_PACKAGE_LIST="brew build-chain-standard sevenzip wget curl unzip"
 
 
 # BUILD SYSTEM---------------------------------------------

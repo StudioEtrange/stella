@@ -426,10 +426,10 @@ function __sys_remove_x11() {
 	brew cask uninstall xquartz
 }
 
-function __sys_install_7z() {
+function __sys_install_sevenzip() {
 	__sys_package_manager "INSTALL" "7z" "apt-get p7zip-full | brew p7zip"
 }
-function __sys_remove_7z() {
+function __sys_remove_sevenzip() {
 	__sys_package_manager "REMOVE" "7z" "apt-get p7zip-full | brew p7zip"
 }
 
