@@ -4,6 +4,9 @@ _OPENSSL_INCLUDED_=1
 # Requipre perl (from system is enough), to configure source code
 # Require system "build-system"
 
+# NOTE : On darwin openssl lib in lib/engines folder does not have LC_ID_DYLIB
+	
+
 function feature_openssl() {
 	FEAT_NAME=openssl
 	FEAT_LIST_SCHEMA="1_0_2d:source"
@@ -37,7 +40,7 @@ function feature_openssl_1_0_2d() {
 
 function feature_openssl_link() {
 	# zlib dependencies
-	__link_feature_library "zlib#1_2_8" "LIBS_NAME z GET_FLAGS _zlib FORCE_STATIC NO_SET_FLAGS"
+	__link_feature_library "zlib#1_2_8" "LIBS_NAME z GET_FLAGS _zlib FORCE_DYNAMIC NO_SET_FLAGS"
 }
 
 
@@ -45,11 +48,19 @@ function feature_openssl_link() {
 function feature_openssl_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
+
+	#__set_toolset "CUSTOM" "CONFIG_TOOL configure"
+	__set_toolset "STANDARD"
+
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
+	
+
 	ARCH=x64
+
+	__set_build_mode ARCH $ARCH
+
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		OPENSSL_OPT="shared no-idea no-mdc2 no-rc5 enable-ssl2 enable-tlsext enable-cms"
 
@@ -69,9 +80,7 @@ function feature_openssl_install_source() {
 
 	__feature_callback
 
-	# NOTE : On darwin openssl lib in lib/engines folder does not have LC_ID_DYLIB -- I dont knwo why - so I disable relocate mode
-	__set_build_mode "RELOCATE" "OFF"
-	__apply_build_env
+	__prepare_build "$INSTALL_DIR"
 
 	# configure --------------------------------
 	# http://stackoverflow.com/questions/16601895/how-can-one-build-openssl-on-ubuntu-with-a-specific-version-of-zlib
@@ -95,7 +104,7 @@ function feature_openssl_install_source() {
 	# clean --------------------------------
 	rm -Rf $SRC_DIR
 
-	__inspect_build "$INSTALL_DIR"
+	__inspect_build "$INSTALL_DIR" "EXCLUDE_INSPECT /share/man/"
 }
 
 

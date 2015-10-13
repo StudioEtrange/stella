@@ -43,6 +43,9 @@ function feature_automake_install_source() {
 	
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
+	#__set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL make"
+	__set_toolset "STANDARD"
+
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
 	AUTO_INSTALL_CONF_FLAG_POSTFIX=	
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
@@ -51,7 +54,7 @@ function feature_automake_install_source() {
 	__feature_callback
 
 
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "CONFIG_TOOL configure BUILD_TOOL make"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
 	
 }
 

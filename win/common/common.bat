@@ -670,7 +670,7 @@ goto :eof
 
 	if "!_opt_strip!"=="OFF" (
 		if "%EXTENSION%"==".7z" (
-			"%SEVENZIP%" x "%FILE_PATH%" -y -o"%UNZIP_DIR%"
+			"%SEVENZIP%" x "%FILE_PATH%" -y -o"%UNZIP_DIR%" 1>NUL
 		)
 		if "%EXTENSION%"==".exe" (
 			"%SEVENZIP%" x "%FILE_PATH%" -y -o"%UNZIP_DIR%"
@@ -691,7 +691,7 @@ goto :eof
 		)
 
 		if "%EXTENSION%"==".zip" (
-			"%UZIP%" -o "%FILE_PATH%" -d "%UNZIP_DIR%"
+			"%UZIP%" -q -o "%FILE_PATH%" -d "%UNZIP_DIR%"
 		)
 
 	) else (
@@ -701,10 +701,10 @@ goto :eof
 		)
 		mkdir "%STELLA_APP_TEMP_DIR%\%_FILENAME%"
 		if "%EXTENSION%"==".zip" (
-			"%UZIP%" -o "%FILE_PATH%" -d "%STELLA_APP_TEMP_DIR%\%_FILENAME%"
+			"%UZIP%" -q -o "%FILE_PATH%" -d "%STELLA_APP_TEMP_DIR%\%_FILENAME%"
 		)
 		if "%EXTENSION%"==".7z" (
-			"%SEVENZIP%" x "%FILE_PATH%" -y -o"%STELLA_APP_TEMP_DIR%\%_FILENAME%"
+			"%SEVENZIP%" x "%FILE_PATH%" -y -o"%STELLA_APP_TEMP_DIR%\%_FILENAME%" 1>NUL
 		)
 		if "%EXTENSION%"==".exe" (
 			"%SEVENZIP%" x "%FILE_PATH%" -y -o"%STELLA_APP_TEMP_DIR%\%_FILENAME%"
@@ -738,12 +738,12 @@ goto :eof
 			for /D %%i in (*) do (
 				REM for /D %%i in (*) do xcopy /q /y /e /i %%i "%UNZIP_DIR%"
 				cd /D %%i
-				for /D %%j in (*) do move /y %%j "%UNZIP_DIR%\"
-				for %%j in (*) do move /y %%j "%UNZIP_DIR%\"
+				for /D %%j in (*) do move /y %%j "%UNZIP_DIR%\" 1>NUL
+				for %%j in (*) do move /y %%j "%UNZIP_DIR%\" 1>NUL
 			)
 		) else (
-			for /D %%j in (*) do move /y %%j "%UNZIP_DIR%\"
-			for %%j in (*) do move /y %%j "%UNZIP_DIR%\"
+			for /D %%j in (*) do move /y %%j "%UNZIP_DIR%\" 1>NUL
+			for %%j in (*) do move /y %%j "%UNZIP_DIR%\" 1>NUL
 		)
 		set "_only_one_folder_exist=NONE"
 		cd /D "%STELLA_APP_WORK_ROOT%"
@@ -1009,17 +1009,34 @@ goto :eof
 
 :: like basename in bash
 :basename
-	set "_path=%~1"
-	set "_result_basename=%~2"
+	set "_result_basename=%~1"
+	set "_path=%~2"
 
-	for /F "delims=" %%A in ("!_path!\.") do set %_result_basename%=%%~nA
+	for /F "delims=" %%A in ("!_path!\.") do (
+		set %_result_basename%=%%~nA
+	)
 goto :eof
 
 :dirname
-	set "_path=%~1"
-	set "_result_dirname=%~2"
+	set "_result_dirname=%~1"
+	set "_path=%~2"
 
-	for /F "delims=" %%A in ("!_path!\.") do set %_result_dirname%=%%~dpA
+	for /F "delims=" %%A in ("!_path!\.") do (
+		set %_result_dirname%=%%~dpA
+	)
+goto :eof
+
+
+:which
+	set "_result_which=%~1"
+	set "_file=%~2"
+
+	set "_t="
+	for /F "delims=" %%A in ('where.exe !_file! 2^>NUL') do (
+		set "_t=%%A"
+	)
+
+	set "!_result_which!=!_t!"
 goto :eof
 
 :: check if a "findstr windows regexp" can be found in a string
@@ -1039,6 +1056,8 @@ goto :eof
 		if not "%%m"=="0" set "_match_exp=TRUE"
 	)
 goto :eof
+
+
 
 :run_admin
 	set _cmd=%*

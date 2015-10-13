@@ -50,18 +50,20 @@ function feature_python_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
-	
+	#__set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL make"
+	__set_toolset "STANDARD"
+
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
-
+	
 	__feature_callback
 
 	# auto relocate failed, because adding rpath there is not enough rpath in headers
 	# maybe we have to use -Wl,-headerpad_max_install_names
 	# error message :
 	# "because larger updated load commands do not fit (the program must be relinked, and you may need to use -headerpad or -headerpad_max_install_names)"
-	__set_build_mode "RELOCATE" "OFF"
+	#__set_build_mode "RELOCATE" "OFF"
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="--enable-shared"
@@ -74,7 +76,7 @@ function feature_python_install_source() {
 	[ "$STELLA_CURRENT_OS" == "macos" ] && __set_build_mode MACOSX_DEPLOYMENT_TARGET $(__get_macos_version)
 
 
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD CONFIG_TOOL configure BUILD_TOOL make"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD"
 
 	# install last pip/setuptools
 	__get_resource "get-pip" "https://bootstrap.pypa.io/get-pip.py" "HTTP" "$FEAT_INSTALL_ROOT/pip"

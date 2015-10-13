@@ -42,8 +42,13 @@ function feature_socat_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	
+	#__set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL make"
+	__set_toolset "STANDARD"
+
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
+	
 	__feature_callback
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
@@ -54,7 +59,7 @@ function feature_socat_install_source() {
 
 	
 	
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "CONFIG_TOOL configure BUILD_TOOL make"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
 
 
 }

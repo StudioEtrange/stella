@@ -68,6 +68,7 @@ function feature_boost_install_source() {
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
+	__set_toolset "STANDARD"
 
 	local without_lib=python,mpi
 
@@ -78,6 +79,9 @@ function feature_boost_install_source() {
     fi
 
     __feature_callback
+
+
+    __prepare_build "$INSTALL_DIR"
 
 	cd "$SRC_DIR"
 	./bootstrap.sh --prefix="$INSTALL_DIR" --libdir="$INSTALL_DIR/lib" --includedir="$INSTALL_DIR/include" --without-icu --without-libraries="$without_lib"

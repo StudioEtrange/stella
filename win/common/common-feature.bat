@@ -404,6 +404,9 @@ goto :eof
 				call :feature_callback
 			) else (
 				echo Installing !FEAT_NAME! version !FEAT_VERSION! in !FEAT_INSTALL_ROOT!
+				if "!FEAT_SCHEMA_FLAVOUR!"=="source" ( 
+					call %STELLA_COMMON%\common-build.bat :start_build_session
+				)
 				call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :feature_!FEAT_NAME!_install_!FEAT_SCHEMA_FLAVOUR!
 			)
 

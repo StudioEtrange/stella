@@ -47,6 +47,9 @@ function feature_hfst_install_source() {
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 
+	#__set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL make"
+	__set_toolset "STANDARD"
+
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="--disable-dependency-tracking --enable-all-tools \
 									--enable-proc --enable-lexc --enable-tagger \
@@ -62,7 +65,7 @@ function feature_hfst_install_source() {
 	# Makefile do not create bin directory
 	mkdir -p "$FEAT_INSTALL_ROOT/bin"
 
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD CONFIG_TOOL configure BUILD_TOOL make"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD"
 
 }
 

@@ -40,23 +40,31 @@ function feature_ucl_link() {
 	__link_feature_library "ucl#1_03" "LIBS_NAME ucl FORCE_STATIC"
 	__link_feature_library "zlib#1_2_8" "LIBS_NAME z FORCE_DYNAMIC"
 	
-	
 }
 
 function feature_upx_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
+
+	__set_toolset "STANDARD"
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 	
 	__feature_callback
 
+	__prepare_build "$INSTALL_DIR"
+
+
+	CXXFLAGS="$CXXFLAGS "
+
 	# can not build doc
 	sed -i".old" '/-C doc/d' "$SRC_DIR/Makefile"
 
+	# some gcc version will fail on undeclared typedef
+	sed -i".old" "s/CXXFLAGS += -Wall/CXXFLAGS += -Wall -Wno-unused-local-typedefs/g" "$SRC_DIR/src/Makefile"
+
 	cd "$SRC_DIR"
-	#__set_standard_build_flags
-	__apply_build_env
 
 	make all
 

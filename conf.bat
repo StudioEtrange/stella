@@ -6,7 +6,7 @@ set _STELLA_CONF_CURRENT_FILE_DIR=%_STELLA_CONF_CURRENT_FILE_DIR:~0,-1%
 if "%STELLA_CURRENT_RUNNING_DIR%"=="" set STELLA_CURRENT_RUNNING_DIR=%cd%
 
 
-:: PATHS
+:: STELLA PATHS ---------------------------------------------
 set STELLA_ROOT=%_STELLA_CONF_CURRENT_FILE_DIR%
 set STELLA_COMMON=%STELLA_ROOT%\win\common
 set STELLA_POOL=%STELLA_ROOT%\win\pool
@@ -16,7 +16,7 @@ set STELLA_ARTEFACT=%STELLA_POOL%\artefact
 set STELLA_APPLICATION=%STELLA_ROOT%\app
 set STELLA_TEMPLATE=%STELLA_POOL%\template
 
-:: URL
+:: URL PATHS ---------------------------------------------
 set STELLA_URL=http://stella.sh
 set STELLA_POOL_URL=%STELLA_URL%/pool
 set STELLA_ARTEFACT_URL=%STELLA_POOL_URL%/win/artefact
@@ -25,10 +25,10 @@ set STELLA_DIST_URL=%STELLA_URL%/dist
 
 
 
-:: GATHER PLATFORM INFO  -------------
+:: GATHER PLATFORM INFO ---------------------------------------------
 call %STELLA_COMMON%\common-platform.bat :set_current_platform_info
 
-:: GATHER CURRENT APP INFO  -------------
+:: GATHER CURRENT APP INFO ---------------------------------------------
 set STELLA_APP_PROPERTIES_FILENAME=stella.properties
 set STELLA_APP_NAME=
 
@@ -43,7 +43,7 @@ if "%STELLA_APP_NAME%"=="" (
 	set STELLA_APP_NAME=stella
 )
 
-:: APP PATH
+:: APP PATH ---------------------------------------------
 call %STELLA_COMMON%\common.bat :rel_to_abs_path "STELLA_APP_ROOT" "%STELLA_APP_ROOT%" "%STELLA_CURRENT_RUNNING_DIR%"
 
 if "%STELLA_APP_WORK_ROOT%"=="" (
@@ -72,6 +72,7 @@ set STELLA_INTERNAL_TEMP_DIR=%STELLA_INTERNAL_WORK_ROOT%\temp
 :: OTHERS ---------------------------------------------
 set FEATURE_LIST_ENABLED=
 set VERBOSE_MODE=0
+set "STELLA_NO_PROXY=localhost,127.0.0.1,localaddress,.localdomain.com"
 set "WGET=wget.exe"
 set "UZIP=unzip.exe"
 set "SEVENZIP=7z.exe"
@@ -82,8 +83,49 @@ set "CURL=curl"
 set "NPM=npm"
 
 
-:: INTERNAL LIST ---------------------------------------------
-set "__STELLA_FEATURE_LIST=git docker-swarm socat nginx mingw-w64 go-build-chain go-crosscompile-chain go docker-bundle docker-client docker-machine oracle-jdk maven spark nikpeviewer dependencywalker conemu goconfig-cli ninja jom cmake packer perl ruby rubydevkit nasm python vagrant openssh wget unzip sevenzip patch gnumake"
+:: FEATURE LIST ---------------------------------------------
+set "__STELLA_FEATURE_LIST=freetype libpng zlib git docker-swarm socat nginx mingw-w64 go-build-chain go-crosscompile-chain go docker-bundle docker-client docker-machine oracle-jdk maven spark nikpeviewer dependencywalker conemu goconfig-cli ninja jom cmake packer perl ruby rubydevkit nasm python vagrant openssh wget unzip sevenzip patch gnumake"
+
+:: SYS PACKAGE --------------------------------------------
+:: list of available installable system package
+set "STELLA_SYS_PACKAGE_LIST=chocolatey vs2015community"
+
+
+:: BUILD SYSTEM---------------------------------------------
+:: Define linking mode. 
+:: have an effect only for feature linked with link_feature_libray (do not ovveride specific FORCE_STATIC or FORCE_DYNAMIC)
+:: DEFAULT | STATIC | DYNAMIC
+call %STELLA_COMMON%\common-build.bat :set_build_mode_default "LINK_MODE" "DEFAULT"
+
+:: these features will be picked from the system
+:: have an effect only for feature declared in FEAT_SOURCE_DEPENDENCIES, FEAT_BINARY_DEPENDENCIES or passed to  __link_feature_libray
+set "STELLA_BUILD_DEP_FROM_SYSTEM_DEFAULT=openssl python"
+:: parallelize build (except specificied unparallelized one)
+:: ON | OFF
+call %STELLA_COMMON%\common-build.bat :set_build_mode_default "PARALLELIZE" "ON"
+:: compiler optimization
+call %STELLA_COMMON%\common-build.bat :set_build_mode_default "OPTIMIZATION" "2"
+:: rellocatable shared libraries
+call %STELLA_COMMON%\common-build.bat :set_build_mode_default "RELOCATE" "OFF"
+:: ARCH x86 x64
+:: By default we do not provide any build arch information
+REM call %STELLA_COMMON%\common-build.bat :set_build_mode_default "ARCH" ""
+
+:: supported build toolset
+REM CONFIG TOOL | BUILD TOOL 		| COMPIL FRONTEND
+REM    cmake	|	ninja	 		|   gcc 	===> depend on env CC or CMAKE_C_COMPILER (path or exe name)
+REM    cmake	|	ninja	 		|   cl 		===> 
+REM    cmake	|	nmake	 		|   cl
+REM    cmake	|	jom		 		|   ?
+REM    cmake	|	mingw-make		|   gcc
+REM 	NULL	|	nmake	 		|   cl
+REM 	NULL	|	mingw-make		|   gcc
+
+REM STANDARD TOOLSET : 	cmake	|	mingw-make		|   gcc 		|   cl OR gcc ?
+REM MS TOOLSET : 		cmake	|	nmake	 		|   cl
+set "STELLA_BUILD_DEFAULT_CONFIG_TOOL=cmake"
+set "STELLA_BUILD_DEFAULT_BUILD_TOOL=mingw-make"
+set "STELLA_BUILD_DEFAULT_COMPIL_FRONTEND=gcc"
 
 :: API ---------------------------------------------
 set "STELLA_API_COMMON_PUBLIC=get_active_path uncompress trim argparse is_path_abs get_resource delete_resource update_resource revert_resource download_uncompress del_folder copy_folder_content_into fork run_admin mercurial_project_version git_project_version"

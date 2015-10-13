@@ -101,6 +101,10 @@ function feature_cmake_install_source() {
 
 	__download_uncompress "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_FILENAME" "$SRC_DIR" "DEST_ERASE STRIP"
 
+	__set_toolset "STANDARD"
+
+	__prepare_build "$INSTALL_DIR"
+
 	__del_folder "$BUILD_DIR"
 	mkdir -p "$BUILD_DIR"
 
@@ -115,6 +119,9 @@ function feature_cmake_install_source() {
 
 	__del_folder "$SRC_DIR"
 	__del_folder "$BUILD_DIR"
+
+
+	__inspect_build "$INSTALL_DIR" "EXCLUDE_INSPECT /share/"
 
 }
 

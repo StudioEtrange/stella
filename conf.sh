@@ -87,7 +87,7 @@ FEATURE_LIST_ENABLED=
 VERBOSE_MODE=0
 STELLA_NO_PROXY="localhost,127.0.0.1,localaddress,.localdomain.com"
 
-# INTERNAL LIST---------------------------------------------
+# FEATURE LIST---------------------------------------------
 __STELLA_FEATURE_LIST=
 for recipe in "$STELLA_FEATURE_RECIPE"/*.sh; do
 	recipe=$(basename "$recipe")
@@ -96,9 +96,10 @@ for recipe in "$STELLA_FEATURE_RECIPE"/*.sh; do
 	__STELLA_FEATURE_LIST="$__STELLA_FEATURE_LIST $recipe"
 done
 
+# SYS PACKAGE --------------------------------------------
 # list of available installable system package
-[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && __STELLA_SYS_PACKAGE_LIST="brew x11 build-chain-standard sevenzip wget curl unzip cmake"
-[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && __STELLA_SYS_PACKAGE_LIST="build-chain-standard sevenzip wget curl unzip cmake"
+[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && STELLA_SYS_PACKAGE_LIST="brew x11 build-chain-standard sevenzip wget curl unzip cmake"
+[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && STELLA_SYS_PACKAGE_LIST="build-chain-standard sevenzip wget curl unzip cmake"
 
 
 
@@ -120,9 +121,25 @@ __set_build_mode_default "OPTIMIZATION" "2"
 # everything will be sticked to your stella shared lib installation path
 # this will affect rpath values (and install_name for darwin)
 __set_build_mode_default "RELOCATE" "OFF"
+# ARCH x86 x64
+# By default we do not provide any build arch information
+#__set_build_mode_default "ARCH" ""
 
 
 
+# supported build toolset
+# CONFIG TOOL 	| BUILD TOOL 		| COMPIL FRONTEND
+#    configure	|	make	 		|   gcc clang
+#    cmake		|	ninja	 		|   gcc clang
+#    cmake		|	make	 		|   gcc clang
+#    NULL		|	make		 	|   gcc clang
+
+# STANDARD TOOLSET : configure	|	make|   gcc clang
+# NINJA TOOLSET : cmake	|	ninja |   gcc clang
+# CMAKE TOOLSET : cmake	|	make  |   gcc clang
+STELLA_BUILD_DEFAULT_CONFIG_TOOL=configure
+STELLA_BUILD_DEFAULT_BUILD_TOOL=make
+STELLA_BUILD_DEFAULT_COMPIL_FRONTEND=gcc-clang
 
 # . is current running directory
 # $ORIGIN and @loader_path is directory of the file who wants to load a shared library

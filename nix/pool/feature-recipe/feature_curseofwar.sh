@@ -53,6 +53,11 @@ function feature_curseofwar_install_source() {
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP FORCE_NAME $FEAT_SOURCE_URL_FILENAME"
 
 
+	# curse of war have problem on darwin when using install script with make build tool (cause of 'install -D' flag which not exist)
+	# curse of war does not install when using cmake
+	__set_toolset "CUSTOM" "CONFIG_TOOL cmake"
+	
+
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
 	AUTO_INSTALL_CONF_FLAG_POSTFIX=
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
@@ -60,10 +65,8 @@ function feature_curseofwar_install_source() {
 
 	__feature_callback
 
-	# curse of war have problem on darwin when using install script with make build tool (cause of usinf install -D flag which not exist)
-	#__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_CONFIG BUILD_TOOL make NO_OUT_OF_TREE_BUILD"
-	# curse of war does not install when using cmake
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "CONFIG_TOOL cmake NO_OUT_OF_TREE_BUILD SOURCE_KEEP"
+	
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_INSTALL NO_OUT_OF_TREE_BUILD SOURCE_KEEP"
 	
 
 	# install
@@ -95,8 +98,8 @@ function feature_curseofwar_install_source() {
 	chmod +x "$INSTALL_DIR/curseofwar-sdl.sh"
 
 
-	__inspect_build "$INSTALL_DIR"
-	#__del_folder "$SRC_DIR"
+	__inspect_build "$INSTALL_DIR" "EXCLUDE_INSPECT /share/|/images/|/pixmaps/"
+	__del_folder "$SRC_DIR"
 	
 
 }

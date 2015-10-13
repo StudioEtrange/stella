@@ -3,7 +3,7 @@ _R_INCLUDED_=1
 
 # TODO 
 # make recipe for revolution r open (RRO) https://mran.revolutionanalytics.com/download/#download
-
+# http://r.research.att.com/tools/
 function feature_r() {
 	FEAT_NAME=r
 	FEAT_LIST_SCHEMA="3_2_2:source"
@@ -47,6 +47,9 @@ function feature_r_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	
+	#__set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL make"
+	__set_toolset "STANDARD"
+	
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 
@@ -55,9 +58,9 @@ function feature_r_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
-	__feature_callback
+	#__feature_callback
 
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "CONFIG_TOOL configure BUILD_TOOL make"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP NO_OUT_OF_TREE_BUILD"
 
 }
 

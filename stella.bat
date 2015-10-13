@@ -4,10 +4,9 @@
 call %~dp0\conf.bat
 
 
-
 :: arguments
-set "params=domain:"app feature stella proxy boot" action:"version on off register search remove link api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature install list stella docker" id:"_ANY_""
-set "options=-f: -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_ -stellaroot:_ANY_ -samples: -proxyhost:_ANY_ -proxyport:_ANY_ -proxyuser:_ANY_ -proxypass:_ANY_ -depforce: -depignore:"
+set "params=domain:"app feature stella proxy boot sys" action:"version on off register search remove link api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature install list stella docker" id:"_ANY_""
+set "options=-f: -buildarch:"x86 x64" -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_ -stellaroot:_ANY_ -samples: -proxyhost:_ANY_ -proxyport:_ANY_ -proxyuser:_ANY_ -proxypass:_ANY_ -depforce: -depignore:"
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
 if "%ARGOPT_FLAG_HELP%"=="1" goto :usage
@@ -35,6 +34,27 @@ if "%DOMAIN%"=="app" goto :end
 
 
 
+REM --------------- SYS ----------------------------
+if "%DOMAIN%"=="sys" (
+	call %STELLA_COMMON%\common.bat :init_stella_env
+
+	if "%ACTION%"=="install" (
+		call %STELLA_COMMON%\common-platform.bat :sys_install_%id%
+		goto :end
+	)
+	if "%ACTION%"=="remove" (
+		call %STELLA_COMMON%\common-platform.bat :sys_remove_%id%
+		goto :end
+	)
+	if "%ACTION%"=="list" (
+		echo !STELLA_SYS_PACKAGE_LIST!
+		goto :end
+	)
+)
+if "%DOMAIN%"=="sys" goto :end
+
+
+
 REM --------------- BOOT ----------------------------
 if "%DOMAIN%"=="boot" (
 	call %STELLA_COMMON%\common.bat :init_stella_env
@@ -45,9 +65,11 @@ if "%DOMAIN%"=="boot" (
 			goto :end
 		)
 	)
+	if "%ACTION%"=="docker" (
+		echo NOT YET IMPLEMENTED
+	)
 )
 if "%DOMAIN%"=="boot" goto :end
-
 
 
 
@@ -98,6 +120,7 @@ REM --------------- FEATURE ----------------------------
 if "%DOMAIN%"=="feature" (
 	set "_feature_options="
 	if "%-f%"=="1" set "_feature_options=!_feature_options! -f"
+	if not "%-buildarch%"=="" set "_feature_options=!_feature_options! -buildarch !-buildarch!"
 	if "%-depforce%"=="1" set "_feature_options=!_feature_options! -depforce"
 	if "%-depignore%"=="1" set "_feature_options=!_feature_options! -depignore"
 	
@@ -138,10 +161,9 @@ if "%DOMAIN%"=="proxy" goto :end
 	echo 		app get-data^|get-assets^|delete-data^|delete-assets^|update-data^|update-assets^|revert-data^|revert-assets ^<data id^|assets id^>
 	echo 		app get-data-pack^|get-assets-pack^|delete-data-pack^|delete-assets-pack^|update-data-pack^|update-assets-pack^|revert-data-pack^|revert-assets-pack ^<data pack name^|assets pack name^>
 	echo 		app get-feature ^<all^|feature schema^> : install all features defined in app properties file or install a matching one
-	echo 		app setup-env ^<env id^|all^> : download, build, deploy and run virtual environment based on app properties
 	echo		app link ^<app-path^> [-stellaroot=^<path^>] : link an app to a specific stella path
 	echo	* feature management :
-	echo 		feature install ^<feature schema^> [-depforce] [-depignore] : install a feature. [-depforce] will force to reinstall all dependencies. [-depignore] will ignore dependencies. schema = feature_name[#version][@arch][:binary^|source][/os_restriction][\os_exclusion]
+	echo 		feature install ^<feature schema^> [-depforce] [-depignore] [-buildarch=x86^|x64] : install a feature. [-depforce] will force to reinstall all dependencies. [-depignore] will ignore dependencies. schema = feature_name[#version][@arch][:binary^|source][/os_restriction][\os_exclusion]
 	echo 		feature remove ^<feature schema^> : remove a feature
 	echo 		feature list ^<all^|feature name^|active^>: list all available features OR available version of a feature OR current active features
 	echo	* various :
@@ -156,7 +178,10 @@ if "%DOMAIN%"=="proxy" goto :end
 	echo 	* bootstrap management :
 	echo 		boot stella shell : launch a shell with all stella env var setted
 	echo		boot docker ^<docker-id^> [commands] : launch a command on a docker container with stella mounted as /stella --  need docker installed on your system
-
+	echo	* system package management : WARN This will affect your system
+	echo 		sys install ^<package name^> : install  a system package
+	echo 		sys remove ^<package name^> : remove a system package
+	echo 		sys list all : list all available system package name
 goto :end
 
 

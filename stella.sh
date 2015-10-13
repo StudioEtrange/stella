@@ -14,10 +14,9 @@ function usage() {
 	echo " L     app get-data|get-assets|delete-data|delete-assets|update-data|update-assets|revert-data|revert-assets <data id|assets id>"
 	echo " L     app get-data-pack|get-assets-pack|update-data-pack|update-assets-pack|revert-data-pack|revert-assets-pack|delete-data-pack|delete-assets-pack <data pack name|assets pack name>"
 	echo " L     app get-feature <all|feature schema> : install all features defined in app properties file or install a matching one"
-	echo " L     app setup-env <env id|all> : download, build, deploy and run virtual environment based on app properties"
 	echo " L     app link <app-path> [--stellaroot=<path>] : link an app to a specific stella path"
 	echo " o-- feature management :"
-	echo " L     feature install <feature schema> [--depforce] [--depignore] [--export=<path>] [--portable=<path>] : install a feature. [--depforce] will force to reinstall all dependencies. [--depignore] will ignore dependencies. schema = feature_name[#version][@arch][:binary|source][/os_restriction][\os_exclusion]"
+	echo " L     feature install <feature schema> [--depforce] [--depignore] [--buildarch=x86|x64] [--export=<path>] [--portable=<path>] : install a feature. [--depforce] will force to reinstall all dependencies. [--depignore] will ignore dependencies. schema = feature_name[#version][@arch][:binary|source][/os_restriction][\os_exclusion]"
 	echo " L     feature remove <feature schema> : remove a feature"
 	echo " L     feature list <all|feature name|active> : list all available feature OR available versions of a feature OR current active features"
 	echo " o-- various :"
@@ -64,6 +63,7 @@ DEPFORCE=''						''    		''            		b     		0     		'1'           			Force 
 DEPIGNORE=''					''    		''            		b     		0     		'1'           		Will not process any dependencies.
 EXPORT=''                     ''          'path'              s           0           ''                      	Export feature to this dir.
 PORTABLE=''                   ''          'path'              s           0           ''                      Make a portable version of this feature in this dir
+BUILDARCH=''				'a'				'arch'			a 			0 			 'x86 x64'			
 "
 
 __argparse "$0" "$OPTIONS" "$PARAMETERS" "Lib Stella" "$(usage)" "" "$@"
@@ -100,6 +100,9 @@ if [ "$DOMAIN" == "feature" ]; then
 	if [ "$FORCE" == "1" ]; then
 		_feature_options="$_feature_options -f"
 	fi
+	if [ ! "$BUILDARCH" == "" ]; then
+		_feature_options="$_feature_options --buildarch=$BUILDARCH"
+	fi
 	if [ ! "$EXPORT" == "" ]; then
 		_feature_options="$_feature_options --export=$EXPORT"
 	fi
@@ -121,7 +124,7 @@ if [ "$DOMAIN" == "sys" ]; then
 		__sys_remove_"$ID"
 	fi
 	if [ "$ACTION" == "list" ]; then
-		echo "$__STELLA_SYS_PACKAGE_LIST"
+		echo "$STELLA_SYS_PACKAGE_LIST"
 	fi
 fi
 

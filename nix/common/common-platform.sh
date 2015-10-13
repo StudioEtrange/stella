@@ -201,7 +201,6 @@ function __ask_install_requirements() {
 
 
 function __stella_requirement() {
-	# __require "7z" "7z" "PREFER_SYSTEM"
 	case $STELLA_CURRENT_OS in
 		*);;
 	esac
@@ -242,18 +241,29 @@ function __require() {
 		if [ "$_opt_optional" == "ON" ]; then
 			if [ "$_opt_prefer_system" == "ON" ]; then
 				echo "** WARN -- You should install $_artefact -- Try stella.sh sys install $_id OR your regular OS package manager"
-			fi
-			if [ "$_opt_prefer_stella" == "ON" ]; then
-				echo "** WARN -- You should install $_artefact -- Try stella.sh feature install $_id"
+			else
+				if [ "$_opt_prefer_stella" == "ON" ]; then
+					echo "** WARN -- You should install $_artefact -- Try stella.sh feature install $_id"
+				else
+					echo "** WARN -- You should install $_artefact"
+					echo "-- For a system install : try stella.sh sys install $_id OR your regular OS package manager"
+					echo "-- For an install from Stella : try stella.sh feature install $_id"
+				fi
 			fi
 		else
 			if [ "$_opt_prefer_system" == "ON" ]; then
 				echo "** ERROR -- Please install $_artefact"
 				echo "** Try stella.sh sys install $_id OR your regular OS package manager"
 				exit 1
-			fi
-			if [ "$_opt_prefer_stella" == "ON" ]; then
-				__feature_install "$_id" "INTERNAL HIDDEN"
+			else
+				if [ "$_opt_prefer_stella" == "ON" ]; then
+					__feature_install "$_id" "INTERNAL HIDDEN"
+				else
+					echo "** ERROR -- Please install $_artefact"
+					echo "-- For a system install : try stella.sh sys install $_id OR your regular OS package manager"
+					echo "-- For an install from Stella : try stella.sh feature install $_id"
+					exit 1
+				fi
 			fi
 		fi
 	fi
@@ -303,7 +313,6 @@ function __sys_package_manager() {
 
 	local _flag_package_manager=OFF
 	local _packages=
-	local _invert_filter=
 	for o in $_packages_list; do
 		[ "$o" == "|" ] && _flag_package_manager=OFF
 		[ "$_flag_package_manager" == "ON" ] && _packages="$_packages $o"

@@ -67,14 +67,40 @@ goto :eof
 
 goto :eof
 
+
 :feature_template_install_source
 	set "INSTALL_DIR=!FEAT_INSTALL_ROOT!"
 	set "SRC_DIR=!FEAT_INSTALL_ROOT!\!FEAT_NAME!-!FEAT_VERSION!-src"
 	set "BUILD_DIR=!FEAT_INSTALL_ROOT!\!FEAT_NAME!-!FEAT_VERSION!-build"
 
+	call %STELLA_COMMON%\common-build.bat :set_toolset "STANDARD"
+	REM call %STELLA_COMMON%\common-build.bat :set_toolset "CUSTOM" "CONFIG_TOOL cmake"
+
 	call %STELLA_COMMON%\common.bat :get_resource "!FEAT_NAME!" "!FEAT_SOURCE_URL!" "!FEAT_SOURCE_URL_PROTOCOL!" "!SRC_DIR!" "DEST_ERASE STRIP"
 	
 	call %STELLA_COMMON%\common-feature :feature_callback
+
+	:: out of tree build do not work
+	call %STELLA_COMMON%\common-build.bat :auto_build "!FEAT_NAME!" "!SRC_DIR!" "!INSTALL_DIR!"
+
+
+goto :eof
+
+
+
+:feature_template_install_source
+	set "INSTALL_DIR=!FEAT_INSTALL_ROOT!"
+	set "SRC_DIR=!FEAT_INSTALL_ROOT!\!FEAT_NAME!-!FEAT_VERSION!-src"
+	set "BUILD_DIR=!FEAT_INSTALL_ROOT!\!FEAT_NAME!-!FEAT_VERSION!-build"
+
+	call %STELLA_COMMON%\common-build.bat :set_toolset "STANDARD"
+	REM call %STELLA_COMMON%\common-build.bat :set_toolset "CUSTOM" "CONFIG_TOOL cmake"
+
+	call %STELLA_COMMON%\common.bat :get_resource "!FEAT_NAME!" "!FEAT_SOURCE_URL!" "!FEAT_SOURCE_URL_PROTOCOL!" "!SRC_DIR!" "DEST_ERASE STRIP"
+	
+	call %STELLA_COMMON%\common-feature :feature_callback
+
+	call %STELLA_COMMON%\common-build.bat :prepare_build "!INSTALL_DIR!"
 
 	REM build instructions
 	cd /D %BUILD_DIR%

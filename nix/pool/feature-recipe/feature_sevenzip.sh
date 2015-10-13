@@ -36,8 +36,13 @@ function feature_sevenzip_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
+	__set_toolset "STANDARD"
+
+
 	__get_resource "sevenzip" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 	#__download_uncompress "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_FILENAME" "$SRC_DIR" "DEST_ERASE STRIP"
+
+	__prepare_build "$INSTALL_DIR"
 
 	cd "$SRC_DIR"
     make all3

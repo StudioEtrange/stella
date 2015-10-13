@@ -487,7 +487,7 @@ function __feature_install() {
 			else
 				
 				echo " ** Installing $FEAT_NAME version $FEAT_VERSION in $FEAT_INSTALL_ROOT"
-				[ "$FEAT_SCHEMA_FLAVOUR" == "source" ] && __start_build_session $_OPT
+				[ "$FEAT_SCHEMA_FLAVOUR" == "source" ] && __start_build_session
 				feature_"$FEAT_NAME"_install_"$FEAT_SCHEMA_FLAVOUR"
 			fi
 

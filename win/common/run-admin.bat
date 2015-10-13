@@ -36,9 +36,10 @@ set "_arg=%*"
 	set "batchPath=%~0"
 	REM setlocal EnableDelayedExpansion
 	
-	REM Hack for VM : re-map a drive letter for shared folder for Admin user
+	
+	REM Hack for VirtualBox : re-map a drive letter for shared folder for Admin user
 	REM set "driveLetter=%~d0"
-	REM "SHARED_FOLDER=\\VBOXSVR\nomorgan"
+	REM set "SHARED_FOLDER=\\VBOXSVR\nomorgan"
 	REM ECHO UAC.ShellExecute "cmd", "/k net use !driveLetter! %SHARED_FOLDER% 1>NUL 2>&1 && echo OK || echo KO && call !batchPath! ###_FLAG_### !_arg!", "", "runas", 1 >> "%temp%\OEgetPrivileges.vbs"
 
 	ECHO UAC.ShellExecute "!batchPath!", "###_FLAG_### !_arg!", "", "runas", 1 >> "%temp%\OEgetPrivileges.vbs"
