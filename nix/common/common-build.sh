@@ -453,6 +453,7 @@ function __link_feature_library() {
 	# FORCE_STATIC -- force link to static version of lib (by isolating it)
 	# FORCE_DYNAMIC -- force link to dynamic version of lib (by isolating it) 
 	# FORCE_LIB_FOLDER <path> -- folder prefix where lib resides, default "/lib"
+	# FORCE_BIN_FOLDER <path>
 	# FORCE_INCLUDE_FOLDER <path> -- folder prefix where include resides, default "/include"
 	# GET_FLAGS <prefix> -- init prefix_C_CXX_FLAGS, prefix_CPP_FLAGS, prefix_LINK_FLAGS with correct flags
 	# GET_FOLDER <prefix> -- init prefix_ROOT, prefix_LIB, prefix_BIN, prefix_INCLUDE with correct path
@@ -473,6 +474,8 @@ function __link_feature_library() {
 	local _opt_flavour=
 	local _flag_lib_folder=OFF
 	local _lib_folder=lib
+	local _flag_bin_folder=OFF
+	local _bin_folder=bin
 	local _flag_include_folder=OFF
 	local _include_folder=include
 	local _opt_set_flags=ON
@@ -498,6 +501,8 @@ function __link_feature_library() {
 
 		[ "$_flag_lib_folder" == "ON" ] && _lib_folder=$o && _flag_lib_folder=OFF
 		[ "$o" == "FORCE_LIB_FOLDER" ] && _flag_lib_folder=ON && _flag_libs_name=OFF
+		[ "$_flag_bin_folder" == "ON" ] && _bin_folder=$o && _flag_bin_folder=OFF
+		[ "$o" == "FORCE_BIN_FOLDER" ] && _flag_bin_folder=ON && _flag_libs_name=OFF
 		[ "$_flag_include_folder" == "ON" ] && _include_folder=$o && _flag_include_folder=OFF
 		[ "$o" == "FORCE_INCLUDE_FOLDER" ] && _flag_include_folder=ON && _flag_libs_name=OFF
 

@@ -458,6 +458,8 @@ goto :eof
 	set _opt_flavour=
 	set _flag_lib_folder=OFF
 	set _lib_folder=lib
+	set _flag_bin_folder=OFF
+	set _bin_folder=bin
 	set _flag_include_folder=OFF
 	set _include_folder=include
 	set _opt_set_flags=ON
@@ -491,6 +493,14 @@ goto :eof
 		)
 		if "%%O"=="FORCE_LIB_FOLDER" (
 			set _flag_lib_folder=ON
+			set _flag_libs_name=OFF
+		)
+		if "!_flag_bin_folder!"=="ON" (
+			set "_bin_folder=%%O"
+			set _flag_bin_folder=OFF
+		)
+		if "%%O"=="FORCE_BIN_FOLDER" (
+			set _flag_bin_folder=ON
 			set _flag_libs_name=OFF
 		)
 		if "!_flag_include_folder!"=="ON" (
@@ -580,7 +590,7 @@ goto :eof
 		call %STELLA_COMMON%\common.bat :del_folder "!LIB_TARGET_FOLDER!"
 		
 		echo *** Copying items from !REQUIRED_LIB_ROOT!\!_lib_folder! to !LIB_TARGET_FOLDER!
-		for %%f in ("!REQUIRED_LIB_ROOT!\!_lib_folder\*.*") do (
+		for %%f in ("!REQUIRED_LIB_ROOT!\!_lib_folder!\*.*") do (
 			call :is_import_or_static_lib "_type" %%f
 			if "!_type!"=="STATIC" (
 				copy /Y %%f %%f  !LIB_TARGET_FOLDER!\
@@ -594,12 +604,17 @@ goto :eof
 		call %STELLA_COMMON%\common.bat :del_folder "!LIB_TARGET_FOLDER!"
 
 		echo *** Copying items from !REQUIRED_LIB_ROOT!\!_lib_folder! to !LIB_TARGET_FOLDER!
-		for %%f in ("!REQUIRED_LIB_ROOT!\!_lib_folder\*.*") do (
+		for %%f in ("!REQUIRED_LIB_ROOT!\!_lib_folder!\*.*") do (
 			call :is_import_or_static_lib "_type" %%f
 			if "!_type!"=="IMPORT" (
 				copy /Y %%f !LIB_TARGET_FOLDER!\
 			)
 		)
+		echo *** Copying DLL items from !REQUIRED_LIB_ROOT!\!_bin_folder! to !LIB_TARGET_FOLDER!
+		for %%f in ("!REQUIRED_LIB_ROOT!\!_bin_folder!\*.dll") do (
+			copy /Y %%f !LIB_TARGET_FOLDER!\
+		)
+
 	)
 	if "!_opt_flavour!"=="DEFAULT" (
 		set "LIB_TARGET_FOLDER=!REQUIRED_LIB_ROOT!\!_lib_folder!"
@@ -900,8 +915,8 @@ goto :eof
 	:: -DCMAKE_MODULE_PATH="$CMAKE_MODULE_PATH" 
 
 	:: TODO do we need this ?
-	set "CMAKE_LIBRARY_PATH=%CMAKE_LIBRARY_PATH:\=\\%"
-	set "CMAKE_INCLUDE_PATH=%CMAKE_INCLUDE_PATH:\=\\%"
+	if not "!CMAKE_LIBRARY_PATH!"=="" set "CMAKE_LIBRARY_PATH=%CMAKE_LIBRARY_PATH:\=\\%"
+	if not "!CMAKE_INCLUDE_PATH!"=="" set "CMAKE_INCLUDE_PATH=%CMAKE_INCLUDE_PATH:\=\\%"
 
 
 	call %STELLA_COMMON%\common.bat :trim "STELLA_CMAKE_EXTRA_FLAGS" "!STELLA_CMAKE_EXTRA_FLAGS!"

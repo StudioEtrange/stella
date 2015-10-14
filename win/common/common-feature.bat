@@ -417,14 +417,11 @@ goto :eof
 				
 				for %%p in (!_dependencies!) do (
 					echo Installing dependency %%p
-					echo HERE066 !_SCHEMA! 
 					
 					call :feature_install %%p "!_OPT! HIDDEN"
 					if "!TEST_FEATURE!"=="0" (
 						echo ** Error while installing dependency feature !FEAT_SCHEMA_SELECTED!
 					)
-					
-					echo HERE077 !_SCHEMA! 
 				)
 
 				call :pop_schema_context
