@@ -5,7 +5,7 @@ call %~dp0\..\..\conf.bat
 
 :: arguments
 set "params=action:"install remove list" id:"_ANY_""
-set "options=-f: -depforce: -depignore: -buildarch:"x86 x64""
+set "options=-f: -depforce: -depignore: -buildarch:"x86 x64" -export:_ANY_ -portable:_ANY_"
 call %STELLA_COMMON%\argopt.bat :argopt %*
 if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
 if "%ARGOPT_FLAG_HELP%"=="1" goto :usage
@@ -22,7 +22,12 @@ if "%action%"=="install" (
 	)
 	if "%-depforce%"=="1" set "_feature_options=!_feature_options! DEP_FORCE"
 	if "%-depignore%"=="1" set "_feature_options=!_feature_options! DEP_IGNORE"
-	call %STELLA_COMMON%\common-feature.bat :feature_install %id% !_feature_options!
+	
+	if not "%-export%"=="" set "_feature_options=!_feature_options! EXPORT !-export!"
+	if not "%-portable%"=="" set "_feature_options=!_feature_options! PORTABLE !-portable!"
+
+
+	call %STELLA_COMMON%\common-feature.bat :feature_install %id% "!_feature_options!"
 	goto :end
 )
 

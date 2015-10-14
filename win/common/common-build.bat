@@ -559,8 +559,16 @@ goto :eof
 	echo ** Linked to !SCHEMA!
 
 	:: INSPECT required lib through schema
-	echo TODO TO FINISH !!!!!!!!!!!!!!
-	set "REQUIRED_LIB_ROOT=!FEAT_INSTALL_ROOT!"
+	call %STELLA_COMMON%\common-feature.bat :push_schema_context
+	call %STELLA_COMMON%\common-feature.bat :feature_inspect !SCHEMA!
+	
+	if "!TEST_FEATURE!"=="1" (
+		set "REQUIRED_LIB_ROOT=!FEAT_INSTALL_ROOT!"
+	) else (
+		set "REQUIRED_LIB_ROOT="
+		echo ** ERROR : depend on lib !SCHEMA!
+	)
+	call %STELLA_COMMON%\common-feature.bat :pop_schema_context
 
 
 	:: ISOLATE LIBS
@@ -854,9 +862,9 @@ goto :eof
 	echo ====^> Build management Tool : !STELLA_BUILD_BUILD_TOOL!
 	echo ====^> Compiler Frontend : !STELLA_BUILD_COMPIL_FRONTEND!
 	echo ** BUILD INFO
-	echo ====^> Build arch : !STELLA_BUILD_ARCH!
+	echo ====^> Build arch directive : !STELLA_BUILD_ARCH!
 	echo ====^> Parallelized build (if supported) : !STELLA_BUILD_PARALLELIZE!
-	
+	echo ====^> Relocation : !STELLA_BUILD_RELOCATE!
 
 
 goto :eof

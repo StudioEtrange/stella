@@ -9,7 +9,7 @@ goto :eof
 	set "FEAT_DEFAULT_VERSION=1_0_0"
 	set "FEAT_DEFAULT_ARCH=x64"
 
-	set "FEAT_BUNDLE=NESTED"
+	set "FEAT_BUNDLE=MERGE"
 goto :eof
 
 :feature_docker-bundle_1_0_0

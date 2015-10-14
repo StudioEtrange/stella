@@ -6,6 +6,9 @@ goto :eof
 ::--------------------------------------------------------
 
 :init_stella_env
+	:: STACK
+	call :stack_init
+
 	call %STELLA_COMMON%\common-feature.bat :feature_init_installed
 
 	:: PROXY
@@ -41,6 +44,12 @@ rem		call %STELLA_COMMON%\common.bat :trim "result" "!_s!"
 			goto :eof
 		)
 	)
+goto :eof
+
+
+REM http://stackoverflow.com/a/5841587
+:strlen
+	echo TODO strlen
 goto :eof
 
 :: FILES TOOL ---------------------------------------
@@ -125,14 +134,14 @@ REM %~dp0 get the fully qualified path of the 0th argument (which is the current
 	set "_result_var_rel_to_abs_path=%~1"
 	set "_rel_path=%~2"
 	if defined %2 set "_rel_path=!%~2!"
+	set "_abs_root_path=%~3"
 
 	call :is_path_abs "IS_ABS" "%_rel_path%"
 	if "%IS_ABS%"=="TRUE" ( 
 		set "_abs_root_path="
 		for %%A in ( %_rel_path%\ ) do set "_temp_path=%%~dpA"
 		set %_result_var_rel_to_abs_path%=!_temp_path:~0,-1!
-	) else (
-		set "_abs_root_path=%~3"
+	) else (	
 		if not defined _abs_root_path set "_abs_root_path=%STELLA_CURRENT_RUNNING_DIR%"
 		for /f "tokens=*" %%A in ("!_abs_root_path!.\%_rel_path%") do set "%_result_var_rel_to_abs_path%=%%~fA"
 	)
@@ -1056,6 +1065,40 @@ goto :eof
 		if not "%%m"=="0" set "_match_exp=TRUE"
 	)
 goto :eof
+
+
+REM STACK ---------------
+REM https://github.com/seece/Batchfilth/blob/master/filth.bat
+:stack_init
+	set __STELLA_STACK_SP=0
+goto :eof
+:stack_top
+    set /a top_of_stack=!__STELLA_STACK_SP!-1
+    call :stack_read !top_of_stack! "%~1"
+goto :eof
+:stack_read
+	set "_result_var_read=%~2"
+    if not defined stack[%~1] (
+        echo Memory access violation! %~1
+        exit /b
+    )
+    set "!_result_var_read!=!stack[%~1]!"
+goto :eof
+:stack_push
+    set "stack[!__STELLA_STACK_SP!]=%~1"
+    set /a __STELLA_STACK_SP=!__STELLA_STACK_SP!+1
+goto :eof
+:stack_pop
+    call :stack_top "%~1"
+    set /a __STELLA_STACK_SP=!__STELLA_STACK_SP!-1
+goto :eof
+:stack_print
+    echo sp: !__STELLA_STACK_SP!
+    set /a stackend=!__STELLA_STACK_SP! - 1
+    for /L %%i in (0,1,!stackend!) do (
+        echo %%i: !stack[%%i]!
+    )
+exit /b
 
 
 

@@ -307,10 +307,10 @@ function __feature_install() {
 		[ "$o" == "DEP_IGNORE" ] && _opt_ignore_dep=ON
 		# EXPORT <dir> : will install feature in this specified root directory - so it will not be detected as active features
 		[ "$_flag_export" == "ON" ] && _dir_export="$o" && _export_mode=ON && _flag_export=OFF
-		[ "$o" == "EXPORT" ] && _flag_export=ON && _opt_internal_feature=OFF && _opt_hidden_feature=ON
+		[ "$o" == "EXPORT" ] && _flag_export=ON 
 		# PORTABLE <dir> : will install feature in this specified root directory in a portable (=chroot) way - so it will not be detected as active features - and this folder will ship every dependencies
 		[ "$_flag_portable" == "ON" ] && _dir_portable="$o" && _portable_mode=ON && _flag_portable=OFF
-		[ "$o" == "PORTABLE" ] && _flag_portable=ON && _opt_internal_feature=OFF && _opt_hidden_feature=ON
+		[ "$o" == "PORTABLE" ] && _flag_portable=ON
 	done
 
 
@@ -318,6 +318,9 @@ function __feature_install() {
 
 	# EXPORT / PORTABLE MODE ------------------------------------
 	if [ "$_export_mode" == "ON" ]; then
+		_opt_internal_feature=OFF
+		_opt_hidden_feature=ON
+
 		FEAT_MODE_EXPORT_SCHEMA="$_SCHEMA"
 		_SCHEMA="mode-export"
 
@@ -327,6 +330,9 @@ function __feature_install() {
 	fi
 
 	if [ "$_portable_mode" == "ON" ]; then
+		_opt_internal_feature=OFF
+		_opt_hidden_feature=ON
+		
 		FEAT_MODE_EXPORT_SCHEMA="$_SCHEMA"
 		_SCHEMA="mode-export"
 
@@ -430,7 +436,9 @@ function __feature_install() {
 					fi
 
 					if [ "$_origin" == "STELLA" ]; then
+						echo "Installing dependency $dep"
 						__push_schema_context
+
 						__feature_install $dep "$_OPT HIDDEN"
 						if [ "$TEST_FEATURE" == "0" ]; then
 							echo "** Error while installing dependency feature $FEAT_SCHEMA_SELECTED"

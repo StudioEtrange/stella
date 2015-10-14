@@ -66,7 +66,7 @@ goto :eof
 
 :feature_docker-machine_install_binary
 
-	call %STELLA_COMMON%\common.bat :get_resource "!FEAT_NAME!" "!FEAT_BINARY_URL!" "!FEAT_BINARY_URL_PROTOCOL!" "!FEAT_INSTALL_ROOT!" "DEST_ERASE"
+	call %STELLA_COMMON%\common.bat :get_resource "!FEAT_NAME!" "!FEAT_BINARY_URL!" "!FEAT_BINARY_URL_PROTOCOL!" "!FEAT_INSTALL_ROOT!" "FORCE_NAME !FEAT_BINARY_URL_FILENAME!"
 	
 	move /y "!FEAT_INSTALL_ROOT!\!FEAT_BINARY_URL_FILENAME!" "!FEAT_INSTALL_ROOT!\docker-machine.exe"
 	

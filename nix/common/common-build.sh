@@ -860,8 +860,9 @@ function __prepare_build() {
 	echo "====> Build management Tool : $STELLA_BUILD_BUILD_TOOL"
 	echo "====> Compiler Frontend : $STELLA_BUILD_COMPIL_FRONTEND"
 	echo "** BUILD INFO"
-	echo "====> Build arch : $STELLA_BUILD_ARCH"
+	echo "====> Build arch directive : $STELLA_BUILD_ARCH"
 	echo "====> Parallelized (if supported) : $STELLA_BUILD_PARALLELIZE"
+	echo "====> Relocation : $STELLA_BUILD_RELOCATE"
 
 
 }

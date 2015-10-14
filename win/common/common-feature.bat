@@ -44,21 +44,20 @@ goto :eof
 
 			if not "!FEAT_BUNDLE!"=="" (
 				set "save_opt_hidden_feature=!_opt_hidden_feature!"
-				set "save_FEAT_SCHEMA_SELECTED_0=!FEAT_SCHEMA_SELECTED!"		
+				
+				call :push_schema_context
 
 				set "FEAT_BUNDLE_MODE=!FEAT_BUNDLE!"
-
 				for %%p in (!FEAT_BUNDLE_ITEM!) do (
 					call :feature_init %%p "HIDDEN"
 				)
 				set "FEAT_BUNDLE_MODE="
 
-				REM re-compute bundle variables
-				set "FEAT_SCHEMA_SELECTED=!save_FEAT_SCHEMA_SELECTED_0!"
-				call :internal_feature_context !FEAT_SCHEMA_SELECTED!
+				call :pop_schema_context
+				set "_opt_hidden_feature=!save_opt_hidden_feature!"
 			)
 			
-			if not "!save_opt_hidden_feature!"=="ON" set "FEATURE_LIST_ENABLED=!FEATURE_LIST_ENABLED! !FEAT_NAME!#!FEAT_VERSION!"
+			if not "!_opt_hidden_feature!"=="ON" set "FEATURE_LIST_ENABLED=!FEATURE_LIST_ENABLED! !FEAT_NAME!#!FEAT_VERSION!"
 			if not "!FEAT_SEARCH_PATH!"=="" set "PATH=!FEAT_SEARCH_PATH!;!PATH!"
 
 			
@@ -130,6 +129,16 @@ goto :eof
 goto :eof
 
 
+:push_schema_context
+	call %STELLA_COMMON%\common.bat :stack_push "!TEST_FEATURE!"
+	call %STELLA_COMMON%\common.bat :stack_push "!FEAT_SCHEMA_SELECTED!"
+goto :eof
+
+:pop_schema_context
+	call %STELLA_COMMON%\common.bat :stack_pop "FEAT_SCHEMA_SELECTED"
+	call :internal_feature_context !FEAT_SCHEMA_SELECTED!
+	call %STELLA_COMMON%\common.bat :stack_pop "TEST_FEATURE"
+goto :eof
 :: test if a feature is installed
 :: AND retrieve informations based on actually installed feature (looking inside STELLA_APP_FEATURE_ROOT) OR from feature recipe if not installed
 :: do not use default values from feature recipe to search installed feature
@@ -145,9 +154,10 @@ goto :eof
 	if not "!FEAT_SCHEMA_SELECTED!"=="" (
 		if not "!FEAT_BUNDLE!"=="" (
 			set "_t=1"
-			set "FEAT_BUNDLE_MODE=!FEAT_BUNDLE!"
 			
-			set "save_FEAT_SCHEMA_SELECTED_1=!FEAT_SCHEMA_SELECTED!"
+			call :push_schema_context
+
+			set "FEAT_BUNDLE_MODE=!FEAT_BUNDLE!"
 			for %%p in (!FEAT_BUNDLE_ITEM!) do (
 				set "TEST_FEATURE=0"
 				call :feature_inspect %%p
@@ -156,8 +166,9 @@ goto :eof
 				)
 			)
 			set "FEAT_BUNDLE_MODE="
-			set "FEAT_SCHEMA_SELECTED=!save_FEAT_SCHEMA_SELECTED_1!"
-			call :internal_feature_context !FEAT_SCHEMA_SELECTED!
+
+			call :pop_schema_context
+
 			set "TEST_FEATURE=!_t!"
 			if "!TEST_FEATURE!"=="1" (
 				if not "!FEAT_INSTALL_TEST!"=="" (
@@ -225,16 +236,14 @@ goto :eof
 			echo Remove bundle !FEAT_NAME! version !FEAT_VERSION!
 			call %STELLA_COMMON%\common.bat :del_folder !FEAT_INSTALL_ROOT!
 
-			set "save_FEAT_SCHEMA_SELECTED_2=!FEAT_SCHEMA_SELECTED!"
+			call :push_schema_context
+
 			set "FEAT_BUNDLE_MODE=!FEAT_BUNDLE!"
 			for %%p in (!FEAT_BUNDLE_ITEM!) do (
 				call :feature_remove %%p "HIDDEN"
 			)
 			set "FEAT_BUNDLE_MODE="
-			set "FEAT_SCHEMA_SELECTED=!save_FEAT_SCHEMA_SELECTED_2!"
-
-			REM compute bundle variables
-			call :internal_feature_context !FEAT_SCHEMA_SELECTED!
+			call :pop_schema_context
 			
 		) else (
 			echo Remove !FEAT_NAME! version !FEAT_VERSION! from !FEAT_INSTALL_ROOT!
@@ -268,14 +277,73 @@ goto :eof
 	set _opt_hidden_feature=OFF
 	set _opt_force_reinstall_dep=0
 	set _opt_ignore_dep=OFF
+	set _flag_export=OFF
+	set _dir_export=
+	set _export_mode=OFF
+	set _flag_portable=OFF
+	set _dir_portable=
+	set _portable_mode=OFF
+
 	for %%O in (%_OPT%) do (
 		if "%%O"=="INTERNAL" set _opt_internal_feature=ON
 		if "%%O"=="HIDDEN" set _opt_hidden_feature=ON
 		if "%%O"=="DEP_FORCE" set _opt_force_reinstall_dep=1
 		if "%%O"=="DEP_IGNORE" set _opt_ignore_dep=ON
+		if "!_flag_export!"=="ON" (
+			set "_dir_export=%%O"
+			set _flag_export=OFF
+			set _export_mode=ON
+		)
+		if "%%O"=="EXPORT" (
+			set _flag_export=ON
+		)
+		if "!_flag_portable!"=="ON" (
+			set "_dir_portable=%%O"
+			set _flag_portable=OFF
+			set _portable_mode=ON
+		)
+		if "%%O"=="PORTABLE" (
+			set _flag_portable=ON
+		)
 	)
 
 	
+
+	:: EXPORT / PORTABLE MODE ------------------------------------
+	if "!_export_mode!"=="ON" (
+		set _opt_internal_feature=OFF
+		set _opt_hidden_feature=ON
+
+		set "FEAT_MODE_EXPORT_SCHEMA=!_SCHEMA!"
+		set "_SCHEMA=mode-export"
+
+		set "_save_app_feature_root=!STELLA_APP_FEATURE_ROOT!"
+		call %STELLA_COMMON%\common.bat :rel_to_abs_path "STELLA_APP_FEATURE_ROOT" "!_dir_export!"
+		set "_OPT=%_OPT:EXPORT=__%"
+	)
+
+	if "!_portable_mode!"=="ON" (
+		set _opt_internal_feature=OFF
+		set _opt_hidden_feature=ON
+		
+		set "FEAT_MODE_EXPORT_SCHEMA=!_SCHEMA!"
+		set "_SCHEMA=mode-export"
+
+		set "_save_app_feature_root=!STELLA_APP_FEATURE_ROOT!"
+		call %STELLA_COMMON%\common.bat :rel_to_abs_path "STELLA_APP_FEATURE_ROOT" "!_dir_portable!"
+		set "_OPT=%_OPT:PORTABLE=__%"
+
+		set "_save_relocate_default_mode=!STELLA_BUILD_RELOCATE_DEFAULT!"
+		call %STELLA_COMMON%\common-build.bat :set_build_mode_default "RELOCATE" "ON"
+	)
+
+
+
+
+
+
+
+
 
 	call :internal_feature_context !_SCHEMA!
 
@@ -314,51 +382,59 @@ goto :eof
 
 		if "%FORCE%"=="1" (
 			set TEST_FEATURE=0
-			call %STELLA_COMMON%\common.bat :del_folder !FEAT_INSTALL_ROOT!
+			if "!_export_mode!"=="OFF" (
+				if "!_portable_mode!"=="OFF" (
+					call %STELLA_COMMON%\common.bat :del_folder !FEAT_INSTALL_ROOT!
+				)
+			)
 		) else (
 			call :feature_inspect !FEAT_SCHEMA_SELECTED!
 		)
 
 		if "!TEST_FEATURE!"=="0" (
 
-			if not exist "!FEAT_INSTALL_ROOT!" mkdir "!FEAT_INSTALL_ROOT!"
+			if "!_export_mode!"=="OFF" (
+				if "!_portable_mode!"=="OFF" (
+					if not exist "!FEAT_INSTALL_ROOT!" mkdir "!FEAT_INSTALL_ROOT!"
+				)
+			)
+
 
 			REM dependencies
 			if "!IGNORE_DEP!"=="OFF" (
 				REM TODO see unix implementation : stack call is inside dependencies loop
 				set "save_FORCE=%FORCE%"
 				set "FORCE=!_opt_force_reinstall_dep!"
-				set "save_FEAT_SCHEMA_SELECTED_3=!FEAT_SCHEMA_SELECTED!"
+				
 
 				set _f_dep=0
 				if "!FEAT_SCHEMA_FLAVOUR!"=="source" (
 					for %%p in (!FEAT_SOURCE_DEPENDENCIES!) do (
 						echo Installing dependency %%p
-						REM TODO put stack call HERE
+						call :push_schema_context
+						
 						call :feature_install %%p "!_OPT! HIDDEN"
 						if "!TEST_FEATURE!"=="0" (
 							echo ** Error while installing dependency feature !FEAT_SCHEMA_SELECTED!
 						)
-						REM TODO put stack call HERE
-						set _f_dep=1
+						call :pop_schema_context
+						
 					)
 				)
 
 				if "!FEAT_SCHEMA_FLAVOUR!"=="binary" (
 					for %%p in (!FEAT_BINARY_DEPENDENCIES!) do (
 						echo Installing dependency %%p
-						REM TODO put stack call HERE
+						call :push_schema_context
+					
 						call :feature_install %%p "!_OPT! HIDDEN"
 						if "!TEST_FEATURE!"=="0" (
 							echo ** Error while installing dependency feature !FEAT_SCHEMA_SELECTED!
 						)
-						REM TODO put stack call HERE
-						set _f_dep=1
+						call :pop_schema_context
 					)
 				)
 				set "FORCE=!save_FORCE!"
-				set "FEAT_SCHEMA_SELECTED=!save_FEAT_SCHEMA_SELECTED_3!"
-				if "!_f_dep!"=="1" call :internal_feature_context !FEAT_SCHEMA_SELECTED!
 			)
 
 
@@ -368,7 +444,7 @@ goto :eof
 				
 				if not "!FEAT_BUNDLE_ITEM!"=="" (
 
-					set "save_FEAT_SCHEMA_SELECTED_4=!FEAT_SCHEMA_SELECTED!"
+					call :push_schema_context
 
 					if not "!FEAT_BUNDLE_MODE!"=="LIST" (
 						set "save_FORCE=%FORCE%"
@@ -393,8 +469,7 @@ goto :eof
 						set "FORCE=!save_FORCE!"
 					)
 
-					set "FEAT_SCHEMA_SELECTED=!save_FEAT_SCHEMA_SELECTED_4!"
-					call :internal_feature_context !FEAT_SCHEMA_SELECTED!
+					call :pop_schema_context
 					
 				)
 				set "FEAT_BUNDLE_MODE="
@@ -410,19 +485,36 @@ goto :eof
 				call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :feature_!FEAT_NAME!_install_!FEAT_SCHEMA_FLAVOUR!
 			)
 
-			call :feature_inspect !FEAT_SCHEMA_SELECTED!
-			if "!TEST_FEATURE!"=="1" (
-				echo ** Feature !_SCHEMA! is installed
-				call :feature_init "!FEAT_SCHEMA_SELECTED!" !_OPT!
-			) else (
-				echo ** Error while installing feature !FEAT_SCHEMA_SELECTED!
-				REM Sometimes current directory is lost by the system
-				cd /D %STELLA_APP_ROOT%
-			)
+			if "!_export_mode!"=="OFF" (
+				if "!_portable_mode!"=="OFF" (
+
+					call :feature_inspect !FEAT_SCHEMA_SELECTED!
+					if "!TEST_FEATURE!"=="1" (
+						echo ** Feature !_SCHEMA! is installed
+						call :feature_init "!FEAT_SCHEMA_SELECTED!" !_OPT!
+					) else (
+						echo ** Error while installing feature !FEAT_SCHEMA_SELECTED!
+						REM Sometimes current directory is lost by the system
+						cd /D %STELLA_APP_ROOT%
+					)
+				)
+			)					
 
 		) else (
 			echo ** Feature !_SCHEMA! already installed
 			call :feature_init "!FEAT_SCHEMA_SELECTED!" !_OPT!
+		)
+
+
+
+		if "!_export_mode!"=="ON" (
+			set "STELLA_APP_FEATURE_ROOT=!_save_app_feature_root!"
+		)
+		
+		if "!_portable_mode!"=="ON" (
+			set "STELLA_APP_FEATURE_ROOT=!_save_app_feature_root!"
+			call %STELLA_COMMON%\common-build.bat :set_build_mode_default "RELOCATE" "!_save_relocate_default_mode!"
+
 		)
 
 		if "%_opt_internal_feature%"=="ON" (

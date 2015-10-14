@@ -84,7 +84,7 @@ set "NPM=npm"
 
 
 :: FEATURE LIST ---------------------------------------------
-set "__STELLA_FEATURE_LIST=freetype libpng zlib git docker-swarm socat nginx mingw-w64 go-build-chain go-crosscompile-chain go docker-bundle docker-client docker-machine oracle-jdk maven spark nikpeviewer dependencywalker conemu goconfig-cli ninja jom cmake packer perl ruby rubydevkit nasm python vagrant openssh wget unzip sevenzip patch gnumake"
+set "__STELLA_FEATURE_LIST=mode-export freetype libpng zlib git docker-swarm socat nginx mingw-w64 go-build-chain go-crosscompile-chain go docker-bundle docker-client docker-machine oracle-jdk maven spark nikpeviewer dependencywalker conemu goconfig-cli ninja jom cmake packer perl ruby rubydevkit nasm python vagrant openssh wget unzip sevenzip patch gnumake"
 
 :: SYS PACKAGE --------------------------------------------
 :: list of available installable system package
@@ -109,7 +109,7 @@ call %STELLA_COMMON%\common-build.bat :set_build_mode_default "OPTIMIZATION" "2"
 call %STELLA_COMMON%\common-build.bat :set_build_mode_default "RELOCATE" "OFF"
 :: ARCH x86 x64
 :: By default we do not provide any build arch information
-REM call %STELLA_COMMON%\common-build.bat :set_build_mode_default "ARCH" ""
+:: call %STELLA_COMMON%\common-build.bat :set_build_mode_default "ARCH" ""
 
 :: supported build toolset
 REM CONFIG TOOL | BUILD TOOL 		| COMPIL FRONTEND
