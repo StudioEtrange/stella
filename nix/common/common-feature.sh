@@ -417,6 +417,8 @@ function __feature_install() {
 				
 				save_FORCE=$FORCE
 				FORCE=$_opt_force_reinstall_dep
+				
+				__push_schema_context
 
 				for dep in $_dependencies; do
 					
@@ -437,18 +439,19 @@ function __feature_install() {
 
 					if [ "$_origin" == "STELLA" ]; then
 						echo "Installing dependency $dep"
-						__push_schema_context
+						
 
 						__feature_install $dep "$_OPT HIDDEN"
 						if [ "$TEST_FEATURE" == "0" ]; then
 							echo "** Error while installing dependency feature $FEAT_SCHEMA_SELECTED"
 						fi
-						__pop_schema_context	
+							
 					fi
 					[ "$_origin" == "SYSTEM" ] && echo "Using dependency $dep from SYSTEM."
 					
 				done
 				
+				__pop_schema_context
 				FORCE=$save_FORCE
 			fi
 

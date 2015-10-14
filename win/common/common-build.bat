@@ -570,7 +570,6 @@ goto :eof
 	)
 	call %STELLA_COMMON%\common-feature.bat :pop_schema_context
 
-
 	:: ISOLATE LIBS
 	set "LIB_TARGET_FOLDER="
 

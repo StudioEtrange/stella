@@ -29,7 +29,7 @@ goto :eof
 	set FEAT_ENV_CALLBACK=
 
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\zlib1.dll"
-	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!"	
+	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\bin"	
 
 goto :eof
 

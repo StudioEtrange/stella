@@ -4,6 +4,9 @@ TODO
 [ ] Make comm in code
 [ ] Format output (log system)
 [ ] Test and remove DEST_ERASE in each feature_recipe : cause problem when bundled in merge mode
-[ ] Default build arch equivalent to current cpu arch ?
+[ ] Default build arch equivalent to current cpu arch ? (and change option name buildarch with forcearch)
 [ ] Test and fix path with space
 [ ] windows : function require
+[ ] function get_ressource : change option STRIP to option NO_STRIP. STRIP will be by default if possible
+[ ] windows : review link feature library and lib isolation
+[ ] windows : portable mode review copy dependencies
