@@ -123,7 +123,7 @@ goto :eof
 	if "!CONFIG_TOOL!"=="cmake" (
 		if not "!_flag_build!"=="FORCE" (
 			call %STELLA_COMMON%\common.bat :which "_test1" "ninja"
-			if not "!_test1"=="" (
+			if not "!_test1!"=="" (
 				set "BUILD_TOOL=ninja"
 				if not "!_flag_frontend!"=="FORCE" (
 					set "COMPIL_FRONTEND=gcc"
@@ -407,6 +407,9 @@ goto :eof
 	)
 
 	if "!STELLA_BUILD_BUILD_TOOL!"=="nmake" (
+		if "!_opt_parallelize!"=="ON" (
+			set CL=/MP
+		)
 		nmake
 		if "!_opt_install!"=="ON" (
 			nmake install
@@ -808,18 +811,20 @@ goto :eof
 
 
 	:: set flags -------------
-
+	REM this env vars are setted if we use cmake or not
 	if "!STELLA_BUILD_COMPIL_FRONTEND!"=="gcc" (
 		set CC=gcc
 		set CXX=gcc
 		set CPP=gcc
 	)
 
+	REM this env vars are setted if we use cmake or not
 	if "!STELLA_BUILD_COMPIL_FRONTEND!"=="cl" (
 		call :vs_env_vars !STELLA_BUILD_ARCH!
 		set CC=cl
 		set CXX=cl
 		set CPP=cl
+		
 		REM https://msdn.microsoft.com/en-us/library/d7ahf12s.aspx
 		REM set AS=ml
 		REM set BC=bc
@@ -1085,6 +1090,11 @@ goto :eof
 			)
 		)
 
+
+	)
+
+	if "%~1"=="ARCH" (
+
 	)
 	
 goto :eof
@@ -1192,6 +1202,30 @@ goto :eof
 
 
 
+:find_winsdk
+	set "_result_var=%~1"
+	set "_version=%~2"
+
+	for /F "tokens=1 delims=" %%i in ('reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\Windows\!_version!" /v InstallationFolder 2^>NUL') do (
+		set "_tp=%%i"
+		set "_path=%_tp:InstallationFolder=%"
+		set "_path=%_path:REGZ=%"
+
+		call %STELLA_COMMON%\common.bat :trim "_path" "!_path!"
+	)
+
+	set "!_result_var!="
+	if exist "!_path!" (
+		set "!_result_var!=!_path!"
+	)
+
+	REM could also search (after winsdk 7.1) in this key
+	REM HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows Kits\\Installed Roots
+	REM see https://github.com/rpavlik/cmake-modules/blob/master/FindWindowsSDK.cmake
+
+goto :eof
+
+
 REM usefull when using Visual Studio Express which not contain MFC
 REM use MFC and ATL from WDK/DDK instead
 REM code based on wdk7.1.0
@@ -1270,28 +1304,18 @@ goto :eof
 
 
 	REM set VC env vars
-	if "!vstudio!"=="vs10" (
-		REM after Windows SDK 7, SDK did not bring any compiler
-		if "%PlatformToolset%"=="Windows7.1SDK" (
-			REm TODO /Debug output
-			echo ** Windows SDK Command Line environment activation
-			if "!_target_arch!"=="x64" call SetEnv /x64 /Release
-			if "!_target_arch!"=="x86" call SetEnv /x86 /Release
-			if "!_target_arch!"=="" call SetEnv
+	if "!vstudio!"=="vs10" if "!_target_arch!"=="x64" (
+		REM for 64 bits build with visual studio 2010, need WinSDK 7.1
+		call :find_winsdk "sdk71path" "v7.1"
+		if "!sdk71path!"=="" (
+			echo ** WARNING : for x64 target you MUST install Windows SDK 7.1 and use the Windows SDK 7.1 command line.
 		) else (
-			if "!_target_arch!"=="x64" (
-				echo ** WARNING : for x64 target you MUST install Windows SDK 7.1 and use the Windows SDK 7.1 command line.
-			)
-			if "!_target_arch!"=="x86" (
-				echo ** Visual Studio Command Line environment activation
-				call "%vcpath%\vcvarsall.bat" x86
-			)
-			if "!_target_arch!"=="" (
-				echo ** Visual Studio Command Line environment activation
-				call "%vcpath%\vcvarsall.bat"
-			)
+			echo ** Windows SDK 7.1 Command Line environment activation
+			REm TODO /Debug output
+			if "!_target_arch!"=="x64" call "!sdk71path!SetEnv" /x64 /Release
+			if "!_target_arch!"=="x86" call "!sdk71path!SetEnv" /x86 /Release
+			if "!_target_arch!"=="" call "!sdk71path!SetEnv"
 		)
-
 	) else (
 		if exist "!vcpath!\vcvarsall.bat" (
 			echo ** Visual Studio Command Line environment activation
