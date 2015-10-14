@@ -408,7 +408,7 @@ goto :eof
 
 	if "!STELLA_BUILD_BUILD_TOOL!"=="nmake" (
 		if "!_opt_parallelize!"=="ON" (
-			set CL=/MP
+			set "CL=/MP !CL!"
 		)
 		nmake
 		if "!_opt_install!"=="ON" (
@@ -808,8 +808,6 @@ goto :eof
 
 
 
-
-
 	:: set flags -------------
 	REM this env vars are setted if we use cmake or not
 	if "!STELLA_BUILD_COMPIL_FRONTEND!"=="gcc" (
@@ -819,18 +817,17 @@ goto :eof
 	)
 
 	REM this env vars are setted if we use cmake or not
+	REM https://msdn.microsoft.com/en-us/library/d7ahf12s.aspx
+	REM set AS=ml
+	REM set BC=bc
+	REM set RC=rc
 	if "!STELLA_BUILD_COMPIL_FRONTEND!"=="cl" (
 		call :vs_env_vars !STELLA_BUILD_ARCH!
 		set CC=cl
 		set CXX=cl
 		set CPP=cl
-		
-		REM https://msdn.microsoft.com/en-us/library/d7ahf12s.aspx
-		REM set AS=ml
-		REM set BC=bc
-		REM set RC=rc
-	)
 
+	)
 
 
 	if "!STELLA_BUILD_CONFIG_TOOL!"=="cmake" (
@@ -1089,13 +1086,8 @@ goto :eof
 				REM set "STELLA_C_CXX_FLAGS=TARGET_CPU=amd64"
 			)
 		)
-
-
 	)
 
-	if "%~1"=="ARCH" (
-
-	)
 	
 goto :eof
 
@@ -1201,27 +1193,25 @@ goto :eof
 
 
 
-
+REM could also search (after winsdk 7.1) in this key
+REM HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows Kits\\Installed Roots
+REM see https://github.com/rpavlik/cmake-modules/blob/master/FindWindowsSDK.cmake
 :find_winsdk
 	set "_result_var=%~1"
 	set "_version=%~2"
 
-	for /F "tokens=1 delims=" %%i in ('reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\Windows\!_version!" /v InstallationFolder 2^>NUL') do (
+	for /F "tokens=1 delims=" %%i in ('reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\Windows\!_version!" /v InstallationFolder 2^>NUL ^| findstr InstallationFolder') do (
 		set "_tp=%%i"
-		set "_path=%_tp:InstallationFolder=%"
-		set "_path=%_path:REGZ=%"
-
-		call %STELLA_COMMON%\common.bat :trim "_path" "!_path!"
 	)
+	set "_tp=%_tp:InstallationFolder=%"
+	set "_tp=%_tp:REG_SZ=%"
+
+	call %STELLA_COMMON%\common.bat :trim "_tp" "!_tp!"
 
 	set "!_result_var!="
-	if exist "!_path!" (
-		set "!_result_var!=!_path!"
+	if exist "!_tp!" (
+		set "!_result_var!=!_tp!"
 	)
-
-	REM could also search (after winsdk 7.1) in this key
-	REM HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows Kits\\Installed Roots
-	REM see https://github.com/rpavlik/cmake-modules/blob/master/FindWindowsSDK.cmake
 
 goto :eof
 
@@ -1263,7 +1253,7 @@ goto :eof
 	if not "%VS80COMNTOOLS%"=="" (
 		set "vstudio=vs8"
 		set "vcpath=%VS80COMNTOOLS%..\..\VC"
-		echo ** Detected Visual Studio 2005
+		echo ** Detected Visual Studio 2005 in %VS80COMNTOOLS%
 		echo ** WARN Please update Visual Studio or it may not work
 		if "!_target_arch!"=="arm" echo ** WARNING ARM target supported with Visual Studio 2012 / VC11 and after only
 	)
@@ -1271,7 +1261,7 @@ goto :eof
 	if not "%VS90COMNTOOLS%"=="" (
 		set "vstudio=vs9"
 		set "vcpath=%VS90COMNTOOLS%..\..\VC"
-		echo ** Detected Visual Studio 2008
+		echo ** Detected Visual Studio 2008 in !VS90COMNTOOLS!
 		echo ** WARN Please update Visual Studio or it may not work
 		if "!_target_arch!"=="arm" echo ** WARNING ARM target supported with Visual Studio 2012 / VC11 and after only
 	)
@@ -1279,42 +1269,51 @@ goto :eof
 	if not "%VS100COMNTOOLS%"=="" (
 		set "vstudio=vs10"
 		set "vcpath=%VS100COMNTOOLS%..\..\VC"
-		echo ** Detected Visual Studio 2010
+		echo ** Detected Visual Studio 2010 in !VS100COMNTOOLS!
+		echo ** WARN You should update Visual Studio
 		if "!_target_arch!"=="arm" echo ** WARNING ARM target supported with Visual Studio 2012 / VC11 and after only
 	)
 	REM Visual Studio 2012
 	if not "%VS110COMNTOOLS%"=="" (
 		set "vstudio=vs11"
 		set "vcpath=%VS110COMNTOOLS%..\..\VC"
-		echo ** Detected Visual Studio 2012
+		echo ** Detected Visual Studio 2012 in !VS110COMNTOOLS!
 	)
 	REM Visual Studio 2013
 	if not "%VS120COMNTOOLS%"=="" (
 		set "vstudio=vs12"
 		set "vcpath=%VS120COMNTOOLS%..\..\VC"
-		echo ** Detected Visual Studio 2013
+		echo ** Detected Visual Studio 2013 in !VS120COMNTOOLS!
 	)
 	REM Visual Studio 2014 OR VS13/VC13 does not exist
 	REM Visual Studio 2015
 	if not "%VS140COMNTOOLS%"=="" (
 		set "vstudio=vs14"
 		set "vcpath=%VS140COMNTOOLS%..\..\VC"
-		echo ** Detected Visual Studio 2015
+		echo ** Detected Visual Studio 2015 in !VS140COMNTOOLS!
 	)
 
 
 	REM set VC env vars
-	if "!vstudio!"=="vs10" if "!_target_arch!"=="x64" (
-		REM for 64 bits build with visual studio 2010, need WinSDK 7.1
-		call :find_winsdk "sdk71path" "v7.1"
-		if "!sdk71path!"=="" (
-			echo ** WARNING : for x64 target you MUST install Windows SDK 7.1 and use the Windows SDK 7.1 command line.
+	if "!vstudio!"=="vs10" (
+
+		if not "!_target_arch!"=="x86" (
+			REM for 64 bits build with visual studio 2010, need WinSDK 7.1
+			call :find_winsdk "sdk71path" "v7.1"
+
+			if "!sdk71path!"=="" (
+				echo ** WARNING : for x64 target you MUST install Windows SDK 7.1 and use the Windows SDK 7.1 command line.
+			) else (
+				echo ** Windows SDK 7.1 Command Line environment activation
+				REM TODO /Debug output
+				if "!_target_arch!"=="x64" call "!sdk71path!bin\SetEnv" /x64 /Release
+				if "!_target_arch!"=="x86" call "!sdk71path!bin\SetEnv" /x86 /Release
+				REM by default WinSDK7.1 take same architecture than current processors
+				if "!_target_arch!"=="" call "!sdk71path!bin\SetEnv" /Release
+			)
 		) else (
-			echo ** Windows SDK 7.1 Command Line environment activation
-			REm TODO /Debug output
-			if "!_target_arch!"=="x64" call "!sdk71path!SetEnv" /x64 /Release
-			if "!_target_arch!"=="x86" call "!sdk71path!SetEnv" /x86 /Release
-			if "!_target_arch!"=="" call "!sdk71path!SetEnv"
+			echo ** Visual Studio Command Line environment activation
+			call "!vcpath!\vcvarsall.bat" x86
 		)
 	) else (
 		if exist "!vcpath!\vcvarsall.bat" (
