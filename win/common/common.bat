@@ -1098,7 +1098,7 @@ goto :eof
     for /L %%i in (0,1,!stackend!) do (
         echo %%i: !stack[%%i]!
     )
-exit /b
+goto :eof
 
 
 

@@ -402,7 +402,7 @@ goto :eof
 
 			REM dependencies
 			if "!IGNORE_DEP!"=="OFF" (
-				REM TODO see unix implementation : stack call is inside dependencies loop
+
 				set "save_FORCE=%FORCE%"
 				set "FORCE=!_opt_force_reinstall_dep!"
 				
@@ -442,6 +442,11 @@ goto :eof
 			if not "!FEAT_BUNDLE!"=="" (
 				set "FEAT_BUNDLE_MODE=!FEAT_BUNDLE!"
 				
+				:: save export/portable mode
+				call %STELLA_COMMON%\common.bat :stack_push "!_export_mode!"
+				call %STELLA_COMMON%\common.bat :stack_push "!_portable_mode!"
+		
+
 				if not "!FEAT_BUNDLE_ITEM!"=="" (
 
 					call :push_schema_context
@@ -474,6 +479,10 @@ goto :eof
 				)
 				set "FEAT_BUNDLE_MODE="
 				
+				:: restore export/portable mode
+				call %STELLA_COMMON%\common.bat :stack_pop "_portable_mode"
+				call %STELLA_COMMON%\common.bat :stack_pop "_export_mode"
+	
 				
 				REM automatic call of callback
 				call :feature_callback

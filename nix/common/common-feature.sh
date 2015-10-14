@@ -332,7 +332,7 @@ function __feature_install() {
 	if [ "$_portable_mode" == "ON" ]; then
 		_opt_internal_feature=OFF
 		_opt_hidden_feature=ON
-		
+
 		FEAT_MODE_EXPORT_SCHEMA="$_SCHEMA"
 		_SCHEMA="mode-export"
 
@@ -456,6 +456,10 @@ function __feature_install() {
 			if [ ! "$FEAT_BUNDLE" == "" ]; then
 				FEAT_BUNDLE_MODE=$FEAT_BUNDLE
 				
+				# save export/portable mode
+				__stack_push "$_export_mode"
+				__stack_push "$_portable_mode"
+
 				if [ ! "$FEAT_BUNDLE_ITEM" == "" ]; then
 					__push_schema_context
 
@@ -488,6 +492,10 @@ function __feature_install() {
 					__pop_schema_context
 				fi
 				FEAT_BUNDLE_MODE=
+
+				# restore export/portable mode
+				__stack_pop "_portable_mode"
+				__stack_pop "_export_mode"
 
 				
 				# automatic call of callback
