@@ -495,10 +495,10 @@ goto :eof
 
 			if "!_export_mode!"=="OFF" (
 				if "!_portable_mode!"=="OFF" (
-
+					set "save_SCHEMA=!_SCHEMA!"
 					call :feature_inspect !FEAT_SCHEMA_SELECTED!
 					if "!TEST_FEATURE!"=="1" (
-						echo ** Feature !_SCHEMA! is installed
+						echo ** Feature !save_SCHEMA! is installed
 						call :feature_init "!FEAT_SCHEMA_SELECTED!" !_OPT!
 					) else (
 						echo ** Error while installing feature !FEAT_SCHEMA_SELECTED!

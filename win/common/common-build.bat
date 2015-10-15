@@ -585,34 +585,39 @@ goto :eof
 
 	if "!_opt_flavour!"=="FORCE_STATIC" (
 
-		echo *** Isolate dependencies into !LIB_TARGET_FOLDER!
 		set "LIB_TARGET_FOLDER=!REQUIRED_LIB_ROOT!\stella-dep-static"
-		call %STELLA_COMMON%\common.bat :del_folder "!LIB_TARGET_FOLDER!"
+		echo *** Isolate dependencies into !LIB_TARGET_FOLDER!
 		
+		call %STELLA_COMMON%\common.bat :del_folder "!LIB_TARGET_FOLDER!"
+		mkdir "!LIB_TARGET_FOLDER!"
+
 		echo *** Copying items from !REQUIRED_LIB_ROOT!\!_lib_folder! to !LIB_TARGET_FOLDER!
 		for %%f in ("!REQUIRED_LIB_ROOT!\!_lib_folder!\*.*") do (
-			call :is_import_or_static_lib "_type" %%f
+			call :is_import_or_static_lib "_type"" %%f"
 			if "!_type!"=="STATIC" (
-				copy /Y %%f %%f  !LIB_TARGET_FOLDER!\
+				copy /Y "%%f" "!LIB_TARGET_FOLDER!\"
 			)
 		)
 	)
 	if "!_opt_flavour!"=="FORCE_DYNAMIC" (
 
-		echo *** Isolate dependencies into !LIB_TARGET_FOLDER!
 		set "LIB_TARGET_FOLDER=!REQUIRED_LIB_ROOT!\stella-dep-dynamic"
+		echo *** Isolate dependencies into !LIB_TARGET_FOLDER!
+		
 		call %STELLA_COMMON%\common.bat :del_folder "!LIB_TARGET_FOLDER!"
+		mkdir "!LIB_TARGET_FOLDER!"
 
 		echo *** Copying items from !REQUIRED_LIB_ROOT!\!_lib_folder! to !LIB_TARGET_FOLDER!
 		for %%f in ("!REQUIRED_LIB_ROOT!\!_lib_folder!\*.*") do (
-			call :is_import_or_static_lib "_type" %%f
+			echo %%f
+			call :is_import_or_static_lib "_type" "%%f"
 			if "!_type!"=="IMPORT" (
-				copy /Y %%f !LIB_TARGET_FOLDER!\
+				copy /Y "%%f" "!LIB_TARGET_FOLDER!\"
 			)
 		)
 		echo *** Copying DLL items from !REQUIRED_LIB_ROOT!\!_bin_folder! to !LIB_TARGET_FOLDER!
 		for %%f in ("!REQUIRED_LIB_ROOT!\!_bin_folder!\*.dll") do (
-			copy /Y %%f !LIB_TARGET_FOLDER!\
+			copy /Y "%%f" "!LIB_TARGET_FOLDER!\"
 		)
 
 	)
@@ -1200,19 +1205,34 @@ goto :eof
 :is_import_or_static_lib
 	set "_result_var=%~1"
 	set "!_result_var!=UNKNOW"
-	set _nb_dll=0
-	set _nb_obj=0
-	for /f %%i in ('lib /list %~2 ^| findstr /N ".dll$" ^| find /c ":"') do set _nb_dll=%%i
-	for /f %%j in ('lib /list %~2 ^| findstr /N ".obj$" ^| find /c ":"') do set _nb_obj=%%j
-	for /f %%j in ('lib /list %~2 ^| findstr /N ".o$" ^| find /c ":"') do set /a _nb_obj=%%j+!_nb_obj!
-	if %_nb_dll% EQU 0 if %_nb_obj% GTR 0 (
-		set "!_result_var!=STATIC"
+
+	call %STELLA_COMMON%\common.bat :which "_test_tool" "lib"
+	if "!_test_tool!"=="" (
+		call %STELLA_COMMON%\common.bat :which "_test_tool" "objdump"
+		if "!_test_tool!"=="" (
+			echo ** WARN cannot find lib.exe or objdump to analyse lib file
+		) else (
+			set "_test_tool=objdump -a"
+		)
+	) else (
+		set "_test_tool=lib /list"
 	)
-	if %_nb_obj% EQU 0 if %_nb_dll% GTR 0 (
-		set "!_result_var!=IMPORT"
+
+	if not "!_test_tool!"=="" (
+		set _nb_dll=0
+		set _nb_obj=0
+
+		for /f %%i in ('!_test_tool! %~2 ^| findstr /N ".dll$" ^| find /c ":"') do set _nb_dll=%%i
+		for /f %%j in ('!_test_tool! %~2 ^| findstr /N ".obj$" ^| find /c ":"') do set _nb_obj=%%j
+		for /f %%k in ('!_test_tool! %~2 ^| findstr /N ".o$" ^| find /c ":"') do set /a _nb_obj=%%k+!_nb_obj!
+		if !_nb_dll! EQU 0 if !_nb_obj! GTR 0 (
+			set "!_result_var!=STATIC"
+		)
+		if !_nb_obj! EQU 0 if !_nb_dll! GTR 0 (
+			set "!_result_var!=IMPORT"
+		)
 	)
 goto :eof
-
 
 
 REM could also search (after winsdk 7.1) in this key

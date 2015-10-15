@@ -490,8 +490,8 @@ goto :eof
 						)
 					)
 					if "!_opt_strip!"=="ON" (
-						echo  ** Ressource already stripped
-						set _FLAG=0
+						echo ** Destination folder exist
+						REM set _FLAG=0
 					)
 				)	
 			)

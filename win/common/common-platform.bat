@@ -190,6 +190,7 @@ goto :eof
 	call %STELLA_COMMON%\common-feature.bat :feature_install unzip#5_51_1 "HIDDEN INTERNAL"
 	call %STELLA_COMMON%\common-feature.bat :feature_install wget#1_11_4 "HIDDEN INTERNAL"
 	call %STELLA_COMMON%\common-feature.bat :feature_install sevenzip#9_38 "HIDDEN INTERNAL"
+	call %STELLA_COMMON%\common-feature.bat :feature_install cmake#3_1_2@x86:binary "HIDDEN INTERNAL"
 goto :eof
 
 

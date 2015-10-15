@@ -464,8 +464,9 @@ function __resource() {
 							fi
 						fi
 						if [ "$_opt_strip" == "ON" ]; then
-							echo " ** Ressource already stripped"
-							_FLAG=0
+							#echo " ** Ressource already stripped"
+							echo " ** Destination folder exist"
+							#_FLAG=0
 						fi
 					fi
 				fi
