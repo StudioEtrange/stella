@@ -1222,9 +1222,9 @@ goto :eof
 		set _nb_dll=0
 		set _nb_obj=0
 
-		for /f %%i in ('!_test_tool! %~2 ^| findstr /N ".dll$" ^| find /c ":"') do set _nb_dll=%%i
-		for /f %%j in ('!_test_tool! %~2 ^| findstr /N ".obj$" ^| find /c ":"') do set _nb_obj=%%j
-		for /f %%k in ('!_test_tool! %~2 ^| findstr /N ".o$" ^| find /c ":"') do set /a _nb_obj=%%k+!_nb_obj!
+		for /f %%i in ('!_test_tool! %~2 2^>NUL ^| findstr /N ".dll$" ^| find /c ":"') do set _nb_dll=%%i
+		for /f %%j in ('!_test_tool! %~2 2^>NUL ^| findstr /N ".obj$" ^| find /c ":"') do set _nb_obj=%%j
+		for /f %%k in ('!_test_tool! %~2 2^>NUL ^| findstr /N ".o$" ^| find /c ":"') do set /a _nb_obj=%%k+!_nb_obj!
 		if !_nb_dll! EQU 0 if !_nb_obj! GTR 0 (
 			set "!_result_var!=STATIC"
 		)

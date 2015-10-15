@@ -36,11 +36,6 @@ function feature_libogg_DEV20150926() {
 
 }
 
-function feature_libogg_link() {
-	__link_feature_library "zlib#1_2_8" "FORCE_DYNAMIC LIBS_NAME z"
-	#__link_feature_library "zlib#1_2_8" "FORCE_STATIC"
-}
-
 
 function feature_libogg_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
@@ -57,7 +52,6 @@ function feature_libogg_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
-	__feature_callback
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
 	
