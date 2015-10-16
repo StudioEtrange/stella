@@ -4,15 +4,15 @@ goto :eof
 
 :feature_docker-swarm
 	set "FEAT_NAME=docker-swarm"
-	set "FEAT_LIST_SCHEMA=1_6_0:source 1_6_0:source"
-	set "FEAT_DEFAULT_VERSION=1_6_0"
+	set "FEAT_LIST_SCHEMA=0_2_0:source 0_2_0:source"
+	set "FEAT_DEFAULT_VERSION=0_2_0"
 	set "FEAT_DEFAULT_ARCH="
 	set "FEAT_DEFAULT_FLAVOUR=source"
 goto :eof
 
 
-:feature_docker-swarm_1_6_0
-	set "FEAT_VERSION=1_6_0"
+:feature_docker-swarm_0_2_0
+	set "FEAT_VERSION=0_2_0"
 
 	set FEAT_SOURCE_DEPENDENCIES="go-build-chain#1_4_2"
 	set FEAT_BINARY_DEPENDENCIES=
