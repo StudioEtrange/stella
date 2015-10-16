@@ -52,7 +52,6 @@ goto :eof
 
 	call %STELLA_COMMON%\common-feature.bat :feature_callback
 
-	:: out of tree build do not work
 	call %STELLA_COMMON%\common-build.bat :auto_build "!FEAT_NAME!" "!SRC_DIR!" "!INSTALL_DIR!"
 
 goto :eof

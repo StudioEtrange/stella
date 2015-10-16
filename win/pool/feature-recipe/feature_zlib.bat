@@ -40,9 +40,6 @@ goto :eof
 	
 
 	call %STELLA_COMMON%\common-build.bat :set_toolset "MS"
-	REM call %STELLA_COMMON%\common-build.bat :set_toolset "CUSTOM" "CONFIG_TOOL cmake BUILD_TOOL ninja COMPIL_FRONTEND cl"
-	REM call %STELLA_COMMON%\common-build.bat :set_toolset "CUSTOM" "CONFIG_TOOL cmake COMPIL_FRONTEND gcc"
-
 
 	call %STELLA_COMMON%\common.bat :get_resource "!FEAT_NAME!" "!FEAT_SOURCE_URL!" "!FEAT_SOURCE_URL_PROTOCOL!" "!SRC_DIR!" "STRIP"	
 
@@ -56,7 +53,6 @@ goto :eof
 
 	call %STELLA_COMMON%\common-feature.bat :feature_callback
 
-	:: out of tree build do not work
 	call %STELLA_COMMON%\common-build.bat :auto_build "!FEAT_NAME!" "!SRC_DIR!" "!INSTALL_DIR!"
 
 goto :eof

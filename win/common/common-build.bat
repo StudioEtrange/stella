@@ -28,7 +28,7 @@ goto :eof
 ::		__auto_build
 
 ::				SET BUILD ENV AND FLAGS
-::				__prepare_build  
+::				__prepare_build
 ::						EXPORT / RPATH
 ::						__export_env ====> MUST BE CALLED if we used __link_feature_library
 ::						
@@ -280,7 +280,7 @@ goto :eof
 	::	echo "!AUTO_SOURCE_DIR!\configure" --prefix="!AUTO_INSTALL_DIR!" !AUTO_INSTALL_CONF_FLAG_POSTFIX!
 	::)
 
-	if "!STELLA_BUILD_CONFIG_TOOL!"=="cmake" (		
+	if "!STELLA_BUILD_CONFIG_TOOL!"=="cmake" (
 		if "!STELLA_BUILD_BUILD_TOOL!"=="mingw-make" (
 			set "CMAKE_GENERATOR=MinGW Makefiles"
 		)
@@ -401,8 +401,12 @@ goto :eof
 		)
 
 		ninja !_debug! !_FLAG_PARALLEL! !AUTO_INSTALL_BUILD_FLAG_POSTFIX!
-		if "!_opt_install!"=="ON" (
-			ninja !_debug! !AUTO_INSTALL_BUILD_FLAG_POSTFIX! install
+
+		REM install step exist mainly when cmake generate it
+		if "!STELLA_BUILD_CONFIG_TOOL!"=="cmake" (
+			if "!_opt_install!"=="ON" (
+				ninja !_debug! !AUTO_INSTALL_BUILD_FLAG_POSTFIX! install
+			)
 		)
 	)
 
@@ -410,9 +414,13 @@ goto :eof
 		if "!_opt_parallelize!"=="ON" (
 			set "CL=/MP !CL!"
 		)
-		nmake
-		if "!_opt_install!"=="ON" (
-			nmake install
+		nmake !AUTO_INSTALL_BUILD_FLAG_POSTFIX!
+
+		REM install step exist mainly when cmake generate it
+		if "!STELLA_BUILD_CONFIG_TOOL!"=="cmake" (
+			if "!_opt_install!"=="ON" (
+				nmake !AUTO_INSTALL_BUILD_FLAG_POSTFIX! install
+			)
 		)
 	)
 
@@ -985,13 +993,9 @@ goto :eof
 
 	:: flags to pass to the linker
 	:: https://msdn.microsoft.com/en-us/library/6y6t9esh.aspx
-	set "LINK=!STELLA_LINK_FLAGS!"
-	::if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-		:: TODO experimental new flags
-		:: https://sourceware.org/binutils/docs/ld/Options.html
-		:: http://www.kaizou.org/2015/01/linux-libraries/
-		::export LDFLAGS="-Wl,--copy-dt-needed-entries -Wl,--as-needed -Wl,--no-allow-shlib-undefined -Wl,--no-undefined $STELLA_LINK_FLAGS"
-
+	REM do not work == make link.exe to not found an UNKNOW link.obj file when we use LINK env var
+	REM set "LINK=!STELLA_LINK_FLAGS!"
+	
 goto :eof
 
 
@@ -1103,16 +1107,7 @@ goto :eof
 				set "STELLA_C_CXX_FLAGS=-m64 !STELLA_C_CXX_FLAGS!"
 			)
 		)
-		REM note : nmake -f makefile.vc BUILD=debug SHARED=1 RUNTIME_LIBS=dynamic DEBUG_INFO=1 VENDOR=mrpt TARGET_CPU=amd64 ?????
-		if "!STELLA_BUILD_COMPIL_FRONTEND!"=="cl" (
-			if "%~2"=="x86" (
-				set "STELLA_LINK_FLAGS=/MACHINE:X86 !STELLA_LINK_FLAGS!"
-			)
-			if "%~2"=="x64" (
-				set "STELLA_LINK_FLAGS=/MACHINE:X64 !STELLA_LINK_FLAGS!"
-				REM set "STELLA_C_CXX_FLAGS=TARGET_CPU=amd64"
-			)
-		)
+	
 	)
 
 	
@@ -1339,24 +1334,21 @@ goto :eof
 	REM set VC env vars
 	if "!vstudio!"=="vs10" (
 
-		if not "!_target_arch!"=="x86" (
-			REM for 64 bits build with visual studio 2010, need WinSDK 7.1
-			call :find_winsdk "sdk71path" "v7.1"
+		
+		REM for 64 bits build with visual studio 2010, need WinSDK 7.1
+		call :find_winsdk "sdk71path" "v7.1"
 
-			if "!sdk71path!"=="" (
-				echo ** WARNING : for x64 target you MUST install Windows SDK 7.1 and use the Windows SDK 7.1 command line.
-			) else (
-				echo ** Windows SDK 7.1 Command Line environment activation
-				REM TODO /Debug output
-				if "!_target_arch!"=="x64" call "!sdk71path!bin\SetEnv" /x64 /Release
-				if "!_target_arch!"=="x86" call "!sdk71path!bin\SetEnv" /x86 /Release
-				REM by default WinSDK7.1 take same architecture than current processors
-				if "!_target_arch!"=="" call "!sdk71path!bin\SetEnv" /Release
-			)
+		if "!sdk71path!"=="" (
+			echo ** WARNING : for x64 target you MUST install Windows SDK 7.1. Even for x86, it is recommanded to use the Windows SDK 7.1 command line.
 		) else (
-			echo ** Visual Studio Command Line environment activation
-			call "!vcpath!\vcvarsall.bat" x86
+			echo ** Windows SDK 7.1 Command Line environment activation
+			REM TODO /Debug output
+			if "!_target_arch!"=="x64" call "!sdk71path!bin\SetEnv" /x64 /release
+			if "!_target_arch!"=="x86" call "!sdk71path!bin\SetEnv" /x86 /release
+			REM by default WinSDK7.1 take same architecture than current processors
+			if "!_target_arch!"=="" call "!sdk71path!bin\SetEnv" /release
 		)
+
 	) else (
 		if exist "!vcpath!\vcvarsall.bat" (
 			echo ** Visual Studio Command Line environment activation

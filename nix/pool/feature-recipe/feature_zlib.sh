@@ -41,7 +41,6 @@ function feature_zlib_install_source() {
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	
 
-	#__set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL make"
 	__set_toolset "STANDARD"
 
 	
