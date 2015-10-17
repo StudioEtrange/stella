@@ -27,7 +27,7 @@ goto :eof
 	set FEAT_BINARY_URL_PROTOCOL=
 	
 	set FEAT_SOURCE_CALLBACK=
-	set FEAT_BINARY_CALLBACK=feature_wget_1_11_4_patch
+	set FEAT_BINARY_CALLBACK=feature_wget_1_11_4_artefact
 	set FEAT_ENV_CALLBACK=
 
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\wget.exe"
@@ -35,7 +35,7 @@ goto :eof
 goto :eof
 
 
-:feature_wget_1_11_4_patch
+:feature_wget_1_11_4_artefact
 	call %STELLA_COMMON%\common.bat :uncompress "%STELLA_ARTEFACT%\wget-1.11.4-1-bin.zip" "!FEAT_INSTALL_ROOT!"
 	call %STELLA_COMMON%\common.bat :uncompress "%STELLA_ARTEFACT%\wget-1.11.4-1-dep.zip" "!FEAT_INSTALL_ROOT!"
 goto :eof

@@ -10,7 +10,7 @@ REM build from sourcee
 REM https://ffmpeg.zeranoe.com/blog/?cat=4
 
 REM official website : http://mingw-w64.yaxm.org/doku.php/start
-REM download url from mingw-builds from : http:/:sourceforge.net/projects/mingw-w64/
+REM download url from mingw-builds from : http://sourceforge.net/projects/mingw-w64/
 
 :feature_mingw-w64
 	set "FEAT_NAME=mingw-w64"
@@ -30,8 +30,9 @@ goto :eof
 
 	REM dwarf is 32bit only, seh is 64bit only, sjlj works with 32 / 64
 	set MINGW_EXCEPTION=sjlj
-	if "!FEAT_ARCH!"=="x64" set MINGW_EXCEPTION=seh
-	if "!FEAT_ARCH!"=="x86" set MINGW_EXCEPTION=dwarf
+	REM NOTE : if we use dwarf on 64 bits hosts we can not build 32bits apps
+	REM if "!FEAT_ARCH!"=="x64" set MINGW_EXCEPTION=seh
+	REM if "!FEAT_ARCH!"=="x86" set MINGW_EXCEPTION=dwarf
 
 	REM win32 or posix
 	set MINGW_THREADS=win32

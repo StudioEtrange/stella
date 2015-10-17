@@ -53,7 +53,7 @@ REM http://stackoverflow.com/a/5841587
 goto :eof
 
 :: FILES TOOL ---------------------------------------
-:del_folder2
+:del_folder
 	if exist "%~1" (
 		echo ** Deleting %~1 folder
 		REM call :timecount_start timecount_id
@@ -67,8 +67,9 @@ goto :eof
 		REM icacls %~1 /setowner "%username%" /t >nul
 	)
 goto :eof
-REM TODO powershell alternative 
-:del_folder
+REM TODO powershell alternative
+REM note : the powershell command seems to not wait delete folder before release
+:del_folder2
 	if exist "%~1" (
 		echo ** Deleting %~1 folder
 		powershell -Command "remove-item %~1 -force -recurse"
@@ -421,14 +422,15 @@ goto :eof
 
 
 	if "!_opt_get!"=="ON" (
-		if "%FORCE%"=="1" (
-			if "!_opt_merge!"=="OFF" (
-				call :del_folder "%FINAL_DESTINATION%"
-			)
-			if "!_opt_merge!"=="ON" (
-				del /q/f "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
-			)
-		)
+		REM TODO : do not delete when FORCE flag is used
+		REM if "%FORCE%"=="1" (
+		REM 	if "!_opt_merge!"=="OFF" (
+		REM 		call :del_folder "%FINAL_DESTINATION%"
+		REM 	)
+		REM 	if "!_opt_merge!"=="ON" (
+		REM 		del /q/f "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
+		REM 	)
+		REM )
 
 		if "!_opt_dest_erase!"=="ON" (
 			if "!_opt_merge!"=="OFF" (
@@ -481,7 +483,7 @@ goto :eof
 				set _FLAG=0
 			)
 
-			if exist "%FINAL_DESTINATION%" (
+			if exist "!FINAL_DESTINATION!" (
 				if "!_opt_get!"=="ON" (
 					if "!_opt_merge!"=="ON" (
 						if exist "%FINAL_DESTINATION%\._MERGED_!_name_legal!" (
@@ -542,7 +544,7 @@ goto :eof
 	)
 
 	if "!_FLAG!"=="1" (
-		if not exist "%FINAL_DESTINATION%" mkdir %FINAL_DESTINATION%
+		if not exist "!FINAL_DESTINATION!" mkdir "!FINAL_DESTINATION!"
 
 		if "%PROTOCOL%"=="HTTP_ZIP" (
 			if "!_opt_get!"=="ON" call :download_uncompress "%URI%" "!_download_filename!" "%FINAL_DESTINATION%" "%_STRIP%"

@@ -2,6 +2,9 @@
 call %*
 goto :eof
 
+REM NOTE patch from  gnuwin32 project has a bug on windows with UAC
+REM http://butnottoohard.blogspot.fr/2010/01/windows-7-chronicles-gnu-patch-mtexe.html
+REM http://math.nist.gov/oommf/software-patchsets/patch_on_Windows7.html
 
 :feature_patch
 	set "FEAT_NAME=patch"
@@ -22,12 +25,12 @@ goto :eof
 	set FEAT_SOURCE_URL_FILENAME=
 	set FEAT_SOURCE_URL_PROTOCOL=
 
-	set "FEAT_BINARY_URL=http://freefr.dl.sourceforge.net/project/gnuwin32/patch/2.5.9-7/patch-2.5.9-7-bin.zip"
-	set "FEAT_BINARY_URL_FILENAME="
-	set "FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP"
+	set FEAT_BINARY_URL=
+	set FEAT_BINARY_URL_FILENAME=
+	set FEAT_BINARY_URL_PROTOCOL=
 
 	set FEAT_SOURCE_CALLBACK=
-	set FEAT_BINARY_CALLBACK=
+	set FEAT_BINARY_CALLBACK=feature_patch_2_5_9_artefact
 	set FEAT_ENV_CALLBACK=
 
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\patch.exe"
@@ -37,9 +40,14 @@ goto :eof
 goto :eof
 
 
+:feature_patch_2_5_9_artefact
+	call %STELLA_COMMON%\common.bat :uncompress "!STELLA_ARTEFACT!\patch-2_5_9-7-with-manifest.zip" "!FEAT_INSTALL_ROOT!"
+goto :eof
+
+
+
 :feature_patch_install_binary
-	call %STELLA_COMMON%\common.bat :get_resource "vagrant" "!FEAT_BINARY_URL!" "!FEAT_BINARY_URL_PROTOCOL!" "!FEAT_INSTALL_ROOT!"
-		
+	call %STELLA_COMMON%\common-feature.bat :feature_callback
 goto :eof
 
 

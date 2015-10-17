@@ -1,0 +1,23 @@
+--- E:\CODE\stella\cache\CMakeLists.txt	2015-10-04 06:55:56.000000000 +0200
++++ E:\CODE\stella\workspace\feature_win\windows\freetype-2_6_1-src\CMakeLists.txt	2015-10-17 04:31:11.395923800 +0200
+@@ -98,15 +98,14 @@
+   if (DEFINED IOS_PLATFORM)
+     message(FATAL_ERROR "IOS_PLATFORM is not supported on this platform")
+   endif ()
+-endif ()
+-
+-if (WIN32 AND BUILD_SHARED_LIBS)
+-  message(FATAL_ERROR "Shared libraries not supported on Windows.")
+-endif ()
+-
++endif () 
++  
+ 
+ project(freetype)
+ 
++if (WIN32 AND NOT MINGW AND BUILD_SHARED_LIBS)
++  message(FATAL_ERROR "Shared libraries not supported on Windows.")
++endif ()
+ 
+ # Disallow in-source builds
+ if ("${PROJECT_BINARY_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")

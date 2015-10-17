@@ -10,6 +10,7 @@ if "%STELLA_CURRENT_RUNNING_DIR%"=="" set STELLA_CURRENT_RUNNING_DIR=%cd%
 set STELLA_ROOT=%_STELLA_CONF_CURRENT_FILE_DIR%
 set STELLA_COMMON=%STELLA_ROOT%\win\common
 set STELLA_POOL=%STELLA_ROOT%\win\pool
+set "STELLA_PATCH=%STELLA_POOL%\patch"
 set STELLA_BIN=%STELLA_ROOT%\win\bin
 set STELLA_FEATURE_RECIPE=%STELLA_POOL%\feature-recipe
 set STELLA_ARTEFACT=%STELLA_POOL%\artefact
@@ -84,7 +85,7 @@ set "NPM=npm"
 
 
 :: FEATURE LIST ---------------------------------------------
-set "__STELLA_FEATURE_LIST=libjpeg curl libogg mode-export freetype libpng zlib git docker-swarm socat nginx mingw-w64 go-build-chain go-crosscompile-chain go docker-bundle docker-client docker-machine oracle-jdk maven spark nikpeviewer dependencywalker conemu goconfig-cli ninja jom cmake packer perl ruby rubydevkit nasm python vagrant openssh wget unzip sevenzip patch gnumake"
+set "__STELLA_FEATURE_LIST=diffutils libjpeg curl libogg mode-export freetype libpng zlib git docker-swarm socat nginx mingw-w64 go-build-chain go-crosscompile-chain go docker-bundle docker-client docker-machine oracle-jdk maven spark nikpeviewer dependencywalker conemu goconfig-cli ninja jom cmake packer perl ruby rubydevkit nasm python vagrant openssh wget unzip sevenzip patch gnumake"
 
 :: SYS PACKAGE --------------------------------------------
 :: list of available installable system package

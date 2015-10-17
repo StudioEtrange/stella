@@ -312,8 +312,6 @@ goto :eof
 		-DCMAKE_INSTALL_BINDIR="!AUTO_INSTALL_DIR!\bin" -DINSTALL_BIN_DIR="!AUTO_INSTALL_DIR!\bin" -DCMAKE_INSTALL_LIBDIR="!AUTO_INSTALL_DIR!\lib" -DINSTALL_LIB_DIR="!AUTO_INSTALL_DIR!\lib" ^
 		-DCMAKE_LIBRARY_PATH="!CMAKE_LIBRARY_PATH!" -DCMAKE_INCLUDE_PATH="!CMAKE_INCLUDE_PATH!" ^
 		-DCMAKE_SYSTEM_INCLUDE_PATH:PATH="!CMAKE_INCLUDE_PATH!" -DCMAKE_SYSTEM_LIBRARY_PATH:PATH="!CMAKE_LIBRARY_PATH!" ^
-		-DBUILD_STATIC_LIBS:BOOL=TRUE -DBUILD_SHARED_LIBS:BOOL=TRUE ^
-		-DCMAKE_FIND_FRAMEWORK=LAST -DCMAKE_FIND_APPBUNDLE=LAST ^
 		-G "!CMAKE_GENERATOR!"
 
 		
@@ -1173,7 +1171,7 @@ goto :eof
 		dumpbin /headers "!_path!" 2>NUL | findstr machine | findstr x86 1>NUL && set "_result=x86" || set "_result=x64"
 	) else (
 		if "!_test_tool!"=="objdump" (
-			objdump -f "!_path!" 2>NUL | findstr i386 1>NUL && set _result=x86 || set "_result=x64"
+			objdump -f "!_path!" 2>NUL | findstr x86-64 1>NUL && set "_result=x64" || set "_result=x86"
 		)
 	)
 
