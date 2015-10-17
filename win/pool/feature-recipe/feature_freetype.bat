@@ -2,8 +2,8 @@
 call %*
 goto :eof
 
-REM TODO depend on bzip
-
+REM TODO : build static lib
+REM TODO : bug when linking with bzip2
 :feature_freetype
 	set "FEAT_NAME=freetype"
 	set "FEAT_LIST_SCHEMA=2_6_1:source"
@@ -15,7 +15,7 @@ goto :eof
 
 :feature_freetype_2_6_1
 	set "FEAT_VERSION=2_6_1"
-	set "FEAT_SOURCE_DEPENDENCIES=zlib#1_2_8 libpng#1_6_18"
+	set "FEAT_SOURCE_DEPENDENCIES=zlib#1_2_8 libpng#1_6_18 bzip2#1_0_6"
 	set FEAT_BINARY_DEPENDENCIES=
 
 	set "FEAT_SOURCE_URL=http://downloads.sourceforge.net/project/freetype/freetype2/2.6.1/ft261.zip"
@@ -55,6 +55,7 @@ goto :eof
 :feature_freetype_link
 	call %STELLA_COMMON%\common-build.bat :link_feature_library "zlib#1_2_8" "FORCE_DYNAMIC"
 	call %STELLA_COMMON%\common-build.bat :link_feature_library "libpng#1_6_18" "FORCE_DYNAMIC"
+	call %STELLA_COMMON%\common-build.bat :link_feature_library "bzip2#1_0_6" "FORCE_STATIC"
 goto :eof
 
 :feature_freetype_install_source
