@@ -677,8 +677,6 @@ goto :eof
 	for %%A in ( %FILE_PATH% ) do set _FILENAME=%%~nxA
 	for %%B in ( %FILE_PATH% ) do set EXTENSION=%%~xB
 
-	
-
 	if "!_opt_strip!"=="OFF" (
 		if "%EXTENSION%"==".7z" (
 			"%SEVENZIP%" x "%FILE_PATH%" -y -o"%UNZIP_DIR%" 1>NUL
@@ -692,9 +690,10 @@ goto :eof
 			"%SEVENZIP%" x "%FILE_PATH%" -y -so | "%SEVENZIP%" x -y -aoa -si -ttar -o"%UNZIP_DIR%"
 		)
 
-		if "%EXTENSION%"==".gz" (
-			for %%C in ( %_FILENAME% ) do set EXTENSION_BIS=%%~xC
-			if "%EXTENSION_BIS%"==".tar" (
+		if "!EXTENSION!"==".gz" (
+			for %%C in ( !_FILENAME! ) do set _FILENAME_BIS=%%~nC
+			for %%D in ( !_FILENAME_BIS! ) do set EXTENSION_BIS=%%~xD
+			if "!EXTENSION_BIS!"==".tar" (
 				"%SEVENZIP%" x "%FILE_PATH%" -y -so | "%SEVENZIP%" x -y -aoa -si -ttar -o"%UNZIP_DIR%"
 			) else (
 				"%SEVENZIP%" x "%FILE_PATH%" -y -o"%UNZIP_DIR%"
@@ -723,8 +722,10 @@ goto :eof
 		if "%EXTENSION%"==".tgz" (
 			"%SEVENZIP%" x "%FILE_PATH%" -y -so | "%SEVENZIP%" x -y -aoa -si -ttar -o"%STELLA_APP_TEMP_DIR%\%_FILENAME%"
 		)
-		if "%EXTENSION%"==".gz" (
-			if "%EXTENSION_BIS%"==".tar" (
+		if "!EXTENSION!"==".gz" (
+			for %%C in ( !_FILENAME! ) do set _FILENAME_BIS=%%~nC
+			for %%D in ( !_FILENAME_BIS! ) do set EXTENSION_BIS=%%~xD
+			if "!EXTENSION_BIS!"==".tar" (
 				"%SEVENZIP%" x "%FILE_PATH%" -y -so | "%SEVENZIP%" x -y -aoa -si -ttar -o"%STELLA_APP_TEMP_DIR%\%_FILENAME%"
 			) else (
 				"%SEVENZIP%" x "%FILE_PATH%" -y -o"%STELLA_APP_TEMP_DIR%\%_FILENAME%"

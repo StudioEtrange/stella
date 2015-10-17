@@ -214,7 +214,6 @@ goto :eof
 		call :require_current_toolset
 	)
 
-	
 	:: set build env
 	call :prepare_build "!INSTALL_DIR!"
 
