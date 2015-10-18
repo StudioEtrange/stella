@@ -24,15 +24,24 @@ goto :eof
 	set FEAT_BINARY_URL_FILENAME=
 	set FEAT_BINARY_URL_PROTOCOL=
 	
-	set FEAT_SOURCE_CALLBACK=
+	set FEAT_SOURCE_CALLBACK=feature_bzip2_patch
 	set FEAT_BINARY_CALLBACK=
 	set FEAT_ENV_CALLBACK=
 
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\lib\libbz2.lib"
-	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\bin"	
-
+	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\bin"
 goto :eof
 
+:feature_bzip2_patch
+	REM patches from https://github.com/philr/bzip2-windows (carefull : patch files endline must be windows style)
+	copy /Y "!STELLA_PATCH!\bzip2\*.diff" "!SRC_DIR!\"
+	copy /Y "!STELLA_PATCH!\bzip2\version.rc" "!SRC_DIR!\"
+
+	cd /D "!SRC_DIR!"
+	for %%i in ("!SRC_DIR!"\*.diff) do (
+	 	patch --verbose -u -p1 < %%i
+	)
+goto :eof
 
 :feature_bzip2_install_source
 	set "INSTALL_DIR=!FEAT_INSTALL_ROOT!"
@@ -42,10 +51,10 @@ goto :eof
 
 	call %STELLA_COMMON%\common.bat :get_resource "!FEAT_NAME!" "!FEAT_SOURCE_URL!" "!FEAT_SOURCE_URL_PROTOCOL!" "!SRC_DIR!" "STRIP"	
 
-
+	call %STELLA_COMMON%\common-feature.bat :feature_callback
 
 	set "AUTO_INSTALL_CONF_FLAG_POSTFIX="
-	set "AUTO_INSTALL_BUILD_FLAG_POSTFIX=/f makefile.msc"
+	set "AUTO_INSTALL_BUILD_FLAG_POSTFIX=/f makefile.msc all"
 	
 
 	call %STELLA_COMMON%\common-build.bat :auto_build "!FEAT_NAME!" "!SRC_DIR!" "!INSTALL_DIR!" "NO_CONFIG NO_OUT_OF_TREE_BUILD SOURCE_KEEP NO_INSPECT"

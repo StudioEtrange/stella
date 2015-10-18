@@ -3,7 +3,7 @@ call %*
 goto :eof
 
 REM TODO : build static lib
-REM TODO : bug when linking with bzip2
+
 :feature_freetype
 	set "FEAT_NAME=freetype"
 	set "FEAT_LIST_SCHEMA=2_6_1:source"
@@ -37,17 +37,17 @@ goto :eof
 
 :feature_freetype_patch
 	REM patch CMakeLists to allow build DLL on windows with mingw
-	patch "!SRC_DIR!\CMakeLists.txt" "!STELLA_PATCH!\freetype\patch-CMakeLists-mingw-shared.txt"
+	patch --verbose "!SRC_DIR!\CMakeLists.txt" "!STELLA_PATCH!\freetype\patch-CMakeLists-mingw-shared.txt"
 
 	REM TODO dont know if we need this
 	REM patch long to 64bits
 	REM https://github.com/Robmaister/SharpFont.Dependencies/tree/master/freetype2
 	REM https://github.com/Robmaister/SharpFont.Dependencies/blob/master/freetype2/win64.patch
-	if "!STELLA_BUILD_ARCH!"=="x64" (
-		copy /Y "!STELLA_PATCH!\freetype\win64.patch" "!SRC_DIR!\"
-		cd /D "!SRC_DIR!"
+	REM if "!STELLA_BUILD_ARCH!"=="x64" (
+		REM copy /Y "!STELLA_PATCH!\freetype\win64.patch" "!SRC_DIR!\"
+		REM cd /D "!SRC_DIR!"
 		REM patch -p0 < win64.patch
-	)
+	REM )
 
 goto :eof
 
@@ -55,7 +55,7 @@ goto :eof
 :feature_freetype_link
 	call %STELLA_COMMON%\common-build.bat :link_feature_library "zlib#1_2_8" "FORCE_DYNAMIC"
 	call %STELLA_COMMON%\common-build.bat :link_feature_library "libpng#1_6_18" "FORCE_DYNAMIC"
-	call %STELLA_COMMON%\common-build.bat :link_feature_library "bzip2#1_0_6" "FORCE_STATIC"
+	call %STELLA_COMMON%\common-build.bat :link_feature_library "bzip2#1_0_6" "FORCE_STATIC FORCE_RENAME libbz2-static.lib libbz2.lib"
 goto :eof
 
 :feature_freetype_install_source

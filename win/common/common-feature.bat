@@ -598,19 +598,19 @@ goto :eof
 :feature_callback
 	if not "!FEAT_BUNDLE!"=="" (
 		for %%p in (!FEAT_BUNDLE_CALLBACK!) do (
-			call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :%%p
+			call "%STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat" :%%p
 		)
 	) else (
 		
 		if "!FEAT_SCHEMA_FLAVOUR!"=="source" (
 			for %%p in (!FEAT_SOURCE_CALLBACK!) do (
-				call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :%%p
+				call "%STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat" :%%p				
 			)
 		)
 
 		if "!FEAT_SCHEMA_FLAVOUR!"=="binary" (
 			for %%p in (!FEAT_BINARY_CALLBACK!) do (
-				call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :%%p
+				call "%STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat" :%%p
 			)
 		)
 

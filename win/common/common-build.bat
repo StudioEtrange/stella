@@ -470,6 +470,8 @@ goto :eof
 	set _opt_set_flags=ON
 	set _flag_libs_name=OFF
 	set _libs_name=
+	set _flag_rename=OFF
+	set _list_rename=
 
 
 	if "!STELLA_BUILD_LINK_MODE!"=="DEFAULT" (
@@ -482,14 +484,17 @@ goto :eof
 		set "_opt_flavour=FORCE_STATIC"
 	)
 
+	REM FORCE_RENAME : rename files when isolating files -- only apply when FORCE_STATIC or FORCE_DYNAMIC is ON
 	for %%O in (%OPT%) do (
 		if "%%O"=="FORCE_STATIC" (
 			set _opt_flavour=%%O
 			set _flag_libs_name=OFF
+			set _flag_rename=OFF
 		)
 		if "%%O"=="FORCE_DYNAMIC" (
 			set _opt_flavour=%%O
 			set _flag_libs_name=OFF
+			set _flag_rename=OFF
 		)
 
 		if "!_flag_lib_folder!"=="ON" (
@@ -499,6 +504,7 @@ goto :eof
 		if "%%O"=="FORCE_LIB_FOLDER" (
 			set _flag_lib_folder=ON
 			set _flag_libs_name=OFF
+			set _flag_rename=OFF
 		)
 		if "!_flag_bin_folder!"=="ON" (
 			set "_bin_folder=%%O"
@@ -507,6 +513,7 @@ goto :eof
 		if "%%O"=="FORCE_BIN_FOLDER" (
 			set _flag_bin_folder=ON
 			set _flag_libs_name=OFF
+			set _flag_rename=OFF
 		)
 		if "!_flag_include_folder!"=="ON" (
 			set "_include_folder=%%O"
@@ -515,6 +522,7 @@ goto :eof
 		if "%%O"=="FORCE_INCLUDE_FOLDER" (
 			set _flag_include_folder=ON
 			set _flag_libs_name=OFF
+			set _flag_rename=OFF
 		)
 
 		if "!_flags!"=="ON" (
@@ -524,6 +532,7 @@ goto :eof
 		if "%%O"=="GET_FLAGS" (
 			set _flags=ON
 			set _flag_libs_name=OFF
+			set _flag_rename=OFF
 		)
 		if "!_folders!"=="ON" (
 			set "_var_folders=%%O"
@@ -532,11 +541,13 @@ goto :eof
 		if "%%O"=="GET_FOLDER" (
 			set _folders=ON
 			set _flag_libs_name=OFF
+			set _flag_rename=OFF
 		)
 
 		if "%%O"=="NO_SET_FLAGS" (
 			set _opt_set_flags=OFF
 			set _flag_libs_name=OFF
+			set _flag_rename=OFF
 		)
 
 		if "!_flag_libs_name!"=="ON" (
@@ -544,10 +555,22 @@ goto :eof
 		)
 		if "%%O"=="LIBS_NAME" (
 			set "_flag_libs_name=ON"
+			set _flag_rename=OFF
+		)
+
+		if "!_flag_rename!"=="ON" (
+			set "_list_rename=!_list_rename! %%O"
+		)
+		if "%%O"=="FORCE_RENAME" (
+			set "_flag_rename=ON"
+			set _flag_libs_name=OFF
 		)
 
 	)
 
+	if "!_opt_flavour!"=="DEFAULT" (
+		set "_list_rename="
+	)
 
 	:: check origin for this schema
 	set "_origin="
@@ -598,9 +621,23 @@ goto :eof
 
 		echo *** Copying items from !REQUIRED_LIB_ROOT!\!_lib_folder! to !LIB_TARGET_FOLDER!
 		for %%f in ("!REQUIRED_LIB_ROOT!\!_lib_folder!\*.*") do (
-			call :is_import_or_static_lib "_type"" %%f"
+			call :is_import_or_static_lib "_type" "%%f"
 			if "!_type!"=="STATIC" (
-				copy /Y "%%f" "!LIB_TARGET_FOLDER!\"
+				set "_renamed_filename="
+				set "_filename=%%~nxf"
+				set _pair=1
+				set _do_rename=0
+				for %%k in (!_list_rename!) do (
+					if "!_pair!"=="1" (
+						set _pair=0
+						if "!_filename!"=="%%k" set _do_rename=1
+					) else (
+						if "!_do_rename!"=="1" set "_renamed_filename=%%k"
+						set _pair=1
+						set _do_rename=0
+					)
+				)
+				copy /Y "%%f" "!LIB_TARGET_FOLDER!\!_renamed_filename!"
 			)
 		)
 	)
@@ -614,15 +651,42 @@ goto :eof
 
 		echo *** Copying items from !REQUIRED_LIB_ROOT!\!_lib_folder! to !LIB_TARGET_FOLDER!
 		for %%f in ("!REQUIRED_LIB_ROOT!\!_lib_folder!\*.*") do (
-			echo %%f
 			call :is_import_or_static_lib "_type" "%%f"
 			if "!_type!"=="IMPORT" (
-				copy /Y "%%f" "!LIB_TARGET_FOLDER!\"
+				set "_renamed_filename="
+				set "_filename=%%~nxf"
+				set _pair=1
+				set _do_rename=0
+				for %%k in (!_list_rename!) do (
+					if "!_pair!"=="1" (
+						set _pair=0
+						if "!_filename!"=="%%k" set _do_rename=1
+					) else (
+						if "!_do_rename!"=="1" set "_renamed_filename=%%k"
+						set _pair=1
+						set _do_rename=0
+					)
+				)
+				copy /Y "%%f" "!LIB_TARGET_FOLDER!\!_renamed_filename!"
 			)
 		)
 		echo *** Copying DLL items from !REQUIRED_LIB_ROOT!\!_bin_folder! to !LIB_TARGET_FOLDER!
 		for %%f in ("!REQUIRED_LIB_ROOT!\!_bin_folder!\*.dll") do (
-			copy /Y "%%f" "!LIB_TARGET_FOLDER!\"
+			set "_renamed_filename="
+			set "_filename=%%~nxf"
+			set _pair=1
+			set _do_rename=0
+			for %%k in (!_list_rename!) do (
+				if "!_pair!"=="1" (
+					set _pair=0
+					if "!_filename!"=="%%k" set _do_rename=1
+				) else (
+					if "!_do_rename!"=="1" set "_renamed_filename=%%k"
+					set _pair=1
+					set _do_rename=0
+				)
+			)
+			copy /Y "%%f" "!LIB_TARGET_FOLDER!\!_renamed_filename!"
 		)
 
 	)
@@ -1104,7 +1168,11 @@ goto :eof
 				set "STELLA_C_CXX_FLAGS=-m64 !STELLA_C_CXX_FLAGS!"
 			)
 		)
-	
+		if "!STELLA_BUILD_COMPIL_FRONTEND!"=="cl" (
+			echo TODO arch for cl ?
+			REM set "CL=/arch:x86"
+			REM set "LINK=/MACHINE:X86"
+		)
 	)
 
 	
@@ -1330,20 +1398,23 @@ goto :eof
 
 	REM set VC env vars
 	if "!vstudio!"=="vs10" (
-
-		
-		REM for 64 bits build with visual studio 2010, need WinSDK 7.1
-		call :find_winsdk "sdk71path" "v7.1"
-
-		if "!sdk71path!"=="" (
-			echo ** WARNING : for x64 target you MUST install Windows SDK 7.1. Even for x86, it is recommanded to use the Windows SDK 7.1 command line.
+		if "!_target_arch!"=="x86" (
+			REM use SDK7.1 to set env for x86 target seems to be broken
+			call "!vcpath!\vcvarsall.bat" x86
 		) else (
-			echo ** Windows SDK 7.1 Command Line environment activation
-			REM TODO /Debug output
-			if "!_target_arch!"=="x64" call "!sdk71path!bin\SetEnv" /x64 /release
-			if "!_target_arch!"=="x86" call "!sdk71path!bin\SetEnv" /x86 /release
-			REM by default WinSDK7.1 take same architecture than current processors
-			if "!_target_arch!"=="" call "!sdk71path!bin\SetEnv" /release
+			REM for 64 bits build with visual studio 2010, need WinSDK 7.1
+			call :find_winsdk "sdk71path" "v7.1"
+
+			if "!sdk71path!"=="" (
+				echo ** WARNING : for x64 target you MUST install Windows SDK 7.1.
+			) else (
+				echo ** Windows SDK 7.1 Command Line environment activation
+				REM TODO /Debug output
+				if "!_target_arch!"=="x64" call "!sdk71path!bin\SetEnv" /x64 /release
+				REM if "!_target_arch!"=="x86" call "!sdk71path!bin\SetEnv" /x86 /release
+				REM by default WinSDK7.1 take same architecture than current processors
+				if "!_target_arch!"=="" call "!sdk71path!bin\SetEnv" /release
+			)
 		)
 
 	) else (
