@@ -38,6 +38,7 @@ function feature_autoconf_2_69() {
 function feature_autoconf_2_69_patch() {
 	#TODO : really need this ?
 	#AUTO_INSTALL_CONF_FLAG_POSTFIX="--docdir=$INSTALL_DIR/share/doc/automake-1.14"
+	
 	AUTO_INSTALL_CONF_FLAG_POSTFIX=
 }
 

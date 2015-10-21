@@ -128,6 +128,8 @@ function feature_oracle-jdk_install_binary() {
 			curl -j -k -S -L -H "Cookie: oraclelicense=accept-securebackup-cookie; oraclelicense=accept-securebackup-cookie" -o "$STELLA_APP_CACHE_DIR/$FEAT_BINARY_URL_FILENAME" "$FEAT_BINARY_URL"
 		fi
 
+		
+
 		# mount dmg file and extract pkg file
 		if [ ! -f "$STELLA_APP_CACHE_DIR/$PKG_NAME" ]; then
 			hdiutil mount "$STELLA_APP_CACHE_DIR/$FEAT_BINARY_URL_FILENAME"
@@ -139,7 +141,7 @@ function feature_oracle-jdk_install_binary() {
 		rm -Rf "$STELLA_APP_TEMP_DIR/$FEAT_VERSION"
 		pkgutil --expand "$STELLA_APP_CACHE_DIR/$PKG_NAME" "$STELLA_APP_TEMP_DIR/$FEAT_VERSION/"
 
-		# extract jdk from binary payload file
+		# extract files from payload
 		rm -Rf "$FEAT_INSTALL_ROOT"
 		mkdir -p "$FEAT_INSTALL_ROOT"
 		cd "$FEAT_INSTALL_ROOT"

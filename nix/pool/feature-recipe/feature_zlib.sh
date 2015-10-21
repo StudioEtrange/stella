@@ -44,7 +44,7 @@ function feature_zlib_install_source() {
 	__set_toolset "STANDARD"
 
 	
-	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "STRIP"
+	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=

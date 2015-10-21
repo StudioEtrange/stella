@@ -3,6 +3,8 @@ _GETTEXT_INCLUDED_=1
 
 # https://github.com/Homebrew/homebrew/blob/master/Library/Formula/gettext.rb
 
+# TODO : link to ncurses
+
 function feature_gettext() {
 
 	FEAT_NAME=gettext

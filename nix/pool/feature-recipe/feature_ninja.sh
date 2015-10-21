@@ -57,7 +57,7 @@ function feature_ninja_install_source() {
 function feature_ninja_install_binary() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	
-	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$INSTALL_DIR" "DEST_ERASE STRIP FORCE_NAME $FEAT_BINARY_URL_FILENAME"
+	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$INSTALL_DIR" "STRIP FORCE_NAME $FEAT_BINARY_URL_FILENAME"
 
 }
 

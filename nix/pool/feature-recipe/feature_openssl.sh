@@ -1,7 +1,7 @@
 if [ ! "$_OPENSSL_INCLUDED_" == "1" ]; then 
 _OPENSSL_INCLUDED_=1
 
-# Requipre perl (from system is enough), to configure source code
+# TODO Require perl (from system is enough), to configure source code
 # Require system "build-system"
 
 # NOTE : On darwin openssl lib in lib/engines folder does not have LC_ID_DYLIB
@@ -49,7 +49,6 @@ function feature_openssl_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
-	#__set_toolset "CUSTOM" "CONFIG_TOOL configure"
 	__set_toolset "STANDARD"
 
 
@@ -57,9 +56,7 @@ function feature_openssl_install_source() {
 
 	
 
-	ARCH=x64
-
-	__set_build_mode ARCH $ARCH
+	ARCH=$STELLA_BUILD_ARCH
 
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		OPENSSL_OPT="shared no-idea no-mdc2 no-rc5 enable-ssl2 enable-tlsext enable-cms"

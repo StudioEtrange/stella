@@ -1704,7 +1704,7 @@ function __check_dynamic_linking_darwin() {
 	while read -r line ; do
 			printf %s "====> checking linked lib : $line "
 			_match=
-			
+			# @rpath case
 			if [ -z "${line##*@rpath*}" ]; then
 
 				for p in $_rpath; do
@@ -1721,10 +1721,16 @@ function __check_dynamic_linking_darwin() {
 					fi
 				done
 			else
-				if [ -f "$line" ]; then
-					printf %s "-- OK"
-					_match=1
-				fi 
+				# @loader_path case -- TODO not sure we can find @loader_path in a path to a linked lib
+				if [ -z "${line##*@loader_path*}" ]; then
+					echo "TODO not implemented"
+					# for @loader_path/foo/bar.dylib extract /foo/ and prefix it with current file path
+				else
+					if [ -f "$line" ]; then
+						printf %s "-- OK"
+						_match=1
+					fi
+				fi
 			fi
 			[ "$_match" == "" ] && printf %s "-- WARN not found"
 			echo
@@ -1779,7 +1785,7 @@ function __fix_built_files() {
 						[ ! "$(__get_extension_from_string $path)" == "a" ] && __fix_rpath_linux "$path" "REL_RPATH"
 					fi
 				fi
-				#[ ! "$(__get_extension_from_string $path)" == "a" ] && __fix_linked_lib_linux "$path" "ONLY_ABS_PATH REL_RPATH EXCLUDE_FILTER /System/Library|/usr/lib"
+				#[ ! "$(__get_extension_from_string $path)" == "a" ] && __fix_linked_lib_linux "$path" "REL_RPATH EXCLUDE_FILTER /System/Library|/usr/lib"
 			;;
 			darwin)
 
@@ -1791,7 +1797,7 @@ function __fix_built_files() {
 						if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
 							[ "$(__get_extension_from_string $path)" == "dylib" ] && __fix_dynamiclib_install_name_darwin "$path" "RPATH"
 							#[ "$(__get_extension_from_string $path)" == "so" ] && __fix_dynamiclib_install_name_darwin "$path"
-							[ ! "$(__get_extension_from_string $path)" == "a" ] && __fix_linked_lib_darwin "$path" "ONLY_ABS_PATH REL_RPATH EXCLUDE_FILTER /System/Library|/usr/lib"
+							[ ! "$(__get_extension_from_string $path)" == "a" ] && __fix_linked_lib_darwin "$path" "REL_RPATH EXCLUDE_FILTER /System/Library|/usr/lib"
 							[ ! "$(__get_extension_from_string $path)" == "a" ] && __fix_rpath_darwin "$path"
 						else
 							[ "$(__get_extension_from_string $path)" == "dylib" ] && __fix_dynamiclib_install_name_darwin "$path" "PATH"
@@ -1811,14 +1817,13 @@ function __fix_built_files() {
 
 # rpath ------------------------------
 # fix rpath to rel path or abs path
-# NOT IMPLEMENTED : fix missing rpath values by adding rpath values contained in list STELLA_BUILD_RPATH
+# TODO NOT IMPLEMENTED : fix missing rpath values by adding rpath values contained in list STELLA_BUILD_RPATH
 function __fix_rpath_linux() {
 	local _file=$1
 	local _OPT="$2"
 
 	# REL_RPATH : transform all rpath values to relative path
 	# ABS_RPATH : transform all rpath values to absolute path
-
 	local _rel_rpath=ON
 	local _abs_rpath=OFF
 	for o in $OPT; do 
@@ -1929,77 +1934,115 @@ function __fix_rpath_darwin() {
 }
 
 # fix linked shared lib by modifying LOAD_DYLIB and adding rpath values
-# sometimes, we have to do this because we did set the install_name of a lib after the build, but too late.
+# 	first choose linked lib to modify path -- you can filter libs by exclude some (EXCLUDE_FILTER) or by path (ABS_PATH_FILTER)
+#	second transform path to linked lib -- you can choose to 
+#					transform all rel path to abs path (ABS_RPATH) (including @loader_path, but do not change @rpath or @executable_path because we cant determine the path)
+#					transform all abs path to rel path (REL_RPATH) (use @rpath, and add an RPATH value corresponding to the relative path to the file with @loader_path/)
+#					force a specific path (FIX_RPATH <path>)
 # TODO should exclude linked lib with @rpath/lib
 function __fix_linked_lib_darwin() {
 	local _file=$1
 	local OPT="$2"
+	# linked lib filter
+	# INCLUDE_FILTER <expr> -- include from the transformation these libraries
+	# EXCLUDE_FILTER <expr> -- exclude from the transformation these libraries
+	# rpath to insert
+	# ABS_RPATH -- fix linked lib with an absolute path
+	# REL_RPATH [DEFAULT MODE] -- fix linked lib with a relative path (use @rpath, and add an RPATH value corresponding to the relative path to the file with @loader_path/)
+	# FIX_RPATH <path> -- fix a given path
 
-	# ONLY_ABS_PATH -- apply only to linked lib registered with an absolute path
-	# ABS_RPATH -- add an absolute rpath value to linked lib
-	# REL_RPATH -- add a relative rpath value to linked lib
-	# EXCLUDE_FILTER -- ignore these linked libraries
-
-	local _opt_abs_path=OFF
-	local _flag_filter=OFF
-	local _filter=
+	
+	local _flag_exclude_filter=OFF
+	local _exclude_filter=
 	local _invert_filter=
-	local _abs_rpath=ON
-	local _rel_rpath=OFF
+	local _flag_include_filter=OFF
+	local _include_filter=
+	local _abs_rpath=OFF
+	local _rel_rpath=ON
+	local _flag_fix_rpath=OFF
+	local _force_rpath=
+	local _fix_rpath=OFF
+
 	for o in $OPT; do 
-		[ "$o" == "ONLY_ABS_PATH" ] && _opt_abs_path=ON
-		[ "$_flag_filter" == "ON" ] && _filter=$o && _flag_filter=OFF
-		[ "$o" == "EXCLUDE_FILTER" ] && _flag_filter=ON && _invert_filter="-Ev"
-		[ "$o" == "REL_RPATH" ] && _opt_abs_path=ON && _rel_rpath=ON && _abs_rpath=OFF
-		[ "$o" == "ABS_RPATH" ] && _opt_abs_path=ON && _rel_rpath=OFF && _abs_rpath=ON
+		[ "$_flag_include_filter" == "ON" ] && _include_filter="$o" && _flag_include_filter=OFF
+		[ "$o" == "INCLUDE_FILTER" ] && _flag_include_filter=ON
+		[ "$_flag_exclude_filter" == "ON" ] && _exclude_filter="$o" && _flag_exclude_filter=OFF
+		[ "$o" == "EXCLUDE_FILTER" ] && _flag_exclude_filter=ON && _invert_filter="-Ev"
+		
+		[ "$o" == "REL_RPATH" ] && _rel_rpath=ON && _abs_rpath=OFF && _fix_rpath=OFF
+		[ "$o" == "ABS_RPATH" ] && _rel_rpath=OFF && _abs_rpath=ON && _fix_rpath=OFF
+		[ "$_flag_fix_rpath" == "ON" ] && _force_rpath="$o" && _flag_fix_rpath=OFF && _fix_rpath=ON && _rel_rpath=OFF && _abs_rpath=OFF
+		[ "$o" == "FIX_RPATH" ] && _flag_fix_rpath=ON
 	done
-
-
 
 	local _new_load_dylib=
 	local line=
 	local _linked_lib_filename=
 	local _filename
-
 	local _linked_lib_list=
-
 	local _flag_existing_rpath=
 
 
 	# get existing linked lib
 	while read -r line; do
-		if [ "$_opt_abs_path" == "ON" ]; then
-			if [ "$(__is_abs "$line")" == "TRUE" ]; then
-				[ -f "$line" ] && _linked_lib_list="$_linked_lib_list $line"
-			fi
-		else
-			[ -f "$line" ] && _linked_lib_list="$_linked_lib_list $line"
+		# FIX_RPATH : pick all filtered libraries
+		if [ "$_fix_rpath" == "ON" ]; then
+			_linked_lib_list="$_linked_lib_list $line"
 		fi
-	done <<< "$(otool -l "$_file" | grep -E "LC_LOAD_DYLIB" -A2 | grep $_invert_filter "$_filter" | tr -s ' ' | cut -d ' ' -f 3)"
+		# ABS_RPATH : pick only rel rpath - do not pick @rpath or @executable_path
+		if [ "$_abs_rpath" == "ON" ]; then
+			case $line in
+				@rpath*|@executable_path*);;
+				@loader_path)
+					_linked_lib_list="$_linked_lib_list $line"
+					;;
+				*)
+					if [ "$(__is_abs "$line")" == "FALSE" ]; then
+						_linked_lib_list="$_linked_lib_list $line"
+					fi
+					;;
+			esac	
+		fi
+		# REL_RPATH : pick only abs rpath
+		if [ "$_rel_rpath" == "ON" ]; then
+			if [ "$(__is_abs "$line")" == "TRUE" ]; then
+				_linked_lib_list="$_linked_lib_list $line"
+			fi
+		fi
+	done <<< "$(otool -l "$_file" | grep -E "LC_LOAD_DYLIB" -A2 | grep -E "$_include_filter" | grep $_invert_filter "$_exclude_filter" | tr -s ' ' | cut -d ' ' -f 3)"
+
 
 	for l in $_linked_lib_list; do
 
 		_filename=$(__get_filename_from_string $_file)
-		
-		_new_load_dylib="$(__get_path_from_string $l)"
-		[ "$_rel_rpath" == "ON" ] && _new_load_dylib="@loader_path/$(__abs_to_rel_path $_new_load_dylib $(__get_path_from_string $_file))"
 		_linked_lib_filename="$(__get_filename_from_string $l)"
-		
+
 		echo "** Fixing $_filename linked to $_linked_lib_filename shared lib"
-		
-		echo "====> setting LOAD_DYLIB : @rpath/$_linked_lib_filename"
-		install_name_tool -change "$l" "@rpath/$_linked_lib_filename" "$_file"
+	
+		if [ "$_fix_rpath" == "ON" ]; then
+			echo "====> setting LC_LOAD_DYLIB : $_force_rpath/$_linked_lib_filename"
+			install_name_tool -change "$l" "$_force_rpath/$_linked_lib_filename" "$_file"
+		fi
+		if [ "$_abs_rpath" == "ON" ]; then
+			_new_load_dylib="$(__get_path_from_string $l)"
+			echo "====> setting LC_LOAD_DYLIB : $_new_load_dylib/$_linked_lib_filename"
+			install_name_tool -change "$l" "$_new_load_dylib/$_linked_lib_filename" "$_file"
+		fi
+		if [ "$_rel_rpath" == "ON" ]; then
+			_new_load_dylib="@loader_path/$(__abs_to_rel_path $_new_load_dylib $(__get_path_from_string $_file))"
+			echo "====> setting LC_LOAD_DYLIB : @rpath/$_linked_lib_filename"
+			install_name_tool -change "$l" "@rpath/$_linked_lib_filename" "$_file"
 
-
-		echo "====> Adding RPATH value : $_new_load_dylib"
-		#__set_build_mode "RPATH" "ADD" "$_new_load_dylib"
-		_flag_existing_rpath=0
-		while read -r line; do
-			[ "$line" == "$_new_load_dylib" ] && _flag_existing_rpath=1
-		done <<< "$(otool -l "$_file" | grep -E "LC_RPATH" -A2 | grep path | tr -s ' ' | cut -d ' ' -f 3)"
-		
-		if [ "$_flag_existing_rpath" == "0" ]; then
-			install_name_tool -add_rpath "$_new_load_dylib" "$_file"
+			echo "====> Adding RPATH value : $_new_load_dylib"
+			#__set_build_mode "RPATH" "ADD" "$_new_load_dylib"
+			_flag_existing_rpath=0
+			while read -r line; do
+				[ "$line" == "$_new_load_dylib" ] && _flag_existing_rpath=1
+			done <<< "$(otool -l "$_file" | grep -E "LC_RPATH" -A2 | grep path | tr -s ' ' | cut -d ' ' -f 3)"
+			
+			if [ "$_flag_existing_rpath" == "0" ]; then
+				install_name_tool -add_rpath "$_new_load_dylib" "$_file"
+			fi
 		fi
 	done
 

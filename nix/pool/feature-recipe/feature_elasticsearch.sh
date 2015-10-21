@@ -19,7 +19,7 @@ function feature_elasticsearch_env() {
 
 function feature_elasticsearch_1_4_4() {
 	FEAT_VERSION=1_4_4
-	# NEED JDK 7 >= 7.60
+	# TODO NEED JDK 7 >= 7.60
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 	
@@ -42,7 +42,7 @@ function feature_elasticsearch_1_4_4() {
 
 function feature_elasticsearch_1_5_0() {
 	FEAT_VERSION=1_5_0
-	# NEED JDK 7 >= 7.60
+	# TODO NEED JDK 7 >= 7.60
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -88,7 +88,7 @@ function feature_elasticsearch_1_6_0() {
 }
 
 function feature_elasticsearch_install_binary() {
-	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP"
+	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "STRIP"
 
 
 }
