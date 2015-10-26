@@ -1402,10 +1402,12 @@ function __check_built_files() {
 					echo "** Analysing $path"
 					__check_arch "$path" "$STELLA_BUILD_ARCH"
 					if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
-						[ "$(__get_extension_from_string $path)" == "dylib" ] && __check_install_name_darwin "$path" "RPATH"
+						#[ "$(__get_extension_from_string $path)" == "dylib" ] && __check_install_name_darwin "$path" "RPATH"
+						[[ "$path" =~ .*dylib.* ]] && __check_install_name_darwin "$path" "RPATH"
 						[ ! "$(__get_extension_from_string $path)" == "a" ] && __check_rpath_darwin "$path" "REL_RPATH"
 					else
-						[ "$(__get_extension_from_string $path)" == "dylib" ] && __check_install_name_darwin "$path" "PATH"
+						#[ "$(__get_extension_from_string $path)" == "dylib" ] && __check_install_name_darwin "$path" "PATH"
+						[[ "$path" =~ .*dylib.* ]] && __check_install_name_darwin "$path" "PATH"
 						[ ! "$(__get_extension_from_string $path)" == "a" ] && __check_rpath_darwin "$path" "NO_RPATH"
 					fi
 
@@ -1579,7 +1581,8 @@ function __check_rpath_darwin() {
 	done
 
 
-	t=`otool -l $_file | grep -E "LC_RPATH" -A2 | grep -E "path "`
+	#t=`otool -l $_file | grep -E "LC_RPATH" -A2 | grep -E "path "`
+	t="$(otool -l "$_file" | grep -E "LC_RPATH" -A2 | awk '/LC_RPATH/{for(i=2;i;--i)getline; print $0 }' | tr -s ' ' | cut -d ' ' -f 3)"
 	if [ "$_no_rpath" == "ON" ];then
 		printf %s "*** Checking if there is no RPATH setted "
 		if [ "$t" == "" ]; then
@@ -1612,7 +1615,8 @@ function __check_rpath_darwin() {
 			 	fi
 			 fi
 		 	echo
-		done <<< "$(otool -l "$_file" | grep -E "LC_RPATH" -A2 | grep path | tr -s ' ' | cut -d ' ' -f 3)"
+		#done <<< "$(otool -l "$_file" | grep -E "LC_RPATH" -A2 | grep path | tr -s ' ' | cut -d ' ' -f 3)"
+		done <<< "$(otool -l "$_file" | grep -E "LC_RPATH" -A2 | awk '/LC_RPATH/{for(i=2;i;--i)getline; print $0 }' | tr -s ' ' | cut -d ' ' -f 3)"
 
 		local _err=0
 		for r in $STELLA_BUILD_RPATH; do
@@ -1695,7 +1699,8 @@ function __check_dynamic_linking_darwin() {
 	local _rpath=
 	while read -r line; do
 		_rpath="$_rpath $line"
-	done <<< "$(otool -l "$_file" | grep -E "LC_RPATH" -A2 | grep path | tr -s ' ' | cut -d ' ' -f 3)"
+	#done <<< "$(otool -l "$_file" | grep -E "LC_RPATH" -A2 | grep path | tr -s ' ' | cut -d ' ' -f 3)"
+	done <<< "$(otool -l "$_file" | grep -E "LC_RPATH" -A2 | awk '/LC_RPATH/{for(i=2;i;--i)getline; print $0 }' | tr -s ' ' | cut -d ' ' -f 3)"
 
 
 	local _match=
@@ -1734,7 +1739,8 @@ function __check_dynamic_linking_darwin() {
 			fi
 			[ "$_match" == "" ] && printf %s "-- WARN not found"
 			echo
-	done < <(otool -l $_file | grep -E "LC_LOAD_DYLIB" -A2 | grep name | tr -s ' ' | cut -d ' ' -f 3)
+	#done < <(otool -l $_file | grep -E "LC_LOAD_DYLIB" -A2 | grep name | tr -s ' ' | cut -d ' ' -f 3)
+	done <<< "$(otool -l "$_file" | grep -E "LC_LOAD_DYLIB" -A2 | awk '/LC_LOAD_DYLIB/{for(i=2;i;--i)getline; print $0 }' | tr -s ' ' | cut -d ' ' -f 3)"
 
 
 }
@@ -1795,8 +1801,9 @@ function __fix_built_files() {
 						# fix write permission
 						chmod +w "$path"
 						if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
-							[ "$(__get_extension_from_string $path)" == "dylib" ] && __fix_dynamiclib_install_name_darwin "$path" "RPATH"
-							#[ "$(__get_extension_from_string $path)" == "so" ] && __fix_dynamiclib_install_name_darwin "$path"
+							#[ "$(__get_extension_from_string $path)" == "dylib" ] && __fix_dynamiclib_install_name_darwin "$path" "RPATH"
+							#[ "$(__get_extension_from_string $path)" == "so" ] && __fix_dynamiclib_install_name_darwin "$path" "RPATH"
+							[[ "$path" =~ .*dylib.* ]] && __fix_dynamiclib_install_name_darwin "$path" "RPATH"
 							[ ! "$(__get_extension_from_string $path)" == "a" ] && __fix_linked_lib_darwin "$path" "REL_RPATH EXCLUDE_FILTER /System/Library|/usr/lib"
 							[ ! "$(__get_extension_from_string $path)" == "a" ] && __fix_rpath_darwin "$path"
 						else
@@ -1911,8 +1918,8 @@ function __fix_rpath_darwin() {
 			else
 				old_rpath="$old_rpath $line"
 			fi
-		done <<< "$(otool -l "$_file" | grep -E "LC_RPATH" -A2 | grep path | tr -s ' ' | cut -d ' ' -f 3)"
-
+		#done <<< "$(otool -l "$_file" | grep -E "LC_RPATH" -A2 | grep path | tr -s ' ' | cut -d ' ' -f 3)"
+		done <<< "$(otool -l "$_file" | grep -E "LC_RPATH" -A2 | awk '/LC_RPATH/{for(i=2;i;--i)getline; print $0 }' | tr -s ' ' | cut -d ' ' -f 3)"
 
 		if [ "$_flag_rpath" == "" ];then
 			msg="$msg -- adding RPATH value : $r"
@@ -1946,6 +1953,7 @@ function __fix_linked_lib_darwin() {
 	# linked lib filter
 	# INCLUDE_FILTER <expr> -- include from the transformation these libraries
 	# EXCLUDE_FILTER <expr> -- exclude from the transformation these libraries
+	# ABS_PATH_FILTER
 	# rpath to insert
 	# ABS_RPATH -- fix linked lib with an absolute path
 	# REL_RPATH [DEFAULT MODE] -- fix linked lib with a relative path (use @rpath, and add an RPATH value corresponding to the relative path to the file with @loader_path/)
@@ -2009,7 +2017,8 @@ function __fix_linked_lib_darwin() {
 				_linked_lib_list="$_linked_lib_list $line"
 			fi
 		fi
-	done <<< "$(otool -l "$_file" | grep -E "LC_LOAD_DYLIB" -A2 | grep -E "$_include_filter" | grep $_invert_filter "$_exclude_filter" | tr -s ' ' | cut -d ' ' -f 3)"
+	#done <<< "$(otool -l "$_file" | grep -E "LC_LOAD_DYLIB" -A2 | grep -E "$_include_filter" | grep $_invert_filter "$_exclude_filter" | tr -s ' ' | cut -d ' ' -f 3)"
+	done <<< "$(otool -l "$_file" | grep -E "LC_LOAD_DYLIB" -A2 | awk '/LC_LOAD_DYLIB/{for(i=2;i;--i)getline; print $0 }' | grep -E "$_include_filter" | grep $_invert_filter "$_exclude_filter" | tr -s ' ' | cut -d ' ' -f 3)"
 
 
 	for l in $_linked_lib_list; do
@@ -2038,8 +2047,8 @@ function __fix_linked_lib_darwin() {
 			_flag_existing_rpath=0
 			while read -r line; do
 				[ "$line" == "$_new_load_dylib" ] && _flag_existing_rpath=1
-			done <<< "$(otool -l "$_file" | grep -E "LC_RPATH" -A2 | grep path | tr -s ' ' | cut -d ' ' -f 3)"
-			
+			#done <<< "$(otool -l "$_file" | grep -E "LC_RPATH" -A2 | grep path | tr -s ' ' | cut -d ' ' -f 3)"
+			done <<< "$(otool -l "$_file" | grep -E "LC_RPATH" -A2 | awk '/LC_RPATH/{for(i=2;i;--i)getline; print $0 }' | tr -s ' ' | cut -d ' ' -f 3)"
 			if [ "$_flag_existing_rpath" == "0" ]; then
 				install_name_tool -add_rpath "$_new_load_dylib" "$_file"
 			fi
@@ -2108,7 +2117,9 @@ function __fix_dynamiclib_install_name_darwin() {
 
 function __get_install_name_darwin() {
 	local _file=$1
-	echo $(otool -l $_file | grep -E "LC_ID_DYLIB" -A2 | grep name | tr -s ' ' | cut -d ' ' -f 3)
+	#echo $(otool -l $_file | grep -E "LC_ID_DYLIB" -A2 | grep name | tr -s ' ' | cut -d ' ' -f 3)
+	echo $(otool -l "$_file" | grep -E "LC_ID_DYLIB" -A2 | awk '/LC_ID_DYLIB/{for(i=2;i;--i)getline; print $0 }' | tr -s ' ' | cut -d ' ' -f 3)
+	
 }
 
 fi

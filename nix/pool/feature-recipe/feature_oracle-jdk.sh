@@ -125,6 +125,7 @@ function feature_oracle-jdk_install_binary() {
 
 		# download
 		if [ ! -f "$STELLA_APP_CACHE_DIR/$FEAT_BINARY_URL_FILENAME" ]; then
+			# TODO : check cookie (twice the same)
 			curl -j -k -S -L -H "Cookie: oraclelicense=accept-securebackup-cookie; oraclelicense=accept-securebackup-cookie" -o "$STELLA_APP_CACHE_DIR/$FEAT_BINARY_URL_FILENAME" "$FEAT_BINARY_URL"
 		fi
 

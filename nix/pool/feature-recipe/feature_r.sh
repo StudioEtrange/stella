@@ -10,8 +10,6 @@ _R_INCLUDED_=1
 # try to mimic recipe  installation from RRO (revolution r open) https://mran.revolutionanalytics.com/download/#download
 
 
-
-
 function feature_r() {
 	FEAT_NAME=r
 	FEAT_LIST_SCHEMA="3_2_2:source"
