@@ -298,7 +298,13 @@ function __get_current_package_manager() {
 	echo "$_package_manager"
 }
 
+function __sys_install() {
+	__sys_install_$1
+}
 
+function __sys_remove() {
+	__sys_remove_$1
+}
 
 function __sys_package_manager() {
 	# INSTALL or REMOVE
@@ -322,14 +328,14 @@ function __sys_package_manager() {
 	if [ "$_action" == "INSTALL" ]; then
 		case $_package_manager in
 			apt-get)
-				sudo apt-get update
-				sudo apt-get -y install $_packages
+				sudo -E apt-get update
+				sudo -E apt-get -y install $_packages
 				;;
 			brew)
 				brew install $_packages
 				;;
 			yum)
-				sudo yum install -y $_packages
+				sudo -E yum install -y $_packages
 				;;
 			*)	echo " ** WARN : dont know how to install $_id"
 				;;
@@ -338,14 +344,14 @@ function __sys_package_manager() {
 	if [ "$_action" == "REMOVE" ]; then
 		case $_package_manager in
 			apt-get)
-				sudo apt-get update
-				sudo apt-get -y autoremove --purge $_packages
+				sudo -E apt-get update
+				sudo -E apt-get -y autoremove --purge $_packages
 				;;
 			brew)
 				brew uninstall $_packages
 				;;
 			yum)
-				sudo yum remove -y $_packages
+				sudo -E yum remove -y $_packages
 				;;
 			*)	echo " ** WARN : dont know how to remove $_id"
 				;;

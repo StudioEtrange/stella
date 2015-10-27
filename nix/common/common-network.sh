@@ -5,15 +5,15 @@ _STELLA_COMMON_NET_INCLUDED_=1
 # --------------- PROXY INIT ----------------
 
 function __init_proxy() {
-	if [ -f "$STELLA_ROOT/.stella-env" ]; then
-		__get_key "$STELLA_ROOT/.stella-env" "STELLA_PROXY" "ACTIVE" "PREFIX"
+	if [ -f "$STELLA_APP_ROOT/.stella-env" ]; then
+		__get_key "$STELLA_APP_ROOT/.stella-env" "STELLA_PROXY" "ACTIVE" "PREFIX"
 	fi
 
 	if [ ! "$STELLA_PROXY_ACTIVE" == "" ]; then
-		__get_key "$STELLA_ROOT/.stella-env" "STELLA_PROXY_$STELLA_PROXY_ACTIVE" "PROXY_HOST" "PREFIX"
-		__get_key "$STELLA_ROOT/.stella-env" "STELLA_PROXY_$STELLA_PROXY_ACTIVE" "PROXY_PORT" "PREFIX"
-		__get_key "$STELLA_ROOT/.stella-env" "STELLA_PROXY_$STELLA_PROXY_ACTIVE" "PROXY_USER" "PREFIX"
-		__get_key "$STELLA_ROOT/.stella-env" "STELLA_PROXY_$STELLA_PROXY_ACTIVE" "PROXY_PASS" "PREFIX"
+		__get_key "$STELLA_APP_ROOT/.stella-env" "STELLA_PROXY_$STELLA_PROXY_ACTIVE" "PROXY_HOST" "PREFIX"
+		__get_key "$STELLA_APP_ROOT/.stella-env" "STELLA_PROXY_$STELLA_PROXY_ACTIVE" "PROXY_PORT" "PREFIX"
+		__get_key "$STELLA_APP_ROOT/.stella-env" "STELLA_PROXY_$STELLA_PROXY_ACTIVE" "PROXY_USER" "PREFIX"
+		__get_key "$STELLA_APP_ROOT/.stella-env" "STELLA_PROXY_$STELLA_PROXY_ACTIVE" "PROXY_PASS" "PREFIX"
 
 		eval STELLA_PROXY_HOST=$(echo '$STELLA_PROXY_'$STELLA_PROXY_ACTIVE'_PROXY_HOST')
 		eval STELLA_PROXY_PORT=$(echo '$STELLA_PROXY_'$STELLA_PROXY_ACTIVE'_PROXY_PORT')
@@ -110,15 +110,15 @@ function __register_proxy() {
 	local _user=$4
 	local _pass=$5
 
-	__add_key "$STELLA_ROOT/.stella-env" "STELLA_PROXY_$_name" "PROXY_HOST" "$_host"
-	__add_key "$STELLA_ROOT/.stella-env" "STELLA_PROXY_$_name" "PROXY_PORT" "$_port"
-	__add_key "$STELLA_ROOT/.stella-env" "STELLA_PROXY_$_name" "PROXY_USER" "$_user"
-	__add_key "$STELLA_ROOT/.stella-env" "STELLA_PROXY_$_name" "PROXY_PASS" "$_pass"
+	__add_key "$STELLA_APP_ROOT/.stella-env" "STELLA_PROXY_$_name" "PROXY_HOST" "$_host"
+	__add_key "$STELLA_APP_ROOT/.stella-env" "STELLA_PROXY_$_name" "PROXY_PORT" "$_port"
+	__add_key "$STELLA_APP_ROOT/.stella-env" "STELLA_PROXY_$_name" "PROXY_USER" "$_user"
+	__add_key "$STELLA_APP_ROOT/.stella-env" "STELLA_PROXY_$_name" "PROXY_PASS" "$_pass"
 }
 
 function __enable_proxy() {
 	local _name=$1
-	__add_key "$STELLA_ROOT/.stella-env" "STELLA_PROXY" "ACTIVE" "$_name"
+	__add_key "$STELLA_APP_ROOT/.stella-env" "STELLA_PROXY" "ACTIVE" "$_name"
 	__init_proxy
 }
 

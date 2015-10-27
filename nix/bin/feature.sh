@@ -8,7 +8,7 @@ function usage() {
 	echo "----------------"
 	echo "List of commands"
 	echo " o-- Feature management :"
-	echo " L     install <feature schema> [--depforce] [--depignore] [--buildarch=x86|x64] [--export=<path>] [--portable=<path>] : install a feature. [--depforce] will force to reinstall all dependencies.[--depignore] will ignore dependencies. schema = feature_name[#version][@arch][:binary|source][/os_restriction][\os_exclusion]"
+	echo " L     install <feature schema> [--depforce] [--depignore] [--buildarch=x86|x64] [--export=<path>] [--portable=<path>] : install a feature. [--depforce] will force to reinstall all dependencies.[--depignore] will ignore dependencies. schema = feature_name[#version][@arch][:binary|source][/os_restriction][\\os_exclusion]"
 	echo " L     remove <feature schema> : remove a feature"
 	echo " L     list <all|feature name|active> : list all available features OR available versions of a feature OR current active features"
 

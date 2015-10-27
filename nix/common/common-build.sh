@@ -1838,6 +1838,7 @@ function __fix_rpath_linux() {
 		[ "$o" == "ABS_RPATH" ] && _rel_rpath=OFF && _abs_rpath=ON
 	done
 
+	__require "patchelf" "PREFER_STELLA"
 
 	local msg=
 	local _rpath_values=

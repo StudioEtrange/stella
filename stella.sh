@@ -15,9 +15,9 @@ function usage() {
 	echo " L     app get-data-pack|get-assets-pack|update-data-pack|update-assets-pack|revert-data-pack|revert-assets-pack|delete-data-pack|delete-assets-pack <data pack name|assets pack name>"
 	echo " L     app get-feature <all|feature schema> : install all features defined in app properties file or install a matching one"
 	echo " L     app link <app-path> [--stellaroot=<path>] : link an app to a specific stella path"
-	echo " L 	 app deploy user@host:path [--cache] [--workspace] : : deploy current app version to an other target via ssh. [--cache] : include app cache folder. [--workspace] : include app workspace folder"
+	echo " L     app deploy user@host:path [--cache] [--workspace] : : deploy current app version to an other target via ssh. [--cache] : include app cache folder. [--workspace] : include app workspace folder"
 	echo " o-- feature management :"
-	echo " L     feature install <feature schema> [--depforce] [--depignore] [--buildarch=x86|x64] [--export=<path>] [--portable=<path>] : install a feature. [--depforce] will force to reinstall all dependencies. [--depignore] will ignore dependencies. schema = feature_name[#version][@arch][:binary|source][/os_restriction][\os_exclusion]"
+	echo " L     feature install <feature schema> [--depforce] [--depignore] [--buildarch=x86|x64] [--export=<path>] [--portable=<path>] : install a feature. [--depforce] will force to reinstall all dependencies. [--depignore] will ignore dependencies. schema = feature_name[#version][@arch][:binary|source][/os_restriction][\\os_exclusion]"
 	echo " L     feature remove <feature schema> : remove a feature"
 	echo " L     feature list <all|feature name|active> : list all available feature OR available versions of a feature OR current active features"
 	echo " o-- various :"
@@ -122,10 +122,10 @@ fi
 if [ "$DOMAIN" == "sys" ]; then
 	__init_stella_env
 	if [ "$ACTION" == "install" ]; then
-		__sys_install_"$ID"
+		__sys_install "$ID"
 	fi
 	if [ "$ACTION" == "remove" ]; then
-		__sys_remove_"$ID"
+		__sys_remove "$ID"
 	fi
 	if [ "$ACTION" == "list" ]; then
 		echo "$STELLA_SYS_PACKAGE_LIST"

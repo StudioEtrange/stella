@@ -6,15 +6,15 @@ REM --------------- PROXY INIT ----------------
 
 
 :init_proxy
-	if exist "%STELLA_ROOT%\.stella-env" (
-		call %STELLA_COMMON%\common.bat :get_key "%STELLA_ROOT%\.stella-env" "STELLA_PROXY" "ACTIVE" "PREFIX"
+	if exist "%STELLA_APP_ROOT%\.stella-env" (
+		call %STELLA_COMMON%\common.bat :get_key "%STELLA_APP_ROOT%\.stella-env" "STELLA_PROXY" "ACTIVE" "PREFIX"
 	)
 
 	if not "!STELLA_PROXY_ACTIVE!"=="" (
-		call %STELLA_COMMON%\common.bat :get_key "%STELLA_ROOT%\.stella-env" "STELLA_PROXY_!STELLA_PROXY_ACTIVE!" "PROXY_HOST" "PREFIX"
-		call %STELLA_COMMON%\common.bat :get_key "%STELLA_ROOT%\.stella-env" "STELLA_PROXY_!STELLA_PROXY_ACTIVE!" "PROXY_PORT" "PREFIX"
-		call %STELLA_COMMON%\common.bat :get_key "%STELLA_ROOT%\.stella-env" "STELLA_PROXY_!STELLA_PROXY_ACTIVE!" "PROXY_USER" "PREFIX"
-		call %STELLA_COMMON%\common.bat :get_key "%STELLA_ROOT%\.stella-env" "STELLA_PROXY_!STELLA_PROXY_ACTIVE!" "PROXY_PASS" "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%STELLA_APP_ROOT%\.stella-env" "STELLA_PROXY_!STELLA_PROXY_ACTIVE!" "PROXY_HOST" "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%STELLA_APP_ROOT%\.stella-env" "STELLA_PROXY_!STELLA_PROXY_ACTIVE!" "PROXY_PORT" "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%STELLA_APP_ROOT%\.stella-env" "STELLA_PROXY_!STELLA_PROXY_ACTIVE!" "PROXY_USER" "PREFIX"
+		call %STELLA_COMMON%\common.bat :get_key "%STELLA_APP_ROOT%\.stella-env" "STELLA_PROXY_!STELLA_PROXY_ACTIVE!" "PROXY_PASS" "PREFIX"
 
 
 		for %%I in (STELLA_PROXY_!STELLA_PROXY_ACTIVE!_PROXY_HOST) do set "STELLA_PROXY_HOST=!%%I!"
@@ -81,15 +81,15 @@ REM -------------------- FUNCTIONS-----------------
 	set "_user=%~4"
 	set "_pass=%~5"
 
-	call %STELLA_COMMON%\common.bat :add_key "%STELLA_ROOT%\.stella-env" "STELLA_PROXY_%_name%" "PROXY_HOST" "%_host%"
-	call %STELLA_COMMON%\common.bat :add_key "%STELLA_ROOT%\.stella-env" "STELLA_PROXY_%_name%" "PROXY_PORT" "%_port%"
-	call %STELLA_COMMON%\common.bat :add_key "%STELLA_ROOT%\.stella-env" "STELLA_PROXY_%_name%" "PROXY_USER" "%_user%"
-	call %STELLA_COMMON%\common.bat :add_key "%STELLA_ROOT%\.stella-env" "STELLA_PROXY_%_name%" "PROXY_PASS" "%_pass%"
+	call %STELLA_COMMON%\common.bat :add_key "%STELLA_APP_ROOT%\.stella-env" "STELLA_PROXY_%_name%" "PROXY_HOST" "%_host%"
+	call %STELLA_COMMON%\common.bat :add_key "%STELLA_APP_ROOT%\.stella-env" "STELLA_PROXY_%_name%" "PROXY_PORT" "%_port%"
+	call %STELLA_COMMON%\common.bat :add_key "%STELLA_APP_ROOT%\.stella-env" "STELLA_PROXY_%_name%" "PROXY_USER" "%_user%"
+	call %STELLA_COMMON%\common.bat :add_key "%STELLA_APP_ROOT%\.stella-env" "STELLA_PROXY_%_name%" "PROXY_PASS" "%_pass%"
 goto:eof
 
 :enable_proxy
 	set "_name=%~1"
-	call %STELLA_COMMON%\common.bat :add_key "%STELLA_ROOT%\.stella-env" "STELLA_PROXY" "ACTIVE" "%_name%"
+	call %STELLA_COMMON%\common.bat :add_key "%STELLA_APP_ROOT%\.stella-env" "STELLA_PROXY" "ACTIVE" "%_name%"
 	call :init_proxy
 goto:eof
 
