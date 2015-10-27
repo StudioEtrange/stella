@@ -10,7 +10,7 @@ TODO
 [ ] function get_ressource : change option STRIP to option NO_STRIP. STRIP will be by default if possible
 [ ] windows : review link feature library and lib isolation
 [ ] windows : portable mode review copy dependencies
-[ ] windows lib : https://ryzomcore.atlassian.net/wiki/display/RC/MinGW+External+Libraries https://ryzomcore.atlassian.net/wiki/display/RC/Create+External+Libs
+[ ] windows add recipes for these libs : https://ryzomcore.atlassian.net/wiki/display/RC/MinGW+External+Libraries https://ryzomcore.atlassian.net/wiki/display/RC/Create+External+Libs
 [ ] feature system : FEAT_DEFAULT_ARCH must be fill with current cpu arch
 [ ] feature built from source must pick an arch and be installed in a folder with version@arch -- buildarch option should be remove -- by default built arch should be current cpu arch
 [ ] replace gnu patch (pb with UAC)
