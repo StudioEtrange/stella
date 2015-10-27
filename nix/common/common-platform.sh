@@ -328,6 +328,9 @@ function __sys_package_manager() {
 			brew)
 				brew install $_packages
 				;;
+			yum)
+				sudo yum install -y $_packages
+				;;
 			*)	echo " ** WARN : dont know how to install $_id"
 				;;
 		esac
@@ -340,6 +343,9 @@ function __sys_package_manager() {
 				;;
 			brew)
 				brew uninstall $_packages
+				;;
+			yum)
+				sudo yum remove -y $_packages
 				;;
 			*)	echo " ** WARN : dont know how to remove $_id"
 				;;
@@ -413,14 +419,14 @@ function __sys_install_build-chain-standard() {
 
 	else
 		#bison util-linux build-essential gcc-multilib g++-multilib g++ pkg-config
-		__sys_package_manager "INSTALL" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib"
+		__sys_package_manager "INSTALL" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib | yum gcc gcc-c++ make kernel-devel"
 	fi
 }
 function __sys_remove_build-chain-standard() {
 	if [ "$STELLA_CURRENT_OS" == "macos" ]; then
 		echo " ** Remove Xcode and Command Line Development Tools by hand"
 	else
-		__sys_package_manager "REMOVE" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib"
+		__sys_package_manager "REMOVE" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib | yum gcc gcc-c++ make kernel-devel"
 	fi
 
 }
@@ -436,38 +442,38 @@ function __sys_remove_x11() {
 }
 
 function __sys_install_sevenzip() {
-	__sys_package_manager "INSTALL" "7z" "apt-get p7zip-full | brew p7zip"
+	__sys_package_manager "INSTALL" "7z" "apt-get p7zip-full | brew p7zip | yum p7zip"
 }
 function __sys_remove_sevenzip() {
-	__sys_package_manager "REMOVE" "7z" "apt-get p7zip-full | brew p7zip"
+	__sys_package_manager "REMOVE" "7z" "apt-get p7zip-full | brew p7zip | yum p7zip"
 }
 
 function __sys_install_curl() {
-	__sys_package_manager "INSTALL" "curl" "apt-get curl | brew curl"
+	__sys_package_manager "INSTALL" "curl" "apt-get curl | brew curl | yum curl"
 }
 function __sys_remove_curl() {
-	__sys_package_manager "REMOVE" "curl" "apt-get curl | brew curl"	
+	__sys_package_manager "REMOVE" "curl" "apt-get curl | brew curl | yum curl"	
 }
 
 function __sys_install_wget() {
-	__sys_package_manager "INSTALL" "wget" "apt-get wget | brew wget"
+	__sys_package_manager "INSTALL" "wget" "apt-get wget | brew wget | yum wget"
 }
 function __sys_remove_wget() {
-	__sys_package_manager "REMOVE" "wget" "apt-get wget | brew wget"	
+	__sys_package_manager "REMOVE" "wget" "apt-get wget | brew wget | yum wget"
 }
 
 function __sys_install_unzip() {
-	__sys_package_manager "INSTALL" "unzip" "apt-get unzip | brew unzip"
+	__sys_package_manager "INSTALL" "unzip" "apt-get unzip | brew unzip | yum unzip"
 }
 function __sys_remove_unzip() {
-	__sys_package_manager "REMOVE" "unzip" "apt-get unzip | brew unzip"
+	__sys_package_manager "REMOVE" "unzip" "apt-get unzip | brew unzip | yum unzip"
 }
 
 function __sys_install_cmake() {
-	__sys_package_manager "INSTALL" "cmake" "apt-get cmake | brew cmake"
+	__sys_package_manager "INSTALL" "cmake" "apt-get cmake | brew cmake | yum cmake"
 }
 function __sys_remove_cmake() {
-	__sys_package_manager "REMOVE" "cmake" "apt-get cmake | brew cmake"
+	__sys_package_manager "REMOVE" "cmake" "apt-get cmake | brew cmake | yum cmake"
 }
 
 
