@@ -5,8 +5,8 @@ goto :eof
 REM http://www.ijg.org/
 REM unnofficial sources with cmake : https://github.com/LuaDist/libjpeg
 	
-:feature_libjpeg
-	set "FEAT_NAME=libjpeg"
+:feature_jpeg
+	set "FEAT_NAME=jpeg"
 	set "FEAT_LIST_SCHEMA=9a:source"
 	set "FEAT_DEFAULT_VERSION=9a"
 	set "FEAT_DEFAULT_ARCH="
@@ -14,7 +14,7 @@ REM unnofficial sources with cmake : https://github.com/LuaDist/libjpeg
 goto :eof
 
 
-:feature_libjpeg_9a
+:feature_jpeg_9a
 	set "FEAT_VERSION=9a"
 	set "FEAT_SOURCE_DEPENDENCIES="
 	set FEAT_BINARY_DEPENDENCIES=
@@ -37,7 +37,7 @@ goto :eof
 goto :eof
 
 
-:feature_libjpeg_install_source
+:feature_jpeg_install_source
 	set "INSTALL_DIR=!FEAT_INSTALL_ROOT!"
 	set "SRC_DIR=!STELLA_APP_FEATURE_ROOT!\!FEAT_NAME!-!FEAT_VERSION!-src"
 	
