@@ -6,6 +6,40 @@ set +h
 
 
 # VARIOUS-----------------------------
+
+function __transfert_stella(){
+	# form is user@host:path
+	local _target=$1
+	
+	local _OPT=$2
+	local _opt_ex_cache="EXCLUDE_FILTER /$(__abs_to_rel_path $STELLA_INTERNAL_CACHE_DIR $STELLA_ROOT)/"
+	local _opt_ex_workspace="EXCLUDE_FILTER /$(__abs_to_rel_path $STELLA_INTERNAL_WORK_ROOT $STELLA_ROOT)/"
+	for o in $_OPT; do 
+		[ "$o" == "CACHE" ] && _opt_ex_cache=
+		[ "$o" == "WORKSPACE" ] && _opt_ex_workspace=
+	done
+
+	__transfert_folder "$STELLA_ROOT" "$_target" "$_opt_ex_cache $_opt_ex_workspace"
+}
+
+function __transfert_folder(){
+	local _folder=$1
+	# form is user@host:path
+	local _target=$2
+
+
+	local _OPT=$3
+	local _flag_exclude_filter=OFF
+	local _exclude_filter=
+	for o in $_OPT; do 
+		[ "$_flag_exclude_filter" == "ON" ] && _exclude_filter="--exclude $o $_exclude_filter" && _flag_exclude_filter=OFF
+		[ "$o" == "EXCLUDE_FILTER" ] && _flag_exclude_filter=ON
+	done
+
+	__require "rsync" "rsync"
+	rsync $_exclude_filter --force --delete-excluded --delete -avz -e 'ssh' "$_folder/" $_target/
+}
+
 function __daemonize() {
 	local _item_path=$1
 	local _log_file=$2

@@ -12,7 +12,8 @@ function usage() {
     echo " L     get-data-pack|get-assets-pack|update-data-pack|update-assets-pack|revert-data-pack|revert-assets-pack|delete-data-pack|delete-assets-pack <data pack name|assets pack name>"
     echo " L     get-feature <all|feature schema> : install all features defined in app properties file or install a matching one"
     echo " L     link stella <app-path> [--stellaroot=<path>] : link an app to a specific stella path"
-
+    echo " L     deploy user@host:path [--cache] [--workspace] : : deploy current app version to an other target via ssh. [--cache] : include app cache folder. [--workspace] : include app workspace folder"
+    
 }
 
 
@@ -20,7 +21,7 @@ function usage() {
 
 # MAIN ------------------------
 PARAMETERS="
-ACTION=                         'action'                    a           'link init get-data get-assets delete-data delete-assets update-data update-assets revert-data revert-assets get-feature get-data-pack get-assets-pack update-data-pack update-assets-pack revert-data-pack revert-assets-pack'            Action to compute.
+ACTION=                         'action'                    a           'deploy link init get-data get-assets delete-data delete-assets update-data update-assets revert-data revert-assets get-feature get-data-pack get-assets-pack update-data-pack update-assets-pack revert-data-pack revert-assets-pack'            Action to compute.
 ID=                          ''                             s           ''                      Data or Assets or Env ID or Application name.
 "
 OPTIONS="
@@ -30,6 +31,8 @@ WORKROOT=''                     ''          'path'              s           0   
 CACHEDIR=''                     ''          'path'              s           0           ''                      Cache folder path
 SAMPLES=''                      ''         ''                  b           0       '1'                     Generate app samples.
 STELLAROOT=''                     ''          'path'              s           0           ''                      Stella path to link.
+CACHE=''                        ''          ''                  b           0           '1'                     Include cache folder when deploying.
+WORKSPACE=''                        ''          ''                  b           0           '1'                     Include workspace folder when deploying.
 "
 
 
@@ -69,7 +72,12 @@ else
         fi
 
         case $ACTION in
-            
+            deploy)
+                _deploy_options=
+                [ "$CACHE" == "1" ] && _deploy_options="CACHE"
+                [ "$WORKSPACE" == "1" ] && _deploy_options="$_deploy_options WORKSPACE"
+                __transfert_app "$ID" "$_deploy_options"
+                ;;
             get-feature)
                 if [ "$ID" == "all" ]; then
                     __get_features

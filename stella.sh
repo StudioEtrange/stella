@@ -15,6 +15,7 @@ function usage() {
 	echo " L     app get-data-pack|get-assets-pack|update-data-pack|update-assets-pack|revert-data-pack|revert-assets-pack|delete-data-pack|delete-assets-pack <data pack name|assets pack name>"
 	echo " L     app get-feature <all|feature schema> : install all features defined in app properties file or install a matching one"
 	echo " L     app link <app-path> [--stellaroot=<path>] : link an app to a specific stella path"
+	echo " L 	 app deploy user@host:path [--cache] [--workspace] : : deploy current app version to an other target via ssh. [--cache] : include app cache folder. [--workspace] : include app workspace folder"
 	echo " o-- feature management :"
 	echo " L     feature install <feature schema> [--depforce] [--depignore] [--buildarch=x86|x64] [--export=<path>] [--portable=<path>] : install a feature. [--depforce] will force to reinstall all dependencies. [--depignore] will ignore dependencies. schema = feature_name[#version][@arch][:binary|source][/os_restriction][\os_exclusion]"
 	echo " L     feature remove <feature schema> : remove a feature"
@@ -24,6 +25,7 @@ function usage() {
 	echo " L     stella install dep : install all features and systems requirements if any, for the current OS ($STELLA_CURRENT_OS)"
 	echo " L     stella version print : print stella version"
 	echo " L     stella search path : print current system search path"
+	echo " L     stella deploy <user@host:path> [--cache] [--workspace] : deploy current stella version to an other target via ssh. [--cache] : include stella cache folder. [--workspace] : include stella workspace folder"
 	echo " o-- network management :"
 	echo " L     proxy on <name> : active proxy"
 	echo " L     proxy off now : disable proxy"
@@ -45,8 +47,8 @@ function usage() {
 # arguments
 PARAMETERS="
 DOMAIN=                          'domain'     		a           'app feature stella proxy sys boot'         										   				Action domain.
-ACTION=                         'action'   					a           'docker stella version search remove on off register link api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature install list'         	Action to compute.
-ID=							 ''								s 			'' 						Feature ID or Data or Assets or Env or Distrib ID.
+ACTION=                         'action'   					a           'deploy docker stella version search remove on off register link api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature install list'         	Action to compute.
+ID=							 ''								s 			''
 "
 OPTIONS="
 FORCE=''                       	'f'    		''            		b     		0     		'1'           			Force operation.
@@ -64,6 +66,8 @@ DEPIGNORE=''					''    		''            		b     		0     		'1'           		Will no
 EXPORT=''                     ''          'path'              s           0           ''                      	Export feature to this dir.
 PORTABLE=''                   ''          'path'              s           0           ''                      Make a portable version of this feature in this dir
 BUILDARCH=''				'a'				'arch'			a 			0 			 'x86 x64'			
+CACHE=''                       	''    		''            		b     		0     		'1'           			Include cache folder when deploying.
+WORKSPACE=''                       	''    		''            		b     		0     		'1'           			Include workspace folder when deploying.
 "
 
 __argparse "$0" "$OPTIONS" "$PARAMETERS" "Lib Stella" "$(usage)" "" "$@"
@@ -192,6 +196,14 @@ if [ "$DOMAIN" == "stella" ]; then
 	        echo $(__get_active_path)
 	    fi
 	fi
+
+	if [ "$ACTION" == "deploy" ]; then
+		_deploy_options=
+		[ "$CACHE" == "1" ] && _deploy_options="CACHE"
+		[ "$WORKSPACE" == "1" ] && _deploy_options="$_deploy_options WORKSPACE"
+		__transfert_stella "$ID" "$_deploy_options"
+	fi
+
 fi
 
 

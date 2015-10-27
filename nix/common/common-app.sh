@@ -6,6 +6,20 @@ _STELLA_COMMON_APP_INCLUDED_=1
 
 # APP RESSOURCES & ENV MANAGEMENT ---------------
 
+function __transfert_app(){
+	# form is user@host:path
+	local _target=$1
+	
+	local _OPT=$2
+	local _opt_ex_cache="EXCLUDE_FILTER /$(__abs_to_rel_path $STELLA_APP_CACHE_DIR $STELLA_APP_ROOT)/"
+	local _opt_ex_workspace="EXCLUDE_FILTER /$(__abs_to_rel_path $STELLA_APP_WORK_ROOT $STELLA_APP_ROOT)/"
+	for o in $_OPT; do 
+		[ "$o" == "CACHE" ] && _opt_ex_cache=
+		[ "$o" == "WORKSPACE" ] && _opt_ex_workspace=
+	done
+
+	__transfert_folder "$STELLA_APP_ROOT" "$_target" "$_opt_ex_cache $_opt_ex_workspace"
+}
 
 
 # ARG 1 optional : specify an app path
