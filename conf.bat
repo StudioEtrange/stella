@@ -137,6 +137,10 @@ set "STELLA_BUILD_DEFAULT_CONFIG_TOOL=cmake"
 set "STELLA_BUILD_DEFAULT_BUILD_TOOL=mingw-make"
 set "STELLA_BUILD_DEFAULT_COMPIL_FRONTEND=gcc"
 
+:: build engine reset
+call %STELLA_COMMON%\common-build.bat :reset_build_env
+
+
 :: API ---------------------------------------------
 set "STELLA_API_COMMON_PUBLIC=get_active_path uncompress trim argparse is_path_abs get_resource delete_resource update_resource revert_resource download_uncompress del_folder copy_folder_content_into fork run_admin mercurial_project_version git_project_version"
 set "STELLA_API_API_PUBLIC=api_connect api_disconnect"

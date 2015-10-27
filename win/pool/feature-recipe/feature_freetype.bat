@@ -36,6 +36,7 @@ goto :eof
 goto :eof
 
 :feature_freetype_patch
+	REM STELLAFIX : committed to upstream https://savannah.nongnu.org/bugs/?func=detailitem&item_id=46233
 	REM patch CMakeLists to allow build DLL on windows with mingw
 	patch --verbose "!SRC_DIR!\CMakeLists.txt" "!STELLA_PATCH!\freetype\patch-CMakeLists-mingw-shared.txt"
 
