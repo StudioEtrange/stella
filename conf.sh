@@ -83,6 +83,16 @@ STELLA_INTERNAL_FEATURE_ROOT=$STELLA_INTERNAL_WORK_ROOT/feature_$STELLA_CURRENT_
 STELLA_INTERNAL_CACHE_DIR=$STELLA_ROOT/cache
 STELLA_INTERNAL_TEMP_DIR=$STELLA_INTERNAL_WORK_ROOT/temp
 
+# current config env
+# app env config has priority over stella config env
+STELLA_ENV_FILE=
+if [ -f "$STELLA_APP_ROOT/.stella-env" ]; then
+	STELLA_ENV_FILE="$STELLA_APP_ROOT/.stella-env"
+else
+	[ -f "$STELLA_ROOT/.stella-env" ] && STELLA_ENV_FILE="$STELLA_ROOT/.stella-env"
+fi
+
+
 # OTHERS ---------------------------------------------
 FEATURE_LIST_ENABLED=
 VERBOSE_MODE=0
@@ -149,10 +159,9 @@ STELLA_BUILD_DEFAULT_COMPIL_FRONTEND=gcc-clang
 # TODO : NOT USED ?
 STELLA_BUILD_RPATH_DEFAULT=""
 
-
-
-# first buid engine reset
+# buid engine reset
 __reset_build_env
+
 # API ---------------------------------------------
 STELLA_API_COMMON_PUBLIC="get_active_path uncompress daemonize rel_to_abs_path is_abs argparse get_filename_from_string \
 get_resource delete_resource update_resource revert_resource download_uncompress copy_folder_content_into del_folder \

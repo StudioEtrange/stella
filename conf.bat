@@ -70,6 +70,15 @@ set STELLA_INTERNAL_FEATURE_ROOT=%STELLA_INTERNAL_WORK_ROOT%\feature_%STELLA_CUR
 set STELLA_INTERNAL_CACHE_DIR=%STELLA_ROOT%\cache
 set STELLA_INTERNAL_TEMP_DIR=%STELLA_INTERNAL_WORK_ROOT%\temp
 
+:: current config env
+:: app env config has priority over stella config env
+set "STELLA_ENV_FILE="
+if exist "%STELLA_APP_ROOT%\.stella-env" (
+	set "STELLA_ENV_FILE=%STELLA_APP_ROOT%\.stella-env"
+) else (
+	if exist "%STELLA_ROOT%\.stella-env" set "STELLA_ENV_FILE=%STELLA_ROOT%\.stella-env"
+)
+
 :: OTHERS ---------------------------------------------
 set FEATURE_LIST_ENABLED=
 set VERBOSE_MODE=0
