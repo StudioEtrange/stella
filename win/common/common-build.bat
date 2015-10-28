@@ -1225,8 +1225,12 @@ goto :eof
 	)
 
 	if "!_is_bin!"=="1" (
+		echo.
+		echo --
 		echo ** Analysing !_path!
 		call :check_arch "!_path!" "!STELLA_BUILD_ARCH!"
+		call :check_dynamic_linking "!_path!"
+		echo.
 	)
 goto :eof
 
@@ -1255,6 +1259,22 @@ goto :eof
 
 goto :eof
 
+REM check linked DLL
+REM could be done with depends.exe /c (console cmd) OR with dumpbin OR with cmake
+REM On windows lib search order is
+REM 1.The directory from which the application loaded.
+REM	2.The system directory. Use the GetSystemDirectory function to get the path of this directory.
+REM	3.The 16-bit system directory. There is no function that obtains the path of this directory, but it is searched.
+REM	4.The Windows directory. Use the GetWindowsDirectory function to get the path of this directory.
+REM	5.The current directory.
+REM	6.The directories that are listed in the PATH environment variable. Note that this does not include the per-application path specified by the App Paths registry key. The App Paths key is not used when computing the DLL search path.
+:check_dynamic_linking
+	set "_path=%~1"
+
+	set "_path=%_path:\=\\%"
+	cmake -DBINARY_FILE:PATH="!_path!" -P "!STELLA_POOL!\check_linked_lib.cmake"
+
+goto :eof
 
 :: VARIOUS ------------------------------------------------------------------------------------------------------------------------------
 

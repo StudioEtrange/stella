@@ -15,6 +15,7 @@ TODO
 [ ] feature built from source must pick an arch and be installed in a folder with version@arch -- buildarch option should be remove -- by default built arch should be current cpu arch
 [ ] replace gnu patch (pb with UAC)
 [ ] linux : FORCE_RENAME on link feature library
-[ ] windows : check library dynamic dependencies
+[X] windows : check library dynamic dependencies - use dependencywalker in console mode ? use dumpbin http://stackoverflow.com/a/475323 ? use CMAKE GetPrerequisites. FINISH check_linked_lib.cmake use it with cmake -P check_linked_lib.cmake -DMY_BINARY_LOCATION=<path>
 [ ] linux & windows : when ckecking dependencies dynamic -- print all libs
 [ ] add possibility of a last step before/after install, to do some test like make test or make check (i.e : for gmp lib)
+[ ] windows : sys_install_vs2015community => this chocolatey recipe do not install all VC Tools by default
