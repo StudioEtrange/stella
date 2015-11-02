@@ -91,10 +91,10 @@ function __link_app() {
 
 
 	# tweak stella properties file
-	_STELLA_APP_PROPERTIES_FILE="$_target_approot/$STELLA_APP_PROPERTIES_FILENAME"
+	_target_STELLA_APP_PROPERTIES_FILE="$_target_approot/$STELLA_APP_PROPERTIES_FILENAME"
 	
-	[ "$_opt_share_cache" == "ON" ] && __add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_CACHE_DIR" "$STELLA_APP_CACHE_DIR"
-	[ "$_opt_share_workspace" == "ON" ] && __add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_WORK_ROOT" "$STELLA_APP_WORK_ROOT"
+	[ "$_opt_share_cache" == "ON" ] && __add_key "$_target_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_CACHE_DIR" "$STELLA_APP_CACHE_DIR"
+	[ "$_opt_share_workspace" == "ON" ] && __add_key "$_target_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_WORK_ROOT" "$STELLA_APP_WORK_ROOT"
 	
 
 }
@@ -170,17 +170,11 @@ function __get_all_properties() {
 		__get_key "$_properties_file" "STELLA" "APP_NAME" "PREFIX"
 		__get_key "$_properties_file" "STELLA" "APP_WORK_ROOT" "PREFIX"
 		# so that nested stella application will use the same cache folder
-		[ "$STELLA_APP_CACHE_DIR" == "" ] && __get_key "$_properties_file" "STELLA" "APP_CACHE_DIR" "PREFIX"
-		#__get_key "$_properties_file" "STELLA" "DATA_LIST" "PREFIX"
-		#__get_key "$_properties_file" "STELLA" "ASSETS_LIST" "PREFIX"
-		#__get_key "$_properties_file" "STELLA" "ENV_LIST" "PREFIX"
-		#__get_key "$_properties_file" "STELLA" "INFRA_LIST" "PREFIX"
+		#[ "$STELLA_APP_CACHE_DIR" == "" ] && __get_key "$_properties_file" "STELLA" "APP_CACHE_DIR" "PREFIX"
+		__get_key "$_properties_file" "STELLA" "APP_CACHE_DIR" "PREFIX"
+
 		__get_key "$_properties_file" "STELLA" "APP_FEATURE_LIST" "PREFIX"
 
-		#__get_data_properties "$_properties_file" "$STELLA_DATA_LIST"
-		#__get_assets_properties "$_properties_file" "$STELLA_ASSETS_LIST"
-		#__get_infra_properties "$_properties_file" "$STELLA_INFRA_LIST"
-		#__get_env_properties "$_properties_file" "$STELLA_ENV_LIST"
 	fi
 }
 

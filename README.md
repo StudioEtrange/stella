@@ -86,11 +86,9 @@ _NOTE : You dont really need this, because all previous installation methods wil
 _
 
 	from app1.sh :
-	$STELLA_API link_app "STELLA_ROOT $STELLA_APP_WORK_ROOT/app2"
+	$STELLA_API link_app "STELLA_ROOT $STELLA_APP_WORK_ROOT/app2 WORKSPACE CACHE"
 
-Then app2.sh will use the same stella folder than app1.sh
-
-* Two nested or linked stella applications will share the same cache folder. The first running cache stella application will be used.
+Then app2.sh will use the same stella folder than app1.sh, and the same workspace and cache folder
 
 * From app1 you can use STELLA API functions connected to another app2 (means : in the context of app2)
 

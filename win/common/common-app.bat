@@ -448,9 +448,9 @@ goto :eof
 	call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "STELLA" "APP_WORK_ROOT" "PREFIX"
 
 	REM so that nested stella application will use the same cache folder
-	if "!STELLA_APP_CACHE_DIR!"=="" (
+	REM if "!STELLA_APP_CACHE_DIR!"=="" (
 		call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "STELLA" "APP_CACHE_DIR" "PREFIX"
-	)
+	REM )
 
 	call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "STELLA" "APP_CACHE_DIR" "PREFIX"
 	REM call %STELLA_COMMON%\common.bat :get_key "%_properties_file%" "STELLA" "DATA_LIST" "PREFIX"
