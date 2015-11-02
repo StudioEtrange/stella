@@ -2,7 +2,7 @@
 call %*
 goto :eof
 
-REM NOTE patch from  gnuwin32 project has a bug on windows with UAC
+REM NOTE patch from gnuwin32 project has a bug on windows with UAC
 REM http://butnottoohard.blogspot.fr/2010/01/windows-7-chronicles-gnu-patch-mtexe.html
 REM http://math.nist.gov/oommf/software-patchsets/patch_on_Windows7.html
 
