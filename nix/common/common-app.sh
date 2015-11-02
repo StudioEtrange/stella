@@ -51,29 +51,51 @@ function __create_app_samples() {
 	cp -f "$STELLA_TEMPLATE/sample-stella.properties" "$_approot/sample-stella.properties"
 }
 
+# align stella installation to current app one (recreate stella-link file)
+# align workspace and cache folder paths of the current one (change stella properties path)
 function __link_app() {
-	local _approot=$1
-	local _stella_root=$2
+	local _target_approot=$1
+	#local _stella_root=$2
 
-	_approot=$(__rel_to_abs_path $_approot $STELLA_CURRENT_RUNNING_DIR)
+	local _OPT=$2
+	local _opt_share_cache=OFF
+	local _opt_share_workspace=OFF
+	local _flag_stella_root=OFF
+	local _stella_root=
+	for o in $_OPT; do 
+		[ "$o" == "CACHE" ] && _opt_share_cache=ON
+		[ "$o" == "WORKSPACE" ] && _opt_share_workspace=ON
+		[ "$_flag_stella_root" == "ON" ] && _stella_root="$o" && _flag_stella_root=OFF
+		[ "$o" == "STELLA_ROOT" ] && _flag_stella_root=ON
+	done
+
+	_target_approot=$(__rel_to_abs_path $_target_approot $STELLA_CURRENT_RUNNING_DIR)
 
 	[ "$_stella_root" == "" ] && _stella_root=$STELLA_ROOT
-	[ "$(__is_abs "$_stella_root")" == "FALSE" ] && _stella_root=$(__rel_to_abs_path "$_stella_root" "$_approot")
+	[ "$(__is_abs "$_stella_root")" == "FALSE" ] && _stella_root=$(__rel_to_abs_path "$_stella_root" "$_target_approot")
 
 	_s_ver=$(__get_stella_version "$_stella_root")
 	_s_flavour=$(__get_stella_flavour "$_stella_root")
 	
-	_stella_root=$(__abs_to_rel_path "$_stella_root" "$_approot")
+	_stella_root=$(__abs_to_rel_path "$_stella_root" "$_target_approot")
 
-	echo "#!/bin/bash" >$_approot/stella-link.sh.temp
-	echo "_STELLA_LINK_CURRENT_FILE_DIR=\"\$( cd \"\$( dirname \"\${BASH_SOURCE[0]}\" )\" && pwd )\"" >>$_approot/stella-link.sh.temp
-	echo "export STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$_approot/stella-link.sh.temp
-	echo "STELLA_DEP_FLAVOUR=$_s_flavour" >>$_approot/stella-link.sh.temp
-	echo "STELLA_DEP_VERSION=$_s_ver" >>$_approot/stella-link.sh.temp
+	echo "#!/bin/bash" >$_target_approot/stella-link.sh.temp
+	echo "_STELLA_LINK_CURRENT_FILE_DIR=\"\$( cd \"\$( dirname \"\${BASH_SOURCE[0]}\" )\" && pwd )\"" >>$_target_approot/stella-link.sh.temp
+	echo "export STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$_target_approot/stella-link.sh.temp
+	echo "STELLA_DEP_FLAVOUR=$_s_flavour" >>$_target_approot/stella-link.sh.temp
+	echo "STELLA_DEP_VERSION=$_s_ver" >>$_target_approot/stella-link.sh.temp
 
-	cat $_approot/stella-link.sh.temp $STELLA_TEMPLATE/sample-stella-link.sh > $_approot/stella-link.sh
-	chmod +x $_approot/stella-link.sh
-	rm -f $_approot/stella-link.sh.temp
+	cat $_target_approot/stella-link.sh.temp $STELLA_TEMPLATE/sample-stella-link.sh > $_target_approot/stella-link.sh
+	chmod +x $_target_approot/stella-link.sh
+	rm -f $_target_approot/stella-link.sh.temp
+
+
+	# tweak stella properties file
+	_STELLA_APP_PROPERTIES_FILE="$_target_approot/$STELLA_APP_PROPERTIES_FILENAME"
+	
+	[ "$_opt_share_cache" == "ON" ] && __add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_CACHE_DIR" "$STELLA_APP_CACHE_DIR"
+	[ "$_opt_share_workspace" == "ON" ] && __add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_WORK_ROOT" "$STELLA_APP_WORK_ROOT"
+	
 
 }
 

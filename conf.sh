@@ -66,7 +66,7 @@ __get_all_properties $_STELLA_APP_PROPERTIES_FILE
 # APP PATH ---------------------------------------------
 STELLA_APP_ROOT=$(__rel_to_abs_path "$STELLA_APP_ROOT" "$STELLA_CURRENT_RUNNING_DIR")
 
-[ "$STELLA_APP_WORK_ROOT" == "" ] && STELLA_APP_WORK_ROOT=$STELLA_APP_ROOT/workspace
+[ "$STELLA_APP_WORK_ROOT" == "" ] && STELLA_APP_WORK_ROOT="$STELLA_APP_ROOT/workspace"
 STELLA_APP_WORK_ROOT=$(__rel_to_abs_path "$STELLA_APP_WORK_ROOT" "$STELLA_APP_ROOT")
 
 [ "$STELLA_APP_CACHE_DIR" == "" ] && STELLA_APP_CACHE_DIR="$STELLA_APP_ROOT/cache"

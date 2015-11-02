@@ -86,7 +86,7 @@ _NOTE : You dont really need this, because all previous installation methods wil
 _
 
 	from app1.sh :
-	$STELLA_API link_app $STELLA_APP_WORK_ROOT/app2
+	$STELLA_API link_app "STELLA_ROOT $STELLA_APP_WORK_ROOT/app2"
 
 Then app2.sh will use the same stella folder than app1.sh
 

@@ -127,6 +127,7 @@ function __disable_proxy() {
 	echo "STELLA Proxy Disabled"
 }
 
+# specify IP only
 function __no_proxy_for() {
 	local _ip=$1
 	

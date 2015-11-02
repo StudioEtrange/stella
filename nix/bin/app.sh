@@ -61,7 +61,7 @@ if [ "$ACTION" == "init" ]; then
 else
 
     if [ "$ACTION" == "link" ]; then
-        __link_app "$ID" "$STELLAROOT"
+        __link_app "$ID" "STELLA_ROOT $STELLAROOT"
         
     else
 
