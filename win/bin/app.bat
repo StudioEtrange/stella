@@ -41,7 +41,7 @@ if "%ACTION%"=="init" (
 )
 
 if "%ACTION%"=="link" (
-	call %STELLA_COMMON%\common-app.bat :link_app "%id%" "!-stellaroot!"
+	call %STELLA_COMMON%\common-app.bat :link_app "%id%" "STELLA_ROOT !-stellaroot!"
 	goto :end
 )
 

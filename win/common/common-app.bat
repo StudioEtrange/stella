@@ -385,6 +385,8 @@ goto :eof
 
 	del /f /q "!_target_approot!\stella-link.bat.temp" >nul
 
+
+
 	REM tweak stella properties file
 	set "_target_STELLA_APP_PROPERTIES_FILE=!_target_approot!\%STELLA_APP_PROPERTIES_FILENAME%"
 	if "!_opt_share_workspace!"=="ON" (
