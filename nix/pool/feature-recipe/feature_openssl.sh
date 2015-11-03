@@ -1,7 +1,8 @@
 if [ ! "$_OPENSSL_INCLUDED_" == "1" ]; then 
 _OPENSSL_INCLUDED_=1
 
-# TODO Require perl (from system is enough), to configure source code
+# TODO 
+# Require perl (from system is enough), to configure source code
 # Require system "build-system"
 
 # NOTE : On darwin openssl lib in lib/engines folder does not have LC_ID_DYLIB

@@ -1,26 +1,26 @@
 if [ ! "$_LIBSQUISH_INCLUDED_" == "1" ]; then 
 _LIBSQUISH_INCLUDED_=1
 
-#TODO not finished
+# TODO : cmake do not build static lib
 
 function feature_libsquish() {
 	FEAT_NAME=libsquish
-	FEAT_LIST_SCHEMA="1_0_6:source"
-	FEAT_DEFAULT_VERSION=1_0_6
+	FEAT_LIST_SCHEMA="1_13:source"
+	FEAT_DEFAULT_VERSION=1_13
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_libsquish_1_0_6() {
-	FEAT_VERSION=1_0_6
+function feature_libsquish_1_13() {
+	FEAT_VERSION=1_13
 
 
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
-	FEAT_SOURCE_URL=http://hg.kervala.net/squish
-	FEAT_SOURCE_URL_FILENAME=
-	FEAT_SOURCE_URL_PROTOCOL=HG
+	FEAT_SOURCE_URL=http://downloads.sourceforge.net/project/libsquish/libsquish-1.13.tgz
+	FEAT_SOURCE_URL_FILENAME=libsquish-1.13.tgz
+	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
@@ -30,8 +30,8 @@ function feature_libsquish_1_0_6() {
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/libsquish
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/include/squish.h
+	FEAT_SEARCH_PATH=
 
 }
 
@@ -45,14 +45,17 @@ function feature_libsquish_install_source() {
 	#__set_toolset "CUSTOM"  "CONFIG_TOOL cmake BUILD_TOOL make"
 	__set_toolset "CMAKE"
 	
-	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
+	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE"
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
-	AUTO_INSTALL_CONF_FLAG_POSTFIX=	
+	# -DBUILD_SQUISH_WITH_ALTIVEC=ON for powerpc
+	AUTO_INSTALL_CONF_FLAG_POSTFIX="-DBUILD_SQUISH_WITH_SSE2=ON -DBUILD_SQUISH_WITH_ALTIVEC=OFF -DBUILD_SHARED_LIBS=ON -DBUILD_SQUISH_EXTRA=OFF"
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
-
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
+
+
+	
 	
 
 }
