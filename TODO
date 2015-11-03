@@ -23,4 +23,4 @@ TODO
 [ ] windows : sys_install_vs2015community => this chocolatey recipe do not install all VC Tools by default
 [ ] stella-env file : make it local or global with an option ?
 [ ] no_proxy should be in stella-env file like proxy. ANd should be local or global
-[ ] link-app : on windows, add option to align workspace/cache path (like on nix)
+[X] windows : link-app : add option to align workspace/cache path (like on nix)

@@ -8,9 +8,9 @@
 if not "%~1"=="nothing" (
 	if not "%~1"=="bootstrap" (
 		if not exist "!STELLA_ROOT!\stella.bat" (
-			if exist "!STELLA_ROOT!\..\stella-link.bat" (	
-				echo ** Try to chain link stella from !STELLA_ROOT!\..
-				call "!STELLA_ROOT!\..\stella-link.bat" chaining
+			if exist "!_STELLA_LINK_CURRENT_FILE_DIR!\..\stella-link.bat" (	
+				echo ** Try to chain link stella from !_STELLA_LINK_CURRENT_FILE_DIR!\..
+				call "!_STELLA_LINK_CURRENT_FILE_DIR!\..\stella-link.bat" chaining
 			) else (
 				echo ** WARNING Stella is missing -- bootstraping stella
 				call "!_STELLA_LINK_CURRENT_FILE_DIR!\stella-link.bat" bootstrap

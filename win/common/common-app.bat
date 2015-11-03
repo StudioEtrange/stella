@@ -335,38 +335,64 @@ goto :eof
 goto :eof
 
 :link_app
-	set "_approot=%~1"
-	set "_stella_root=%~2"
+	set "_target_approot=%~1"
+	set "OPT=%~2"
+	REM set "_stella_root=%~2"
 
-	if "!_stella_root!" == "" {
-		set "_stella_root=%STELLA_ROOT%"
-	} 
+	set _opt_share_cache=OFF
+	set _opt_share_workspace=OFF
+	set _flag_stella_root=OFF
+	set "_stella_root=!STELLA_ROOT!"
 
-	call %STELLA_COMMON%\common.bat :rel_to_abs_path "_approot" "!_approot!" "%STELLA_CURRENT_RUNNING_DIR%"
+	for %%O in (%OPT%) do (
+		if "%%O"=="CACHE" (
+			set _opt_share_cache=ON
+		)
+		if "%%O"=="WORKSPACE" (
+			set _opt_share_workspace=ON
+		)
+		if "!_flag_stella_root!"=="ON" (
+			set "_stella_root=%%O"
+			set _flag_stella_root=OFF
+		)
+		if "%%O"=="STELLA_ROOT" (
+			set _flag_stella_root=ON
+		)
+	)
+
+	call %STELLA_COMMON%\common.bat :rel_to_abs_path "_target_approot" "!_target_approot!" "%STELLA_CURRENT_RUNNING_DIR%"
 
 	call %STELLA_COMMON%\common.bat :is_path_abs "IS_ABS" "!_stella_root!"
 	if "%IS_ABS%"=="FALSE" (
-		call %STELLA_COMMON%\common.bat :rel_to_abs_path "_stella_root" "!_stella_root!" "%_approot%"
+		call %STELLA_COMMON%\common.bat :rel_to_abs_path "_stella_root" "!_stella_root!" "%_target_approot%"
 	)
 
 	call %STELLA_COMMON%\common.bat :get_stella_flavour "_s_flavour" "!_stella_root!"
 	call %STELLA_COMMON%\common.bat :get_stella_version "_s_ver" "!_stella_root!"
 
-	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_stella_root" "!_stella_root!" "%_approot%"
+	call %STELLA_COMMON%\common.bat :abs_to_rel_path "_stella_root" "!_stella_root!" "%_target_approot%"
 
 	
 
-	> "!_approot!\stella-link.bat.temp" ECHO(@if not "%%~1"=="include" if not "%%~1"=="chaining" if not "%%~1"=="nothing" setlocal enableExtensions enableDelayedExpansion
-	>> "!_approot!\stella-link.bat.temp" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%~dp0
-	>> "!_approot!\stella-link.bat.temp" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%_STELLA_LINK_CURRENT_FILE_DIR:~0,-1%%
-	>> "!_approot!\stella-link.bat.temp" ECHO(@set STELLA_ROOT=%%_STELLA_LINK_CURRENT_FILE_DIR%%\!_stella_root!
-	>> "!_approot!\stella-link.bat.temp" ECHO(@set STELLA_DEP_FLAVOUR=!_s_flavour!
-	>> "!_approot!\stella-link.bat.temp" ECHO(@set STELLA_DEP_VERSION=!_s_ver!
+	> "!_target_approot!\stella-link.bat.temp" ECHO(@if not "%%~1"=="include" if not "%%~1"=="chaining" if not "%%~1"=="nothing" setlocal enableExtensions enableDelayedExpansion
+	>> "!_target_approot!\stella-link.bat.temp" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%~dp0
+	>> "!_target_approot!\stella-link.bat.temp" ECHO(@set _STELLA_LINK_CURRENT_FILE_DIR=%%_STELLA_LINK_CURRENT_FILE_DIR:~0,-1%%
+	>> "!_target_approot!\stella-link.bat.temp" ECHO(@set STELLA_ROOT=%%_STELLA_LINK_CURRENT_FILE_DIR%%\!_stella_root!
+	>> "!_target_approot!\stella-link.bat.temp" ECHO(@set STELLA_DEP_FLAVOUR=!_s_flavour!
+	>> "!_target_approot!\stella-link.bat.temp" ECHO(@set STELLA_DEP_VERSION=!_s_ver!
 
-	copy /b "!_approot!\stella-link.bat.temp"+"%STELLA_TEMPLATE%\sample-stella-link.bat" "!_approot!\stella-link.bat"
+	copy /b "!_target_approot!\stella-link.bat.temp"+"%STELLA_TEMPLATE%\sample-stella-link.bat" "!_target_approot!\stella-link.bat"
 
-	del /f /q "!_approot!\stella-link.bat.temp" >nul
+	del /f /q "!_target_approot!\stella-link.bat.temp" >nul
 
+	REM tweak stella properties file
+	set "_target_STELLA_APP_PROPERTIES_FILE=!_target_approot!\%STELLA_APP_PROPERTIES_FILENAME%"
+	if "!_opt_share_workspace!"=="ON" (
+		call %STELLA_COMMON%\common.bat :add_key "!_target_STELLA_APP_PROPERTIES_FILE!" "STELLA" "APP_WORK_ROOT" "!STELLA_APP_WORK_ROOT!"
+	)
+	if "!_opt_share_cache!"=="ON" (
+		call %STELLA_COMMON%\common.bat :add_key "!_target_STELLA_APP_PROPERTIES_FILE!" "STELLA" "APP_CACHE_DIR" "!STELLA_APP_CACHE_DIR!"
+	)
 goto :eof
 
 :init_app

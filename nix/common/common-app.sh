@@ -61,7 +61,7 @@ function __link_app() {
 	local _opt_share_cache=OFF
 	local _opt_share_workspace=OFF
 	local _flag_stella_root=OFF
-	local _stella_root=
+	local _stella_root=$STELLA_ROOT
 	for o in $_OPT; do 
 		[ "$o" == "CACHE" ] && _opt_share_cache=ON
 		[ "$o" == "WORKSPACE" ] && _opt_share_workspace=ON
@@ -71,7 +71,7 @@ function __link_app() {
 
 	_target_approot=$(__rel_to_abs_path $_target_approot $STELLA_CURRENT_RUNNING_DIR)
 
-	[ "$_stella_root" == "" ] && _stella_root=$STELLA_ROOT
+	#[ "$_stella_root" == "" ] && _stella_root=$STELLA_ROOT
 	[ "$(__is_abs "$_stella_root")" == "FALSE" ] && _stella_root=$(__rel_to_abs_path "$_stella_root" "$_target_approot")
 
 	_s_ver=$(__get_stella_version "$_stella_root")

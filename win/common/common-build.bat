@@ -670,6 +670,7 @@ goto :eof
 				copy /Y "%%f" "!LIB_TARGET_FOLDER!\!_renamed_filename!"
 			)
 		)
+		REM TODO DO NOT COPY DLL ?
 		echo *** Copying DLL items from !REQUIRED_LIB_ROOT!\!_bin_folder! to !LIB_TARGET_FOLDER!
 		for %%f in ("!REQUIRED_LIB_ROOT!\!_bin_folder!\*.dll") do (
 			set "_renamed_filename="
