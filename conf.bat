@@ -131,8 +131,9 @@ REM    cmake	|	mingw-make		|   gcc
 REM 	NULL	|	nmake	 		|   cl
 REM 	NULL	|	mingw-make		|   gcc
 
-REM STANDARD TOOLSET : 	cmake	|	mingw-make		|   gcc 		|   cl OR gcc ?
-REM MS TOOLSET : 		cmake	|	nmake	 		|   cl
+REM TOOLSET
+REM STANDARD : 	cmake	|	mingw-make		|   gcc 		|   cl OR gcc ?
+REM MS  : 		cmake	|	nmake	 		|   cl
 set "STELLA_BUILD_DEFAULT_CONFIG_TOOL=cmake"
 set "STELLA_BUILD_DEFAULT_BUILD_TOOL=mingw-make"
 set "STELLA_BUILD_DEFAULT_COMPIL_FRONTEND=gcc"
