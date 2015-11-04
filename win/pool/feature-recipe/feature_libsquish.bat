@@ -2,7 +2,7 @@
 call %*
 goto :eof
 
-REM TODO only static lib is built
+REM TODO only static lib is built. When building shared lib, there is no exported symbol from DLL (and there is no import lib built)
 
 :feature_libsquish
 	set "FEAT_NAME=libsquish"
