@@ -89,7 +89,7 @@ STELLA_ENV_FILE=
 if [ -f "$STELLA_APP_ROOT/.stella-env" ]; then
 	STELLA_ENV_FILE="$STELLA_APP_ROOT/.stella-env"
 else
-	[ -f "$STELLA_ROOT/.stella-env" ] && STELLA_ENV_FILE="$STELLA_ROOT/.stella-env"
+	STELLA_ENV_FILE="$STELLA_ROOT/.stella-env"
 fi
 
 

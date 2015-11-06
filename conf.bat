@@ -76,7 +76,7 @@ set "STELLA_ENV_FILE="
 if exist "%STELLA_APP_ROOT%\.stella-env" (
 	set "STELLA_ENV_FILE=%STELLA_APP_ROOT%\.stella-env"
 ) else (
-	if exist "%STELLA_ROOT%\.stella-env" set "STELLA_ENV_FILE=%STELLA_ROOT%\.stella-env"
+	set "STELLA_ENV_FILE=%STELLA_ROOT%\.stella-env"
 )
 
 :: OTHERS ---------------------------------------------
