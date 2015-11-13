@@ -4,6 +4,7 @@ _OPENSSL_INCLUDED_=1
 # TODO 
 # Require perl (from system is enough), to configure source code
 # Require system "build-system"
+# build with an arch
 
 # NOTE : On darwin openssl lib in lib/engines folder does not have LC_ID_DYLIB
 	
@@ -56,8 +57,8 @@ function feature_openssl_install_source() {
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 	
-
 	ARCH=$STELLA_BUILD_ARCH
+	[ "$ARCH" == "" ] && ARCH="x64"
 
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		OPENSSL_OPT="shared no-idea no-mdc2 no-rc5 enable-ssl2 enable-tlsext enable-cms"
