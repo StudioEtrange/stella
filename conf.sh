@@ -120,7 +120,7 @@ done
 # DEFAULT | STATIC | DYNAMIC
 __set_build_mode_default "LINK_MODE" "DEFAULT"
 # these features will be picked from the system
-# have an effect only for feature declared in FEAT_SOURCE_DEPENDENCIES, FEAT_BINARY_DEPENDENCIES or passed to  __link_feature_libray
+# have an effect only for feature declared in FEAT_SOURCE_DEPENDENCIES, FEAT_BINARY_DEPENDENCIES or passed to __link_feature_libray
 STELLA_BUILD_DEP_FROM_SYSTEM_DEFAULT="openssl python"
 # parallelize build (except specificied unparallelized one)
 # ON | OFF

@@ -91,7 +91,7 @@ function feature_packer_0_7_5() {
 # -----------------------------------------
 function feature_packer_install_binary() {
 	
-	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP FORCE_NAME $FEAT_BINARY_URL_FILENAME"
+	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "STRIP FORCE_NAME $FEAT_BINARY_URL_FILENAME"
 
 	if [ -d "$FEAT_INSTALL_ROOT" ]; then
 		cd $INSTALL_DIR
