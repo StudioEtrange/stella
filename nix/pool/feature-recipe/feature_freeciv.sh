@@ -2,8 +2,7 @@ if [ ! "$_freeciv_INCLUDED_" == "1" ]; then
 _freeciv_INCLUDED_=1
 
 # TODO
-# dep : freetype sdl curl gettext
-# to finish do not work
+# dep : X11
 
 function feature_freeciv() {
 	FEAT_NAME=freeciv
@@ -16,7 +15,7 @@ function feature_freeciv() {
 function feature_freeciv_2_5_1() {
 	FEAT_VERSION=2_5_1
 	
-	FEAT_SOURCE_DEPENDENCIES="sdl#1_2_15 gettext#0_19_4 pkgconfig#0_29"
+	FEAT_SOURCE_DEPENDENCIES="sdl#1_2_15 gettext#0_19_4 pkgconfig#0_29 curl#7_36_0"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://downloads.sourceforge.net/project/freeciv/Freeciv%202.5/2.5.1/freeciv-2.5.1.tar.bz2
@@ -39,8 +38,10 @@ function feature_freeciv_2_5_1() {
 function feature_freeciv_link() {
 	__link_feature_library "sdl#1_2_15"
 	__link_feature_library "gettext#0_19_4"
+	__link_feature_library "curl#7_36_0" "NO_SET_FLAGS GET_FLAGS _curl"
 	
-
+	export CURL_CFLAGS="$_curl_C_CXX_FLAGS $_curl_CPP_FLAGS"
+	export CURL_LIBS="$_curl_LINK_FLAGS"
 }
 
 
@@ -54,13 +55,14 @@ function feature_freeciv_install_source() {
 
 	__set_toolset "STANDARD"
 	
+	__feature_callback
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
 	AUTO_INSTALL_CONF_FLAG_POSTFIX=
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
-	__feature_callback
+	
 
 	
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP"
