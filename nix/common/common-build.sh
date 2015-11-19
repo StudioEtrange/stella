@@ -190,6 +190,7 @@ function __auto_build() {
 		[ ! "$_opt_build_keep" == "ON" ] && rm -Rf "$BUILD_DIR"
 	fi
 
+	mkdir -p "$BUILD_DIR"
 
 	# requirements
 	local _check=
@@ -199,7 +200,7 @@ function __auto_build() {
 	
 	
 	# set build env
-	__prepare_build "$INSTALL_DIR"
+	__prepare_build "$INSTALL_DIR" "$SOURCE_DIR" "$BUILD_DIR"
 
 	# launch process
 	[ "$_opt_configure" == "ON" ] && __launch_configure "$SOURCE_DIR" "$INSTALL_DIR" "$BUILD_DIR" "$OPT"
@@ -587,7 +588,7 @@ function __link_feature_library() {
 
 		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 			for f in "$LIB_TARGET_FOLDER"/*".dylib"*; do	
-				if [ -f "$f" ]; then	
+				if [ -f "$f" ]; then
 					[ "$STELLA_BUILD_RELOCATE" == "ON" ] && __fix_dynamiclib_install_name_darwin "$f" "RPATH"
 					[ "$STELLA_BUILD_RELOCATE" == "OFF" ] && __fix_dynamiclib_install_name_darwin "$f" "PATH"
 				fi
@@ -682,9 +683,12 @@ function __link_flags_gcc-clang() {
 
 
 
-# determine RPATH values and copy if necessary dependencies
+# manage RPATH values considering EXPORT mode or PORTABLE mode
+# and copy if necessary dependencies
 function __export_env() {
 	local INSTALL_DIR="$1"
+	local SOURCE_DIR="$2"
+	local BUILD_DIR="$3"
 	# relocation mode
 	if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
 		echo "*** We are in RELOCATION mode !"
@@ -697,6 +701,9 @@ function __export_env() {
 	fi
 
 	# Copy each linked feature into a folder stella-dep
+	# we copy each dep into stella-dep folder 
+	# 		but we do NOT use them while BUILDING
+	# 		they are used only at RUNTIME (based on rpath values)
 	if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
 
 		local LIB_TARGET_FOLDER="$INSTALL_DIR/stella-dep"
@@ -719,16 +726,31 @@ function __export_env() {
 				fi
 			fi
 		done
+
+		
 		if [ ! "$LINKED_LIBS_PATH" == "" ]; then
 			if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-				for f in "$LIB_TARGET_FOLDER"/*".dylib"*; do		
+				for f in "$LIB_TARGET_FOLDER"/*".dylib"*; do
 					[ -f "$f" ] && __fix_dynamiclib_install_name_darwin "$f" "RPATH"
 				done
 			fi
-			# NOTE : $ORIGIN may have problem on some systems, see : http://www.cmake.org/pipermail/cmake/2008-January/019290.html
-			[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && __set_build_mode "RPATH" "ADD_FIRST" '$ORIGIN/../stella-dep'
-			[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && __set_build_mode "RPATH" "ADD_FIRST" "@loader_path/../stella-dep"
+			# TODO : NOTE : $ORIGIN may have problem on some systems, see : http://www.cmake.org/pipermail/cmake/2008-January/019290.html
+			if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+				__set_build_mode "RPATH" "ADD_FIRST" '$ORIGIN/../stella-dep'
+				__set_build_mode "RPATH" "ADD_FIRST" '$ORIGIN/stella-dep'
+			fi
+			if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+				__set_build_mode "RPATH" "ADD_FIRST" "@loader_path/../stella-dep"
+				__set_build_mode "RPATH" "ADD_FIRST" "@loader_path/stella-dep"
+			fi
+
+			# create a link into build dir in case some temporary built files needs to be run with dependencies
+			ln -s "$INSTALL_DIR/stella-dep" "$SOURCE_DIR/stella-dep"
+			ln -s "$INSTALL_DIR/stella-dep" "$BUILD_DIR/stella-dep"
 		fi
+
+
+
 
 
 
@@ -736,8 +758,10 @@ function __export_env() {
 
 
 
-		# On darwin we do not use RPATH because lib are linked with path
-		# On Linux we must use RPATH because libs are linked without path
+
+		# when we are NOT on PORTABLE mode BUT only on EXPORT mode
+		# 	On darwin we do not use RPATH because lib are linked with path
+		# 	On Linux we must use RPATH because libs are linked without path
 		if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
 			LINKED_LIBS_PATH="$(__trim $LINKED_LIBS_PATH)"
 			local _flavor=
@@ -823,10 +847,12 @@ function __reset_build_env() {
 
 
 function __prepare_build() {
-	local INSTALL_DIR=$1
+	local INSTALL_DIR="$1"
+	local SOURCE_DIR="$2"
+	local BUILD_DIR="$3"
 
 	# export/rpath
-	__export_env "$INSTALL_DIR"
+	__export_env "$INSTALL_DIR" "$SOURCE_DIR" "$BUILD_DIR"
 
 	
 	# set env
@@ -972,7 +998,8 @@ function __set_env_vars_for_gcc-clang() {
 			STELLA_LINK_FLAGS="$STELLA_LINK_FLAGS -Wl,-rpath='"$r"'"
 		fi
 		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then	
-			STELLA_LINK_FLAGS="$STELLA_LINK_FLAGS -Wl,-rpath,'"$r"'"
+			# NOTE : if we use ' or " around $r, it will be used as rpath value
+			STELLA_LINK_FLAGS="$STELLA_LINK_FLAGS -Wl,-rpath,$r"
 		fi
 	done
 	
@@ -1303,7 +1330,7 @@ function __set_build_env() {
 }
 
 
-# CHECK BUILD ------------------------------------------------------------------------------------------------------------------------------
+# INSPECT BUILD ------------------------------------------------------------------------------------------------------------------------------
 function __inspect_build() {
 	local path="$1"
 	local OPT="$2"
@@ -1804,8 +1831,10 @@ function __fix_built_files() {
 							#[ "$(__get_extension_from_string $path)" == "dylib" ] && __fix_dynamiclib_install_name_darwin "$path" "RPATH"
 							#[ "$(__get_extension_from_string $path)" == "so" ] && __fix_dynamiclib_install_name_darwin "$path" "RPATH"
 							[[ "$path" =~ .*dylib.* ]] && __fix_dynamiclib_install_name_darwin "$path" "RPATH"
-							[ ! "$(__get_extension_from_string $path)" == "a" ] && __fix_linked_lib_darwin "$path" "REL_RPATH EXCLUDE_FILTER /System/Library|/usr/lib"
-							[ ! "$(__get_extension_from_string $path)" == "a" ] && __fix_rpath_darwin "$path"
+							if [ ! "$(__get_extension_from_string $path)" == "a" ]; then
+								__fix_linked_lib_darwin "$path" "REL_RPATH EXCLUDE_FILTER /System/Library|/usr/lib"
+								__fix_rpath_darwin "$path"
+							fi
 						else
 							[ "$(__get_extension_from_string $path)" == "dylib" ] && __fix_dynamiclib_install_name_darwin "$path" "PATH"
 						fi
@@ -1942,7 +1971,7 @@ function __fix_rpath_darwin() {
 }
 
 # fix linked shared lib by modifying LOAD_DYLIB and adding rpath values
-# 	first choose linked lib to modify path -- you can filter libs by exclude some (EXCLUDE_FILTER) or by path (ABS_PATH_FILTER)
+# 	first choose linked lib to modify path -- you can filter libs by exclude some (EXCLUDE_FILTER)
 #	second transform path to linked lib -- you can choose to 
 #					transform all rel path to abs path (ABS_RPATH) (including @loader_path, but do not change @rpath or @executable_path because we cant determine the path)
 #					transform all abs path to rel path (REL_RPATH) (use @rpath, and add an RPATH value corresponding to the relative path to the file with @loader_path/)
@@ -1951,14 +1980,14 @@ function __fix_rpath_darwin() {
 function __fix_linked_lib_darwin() {
 	local _file=$1
 	local OPT="$2"
-	# linked lib filter
+	# linked lib filter :
 	# INCLUDE_FILTER <expr> -- include from the transformation these libraries
 	# EXCLUDE_FILTER <expr> -- exclude from the transformation these libraries
-	# ABS_PATH_FILTER
-	# rpath to insert
+
+	# rpath to insert :
 	# ABS_RPATH -- fix linked lib with an absolute path
 	# REL_RPATH [DEFAULT MODE] -- fix linked lib with a relative path (use @rpath, and add an RPATH value corresponding to the relative path to the file with @loader_path/)
-	# FIX_RPATH <path> -- fix a given path
+	# FIX_RPATH <path> -- fix with a given path
 
 	
 	local _flag_exclude_filter=OFF
