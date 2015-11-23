@@ -2,8 +2,13 @@ if [ ! "$_freeciv_INCLUDED_" == "1" ]; then
 _freeciv_INCLUDED_=1
 
 # TODO
-# dep : X11
-
+# https://github.com/Homebrew/homebrew-games/blob/master/freeciv.rb
+# https://packages.debian.org/sid/freeciv-client-sdl
+# need readline need libggz
+# for freeciv module installer, use gtk or qt
+# need ncurses ?
+# linked against zlib and bz2 and iconv
+# SDL client has less functionnality than gtk client ===> abandon sdl client which do not build
 function feature_freeciv() {
 	FEAT_NAME=freeciv
 	FEAT_LIST_SCHEMA="2_5_1:source"
@@ -39,20 +44,20 @@ function feature_freeciv_link() {
 	
 	__link_feature_library "gettext#0_19_4"
 	
-	__link_feature_library "curl#7_36_0" "NO_SET_FLAGS GET_FLAGS _curl"
+	__link_feature_library "curl#7_36_0" "GET_FLAGS _curl LIBS_NAME curl"
 	export CURL_CFLAGS="$_curl_C_CXX_FLAGS $_curl_CPP_FLAGS"
 	export CURL_LIBS="$_curl_LINK_FLAGS"
 
-	__link_feature_library "sdl#1_2_15" "GET_FOLDER _sdl FORCE_INCLUDE_FOLDER include/SDL NO_SET_FLAGS"
+	__link_feature_library "sdl#1_2_15" "GET_FOLDER _sdl FORCE_INCLUDE_FOLDER include/SDL NO_SET_FLAGS LIBS_NAME SDL"
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="$AUTO_INSTALL_CONF_FLAG_POSTFIX --with-sdl-prefix=$_sdl_ROOT"
 
-	__link_feature_library "sdl-mixer#1_2_12" "NO_SET_FLAGS GET_FLAGS _mixer"
-	 export SDLMIXER_CFLAGS="$_mixer_C_CXX_FLAGS $_mixer_CPP_FLAGS"
-	 export SDLMIXER_LIBS="$_mixer_LINK_FLAGS"
+	__link_feature_library "sdl-mixer#1_2_12" "GET_FLAGS _mixer FORCE_INCLUDE_FOLDER include/SDL"
+	#export SDLMIXER_CFLAGS="$_mixer_C_CXX_FLAGS $_mixer_CPP_FLAGS"
+	#export SDLMIXER_LIBS="$_mixer_LINK_FLAGS"
 
-	 __link_feature_library "sdl-image#1_2_12" "FORCE_INCLUDE_FOLDER include/SDL"
-	 __link_feature_library "sdl-gfx#2_0_25" "FORCE_INCLUDE_FOLDER include/SDL"
-	 __link_feature_library "sdl-ttf#2_0_11" "FORCE_INCLUDE_FOLDER include/SDL"
+	__link_feature_library "sdl-image#1_2_12" "FORCE_INCLUDE_FOLDER include/SDL"
+	__link_feature_library "sdl-gfx#2_0_25" "FORCE_INCLUDE_FOLDER include/SDL"
+	__link_feature_library "sdl-ttf#2_0_11" "FORCE_INCLUDE_FOLDER include/SDL"
 }
 
 
@@ -70,19 +75,55 @@ function feature_freeciv_install_source() {
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="--disable-dependency-tracking --disable-debug \
-	--enable-fcdb=no --enable-ipv6=yes --enable-client=sdl --without-gtk --without-qt --disable-gtktest --disable-qttest --enable-sdl-mixer=sdl"
-
+	--enable-fcdb=no --enable-fcmp=no --enable-ipv6=yes --enable-client=sdl --enable-sdl-mixer=sdl --enable-aimodules=no \
+	--enable-shared --enable-static --enable-aimodules=yes"
+	# enable-fcmp : freeciv module pack installer/management : cannot be built with sdl
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
 	
 
-	
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP BUILD_KEEP EXCLUDE_INSPECT /share"
 	
 	
 
 }
+# == General build options ==
+#   Shared libraries:      no
+#   Debugging support:     no
+#   Profiling support:     no
+#   IPv6 support:          yes
+#   Map image toolkits:    auto
+#     ppm:                   built-in
+#     MagickWand:            no
+
+#   == Client ==
+#   Build freeciv client:  yes
+
+#   Maintained client frontends:
+#     Gtk-2.0: no
+#     Gtk-3.0: no
+#     SDL:     yes
+#     QT:      no
+#     Stub:    no
+
+#   Not maintained client frontends:
+#     Xaw:     no
+
+#   == Server ==
+#   Build freeciv server:  yes
+#     AI modules support:    no
+#     Database support:      no
+#       mysql:                 no
+#       postgres:              no
+#       sqlite3:               no
+
+#   == Tools ==
+#   Modpack installers:   none
+#   Manual generator:      yes
+
+
+
 
 
 # Optional Features:

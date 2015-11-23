@@ -459,7 +459,7 @@ function __link_feature_library() {
 	# GET_FLAGS <prefix> -- init prefix_C_CXX_FLAGS, prefix_CPP_FLAGS, prefix_LINK_FLAGS with correct flags
 	# GET_FOLDER <prefix> -- init prefix_ROOT, prefix_LIB, prefix_BIN, prefix_INCLUDE with correct path
 	# NO_SET_FLAGS -- do not set stella build system flags
-	# LIBS_NAME -- libraries name to use with -l arg (so without libprefix) -- you can specify several libraries OR no library at all. so -l flag will not be setted, only -L will be setted
+	# LIBS_NAME -- libraries name to use with -l arg -- you can specify several libraries. If you do not use LIBS_NAME -l flag will not be setted, only -L will be setted
 
 	
 	local _ROOT=
@@ -894,6 +894,17 @@ function __prepare_build() {
 	echo "====> Build arch directive : $STELLA_BUILD_ARCH"
 	echo "====> Parallelized (if supported) : $STELLA_BUILD_PARALLELIZE"
 	echo "====> Relocation : $STELLA_BUILD_RELOCATE"
+	echo "** SOME FLAGS"
+	echo "====> STELLA_C_CXX_FLAGS : $STELLA_C_CXX_FLAGS"
+	echo "====> STELLA_CPP_FLAGS : $STELLA_CPP_FLAGS"
+	echo "====> STELLA_LINK_FLAGS : $STELLA_LINK_FLAGS"
+	echo "====> STELLA_DYNAMIC_LINK_FLAGS : $STELLA_DYNAMIC_LINK_FLAGS"
+	echo "====> STELLA_STATIC_LINK_FLAGS : $STELLA_STATIC_LINK_FLAGS"
+	echo "====> CMAKE_LIBRARY_PATH : $CMAKE_LIBRARY_PATH"
+	echo "====> CMAKE_INCLUDE_PATH : $CMAKE_INCLUDE_PATH"
+	echo "====> STELLA_CMAKE_EXTRA_FLAGS : $STELLA_CMAKE_EXTRA_FLAGS"
+	
+
 
 
 }
