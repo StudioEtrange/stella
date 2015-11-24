@@ -2,6 +2,7 @@ if [ ! "$_ALLEGRO_INCLUDED_" == "1" ]; then
 _ALLEGRO_INCLUDED_=1
 
 # TODO
+# https://github.com/liballeg/allegro5
 
 # -- Found Threads: TRUE  
 # -- Found OpenAL: /System/Library/Frameworks/OpenAL.framework  

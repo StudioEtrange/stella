@@ -403,11 +403,11 @@ function __revert_resource() {
 }
 
 function __resource() {
-	local NAME=$1
-	local URI=$2
-	local PROTOCOL=$3
+	local NAME="$1"
+	local URI="$2"
+	local PROTOCOL="$3"
 	# FINAL_DESTINATION is the folder inside which one the resource will be put
-	local FINAL_DESTINATION=$4
+	local FINAL_DESTINATION="$4"
 	local OPT="$5"
 	# option should passed as one string "OPT1 OPT2"
 	# 	"MERGE" for merge in FINAL_DESTINATION

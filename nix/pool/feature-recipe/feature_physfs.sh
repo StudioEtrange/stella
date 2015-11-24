@@ -1,9 +1,7 @@
 if [ ! "$_physfs_INCLUDED_" == "1" ]; then 
 _physfs_INCLUDED_=1
 
-# TODO not finished
-# need zlib
-# need readline ncurses for test
+
 
 function feature_physfs() {
 	FEAT_NAME=physfs
