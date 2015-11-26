@@ -39,7 +39,7 @@ function feature_dumb_0_9_3() {
 
 
 function feature_dumb_conftools_0_9_3() {
-	__get_resource "$FEAT_NAME" "http://downloads.sourceforge.net/project/dumb/dumb/0.9.3/dumb-0.9.3-autotools.tar.gz" "HTTP_ZIP" "$SRC_DIR" "STRIP"
+	__get_resource "libdumb conf tools" "http://downloads.sourceforge.net/project/dumb/dumb/0.9.3/dumb-0.9.3-autotools.tar.gz" "HTTP_ZIP" "$SRC_DIR" "STRIP"
 
 
 }
@@ -62,7 +62,7 @@ function feature_dumb_install_source() {
 
 	__feature_callback
 
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP BUILD_KEEP"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
 
 }
 
