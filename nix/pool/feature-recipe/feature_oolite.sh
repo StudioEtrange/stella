@@ -20,7 +20,7 @@ function feature_oolite_1_82() {
 	FEAT_VERSION=1_82
 
 
-	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_SOURCE_DEPENDENCIES="gnustep-make#2_6_7"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://github.com/OoliteProject/oolite/releases/download/1.82/oolite-source-1.82.tar.bz2

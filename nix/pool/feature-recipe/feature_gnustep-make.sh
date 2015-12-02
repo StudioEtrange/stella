@@ -29,13 +29,17 @@ function feature_gnustep-make_2_6_7() {
 
 	FEAT_SOURCE_CALLBACK=
 	FEAT_BINARY_CALLBACK=
-	FEAT_ENV_CALLBACK=
+	FEAT_ENV_CALLBACK=feature_gnustep-make_setenv
 
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/gnustep-make
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/gnustep-config
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 
 }
 
+
+function feature_gnustep-make_setenv() {
+	source $FEAT_INSTALL_ROOT/Library/GNUstep/Makefiles/GNUstep.sh
+}
 
 function feature_gnustep-make_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
@@ -47,9 +51,10 @@ function feature_gnustep-make_install_source() {
 
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
-	AUTO_INSTALL_CONF_FLAG_POSTFIX="--with-config-file=$FEAT_INSTALL_ROOT/etc/GNUstep.conf --enable-native-objc-exceptions"
+	AUTO_INSTALL_CONF_FLAG_POSTFIX="--with-config-file=$INSTALL_DIR/etc/GNUstep.conf --enable-native-objc-exceptions"
+
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
-	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
+	AUTO_INSTALL_BUILD_FLAG_POSTFIX="tooldir=$INSTALL_DIR/bin"
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
 	
