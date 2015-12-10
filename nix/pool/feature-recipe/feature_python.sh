@@ -78,6 +78,9 @@ function feature_python_install_source() {
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD"
 
+
+
+
 	# install last pip/setuptools
 	__get_resource "get-pip" "https://bootstrap.pypa.io/get-pip.py" "HTTP" "$FEAT_INSTALL_ROOT/pip"
 	cd "$FEAT_INSTALL_ROOT/pip"

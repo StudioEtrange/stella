@@ -21,7 +21,10 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 
 # 		SET CUSTOM BUILD MODE
 #		__set_build_mode ARCH x86
-#
+
+#		SET CUSTOM FLAGS
+#		STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS -DFLAG"
+
 #		LINK BUILD TO OTHER LIBRARY
 #		__link_feature_library
 
@@ -821,6 +824,7 @@ function __reset_build_env() {
 	STELLA_BUILD_ARCH="$STELLA_BUILD_ARCH_DEFAULT"
 	STELLA_BUILD_DARWIN_STDLIB="$STELLA_BUILD_DARWIN_STDLIB_DEFAULT"
 	STELLA_BUILD_MACOSX_DEPLOYMENT_TARGET="$STELLA_BUILD_MACOSX_DEPLOYMENT_TARGET_DEFAULT"
+	STELLA_BUILD_MIX_CPP_C_FLAGS="$STELLA_BUILD_MIX_CPP_C_FLAGS_DEFAULT"
 
 	# EXTERNAL VARIABLE
 	# reset variable from outside stella
@@ -1025,10 +1029,15 @@ function __set_env_vars_for_gcc-clang() {
 	STELLA_LINK_FLAGS="$LINKED_LIBS_LINK_FLAGS $STELLA_LINK_FLAGS $STELLA_DYNAMIC_LINK_FLAGS $STELLA_STATIC_LINK_FLAGS"
 
 
- 	# flags to pass to the C compiler.
-	export CFLAGS="$STELLA_C_CXX_FLAGS"
-	# flags to pass to the C++ compiler.
-	export CXXFLAGS="$STELLA_C_CXX_FLAGS"
+ 	if [ "$STELLA_BUILD_MIX_CPP_C_FLAGS" == "ON" ]; then
+ 		# flags to pass to the C compiler.
+		export CFLAGS="$STELLA_C_CXX_FLAGS $STELLA_CPP_FLAGS"
+		# flags to pass to the C++ compiler
+		export CXXFLAGS="$STELLA_C_CXX_FLAGS $STELLA_CPP_FLAGS"
+	else
+		export CFLAGS="$STELLA_C_CXX_FLAGS"
+		export CXXFLAGS="$STELLA_C_CXX_FLAGS"
+	fi
 	# flags to pass to the C preprocessor. Used when compiling C and C++ (Used to pass -Iinclude_folder)
 	export CPPFLAGS="$STELLA_CPP_FLAGS"
 	# flags to pass to the linker
@@ -1061,6 +1070,10 @@ function __set_build_mode_default() {
 
 # TOOLSET agnostic
 function __set_build_mode() {
+
+	# mIX_CPP_C_FLAGS -----------------------------------------------------------------
+	# set CFLAGS and CXXFLAGS with CPPFLAGS
+	[ "$1" == "MIX_CPP_C_FLAGS" ] && STELLA_BUILD_MIX_CPP_C_FLAGS=$2
 
 	# STATIC/DYNAMIC LINK -----------------------------------------------------------------
 	# force build system to force a linking mode when it is possible
@@ -1220,8 +1233,9 @@ function __set_build_env() {
 	# by default -mmacosx-version-min value is used to choose one of them
 	if [ "$1" == "DARWIN_STDLIB" ]; then
 		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-			#[ "$2" == "LIBCPP" ] && STELLA_LINK_FLAGS="$STELLA_LINK_FLAGS -stdlib=libc++"
-			#[ "$2" == "LIBSTDCPP" ] && STELLA_LINK_FLAGS="$STELLA_LINK_FLAGS -stdlib=libstdc++"
+			# we seems to need this on both cflags and ldflags (i.e for openttd)
+			[ "$2" == "LIBCPP" ] && STELLA_LINK_FLAGS="$STELLA_LINK_FLAGS -stdlib=libc++"
+			[ "$2" == "LIBSTDCPP" ] && STELLA_LINK_FLAGS="$STELLA_LINK_FLAGS -stdlib=libstdc++"
 			[ "$2" == "LIBCPP" ] && STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS -stdlib=libc++"
 			[ "$2" == "LIBSTDCPP" ] && STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS -stdlib=libstdc++"
 		fi

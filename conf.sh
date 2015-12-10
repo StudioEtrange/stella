@@ -136,8 +136,8 @@ __set_build_mode_default "RELOCATE" "OFF"
 # ARCH x86 x64
 # By default we do not provide any build arch information
 #__set_build_mode_default "ARCH" ""
-
-
+# do not mix CPPFLAGS with CXXFLAGS and CFLAGS
+__set_build_mode_default "MIX_CPP_C_FLAGS" "OFF"
 
 # supported build toolset
 # CONFIG TOOL 	| BUILD TOOL 		| COMPIL FRONTEND

@@ -25,7 +25,7 @@ function feature_autoconf_2_69() {
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
 
-	FEAT_SOURCE_CALLBACK=feature_autoconf_2_69_patch
+	FEAT_SOURCE_CALLBACK=
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
@@ -35,12 +35,7 @@ function feature_autoconf_2_69() {
 
 }
 
-function feature_autoconf_2_69_patch() {
-	#TODO : really need this ?
-	#AUTO_INSTALL_CONF_FLAG_POSTFIX="--docdir=$INSTALL_DIR/share/doc/automake-1.14"
-	
-	AUTO_INSTALL_CONF_FLAG_POSTFIX=
-}
+
 
 function feature_autoconf_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
