@@ -17,8 +17,7 @@ function feature_libpng_1_6_17() {
 
 	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8"
 	FEAT_BINARY_DEPENDENCIES=
-
-	FEAT_SOURCE_URL=http://downloads.sourceforge.net/project/libpng/libpng16/1.6.17/libpng-1.6.17.tar.xz
+	FEAT_SOURCE_URL=http://downloads.sourceforge.net/project/libpng/libpng16/older-releases/1.6.17/libpng-1.6.17.tar.xz
 	FEAT_SOURCE_URL_FILENAME=libpng-1.6.17.tar.xz
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
