@@ -1,9 +1,9 @@
 if [ ! "$_openttd_INCLUDED_" == "1" ]; then 
 _openttd_INCLUDED_=1
 
-# TO FINISH
-# https://github.com/Homebrew/homebrew-games/blob/master/openttd.rb
 
+# https://github.com/Homebrew/homebrew-games/blob/master/openttd.rb
+# patch ; https://bugs.openttd.org/task/6380
 function feature_openttd() {
 	FEAT_NAME=openttd
 	FEAT_LIST_SCHEMA="1_5_3:source"
@@ -30,7 +30,7 @@ function feature_openttd_1_5_3() {
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
 
-	FEAT_SOURCE_CALLBACK="feature_openttd_link feature_openttd_patch"
+	FEAT_SOURCE_CALLBACK="feature_openttd_link feature_openttd_patch feature_openttd_resource"
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
@@ -66,11 +66,22 @@ function feature_openttd_patch() {
 		cp "$STELLA_PATCH/openttd/patch_osx_quartz_CMGetSystemProfile_deprecated.diff" "$SRC_DIR"
 		cd "$SRC_DIR"
 		patch -Np0 < patch_osx_quartz_CMGetSystemProfile_deprecated.diff
+
+		cp "$STELLA_PATCH/openttd/patch_osx_music_AudioComponentDescription.diff" "$SRC_DIR"
+		cd "$SRC_DIR"
+		patch -Np0 < patch_osx_music_AudioComponentDescription.diff
 	fi
 
 }
 
 
+
+function feature_openttd_resource() {
+	# default resources
+	__get_resource "opengfx" "https://bundles.openttdcoop.org/opengfx/releases/0.5.2/opengfx-0.5.2.zip" "HTTP_ZIP" "$INSTALL_DIR/games/data/opengfx" "STRIP"
+	__get_resource "opensfx" "https://bundles.openttdcoop.org/opensfx/releases/0.2.3/opensfx-0.2.3.zip" "HTTP_ZIP" "$INSTALL_DIR/games/data/opensfx" "STRIP"
+	__get_resource "openmsx" "https://bundles.openttdcoop.org/openmsx/releases/0.3.1/openmsx-0.3.1.zip" "HTTP_ZIP" "$INSTALL_DIR/gm/openmsx" "STRIP"
+}
 
 function feature_openttd_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
@@ -83,17 +94,16 @@ function feature_openttd_install_source() {
 	# configure script do not play well with CPPFLAGS
 	__set_build_mode "MIX_CPP_C_FLAGS" "ON"
 
-	
+	AUTO_INSTALL_CONF_FLAG_POSTFIX=
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		__set_build_mode "DARWIN_STDLIB" "LIBSTDCPP"
-		__set_build_mode "MACOSX_DEPLOYMENT_TARGET" "10.11"
+		#__set_build_mode "MACOSX_DEPLOYMENT_TARGET" "10.11"
 
 		AUTO_INSTALL_CONF_FLAG_POSTFIX="--with-cocoa --without-application-bundle"
-		STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS -D__AUDIOCOMPONENT_H__"
 	fi
 
 	
@@ -102,25 +112,6 @@ function feature_openttd_install_source() {
 
 	
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD"
-	
-
-	# (buildpath/"bundle/OpenTTD.app/Contents/Resources/data/opengfx").install resource("opengfx")
- #    (buildpath/"bundle/OpenTTD.app/Contents/Resources/data/opensfx").install resource("opensfx")
- #    (buildpath/"bundle/OpenTTD.app/Contents/Resources/gm/openmsx").install resource("openmsx")
- #    resource "opengfx" do
- #    url "https://bundles.openttdcoop.org/opengfx/releases/0.5.2/opengfx-0.5.2.zip"
- #    sha256 "19be61f1cb04cbb3cb9602f0b8eb6e6f56ecbefbfdd6e0e03f9579e5a5c1cbc8"
- #  end
-
- #  resource "opensfx" do
- #    url "https://bundles.openttdcoop.org/opensfx/releases/0.2.3/opensfx-0.2.3.zip"
- #    sha256 "3574745ac0c138bae53b56972591db8d778ad9faffd51deae37a48a563e71662"
- #  end
-
- #  resource "openmsx" do
- #    url "https://bundles.openttdcoop.org/openmsx/releases/0.3.1/openmsx-0.3.1.zip"
- #    sha256 "92e293ae89f13ad679f43185e83fb81fb8cad47fe63f4af3d3d9f955130460f5"
- #  end
 
 }
 

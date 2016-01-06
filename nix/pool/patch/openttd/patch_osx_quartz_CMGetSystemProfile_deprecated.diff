@@ -4,7 +4,7 @@
  	static CGColorSpaceRef colorSpace = NULL;
  
  	if (colorSpace == NULL) {
-+#if (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_11)		
++#if (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_6)
  		CMProfileRef sysProfile;
  
  		if (CMGetSystemProfile(&sysProfile) == noErr) {
