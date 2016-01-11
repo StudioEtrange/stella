@@ -52,7 +52,7 @@ function feature_angband_link() {
 	__link_feature_library "sdl#1_2_15" "GET_FOLDER _sdl FORCE_INCLUDE_FOLDER include/SDL NO_SET_FLAGS LIBS_NAME SDL"
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="$AUTO_INSTALL_CONF_FLAG_POSTFIX --with-sdl-prefix=$_sdl_ROOT"
 
-	__link_feature_library "sdl-mixer#1_2_12" "GET_FLAGS _mixer FORCE_INCLUDE_FOLDER include/SDL"
+	__link_feature_library "sdl-mixer#1_2_12" "FORCE_INCLUDE_FOLDER include/SDL"
 	__link_feature_library "sdl-image#1_2_12" "FORCE_INCLUDE_FOLDER include/SDL"
 	__link_feature_library "sdl-ttf#2_0_11" "FORCE_INCLUDE_FOLDER include/SDL"
 }

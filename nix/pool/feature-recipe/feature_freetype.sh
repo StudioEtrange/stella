@@ -1,6 +1,14 @@
 if [ ! "$_FREETYPE_INCLUDED_" == "1" ]; then 
 _FREETYPE_INCLUDED_=1
 
+# TODO
+# PB1
+# on ubuntu : work only with FORCE_DYNAMIC for all dep
+# PB2
+# on ubuntu :
+# checking for BZIP2... no
+# checking for BZ2_bzDecompress in -lbz2... no
+# checking for LIBPNG... no
 
 function feature_freetype() {
 	FEAT_NAME=freetype
