@@ -49,7 +49,12 @@ goto :eof
 
 				set "FEAT_BUNDLE_MODE=!FEAT_BUNDLE!"
 				for %%p in (!FEAT_BUNDLE_ITEM!) do (
-					call :feature_init %%p "HIDDEN"
+					REM call :feature_init %%p "HIDDEN"
+					call :internal_feature_context "%%p"
+					if not "!FEAT_SEARCH_PATH!"=="" set "PATH=!FEAT_SEARCH_PATH!;!PATH!"
+					for %%e in (!FEAT_ENV_CALLBACK!) do (
+						call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :%%e
+					)
 				)
 				set "FEAT_BUNDLE_MODE="
 
@@ -139,6 +144,7 @@ goto :eof
 	call :internal_feature_context !FEAT_SCHEMA_SELECTED!
 	call %STELLA_COMMON%\common.bat :stack_pop "TEST_FEATURE"
 goto :eof
+
 :: test if a feature is installed
 :: AND retrieve informations based on actually installed feature (looking inside STELLA_APP_FEATURE_ROOT) OR from feature recipe if not installed
 :: do not use default values from feature recipe to search installed feature
@@ -433,7 +439,7 @@ goto :eof
 
 			REM bundle
 			if not "!FEAT_BUNDLE!"=="" (
-				set "FEAT_BUNDLE_MODE=!FEAT_BUNDLE!"
+				
 				
 				:: save export/portable mode
 				call %STELLA_COMMON%\common.bat :stack_push "!_export_mode!"
@@ -443,6 +449,7 @@ goto :eof
 				if not "!FEAT_BUNDLE_ITEM!"=="" (
 					call %STELLA_COMMON%\common.bat :stack_push "!_SCHEMA!"
 					call :push_schema_context
+					set "FEAT_BUNDLE_MODE=!FEAT_BUNDLE!"
 
 					if not "!FEAT_BUNDLE_MODE!"=="LIST" (
 						set "save_FORCE=%FORCE%"
@@ -467,11 +474,12 @@ goto :eof
 						set "FORCE=!save_FORCE!"
 					)
 
+					set "FEAT_BUNDLE_MODE="
 					call :pop_schema_context
 					call %STELLA_COMMON%\common.bat :stack_pop "_SCHEMA"
 					
 				)
-				set "FEAT_BUNDLE_MODE="
+				
 				
 				:: restore export/portable mode
 				call %STELLA_COMMON%\common.bat :stack_pop "_portable_mode"

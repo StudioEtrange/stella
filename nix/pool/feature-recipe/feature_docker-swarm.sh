@@ -4,12 +4,35 @@ _DOCKERSWARM_INCLUDED_=1
 
 function feature_docker-swarm() {
 	FEAT_NAME="docker-swarm"
-	FEAT_LIST_SCHEMA="0_3_0:source"
+	FEAT_LIST_SCHEMA="0_3_0:source 1_0_1:source"
 	FEAT_DEFAULT_VERSION="0_3_0"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
+
+
+function feature_docker-swarm_1_0_1() {
+	FEAT_VERSION="1_0_1"
+	FEAT_SOURCE_DEPENDENCIES="go-build-chain#1_4_2"
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL="https://github.com/docker/swarm/archive/v1.0.1.zip"
+	FEAT_SOURCE_URL_FILENAME="docker-swarm-v1.0.1.zip"
+	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
+
+	FEAT_BINARY_URL=
+	FEAT_BINARY_URL_FILENAME=
+	FEAT_BINARY_URL_PROTOCOL=
+
+	FEAT_SOURCE_CALLBACK=
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+	
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/swarm"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
+
+}
 
 function feature_docker-swarm_0_3_0() {
 	FEAT_VERSION="0_3_0"

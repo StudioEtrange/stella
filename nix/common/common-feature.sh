@@ -45,7 +45,14 @@ function __feature_init() {
 
 				FEAT_BUNDLE_MODE=$FEAT_BUNDLE
 				for p in $FEAT_BUNDLE_ITEM; do	
-					__feature_init $p "HIDDEN"
+					#__feature_init $p "HIDDEN"
+					__internal_feature_context $p
+					if [ ! "$FEAT_SEARCH_PATH" == "" ]; then
+						PATH="$FEAT_SEARCH_PATH:$PATH"
+					fi
+					for c in $FEAT_ENV_CALLBACK; do
+						$c
+					done
 				done
 				FEAT_BUNDLE_MODE=
 
@@ -135,16 +142,12 @@ function __feature_match_installed() {
 function __push_schema_context() {
 	__stack_push "$TEST_FEATURE"
 	__stack_push "$FEAT_SCHEMA_SELECTED"
-	#echo PUSH $FEAT_SCHEMA_SELECTED
-
 }
 # load context before calling __feature_inspect, in case we use it inside a schema context
 function __pop_schema_context() {
 	__stack_pop FEAT_SCHEMA_SELECTED
 	__internal_feature_context $FEAT_SCHEMA_SELECTED
-	__stack_pop TEST_FEATURE
-	#echo POP $FEAT_SCHEMA_SELECTED
-	
+	__stack_pop TEST_FEATURE	
 }
 
 
@@ -159,6 +162,7 @@ function __feature_inspect() {
 
 	if [ ! "$FEAT_SCHEMA_SELECTED" == "" ]; then
 		if [ ! "$FEAT_BUNDLE" == "" ]; then
+
 			local p
 			local _t=1
 			__push_schema_context
@@ -171,6 +175,7 @@ function __feature_inspect() {
 			done
 			FEAT_BUNDLE_MODE=
 			__pop_schema_context
+
 			TEST_FEATURE=$_t
 			if [ "$TEST_FEATURE" == "1" ]; then
 				if [ ! "$FEAT_INSTALL_TEST" == "" ]; then
@@ -186,7 +191,6 @@ function __feature_inspect() {
 			for f in $FEAT_INSTALL_TEST; do
 				if [ ! -f "$f" ]; then
 					TEST_FEATURE=0
-					[ "$VERBOSE_MODE" == "0" ] || echo " ** FEATURE Detected in $FEAT_INSTALL_ROOT"
 				fi
 			done
 		fi
@@ -457,14 +461,16 @@ function __feature_install() {
 
 			# bundle -----------------
 			if [ ! "$FEAT_BUNDLE" == "" ]; then
-				FEAT_BUNDLE_MODE=$FEAT_BUNDLE
+				
 				
 				# save export/portable mode
 				__stack_push "$_export_mode"
 				__stack_push "$_portable_mode"
 
 				if [ ! "$FEAT_BUNDLE_ITEM" == "" ]; then
+
 					__push_schema_context
+					FEAT_BUNDLE_MODE=$FEAT_BUNDLE
 
 					if [ ! "$FEAT_BUNDLE_MODE" == "LIST" ]; then
 						save_FORCE=$FORCE
@@ -472,8 +478,8 @@ function __feature_install() {
 					fi
 
 					# should be  MERGE or NESTED or LIST
-					# NESTED : each item will be installed inside the bundle path in a separate directory
-					# MERGE : each item will be installed in the bundle path
+					# NESTED : each item will be installed inside the bundle path in a separate directory (with each feature name but without version)
+					# MERGE : each item will be installed in the bundle path (without each feature name/version)
 					# LIST : this bundle is just a list of item that will be installed normally
 
 					local _flag_hidden
@@ -491,23 +497,25 @@ function __feature_install() {
 					if [ ! "$FEAT_BUNDLE_MODE" == "LIST" ]; then
 						FORCE=$save_FORCE
 					fi
-					
+
+					FEAT_BUNDLE_MODE=
 					__pop_schema_context
 				fi
-				FEAT_BUNDLE_MODE=
+				
 
 				# restore export/portable mode
 				__stack_pop "_portable_mode"
 				__stack_pop "_export_mode"
 
-				
-				# automatic call of callback
+				# automatic call of bundle callback after installation of each items
 				__feature_callback
 			else
 				
 				echo " ** Installing $FEAT_NAME version $FEAT_VERSION in $FEAT_INSTALL_ROOT"
 				[ "$FEAT_SCHEMA_FLAVOUR" == "source" ] && __start_build_session
 				feature_"$FEAT_NAME"_install_"$FEAT_SCHEMA_FLAVOUR"
+
+				# NOTE : feature_callback is called from recipe itself
 			fi
 
 			if [ "$_export_mode" == "OFF" ]; then
@@ -603,7 +611,7 @@ function __feature_init_installed() {
 	done
 
 	# TODO log
-	[ "$VERBOSE_MODE" == "1" ] && echo "** Features initialized : $FEATURE_LIST_ENABLED"
+	echo "** Features initialized : $FEATURE_LIST_ENABLED"
 }
 
 

@@ -9,8 +9,8 @@ function feature_template-bundle() {
 	FEAT_DEFAULT_ARCH=x64
 
 	# should be MERGE or NESTED or LIST
-	# NESTED : each item will be installed inside the bundle path in a separate directory
-	# MERGE : each item will be installed in the bundle path
+	# NESTED : each item will be installed inside the bundle path in a separate directory (with each feature name but without version)
+	# MERGE : each item will be installed in the bundle path (without each feature name/version)
 	# LIST : this bundle is just a list of item that will be installed normally
 	FEAT_BUNDLE=NESTED
 }
@@ -35,7 +35,7 @@ function feature_template-bundle_1_0_0() {
 	FEAT_BUNDLE_ITEM_x84="foo#1_0_0@x64 bar#1_0_0@x64"
 
 	# callback are list of functions
-	# automatic callback each time feature is initialized, to init env var
+	# automatic callback each time feature is initialized
 	FEAT_ENV_CALLBACK=feature_template-bundle_setenv
 	# automatic callback after all items in bundle list are installed
 	FEAT_BUNDLE_CALLBACK=

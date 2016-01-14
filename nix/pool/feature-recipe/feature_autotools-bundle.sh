@@ -32,5 +32,4 @@ function feature_autotools-bundle_1() {
 }
 
 
-
 fi

@@ -33,6 +33,7 @@ function feature_libtool_2_4_2() {
 
 }
 
+
 function feature_libtool_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"

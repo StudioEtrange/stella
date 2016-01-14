@@ -13,10 +13,42 @@ _DOCKER_INCLUDED_=1
 
 function feature_docker() {
 	FEAT_NAME=docker
-	FEAT_LIST_SCHEMA="1_8_1:binary"
-	FEAT_DEFAULT_VERSION=1_8_1
+	FEAT_LIST_SCHEMA="1_8_1:binary 1_9_1:binary"
+	FEAT_DEFAULT_VERSION=1_9_1
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
+}
+
+
+function feature_docker_1_9_1() {
+	FEAT_VERSION=1_9_1
+
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL=
+	FEAT_SOURCE_URL_FILENAME=
+	FEAT_SOURCE_URL_PROTOCOL=
+
+	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+		FEAT_BINARY_URL=https://get.docker.com/builds/Darwin/x86_64/docker-1.9.1
+		FEAT_BINARY_URL_FILENAME=docker-client-1.9.1-darwin
+	fi
+
+	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+		FEAT_BINARY_URL=https://get.docker.com/builds/Linux/x86_64/docker-1.9.1
+		FEAT_BINARY_URL_FILENAME=docker-1.9.1-linux
+	fi
+	FEAT_BINARY_URL_PROTOCOL=HTTP
+
+	FEAT_SOURCE_CALLBACK=
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/docker
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
+
 }
 
 function feature_docker_1_8_1() {

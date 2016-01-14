@@ -32,6 +32,7 @@ function feature_m4_1_4_17() {
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 }
 
+
 function feature_m4_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
