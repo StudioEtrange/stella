@@ -28,7 +28,7 @@ function feature_docker-machine_0_5_6() {
 		FEAT_BINARY_URL_FILENAME_x86=
 		FEAT_BINARY_URL_PROTOCOL_x86=
 		FEAT_BINARY_URL_x64=https://github.com/docker/machine/releases/download/v0.5.6/docker-machine_darwin-amd64
-		FEAT_BINARY_URL_FILENAME_x64=docker-machine_darwin-amd64-0_56
+		FEAT_BINARY_URL_FILENAME_x64=docker-machine_darwin-amd64-0_5_6
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
 	fi
 
