@@ -4,21 +4,21 @@ _GOCROSSCOMPILE_INCLUDED_=1
 
 function feature_go-crosscompile-chain() {
 	FEAT_NAME="go-crosscompile-chain"
-	FEAT_LIST_SCHEMA="1_4_2"
-	FEAT_DEFAULT_VERSION=1_4_2
+	FEAT_LIST_SCHEMA="1_4_3"
+	FEAT_DEFAULT_VERSION=1_4_3
 	FEAT_DEFAULT_ARCH=
 
 	FEAT_BUNDLE=NESTED
 }
 
-function feature_go-crosscompile-chain_1_4_2() {
-	FEAT_VERSION=1_4_2
+function feature_go-crosscompile-chain_1_4_3() {
+	FEAT_VERSION=1_4_3
 	
 	# need gcc
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
-	FEAT_BUNDLE_ITEM="go#1_4_2"
+	FEAT_BUNDLE_ITEM="go#1_4_3"
 
 	FEAT_ENV_CALLBACK=feature_go_crosschain_setenv
 	FEAT_BUNDLE_CALLBACK="feature_go_crosschain_setenv feature_go_prepare_crosschain"
@@ -26,7 +26,7 @@ function feature_go-crosscompile-chain_1_4_2() {
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/_GONATIVE_TOOLCHAIN_/go/pkg/windows_386/go/parser.a"
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/_WORKSPACE_/bin:$FEAT_INSTALL_ROOT/_GONATIVE_TOOLCHAIN_/go/bin"
 
-	BUILDCHAIN_GO_VERSION="1.4.2"
+	BUILDCHAIN_GO_VERSION="1.4.3"
 }
 
 
@@ -36,7 +36,7 @@ function feature_go_crosschain_setenv() {
 	echo " ** GOLANG cross-compile environment"
 	echo " GOROOT = $GOROOT"
 	echo " GOPATH = $GOPATH"
-	echo "   ** Restore your dependencies - from folder containing Godeps :"
+	echo "   ** To restore your dependencies from folder containing Godeps :"
 	echo "      godep restore"
 	echo "   ** Cross-compile your project from source"
 	echo "      gox -verbose -osarch=\"windows/386 windows/amd64 linux/386 linux/amd64 darwin/386 darwin/amd64\" <PATH_TO_PROJECT_ROOT|PROJECT_NAME in your GOPATH>"
