@@ -15,6 +15,8 @@ function __init_proxy() {
 		__get_key "$STELLA_ENV_FILE" "STELLA_PROXY_$STELLA_PROXY_ACTIVE" "PROXY_USER" "PREFIX"
 		__get_key "$STELLA_ENV_FILE" "STELLA_PROXY_$STELLA_PROXY_ACTIVE" "PROXY_PASS" "PREFIX"
 
+		
+
 		eval STELLA_PROXY_HOST=$(echo '$STELLA_PROXY_'$STELLA_PROXY_ACTIVE'_PROXY_HOST')
 		eval STELLA_PROXY_PORT=$(echo '$STELLA_PROXY_'$STELLA_PROXY_ACTIVE'_PROXY_PORT')
 		
@@ -47,13 +49,23 @@ function __init_proxy() {
 
 
 		echo "STELLA Proxy Active : $STELLA_PROXY_ACTIVE [ $STELLA_PROXY_HOST:$STELLA_PROXY_PORT ]"
-
+		[ ! "$STELLA_NO_PROXY" == "" ] && echo "STELLA Proxy bypassed for $STELLA_NO_PROXY"
 
 		__proxy_override
 	fi
 
 	
 }
+
+# for DOCKER
+
+# DOCKER-MACHINE
+# set env with ip of docker-machine set as no-proxy (ie : VM IP do not pass by proxy)
+# eval $(docker-machine env --no-proxy <machine-id>)
+# set proxy as env var inside docker-machine (ie : HTTP_PROXY)
+# docker-machine create -d virtualbox --engine-env HTTP_PROXY=http://example.com:8080 --engine-env HTTPS_PROXY=https://example.com:8080 --engine-env NO_PROXY=example2.com \
+
+# DOCKER DAEMON
 
 # ---------------- SHIM FUNCTIONS -----------------------------
 function __proxy_override() {
@@ -96,7 +108,7 @@ function __proxy_override() {
 	}
 
 	function brew() {
-		no_proxy="$STELLA_NO_PROXY" https_proxy="$STELLA_HTTPS_PROXY"  http_proxy="$STELLA_HTTP_PROXY" command brew "$@"
+		no_proxy="$STELLA_NO_PROXY" https_proxy="$STELLA_HTTPS_PROXY" http_proxy="$STELLA_HTTP_PROXY" command brew "$@"
 	}
 
 }

@@ -19,13 +19,14 @@ https://github.com/Alexpux/MINGW-packages
 [ ] feature system : FEAT_DEFAULT_ARCH must be fill with current cpu arch
 [ ] feature built from source must pick an arch and be installed in a folder with version@arch -- buildarch option should be remove -- by default built arch should be current cpu arch
 [ ] windows : replace patch from gnuwin32 (pb with UAC)
-[ ] linux : FORCE_RENAME on link feature library
+[ ] linux : FORCE_RENAME on link_feature_library (see windows implementation)
 [X] windows : check library dynamic dependencies - use dependencywalker in console mode ? use dumpbin http://stackoverflow.com/a/475323 ? use CMAKE GetPrerequisites. FINISH check_linked_lib.cmake use it with cmake -P check_linked_lib.cmake -DMY_BINARY_LOCATION=<path>
 [ ] linux : when ckecking dependencies dynamic -- print all libs
 [ ] add possibility of a last step before/after install, to do some test like make test or make check (i.e : for gmp lib)
 [ ] windows : sys_install_vs2015community => this chocolatey recipe do not install all VC Tools by default
 [ ] stella-env file : make it local or global with an option ?
-[ ] no_proxy should be in stella-env file like proxy. ANd should be local or global
+[ ] "no_proxy" should be in stella-env file
+[ ] proxy values in stella-env should be local or global
 [X] windows : link-app : add option to align workspace/cache path (like on nix)
 
 [ ] windows : build mingw-w64 compiler https://github.com/niXman/mingw-builds

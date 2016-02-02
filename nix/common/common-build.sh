@@ -455,7 +455,8 @@ function __link_feature_library() {
 	local SCHEMA="$1"
 	local OPT="$2"
 	# FORCE_STATIC -- force link to static version of lib (by isolating it)
-	# FORCE_DYNAMIC -- force link to dynamic version of lib (by isolating it) 
+	# FORCE_DYNAMIC -- force link to dynamic version of lib (by isolating it)
+	# TODO (see windows impl.) : FORCE_RENAME -- rename files when isolating files -- only apply when FORCE_STATIC or FORCE_DYNAMIC is ON
 	# FORCE_LIB_FOLDER <path> -- folder prefix where lib resides, default "/lib"
 	# FORCE_BIN_FOLDER <path>
 	# FORCE_INCLUDE_FOLDER <path> -- folder prefix where include resides, default "/include"
