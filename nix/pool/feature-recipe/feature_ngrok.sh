@@ -22,19 +22,19 @@ function feature_ngrok_stable() {
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		FEAT_BINARY_URL_x64="https://api.equinox.io/1/Applications/ap_pJSFC5wQYkAyI0FIVwKYs9h1hW/Updates/Asset/ngrok.zip?channel=stable&os=darwin&arch=amd64"
 		FEAT_BINARY_URL_FILENAME_x64=ngrok_darwin_amd64.zip
-		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
+		FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP
 		FEAT_BINARY_URL_x86="https://api.equinox.io/1/Applications/ap_pJSFC5wQYkAyI0FIVwKYs9h1hW/Updates/Asset/ngrok.zip?channel=stable&os=darwin&arch=386"
 		FEAT_BINARY_URL_FILENAME_x86=ngrok_darwin_386.zip
-		FEAT_BINARY_URL_PROTOCOL_x86=HTTP
+		FEAT_BINARY_URL_PROTOCOL_x86=HTTP_ZIP
 	fi
 	
 	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
 		FEAT_BINARY_URL_x64="https://api.equinox.io/1/Applications/ap_pJSFC5wQYkAyI0FIVwKYs9h1hW/Updates/Asset/ngrok.zip?channel=stable&os=linux&arch=amd64"
 		FEAT_BINARY_URL_FILENAME_x64=ngrok_linux_amd64.zip
-		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
+		FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP
 		FEAT_BINARY_URL_x86="https://api.equinox.io/1/Applications/ap_pJSFC5wQYkAyI0FIVwKYs9h1hW/Updates/Asset/ngrok.zip?channel=stable&os=linux&arch=386"
 		FEAT_BINARY_URL_FILENAME_x86=ngrok_linux_386.zip
-		FEAT_BINARY_URL_PROTOCOL_x86=HTTP
+		FEAT_BINARY_URL_PROTOCOL_x86=HTTP_ZIP
 	fi
 
 	FEAT_SOURCE_CALLBACK=
