@@ -30,3 +30,9 @@ https://github.com/Alexpux/MINGW-packages
 [X] windows : link-app : add option to align workspace/cache path (like on nix)
 
 [ ] windows : build mingw-w64 compiler https://github.com/niXman/mingw-builds
+
+[ ] ssh : launch stella app through ssh
+https://thornelabs.net/2013/08/21/simple-ways-to-send-multiple-line-commands-over-ssh.html
+http://stackoverflow.com/questions/4412238/whats-the-cleanest-way-to-ssh-and-run-multiple-commands-in-bash
+http://tldp.org/LDP/abs/html/here-docs.html
+SSHFS ? cache delivering only via HTTP ?
