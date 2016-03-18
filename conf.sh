@@ -2,7 +2,8 @@ if [ ! "$_STELLA_CONF_INCLUDED_" == "1" ]; then
 _STELLA_CONF_INCLUDED_=1
 
 # DEBUG STELLA
-#set -xv
+#set -x
+# set -xv
 
 _STELLA_CONF_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 if [ "$STELLA_CURRENT_RUNNING_DIR" == "" ]; then

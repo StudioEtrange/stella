@@ -2,7 +2,7 @@
 _STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $_STELLA_CURRENT_FILE_DIR/conf.sh
 
-
+#__timecount_start "id"
 
 
 function usage() {
@@ -211,3 +211,4 @@ fi
 
 
 echo "** END **"
+#__timecount_stop "id"

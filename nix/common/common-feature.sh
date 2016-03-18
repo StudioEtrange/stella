@@ -28,13 +28,17 @@ function __feature_init() {
 	__internal_feature_context $_SCHEMA
 	
 
-	local _flag=0
-	local a
-	for a in $FEATURE_LIST_ENABLED; do
-		[ "$FEAT_NAME#$FEAT_VERSION" == "$a" ] && _flag=1
-	done
+	#local _flag=0
+	#local a
+	local _tmp_feat=
+	if [[ ! " ${FEATURE_LIST_ENABLED[@]} " =~ " $FEAT_NAME#$FEAT_VERSION " ]]; then
 
-	if [ "$_flag" == "0" ]; then
+	
+	#for a in $FEATURE_LIST_ENABLED; do
+	#	[ "$FEAT_NAME#$FEAT_VERSION" == "$a" ] && _flag=1
+	#done
+
+	#if [ "$_flag" == "0" ]; then
 		__feature_inspect $FEAT_SCHEMA_SELECTED
 		if [ "$TEST_FEATURE" == "1" ]; then
 
@@ -569,8 +573,6 @@ function __feature_install() {
 
 function __feature_init_installed() {
 	
-	
-
 	local _tested_feat_name=
 	local _tested_feat_ver=
 	# init internal features
