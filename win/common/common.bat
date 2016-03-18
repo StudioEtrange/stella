@@ -201,7 +201,7 @@ goto :eof
 
 :: MEASURE TOOL------------
 :: example
-:: call :timecount_start timecount_id
+:: call :timecount_start timecount_id (var name which will receive timecount_id)
 ::		do something
 :: call :timecount_stop !timecount_id!
 :: echo ** time elapsed : !STELLA_TIMECOUNT_ELAPSED!

@@ -668,13 +668,13 @@ REM init feature context (properties, variables, ...)
 	set "FEAT_BUNDLE="
 
 	if not "!__SCHEMA!"=="" (
-		REM TODO we call translate_schema inside select_official_schema, so double call
-		call :select_official_schema !__SCHEMA! "FEAT_SCHEMA_SELECTED"
+		REM TODO we call translate_schema inside select_official_schema, so double call ===> DONE !
+		call :select_official_schema !__SCHEMA! "FEAT_SCHEMA_SELECTED" "TMP_FEAT_SCHEMA_NAME" "TMP_FEAT_SCHEMA_VERSION" "FEAT_ARCH" "FEAT_SCHEMA_FLAVOUR" "FEAT_SCHEMA_OS_RESTRICTION" "FEAT_SCHEMA_OS_EXCLUSION"
 	)
 
 	if not "!FEAT_SCHEMA_SELECTED!"=="" (
 
-		call :translate_schema "!FEAT_SCHEMA_SELECTED!" "TMP_FEAT_SCHEMA_NAME" "TMP_FEAT_SCHEMA_VERSION" "FEAT_ARCH" "FEAT_SCHEMA_FLAVOUR" "FEAT_SCHEMA_OS_RESTRICTION" "FEAT_SCHEMA_OS_EXCLUSION"
+		REM call :translate_schema "!FEAT_SCHEMA_SELECTED!" "TMP_FEAT_SCHEMA_NAME" "TMP_FEAT_SCHEMA_VERSION" "FEAT_ARCH" "FEAT_SCHEMA_FLAVOUR" "FEAT_SCHEMA_OS_RESTRICTION" "FEAT_SCHEMA_OS_EXCLUSION"
 
 		REM set install root (FEAT_INSTALL_ROOT)	
 		if "!FEAT_BUNDLE_MODE!"=="" (
@@ -739,9 +739,115 @@ REM init feature context (properties, variables, ...)
 goto :eof
 
 
+
 REM select an official schema
 REM pick a feature schema by filling some values with default one
+REM and may return split schema properties
 :select_official_schema
+	set "_SCHEMA=%~1"
+	set "feature_select_schema_ORIGINAL_SCHEMA=%~1"
+	set "_RESULT_SCHEMA=%~2"
+
+
+	set "_select_VAR_FEATURE_NAME=%~3"
+	set "_select_VAR_FEATURE_VER=%~4"
+	set "_select_VAR_FEATURE_ARCH=%~5"
+	set "_select_VAR_FEATURE_FLAVOUR=%~6"
+	set "_select_VAR_FEATURE_OS_RESTRICTION=%~7"
+	set "_select_VAR_FEATURE_OS_EXCLUSION=%~8"
+
+	set "_FILLED_SCHEMA="
+
+	if not "!_RESULT_SCHEMA!"=="" (
+		set "!_RESULT_SCHEMA!="
+	)
+
+ 	REM call :translate_schema "!_SCHEMA!" "_TR_FEATURE_NAME" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR" "_TR_FEATURE_OS_RESTRICTION" "_TR_FEATURE_OS_EXCLUSION"
+ 	call :translate_schema "!_SCHEMA!" "%~3" "%~4" "%~5" "%~6" "%~7" "%~8"
+
+ 	set "_tmp=!_select_VAR_FEATURE_NAME!"
+ 	set "_TR_FEATURE_NAME=!_tmp!"
+ 	set "_tmp=!_select_VAR_FEATURE_VER!"
+ 	set "_TR_FEATURE_VER=!_tmp!"
+ 	set "_tmp=!_select_VAR_FEATURE_ARCH!"
+ 	set "_TR_FEATURE_ARCH=!_tmp!"
+ 	set "_tmp=!_select_VAR_FEATURE_FLAVOUR!"
+ 	set "_TR_FEATURE_FLAVOUR=!_tmp!"
+ 	set "_tmp=!_select_VAR_FEATURE_OS_RESTRICTION!"
+ 	set "_TR_FEATURE_OS_RESTRICTION=!_tmp!"
+ 	set "_tmp=!_select_VAR_FEATURE_OS_EXCLUSION!"
+ 	set "_TR_FEATURE_OS_EXCLUSION=!_tmp!"
+
+
+	set "_official=0"
+	for %%a in (%__STELLA_FEATURE_LIST%) do (
+		if "%%a"=="!_TR_FEATURE_NAME!" set "_official=1"
+	)
+
+	if "%_official%"=="1" (
+
+		REM grab feature info
+		call %STELLA_FEATURE_RECIPE%\feature_!_TR_FEATURE_NAME!.bat :feature_!_TR_FEATURE_NAME!
+
+		REM fill schema with default values
+		if "!_TR_FEATURE_VER!"=="" (
+			set "_TR_FEATURE_VER=!FEAT_DEFAULT_VERSION!"
+		)
+		if "!_TR_FEATURE_ARCH!"=="" (
+			set "_TR_FEATURE_ARCH=!FEAT_DEFAULT_ARCH!"
+		)
+		if "!_TR_FEATURE_FLAVOUR!"=="" (
+			set "_TR_FEATURE_FLAVOUR=!FEAT_DEFAULT_FLAVOUR!"
+		)
+
+
+		set "_FILLED_SCHEMA=!_TR_FEATURE_NAME!#!_TR_FEATURE_VER!"
+		if not "!_TR_FEATURE_ARCH!"=="" (
+			set "_FILLED_SCHEMA=!_FILLED_SCHEMA!@!_TR_FEATURE_ARCH!"
+		)
+		if not "!_TR_FEATURE_FLAVOUR!"=="" ( 
+			set "_FILLED_SCHEMA=!_FILLED_SCHEMA!:!_TR_FEATURE_FLAVOUR!"
+		)
+		
+		REM ADDING OS restriction and OS exclusion
+		set _OS_OPTION=
+		if not "!_TR_FEATURE_OS_RESTRICTION!"=="" ( 
+			set "_OS_OPTION=!_OS_OPTION!/!_TR_FEATURE_OS_RESTRICTION!"
+		)
+		if not "!_TR_FEATURE_OS_EXCLUSION!"=="" ( 
+			set "_OS_OPTION=!_OS_OPTION!\!_TR_FEATURE_OS_EXCLUSION!"
+		)
+
+
+		REM check filled schema exists
+		for %%l in (!FEAT_LIST_SCHEMA!) do (
+			if "!_TR_FEATURE_NAME!#%%l"=="!_FILLED_SCHEMA!" (
+				if not "!_RESULT_SCHEMA!"=="" (
+					set "!_RESULT_SCHEMA!=!_FILLED_SCHEMA!!_OS_OPTION!"
+				)
+			)
+		)
+	else (
+		REM not official so empty split values
+
+		set "%_select_VAR_FEATURE_NAME%="
+		set "%_select_VAR_FEATURE_VER%="
+		set "%_select_VAR_FEATURE_ARCH%="
+		set "%_select_VAR_FEATURE_FLAVOUR%="
+		set "%_select_VAR_FEATURE_OS_RESTRICTION%="
+		set "%_select_VAR_FEATURE_OS_EXCLUSION%="
+	)
+
+	set "_SCHEMA=!feature_select_schema_ORIGINAL_SCHEMA!"
+goto:eof
+
+
+
+
+
+REM select an official schema
+REM pick a feature schema by filling some values with default one
+:select_official_schema_old
 	set "_SCHEMA=%~1"
 	set "feature_select_schema_ORIGINAL_SCHEMA=%~1"
 	set "_RESULT_SCHEMA=%~2"

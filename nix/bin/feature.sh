@@ -33,7 +33,6 @@ BUILDARCH=''				'a'				'arch'			a 			0 			 'x86 x64'
 
 __argparse "$0" "$OPTIONS" "$PARAMETERS" "Stella feature management" "$(usage)" "" "$@"
 
-
 # common initializations
 __init_stella_env
 

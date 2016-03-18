@@ -484,6 +484,27 @@ function __init_stella_env() {
 	__init_proxy
 }
 
+#MEASURE TOOL----------------------------------------------
+# __timecount_start "count_id"
+function __timecount_start() {
+	local _count_name_var=$1
+	local _id=$RANDOM$RANDOM
+
+	eval __stella_timecount_$_id="$(date +%s)"
+	eval $_count_name_var="__stella_timecount_$_id"
+
+}
+
+# elapsed_time=$(__timecount_stop "count_id")
+function __timecount_stop() {
+	local _end_count="$(date +%s)"
+	local _ellapsed=
+	local _tmp="$1"
+	local _start_count=${!_tmp}
+
+	local _ellapsed=$(echo "$_end_count - ${!_start_count}" | bc)
+	echo $_ellapsed
+}
 
 
 #FILE TOOLS----------------------------------------------
