@@ -152,7 +152,7 @@ goto :eof
 	set "INSTALL_DIR=%~3"
 	set "OPT=%~4"
 
-	:: DEBUG SOURCE_KEEP BUILD_KEEP UNPARALLELIZE NO_CONFIG NO_BUILD NO_OUT_OF_TREE_BUILD NO_INSPECT_BUILD NO_INSTALL
+	:: DEBUG SOURCE_KEEP BUILD_KEEP NO_CONFIG NO_BUILD NO_OUT_OF_TREE_BUILD NO_INSPECT_BUILD NO_INSTALL
 
 
 	:: keep source code after build (default : FALSE)
@@ -194,12 +194,15 @@ goto :eof
 	if not exist "!INSTALL_DIR!" mkdir "!INSTALL_DIR!"
 	
 	if "!_opt_out_of_tree_build!"=="ON" (
+		echo ** Out of tree build is active
 		if "!FORCE!"=="1" (
 			call %STELLA_COMMON%\common.bat :del_folder "!BUILD_DIR!"
 		)
 		if not "!_opt_build_keep!"=="ON" (
 			call %STELLA_COMMON%\common.bat :del_folder "!BUILD_DIR!"
 		)
+	) else (
+		echo ** Out of tree build is not active
 	)
 
 
@@ -954,7 +957,8 @@ goto :eof
 	echo ====^> Build arch directive : !STELLA_BUILD_ARCH!
 	echo ====^> Parallelized build (if supported) : !STELLA_BUILD_PARALLELIZE!
 	echo ====^> Relocation : !STELLA_BUILD_RELOCATE!
-
+	echo ** FOLDERS
+	echo ====^> Install directory : !_install_dir!
 
 goto :eof
 

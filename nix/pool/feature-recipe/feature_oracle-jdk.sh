@@ -2,8 +2,11 @@ if [ ! "$_ORACLEJDK_INCLUDED_" == "1" ]; then
 _ORACLEJDK_INCLUDED_=1
 
 
-# Recipe for Oracle Java SE Development Kit
+# Recipe for Oracle Java SE Development Kit (=JDK)
 
+# NOTE : Java Runtime Environment (=JRE) is only a java runtime
+#		 Java SE Development Kit (=JDK) includes a JRE and all components needed to develop
+#		 Java EE Development Kit do NOT include any Java SE Development Kit (JDK) nor any JRE. It includes a server (and other examples stuff) implementing the Java EE rules
 
 function feature_oracle-jdk() {
 	FEAT_NAME=oracle-jdk

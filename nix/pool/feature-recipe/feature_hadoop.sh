@@ -2,7 +2,7 @@ if [ ! "$_hadoop_INCLUDED_" == "1" ]; then
 _hadoop_INCLUDED_=1
 
 
-
+# Include YARN service, HDFS service and MapReduce framwork
 function feature_hadoop() {
 	FEAT_NAME=hadoop
 	FEAT_LIST_SCHEMA="2_7_2:binary 2_6_4:binary"

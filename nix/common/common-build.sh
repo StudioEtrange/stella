@@ -152,7 +152,7 @@ function __auto_build() {
 	SOURCE_DIR="$2"
 	INSTALL_DIR="$3"
 	OPT="$4"
-	# DEBUG SOURCE_KEEP BUILD_KEEP UNPARALLELIZE NO_CONFIG NO_BUILD NO_OUT_OF_TREE_BUILD NO_INSPECT_BUILD NO_INSTALL
+	# DEBUG SOURCE_KEEP BUILD_KEEP NO_CONFIG NO_BUILD NO_OUT_OF_TREE_BUILD NO_INSPECT_BUILD NO_INSTALL
 	# EXCLUDE_INSPECT
 
 	# keep source code after build (default : FALSE)
@@ -180,6 +180,7 @@ function __auto_build() {
 	[ "$_opt_configure" == "OFF" ] && _opt_out_of_tree_build=OFF
 
 
+
 	echo " ** Auto-building $NAME into $INSTALL_DIR for $STELLA_CURRENT_OS"
 
 	# folder stuff
@@ -189,8 +190,11 @@ function __auto_build() {
 	mkdir -p "$INSTALL_DIR"
 
 	if [ "$_opt_out_of_tree_build" == "ON" ]; then
+		echo "** Out of tree build is active"
 		[ "$FORCE" == "1" ] && rm -Rf "$BUILD_DIR"
 		[ ! "$_opt_build_keep" == "ON" ] && rm -Rf "$BUILD_DIR"
+	else
+		echo "** Out of tree build is not active"
 	fi
 
 	mkdir -p "$BUILD_DIR"
@@ -309,8 +313,8 @@ function __launch_configure() {
 
 function __launch_build() {
 	local AUTO_SOURCE_DIR
-	local AUTO_BUILD_DIR
 	local AUTO_INSTALL_DIR
+	local AUTO_BUILD_DIR
 	local OPT
 
 	AUTO_SOURCE_DIR="$1"
@@ -522,7 +526,6 @@ function __link_feature_library() {
 		[ "$o" == "LIBS_NAME" ] && _flag_libs_name=ON
 	done
 
-
 	# check origin for this schema
 	local _origin
 	case "$SCHEMA" in
@@ -544,7 +547,9 @@ function __link_feature_library() {
 		return
 	fi
 
-	echo "** Linked to $SCHEMA"
+	echo "** Linking to $SCHEMA"
+
+	[ "$STELLA_BUILD_COMPIL_FRONTEND" == "" ] && echo "** WARN : compil frontend empty - did you set a toolset ?"
 
 	# INSPECT required lib through schema
 	__push_schema_context
@@ -630,6 +635,7 @@ function __link_feature_library() {
 		eval "$_var_folders"_BIN=\"$_BIN\"
 	fi
 
+	echo "** Linked to $SCHEMA"
 }
 
 function __set_link_flags() {
@@ -899,6 +905,10 @@ function __prepare_build() {
 	echo "====> Build arch directive : $STELLA_BUILD_ARCH"
 	echo "====> Parallelized (if supported) : $STELLA_BUILD_PARALLELIZE"
 	echo "====> Relocation : $STELLA_BUILD_RELOCATE"
+	echo "** FOLDERS"
+	echo "====> Install directory : $INSTALL_DIR"
+	echo "====> Source directory : $SOURCE_DIR"
+	echo "====> Build directory : $BUILD_DIR"
 	echo "** SOME FLAGS"
 	echo "====> STELLA_C_CXX_FLAGS : $STELLA_C_CXX_FLAGS"
 	echo "====> STELLA_CPP_FLAGS : $STELLA_CPP_FLAGS"
@@ -1072,7 +1082,7 @@ function __set_build_mode_default() {
 # TOOLSET agnostic
 function __set_build_mode() {
 
-	# mIX_CPP_C_FLAGS -----------------------------------------------------------------
+	# MIX_CPP_C_FLAGS -----------------------------------------------------------------
 	# set CFLAGS and CXXFLAGS with CPPFLAGS
 	[ "$1" == "MIX_CPP_C_FLAGS" ] && STELLA_BUILD_MIX_CPP_C_FLAGS=$2
 

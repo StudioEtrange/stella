@@ -4,7 +4,7 @@ _DOCKER_INCLUDED_=1
 
 
 # docker have a lof ot dependencies and OS specific stuff
-# consider to install it from your OS system package manager or by the provided method here http://docs.docker.com/
+# consider to install it from your OS system package manager or by the provided method here http://docs.docker.com/ OR the install script here https://get.docker.com/
 
 # depending of the supporting state of your current OS,
 # this recipe will install a docker binary which will be a server AND a client, or just a client, depending of your OS
@@ -13,12 +13,44 @@ _DOCKER_INCLUDED_=1
 
 function feature_docker() {
 	FEAT_NAME=docker
-	FEAT_LIST_SCHEMA="1_8_1:binary 1_9_1:binary"
-	FEAT_DEFAULT_VERSION=1_9_1
+	FEAT_LIST_SCHEMA="1_8_1:binary 1_9_1:binary 1_10_3:binary"
+	FEAT_DEFAULT_VERSION=1_10_3
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
+
+
+function feature_docker_1_10_3() {
+	FEAT_VERSION=1_10_3
+
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL=
+	FEAT_SOURCE_URL_FILENAME=
+	FEAT_SOURCE_URL_PROTOCOL=
+
+	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+		FEAT_BINARY_URL=https://get.docker.com/builds/Darwin/x86_64/docker-1.10.3
+		FEAT_BINARY_URL_FILENAME=docker-client-1.10.3-darwin
+	fi
+
+	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+		FEAT_BINARY_URL=https://get.docker.com/builds/Linux/x86_64/docker-1.10.3
+		FEAT_BINARY_URL_FILENAME=docker-1.10.3-linux
+	fi
+	FEAT_BINARY_URL_PROTOCOL=HTTP
+
+	FEAT_SOURCE_CALLBACK=
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/docker
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
+
+}
 
 function feature_docker_1_9_1() {
 	FEAT_VERSION=1_9_1

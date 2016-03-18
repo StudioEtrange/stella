@@ -57,16 +57,6 @@ function __init_proxy() {
 	
 }
 
-# for DOCKER
-
-# DOCKER-MACHINE
-# set env with ip of docker-machine set as no-proxy (ie : VM IP do not pass by proxy)
-# eval $(docker-machine env --no-proxy <machine-id>)
-# set proxy as env var inside docker-machine (ie : HTTP_PROXY)
-# docker-machine create -d virtualbox --engine-env HTTP_PROXY=http://example.com:8080 --engine-env HTTPS_PROXY=https://example.com:8080 --engine-env NO_PROXY=example2.com \
-
-# DOCKER DAEMON
-
 # ---------------- SHIM FUNCTIONS -----------------------------
 function __proxy_override() {
 
@@ -104,11 +94,54 @@ function __proxy_override() {
 	}
 
 	function npm() {
-		command npm --https-proxy="$STELLA_HTTPS_PROXY" --proxy="$STELLA_HTTP_PROXY" "$@"	
+		command npm --https-proxy="$STELLA_HTTPS_PROXY" --proxy="$STELLA_HTTP_PROXY" "$@"
 	}
 
 	function brew() {
 		no_proxy="$STELLA_NO_PROXY" https_proxy="$STELLA_HTTPS_PROXY" http_proxy="$STELLA_HTTP_PROXY" command brew "$@"
+	}
+
+
+
+	# PROXY for DOCKER ----------
+
+	# DOCKER DAEMON
+	# Docker daemon rely on HTTP_PROXY env
+	#		but the env var need to be setted in daemon environement (not client)
+	#		Instead configure /etc/default/docker or /etc/sysconfig/docker and add 
+	#			HTTP_PROXY="http://<proxy_host>:<proxy_port>"
+	#			HTTPS_PROXY="http://<proxy_host>:<proxy_port>"
+	#		Docker daemon is used when accessing docker hub (like for search, pull, ...)
+	#
+	# DOCKER CLIENT
+	# docker client rely on HTTP_PROXY env to communicate to docker daemon via http
+	#		NOTE : so you may set no-proxy env var to not use proxy when accessing daemon
+	# 		eval $(docker-machine env <machine-id> --no-proxy)
+	#		docker run -it ubuntu /bin/bash
+	#
+	# DOCKER MACHINE
+	# http://stackoverflow.com/a/29303930
+	# Docker machine rely on HTTP_PROXY env (ie : for download boot2docker iso)
+	# How to set proxy as env var inside docker-machine (ie : HTTP_PROXY)
+	# 		docker-machine create -d virtualbox --engine-env http_proxy=http://example.com:8080 --engine-env https_proxy=https://example.com:8080 --engine-env NO_PROXY=example2.com <machine-id>
+	# 		WARN : This will set /var/lib/boot2docker/profile with HTTP_PROXY ONLY for docker commands (not the other commands)
+	#		this file will will be used during the boot initialisation (after the automount) and before daemon start
+	# How to retrieve ip of docker-machine
+	# 		docker-machine ip <machine-id>
+	# How to add to CURRENT no_proxy env vas ip of docker machine
+	# 		eval $(docker-machine env --no-proxy <machine-id>)
+	#
+	# DOCKER FILE
+	# into docker file, env var should be setted with ENV
+	#		ENV http_proxy http://<proxy_host>:<proxy_port>
+
+	function docker-machine() {
+		if [ "$1" == "create" ]; then
+			shift 1
+			command docker-machine create --engine-env http_proxy="$STELLA_HTTP_PROXY" --engine-env https_proxy="$STELLA_HTTPS_PROXY" --engine-env no_proxy="$STELLA_NO_PROXY" "$@"
+		else
+			command docker-machine "$@"
+		fi
 	}
 
 }

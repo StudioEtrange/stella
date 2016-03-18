@@ -1,7 +1,7 @@
 TODO
 
 [ ] Update README
-[ ] Make comm in code
+[ ] Make commentary in code
 [ ] Format output (log system)
 [ ] Test and remove DEST_ERASE in each feature_recipe : cause problem when bundled in merge mode. But only for binary ? keep it for source? only when get binary
 
@@ -35,4 +35,5 @@ https://github.com/Alexpux/MINGW-packages
 https://thornelabs.net/2013/08/21/simple-ways-to-send-multiple-line-commands-over-ssh.html
 http://stackoverflow.com/questions/4412238/whats-the-cleanest-way-to-ssh-and-run-multiple-commands-in-bash
 http://tldp.org/LDP/abs/html/here-docs.html
+http://stackoverflow.com/questions/305035/how-to-use-ssh-to-run-shell-script-on-a-remote-machine
 SSHFS ? cache delivering only via HTTP ?
