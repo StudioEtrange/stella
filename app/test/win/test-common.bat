@@ -1,7 +1,7 @@
 @setlocal enableExtensions enableDelayedExpansion
 @echo off
 
-call %~dp0\stella-link.bat :include
+call %~dp0\stella-link.bat include
 
 call :test_trim
 

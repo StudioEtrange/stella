@@ -788,20 +788,24 @@ function __select_official_schema() {
 
 	local _official=0
 	if [[ " ${__STELLA_FEATURE_LIST[@]} " =~ " ${_TR_FEATURE_NAME} " ]]; then
-		_official=1
-	fi
-	
-	if [ "$_official" == "1" ]; then
 
 		# grab feature info
 		source $STELLA_FEATURE_RECIPE/feature_$_TR_FEATURE_NAME.sh
 		feature_$_TR_FEATURE_NAME
 
 		# fill schema with default values
-		[ "$_TR_FEATURE_VER" == "" ] && _TR_FEATURE_VER=$FEAT_DEFAULT_VERSION
-		[ "$_TR_FEATURE_ARCH" == "" ] && _TR_FEATURE_ARCH=$FEAT_DEFAULT_ARCH
-		[ "$_TR_FEATURE_FLAVOUR" == "" ] && _TR_FEATURE_FLAVOUR=$FEAT_DEFAULT_FLAVOUR
-
+		if [ "$_TR_FEATURE_VER" == "" ]; then
+			_TR_FEATURE_VER=$FEAT_DEFAULT_VERSION
+			[ ! "$_VAR_FEATURE_VER" == "" ] && eval $_VAR_FEATURE_VER=$FEAT_DEFAULT_VERSION
+		fi
+		if [ "$_TR_FEATURE_ARCH" == "" ]; then
+			_TR_FEATURE_ARCH=$FEAT_DEFAULT_ARCH
+			[ ! "$_VAR_FEATURE_ARCH" == "" ] && eval $_VAR_FEATURE_ARCH=$FEAT_DEFAULT_ARCH
+		fi
+		if [ "$_TR_FEATURE_FLAVOUR" == "" ]; then
+			_TR_FEATURE_FLAVOUR=$FEAT_DEFAULT_FLAVOUR
+			[ ! "$_VAR_FEATURE_FLAVOUR" == "" ] && eval $_VAR_FEATURE_FLAVOUR=$FEAT_DEFAULT_FLAVOUR
+		fi
 
 		_FILLED_SCHEMA="$_TR_FEATURE_NAME"#"$_TR_FEATURE_VER"
 		[ ! "$_TR_FEATURE_ARCH" == "" ] && _FILLED_SCHEMA="$_FILLED_SCHEMA"@"$_TR_FEATURE_ARCH"
@@ -816,9 +820,14 @@ function __select_official_schema() {
 		local l
 		for l in $FEAT_LIST_SCHEMA; do
 			if [ "$_TR_FEATURE_NAME"#"$l" == "$_FILLED_SCHEMA" ]; then
-				[ ! "$_RESULT_SCHEMA" == "" ] && eval $_RESULT_SCHEMA=$_FILLED_SCHEMA$_OS_OPTION
+				[ ! "$_RESULT_SCHEMA" == "" ] && _official=1
 			fi
 		done
+		
+	fi
+
+	if [ "$_official" == "1" ]; then
+		eval $_RESULT_SCHEMA=$_FILLED_SCHEMA$_OS_OPTION
 	else
 		# not official so empty split values
 		eval $_VAR_FEATURE_NAME=
@@ -831,60 +840,6 @@ function __select_official_schema() {
 
 }
 
-# select an official schema
-# pick a feature schema by filling some values with default one
-function __select_official_schema2() {
-	local _SCHEMA=$1
-	local _RESULT_SCHEMA=$2
-
-	local _FILLED_SCHEMA=
-
-
- 	[ ! "$_RESULT_SCHEMA" == "" ] && unset -v $_RESULT_SCHEMA
-
-	__translate_schema "$_SCHEMA" "_TR_FEATURE_NAME" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR" "_TR_FEATURE_OS_RESTRICTION" "_TR_FEATURE_OS_EXCLUSION"
-
-
-	local _official=0
-	if [[ " ${__STELLA_FEATURE_LIST[@]} " =~ " ${_TR_FEATURE_NAME} " ]]; then
-		_official=1
-	fi
-	#for a in $__STELLA_FEATURE_LIST; do
-		#[ "$a" == "$_TR_FEATURE_NAME" ] && _official=1
-	#done
-
-
-	if [ "$_official" == "1" ]; then
-
-		# grab feature info
-		source $STELLA_FEATURE_RECIPE/feature_$_TR_FEATURE_NAME.sh
-		feature_$_TR_FEATURE_NAME
-
-		# fill schema with default values
-		[ "$_TR_FEATURE_VER" == "" ] && _TR_FEATURE_VER=$FEAT_DEFAULT_VERSION
-		[ "$_TR_FEATURE_ARCH" == "" ] && _TR_FEATURE_ARCH=$FEAT_DEFAULT_ARCH
-		[ "$_TR_FEATURE_FLAVOUR" == "" ] && _TR_FEATURE_FLAVOUR=$FEAT_DEFAULT_FLAVOUR
-
-
-		_FILLED_SCHEMA="$_TR_FEATURE_NAME"#"$_TR_FEATURE_VER"
-		[ ! "$_TR_FEATURE_ARCH" == "" ] && _FILLED_SCHEMA="$_FILLED_SCHEMA"@"$_TR_FEATURE_ARCH"
-		[ ! "$_TR_FEATURE_FLAVOUR" == "" ] && _FILLED_SCHEMA="$_FILLED_SCHEMA":"$_TR_FEATURE_FLAVOUR"
-		
-		# ADDING OS restriction and OS exclusion
-		_OS_OPTION=
-		[ ! "$_TR_FEATURE_OS_RESTRICTION" == "" ] && _OS_OPTION="$_OS_OPTION/$_TR_FEATURE_OS_RESTRICTION"
-		[ ! "$_TR_FEATURE_OS_EXCLUSION" == "" ] && _OS_OPTION="$_OS_OPTION"\\\\"$_TR_FEATURE_OS_EXCLUSION"
-
-		# check filled schema exists
-		local l
-		for l in $FEAT_LIST_SCHEMA; do
-			if [ "$_TR_FEATURE_NAME"#"$l" == "$_FILLED_SCHEMA" ]; then
-				[ ! "$_RESULT_SCHEMA" == "" ] && eval $_RESULT_SCHEMA=$_FILLED_SCHEMA$_OS_OPTION
-			fi
-		done
-	fi
-
-}
 
 # split schema properties
 # feature schema name[#version][@arch][:flavour][/os_restriction][\os_exclusion] in any order

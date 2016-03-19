@@ -9,8 +9,6 @@
 @if not "%~1"=="chaining" set STELLA_APP_ROOT=%_STELLA_LINK_CURRENT_FILE_DIR%
 
 
-
-
 if not "%~1"=="nothing" (
 	if not "%~1"=="bootstrap" (
 		if not exist "!STELLA_ROOT!\stella.bat" (
