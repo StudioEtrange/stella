@@ -2,9 +2,10 @@
 call %*
 goto :eof
 
+REM this is only docker client
 
-:feature_docker-client
-	set "FEAT_NAME=docker-client"
+:feature_docker
+	set "FEAT_NAME=docker"
 	set "FEAT_LIST_SCHEMA=1_6_0@x64:binary 1_6_0@x86:binary"
 	set "FEAT_DEFAULT_VERSION=1_6_0"
 	set "FEAT_DEFAULT_ARCH=x64"
@@ -12,7 +13,7 @@ goto :eof
 goto :eof
 
 
-:feature_docker-client_1_6_0
+:feature_docker_1_6_0
 	set "FEAT_VERSION=1_6_0"
 
 	set FEAT_SOURCE_DEPENDENCIES=
@@ -41,7 +42,7 @@ goto :eof
 
 
 
-:feature_docker-client_install_binary
+:feature_docker_install_binary
 	call %STELLA_COMMON%\common.bat :get_resource "!FEAT_NAME!" "!FEAT_BINARY_URL!" "!FEAT_BINARY_URL_PROTOCOL!" "!FEAT_INSTALL_ROOT!" "FORCE_NAME !FEAT_BINARY_URL_FILENAME!"
 	move /y "!FEAT_INSTALL_ROOT!\!FEAT_BINARY_URL_FILENAME!" "!FEAT_INSTALL_ROOT!\docker.exe"
 goto :eof
