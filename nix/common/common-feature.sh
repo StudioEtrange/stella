@@ -773,9 +773,9 @@ function __select_official_schema() {
 	local _FILLED_SCHEMA=
 
 
- 	[ ! "$_RESULT_SCHEMA" == "" ] && unset -v $_RESULT_SCHEMA
+ 	[ ! "$_RESULT_SCHEMA" == "" ] && eval $_RESULT_SCHEMA=
 
- 	#__translate_schema "$_SCHEMA" "$_VAR_FEATURE_NAME" "$_VAR_FEATURE_VER" "$_VAR_FEATURE_ARCH" "$_VAR_FEATURE_FLAVOUR" "$_VAR_FEATURE_OS_RESTRICTION" "$_VAR_FEATURE_OS_EXCLUSION"
+ 	# __translate_schema "$_SCHEMA" "$_VAR_FEATURE_NAME" "$_VAR_FEATURE_VER" "$_VAR_FEATURE_ARCH" "$_VAR_FEATURE_FLAVOUR" "$_VAR_FEATURE_OS_RESTRICTION" "$_VAR_FEATURE_OS_EXCLUSION"
 	__translate_schema "$_SCHEMA" "$3" "$4" "$5" "$6" "$7" "$8"
 	
 
@@ -815,6 +815,7 @@ function __select_official_schema() {
 		_OS_OPTION=
 		[ ! "$_TR_FEATURE_OS_RESTRICTION" == "" ] && _OS_OPTION="$_OS_OPTION/$_TR_FEATURE_OS_RESTRICTION"
 		[ ! "$_TR_FEATURE_OS_EXCLUSION" == "" ] && _OS_OPTION="$_OS_OPTION"\\\\"$_TR_FEATURE_OS_EXCLUSION"
+
 
 		# check filled schema exists
 		local l
@@ -857,19 +858,18 @@ function __translate_schema() {
 	local _VAR_FEATURE_OS_RESTRICTION=$6
 	local _VAR_FEATURE_OS_EXCLUSION=$7
 
-	[ ! "$_VAR_FEATURE_NAME" == "" ] && unset -v $_VAR_FEATURE_NAME
-	[ ! "$_VAR_FEATURE_VER" == "" ] && unset -v $_VAR_FEATURE_VER
-	[ ! "$_VAR_FEATURE_ARCH" == "" ] && unset -v $_VAR_FEATURE_ARCH
-	[ ! "$_VAR_FEATURE_FLAVOUR" == "" ] && unset -v $_VAR_FEATURE_FLAVOUR
-	[ ! "$_VAR_FEATURE_OS_RESTRICTION" == "" ] && unset -v $_VAR_FEATURE_OS_RESTRICTION
-	[ ! "$_VAR_FEATURE_OS_EXCLUSION" == "" ] && unset -v $_VAR_FEATURE_OS_EXCLUSION
+	[ ! "$_VAR_FEATURE_NAME" == "" ] && eval $_VAR_FEATURE_NAME=
+	[ ! "$_VAR_FEATURE_VER" == "" ] && eval $_VAR_FEATURE_VER=
+	[ ! "$_VAR_FEATURE_ARCH" == "" ] && eval $_VAR_FEATURE_ARCH=
+	[ ! "$_VAR_FEATURE_FLAVOUR" == "" ] && eval $_VAR_FEATURE_FLAVOUR=
+	[ ! "$_VAR_FEATURE_OS_RESTRICTION" == "" ] && eval $_VAR_FEATURE_OS_RESTRICTION=
+	[ ! "$_VAR_FEATURE_OS_EXCLUSION" == "" ] && eval $_VAR_FEATURE_OS_EXCLUSION=
 
 	local _char=
 
-
 	_char=":"
 	if [ -z "${_schema##*$_char*}" ]; then
-		[ ! "_VAR_FEATURE_FLAVOUR" == "" ] && eval $_VAR_FEATURE_FLAVOUR=$(echo $_schema | sed 's,^.*:\([^/\\#@]*\).*$,\1,')
+		[ ! "$_VAR_FEATURE_FLAVOUR" == "" ] && eval $_VAR_FEATURE_FLAVOUR=$(echo $_schema | sed 's,^.*:\([^/\\#@]*\).*$,\1,')
 		#$(echo $_schema | cut -d':' -f 2 | cut -d'\' -f 1 | cut -d'#' -f 1 | cut -d'@' -f 1 | cut -d'/' -f 1)
 	fi
 
