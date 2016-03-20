@@ -49,7 +49,7 @@ goto :eof
 	cd /D %STELLA_APP_CACHE_DIR%
 
 	echo ** Launch MSIEXEC with TARGETDIR=%INSTALL_DIR%
-	msiexec /qn /a %FILE_NAME% TARGETDIR="%INSTALL_DIR%\"
+	msiexec /qn /a %FEAT_BINARY_URL_FILENAME% TARGETDIR="%INSTALL_DIR%\"
 
 goto :eof
 
