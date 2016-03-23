@@ -37,3 +37,5 @@ http://stackoverflow.com/questions/4412238/whats-the-cleanest-way-to-ssh-and-run
 http://tldp.org/LDP/abs/html/here-docs.html
 http://stackoverflow.com/questions/305035/how-to-use-ssh-to-run-shell-script-on-a-remote-machine
 SSHFS ? cache delivering only via HTTP ?
+
+[ ] win : harmonization of internal recipe (patch, unzip, wget, ...)
