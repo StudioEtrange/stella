@@ -4,15 +4,39 @@ goto :eof
 
 REM http://www.ijg.org/
 REM unnofficial sources with cmake : https://github.com/LuaDist/libjpeg
-	
+
+REM : TODO pb with dll
+
 :feature_jpeg
 	set "FEAT_NAME=jpeg"
-	set "FEAT_LIST_SCHEMA=9a:source"
+	set "FEAT_LIST_SCHEMA=9a:source 9b:source"
 	set "FEAT_DEFAULT_VERSION=9a"
 	set "FEAT_DEFAULT_ARCH="
 	set "FEAT_DEFAULT_FLAVOUR=source"
 goto :eof
 
+
+:feature_jpeg_9b
+	set "FEAT_VERSION=9b"
+	set "FEAT_SOURCE_DEPENDENCIES="
+	set FEAT_BINARY_DEPENDENCIES=
+
+	set "FEAT_SOURCE_URL=http://www.ijg.org/files/jpegsr9b.zip"
+	set "FEAT_SOURCE_URL_FILENAME=jpegsr9b.zip"
+	set "FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP"
+	
+	set FEAT_BINARY_URL=
+	set FEAT_BINARY_URL_FILENAME=
+	set FEAT_BINARY_URL_PROTOCOL=
+	
+	set FEAT_SOURCE_CALLBACK=
+	set FEAT_BINARY_CALLBACK=
+	set FEAT_ENV_CALLBACK=
+
+	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\liblibjpeg.dll"
+	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\bin"	
+
+goto :eof
 
 :feature_jpeg_9a
 	set "FEAT_VERSION=9a"
