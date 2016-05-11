@@ -4,7 +4,7 @@ goto :eof
 
 REM --------------- PROXY INIT ----------------
 
-
+REM TODO : review with nix common-network.sh
 :init_proxy
 	if exist "!STELLA_ENV_FILE!" (
 		call %STELLA_COMMON%\common.bat :get_key "!STELLA_ENV_FILE!" "STELLA_PROXY" "ACTIVE" "PREFIX"

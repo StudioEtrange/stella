@@ -103,8 +103,8 @@ function feature_allegro_install_source() {
 
 	# examples are mislinked
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-		__fix_linked_lib_darwin "$INSTALL_DIR/examples" "INCLUDE_FILTER $SRC_DIR-build FIX_RPATH @loader_path/../lib"
-		__fix_linked_lib_darwin "$INSTALL_DIR/demos" "INCLUDE_FILTER $SRC_DIR-build FIX_RPATH @loader_path/../../../../../lib"
+		__fix_linked_lib_darwin "$INSTALL_DIR/examples" "INCLUDE_FILTER $SRC_DIR-build FIXED_PATH @loader_path/../lib"
+		__fix_linked_lib_darwin "$INSTALL_DIR/demos" "INCLUDE_FILTER $SRC_DIR-build FIXED_PATH @loader_path/../../../../../lib"
 	fi
 
 	# clean

@@ -15,7 +15,7 @@ https://ryzomcore.atlassian.net/wiki/display/RC/MinGW+External+Libraries
 https://ryzomcore.atlassian.net/wiki/display/RC/Create+External+Libs
 https://github.com/Alexpux/MINGW-packages
 
-[ ] Default build arch equivalent to current cpu arch ? (and change option name buildarch with forcearch)
+[ ] Default build arch equivalent to current cpu arch ? (and change option name buildarch with forcearch) (set STELLA_BUILD_ARCH_DEFAULT)
 [ ] feature system : FEAT_DEFAULT_ARCH must be fill with current cpu arch
 [ ] feature built from source must pick an arch and be installed in a folder with version@arch -- buildarch option should be remove -- by default built arch should be current cpu arch
 [ ] windows : replace patch from gnuwin32 (pb with UAC)
@@ -39,3 +39,12 @@ http://stackoverflow.com/questions/305035/how-to-use-ssh-to-run-shell-script-on-
 SSHFS ? cache delivering only via HTTP ?
 
 [ ] win : harmonization of internal recipe (patch, unzip, wget, ...)
+
+[ ] nix : code quality shellcheck, lint, bats
+http://carlosbecker.com/posts/lint-shell-scripts
+https://github.com/dokku/dokku/blob/master/tests.mk
+https://github.com/progrium/bashstyle
+http://stackoverflow.com/questions/3668665/is-there-a-static-analysis-tool-like-lint-or-perlcritic-for-shell-scripts
+http://man.he.net/man1/checkbashisms ===> test portability
+https://github.com/duggan/shlint ===> test portability
+https://github.com/SublimeLinter/SublimeLinter-shellcheck

@@ -30,6 +30,7 @@ function usage() {
 	echo " L     proxy on <name> : active proxy"
 	echo " L     proxy off now : disable proxy"
 	echo " L     proxy register <name> --proxyhost=<host> --proxyport=<port> [--proxyuser=<string> --proxypass=<string>] : register this proxy"
+	echo " L     proxy register bypass --proxyhost=<host> : register a host that will bypass proxy"
 	echo " o-- bootstrap management :"
 	echo " L     boot stella shell : launch a shell with all stella env var setted"
 	echo " L     boot docker <docker-id> [commands] : launch a command on a docker container with stella mounted as /stella --  need docker installed on your system"
@@ -159,7 +160,11 @@ if [ "$DOMAIN" == "proxy" ]; then
 	fi
 
 	if [ "$ACTION" == "register" ]; then
-		__register_proxy "$ID" "$PROXYHOST" "$PROXYPORT" "$PROXYUSER" "$PROXYPASS"
+		if [ "$ID" == "bypass" ]; then
+			__register_no_proxy "$PROXYHOST"
+		else
+			__register_proxy "$ID" "$PROXYHOST" "$PROXYPORT" "$PROXYUSER" "$PROXYPASS"
+		fi
 	fi
 fi
 

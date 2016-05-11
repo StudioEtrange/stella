@@ -2,6 +2,8 @@ if [ ! "$_GOCROSSCOMPILE_INCLUDED_" == "1" ]; then
 _GOCROSSCOMPILE_INCLUDED_=1
 
 
+# TODO review with https://github.com/StudioEtrange/ngrok-build 
+
 function feature_go-crosscompile-chain() {
 	FEAT_NAME="go-crosscompile-chain"
 	FEAT_LIST_SCHEMA="1_4_3"
@@ -41,6 +43,7 @@ function feature_go_crosschain_setenv() {
 	echo "   ** Cross-compile your project from source"
 	echo "      gox -verbose -osarch=\"windows/386 windows/amd64 linux/386 linux/amd64 darwin/386 darwin/amd64\" <PATH_TO_PROJECT_ROOT|PROJECT_NAME in your GOPATH>"
 }
+
 
 function feature_go_prepare_crosschain() {
 	PATH="$FEAT_SEARCH_PATH:$PATH"

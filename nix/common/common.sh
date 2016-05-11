@@ -218,6 +218,12 @@ SCRIPT
 )
 }
 
+
+# http://stackoverflow.com/questions/369758/how-to-trim-whitespace-from-a-bash-variable
+function __trim3() {
+	echo -e "$1" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'
+}
+
 # trim whitespace
 function __trim2() {
 	echo $(echo "$1" | sed -e 's/^ *//' -e 's/ *$//')
@@ -530,17 +536,17 @@ function __del_folder() {
 
 # copy content of folder ARG1 into folder ARG2
 function __copy_folder_content_into() {
-	local filter="$3"
-	if [ "$filter" == "" ]; then
-		filter="*"
+	local select_filter="$3"
+	if [ "$select_filter" == "" ]; then
+		select_filter="*"
 	fi
 	
-	if [ $(__count_folder_item $1 $filter) -gt 0 ]; then
+	if [ $(__count_folder_item $1 $select_filter) -gt 0 ]; then
 		mkdir -p $2
 		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-			cp -fa $1/$filter $2
+			cp -fa $1/$select_filter $2
 		else
-			cp -fa $1/$filter --target-directory=$2
+			cp -fa $1/$select_filter --target-directory=$2
 		fi
 	fi
 }
@@ -1085,6 +1091,22 @@ function __ini_file() {
 		modified = 0;
 	}
 
+	# Leaving the found section
+	/\[/ {
+		if(processing) {
+			if ( mode == "ADD" ) {
+				print "'$_KEY'="val;
+				modified = 1;
+				processing = 0;
+			}
+
+			if ( mode == "DEL" ) {
+				processing = 0;
+			}
+		}
+	}
+
+
 	# Entering the section, set the flag
 	/^\['$_SECTION']/ {
 		processing = 1;
@@ -1097,7 +1119,14 @@ function __ini_file() {
 		   		print "'$_KEY'="val;
 				skip = 1;
 				modified = 1;
+				processing = 0;
 			}
+
+			if ( mode == "DEL" ) {
+				skip = 1;
+				processing = 0;
+			}
+
 		}
 	}
 

@@ -209,10 +209,13 @@ function __stella_requirement() {
 
 
 # REQUIRE -------------------------
-
+# require a feature.
+# By default the required feature is MANDATORY
+# Test if feature is present 
+#		if feature is not OPTIONAL may install it from STELLA  or provide guideline to install it FROM SYSTEM
 function __require() {
 	local _artefact="$1" # binary to test
-	local _id="$2" # feature name or sys name for package manager
+	local _id="$2" # feature name (for stella) or sys name (for package manager)
 	local _OPT="$3"
 
 	# OPTIONAL

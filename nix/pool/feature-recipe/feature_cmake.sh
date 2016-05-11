@@ -1,6 +1,7 @@
 if [ ! "$_CMAKE_INCLUDED_" == "1" ]; then 
 _CMAKE_INCLUDED_=1
 
+# TODO : replace __download_uncompress with get_resource
 
 function feature_cmake() {
 

@@ -48,6 +48,7 @@ source $STELLA_COMMON/common-platform.sh
 source $STELLA_COMMON/common.sh
 source $STELLA_COMMON/common-feature.sh
 source $STELLA_COMMON/common-app.sh
+source $STELLA_COMMON/common-binary.sh
 source $STELLA_COMMON/common-build.sh
 source $STELLA_COMMON/common-api.sh
 source $STELLA_COMMON/make-sfx.sh
@@ -100,7 +101,7 @@ fi
 # OTHERS ---------------------------------------------
 FEATURE_LIST_ENABLED=
 VERBOSE_MODE=0
-STELLA_NO_PROXY="localhost,127.0.0.1,localaddress,.localdomain.com"
+STELLA_DEFAULT_NO_PROXY="localhost,127.0.0.1,localaddress,.localdomain.com"
 
 # FEATURE LIST---------------------------------------------
 __STELLA_FEATURE_LIST=
@@ -175,7 +176,8 @@ make_sevenzip_sfx_bin make_targz_sfx_shell compress trim"
 STELLA_API_API_PUBLIC="api_connect api_disconnect"
 STELLA_API_APP_PUBLIC="get_app_property link_app get_data get_assets get_data_pack get_assets_pack delete_data delete_assets delete_data_pack delete_assets_pack update_data update_assets revert_data revert_assets update_data_pack update_assets_pack revert_data_pack revert_assets_pack get_feature get_features"
 STELLA_API_FEATURE_PUBLIC="list_feature_version feature_remove feature_catalog_info feature_install feature_install_list feature_init list_active_features feature_reinit_installed feature_inspect"
-STELLA_API_BUILD_PUBLIC="fix_rpath_linux check_built_files fix_rpath_darwin fix_linked_lib_darwin fix_dynamiclib_install_name_darwin"
+STELLA_API_BINARY_PUBLIC="get_rpath_darwin"
+STELLA_API_BUILD_PUBLIC=""
 STELLA_API_PLATFORM_PUBLIC="sys_install sys_remove require"
 STELLA_API_NETWORK_PUBLIC="enable_proxy disable_proxy no_proxy_for register_proxy"
 

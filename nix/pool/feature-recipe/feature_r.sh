@@ -85,15 +85,15 @@ function feature_r_darwin() {
 	#cp $SRC_DIR/gfortran/lib/libgcc_s_x86_64.1.dylib $SRC_DIR/lib/
 	#cp $SRC_DIR/gfortran/lib/libgcc_s.1.dylib $SRC_DIR/lib/
 
-	__fix_dynamiclib_install_name_darwin "$SRC_DIR/gfortran/lib/libquadmath.0.dylib" "PATH"
-	__fix_dynamiclib_install_name_darwin "$SRC_DIR/gfortran/lib/libgfortran.3.dylib" "PATH"
-	__fix_dynamiclib_install_name_darwin "$SRC_DIR/gfortran/lib/libgcc_s_x86_64.1.dylib" "PATH"
-	__fix_dynamiclib_install_name_darwin "$SRC_DIR/gfortran/lib/libgcc_s.1.dylib" "PATH"
+	__tweak_install_name_darwin "$SRC_DIR/gfortran/lib/libquadmath.0.dylib" "PATH"
+	__tweak_install_name_darwin "$SRC_DIR/gfortran/lib/libgfortran.3.dylib" "PATH"
+	__tweak_install_name_darwin "$SRC_DIR/gfortran/lib/libgcc_s_x86_64.1.dylib" "PATH"
+	__tweak_install_name_darwin "$SRC_DIR/gfortran/lib/libgcc_s.1.dylib" "PATH"
 
-	__fix_linked_lib_darwin "$SRC_DIR/gfortran/lib/libquadmath.0.dylib" "FIX_RPATH @loader_path INCLUDE_FILTER quadmath|gfortran|gcc"
-	__fix_linked_lib_darwin "$SRC_DIR/gfortran/lib/libgfortran.3.dylib" "FIX_RPATH @loader_path INCLUDE_FILTER quadmath|gfortran|gcc"
-	__fix_linked_lib_darwin "$SRC_DIR/gfortran/lib/libgcc_s_x86_64.1.dylib" "FIX_RPATH @loader_path INCLUDE_FILTER quadmath|gfortran|gcc"
-	__fix_linked_lib_darwin "$SRC_DIR/gfortran/lib/libgcc_s.1.dylib" "FIX_RPATH @loader_path INCLUDE_FILTER quadmath|gfortran|gcc"
+	__fix_linked_lib_darwin "$SRC_DIR/gfortran/lib/libquadmath.0.dylib" "FIXED_PATH @loader_path INCLUDE_FILTER quadmath|gfortran|gcc"
+	__fix_linked_lib_darwin "$SRC_DIR/gfortran/lib/libgfortran.3.dylib" "FIXED_PATH @loader_path INCLUDE_FILTER quadmath|gfortran|gcc"
+	__fix_linked_lib_darwin "$SRC_DIR/gfortran/lib/libgcc_s_x86_64.1.dylib" "FIXED_PATH @loader_path INCLUDE_FILTER quadmath|gfortran|gcc"
+	__fix_linked_lib_darwin "$SRC_DIR/gfortran/lib/libgcc_s.1.dylib" "FIXED_PATH @loader_path INCLUDE_FILTER quadmath|gfortran|gcc"
 
 
 	# env and clean

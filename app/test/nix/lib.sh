@@ -4,5 +4,5 @@ function log() {
 	local result=$2
 	local string=$3
 
-	echo " ** TEST ${BASH_SOURCE[0]}::$test_name '$string' [$result]"
+	echo " ** TEST ${BASH_SOURCE[1]}::$test_name '$string' [$result]"
 }
