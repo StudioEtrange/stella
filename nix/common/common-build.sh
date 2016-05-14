@@ -1440,7 +1440,7 @@ function __fix_built_files() {
 
 	if [ "$_opt_filter" == "ON" ]; then
 		if [ ! "$(echo $path | grep -E "$_filter")" == "" ]; then
-			return
+			return 0
 		fi
 	fi
 
@@ -1473,13 +1473,17 @@ function __fix_built_files() {
 					if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
 						#[ "$(__get_extension_from_string $path)" == "dylib" ] && __fix_dynamiclib_install_name_darwin "$path" "RPATH"
 						#[ "$(__get_extension_from_string $path)" == "so" ] && __fix_dynamiclib_install_name_darwin "$path" "RPATH"
-						[[ "$path" =~ .*dylib.* ]] && __tweak_install_name_darwin "$path" "RPATH"
+						if [[ "$path" =~ .*dylib.* ]]; then
+							__tweak_install_name_darwin "$path" "RPATH"
+						fi
 						if [ ! "$(__get_extension_from_string $path)" == "a" ]; then
 							__fix_linked_lib_darwin "$path" "REL_RPATH EXCLUDE_FILTER /System/Library|/usr/lib"
 							__add_rpath_darwin "$path" "$STELLA_BUILD_RPATH"
 						fi
 					else
-						[ "$(__get_extension_from_string $path)" == "dylib" ] && __tweak_install_name_darwin "$path" "PATH"
+						if [ "$(__get_extension_from_string $path)" == "dylib" ]; then
+							__tweak_install_name_darwin "$path" "PATH"
+						fi
 					fi
 		
 			;;

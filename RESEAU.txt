@@ -1,0 +1,81 @@
+RESEAU
+1 ------------------------
+
+FB switch => iron
+		  => FB TV
+LB switch => iron
+
+FB wifi off
+LB wifi off
+FB routeur on
+LB routeur on
+iron DHCP on
+FB DHCP ?
+LB DHCP ?
+FB Services : ? (mdns repeater)
+FB TV : OK
+
+carte wifi sur iron
+
+2 ------------------------
+
+FB switch + LB switch => switch => iron
+				  	  			=> reseau local
+				  				=> FB TV
+
+FB wifi on
+LB wifi on
+FB routeur on
+LB routeur on
+iron DHCP on
+FB DHCP off
+LB DHCP off
+FB Services : OK
+FB TV : OK
+3 ------------------------
+
+FB switch + LB switch => iron  => reseau local
+							   => FB TV
+
+FB wifi on
+LB wifi on
+FB routeur on
+LB routeur on
+iron DHCP on
+FB DHCP on
+LB DHCP on
+
+iron en DMZ de FB et LB
+FB Services : ? mDNS repeater http://clement.storck.me/blog/?p=524
+https://bitbucket.org/geekman/mdns-repeater/
+FB TV : ? pontage VLAN100 ? http://www.debian-fr.org/ponter-le-flux-tv-vlan100-entre-2-freebox-t21094.html
+
+# Pont inter-freebox
+auto br0
+iface br0 inet manual
+bridge_ports eth0.100 eth2.100
+bridge_stp off
+bridge_maxwait 0
+post-up sysctl -w net.bridge.bridge-nf-call-iptables=0
+
+---------------
+LB
+IP : 192.168.1.1 / lune
+DHCP :
+192.168.1.100 => 192.168.1.254
+255.255.255.0
+DMZ : 192.168.1.50
+accès distant : port 1098
+
+FB
+IP : 192.168.2.1 / veine
+DHCP :
+192.168.2.100 => 192.168.2.254
+255.255.255.0
+DMZ : 192.168.2.50
+accès distant : port 1908
+
+
+iron em1 
+IP : 192.168.1.50
+

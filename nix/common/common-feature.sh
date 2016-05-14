@@ -24,13 +24,13 @@ function __feature_init() {
 	for o in $_OPT; do 
 		[ "$o" == "HIDDEN" ] && _opt_hidden_feature=ON
 	done
-
+	
 	__internal_feature_context $_SCHEMA
 	
-
 	#local _flag=0
 	#local a
 	local _tmp_feat=
+	
 	if [[ ! " ${FEATURE_LIST_ENABLED[@]} " =~ " $FEAT_NAME#$FEAT_VERSION " ]]; then
 
 	
@@ -39,6 +39,8 @@ function __feature_init() {
 	#done
 
 	#if [ "$_flag" == "0" ]; then
+
+
 		__feature_inspect $FEAT_SCHEMA_SELECTED
 		if [ "$TEST_FEATURE" == "1" ]; then
 
@@ -81,7 +83,6 @@ function __feature_init() {
 		fi
 
 	fi
-	
 }
 
 
@@ -101,19 +102,18 @@ function __feature_match_installed() {
 
 	local _tested=
 	local _found=
-
 	# we are NOT inside a bundle, because FEAT_BUNDLE_MODE is NOT set
 	if [ "$FEAT_BUNDLE_MODE" == "" ]; then
 
 		__translate_schema "$_SCHEMA" "__VAR_FEATURE_NAME" "__VAR_FEATURE_VER" "__VAR_FEATURE_ARCH" "__VAR_FEATURE_FLAVOUR"
 
-
-		[ ! "$__VAR_FEATURE_VER" == "" ] && _tested=$__VAR_FEATURE_VER
+		[ ! "$__VAR_FEATURE_VER" == "" ] && _tested="$__VAR_FEATURE_VER"
 		[ ! "$__VAR_FEATURE_ARCH" == "" ] && _tested="$_tested"@"$__VAR_FEATURE_ARCH"
 
 		if [ -d "$STELLA_APP_FEATURE_ROOT/$__VAR_FEATURE_NAME" ]; then
 			# for each detected version
 			for _f in  "$STELLA_APP_FEATURE_ROOT"/"$__VAR_FEATURE_NAME"/*; do
+				
 				if [ "$_tested" == "" ]; then
 					_found=$_f
 				else
@@ -121,7 +121,8 @@ function __feature_match_installed() {
 						*"$_tested"*)
 							_found=$_f
 						;;
-						*);;
+						*)
+						;;
 					esac
 				fi
 			done
@@ -129,17 +130,18 @@ function __feature_match_installed() {
 
 		if [ ! "$_found" == "" ]; then
 			# we fix the found version with the flavour of the requested schema
-			[ ! "$__VAR_FEATURE_FLAVOUR" == "" ] && __internal_feature_context "$__VAR_FEATURE_NAME"#"$(__get_filename_from_string $_found)":"$__VAR_FEATURE_FLAVOUR"
-			[ "$__VAR_FEATURE_FLAVOUR" == "" ] && __internal_feature_context "$__VAR_FEATURE_NAME"#"$(__get_filename_from_string $_found)"
+			if [ ! "$__VAR_FEATURE_FLAVOUR" == "" ]; then
+				__internal_feature_context "$__VAR_FEATURE_NAME"#"$(__get_filename_from_string $_found)":"$__VAR_FEATURE_FLAVOUR"
+			else
+				__internal_feature_context "$__VAR_FEATURE_NAME"#"$(__get_filename_from_string $_found)"
+			fi
 		else
 			# empty info values
 			__internal_feature_context
 		fi
 	else
-		__internal_feature_context $_SCHEMA
-
+		__internal_feature_context "$_SCHEMA"
 	fi
-
 }
 
 # save context before calling __feature_inspect, in case we use it inside a schema context
@@ -208,7 +210,7 @@ function __feature_inspect() {
 
 
 
-
+# TODO : update FEATURE_LIST_ENABLED ?
 function __feature_remove() {
 	local _SCHEMA=$1
 	local _OPT="$2"
@@ -521,6 +523,7 @@ function __feature_install() {
 
 				[ "$FEAT_SCHEMA_FLAVOUR" == "source" ] && __start_build_session
 				feature_"$FEAT_NAME"_install_"$FEAT_SCHEMA_FLAVOUR"
+
 				# Sometimes current directory is lost by the system. For example when deleting source folder at the end of the install recipe
 				cd $STELLA_APP_ROOT
 				
@@ -529,6 +532,7 @@ function __feature_install() {
 			if [ "$_export_mode" == "OFF" ]; then
 				if [ "$_portable_mode" == "OFF" ]; then
 					__feature_inspect $FEAT_SCHEMA_SELECTED
+
 					if [ "$TEST_FEATURE" == "1" ]; then
 						echo "** Feature $_SCHEMA is installed"
 						__feature_init "$FEAT_SCHEMA_SELECTED" $_OPT
@@ -853,14 +857,14 @@ function __select_official_schema() {
 # example: wget/ubuntu#1_2@x86:source wget/ubuntu#1_2@x86:source\macos
 function __translate_schema() {
 
-	local _schema=$1
+	local _schema="$1"
 
-	local _VAR_FEATURE_NAME=$2
-	local _VAR_FEATURE_VER=$3
-	local _VAR_FEATURE_ARCH=$4
-	local _VAR_FEATURE_FLAVOUR=$5
-	local _VAR_FEATURE_OS_RESTRICTION=$6
-	local _VAR_FEATURE_OS_EXCLUSION=$7
+	local _VAR_FEATURE_NAME="$2"
+	local _VAR_FEATURE_VER="$3"
+	local _VAR_FEATURE_ARCH="$4"
+	local _VAR_FEATURE_FLAVOUR="$5"
+	local _VAR_FEATURE_OS_RESTRICTION="$6"
+	local _VAR_FEATURE_OS_EXCLUSION="$7"
 
 	[ ! "$_VAR_FEATURE_NAME" == "" ] && eval $_VAR_FEATURE_NAME=
 	[ ! "$_VAR_FEATURE_VER" == "" ] && eval $_VAR_FEATURE_VER=

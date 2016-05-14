@@ -716,14 +716,14 @@ function __resource() {
 
 		case $PROTOCOL in
 			HTTP_ZIP)
-				[ "$_opt_get" == "ON" ] && __download_uncompress "$URI" "$_download_filename" "$FINAL_DESTINATION" "$_STRIP"
-				[ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
+				if [ "$_opt_get" == "ON" ]; then __download_uncompress "$URI" "$_download_filename" "$FINAL_DESTINATION" "$_STRIP"; fi
+				if [ "$_opt_merge" == "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
 				;;
 			HTTP)
 				# HTTP protocol use always merge by default : because it never erase destination folder
 				# but the 'merged' flag file will be created only if we pass the option MERGE
-				[ "$_opt_get" == "ON" ] && __download "$URI" "$_download_filename" "$FINAL_DESTINATION"
-				[ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
+				if [ "$_opt_get" == "ON" ]; then __download "$URI" "$_download_filename" "$FINAL_DESTINATION"; fi
+				if [ "$_opt_merge" == "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
 				;;
 			HG)
 				if [ "$_opt_revert" == "ON" ]; then cd "$FINAL_DESTINATION"; hg revert --all -C; fi
@@ -738,12 +738,12 @@ function __resource() {
 				# [ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
 			FILE)
-				[ "$_opt_get" == "ON" ] && __copy_folder_content_into "$URI" "$FINAL_DESTINATION"
-				[ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
+				if [ "$_opt_get" == "ON" ]; then __copy_folder_content_into "$URI" "$FINAL_DESTINATION"; fi
+				if [ "$_opt_merge" == "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
 				;;
 			FILE_ZIP)
 				__uncompress "$URI" "$FINAL_DESTINATION%" "$_STRIP"
-				[ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
+				if [ "$_opt_merge" == "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
 				;;
 			*)
 				echo " ** ERROR Unknow protocol"
@@ -775,6 +775,8 @@ function __download_uncompress() {
 	
 	__download $URL $FILE_NAME
 	__uncompress "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$UNZIP_DIR" "$OPT"
+
+
 }
 
 function __compress() {
