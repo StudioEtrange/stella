@@ -65,7 +65,7 @@ output_contains() {
   echo "$found"
 }
 
-# contains n ($2) occurence of string ($1)  
+# contains n ($2) occurence of string ($1)
 assert_output_contains_exact() {
   local expected="$1"; local count="${2:-1}";
   local found="$(output_contains $expected)"
@@ -78,7 +78,7 @@ assert_output_contains_exact() {
   fi
 }
 
-# contains at least 1 occurence of string ($1)  
+# contains at least 1 occurence of string ($1)
 assert_output_contains() {
   local expected="$1";
   local found="$(output_contains $expected)"
@@ -90,7 +90,7 @@ assert_output_contains() {
   fi
 }
 
-# contains at least 1 occurence of string ($1)  
+# contains at least 1 occurence of string ($1)
 assert_output_not_contains() {
   assert_output_contains_exact "$1" "0"
 }

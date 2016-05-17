@@ -7,6 +7,8 @@ setup() {
     # remove feature from app properties file
 	__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" ""
 	__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" "PREFIX"
+
+   #set +e; source "$__BATS_STELLA_DECLARE" &>/dev/null; set -e;
 }
 
 teardown() {
@@ -22,7 +24,6 @@ teardown() {
 # INFO -------------------------------------------------------------------
 @test "__translate_schema" {
 
-	skip
 	local TR_FEATURE_OS_RESTRICTION=
 	local TR_FEATURE_VER=
 	local TR_FEATURE_NAME=
@@ -78,14 +79,13 @@ teardown() {
 
 
 @test "__feature_install" {
-	skip
 
 	local _test="sbt"
 	__feature_catalog_info $_test
 	local def_ver=$FEAT_VERSION
 	local def_arch=$FEAT_ARCH
 
-	local old_feature_list="$FEATURE_LIST_ENABLED"
+  local old_feature_list="$(__list_active_features)"
 
 	__feature_install $_test
 	assert_output_not_contains "ERROR"
@@ -98,37 +98,69 @@ teardown() {
 	assert_equal "$def_ver" "$FEAT_VERSION"
 	assert_equal "$def_arch" "$FEAT_ARCH"
 	assert_equal "$STELLA_APP_FEATURE_ROOT/$FEAT_NAME/$FEAT_VERSION" "$FEAT_INSTALL_ROOT"
-	assert_equal "$old_feature_list $FEAT_NAME#$def_ver" "$FEATURE_LIST_ENABLED"
 
-	
+  run __list_active_features
+	assert_output "$old_feature_list $FEAT_NAME#$def_ver"
+
+
+}
+
+
+@test "__feature_remove" {
+
+  local _test="sbt"
+	__feature_catalog_info $_test
+	local def_ver=$FEAT_VERSION
+	local def_arch=$FEAT_ARCH
+
+	local old_feature_list="$(__list_active_features)"
+
+	__feature_install $_test
+	assert_output_not_contains "ERROR"
+
+  __feature_remove $_test
+
+	# empty feature informations values
+	#__internal_feature_context
+
+	__feature_inspect $_test
+	assert_equal "0" "$TEST_FEATURE"
+	assert_equal "sbt" "$FEAT_NAME"
+	assert_equal "$def_ver" "$FEAT_VERSION"
+	assert_equal "$def_arch" "$FEAT_ARCH"
+	assert_equal "$STELLA_APP_FEATURE_ROOT/$FEAT_NAME/$FEAT_VERSION" "$FEAT_INSTALL_ROOT"
+
+  run __list_active_features
+	assert_output "$old_feature_list"
+
 }
 
 
 
 
 @test "__feature_install build from source" {
-
+  skip
 	local _test="cmatrix:source"
 	__feature_catalog_info $_test
 	local def_ver=$FEAT_VERSION
 	local def_arch=$FEAT_ARCH
 
-	local old_feature_list="$FEATURE_LIST_ENABLED"
+	local old_feature_list="$(__list_active_features)"
 
 	__feature_install $_test
 	assert_output_not_contains "ERROR"
 
-	
+  # empty feature informations values
+	#__internal_feature_context
+
 	run __feature_inspect $_test
 	assert_equal "1" "$TEST_FEATURE"
 	assert_equal "cmatrix" "$FEAT_NAME"
 	assert_equal "$def_ver" "$FEAT_VERSION"
 	assert_equal "$def_arch" "$FEAT_ARCH"
 	assert_equal "$STELLA_APP_FEATURE_ROOT/$FEAT_NAME/$FEAT_VERSION" "$FEAT_INSTALL_ROOT"
-	assert_equal "$old_feature_list $FEAT_NAME#$def_ver" "$FEATURE_LIST_ENABLED"
 
+  run __list_active_features
+  assert_output "$old_feature_list $FEAT_NAME#$def_ver"
 
 }
-
-
-

@@ -1,4 +1,5 @@
 #!/bin/bash
+# TODO : migrate to bats
 _CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 _CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
 source $_CURRENT_FILE_DIR/stella-link.sh include
@@ -83,7 +84,3 @@ test__app_init_1
 test__app_init_2
 
 test_bin_app_init_1
-
-
-
-

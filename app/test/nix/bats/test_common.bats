@@ -1,9 +1,7 @@
 load test_bats_helper
 
-
 # GENERIC -------------------------------------------------------------------
 @test "__trim" {
-
 
 	run __trim "test  test"
 	assert_output "test  test"
@@ -28,13 +26,13 @@ load test_bats_helper
 
 	run __abs_to_rel_path "/path1/path2" "/path1"
 	assert_output "path2"
-	
+
 	run __abs_to_rel_path "/path1/path2/path3" "/path1"
 	assert_output "path2/path3"
 
 	run __abs_to_rel_path "/path1/path2" "/path3/path4"
 	assert_output "../../path1/path2"
-	
+
 	run __abs_to_rel_path "/path1" "/path1"
 	assert_output "."
 
@@ -43,10 +41,10 @@ load test_bats_helper
 
 	run __abs_to_rel_path "/path2/path1" "/path3/path1"
 	assert_output "../../path2/path1"
-	
+
 	run __abs_to_rel_path ".." "/path1/path2"
 	assert_output ".."
-	
+
 	run __abs_to_rel_path ".." "../path1/path2"
 	assert_output ".."
 
@@ -58,7 +56,7 @@ load test_bats_helper
 
 	run __abs_to_rel_path "/" "/"
 	assert_output "."
-		
+
 }
 
 @test "__rel_to_abs_path" {
@@ -71,10 +69,10 @@ load test_bats_helper
 
 	run __rel_to_abs_path "../../../" "/"
 	assert_output "/"
-	
+
 	run __rel_to_abs_path "../nix" "$STELLA_ROOT/nix"
 	assert_output "$STELLA_ROOT/nix"
-	
+
 	run __rel_to_abs_path "../test" "$STELLA_ROOT/nix"
 	assert_output "$STELLA_ROOT/test"
 
@@ -82,5 +80,3 @@ load test_bats_helper
 	assert_output "/test2work"
 
 }
-
-

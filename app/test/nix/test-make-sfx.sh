@@ -1,4 +1,5 @@
 #!/bin/bash
+# TODO : migrate to bats
 _CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 _CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
 source $_CURRENT_FILE_DIR/stella-link.sh include
@@ -89,4 +90,3 @@ test__make_targz_sfx_shell_2
 test__make_targz_sfx_shell_3
 
 test__make_sevenzip_sfx_bin_1
-
