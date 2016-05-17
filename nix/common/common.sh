@@ -28,7 +28,7 @@ set +h
 # ===> 1.10.2.2 1.10.2.1 1.10.2 1.10.1.1 1.10.1 1.10.1beta2 1.10.1beta1 1.10.1alpha1 1.10.0 1.10.0RC2 1.10.0RC1 1.9.0
 
 
-# NOTE : ending characters in a version number may be ordered in the opposite way example : 
+# NOTE : ending characters in a version number may be ordered in the opposite way example :
 # 1.0.1 is more recent than 1.0.1beta so in ASC : 1.0.1beta 1.0.1 and in DESC : 1.0.1 1.0.1beta
 # To activate this behaviour use "ENDING_CHAR_REVERSE" option
 # we also need to indicate separator only if we use ENDING_CHAR_REVERSE and if there is any separator (obviously)
@@ -38,7 +38,7 @@ function __sort_version() {
 
 	local opposite_order_for_ending_chars=OFF
 	local mode="ASC"
-	
+
 	local separator=
 
 	local flag_sep=OFF
@@ -60,7 +60,7 @@ function __sort_version() {
 		# separate each block of number and block of letter
 		[ ! "$separator" == "" ] && new_item="$(echo $r | sed "s,\([0-9]*\)\([^0-9]*\)\([0-9]*\),\1$internal_separator\2$internal_separator\3,g" | sed "s,^\([0-9]\),$internal_separator\1," | sed "s,\([0-9]\)$,\1$internal_separator$separator$internal_separator,")"
 		[ "$separator" == "" ] && new_item="$(echo $r | sed "s,\([0-9]*\)\([^0-9]*\)\([0-9]*\),\1$internal_separator\2$internal_separator\3,g" | sed "s,^\([0-9]\),$internal_separator\1," | sed "s,\([0-9]\)$,\1$internal_separator,")"
-		
+
 		if [ "$opposite_order_for_ending_chars" == "OFF" ]; then
 			[ "$mode" == "ASC" ] && substitute=A
 			[ "$mode" == "DESC" ] && substitute=A
@@ -68,7 +68,7 @@ function __sort_version() {
 			[ "$mode" == "ASC" ] && substitute=z
 			[ "$mode" == "DESC" ] && substitute=z
 		fi
-		
+
 		[ ! "$separator" == "" ] && new_item="$(echo $new_item | sed "s,\\$separator,$substitute,g")"
 
 		new_list="$new_list $new_item"
@@ -78,7 +78,7 @@ function __sort_version() {
 		[ "${#number_of_block}" -gt "$max_number_of_block" ] && max_number_of_block="${#number_of_block}"
 	done
 	max_number_of_block=$[max_number_of_block +1]
-	
+
 	# we detect block made with non-number characters for reverse order of block with non-number characters (except the first one)
 	local count=0
 	local b
@@ -123,7 +123,7 @@ function __sort_version() {
 			[ "$mode" == "ASC" ] && block_arg=$block_arg
 			[ "$mode" == "DESC" ] && block_arg=r$block_arg
 		fi
-		
+
 		sorted_arg="$sorted_arg -k $count,$count"$block_arg
 	done
 	[ "$mode" == "ASC" ] && sorted_arg="-t$internal_separator $sorted_arg"
@@ -157,11 +157,11 @@ function __sort_version() {
 function __transfert_stella(){
 	# form is user@host:path
 	local _target=$1
-	
+
 	local _OPT=$2
 	local _opt_ex_cache="EXCLUDE_FILTER /$(__abs_to_rel_path $STELLA_INTERNAL_CACHE_DIR $STELLA_ROOT)/"
 	local _opt_ex_workspace="EXCLUDE_FILTER /$(__abs_to_rel_path $STELLA_INTERNAL_WORK_ROOT $STELLA_ROOT)/"
-	for o in $_OPT; do 
+	for o in $_OPT; do
 		[ "$o" == "CACHE" ] && _opt_ex_cache=
 		[ "$o" == "WORKSPACE" ] && _opt_ex_workspace=
 	done
@@ -178,7 +178,7 @@ function __transfert_folder(){
 	local _OPT=$3
 	local _flag_exclude_filter=OFF
 	local _exclude_filter=
-	for o in $_OPT; do 
+	for o in $_OPT; do
 		[ "$_flag_exclude_filter" == "ON" ] && _exclude_filter="--exclude $o $_exclude_filter" && _flag_exclude_filter=OFF
 		[ "$o" == "EXCLUDE_FILTER" ] && _flag_exclude_filter=ON
 	done
@@ -205,7 +205,7 @@ function __get_active_path() {
 
 function __bootstrap_stella_env() {
 	export PS1="[stella] \u@\h|\W>"
-	
+
 	local _t=$(mktmp)
 	#(set -o posix; set) >$_t
 	declare >$_t
@@ -275,10 +275,19 @@ function __get_stella_flavour() {
 }
 
 
+function __is_dir_empty() {
+	if [ $(find "$1" -prune -empty -type d) ]; then
+		# dir is empty
+		echo "TRUE"
+	else
+		echo "FALSE"
+	fi
+}
+
 # path = ${foo%/*}
 # To get: /tmp/my.dir (like dirname)
 # file = ${foo##*/}
-# To get: filename.tar.gz (like basename)	
+# To get: filename.tar.gz (like basename)
 # base = ${file%%.*}
 # To get: filename
 
@@ -317,7 +326,6 @@ function __is_abs() {
 			;;
 	esac
 }
-
 
 # NOTE by default path is determined giving by the current running directory
 function __rel_to_abs_path() {
@@ -381,7 +389,7 @@ function __rel_to_abs_path_alternative_1(){
 	      if ((len==0));then
 	        continue
 	      else
-	        unset outp[$((len-1))] 
+	        unset outp[$((len-1))]
 	      fi
 	      ;;
 	    *)
@@ -404,7 +412,7 @@ function __rel_to_abs_path_alternative_2(){
 
 	#echo "$(dirname $(readlink -e $F))/$(basename $F)"
 	echo "$(readlink -m $F)"
-	
+
 }
 
 # How to go from _abs_path_root (ARG2) to _abs_path_to_translate (ARG1)
@@ -425,7 +433,7 @@ function __abs_to_rel_path() {
 	fi
 
 	_abs_path_root="$_abs_path_root"/
-	
+
 	local common_part="$_abs_path_root" # for now
 
 	if [ "$(__is_abs $_abs_path_to_translate)" == "FALSE" ]; then
@@ -445,14 +453,14 @@ function __abs_to_rel_path() {
 					else
 						result="../$result"
 					fi
-					
+
 				done
 
 				if [[ $common_part == "/" ]]; then
 					# special case for root (no common path)
 					result="$result/"
 				fi
-				
+
 
 				# since we now have identified the common part,
 				# compute the non-common part
@@ -461,7 +469,7 @@ function __abs_to_rel_path() {
 					result="$result$forward_part"
 				elif [[ -n $forward_part ]]; then
 					result="${forward_part}"
-					
+
 				else
 					if [[ ! -n $result ]] && [[ $common_part == "$_abs_path_to_translate" ]]; then
 						result="."
@@ -540,7 +548,7 @@ function __copy_folder_content_into() {
 	if [ "$select_filter" == "" ]; then
 		select_filter="*"
 	fi
-	
+
 	if [ $(__count_folder_item $1 $select_filter) -gt 0 ]; then
 		mkdir -p $2
 		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
@@ -606,7 +614,7 @@ function __resource() {
 	local _opt_dest_erase=OFF
 	local _checkout_version=
 	local _download_filename=_AUTO_
-	for o in $OPT; do 
+	for o in $OPT; do
 		if [ "$_opt_force_name" == "ON" ]; then
 			_download_filename=$o
 			_opt_force_name=OFF
@@ -644,7 +652,7 @@ function __resource() {
 			[ "$_opt_merge" == "ON" ] && rm -f "$FINAL_DESTINATION/._MERGED_$NAME"
 		fi
 	fi
-	
+
 
 	if [ "$_opt_delete" == "ON" ]; then
 		[ "$_opt_merge" == "OFF" ] && rm -Rf "$FINAL_DESTINATION"
@@ -656,8 +664,8 @@ function __resource() {
 		# strip root folder mode
 		_STRIP=
 		[ "$_opt_strip" == "ON" ] && _STRIP=STRIP
-		
-	
+
+
 		_FLAG=1
 		case $PROTOCOL in
 			HTTP_ZIP|FILE_ZIP)
@@ -683,7 +691,7 @@ function __resource() {
 				[ "$_opt_strip" == "ON" ] && echo "STRIP option not in use"
 				[ "$_opt_revert" == "ON" ] && echo "REVERT Not supported with this protocol" && _FLAG=0
 				[ "$_opt_update" == "ON" ] && echo "UPDATE Not supported with this protocol" && _FLAG=0
-				
+
 				if [ -d "$FINAL_DESTINATION" ]; then
 					if [ "$_opt_get" == "ON" ]; then
 						if [ "$_opt_merge" == "ON" ]; then
@@ -692,7 +700,7 @@ function __resource() {
 								_FLAG=0
 							fi
 						fi
-					fi		
+					fi
 				fi
 				;;
 			HG|GIT)
@@ -702,7 +710,7 @@ function __resource() {
 					if [ "$_opt_get" == "ON" ]; then
 						echo " ** Ressource already exist"
 						_FLAG=0
-					fi	
+					fi
 				else
 					[ "$_opt_revert" == "ON" ] && echo " ** Ressource does not exist" && _FLAG=0
 					[ "$_opt_update" == "ON" ] && echo " ** Ressource does not exist" && _FLAG=0
@@ -765,14 +773,14 @@ function __download_uncompress() {
 	FILE_NAME="$2"
 	UNZIP_DIR="$3"
 	OPT="$4"
-	
-	
+
+
 	if [ "$FILE_NAME" == "_AUTO_" ]; then
 		#_AFTER_SLASH=${URL##*/}
 		FILE_NAME=$(__get_filename_from_url "$URL")
 		echo "** Guessed file name is $FILE_NAME"
 	fi
-	
+
 	__download $URL $FILE_NAME
 	__uncompress "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$UNZIP_DIR" "$OPT"
 
@@ -822,12 +830,12 @@ function __compress() {
 				[ -f "$_target" ] && tar -c -v -z -f "$_output_archive" -C "$(dirname $_target)" "$(basename $_target)"
 			;;
 	esac
-	
+
 
 }
 
 function __uncompress() {
-	# TODO : progress bar 
+	# TODO : progress bar
 	# http://stackoverflow.com/questions/238073/how-to-add-a-progress-bar-to-a-shell-script
 	local FILE_PATH
 	local UNZIP_DIR
@@ -835,10 +843,10 @@ function __uncompress() {
 	FILE_PATH="$1"
 	UNZIP_DIR="$2"
 	OPT="$3"
-	
+
 	local _opt_dest_erase=OFF # delete destination folder (default : FALSE)
 	local _opt_strip=OFF # delete first folder in archive  (default : FALSE)
-	for o in $OPT; do 
+	for o in $OPT; do
 		[ "$o" == "DEST_ERASE" ] && _opt_dest_erase=ON
 		[ "$o" == "STRIP" ] && _opt_strip=ON
 	done
@@ -847,9 +855,9 @@ function __uncompress() {
 	if [ "$_opt_dest_erase" == "ON" ]; then
 		rm -Rf "$UNZIP_DIR"
 	fi
-	
+
 	mkdir -p "$UNZIP_DIR"
-	
+
 	echo " ** Uncompress $FILE_PATH in $UNZIP_DIR"
 
 	cd "$UNZIP_DIR"
@@ -860,7 +868,7 @@ function __uncompress() {
 			[ "$_opt_strip" == "OFF" ] && unzip -a -o "$FILE_PATH"
 			[ "$_opt_strip" == "ON" ] && __unzip-strip "$FILE_PATH" "$UNZIP_DIR"
 			;;
-		*.gz | *.tgz) 
+		*.gz | *.tgz)
 			[ "$_opt_strip" == "OFF" ] && tar xf "$FILE_PATH"
 			[ "$_opt_strip" == "ON" ] && tar xf "$FILE_PATH" --strip-components=1
 			;;
@@ -902,7 +910,7 @@ function __download() {
 	mkdir -p "$STELLA_APP_CACHE_DIR"
 
 	echo " ** Download $FILE_NAME from $URL into cache"
-	
+
 	#if [ "$FORCE" == "1" ]; then
 	#	rm -Rf "$STELLA_APP_CACHE_DIR/$FILE_NAME"
 	#fi
@@ -935,7 +943,7 @@ function __download() {
 			fi
 		fi
 
-	else  
+	else
 		echo "** ERROR downloading $URL"
 	fi
 }
@@ -946,9 +954,9 @@ function __unzip-strip() (
     local temp=$(mktmpdir)
 
     unzip -a -o -d "$temp" "$zip"
-    shopt -s dotglob 
+    shopt -s dotglob
     local f=("$temp"/*)
-    
+
     if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
         mv "$temp"/*/* "$dest"
     else
@@ -962,9 +970,9 @@ function __sevenzip-strip() (
     local dest=${2:-.}
     local temp=$(mktmpdir)
     7z x "$zip" -y -o"$temp"
-    shopt -s dotglob 
+    shopt -s dotglob
     local f=("$temp"/*)
-    
+
     if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
         mv "$temp"/*/* "$dest"
     else
@@ -1043,7 +1051,7 @@ function __get_key() {
 	else
 		eval $_KEY='$(sed -n -e "$_win_endline" -e "$_exp1" "$_FILE" | awk -F= "$_exp2" )'
 	fi
-	
+
 }
 
 function __del_key() {
@@ -1055,7 +1063,7 @@ function __del_key() {
 }
 
 function __add_key() {
-	local _FILE=$1 
+	local _FILE=$1
 	local _SECTION=$2
 	local _KEY=$3
 	local _VALUE=$4
@@ -1113,7 +1121,7 @@ function __ini_file() {
 	/^\['$_SECTION']/ {
 		processing = 1;
 	}
-		
+
 	# Modify the line, if the flag is set
 	/^'$_KEY'=/ {
 		if (processing) {
@@ -1135,7 +1143,7 @@ function __ini_file() {
 
 	# Output a line (that we didnt output above)
 	/.*/ {
-		
+
 		if (skip)
 		    skip = 0;
 		else
@@ -1173,9 +1181,9 @@ function __argparse(){
 	# this variable, if setted, will receive the rest of the command line not processed
 	local COMMAND_LINE_RESULT="$6"
 	shift 6
-	
+
 	local COMMAND_LINE="$@"
-	
+
 	ARGP="
 	--HEADER--
 	ARGP_PROG=$PROGNAME
@@ -1192,17 +1200,17 @@ function __argparse(){
 	$PARAMETERS
 	"
 
-	
+
 	#GETOPT_CMD is an env variable we can choose a getopt command instead of default "getopt"
 
-	
+
 	# Debug mode
 	#export ARGP_DEBUG=1
 	export ARGP_HELP_FMT=
 	#export ARGP_HELP_FMT="rmargin=$(tput cols)"
 	#echo $ARGP
 	exec 4>&1 # fd4 is now a copy of fd1 ie stdout
-	RES=$( echo "$ARGP" | GETOPT_CMD=$GETOPT_CMD $STELLA_COMMON/argp.sh $COMMAND_LINE 3>&1 1>&4 || echo exit $? ) 
+	RES=$( echo "$ARGP" | GETOPT_CMD=$GETOPT_CMD $STELLA_COMMON/argp.sh $COMMAND_LINE 3>&1 1>&4 || echo exit $? )
 	exec 4>&-
 
 	# $@ now contains not parsed argument, options and identified parameters have been processed and removed:
@@ -1216,7 +1224,7 @@ function __argparse(){
 		eval "$COMMAND_LINE_RESULT=\$@"
 	fi
 
-	
+
 }
 
 

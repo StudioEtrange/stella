@@ -38,7 +38,7 @@ function usage() {
 	echo " L     sys install <package name> : install  a system package"
 	echo " L     sys remove <package name> : remove a system package"
 	echo " L     sys list all : list all available system package name"
-	
+
 
 }
 
@@ -66,7 +66,7 @@ DEPFORCE=''						''    		''            		b     		0     		'1'           			Force 
 DEPIGNORE=''					''    		''            		b     		0     		'1'           		Will not process any dependencies.
 EXPORT=''                     ''          'path'              s           0           ''                      	Export feature to this dir.
 PORTABLE=''                   ''          'path'              s           0           ''                      Make a portable version of this feature in this dir
-BUILDARCH=''				'a'				'arch'			a 			0 			 'x86 x64'			
+BUILDARCH=''				'a'				'arch'			a 			0 			 'x86 x64'
 CACHE=''                       	''    		''            		b     		0     		'1'           			Include cache folder when deploying.
 WORKSPACE=''                       	''    		''            		b     		0     		'1'           			Include workspace folder when deploying.
 "
@@ -150,7 +150,7 @@ fi
 # --------------- PROXY ----------------------------
 if [ "$DOMAIN" == "proxy" ]; then
 	__init_stella_env
-	
+
 	if [ "$ACTION" == "on" ]; then
 		__enable_proxy "$ID"
 	fi
@@ -174,11 +174,11 @@ if [ "$DOMAIN" == "stella" ]; then
 
 	if [ "$ACTION" == "api" ]; then
 		if [ "$ID" == "list" ]; then
-			echo $(__api_list)
+			echo "$(__api_list)"
 		fi
 	fi
 
-	
+
 
 	if [ "$ACTION" == "install" ]; then
 		if [ "$ID" == "dep" ]; then
@@ -192,13 +192,13 @@ if [ "$DOMAIN" == "stella" ]; then
 			v2=$(__get_stella_version)
 			echo $v1 -- $v2
 		fi
-		
+
 	fi
 
 
 	if [ "$ACTION" == "search" ]; then
 	    if [ "$ID" == "path" ]; then
-	        echo $(__get_active_path)
+	        echo "$(__get_active_path)"
 	    fi
 	fi
 

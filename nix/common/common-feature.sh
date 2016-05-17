@@ -1,4 +1,4 @@
-if [ ! "$_STELLA_COMMON_FEATURE_INCLUDED_" == "1" ]; then 
+if [ ! "$_STELLA_COMMON_FEATURE_INCLUDED_" == "1" ]; then
 _STELLA_COMMON_FEATURE_INCLUDED_=1
 
 # --------- API -------------------
@@ -21,19 +21,19 @@ function __feature_init() {
 	local _OPT="$2"
 	local _opt_hidden_feature=OFF
 	local o
-	for o in $_OPT; do 
+	for o in $_OPT; do
 		[ "$o" == "HIDDEN" ] && _opt_hidden_feature=ON
 	done
-	
-	__internal_feature_context $_SCHEMA
-	
+
+	__internal_feature_context "$_SCHEMA"
+
 	#local _flag=0
 	#local a
 	local _tmp_feat=
-	
+
 	if [[ ! " ${FEATURE_LIST_ENABLED[@]} " =~ " $FEAT_NAME#$FEAT_VERSION " ]]; then
 
-	
+
 	#for a in $FEATURE_LIST_ENABLED; do
 	#	[ "$FEAT_NAME#$FEAT_VERSION" == "$a" ] && _flag=1
 	#done
@@ -45,12 +45,12 @@ function __feature_init() {
 		if [ "$TEST_FEATURE" == "1" ]; then
 
 			if [ ! "$FEAT_BUNDLE" == "" ]; then
-				local p	
+				local p
 
 				__push_schema_context
 
 				FEAT_BUNDLE_MODE=$FEAT_BUNDLE
-				for p in $FEAT_BUNDLE_ITEM; do	
+				for p in $FEAT_BUNDLE_ITEM; do
 					#__feature_init $p "HIDDEN"
 					__internal_feature_context $p
 					if [ ! "$FEAT_SEARCH_PATH" == "" ]; then
@@ -64,21 +64,21 @@ function __feature_init() {
 
 				__pop_schema_context
 			fi
-		
+
 			if [ ! "$_opt_hidden_feature" == "ON" ]; then
 				FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $FEAT_NAME#$FEAT_VERSION"
 			fi
 			if [ ! "$FEAT_SEARCH_PATH" == "" ]; then
 				PATH="$FEAT_SEARCH_PATH:$PATH"
 			fi
-			
-		
+
+
 
 			local c
 			for c in $FEAT_ENV_CALLBACK; do
 				$c
 			done
-			
+
 
 		fi
 
@@ -98,7 +98,7 @@ function __feature_catalog_info() {
 
 # look for information about an installed feature
 function __feature_match_installed() {
-	local _SCHEMA=$1
+	local _SCHEMA="$1"
 
 	local _tested=
 	local _found=
@@ -111,21 +111,22 @@ function __feature_match_installed() {
 		[ ! "$__VAR_FEATURE_ARCH" == "" ] && _tested="$_tested"@"$__VAR_FEATURE_ARCH"
 
 		if [ -d "$STELLA_APP_FEATURE_ROOT/$__VAR_FEATURE_NAME" ]; then
-			# for each detected version
-			for _f in  "$STELLA_APP_FEATURE_ROOT"/"$__VAR_FEATURE_NAME"/*; do
-				
-				if [ "$_tested" == "" ]; then
-					_found=$_f
-				else
-					case $_f in
-						*"$_tested"*)
-							_found=$_f
-						;;
-						*)
-						;;
-					esac
-				fi
-			done
+				# for each detected version
+				for _f in  "$STELLA_APP_FEATURE_ROOT"/"$__VAR_FEATURE_NAME"/*; do
+					if [ -d "$_f" ]; then
+						if [ "$_tested" == "" ]; then
+							_found="$_f"
+						else
+							case $_f in
+								*"$_tested"*)
+									_found="$_f"
+								;;
+								*)
+								;;
+							esac
+						fi
+					fi
+				done
 		fi
 
 		if [ ! "$_found" == "" ]; then
@@ -153,18 +154,18 @@ function __push_schema_context() {
 function __pop_schema_context() {
 	__stack_pop FEAT_SCHEMA_SELECTED
 	__internal_feature_context $FEAT_SCHEMA_SELECTED
-	__stack_pop TEST_FEATURE	
+	__stack_pop TEST_FEATURE
 }
 
 
 # test if a feature is installed
-# AND retrieve informations based on actually installed feature (looking inside STELLA_APP_FEATURE_ROOT) OR from feature recipe if not installed
-# do not use default values from feature recipe to search installed feature
+# AND retrieve informations based on actually installed feature (looking inside STELLA_APP_FEATURE_ROOT)
+# OR from feature recipe if not installed
 function __feature_inspect() {
-	local _SCHEMA=$1
+	local _SCHEMA="$1"
 	TEST_FEATURE=0
 
-	__feature_match_installed $_SCHEMA
+	__feature_match_installed "$_SCHEMA"
 
 	if [ ! "$FEAT_SCHEMA_SELECTED" == "" ]; then
 		if [ ! "$FEAT_BUNDLE" == "" ]; then
@@ -172,7 +173,7 @@ function __feature_inspect() {
 			local p
 			local _t=1
 			__push_schema_context
-			
+
 			FEAT_BUNDLE_MODE="$FEAT_BUNDLE"
 			for p in $FEAT_BUNDLE_ITEM; do
 				TEST_FEATURE=0
@@ -203,7 +204,6 @@ function __feature_inspect() {
 	else
 		__feature_catalog_info $_SCHEMA
 	fi
-
 }
 
 
@@ -218,12 +218,12 @@ function __feature_remove() {
 	local o
 	local _opt_internal_feature=OFF
 	local _opt_hidden_feature=OFF
-	for o in $_OPT; do 
+	for o in $_OPT; do
 		[ "$o" == "INTERNAL" ] && _opt_internal_feature=ON
 		[ "$o" == "HIDDEN" ] && _opt_hidden_feature=ON
 	done
 
-	__feature_inspect $_SCHEMA	
+	__feature_inspect "$_SCHEMA"
 
 	if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" == "" ]; then
 		if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" == "$STELLA_CURRENT_OS" ]; then
@@ -259,7 +259,7 @@ function __feature_remove() {
 			__del_folder $FEAT_INSTALL_ROOT
 
 			__push_schema_context
-			
+
 			FEAT_BUNDLE_MODE="$FEAT_BUNDLE"
 			for p in $FEAT_BUNDLE_ITEM; do
 				__feature_remove $p "HIDDEN"
@@ -271,7 +271,7 @@ function __feature_remove() {
 			__del_folder $FEAT_INSTALL_ROOT
 		fi
 	fi
-	
+
 
 	if [ "$_opt_internal_feature" == "ON" ]; then
 		STELLA_APP_FEATURE_ROOT=$_save_app_feature_root
@@ -305,7 +305,7 @@ function __feature_install() {
 	local _flag_portable=OFF
 	local _dir_portable=
 	local _portable_mode=OFF
-	
+
 	for o in $_OPT; do
 		# INTERNAL : install feature inside stella root
 		[ "$o" == "INTERNAL" ] && _opt_internal_feature=ON && _export_mode=OFF
@@ -317,7 +317,7 @@ function __feature_install() {
 		[ "$o" == "DEP_IGNORE" ] && _opt_ignore_dep=ON
 		# EXPORT <dir> : will install feature in this specified root directory - so it will not be detected as active features
 		[ "$_flag_export" == "ON" ] && _dir_export="$o" && _export_mode=ON && _flag_export=OFF
-		[ "$o" == "EXPORT" ] && _flag_export=ON 
+		[ "$o" == "EXPORT" ] && _flag_export=ON
 		# PORTABLE <dir> : will install feature in this specified root directory in a portable (=chroot) way - so it will not be detected as active features - and this folder will ship every dependencies
 		[ "$_flag_portable" == "ON" ] && _dir_portable="$o" && _portable_mode=ON && _flag_portable=OFF
 		[ "$o" == "PORTABLE" ] && _flag_portable=ON
@@ -360,8 +360,7 @@ function __feature_install() {
 	local _flag=0
 	local a
 
-	__internal_feature_context $_SCHEMA
-	
+	__internal_feature_context "$_SCHEMA"
 
 	if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" == "" ]; then
 		if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" == "$STELLA_CURRENT_OS" ]; then
@@ -378,7 +377,7 @@ function __feature_install() {
 
 	if [ ! "$FEAT_SCHEMA_SELECTED" == "" ]; then
 
-		
+
 
 		local _save_app_feature_root=
 		if [ "$_opt_internal_feature" == "ON" ]; then
@@ -389,7 +388,7 @@ function __feature_install() {
 			_save_app_temp_dir=$STELLA_APP_TEMP_DIR
 			STELLA_APP_TEMP_DIR=$STELLA_INTERNAL_TEMP_DIR
 		fi
-		
+
 		if [ ! "$_opt_hidden_feature" == "ON" ]; then
 			__add_app_feature $_SCHEMA
 		fi
@@ -424,51 +423,51 @@ function __feature_install() {
 				local _dependencies=
 				[ "$FEAT_SCHEMA_FLAVOUR" == "source" ] && _dependencies="$FEAT_SOURCE_DEPENDENCIES"
 				[ "$FEAT_SCHEMA_FLAVOUR" == "binary" ] && _dependencies="$FEAT_BINARY_DEPENDENCIES"
-				
+
 				save_FORCE=$FORCE
 				FORCE=$_opt_force_reinstall_dep
-				
+
 				__push_schema_context
 
 				for dep in $_dependencies; do
-					
+
 					if [ "$dep" == "FORCE_ORIGIN_STELLA" ]; then
 						_force_origin="STELLA"
 						continue
 					fi
-					if [ "$dep" == "FORCE_ORIGIN_SYSTEM" ]; then 
+					if [ "$dep" == "FORCE_ORIGIN_SYSTEM" ]; then
 						_force_origin="SYSTEM"
 						continue
 					fi
 
 					if [ "$_force_origin" == "" ]; then
 						_origin="$(__dep_choose_origin $dep)"
-					else 
+					else
 						_origin="$_force_origin"
 					fi
 
 					if [ "$_origin" == "STELLA" ]; then
 						echo "Installing dependency $dep"
-						
+
 
 						__feature_install $dep "$_OPT HIDDEN"
 						if [ "$TEST_FEATURE" == "0" ]; then
 							echo "** Error while installing dependency feature $FEAT_SCHEMA_SELECTED"
 						fi
-							
+
 					fi
 					[ "$_origin" == "SYSTEM" ] && echo "Using dependency $dep from SYSTEM."
-					
+
 				done
-				
+
 				__pop_schema_context
 				FORCE=$save_FORCE
 			fi
 
 			# bundle -----------------
 			if [ ! "$FEAT_BUNDLE" == "" ]; then
-				
-				
+
+
 				# save export/portable mode
 				__stack_push "$_export_mode"
 				__stack_push "$_portable_mode"
@@ -499,7 +498,7 @@ function __feature_install() {
 					for _item in $FEAT_BUNDLE_ITEM; do
 						__feature_install $_item "$_OPT $_flag_hidden"
 					done
-					
+
 					if [ ! "$FEAT_BUNDLE_MODE" == "LIST" ]; then
 						FORCE=$save_FORCE
 					fi
@@ -507,7 +506,7 @@ function __feature_install() {
 					FEAT_BUNDLE_MODE=
 					__pop_schema_context
 				fi
-				
+
 
 				# restore export/portable mode
 				__stack_pop "_portable_mode"
@@ -516,9 +515,9 @@ function __feature_install() {
 				# automatic call of bundle callback after installation of each items
 				__feature_callback
 			else
-				
+
 				echo " ** Installing $FEAT_NAME version $FEAT_VERSION in $FEAT_INSTALL_ROOT"
-				
+
 				# NOTE : feature_callback is called from recipe itself
 
 				[ "$FEAT_SCHEMA_FLAVOUR" == "source" ] && __start_build_session
@@ -526,7 +525,7 @@ function __feature_install() {
 
 				# Sometimes current directory is lost by the system. For example when deleting source folder at the end of the install recipe
 				cd $STELLA_APP_ROOT
-				
+
 			fi
 
 			if [ "$_export_mode" == "OFF" ]; then
@@ -557,7 +556,7 @@ function __feature_install() {
 			STELLA_APP_FEATURE_ROOT=$_save_app_feature_root
 			__set_build_mode_default "RELOCATE" "$_save_relocate_default_mode"
 		fi
-		
+
 		if [ "$_opt_internal_feature" == "ON" ]; then
 			STELLA_APP_FEATURE_ROOT=$_save_app_feature_root
 			STELLA_APP_CACHE_DIR=$_save_app_cache_dir
@@ -580,13 +579,13 @@ function __feature_install() {
 
 
 function __feature_init_installed() {
-	
+
 	local _tested_feat_name=
 	local _tested_feat_ver=
 	# init internal features
 	# internal feature are not prioritary over app features
 	if [ ! "$STELLA_APP_FEATURE_ROOT" == "$STELLA_INTERNAL_FEATURE_ROOT" ]; then
-		
+
 		_save_app_feature_root=$STELLA_APP_FEATURE_ROOT
 		STELLA_APP_FEATURE_ROOT=$STELLA_INTERNAL_FEATURE_ROOT
 
@@ -598,8 +597,10 @@ function __feature_init_installed() {
 				if [[ " ${__STELLA_FEATURE_LIST[@]} " =~ " ${_tested_feat_name} " ]]; then
 					# for each detected version
 					for v in  "$f"/*; do
-						_tested_feat_ver="$(__get_filename_from_string $v)"
-						[ -d "$v" ] && __feature_init "$_tested_feat_name#$_tested_feat_ver" "INTERNAL HIDDEN"
+						if [ -d "$v" ]; then
+							_tested_feat_ver="$(__get_filename_from_string $v)"
+							__feature_init "$_tested_feat_name#$_tested_feat_ver" "INTERNAL HIDDEN"
+						fi
 					done
 				fi
 			fi
@@ -617,8 +618,10 @@ function __feature_init_installed() {
 			if [[ " ${__STELLA_FEATURE_LIST[@]} " =~ " ${_tested_feat_name} " ]]; then
 				# for each detected version
 				for v in  "$f"/*; do
-					_tested_feat_ver="$(__get_filename_from_string $v)"
-					[ -d "$v" ] && __feature_init "$_tested_feat_name#$_tested_feat_ver"
+					if [ -d "$v" ]; then
+						_tested_feat_ver="$(__get_filename_from_string $v)"
+						__feature_init "$_tested_feat_name#$_tested_feat_ver"
+					fi
 				done
 			fi
 		fi
@@ -626,7 +629,6 @@ function __feature_init_installed() {
 
 	# TODO log
 	echo "** Features initialized : $FEATURE_LIST_ENABLED"
-	
 }
 
 
@@ -662,10 +664,10 @@ function __feature_callback() {
 
 # init feature context (properties, variables, ...)
 function __internal_feature_context() {
-	local _SCHEMA=$1
+	local _SCHEMA="$1"
 
 	FEAT_ARCH=
-	
+
 	local TMP_FEAT_SCHEMA_NAME=
 	local TMP_FEAT_SCHEMA_VERSION=
 	FEAT_SCHEMA_SELECTED=
@@ -700,12 +702,16 @@ function __internal_feature_context() {
 	FEAT_BUNDLE=
 
 
-	[ "$_SCHEMA" == "" ] && return
-	
-	[ ! "$_SCHEMA" == "" ] && __select_official_schema $_SCHEMA "FEAT_SCHEMA_SELECTED" "TMP_FEAT_SCHEMA_NAME" "TMP_FEAT_SCHEMA_VERSION" "FEAT_ARCH" "FEAT_SCHEMA_FLAVOUR" "FEAT_SCHEMA_OS_RESTRICTION" "FEAT_SCHEMA_OS_EXCLUSION"
+	if [ "$_SCHEMA" == "" ]; then
+		return 0
+	fi
+
+	if [ ! "$_SCHEMA" == "" ]; then
+		__select_official_schema "$_SCHEMA" "FEAT_SCHEMA_SELECTED" "TMP_FEAT_SCHEMA_NAME" "TMP_FEAT_SCHEMA_VERSION" "FEAT_ARCH" "FEAT_SCHEMA_FLAVOUR" "FEAT_SCHEMA_OS_RESTRICTION" "FEAT_SCHEMA_OS_EXCLUSION"
+	fi
 
 	if [ ! "$FEAT_SCHEMA_SELECTED" == "" ]; then
-		
+
 		# set install root (FEAT_INSTALL_ROOT)
 		if [ "$FEAT_BUNDLE_MODE" == "" ]; then
 			if [ ! "$FEAT_ARCH" == "" ]; then
@@ -758,7 +764,7 @@ function __internal_feature_context() {
 		fi
 	else
 		# we grab only os option
-		__translate_schema $_SCHEMA "NONE" "NONE" "NONE" "NONE" "FEAT_SCHEMA_OS_RESTRICTION" "FEAT_SCHEMA_OS_EXCLUSION"
+		__translate_schema "$_SCHEMA" "NONE" "NONE" "NONE" "NONE" "FEAT_SCHEMA_OS_RESTRICTION" "FEAT_SCHEMA_OS_EXCLUSION"
 	fi
 }
 
@@ -768,24 +774,26 @@ function __internal_feature_context() {
 # pick a feature schema by filling some values with default one
 # and may return split schema properties
 function __select_official_schema() {
-	local _SCHEMA=$1
-	local _RESULT_SCHEMA=$2
+	local _SCHEMA="$1"
+	local _RESULT_SCHEMA="$2"
 
-	local _VAR_FEATURE_NAME=$3
-	local _VAR_FEATURE_VER=$4
-	local _VAR_FEATURE_ARCH=$5
-	local _VAR_FEATURE_FLAVOUR=$6
-	local _VAR_FEATURE_OS_RESTRICTION=$7
-	local _VAR_FEATURE_OS_EXCLUSION=$8
+	local _VAR_FEATURE_NAME="$3"
+	local _VAR_FEATURE_VER="$4"
+	local _VAR_FEATURE_ARCH="$5"
+	local _VAR_FEATURE_FLAVOUR="$6"
+	local _VAR_FEATURE_OS_RESTRICTION="$7"
+	local _VAR_FEATURE_OS_EXCLUSION="$8"
 
 	local _FILLED_SCHEMA=
 
 
- 	[ ! "$_RESULT_SCHEMA" == "" ] && eval $_RESULT_SCHEMA=
+ 	if [ ! "$_RESULT_SCHEMA" == "" ]; then
+		eval $_RESULT_SCHEMA=
+	fi
 
  	# __translate_schema "$_SCHEMA" "$_VAR_FEATURE_NAME" "$_VAR_FEATURE_VER" "$_VAR_FEATURE_ARCH" "$_VAR_FEATURE_FLAVOUR" "$_VAR_FEATURE_OS_RESTRICTION" "$_VAR_FEATURE_OS_EXCLUSION"
 	__translate_schema "$_SCHEMA" "$3" "$4" "$5" "$6" "$7" "$8"
-	
+
 
 	local _TR_FEATURE_NAME=${!_VAR_FEATURE_NAME}
 	local _TR_FEATURE_VER=${!_VAR_FEATURE_VER}
@@ -818,7 +826,7 @@ function __select_official_schema() {
 		_FILLED_SCHEMA="$_TR_FEATURE_NAME"#"$_TR_FEATURE_VER"
 		[ ! "$_TR_FEATURE_ARCH" == "" ] && _FILLED_SCHEMA="$_FILLED_SCHEMA"@"$_TR_FEATURE_ARCH"
 		[ ! "$_TR_FEATURE_FLAVOUR" == "" ] && _FILLED_SCHEMA="$_FILLED_SCHEMA":"$_TR_FEATURE_FLAVOUR"
-		
+
 		# ADDING OS restriction and OS exclusion
 		_OS_OPTION=
 		[ ! "$_TR_FEATURE_OS_RESTRICTION" == "" ] && _OS_OPTION="$_OS_OPTION/$_TR_FEATURE_OS_RESTRICTION"
@@ -832,7 +840,7 @@ function __select_official_schema() {
 				[ ! "$_RESULT_SCHEMA" == "" ] && _official=1
 			fi
 		done
-		
+
 	fi
 
 	if [ "$_official" == "1" ]; then
@@ -857,7 +865,7 @@ function __select_official_schema() {
 # example: wget/ubuntu#1_2@x86:source wget/ubuntu#1_2@x86:source\macos
 function __translate_schema() {
 
-	local _schema="$1"
+	local _tr_schema="$1"
 
 	local _VAR_FEATURE_NAME="$2"
 	local _VAR_FEATURE_VER="$3"
@@ -866,53 +874,82 @@ function __translate_schema() {
 	local _VAR_FEATURE_OS_RESTRICTION="$6"
 	local _VAR_FEATURE_OS_EXCLUSION="$7"
 
-	[ ! "$_VAR_FEATURE_NAME" == "" ] && eval $_VAR_FEATURE_NAME=
-	[ ! "$_VAR_FEATURE_VER" == "" ] && eval $_VAR_FEATURE_VER=
-	[ ! "$_VAR_FEATURE_ARCH" == "" ] && eval $_VAR_FEATURE_ARCH=
-	[ ! "$_VAR_FEATURE_FLAVOUR" == "" ] && eval $_VAR_FEATURE_FLAVOUR=
-	[ ! "$_VAR_FEATURE_OS_RESTRICTION" == "" ] && eval $_VAR_FEATURE_OS_RESTRICTION=
-	[ ! "$_VAR_FEATURE_OS_EXCLUSION" == "" ] && eval $_VAR_FEATURE_OS_EXCLUSION=
+	if [ ! "$_VAR_FEATURE_NAME" == "" ]; then
+		eval $_VAR_FEATURE_NAME=
+	fi
+	if [ ! "$_VAR_FEATURE_VER" == "" ]; then
+		eval $_VAR_FEATURE_VER=
+	fi
+	if [ ! "$_VAR_FEATURE_ARCH" == "" ]; then
+		eval $_VAR_FEATURE_ARCH=
+	fi
+	if [ ! "$_VAR_FEATURE_FLAVOUR" == "" ]; then
+		eval $_VAR_FEATURE_FLAVOUR=
+	fi
+	if [ ! "$_VAR_FEATURE_OS_RESTRICTION" == "" ]; then
+		eval $_VAR_FEATURE_OS_RESTRICTION=
+	fi
+	if [ ! "$_VAR_FEATURE_OS_EXCLUSION" == "" ]; then
+		eval $_VAR_FEATURE_OS_EXCLUSION=
+	fi
 
 	local _char=
 
 	_char=":"
-	if [ -z "${_schema##*$_char*}" ]; then
-		[ ! "$_VAR_FEATURE_FLAVOUR" == "" ] && eval $_VAR_FEATURE_FLAVOUR=$(echo $_schema | sed 's,^.*:\([^/\\#@]*\).*$,\1,')
-		#$(echo $_schema | cut -d':' -f 2 | cut -d'\' -f 1 | cut -d'#' -f 1 | cut -d'@' -f 1 | cut -d'/' -f 1)
+	if [ -z "${_tr_schema##*$_char*}" ]; then
+		if [ ! "$_VAR_FEATURE_FLAVOUR" == "" ]; then eval $_VAR_FEATURE_FLAVOUR="$(echo $_tr_schema | sed 's,^.*:\([^/\\#@]*\).*$,\1,')"; fi
 	fi
 
 	_char="/"
-	if [ -z "${_schema##*$_char*}" ]; then
-		[ ! "$_VAR_FEATURE_OS_RESTRICTION" == "" ] && eval $_VAR_FEATURE_OS_RESTRICTION=$(echo $_schema | sed 's,^.*/\([^:\\#@]*\).*$,\1,')
-		#| cut -d'/' -f 2 | cut -d'\' -f 1 | cut -d':' -f 1 | cut -d'#' -f 1 | cut -d'@' -f 1)
+	if [ -z "${_tr_schema##*$_char*}" ]; then
+		if [ ! "$_VAR_FEATURE_OS_RESTRICTION" == "" ]; then eval $_VAR_FEATURE_OS_RESTRICTION="$(echo $_tr_schema | sed 's,^.*/\([^:\\#@]*\).*$,\1,')"; fi
 	fi
 
 	_char='\\'
-	if [ -z "${_schema##*\\*}" ]; then
-		[ ! "$_VAR_FEATURE_OS_EXCLUSION" == "" ] && eval $_VAR_FEATURE_OS_EXCLUSION=$(echo $_schema | sed 's,^.*\\\([^:/#@]*\).*$,\1,')
-		#| cut -d'\' -f 2 | cut -d':' -f 1 | cut -d'#' -f 1 | cut -d'@' -f 1 | cut -d'/' -f 1)
+	if [ -z "${_tr_schema##*\\*}" ]; then
+		if [ ! "$_VAR_FEATURE_OS_EXCLUSION" == "" ]; then eval $_VAR_FEATURE_OS_EXCLUSION="$(echo $_tr_schema | sed 's,^.*\\\([^:/#@]*\).*$,\1,')"; fi
 	fi
 
 	_char="#"
-	if [ -z "${_schema##*$_char*}" ]; then
-		[ ! "$_VAR_FEATURE_VER" == "" ] && eval $_VAR_FEATURE_VER=$(echo $_schema | sed 's,^.*#\([^:/\\@]*\).*$,\1,')
-		#| cut -d'#' -f 2 | cut -d'\' -f 1 | cut -d':' -f 1 | cut -d'@' -f 1 | cut -d'/' -f 1)
+	#if [[ $_tr_schema == *$'\x23'* ]]; then
+	#if string_contains "$_tr_schema" '#'; then
+	#if [ ! "$(echo $_tr_schema | grep "#")" == "" ]; then
+
+	#if contains "$_tr_schema" '#'; then
+	if [ -z "${_tr_schema##*$_char*}" ]; then
+		if [ ! "$_VAR_FEATURE_VER" == "" ]; then eval $_VAR_FEATURE_VER="$(echo $_tr_schema | sed 's,^.*#\([^:/\\@]*\).*$,\1,')"; fi
 	fi
 
 	_char="@"
-	if [ -z "${_schema##*$_char*}" ]; then
-		[ ! "$_VAR_FEATURE_ARCH" == "" ] && eval $_VAR_FEATURE_ARCH=$(echo $_schema | sed 's,^.*@\([^:/\\#]*\).*$,\1,')
-		#| cut -d'@' -f 2 | cut -d'\' -f 1 | cut -d':' -f 1 | cut -d'#' -f 1 | cut -d'/' -f 1)
+	if [ -z "${_tr_schema##*$_char*}" ]; then
+		if [ ! "$_VAR_FEATURE_ARCH" == "" ]; then eval $_VAR_FEATURE_ARCH="$(echo $_tr_schema | sed 's,^.*@\([^:/\\#]*\).*$,\1,')"; fi
 	fi
 
-	
-	[ ! "$_VAR_FEATURE_NAME" == "" ] && eval $_VAR_FEATURE_NAME=$(echo $_schema | sed 's,^\([^:/\\#]*\).*$,\1,')
-	#| cut -d'/' -f 1 | cut -d'\' -f 1 | cut -d':' -f 1 | cut -d'#' -f 1 | cut -d'@' -f 1)
+
+	if [ ! "$_VAR_FEATURE_NAME" == "" ]; then eval $_VAR_FEATURE_NAME="$(echo $_tr_schema | sed 's,^\([^:/\\#]*\).*$,\1,')"; fi
 }
 
 
 # --------------- DEPRECATED ---------------------------------------------
 
+# http://stackoverflow.com/a/8811800
+# contains(string, substring)
+#
+# Returns 0 if the specified string contains the specified substring,
+# otherwise returns 1.
+contains() {
+    string="$1"
+    substring="$2"
+    if test "${string#*$substring}" != "$string"
+    then
+        return 0    # $substring is in $string
+    else
+        return 1    # $substring is not in $string
+    fi
+}
+
+# http://stackoverflow.com/a/20460402
+string_contains() { [ -z "${1##*$2*}" ] && [ -n "$1" -o -z "$2" ]; }
 
 # TODO : migrate to separate recipe (or erase?)
 function __texinfo() {
@@ -926,7 +963,7 @@ function __texinfo() {
 	AUTO_INSTALL_FLAG_PREFIX=
 	AUTO_INSTALL_FLAG_POSTFIX=
 
-	
+
 	__auto_build "configure" "texinfo" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
 
 }
@@ -937,13 +974,13 @@ function __bc() {
 	URL=http://alpha.gnu.org/gnu/bc/bc-1.06.95.tar.bz2
 	VER=1.06.95
 	FILE_NAME=bc-1.06.95.tar.bz2
-	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools"	
+	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/bc-$VER-src"
 	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/bc-$VER-build"
 
 	AUTO_INSTALL_FLAG_PREFIX=
 	AUTO_INSTALL_FLAG_POSTFIX=
-	
+
 	__auto_build "configure" "bc" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
 }
 
@@ -967,7 +1004,7 @@ function __m4() {
 	URL=http://ftp.gnu.org/gnu/m4/m4-1.4.17.tar.gz
 	VER=1.4.17
 	FILE_NAME=m4-1.4.17.tar.gz
-	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools"	
+	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/m4-$VER-src"
 	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/m4-$VER-build"
 
