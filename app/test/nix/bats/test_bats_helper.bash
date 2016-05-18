@@ -49,7 +49,7 @@ assert_equal() {
 assert_output() {
   local expected
   if [ $# -eq 0 ]; then expected="$(cat -)"
-  else expected="$1"
+    else expected="$1"
   fi
   assert_equal "$expected" "$output"
 }
@@ -63,6 +63,22 @@ output_contains() {
   done
 
   echo "$found"
+}
+
+assert_output_not_empty() {
+  if [ "$output" == "" ]; then
+    { echo "output is empty"
+      echo "found:    $output"
+    } | flunk
+  fi
+}
+
+assert_output_empty() {
+  if [ "$output" != "" ]; then
+    { echo "output is not empty"
+      echo "found:    $output"
+    } | flunk
+  fi
 }
 
 # contains n ($2) occurence of string ($1)

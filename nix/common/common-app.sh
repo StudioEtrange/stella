@@ -1,4 +1,4 @@
-if [ ! "$_STELLA_COMMON_APP_INCLUDED_" == "1" ]; then 
+if [ ! "$_STELLA_COMMON_APP_INCLUDED_" == "1" ]; then
 _STELLA_COMMON_APP_INCLUDED_=1
 
 
@@ -9,16 +9,16 @@ _STELLA_COMMON_APP_INCLUDED_=1
 function __transfert_app(){
 	# form is user@host:path
 	local _target=$1
-	
+
 	local _OPT=$2
 	local _opt_ex_cache="EXCLUDE_FILTER /$(__abs_to_rel_path $STELLA_APP_CACHE_DIR $STELLA_APP_ROOT)/"
 	local _opt_ex_workspace="EXCLUDE_FILTER /$(__abs_to_rel_path $STELLA_APP_WORK_ROOT $STELLA_APP_ROOT)/"
-	for o in $_OPT; do 
+	for o in $_OPT; do
 		[ "$o" == "CACHE" ] && _opt_ex_cache=
 		[ "$o" == "WORKSPACE" ] && _opt_ex_workspace=
 	done
 
-	__transfert_folder "$STELLA_APP_ROOT" "$_target" "$_opt_ex_cache $_opt_ex_workspace"
+	__transfert_folder_rsync "$STELLA_APP_ROOT" "$_target" "$_opt_ex_cache $_opt_ex_workspace"
 }
 
 
@@ -37,7 +37,7 @@ function __select_app() {
 		_properties_file="$_app_path/$STELLA_APP_PROPERTIES_FILENAME"
 		#STELLA_APP_ROOT=$_app_path
 	fi
-	
+
 	echo "$_properties_file"
 }
 
@@ -62,7 +62,7 @@ function __link_app() {
 	local _opt_share_workspace=OFF
 	local _flag_stella_root=OFF
 	local _stella_root=$STELLA_ROOT
-	for o in $_OPT; do 
+	for o in $_OPT; do
 		[ "$o" == "CACHE" ] && _opt_share_cache=ON
 		[ "$o" == "WORKSPACE" ] && _opt_share_workspace=ON
 		[ "$_flag_stella_root" == "ON" ] && _stella_root="$o" && _flag_stella_root=OFF
@@ -76,7 +76,7 @@ function __link_app() {
 
 	_s_ver=$(__get_stella_version "$_stella_root")
 	_s_flavour=$(__get_stella_flavour "$_stella_root")
-	
+
 	_stella_root=$(__abs_to_rel_path "$_stella_root" "$_target_approot")
 
 	echo "#!/bin/bash" >$_target_approot/stella-link.sh.temp
@@ -92,10 +92,10 @@ function __link_app() {
 
 	# tweak stella properties file
 	_target_STELLA_APP_PROPERTIES_FILE="$_target_approot/$STELLA_APP_PROPERTIES_FILENAME"
-	
+
 	[ "$_opt_share_cache" == "ON" ] && __add_key "$_target_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_CACHE_DIR" "$STELLA_APP_CACHE_DIR"
 	[ "$_opt_share_workspace" == "ON" ] && __add_key "$_target_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_WORK_ROOT" "$STELLA_APP_WORK_ROOT"
-	
+
 
 }
 
@@ -114,7 +114,7 @@ function __init_app() {
 	fi
 
 
-    [ "$_workroot" == "" ] && _workroot=$_approot/workspace    
+    [ "$_workroot" == "" ] && _workroot=$_approot/workspace
   	[ "$_cachedir" == "" ] && _cachedir=$_approot/cache
 
 
@@ -125,11 +125,11 @@ function __init_app() {
 
 	_s_ver=$(__get_stella_version "$_stella_root")
 	_s_flavour=$(__get_stella_flavour "$_stella_root")
-	
+
 	_workroot=$(__abs_to_rel_path "$_workroot" "$_approot")
 	_cachedir=$(__abs_to_rel_path "$_cachedir" "$_approot")
 	_stella_root=$(__abs_to_rel_path "$STELLA_ROOT" "$_approot")
-	
+
 
 
 	echo "#!/bin/bash" >$_approot/stella-link.sh.temp
@@ -137,7 +137,7 @@ function __init_app() {
 	echo "export STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$_approot/stella-link.sh.temp
 	echo "STELLA_DEP_FLAVOUR=$_s_flavour" >>$_approot/stella-link.sh.temp
 	echo "STELLA_DEP_VERSION=$_s_ver" >>$_approot/stella-link.sh.temp
-	
+
 
 
 
@@ -306,7 +306,7 @@ function __get_feature() {
 	__translate_schema $_SCHEMA "_TR_FEATURE_NAME" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR" "_TR_FEATURE_OS_RESTRICTION" "_TR_FEATURE_OS_EXCLUSION"
 
 	if [ ! "$STELLA_APP_FEATURE_LIST" == "" ]; then
-		
+
 		for f in $STELLA_APP_FEATURE_LIST; do
 
 			__translate_schema $f "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR" "TR_FEATURE_OS_RESTRICTION" "TR_FEATURE_OS_EXCLUSION"
@@ -317,7 +317,7 @@ function __get_feature() {
 			[ ! "$_TR_FEATURE_ARCH" == "" ] && [ ! "$_TR_FEATURE_ARCH" == "$TR_FEATURE_ARCH" ] && _flag=0
 			[ ! "$_TR_FEATURE_VER" == "" ] && [ ! "$_TR_FEATURE_VER" == "$TR_FEATURE_VER" ] && _flag=0
 
-			
+
 			if [ "$_flag" == "1" ]; then
 				__feature_install $f
 			fi
@@ -468,16 +468,16 @@ function __app_resources() {
 	for a in $_list_id; do
 		_artefact_namespace="$a"_"$_mode"_NAMESPACE
 		_artefact_namespace=${!_artefact_namespace}
-		
+
 		_artefact_link=0
 		if [ "$_mode" == "DATA" ]; then
 			_artefact_root="$a"_"$_mode"_ROOT
 			_artefact_root=${!_artefact_root}
 			_artefact_dest=$(__rel_to_abs_path "$_artefact_root" "$STELLA_APP_WORK_ROOT")
-			_artefact_link=0; 
+			_artefact_link=0;
 		fi
 		if [ "$_mode" == "ASSETS" ]; then _artefact_dest="$ASSETS_REPOSITORY"; _artefact_link=1; _artefact_link_target="$ASSETS_ROOT"; fi
-		
+
 
 		_opt="$a"_"$_mode"_OPTIONS
 		_opt=${!_opt}
@@ -493,18 +493,18 @@ function __app_resources() {
 		fi
 
 		_merge=
-		for o in $_opt; do 
+		for o in $_opt; do
 			[ "$o" == "MERGE" ] && _merge=MERGE
 		done
 
 
 		echo "* $_operation $_name [$a] resources"
 
-		if [ "$_merge" == "MERGE" ]; then 
+		if [ "$_merge" == "MERGE" ]; then
 			echo "* Main package of [$a] is $_artefact_namespace"
 		fi
 
-		
+
 		__resource "$_mode : $_name [$_artefact_namespace]" "$_uri" "$_prot" "$_artefact_dest/$_artefact_namespace" "$_opt $_operation"
 		if [ "$_merge" == "MERGE" ]; then echo "* $_name merged into $_artefact_namespace"; fi
 		if [ "$_artefact_link" == "1" ]; then
@@ -514,7 +514,7 @@ function __app_resources() {
 				ln -s "$_artefact_dest/$_artefact_namespace" "$_artefact_link_target/$_artefact_namespace"
 			)
 		fi
-	
+
 	done
 }
 

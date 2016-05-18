@@ -154,8 +154,144 @@ function __sort_version() {
 }
 
 
+
+
+
+
+function __url_encode() {
+	if [ "$(which xxd 2>/dev/null)" == "" ]; then
+		__url_encode_1 "$@"
+	else
+		__url_encode_with_xxd "$@"
+	fi
+}
+
+# https://gist.github.com/cdown/1163649
+function __url_encode_1() {
+    old_lc_collate=$LC_COLLATE
+    LC_COLLATE=C
+		# local LANG=C
+    local length="${#1}"
+    for (( i = 0; i < length; i++ )); do
+        local c="${1:i:1}"
+        case $c in
+            [a-zA-Z0-9.~_-]) printf "$c" ;;
+            *) printf '%%%02X' "'$c" ;;
+        esac
+    done
+
+    LC_COLLATE=$old_lc_collate
+}
+
+# https://gist.github.com/cdown/1163649
+# xxd is used to suppoert wide characters
+function __url_encode_with_xxd() {
+  local length="${#1}"
+  for (( i = 0; i < length; i++ )); do
+    local c="${1:i:1}"
+    case $c in
+	      [a-zA-Z0-9.~_-]) printf "$c" ;;
+	    *) printf "$c" | xxd -p -c1 | while read x;do printf "%%%s" "$x";done
+	  esac
+	done
+}
+
+# Faster solution than __url_encode_1 ? (without xxd)
+# http://unix.stackexchange.com/a/60698
+function __url_encode_2() {
+	string=$1; format=; set --
+  while
+    literal=${string%%[!-._~0-9A-Za-z]*}
+    case "$literal" in
+      ?*)
+        format=$format%s
+        set -- "$@" "$literal"
+        string=${string#$literal};;
+    esac
+    case "$string" in
+      "") false;;
+    esac
+  do
+    tail=${string#?}
+    head=${string%$tail}
+    format=$format%%%02x
+    set -- "$@" "'$head"
+    string=$tail
+  done
+  printf "$format\\n" "$@"
+}
+
+# https://gist.github.com/cdown/1163649
+function __url_decode() {
+
+    local url_encoded="${1//+/ }"
+    printf '%b' "${url_encoded//%/\\x}"
+}
+
+
+# http://wp.vpalos.com/537/uri-parsing-using-bash-built-in-features/ (customized)
+# URI parsing function
+#
+# The function creates global variables with the parsed results.
+# It returns 0 if parsing was successful or non-zero otherwise.
+#
+# [schema://][user[:password]@][host][:port][/path][?[arg1=val1]...][#fragment]
+function __uri_parse() {
+	# uri capture
+	__stella_uri="$@"
+
+	# safe escaping
+	#__stella_uri="${__stella_uri//\`/%60}"
+	#__stella_uri="${__stella_uri//\"/%22}"
+
+	local path
+	local count
+	local query
+	# top level parsing
+	local pattern='^(([a-z]+)://)?((([^:\/]+)(:([^@\/]*))?@)?([^:\/?]*)(:([0-9]+))?)(\/[^?#]*)?(\?[^#]*)?(#.*)?$'
+	[[ "$__stella_uri" =~ $pattern ]] || return 1;
+
+	# component extraction
+	__stella_uri=${BASH_REMATCH[0]}
+	__stella_uri_schema=${BASH_REMATCH[2]}
+	__stella_uri_address=${BASH_REMATCH[3]}
+	__stella_uri_user=${BASH_REMATCH[5]}
+	__stella_uri_password=${BASH_REMATCH[7]}
+	__stella_uri_host=${BASH_REMATCH[8]}
+	__stella_uri_port=${BASH_REMATCH[10]}
+	__stella_uri_path=${BASH_REMATCH[11]}
+	__stella_uri_query=${BASH_REMATCH[12]}
+	__stella_uri_fragment=${BASH_REMATCH[13]}
+
+	# path parsing
+	count=0
+	path="$__stella_uri_path"
+	pattern='^/+([^/]+)'
+	while [[ $path =~ $pattern ]]; do
+			eval "__stella_uri_parts[$count]='${BASH_REMATCH[1]}'"
+			path="${path:${#BASH_REMATCH[0]}}"
+			#let count++
+			count="$(( count + 1 ))"
+	done
+
+	# query parsing
+	count=0
+	query="$__stella_uri_query"
+	pattern='^[?&]+([^= ]+)(=([^&]*))?'
+	while [[ $query =~ $pattern ]]; do
+			eval "__stella_uri_args[$count]='${BASH_REMATCH[1]}'"
+			eval "__stella_uri_arg_${BASH_REMATCH[1]}='${BASH_REMATCH[3]}'"
+			query="${query:${#BASH_REMATCH[0]}}"
+			#let count++
+			count=$(( count + 1 ))
+	done
+
+	# return success
+	return 0
+}
+
 function __transfert_stella(){
-	# form is user@host:path
+	# target form is USER@]HOST[:PORT]/DEST
 	local _target=$1
 
 	local _OPT=$2
@@ -166,14 +302,16 @@ function __transfert_stella(){
 		[ "$o" == "WORKSPACE" ] && _opt_ex_workspace=
 	done
 
-	__transfert_folder "$STELLA_ROOT" "$_target" "$_opt_ex_cache $_opt_ex_workspace"
+	__transfert_folder_rsync "$STELLA_ROOT" "$_target" "$_opt_ex_cache $_opt_ex_workspace"
 }
 
-function __transfert_folder(){
+function __transfert_folder_rsync(){
 	local _folder=$1
-	# form is user@host:path
+	# target form is USER@]HOST[:PORT]/DEST
 	local _target=$2
 
+	__require "rsync" "rsync"
+	__require "ssh" "ssh"
 
 	local _OPT=$3
 	local _flag_exclude_filter=OFF
@@ -183,7 +321,7 @@ function __transfert_folder(){
 		[ "$o" == "EXCLUDE_FILTER" ] && _flag_exclude_filter=ON
 	done
 
-	__require "rsync" "rsync"
+
 	rsync $_exclude_filter --force --delete-excluded --delete -avz -e 'ssh' "$_folder/" $_target/
 }
 
@@ -203,20 +341,7 @@ function __get_active_path() {
 	echo "$PATH"
 }
 
-function __bootstrap_stella_env() {
-	export PS1="[stella] \u@\h|\W>"
 
-	local _t=$(mktmp)
-	#(set -o posix; set) >$_t
-	declare >$_t
-	declare -f >>$_t
-( exec bash -i 3<<SCRIPT 4<&0 <&3
-. $_t 2>/dev/null;rm $_t;
-echo "** STELLA SHELL with env var setted (type exit to exit...) **"
-exec  3>&- <&4
-SCRIPT
-)
-}
 
 
 # http://stackoverflow.com/questions/369758/how-to-trim-whitespace-from-a-bash-variable
@@ -235,6 +360,10 @@ function __trim() {
     var="${var%"${var##*[![:space:]]}"}"   # remove trailing whitespace characters
     echo -n "$var"
 }
+
+# http://stackoverflow.com/a/20460402
+function __string_contains() { [ -z "${1##*$2*}" ] && [ -n "$1" -o -z "$2" ]; }
+
 
 
 function __get_stella_version() {
@@ -740,6 +869,7 @@ function __resource() {
 				# [ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
 			GIT)
+				__require "git" "git" "PREFER_SYSTEM"
 				if [ "$_opt_revert" == "ON" ]; then cd "$FINAL_DESTINATION"; git reset --hard; fi
 				if [ "$_opt_update" == "ON" ]; then cd "$FINAL_DESTINATION"; git pull;if [ ! "$_checkout_version" == "" ]; then git checkout $_checkout_version; fi; fi
 				if [ "$_opt_get" == "ON" ]; then git clone $URI "$FINAL_DESTINATION"; if [ ! "$_checkout_version" == "" ]; then cd "$FINAL_DESTINATION"; git checkout $_checkout_version; fi; fi
@@ -922,7 +1052,7 @@ function __download() {
 			wget "$URL" -O "$STELLA_APP_CACHE_DIR/$FILE_NAME" --no-check-certificate || rm -f "$STELLA_APP_CACHE_DIR/$FILE_NAME"
 		else
 			if [[ -n `which curl 2> /dev/null` ]]; then
-				curl -fkSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL"
+				curl -fSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL" || curl -fkSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL"
 			else
 				__require "curl" "curl" "PREFER_SYSTEM"
 			fi

@@ -911,11 +911,6 @@ function __translate_schema() {
 	fi
 
 	_char="#"
-	#if [[ $_tr_schema == *$'\x23'* ]]; then
-	#if string_contains "$_tr_schema" '#'; then
-	#if [ ! "$(echo $_tr_schema | grep "#")" == "" ]; then
-
-	#if contains "$_tr_schema" '#'; then
 	if [ -z "${_tr_schema##*$_char*}" ]; then
 		if [ ! "$_VAR_FEATURE_VER" == "" ]; then eval $_VAR_FEATURE_VER="$(echo $_tr_schema | sed 's,^.*#\([^:/\\@]*\).*$,\1,')"; fi
 	fi
@@ -932,24 +927,6 @@ function __translate_schema() {
 
 # --------------- DEPRECATED ---------------------------------------------
 
-# http://stackoverflow.com/a/8811800
-# contains(string, substring)
-#
-# Returns 0 if the specified string contains the specified substring,
-# otherwise returns 1.
-contains() {
-    string="$1"
-    substring="$2"
-    if test "${string#*$substring}" != "$string"
-    then
-        return 0    # $substring is in $string
-    else
-        return 1    # $substring is not in $string
-    fi
-}
-
-# http://stackoverflow.com/a/20460402
-string_contains() { [ -z "${1##*$2*}" ] && [ -n "$1" -o -z "$2" ]; }
 
 # TODO : migrate to separate recipe (or erase?)
 function __texinfo() {

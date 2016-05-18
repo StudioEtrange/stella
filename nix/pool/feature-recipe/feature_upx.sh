@@ -74,7 +74,7 @@ function feature_upx_install_source() {
 		__del_folder "$SRC_DIR"
 	fi
 
-	__inspect_build "$INSTALL_DIR"
+	__inspect_and_fix_build "$INSTALL_DIR"
 
 }
 

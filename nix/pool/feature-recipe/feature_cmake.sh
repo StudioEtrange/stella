@@ -122,7 +122,7 @@ function feature_cmake_install_source() {
 	__del_folder "$BUILD_DIR"
 
 
-	__inspect_build "$INSTALL_DIR" "EXCLUDE_INSPECT /share/"
+	__inspect_and_fix_build "$INSTALL_DIR" "EXCLUDE_INSPECT /share/"
 
 }
 

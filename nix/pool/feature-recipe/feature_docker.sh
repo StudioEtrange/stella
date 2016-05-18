@@ -1,4 +1,4 @@
-if [ ! "$_DOCKER_INCLUDED_" == "1" ]; then 
+if [ ! "$_DOCKER_INCLUDED_" == "1" ]; then
 _DOCKER_INCLUDED_=1
 
 
@@ -13,12 +13,44 @@ _DOCKER_INCLUDED_=1
 
 function feature_docker() {
 	FEAT_NAME=docker
-	FEAT_LIST_SCHEMA="1_8_1:binary 1_9_1:binary 1_10_3:binary"
-	FEAT_DEFAULT_VERSION=1_10_3
+	FEAT_LIST_SCHEMA="1_8_1:binary 1_9_1:binary 1_10_3:binary 1_11_1:binary"
+	FEAT_DEFAULT_VERSION=1_11_1
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
+
+
+function feature_docker_1_11_1() {
+	FEAT_VERSION=1_11_1
+
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL=
+	FEAT_SOURCE_URL_FILENAME=
+	FEAT_SOURCE_URL_PROTOCOL=
+
+	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+		FEAT_BINARY_URL=https://get.docker.com/builds/Darwin/x86_64/docker-1.11.1.tgz
+		FEAT_BINARY_URL_FILENAME=docker-client-1.11.1-darwin.tgz
+	fi
+
+	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+		FEAT_BINARY_URL=https://get.docker.com/builds/Linux/x86_64/docker-1.11.1.tgz
+		FEAT_BINARY_URL_FILENAME=docker-1.11.1-linux.tgz
+	fi
+	FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
+
+	FEAT_SOURCE_CALLBACK=
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/docker
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
+
+}
 
 
 function feature_docker_1_10_3() {
@@ -115,8 +147,8 @@ function feature_docker_1_8_1() {
 }
 
 function feature_docker_install_binary() {
-	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE FORCE_NAME $FEAT_BINARY_URL_FILENAME"
-	mv "$FEAT_INSTALL_ROOT"/"$FEAT_BINARY_URL_FILENAME" "$FEAT_INSTALL_ROOT"/docker
+	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "STRIP DEST_ERASE FORCE_NAME $FEAT_BINARY_URL_FILENAME"
+	[ "$FEAT_BINARY_URL_PROTOCOL" == "HTTP" ] && mv "$FEAT_INSTALL_ROOT"/"$FEAT_BINARY_URL_FILENAME" "$FEAT_INSTALL_ROOT"/docker
 
 	chmod +x "$FEAT_INSTALL_ROOT"/docker
 	[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && echo " ** On darwin, docker is in client mode only"

@@ -1,4 +1,4 @@
-if [ ! "$_STELLA_COMMON_BUILD_INCLUDED_" == "1" ]; then 
+if [ ! "$_STELLA_COMMON_BUILD_INCLUDED_" == "1" ]; then
 _STELLA_COMMON_BUILD_INCLUDED_=1
 
 # NOTE : homebrew flag setting system : https://github.com/Homebrew/homebrew/blob/master/Library/Homebrew/extend/ENV/super.rb
@@ -34,10 +34,10 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 
 
 #				SET BUILD ENV AND FLAGS
-#				__prepare_build 
+#				__prepare_build
 #						EXPORT / RPATH
 #						__export_env ====> MUST BE CALLED if we use __link_feature_library
-#						
+#
 #						call set_env_vars_for_gcc-clang
 #						call set_env_vars_for_cmake
 
@@ -47,14 +47,14 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 #				LAUNCH BUILD TOOL
 #				__launch_build
 
-#				__inspect_build
-#						call __fix_built_files 
+#				__inspect_and_fix_build
+#						call __fix_built_files
 #						call __check_built_files
 
 
 function __start_build_session() {
 	__reset_build_env
-	
+
 }
 
 # TOOLSET ------------------------------------------------------------------------------------------------------------------------------
@@ -74,10 +74,10 @@ function __set_toolset() {
 	# compiler frontend
 	local _flag_frontend=
 	local COMPIL_FRONTEND=$STELLA_BUILD_DEFAULT_COMPIL_FRONTEND
-	
+
 	case $MODE in
 		CUSTOM)
-			for o in $OPT; do 
+			for o in $OPT; do
 				[ "$_flag_configure" == "ON" ] && CONFIG_TOOL=$o && _flag_configure=FORCE
 				[ "$o" == "CONFIG_TOOL" ] && _flag_configure=ON
 				[ "$_flag_build" == "ON" ] && BUILD_TOOL=$o && _flag_build=FORCE
@@ -89,7 +89,7 @@ function __set_toolset() {
 			;;
 		STANDARD)
 			STELLA_BUILD_TOOLSET=STANDARD
-			
+
 			_flag_configure=FORCE
 			CONFIG_TOOL=configure
 
@@ -100,12 +100,12 @@ function __set_toolset() {
 			;;
 		CMAKE)
 			STELLA_BUILD_TOOLSET=CMAKE
-			
+
 			_flag_configure=FORCE
 			CONFIG_TOOL=cmake
 
 			BUILD_TOOL=make
-			
+
 			_flag_frontend=FORCE
 			COMPIL_FRONTEND=gcc-clang
 			;;
@@ -123,7 +123,7 @@ function __set_toolset() {
 	STELLA_BUILD_BUILD_TOOL=$BUILD_TOOL
 	STELLA_BUILD_COMPIL_FRONTEND=$COMPIL_FRONTEND
 
-	
+
 }
 
 
@@ -134,7 +134,7 @@ function __require_current_toolset() {
 
 # BUILD ------------------------------------------------------------------------------------------------------------------------------
 function __auto_build() {
-	
+
 	local NAME
 	local SOURCE_DIR
 	local BUILD_DIR
@@ -146,7 +146,7 @@ function __auto_build() {
 	SOURCE_DIR="$2"
 	INSTALL_DIR="$3"
 	OPT="$4"
-	# DEBUG SOURCE_KEEP BUILD_KEEP NO_CONFIG NO_BUILD NO_OUT_OF_TREE_BUILD NO_INSPECT_BUILD NO_INSTALL
+	# DEBUG SOURCE_KEEP BUILD_KEEP NO_CONFIG NO_BUILD NO_OUT_OF_TREE_BUILD NO_inspect_and_fix_build NO_INSTALL
 	# EXCLUDE_INSPECT
 
 	# keep source code after build (default : FALSE)
@@ -160,14 +160,14 @@ function __auto_build() {
 	# build from another folder (default : TRUE)
 	local _opt_out_of_tree_build=ON
 	# disable fix & check build (default : ON)
-	local _opt_inspect_build=ON
-	for o in $OPT; do 
+	local _opt_inspect_and_fix_build=ON
+	for o in $OPT; do
 		[ "$o" == "SOURCE_KEEP" ] && _opt_source_keep=ON
 		[ "$o" == "BUILD_KEEP" ] && _opt_build_keep=ON
 		[ "$o" == "NO_CONFIG" ] && _opt_configure=OFF
 		[ "$o" == "NO_BUILD" ] && _opt_build=OFF
 		[ "$o" == "NO_OUT_OF_TREE_BUILD" ] && _opt_out_of_tree_build=OFF
-		[ "$o" == "NO_INSPECT_BUILD" ] && _opt_inspect_build=OFF
+		[ "$o" == "NO_inspect_and_fix_build" ] && _opt_inspect_and_fix_build=OFF
 	done
 
 	# can not build out of tree without configure first
@@ -198,8 +198,8 @@ function __auto_build() {
 	[ "$_opt_configure" == "ON" ] && _check=1
 	[ "$_opt_build" == "ON" ] && _check=1
 	[ "$_check" == "1" ] && __require_current_toolset
-	
-	
+
+
 	# set build env
 	__prepare_build "$INSTALL_DIR" "$SOURCE_DIR" "$BUILD_DIR"
 
@@ -217,8 +217,8 @@ function __auto_build() {
 		[ ! "$_opt_build_keep" == "ON" ] && rm -Rf "$BUILD_DIR"
 	fi
 
-	
-	[ "$_opt_inspect_build" == "ON" ] && __inspect_build "$INSTALL_DIR" "$OPT"
+
+	[ "$_opt_inspect_and_fix_build" == "ON" ] && __inspect_and_fix_build "$INSTALL_DIR" "$OPT"
 
 	echo " ** Done"
 
@@ -238,14 +238,14 @@ function __launch_configure() {
 
 	# debug mode (default : OFF)
 	local _debug=
-	
-	for o in $OPT; do 
+
+	for o in $OPT; do
 		[ "$o" == "DEBUG" ] && _debug=ON
 	done
 
 	mkdir -p "$AUTO_BUILD_DIR"
 	cd "$AUTO_BUILD_DIR"
-	
+
 	# GLOBAL FLAGs
 	# AUTO_INSTALL_CONF_FLAG_PREFIX
 	# AUTO_INSTALL_CONF_FLAG_POSTFIX
@@ -295,7 +295,7 @@ function __launch_configure() {
 				-DINSTALL_BIN_DIR="$AUTO_INSTALL_DIR/bin" -DINSTALL_LIB_DIR="$AUTO_INSTALL_DIR/lib" \
 				-DCMAKE_LIBRARY_PATH="$CMAKE_LIBRARY_PATH" -DCMAKE_INCLUDE_PATH="$CMAKE_INCLUDE_PATH" \
 				-DCMAKE_FIND_FRAMEWORK=LAST -DCMAKE_FIND_APPBUNDLE=LAST \
-				-G "$CMAKE_GENERATOR"		
+				-G "$CMAKE_GENERATOR"
 				#  -DCMAKE_DEBUG_POSTFIX=$DEBUG_POSTFIX
 				# -DBUILD_STATIC_LIBS:BOOL=TRUE -DBUILD_SHARED_LIBS:BOOL=TRUE \
 			fi
@@ -336,10 +336,10 @@ function __launch_build() {
 	# AUTO_INSTALL_BUILD_FLAG_POSTFIX
 
 	local _FLAG_PARALLEL=
-	
+
 	mkdir -p "$AUTO_BUILD_DIR"
 	cd "$AUTO_BUILD_DIR"
-	
+
 	case $STELLA_BUILD_BUILD_TOOL in
 
 		make)
@@ -349,7 +349,7 @@ function __launch_build() {
 				if [ "$_opt_configure" == "ON" ]; then
 					make $_debug $_FLAG_PARALLEL \
 					$AUTO_INSTALL_BUILD_FLAG_POSTFIX
-					
+
 					if [ "$_opt_install" == "ON" ]; then
 						make $_debug \
 						$AUTO_INSTALL_BUILD_FLAG_POSTFIX \
@@ -359,7 +359,7 @@ function __launch_build() {
 					#make $_debug $_FLAG_PARALLEL \
 					#CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" \
 					#PREFIX="$AUTO_INSTALL_DIR" $AUTO_INSTALL_BUILD_FLAG_POSTFIX
-					
+
 					make $_debug $_FLAG_PARALLEL \
 					PREFIX="$AUTO_INSTALL_DIR" prefix="$AUTO_INSTALL_DIR" \
 					$AUTO_INSTALL_BUILD_FLAG_POSTFIX
@@ -395,7 +395,7 @@ function __launch_build() {
 					eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) make $_debug $_FLAG_PARALLEL \
 					PREFIX="$AUTO_INSTALL_DIR" prefix="$AUTO_INSTALL_DIR" \
 					$AUTO_INSTALL_BUILD_FLAG_POSTFIX
-					
+
 					#if [ "$_opt_install" == "ON" ]; then
 						#eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) make $_debug \
 						#CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" \
@@ -460,12 +460,12 @@ function __link_feature_library() {
 	# NO_SET_FLAGS -- do not set stella build system flags
 	# LIBS_NAME -- libraries name to use with -l arg -- you can specify several libraries. If you do not use LIBS_NAME -l flag will not be setted, only -L will be setted
 
-	
+
 	local _ROOT=
 	local _BIN=
 	local _LIB=
 	local _INCLUDE=
-	
+
 
 	local _folders=OFF
 	local _var_folders=
@@ -481,9 +481,9 @@ function __link_feature_library() {
 	local _opt_set_flags=ON
 	local _flag_libs_name=OFF
 	local _libs_name=
-	
+
 	# default mode
-	case "$STELLA_BUILD_LINK_MODE" in 
+	case "$STELLA_BUILD_LINK_MODE" in
 		DEFAULT)
 			_opt_flavour="DEFAULT"
 			;;
@@ -495,7 +495,7 @@ function __link_feature_library() {
 			;;
 	esac
 
-	for o in $OPT; do 
+	for o in $OPT; do
 		[ "$o" == "FORCE_STATIC" ] && _opt_flavour=$o && _flag_libs_name=OFF
 		[ "$o" == "FORCE_DYNAMIC" ] && _opt_flavour=$o && _flag_libs_name=OFF
 
@@ -532,7 +532,7 @@ function __link_feature_library() {
 				_origin="$(__dep_choose_origin $SCHEMA)"
 				;;
 	esac
-	
+
 	if [ "$_origin" == "SYSTEM" ]; then
 		echo "We do not link against STELLA version of $SCHEMA, but from SYSTEM."
 		return
@@ -553,7 +553,7 @@ function __link_feature_library() {
 	local REQUIRED_LIB_ROOT="$FEAT_INSTALL_ROOT"
 	__pop_schema_context
 
-	
+
 
 	# ISOLATE LIBS
 	# if we want specific static or dynamic linking, we isolate specific version
@@ -564,7 +564,7 @@ function __link_feature_library() {
 
 	local LIB_TARGET_FOLDER=
 	local LIB_EXTENSION=
-	
+
 	case $_opt_flavour in
 		FORCE_STATIC)
 			LIB_TARGET_FOLDER="$REQUIRED_LIB_ROOT/stella-dep-static"
@@ -575,7 +575,7 @@ function __link_feature_library() {
 			[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && LIB_EXTENSION=".so"
 			[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && LIB_EXTENSION=".dylib"
 			;;
-		DEFAULT)	
+		DEFAULT)
 			LIB_TARGET_FOLDER="$REQUIRED_LIB_ROOT/$_lib_folder"
 			;;
 	esac
@@ -587,7 +587,7 @@ function __link_feature_library() {
 		__copy_folder_content_into "$REQUIRED_LIB_ROOT"/"$_lib_folder" "$LIB_TARGET_FOLDER" "*"$LIB_EXTENSION"*"
 
 		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-			for f in "$LIB_TARGET_FOLDER"/*".dylib"*; do	
+			for f in "$LIB_TARGET_FOLDER"/*".dylib"*; do
 				if [ -f "$f" ]; then
 					[ "$STELLA_BUILD_RELOCATE" == "ON" ] && __tweak_install_name_darwin "$f" "RPATH"
 					[ "$STELLA_BUILD_RELOCATE" == "OFF" ] && __tweak_install_name_darwin "$f" "PATH"
@@ -670,16 +670,16 @@ function __link_flags_gcc-clang() {
 	local _C_CXX_FLAGS=
 	local _CPP_FLAGS="-I$_include_path"
 	local _LINK_FLAGS="-L$_lib_path"
-	
+
 	for l in $_libs_name; do
 		_LINK_FLAGS="$_LINK_FLAGS -l$l"
 	done
 
-	
+
 	eval "$_var_flags"_C_CXX_FLAGS=\"$_C_CXX_FLAGS\"
 	eval "$_var_flags"_CPP_FLAGS=\"$_CPP_FLAGS\"
 	eval "$_var_flags"_LINK_FLAGS=\"$_LINK_FLAGS\"
-	
+
 }
 
 
@@ -693,7 +693,7 @@ function __export_env() {
 	# relocation mode
 	if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
 		echo "*** We are in RELOCATION mode !"
-		if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then 
+		if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
 			__set_build_mode_default "RELOCATE" "OFF"
 			__require "patchelf" "patchelf" "PREFER_STELLA"
 			__set_build_mode_default "RELOCATE" "ON"
@@ -702,7 +702,7 @@ function __export_env() {
 	fi
 
 	# Copy each linked feature into a folder stella-dep
-	# we copy each dep into stella-dep folder 
+	# we copy each dep into stella-dep folder
 	# 		but we do NOT use them while BUILDING
 	# 		they are used only at RUNTIME (based on rpath values)
 	if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
@@ -728,7 +728,7 @@ function __export_env() {
 			fi
 		done
 
-		
+
 		if [ ! "$LINKED_LIBS_PATH" == "" ]; then
 			if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 				for f in "$LIB_TARGET_FOLDER"/*".dylib"*; do
@@ -856,7 +856,7 @@ function __prepare_build() {
 	# export/rpath
 	__export_env "$INSTALL_DIR" "$SOURCE_DIR" "$BUILD_DIR"
 
-	
+
 	# set env
 	__set_build_env ARCH $STELLA_BUILD_ARCH
 	__set_build_env CPU_INSTRUCTION_SCOPE $STELLA_BUILD_CPU_INSTRUCTION_SCOPE
@@ -909,7 +909,7 @@ function __prepare_build() {
 	echo "====> CMAKE_LIBRARY_PATH : $CMAKE_LIBRARY_PATH"
 	echo "====> CMAKE_INCLUDE_PATH : $CMAKE_INCLUDE_PATH"
 	echo "====> STELLA_CMAKE_EXTRA_FLAGS : $STELLA_CMAKE_EXTRA_FLAGS"
-	
+
 
 
 
@@ -925,14 +925,14 @@ function __set_env_vars_for_cmake() {
 		for r in $STELLA_BUILD_RPATH; do
 			_rpath="$r;$_rpath"
 		done
-		
+
 		# all phase
 		[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && __set_build_env "CMAKE_RPATH" "ALL_PHASE_USE_RPATH_DARWIN"
 		__set_build_env "CMAKE_RPATH" "ALL_PHASE_USE_RPATH"
 
 		# cmake build phase
 		__set_build_env "CMAKE_RPATH" "BUILD_PHASE_USE_BUILD_FOLDER"
-		
+
 		# cmake install phase
 		__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_USE_FINAL_RPATH"
 		#__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_NO_RPATH"
@@ -959,7 +959,7 @@ function __set_env_vars_for_cmake() {
 
 			# cmake build phase
 			__set_build_env "CMAKE_RPATH" "BUILD_PHASE_NO_RPATH"
-		
+
 			# cmake install phase
 			__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_USE_FINAL_RPATH"
 			# add dependent lib directories to rpath value. (maybe redundant with rpath values computed in __export_env)
@@ -968,15 +968,15 @@ function __set_env_vars_for_cmake() {
 		fi
 	fi
 
-	
+
 
 	# CMAKE Flags
-	# note : 
+	# note :
 	#	- these flags have to be passed to the cmake command line, as cmake do not read en var
 	#	- list of environment variables read by cmake http://www.cmake.org/Wiki/CMake_Useful_Variables#Environment_Variables
 	CMAKE_C_FLAGS="$STELLA_C_CXX_FLAGS"
 	CMAKE_CXX_FLAGS="$STELLA_C_CXX_FLAGS"
-	
+
 	# Linker flags to be used to create shared libraries
 	CMAKE_SHARED_LINKER_FLAGS="$STELLA_LINK_FLAGS $STELLA_DYNAMIC_LINK_FLAGS"
 	# Linker flags to be used to create module
@@ -991,12 +991,12 @@ function __set_env_vars_for_cmake() {
 	LINKED_LIBS_CMAKE_INCLUDE_PATH="$(__trim $LINKED_LIBS_CMAKE_INCLUDE_PATH)"
 	export CMAKE_LIBRARY_PATH="$LINKED_LIBS_CMAKE_LIBRARY_PATH"
 	export CMAKE_INCLUDE_PATH="$LINKED_LIBS_CMAKE_INCLUDE_PATH"
-	# -DCMAKE_MODULE_PATH="$CMAKE_MODULE_PATH" 
+	# -DCMAKE_MODULE_PATH="$CMAKE_MODULE_PATH"
 
 	# save rpath related flags
 	[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && STELLA_CMAKE_EXTRA_FLAGS="$STELLA_CMAKE_EXTRA_FLAGS $STELLA_CMAKE_RPATH $STELLA_CMAKE_RPATH_BUILD_PHASE $STELLA_CMAKE_RPATH_INSTALL_PHASE"
 	[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && STELLA_CMAKE_EXTRA_FLAGS="$STELLA_CMAKE_EXTRA_FLAGS $STELLA_CMAKE_RPATH $STELLA_CMAKE_RPATH_DARWIN $STELLA_CMAKE_RPATH_BUILD_PHASE $STELLA_CMAKE_RPATH_INSTALL_PHASE"
-	
+
 	STELLA_CMAKE_EXTRA_FLAGS="$(__trim $STELLA_CMAKE_EXTRA_FLAGS)"
 }
 
@@ -1014,13 +1014,13 @@ function __set_env_vars_for_gcc-clang() {
 			r=${r/\$ORIGIN/\$\$ORIGIN}
 			STELLA_LINK_FLAGS="$STELLA_LINK_FLAGS -Wl,-rpath='"$r"'"
 		fi
-		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then	
+		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 			# NOTE : if we use ' or " around $r, it will be used as rpath value
 			STELLA_LINK_FLAGS="$STELLA_LINK_FLAGS -Wl,-rpath,$r"
 		fi
 	done
-	
-	
+
+
 	# ADD linked libraries flags
 	LINKED_LIBS_C_CXX_FLAGS="$(__trim $LINKED_LIBS_C_CXX_FLAGS)"
 	LINKED_LIBS_CPP_FLAGS="$(__trim $LINKED_LIBS_CPP_FLAGS)"
@@ -1067,7 +1067,7 @@ function __set_build_mode_default() {
 			eval STELLA_BUILD_"$1"_DEFAULT=\"$2\"
 		;;
 	esac
-	
+
 }
 
 # TOOLSET agnostic
@@ -1093,7 +1093,7 @@ function __set_build_mode() {
 
 	# BINARIES RELOCATABLE -----------------------------------------------------------------
 	# ON | OFF
-	#		every dependency will be added to a DT_NEEDED field in elf files 
+	#		every dependency will be added to a DT_NEEDED field in elf files
 	# 				on linux : DT_NEEDED contain dependency filename only
 	# 				on macos : ????? contain dependency filename only
 	#		if OFF : RPATH values will be added for each dependency by absolute path
@@ -1143,7 +1143,7 @@ function __set_build_mode() {
 function __set_build_env() {
 
 
-	
+
 
 	# CPU_INSTRUCTION_SCOPE -----------------------------------------------------------------
 	# http://sdf.org/~riley/blog/2014/10/30/march-mtune/
@@ -1263,18 +1263,18 @@ function __set_build_env() {
 	#		1.Build Phase
 	#			While building the binary and running tests
 	# 				* [DEFAULT] CMAKE set binary RPATH value with the current build path as RPATH value (CMAKE_SKIP_BUILD_RPATH=OFF)
-	#				* CMAKE set binary RPATH value with EMPTY VALUE (CMAKE_SKIP_BUILD_RPATH=ON)		
+	#				* CMAKE set binary RPATH value with EMPTY VALUE (CMAKE_SKIP_BUILD_RPATH=ON)
 	#				* CMAKE set binary RPATH value with CMAKE_INSTALL_RPATH value (CMAKE_BUILD_WITH_INSTALL_RPATH=ON) - (and so, do not have to re-set it while installing)
 	#		2.Install Phase
 	#			When installing the binanry
 	#				* CMAKE set binary RPATH value with EMPTY VALUE (CMAKE_SKIP_INSTALL_RPATH=ON)
-	#				* [DEFAULT] CMAKE add as binary RPATH value CMAKE_INSTALL_RPATH value 
+	#				* [DEFAULT] CMAKE add as binary RPATH value CMAKE_INSTALL_RPATH value
 	#				* CMAKE add as binary RPATH value all dependent libraries outside the current build tree folder as RPATH value (CMAKE_INSTALL_RPATH_USE_LINK_PATH=ON)
 	#	Note : CMAKE_SKIP_RPATH=ON : CMAKE set binary RPATH value with EMPTY VALUE during both phase (building and installing)
-	#	Default : 
+	#	Default :
 	#		CMAKE_SKIP_RPATH : OFF
-	#		CMAKE_SKIP_BUILD_RPATH : OFF 
-	#		CMAKE_BUILD_WITH_INSTALL_RPATH : OFF 
+	#		CMAKE_SKIP_BUILD_RPATH : OFF
+	#		CMAKE_BUILD_WITH_INSTALL_RPATH : OFF
 	#		CMAKE_INSTALL_RPATH "" (empty)
 	#		CMAKE_INSTALL_RPATH_USE_LINK_PATH : OFF
 	#		CMAKE_SKIP_INSTALL_RPATH : OFF
@@ -1286,24 +1286,24 @@ function __set_build_env() {
 	#		2.Install Phase
 	#			* CMAKE set binary RPATH value with "@rpath" during both phase (CMAKE_MACOSX_RPATH=ON)
 	#			* CMAKE set binary RPATH value with INSTALL_NAME_DIR if it setted
-	#	Default : 
+	#	Default :
 	#		CMAKE_MACOSX_RPATH : ON
 	if [ "$1" == "CMAKE_RPATH" ]; then
 		case $2 in
-			
+
 			# no rpath during BUILD PHASE
 			BUILD_PHASE_NO_RPATH)
 				STELLA_CMAKE_RPATH_BUILD_PHASE="-DCMAKE_SKIP_BUILD_RPATH=ON" # DEFAULT : OFF
 				;;
-			
+
 			BUILD_PHASE_USE_BUILD_FOLDER)
 				STELLA_CMAKE_RPATH_BUILD_PHASE="-DCMAKE_SKIP_BUILD_RPATH=OFF -DCMAKE_BUILD_WITH_INSTALL_RPATH=OFF" # DEFAULT : OFF / OFF
 				;;
-			
+
 			BUILD_PHASE_USE_FINAL_RPATH)
 				STELLA_CMAKE_RPATH_BUILD_PHASE="-DCMAKE_SKIP_BUILD_RPATH=OFF -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON" # DEFAULT :  OFF / OFF
 				;;
-	
+
 
 
 
@@ -1319,14 +1319,14 @@ function __set_build_env() {
 				# NOTE : this is a list !
 				STELLA_CMAKE_RPATH_INSTALL_PHASE="$STELLA_CMAKE_RPATH_INSTALL_PHASE -DCMAKE_INSTALL_RPATH=$3" # DEFAULT : empty string
 				;;
-			
+
 			# add folder containing dependent lib, which are outside of the project
 			INSTALL_PHASE_ADD_DEPENDENT_LIB)
 				STELLA_CMAKE_RPATH_INSTALL_PHASE="$STELLA_CMAKE_RPATH_INSTALL_PHASE -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON" # DEFAULT : OFF
 				;;
-			
 
-				
+
+
 			ALL_PHASE_NO_RPATH)
 				STELLA_CMAKE_RPATH="-DCMAKE_SKIP_RPATH=ON" # DEFAULT : OFF
 			;;
@@ -1334,7 +1334,7 @@ function __set_build_env() {
 				STELLA_CMAKE_RPATH="-DCMAKE_SKIP_RPATH=OFF" # DEFAULT : OFF
 			;;
 
-			
+
 			# For DARWIN
 			ALL_PHASE_NO_RPATH_DARWIN)
 				STELLA_CMAKE_RPATH_DARWIN="-DCMAKE_MACOSX_RPATH=OFF" # DEFAULT : ON
@@ -1345,7 +1345,7 @@ function __set_build_env() {
 				# activate management of rpath values during BUILD and INSTALL phase
 				STELLA_CMAKE_RPATH_DARWIN="-DCMAKE_MACOSX_RPATH=ON" # DEFAULT : ON
 			;;
-			
+
 
 		esac
 
@@ -1358,7 +1358,8 @@ function __set_build_env() {
 
 
 # INSPECT BUILD ------------------------------------------------------------------------------------------------------------------------------
-function __inspect_build() {
+# inspect and fix files built by stella
+function __inspect_and_fix_build() {
 	local path="$1"
 	local OPT="$2"
 
@@ -1371,7 +1372,7 @@ function __inspect_build() {
 	local _opt_filter=OFF
 
 
-	for o in $OPT; do 
+	for o in $OPT; do
 		[ "$_flag_filter" == "ON" ] && _filter=$o && _flag_filter=OFF
 		[ "$o" == "EXCLUDE_INSPECT" ] && _flag_filter=ON && _opt_filter=ON
 	done
@@ -1385,7 +1386,7 @@ function __inspect_build() {
 	local f=
 	if [ -d "$path" ]; then
 		for f in  "$path"/*; do
-			__inspect_build "$f" "$OPT"
+			__inspect_and_fix_build "$f" "$OPT"
 		done
 	fi
 
@@ -1396,12 +1397,14 @@ function __inspect_build() {
 		__fix_built_files "$path" "$OPT"
 
 		# checking built files
+		# TODO remove function
 		__check_built_files "$path" "$OPT"
 	fi
 }
 
 
 # CHECK  ------------------------------------------------------------------------------------------------------------------------------
+# TODO remove function
 function __check_built_files() {
 	local path="$1"
 	local OPT="$2"
@@ -1410,8 +1413,10 @@ function __check_built_files() {
 
 
 	if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
+		#__check_binary_files "$path" "$OPT RELOCATE ARCH $STELLA_BUILD_ARCH MISSING_RPATH $STELLA_BUILD_RPATH"
 		__check_binary_files "$path" "$OPT RELOCATE"
 	else
+		# __check_binary_files "$path" "$OPT NON_RELOCATE ARCH $STELLA_BUILD_ARCH MISSING_RPATH $STELLA_BUILD_RPATH"
 		__check_binary_files "$path" "$OPT"
 	fi
 }
@@ -1426,14 +1431,14 @@ function __check_built_files() {
 function __fix_built_files() {
 	local path="$1"
 	local OPT="$2"
-	
+
 	# EXCLUDE_INSPECT -- ignore these files
 
 	local _filter=
 	local _flag_filter=OFF
 	local _opt_filter=OFF
 
-	for o in $OPT; do 
+	for o in $OPT; do
 		[ "$_flag_filter" == "ON" ] && _filter=$o && _flag_filter=OFF
 		[ "$o" == "EXCLUDE_INSPECT" ] && _flag_filter=ON && _opt_filter=ON
 	done
@@ -1450,12 +1455,12 @@ function __fix_built_files() {
 			__fix_built_files "$f" "$OPT"
 		done
 	fi
-	
+
 	if [ -f "$path" ]; then
-		
-		case $STELLA_CURRENT_PLATFORM in 
+
+		case $STELLA_CURRENT_PLATFORM in
 			linux)
-				
+
 				# fix write permission
 				chmod +w "$path"
 				if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
@@ -1485,7 +1490,7 @@ function __fix_built_files() {
 							__tweak_install_name_darwin "$path" "PATH"
 						fi
 					fi
-		
+
 			;;
 		esac
 	fi

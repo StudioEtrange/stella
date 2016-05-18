@@ -41,7 +41,7 @@ goto :eof
 ::				LAUNCH BUILD TOOL
 ::				__launch_build
 
-::				__inspect_build
+::				__inspect_and_fix_build
 ::						call __fix_built_files 
 ::						call __check_built_files
 
@@ -152,7 +152,7 @@ goto :eof
 	set "INSTALL_DIR=%~3"
 	set "OPT=%~4"
 
-	:: DEBUG SOURCE_KEEP BUILD_KEEP NO_CONFIG NO_BUILD NO_OUT_OF_TREE_BUILD NO_INSPECT_BUILD NO_INSTALL
+	:: DEBUG SOURCE_KEEP BUILD_KEEP NO_CONFIG NO_BUILD NO_OUT_OF_TREE_BUILD NO_inspect_and_fix_build NO_INSTALL
 
 
 	:: keep source code after build (default : FALSE)
@@ -166,14 +166,14 @@ goto :eof
 	:: build from another folder (default : TRUE)
 	set "_opt_out_of_tree_build=ON"
 	:: disable fix & check build (default : ON)
-	set "_opt_inspect_build=ON"
+	set "_opt_inspect_and_fix_build=ON"
 	for %%O in (%OPT%) do (
 		if "%%O"=="SOURCE_KEEP" set _opt_source_keep=ON
 		if "%%O"=="BUILD_KEEP" set _opt_build_keep=ON
 		if "%%O"=="NO_CONFIG" set _opt_configure=OFF
 		if "%%O"=="NO_BUILD" set _opt_build=OFF
 		if "%%O"=="NO_OUT_OF_TREE_BUILD" set _opt_out_of_tree_build=OFF
-		if "%%O"=="NO_INSPECT_BUILD" set _opt_inspect_build=OFF
+		if "%%O"=="NO_inspect_and_fix_build" set _opt_inspect_and_fix_build=OFF
 	)
 
 	:: can not build out of tree without configure first
@@ -243,8 +243,8 @@ goto :eof
 	)
 
 	cd /D "!INSTALL_DIR!"
-	if "!_opt_inspect_build!"=="ON" (
-		call :inspect_build "!INSTALL_DIR!"
+	if "!_opt_inspect_and_fix_build!"=="ON" (
+		call :inspect_and_fix_build "!INSTALL_DIR!"
 	)
 
 	echo ** Done
@@ -1185,7 +1185,7 @@ goto :eof
 
 
 :: CHECK BUILD ------------------------------------------------------------------------------------------------------------------------------
-:inspect_build
+:inspect_and_fix_build
 	set "_path=%~1"
 	
 	set _test_tool=
@@ -1207,7 +1207,7 @@ goto :eof
 			call :check_built_files "%%f"
 		)
 		for /D %%f in (!_path!\*) do (
-			call :inspect_build "%%f"
+			call :inspect_and_fix_build "%%f"
 		)
 
 	) else (

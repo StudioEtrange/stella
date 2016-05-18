@@ -88,7 +88,7 @@ goto :eof
 
 
 	call %STELLA_COMMON%\common.bat :del_folder "!SRC_DIR!"
-	call %STELLA_COMMON%\common-build.bat :inspect_build "!INSTALL_DIR!"
+	call %STELLA_COMMON%\common-build.bat :inspect_and_fix_build "!INSTALL_DIR!"
 	
 goto :eof
 

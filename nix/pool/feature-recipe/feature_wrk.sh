@@ -59,7 +59,7 @@ function feature_wrk_install_source() {
 
 	cp "$SRC_DIR/wrk" "$INSTALL_DIR/"
 
-	__inspect_build "$INSTALL_DIR/"
+	__inspect_and_fix_build "$INSTALL_DIR/"
 
 	rm -Rf "$SRC_DIR"
 	

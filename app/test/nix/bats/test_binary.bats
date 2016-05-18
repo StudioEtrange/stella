@@ -34,11 +34,19 @@ __test_prepare_dynamic_lib_file_darwin() {
 
 # GENERIC -------------------------------------------------------------------
 @test "__get_arch" {
-
 	run __get_arch "$(which cat)"
-	! assert_output ""
+	assert_output_not_empty
 }
 
+@test "__check_arch" {
+	run __check_arch "$(which cat)"
+	assert_output_not_empty
+	assert_success
+
+	run __check_arch "$(which cat)" "FOO"
+	assert_output_not_empty
+	assert_failure
+}
 
 @test "__is_darwin_bin" {
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
@@ -46,7 +54,7 @@ __test_prepare_dynamic_lib_file_darwin() {
 
 		run __is_darwin_bin "$_test_file"
 		assert_output "TRUE"
-	
+
 		__test_clean_file "$_test_file"
 	fi
 }
@@ -55,7 +63,7 @@ __test_prepare_dynamic_lib_file_darwin() {
 # DARWIN : INSTALL NAME --------------------------------
 @test "__get_install_name_darwin" {
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-		
+
 		run __get_install_name_darwin "/usr/lib/libz.1.dylib"
 		assert_output "/usr/lib/libz.1.dylib"
 
@@ -65,7 +73,7 @@ __test_prepare_dynamic_lib_file_darwin() {
 @test "__tweak_install_name_darwin" {
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		_test_file="$(__test_prepare_dynamic_lib_file_darwin)"
-		
+
 		run __tweak_install_name_darwin "$_test_file" "PATH"
 		assert_success
 		run __get_install_name_darwin "$_test_file"
@@ -96,7 +104,7 @@ __test_prepare_dynamic_lib_file_darwin() {
 @test "__add_rpath_darwin AND __remove_all_rpath_darwin" {
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		_test_file="$(__test_prepare_bin_file)"
-		
+
 		run __remove_all_rpath_darwin "$_test_file"
 		run __get_rpath_darwin "$_test_file"
 		assert_output ""
@@ -184,4 +192,3 @@ __test_prepare_dynamic_lib_file_darwin() {
 		__test_clean_file "$_test_file"
 	fi
 }
-

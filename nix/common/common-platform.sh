@@ -48,7 +48,7 @@ function __get_os_from_distro() {
 		*)
 			echo "linuxgeneric"
 			;;
-	esac	
+	esac
 }
 
 function __get_platform_from_os() {
@@ -67,7 +67,7 @@ function __get_platform_from_os() {
 		*)
 			echo "unknown"
 			;;
-	esac	
+	esac
 }
 
 function __get_platform_suffix() {
@@ -86,7 +86,7 @@ function __get_platform_suffix() {
 		*)
 			echo "unknown"
 			;;
-	esac	
+	esac
 }
 
 function __set_current_platform_info() {
@@ -97,7 +97,7 @@ function __set_current_platform_info() {
 	STELLA_CURRENT_PLATFORM=$(__get_platform_from_os "$STELLA_CURRENT_OS")
 	STELLA_CURRENT_PLATFORM_SUFFIX=$(__get_platform_suffix "$STELLA_CURRENT_PLATFORM")
 
-	
+
 	# linux
 	if [[ -n `which nproc 2> /dev/null` ]]; then
 		STELLA_NB_CPU=`nproc`
@@ -211,7 +211,7 @@ function __stella_requirement() {
 # REQUIRE -------------------------
 # require a feature.
 # By default the required feature is MANDATORY
-# Test if feature is present 
+# Test if feature is present
 #		if feature is not OPTIONAL may install it from STELLA  or provide guideline to install it FROM SYSTEM
 function __require() {
 	local _artefact="$1" # binary to test
@@ -228,7 +228,7 @@ function __require() {
 	local _opt_prefer_stella=OFF
 
 
-	for o in $_OPT; do 
+	for o in $_OPT; do
 		[ "$o" == "OPTIONAL" ] && _opt_optional=ON
 		[ "$o" == "PREFER_SYSTEM" ] && _opt_prefer_system=ON && _opt_prefer_stella=OFF
 		[ "$o" == "PREFER_STELLA" ] && _opt_prefer_system=OFF && _opt_prefer_stella=ON
@@ -295,7 +295,7 @@ function __get_current_package_manager() {
 		if [[ -n `which $p 2> /dev/null` ]]; then
 			_package_manager="$p"
 			break
-		fi	
+		fi
 	done
 
 	echo "$_package_manager"
@@ -367,10 +367,10 @@ function __sys_install_brew() {
 	echo " ** Install Homebrew on your system"
 
 	__download "https://raw.githubusercontent.com/Homebrew/install/master/install" "brew-install.rb" "$STELLA_APP_TEMP_DIR"
-	
+
 	ruby "$STELLA_APP_TEMP_DIR/brew-install.rb"
 	rm -f "$STELLA_APP_CACHE_DIR/brew-install.rb"
-	
+
 
 	echo " ** Check Homebrew"
 	if [[ -n `which brew 2> /dev/null` ]]; then
@@ -383,7 +383,7 @@ function __sys_install_brew() {
 		echo "Homebrew apps are run from $_appLocation"
 
 	else
-		echo " ** Error while installing Homebrew"	
+		echo " ** Error while installing Homebrew"
 	fi
 }
 function __sys_remove_brew() {
@@ -393,7 +393,7 @@ function __sys_remove_brew() {
 	brew cleanup 2>/dev/null
 
 	__download "https://raw.githubusercontent.com/Homebrew/install/master/uninstall" "brew-uninstall.rb" "$STELLA_APP_TEMP_DIR"
-		
+
 	ruby "$STELLA_APP_TEMP_DIR/brew-uninstall.rb"
 	rm -f "$STELLA_APP_CACHE_DIR/brew-uninstall.rb"
 }
@@ -461,7 +461,7 @@ function __sys_install_curl() {
 	__sys_package_manager "INSTALL" "curl" "apt-get curl | brew curl | yum curl"
 }
 function __sys_remove_curl() {
-	__sys_package_manager "REMOVE" "curl" "apt-get curl | brew curl | yum curl"	
+	__sys_package_manager "REMOVE" "curl" "apt-get curl | brew curl | yum curl"
 }
 
 function __sys_install_wget() {

@@ -117,7 +117,7 @@ function feature_template_install_source() {
 	make -j$STELLA_NB_CPU
 	make install && __del_folder $SRC_DIR
 
-	__inspect_build "$INSTALL_DIR"
+	__inspect_and_fix_build "$INSTALL_DIR"
 }
 
 

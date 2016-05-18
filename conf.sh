@@ -53,6 +53,7 @@ source $STELLA_COMMON/common-build.sh
 source $STELLA_COMMON/common-api.sh
 source $STELLA_COMMON/make-sfx.sh
 source $STELLA_COMMON/common-network.sh
+source $STELLA_COMMON/common-boot.sh
 
 # GATHER PLATFORM INFO ---------------------------------------------
 __set_current_platform_info
@@ -120,7 +121,7 @@ done
 
 
 # BUILD SYSTEM---------------------------------------------
-# Define linking mode. 
+# Define linking mode.
 # have an effect only for feature linked with __link_feature_libray (do not ovveride specific FORCE_STATIC or FORCE_DYNAMIC)
 # DEFAULT | STATIC | DYNAMIC
 __set_build_mode_default "LINK_MODE" "DEFAULT"

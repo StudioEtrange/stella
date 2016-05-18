@@ -1,5 +1,32 @@
-if [ ! "$_STELLA_COMMON_BINARY_INCLUDED_" == "1" ]; then 
+if [ ! "$_STELLA_COMMON_BINARY_INCLUDED_" == "1" ]; then
 _STELLA_COMMON_BINARY_INCLUDED_=1
+
+# GENERIC
+# __get_arch
+# __check_arch
+
+# __check_binary_files
+
+
+# DARWIN | LINUX
+# __is_darwin_bin 								__is_linux_bin
+
+# __get_install_name_darwin
+# __check_install_name_darwin
+# __tweak_install_name_darwin
+
+# __get_rpath_darwin
+# __have_rpath_darwin
+# __tweak_rpath_darwin						__tweak_rpath_linux
+# __remove_all_rpath_darwin
+# __add_rpath_darwin							__add_rpath_linux
+# __check_rpath_darwin						__check_rpath_linux
+
+# __get_linked_lib_darwin
+# __check_linked_lib_darwin				__check_linked_lib_linux
+# __fix_linked_lib_darwin
+
+
 
 # GENERIC -------------------------------------------------------------------
 function __get_arch() {
@@ -26,94 +53,146 @@ function __get_arch() {
 
 
 function __check_arch() {
-	local _file=$1
-	local _wanted_arch=$2
-	local _result=
+	local _file="$1"
+	local _wanted_arch="$2"
+	local _arch=
+	local _result=0
 
-	_result="$(__get_arch $_file)"
+	_arch="$(__get_arch $_file)"
 
 	if [ "$_wanted_arch" == "" ]; then
-		echo "*** Detected ARCH : $_result"
+		echo "*** Detected ARCH : $_arch"
 	else
-		if [ "$_wanted_arch" == "$_result" ]; then
-			echo "*** Detected ARCH : $_result -- OK"
+		if [ "$_wanted_arch" == "$_arch" ]; then
+			echo "*** Detected ARCH : $_arch -- OK"
 		else
-			echo "*** Detected ARCH : $_result Wanted ARCH : $_wanted_arch -- WARN"
+			_result=1
+			echo "*** Detected ARCH : $_arch Wanted ARCH : $_wanted_arch -- WARN"
 		fi
 	fi
-	
+
+	return $_result
 }
+
+
+# for stella built files
+#__check_binary_files NON_RELOCATE ARCH "$STELLA_BUILD_ARCH" MISSING_RPATH $STELLA_BUILD_RPATH...
+
 
 function __check_binary_files() {
 	local path="$1"
 	local OPT="$2"
+	local _result=0
 
 	# EXCLUDE_INSPECT -- ignore these files
-	# RELOCATE -- built files should be relocatable
-
+	# RELOCATE -- binary file should be relocatable
+	# NON_RELOCATE -- binary file should be non relocatable
+	# ARCH <arch> -- test a specific arch
+	# MISSING_RPATH val1 val2 ... -- test if binary files have some specific values as rpath
 	local _filter=
 	local _flag_filter=OFF
 	local _opt_filter=OFF
-
-	local _flag_relocate=OFF
-
-	for o in $OPT; do 
+	local _arch=
+	local _flag_arch=OFF
+	local _opt_arch=OFF
+	local _flag_relocate=DEFAULT
+	local _flag_missing_rpath=OFF
+	local _missing_rpath_values=
+	local _opt_missing_rpath=OFF
+	for o in $OPT; do
 		[ "$_flag_filter" == "ON" ] && _filter=$o && _flag_filter=OFF
-		[ "$o" == "EXCLUDE_INSPECT" ] && _flag_filter=ON && _opt_filter=ON
-		[ "$o" == "RELOCATE" ] && _flag_relocate=ON
+		[ "$o" == "EXCLUDE_INSPECT" ] && _opt_filter=ON && _flag_filter=ON && _flag_missing_rpath=OFF
+		[ "$_flag_arch" == "ON" ] && _arch=$o && _flag_arch=OFF
+		[ "$o" == "ARCH" ] && _opt_arch=ON && _flag_arch=ON && _flag_missing_rpath=OFF
+		[ "$_flag_missing_rpath" == "ON" ] && _missing_rpath_values="$o $_missing_rpath_values"
+		[ "$o" == "MISSING_RPATH" ] && _flag_missing_rpath=ON && _opt_missing_rpath=ON
+
+		[ "$o" == "RELOCATE" ] && _flag_relocate=YES && _flag_missing_rpath=OFF
+		[ "$o" == "NON_RELOCATE" ] && _flag_relocate=NO && _flag_missing_rpath=OFF
 	done
+
+
 
 	if [ "$_opt_filter" == "ON" ]; then
 		if [ ! "$(echo $path | grep -E "$_filter")" == "" ]; then
-			return
+			return $_result
 		fi
 	fi
 
 	local f=
 	if [ -d "$path" ]; then
 		for f in  "$path"/*; do
-			__check_binary_files "$f" "$OPT"
+			__check_binary_files "$f" "$OPT" || _result=1
 		done
 	fi
-	
+
 	if [ -f "$path" ]; then
 
-		case $STELLA_CURRENT_PLATFORM in 
+		local _check_rpath_opt=
+		if [ "$_opt_missing_rpath" == "ON" ];then
+			_check_rpath_opt="MISSING_RPATH $_missing_rpath_values"
+		fi
+		case $STELLA_CURRENT_PLATFORM in
 			linux)
-				# TODO transfer this test inside each check function
-				if [ ! "$(objdump -p "$path" 2>/dev/null)" == "" ]; then
+				if [ "$(__is_linux_bin $path)" == "TRUE" ]; then
 					echo
 					echo "** Analysing $path"
-					__check_arch "$path" "$STELLA_BUILD_ARCH"
-					if [ "$_flag_relocate" == "ON" ]; then
-						[ ! "$(__get_extension_from_string $path)" == "a" ] && __check_rpath_linux "$path" "REL_RPATH"
-						[ ! "$(__get_extension_from_string $path)" == "a" ] && __check_linked_lib_linux "$path"
-					else
-						[ ! "$(__get_extension_from_string $path)" == "a" ] && __check_rpath_linux "$path" "ABS_RPATH"
-						[ ! "$(__get_extension_from_string $path)" == "a" ] && __check_linked_lib_linux "$path"
-					fi
+
+					__check_arch "$path" "$_arch"
+
+					case $_flag_relocate in
+						YES)
+							if [ ! "$(__get_extension_from_string $path)" == "a" ]; then
+								__check_rpath_linux "$path" "REL_RPATH $_check_rpath_opt"
+								__check_linked_lib_linux "$path"
+							fi
+							;;
+						NO)
+							if [ ! "$(__get_extension_from_string $path)" == "a" ]; then
+								__check_rpath_linux "$path" "ABS_RPATH $_check_rpath_opt"
+								__check_linked_lib_linux "$path"
+							fi
+							;;
+						DEFAULT)
+							if [ ! "$(__get_extension_from_string $path)" == "a" ]; then
+								__check_rpath_linux "$path" "$_check_rpath_opt"
+								__check_linked_lib_linux "$path"
+							fi
+							;;
+					esac
+
 					echo
 				fi
 			;;
 			darwin)
-				# test if file is a binary Mach-O file (binary, shared lib or static lib)
-				# TODO transfer this test inside each check function
-				if [ ! "$(otool -h "$path" 2>/dev/null | grep Mach)" == "" ]; then
-				#if [[ ! "$(otool -h "$path" 2>/dev/null)" =~  *Mach* ]]; then
+				if [ "$(__is_darwin_bin $path)" == "TRUE" ]; then
 					echo
 					echo "** Analysing $path"
-					__check_arch "$path" "$STELLA_BUILD_ARCH"
-					if [ "$_flag_relocate" == "ON" ]; then
-						#[ "$(__get_extension_from_string $path)" == "dylib" ] && __check_install_name_darwin "$path" "RPATH"
-						[[ "$path" =~ .*dylib.* ]] && __check_install_name_darwin "$path" "RPATH"
-						[ ! "$(__get_extension_from_string $path)" == "a" ] && __check_rpath_darwin "$path" "REL_RPATH"
-					else
-						#[ "$(__get_extension_from_string $path)" == "dylib" ] && __check_install_name_darwin "$path" "PATH"
-						[[ "$path" =~ .*dylib.* ]] && __check_install_name_darwin "$path" "PATH"
-						[ ! "$(__get_extension_from_string $path)" == "a" ] && __check_rpath_darwin "$path" "NO_RPATH"
-					fi
 
-					[ ! "$(__get_extension_from_string $path)" == "a" ] && __check_linked_lib_darwin "$path"
+					__check_arch "$path" "$_arch"
+					case $_flag_relocate in
+						YES)
+							[[ "$path" =~ .*dylib.* ]] && __check_install_name_darwin "$path" "RPATH"
+							if [ ! "$(__get_extension_from_string $path)" == "a" ]; then
+								__check_rpath_darwin "$path" "REL_RPATH $_check_rpath_opt"
+								__check_linked_lib_darwin "$path"
+							fi
+						;;
+						NO)
+							[[ "$path" =~ .*dylib.* ]] && __check_install_name_darwin "$path" "PATH"
+							if [ ! "$(__get_extension_from_string $path)" == "a" ]; then
+								__check_rpath_darwin "$path" "NO_RPATH $_check_rpath_opt"
+								__check_linked_lib_darwin "$path"
+							fi
+						;;
+						DEFAULT)
+							[[ "$path" =~ .*dylib.* ]] && __check_install_name_darwin "$path"
+							if [ ! "$(__get_extension_from_string $path)" == "a" ]; then
+								__check_rpath_darwin "$path" "$_check_rpath_opt"
+								__check_linked_lib_darwin "$path"
+							fi
+						;;
+					esac
 					echo
 				fi
 			;;
@@ -161,16 +240,10 @@ function __is_darwin_bin() {
 
 
 # DARWIN : INSTALL NAME --------------------------------
-# __get_install_name_darwin
-# __check_install_name_darwin
-# __tweak_install_name_darwin
-
-
 function __get_install_name_darwin() {
 	local _file=$1
-	#echo $(otool -l $_file | grep -E "LC_ID_DYLIB" -A2 | grep name | tr -s ' ' | cut -d ' ' -f 3)
 	echo $(otool -l "$_file" | grep -E "LC_ID_DYLIB" -A2 | awk '/LC_ID_DYLIB/{for(i=2;i;--i)getline; print $0 }' | tr -s ' ' | cut -d ' ' -f 3)
-	
+
 }
 
 # check ID/Install Name value
@@ -179,13 +252,13 @@ function __get_install_name_darwin() {
 function __check_install_name_darwin() {
 	local _path=$1
 	local OPT="$2"
-	local t		
-
-
+	local t
+	local _result=0
 	local f=
+
 	if [ -d "$_path" ]; then
 		for f in  "$_path"/*; do
-			__check_install_name_darwin "$f" "$OPT"
+			__check_install_name_darwin "$f" "$OPT" || _result=1
 		done
 	fi
 
@@ -193,13 +266,12 @@ function __check_install_name_darwin() {
 
 		if [ "$(__is_darwin_bin $_path)" == "TRUE" ]; then
 
-			local _opt_rpath=ON
+			local _opt_rpath=OFF
 			local _opt_path=OFF
-			for o in $OPT; do 
+			for o in $OPT; do
 				[ "$o" == "RPATH" ] && _opt_rpath=ON && _opt_path=OFF
 				[ "$o" == "PATH" ] && _opt_rpath=OFF && _opt_path=ON
 			done
-
 
 			printf "*** Checking ID/Install Name value : "
 			local _install_name="$(__get_install_name_darwin $_path)"
@@ -207,32 +279,39 @@ function __check_install_name_darwin() {
 			if [ "$_install_name" == "" ]; then
 				echo
 				echo " *** WARN $_path do not have any install name (LC_ID_DYLIB field)"
+				_result=1
 			else
 
 				if [ "$_opt_rpath" == "ON" ]; then
 					t=`echo $_install_name | grep -E "@rpath/"`
 					if [ "$t" == "" ]; then
 						printf %s " WARN ID/Install Name does not contain @rpath : $_install_name"
+						_result=1
 					else
 						printf %s " $_install_name -- OK"
 					fi
 				fi
+
 				if [ "$_opt_path" == "ON" ]; then
 					if [ "$(dirname $_path)" == "$(dirname $_install_name)" ]; then
 						printf %s " $_install_name -- OK"
 					else
 						if [ "$(dirname $_install_name)" == "." ]; then
 							printf %s " WARN ID/Install Name contain only a name : $_install_name"
+							_result=1
 						else
 							printf %s " WARN ID/Install Name does not match location of file : $_install_name"
+							_result=1
 						fi
 					fi
 				fi
-				
+
 			fi
 			echo
 		fi
 	fi
+
+	return $_result
 }
 
 # tweak install name with @rpath/lib_name OR tweak install name replacing @rpath/lib_name with /lib/path/lib_name
@@ -245,32 +324,34 @@ function __tweak_install_name_darwin() {
 	local _new_install_name
 	local _original_install_name
 
+	local _result=0
 
 	local f=
 	if [ -d "$_path" ]; then
 		for f in  "$_path"/*; do
-			__tweak_install_name_darwin "$f" "$OPT"
+			__tweak_install_name_darwin "$f" "$OPT" || _result=1
 		done
 	fi
-	
+
 	if [ -f "$_path" ]; then
 
 		if [ "$(__is_darwin_bin $_path)" == "TRUE" ]; then
 
 			local _opt_rpath=ON
 			local _opt_path=OFF
-			for o in $OPT; do 
+			for o in $OPT; do
 				[ "$o" == "RPATH" ] && _opt_rpath=ON && _opt_path=OFF
 				[ "$o" == "PATH" ] && _opt_rpath=OFF && _opt_path=ON
 			done
 
-			
+
 
 			_original_install_name="$(__get_install_name_darwin $_path)"
 
 			if [ "$_original_install_name" == "" ]; then
 				echo " ** WARN $_path do not have any install name (LC_ID_DYLIB field)"
-				return
+				_result=1
+				return $_result
 			fi
 
 			case "$_original_install_name" in
@@ -305,24 +386,38 @@ function __tweak_install_name_darwin() {
 
 
 # DARWIN : RPATH --------------------------------
-# __get_rpath_darwin
-# __tweak_rpath_darwin
-# __remove_all_rpath_darwin
-# __add_rpath_darwin
-# __check_rpath_darwin
-
-
 # return rpath values in search order
 function __get_rpath_darwin() {
 	local _file="$1"
 	local t
 	t="$(otool -l "$_file" | grep -E "LC_RPATH" -A2 | awk '/LC_RPATH/{for(i=2;i;--i)getline; print $0 }' | tr -s ' ' | cut -d ' ' -f 3 |  tr '\n' ' ')"
-	
+
 	echo "$(__trim $t)"
 }
 
+# check if binary have some specific rpath values
+function __have_rpath_darwin() {
+	local _path="$1"
+	local _rpath_values="$2"
+	local _result=0
+	local t=
+	local r=
 
+	for r in $_rpath_values; do
+		printf %s "*** Checking if this RPATH value is missing : $r"
+		t=`otool -l $_path | grep -E "LC_RPATH" -A2 | grep -E "path $r \("`
 
+		if [ "$t" == "" ];then
+			printf %s " -- WARN RPATH is missing"
+			_result=1
+		else
+			printf %s " -- OK"
+		fi
+		echo
+	done
+
+	return $_result
+}
 
 # modify rpath values
 # ABS_RPATH : transform relative rpath values to absolute path - so rpath values turn from ../foo to /path/foo
@@ -344,7 +439,7 @@ function __tweak_rpath_darwin() {
 
 			local _rel_rpath=ON
 			local _abs_rpath=OFF
-			for o in $_OPT; do 
+			for o in $_OPT; do
 				[ "$o" == "REL_RPATH" ] && _rel_rpath=ON && _abs_rpath=OFF
 				[ "$o" == "ABS_RPATH" ] && _rel_rpath=OFF && _abs_rpath=ON
 			done
@@ -364,7 +459,7 @@ function __tweak_rpath_darwin() {
 
 			 			_p="$(__rel_to_abs_path "$line" $(__get_path_from_string $_path))"
 			 			echo "====> Transform $line to abs path : $_p"
-			 			
+
 			 			_new_rpath_values="$_new_rpath_values $_p"
 			 			_flag_change=1
 			 		else
@@ -372,16 +467,16 @@ function __tweak_rpath_darwin() {
 			 		fi
 			 	else
 				 	if [ "$_rel_rpath" == "ON" ]; then
-				 		if [ "$(__is_abs $line)" == "TRUE" ];then 
+				 		if [ "$(__is_abs $line)" == "TRUE" ];then
 				 			[ ! "$_flag_change" == "1" ] && echo "*** Fixing RPATH for $_path"
-				 			
+
 				 			_p="@loader_path/$(__abs_to_rel_path "$line" $(__get_path_from_string $_path))"
 				 			echo "====> Transform $line to rel path : $_p"
 
 				 			_new_rpath_values="$_new_rpath_values $_p"
 				 			_flag_change=1
 				 		else
-			 				_new_rpath_values="$_new_rpath_values $line"	
+			 				_new_rpath_values="$_new_rpath_values $line"
 				 		fi
 				 	fi
 				fi
@@ -403,7 +498,7 @@ function __tweak_rpath_darwin() {
 # remove all rpath values
 function __remove_all_rpath_darwin() {
 	local _path=$1
-	
+
 	local _rpath_list_values
 	local msg=
 
@@ -441,7 +536,7 @@ function __add_rpath_darwin() {
 		return 0
 	fi
 
-	
+
 
 	if [ -d "$_path" ]; then
 		for f in  "$_path"/*; do
@@ -454,10 +549,10 @@ function __add_rpath_darwin() {
 	if [ -f "$_path" ]; then
 
 		if [ "$(__is_darwin_bin $_path)" == "TRUE" ]; then
-			
+
 			local _flag_first_place=ON
 			local _flag_last_place=OFF
-			for o in $OPT; do 
+			for o in $OPT; do
 				[ "$o" == "FIRST" ] && _flag_first_place=ON && _flag_last_place=OFF
 				[ "$o" == "LAST" ] && _flag_first_place=OFF && _flag_last_place=ON
 			done
@@ -478,7 +573,7 @@ function __add_rpath_darwin() {
 				done
 				[ "$_flag_found" == "0" ] && _new_rpath="$_new_rpath $r"
 			done
-			
+
 			__remove_all_rpath_darwin "$_path"
 
 			if [ "$_flag_first_place" == "ON" ]; then
@@ -494,8 +589,8 @@ function __add_rpath_darwin() {
 				msg="$msg -- adding RPATH value : $p"
 				install_name_tool -add_rpath "$p" "$_path"
 			done
-			
-			
+
+
 
 			[ ! "$msg" == "" ] && echo "** Adding rpath values to $_path $msg"
 		fi
@@ -508,79 +603,83 @@ function __add_rpath_darwin() {
 # 		NO_RPATH -- must no have any rpath
 # 		REL_RPATH -- rpath must be a relative path
 # 		ABS_RPATH -- rpath must be an absolute path
+#			MISSING_RPATH val1 val2 ... -- check some missing rpath
 function __check_rpath_darwin() {
-	local _path=$1
+	local _path="$1"
 	local OPT="$2"
 	local t
-	
+	local _result=0
+
 	if [ -d "$_path" ]; then
 		for f in  "$_path"/*; do
-			__check_rpath_darwin "$f" "$OPT"
+			__check_rpath_darwin "$f" "$OPT" || _result=1
 		done
 	fi
 
 	local _no_rpath=OFF
 	local _rel_rpath=OFF
 	local _abs_rpath=OFF
+	local _flag_missing_rpath=OFF
+	local _missing_rpath_values=
+	local _opt_missing_rpath=OFF
 	for o in $OPT; do
-		[ "$o" == "NO_RPATH" ] && _no_rpath=ON
-		[ "$o" == "REL_RPATH" ] && _rel_rpath=ON && _abs_rpath=OFF
-		[ "$o" == "ABS_RPATH" ] && _rel_rpath=OFF && _abs_rpath=ON
+		[ "$_flag_missing_rpath" == "ON" ] && _missing_rpath_values="$o $_missing_rpath_values"
+		[ "$o" == "MISSING_RPATH" ] && _flag_missing_rpath=ON && _opt_missing_rpath=ON
+		[ "$o" == "NO_RPATH" ] && _no_rpath=ON && _flag_missing_rpath=OFF
+		[ "$o" == "REL_RPATH" ] && _rel_rpath=ON && _abs_rpath=OFF && _flag_missing_rpath=OFF
+		[ "$o" == "ABS_RPATH" ] && _rel_rpath=OFF && _abs_rpath=ON && _flag_missing_rpath=OFF
 	done
 
+	if [ -f "$_path" ]; then
+		if [ "$(__is_darwin_bin $_path)" == "TRUE" ]; then
 
-	t="$(__get_rpath_darwin $_path)"
-	
-	if [ "$_no_rpath" == "ON" ];then
-		printf %s "*** Checking if there is no RPATH setted "
-		if [ "$t" == "" ]; then
-			printf %s " -- OK"
-			echo
-		else
-			printf %s " -- WARN RPATH is setted"
-			echo
-			echo "*** List RPATH values in search order :"
-			echo $t
-		fi
-	else
-		#while read -r line; do
-		for r in $t; do
-			printf %s "*** Checking RPATH value : $r "
-			if [ "$_abs_rpath" == "ON" ]; then
-		 		if [ "$(__is_abs $r)" == "TRUE" ];then 
-		 			printf %s "-- is abs path : OK"
-		 		else
-		 			printf %s "-- is not an abs path : WARN"
-		 		fi
-		 	else
-			 	if [ "$_rel_rpath" == "ON" ]; then
-			 		if [ "$(__is_abs $r)" == "TRUE" ];then 
-			 			printf %s "-- is not a rel path : WARN"
-			 		else
-			 			printf %s "-- is rel path : OK"
-			 		fi
-			 	else
-			 		printf %s "-- OK"
-			 	fi
-			 fi
-		 	echo
-		done
-		
-		local _err=0
-		# TODO do not use STELLA_BUILD_RPATH here
-		for r in $STELLA_BUILD_RPATH; do
-			printf %s "*** Checking if setted RPATH value is missing : $r"
-			t=`otool -l $_path | grep -E "LC_RPATH" -A2 | grep -E "path $r \("`
-			if [ ! "$t" == "" ]; then
-				printf %s " -- OK"	
-				_err=1
+			t="$(__get_rpath_darwin $_path)"
+
+			if [ "$_no_rpath" == "ON" ];then
+				printf %s "*** Checking if there is no RPATH setted "
+				if [ "$t" == "" ]; then
+					printf %s " -- OK"
+					echo
+				else
+					printf %s " -- WARN RPATH is setted"
+					_result=1
+					echo
+					echo "*** List RPATH values in search order :"
+					echo $t
+				fi
+
+			else
+
+				for r in $t; do
+					printf %s "*** Checking RPATH value : $r "
+					if [ "$_abs_rpath" == "ON" ]; then
+						if [ "$(__is_abs $r)" == "TRUE" ];then
+							printf %s "-- is abs path : OK"
+						else
+							printf %s "-- is not an abs path : WARN"
+						_result=1
+						fi
+					fi
+
+					if [ "$_rel_rpath" == "ON" ]; then
+						if [ "$(__is_abs $r)" == "TRUE" ];then
+							printf %s "-- is not a rel path : WARN"
+						_result=1
+						else
+							printf %s "-- is rel path : OK"
+						fi
+					fi
+					echo
+				done
+
+				__have_rpath_darwin "$_path" "$_missing_rpath_values" || _result=1
+
 			fi
-			[ "$_err" == "0" ] && printf %s " -- WARN RPATH is missing"
-			_err=0
-			echo
-		done
+
+		fi
 	fi
 
+	return $_result
 
 }
 
@@ -589,10 +688,6 @@ function __check_rpath_darwin() {
 
 
 # DARWIN : LINKED LIB --------------------------------
-# __get_linked_lib_darwin
-# __check_linked_lib_darwin
-# __fix_linked_lib_darwin
-
 # return linked libs
 function __get_linked_lib_darwin() {
 	local _file="$1"
@@ -608,71 +703,77 @@ function __get_linked_lib_darwin() {
 # Print out dynamic libraries loaded at runtime when launching a program :
 # 		DYLD_PRINT_LIBRARIES=y program
 function __check_linked_lib_darwin() {
-	local _file="$1"
+	local _path="$1"
 	local line=
 	local linked_lib_list=
 	local linked_lib=
 
 	local _result=0
 
-	echo "*** Checking missing dynamic library at runtime"
-	
-	local _rpath=
-	#while read -r line; do
-	#	_rpath="$_rpath $line"
-	#done <<< "$(otool -l "$_file" | grep -E "LC_RPATH" -A2 | awk '/LC_RPATH/{for(i=2;i;--i)getline; print $0 }' | tr -s ' ' | cut -d ' ' -f 3)"
+	if [ -d "$_path" ]; then
+		for f in  "$_path"/*; do
+			__check_linked_lib_darwin "$f" ||	_result=1
+		done
+	fi
 
-	_rpath="$(__get_rpath_darwin $_file)"
+	if [ -f "$_path" ]; then
+		if [ "$(__is_darwin_bin $_path)" == "TRUE" ]; then
 
-	local _match=
-	local loader_path="$(__get_path_from_string "$_file")"
-	local original_rpath_value=
-	local p=
+			echo "*** Checking missing dynamic library at runtime"
 
-	linked_lib_list="$(__get_linked_lib_darwin "$_file")"
+			local _rpath=
+			_rpath="$(__get_rpath_darwin $_path)"
 
-	#while read -r line ; do
-	for line in $linked_lib_list; do
-		printf %s "====> checking linked lib : $line "
-		_match=
-		# @rpath case
-		if [ -z "${line##*@rpath*}" ]; then
+			local _match=
+			local loader_path="$(__get_path_from_string "$_path")"
+			local original_rpath_value=
+			local p=
 
-			for p in $_rpath; do
-				original_rpath_value="$p"
-				#replace @loader_path
-				if [ -z "${p##*@loader_path*}" ]; then
-					p="${p/@loader_path/$loader_path}"
+			linked_lib_list="$(__get_linked_lib_darwin "$_path")"
+
+			for line in $linked_lib_list; do
+				printf %s "====> checking linked lib : $line "
+				_match=
+				# @rpath case
+				if [ -z "${line##*@rpath*}" ]; then
+
+					for p in $_rpath; do
+						original_rpath_value="$p"
+						#replace @loader_path
+						if [ -z "${p##*@loader_path*}" ]; then
+							p="${p/@loader_path/$loader_path}"
+						fi
+						linked_lib="${line/@rpath/$p}"
+						if [ -f "$linked_lib" ]; then
+							printf %s "-- OK -- [$original_rpath_value] ==> $linked_lib"
+							_match=1
+							break
+						fi
+					done
+				else
+					# @loader_path case
+					if [ -z "${line##*@loader_path*}" ]; then
+						linked_lib="${line/@loader_path/$loader_path}"
+						if [ -f "$linked_lib" ]; then
+							printf %s "-- OK -- [$line] ==> $linked_lib"
+							_match=1
+						fi
+					else
+						if [ -f "$line" ]; then
+							printf %s "-- OK"
+							_match=1
+						fi
+					fi
 				fi
-				linked_lib="${line/@rpath/$p}"
-				if [ -f "$linked_lib" ]; then
-					printf %s "-- OK -- [$original_rpath_value] ==> $linked_lib"
-					_match=1
-					break
+				if [ "$_match" == "" ]; then
+					printf %s "-- WARN not found"
+					_result=1
 				fi
+				echo
 			done
-		else
-			# @loader_path case
-			if [ -z "${line##*@loader_path*}" ]; then
-				linked_lib="${line/@loader_path/$loader_path}"
-				if [ -f "$linked_lib" ]; then
-					printf %s "-- OK -- [$line] ==> $linked_lib"
-					_match=1
-				fi
-			else
-				if [ -f "$line" ]; then
-					printf %s "-- OK"
-					_match=1
-				fi
-			fi
+
 		fi
-		if [ "$_match" == "" ]; then
-			printf %s "-- WARN not found"
-			_result=1
-		fi
-		echo
-	done
-	#done <<< "$(otool -l "$_file" | grep -E "LC_LOAD_DYLIB" -A2 | awk '/LC_LOAD_DYLIB/{for(i=2;i;--i)getline; print $0 }' | tr -s ' ' | cut -d ' ' -f 3)"
+	fi
 
 	return $_result
 }
@@ -681,7 +782,7 @@ function __check_linked_lib_darwin() {
 
 # fix linked shared lib by modifying LOAD_DYLIB and adding rpath values
 # 	first choose linked lib to modify path -- you can filter libs by exclude some (EXCLUDE_FILTER) or include some (INCLUDE_FILTER)
-#	second transform path to linked lib -- you can choose to 
+#	second transform path to linked lib -- you can choose to
 #					transform all linked libs with rel path to abs path (ABS_RPATH) (including @loader_path, but do not change @rpath or @executable_path because we cant determine the path)
 #					transform all linked libs with abs path to rel path (REL_RPATH) (use @rpath and add an RPATH value corresponding to the relative path to the file with @loader_path/)
 #					force a specific path (FIXED_PATH <path>) -- so each linked lib is registered now with path/linked_lib
@@ -699,7 +800,7 @@ function __fix_linked_lib_darwin() {
 	# FIXED_PATH <path> -- fix with a given path -- so each linked lib is registered now with path/linked_lib
 
 
-	
+
 	local _flag_exclude_filter=OFF
 	local _exclude_filter=
 	local _invert_filter=
@@ -707,10 +808,30 @@ function __fix_linked_lib_darwin() {
 	local _include_filter=
 	local _abs_rpath=OFF
 	local _rel_rpath=ON
-	
+
 	local _flag_fixed_path=OFF
 	local _force_path=
 	local _fixed_path=OFF
+
+	for o in $OPT; do
+		[ "$o" == "FIX_RPATH" ] && echo "ERROR : deprecated -- use FIXED_PATH instead" && exit 1
+
+		[ "$_flag_fixed_path" == "ON" ] && _force_path="$o" && _flag_fixed_path=OFF && _fixed_path=ON && _rel_rpath=OFF && _abs_rpath=OFF
+		[ "$o" == "FIXED_PATH" ] && _flag_fixed_path=ON
+		[ "$_flag_include_filter" == "ON" ] && _include_filter="$o" && _flag_include_filter=OFF
+		[ "$o" == "INCLUDE_FILTER" ] && _flag_include_filter=ON
+		[ "$_flag_exclude_filter" == "ON" ] && _exclude_filter="$o" && _flag_exclude_filter=OFF
+		[ "$o" == "EXCLUDE_FILTER" ] && _flag_exclude_filter=ON && _invert_filter="-Ev"
+
+		[ "$o" == "REL_RPATH" ] && _rel_rpath=ON && _abs_rpath=OFF && _fixed_path=OFF
+		[ "$o" == "ABS_RPATH" ] && _rel_rpath=OFF && _abs_rpath=ON && _fixed_path=OFF
+
+		[ "$o" == "ABS_LINK_TO_REL" ] && _rel_rpath=ON && _abs_rpath=OFF && _fixed_path=OFF
+		[ "$o" == "REL_LINK_TO_ABS" ] && _rel_rpath=OFF && _abs_rpath=ON && _fixed_path=OFF
+
+
+	done
+
 
 	local f=
 	if [ -d "$_file" ]; then
@@ -718,25 +839,9 @@ function __fix_linked_lib_darwin() {
 			__fix_linked_lib_darwin "$f" "$OPT"
 		done
 	fi
-	
-	if [ -f "$_file" ]; then
-		if [ ! "$(otool -h "$_file" 2>/dev/null | grep Mach)" == "" ]; then
-			for o in $OPT; do 
-				[ "$_flag_include_filter" == "ON" ] && _include_filter="$o" && _flag_include_filter=OFF
-				[ "$o" == "INCLUDE_FILTER" ] && _flag_include_filter=ON
-				[ "$_flag_exclude_filter" == "ON" ] && _exclude_filter="$o" && _flag_exclude_filter=OFF
-				[ "$o" == "EXCLUDE_FILTER" ] && _flag_exclude_filter=ON && _invert_filter="-Ev"
-				
-				[ "$o" == "REL_RPATH" ] && _rel_rpath=ON && _abs_rpath=OFF && _fixed_path=OFF
-				[ "$o" == "ABS_RPATH" ] && _rel_rpath=OFF && _abs_rpath=ON && _fixed_path=OFF
 
-				[ "$o" == "ABS_LINK_TO_REL" ] && _rel_rpath=ON && _abs_rpath=OFF && _fixed_path=OFF
-				[ "$o" == "REL_LINK_TO_ABS" ] && _rel_rpath=OFF && _abs_rpath=ON && _fixed_path=OFF
-				
-				[ "$o" == "FIX_RPATH" ] && echo "ERROR : deprecated -- use FIXED_PATH instead" && exit 1
-				[ "$_flag_fixed_path" == "ON" ] && _force_path="$o" && _flag_fixed_path=OFF && _fixed_path=ON && _rel_rpath=OFF && _abs_rpath=OFF
-				[ "$o" == "FIXED_PATH" ] && _flag_fixed_path=ON
-			done
+	if [ -f "$_file" ]; then
+		if [ "$(__is_darwin_bin $_path)" == "TRUE" ]; then
 
 			local _new_load_dylib=
 			local line=
@@ -765,7 +870,7 @@ function __fix_linked_lib_darwin() {
 								_linked_lib_list="$_linked_lib_list $line"
 							fi
 							;;
-					esac	
+					esac
 				fi
 				# REL_RPATH : pick only abs path
 				if [ "$_rel_rpath" == "ON" ]; then
@@ -773,7 +878,7 @@ function __fix_linked_lib_darwin() {
 						_linked_lib_list="$_linked_lib_list $line"
 					fi
 				fi
-			#done <<< "$(otool -l "$_file" | grep -E "LC_LOAD_DYLIB" -A2 | grep -E "$_include_filter" | grep $_invert_filter "$_exclude_filter" | tr -s ' ' | cut -d ' ' -f 3)"
+				# TODO change to __get_rpath_darwin
 			done <<< "$(otool -l "$_file" | grep -E "LC_LOAD_DYLIB" -A2 | awk '/LC_LOAD_DYLIB/{for(i=2;i;--i)getline; print $0 }' | grep -E "$_include_filter" | grep $_invert_filter "$_exclude_filter" | tr -s ' ' | cut -d ' ' -f 3)"
 
 
@@ -783,7 +888,7 @@ function __fix_linked_lib_darwin() {
 				_linked_lib_filename="$(__get_filename_from_string $l)"
 
 				echo "** Fixing $_filename linked to $_linked_lib_filename shared lib"
-			
+
 				if [ "$_fixed_path" == "ON" ]; then
 					echo "====> setting LC_LOAD_DYLIB : $_force_path/$_linked_lib_filename"
 					install_name_tool -change "$l" "$_force_path/$_linked_lib_filename" "$_file"
@@ -796,7 +901,7 @@ function __fix_linked_lib_darwin() {
 					install_name_tool -change "$l" "$_new_load_dylib/$_linked_lib_filename" "$_file"
 				fi
 
-				
+
 				if [ "$_rel_rpath" == "ON" ]; then
 					_new_load_dylib="@loader_path/$(__abs_to_rel_path $_new_load_dylib $(__get_path_from_string $_file))"
 					echo "====> setting LC_LOAD_DYLIB : @rpath/$_linked_lib_filename"
@@ -805,9 +910,9 @@ function __fix_linked_lib_darwin() {
 					echo "====> Adding RPATH value : $_new_load_dylib"
 					#__set_build_mode "RPATH" "ADD" "$_new_load_dylib"
 					_flag_existing_rpath=0
+					# TODO change to __get_rpath_darwin
 					while read -r line; do
 						[ "$line" == "$_new_load_dylib" ] && _flag_existing_rpath=1
-					#done <<< "$(otool -l "$_file" | grep -E "LC_RPATH" -A2 | grep path | tr -s ' ' | cut -d ' ' -f 3)"
 					done <<< "$(otool -l "$_file" | grep -E "LC_RPATH" -A2 | awk '/LC_RPATH/{for(i=2;i;--i)getline; print $0 }' | tr -s ' ' | cut -d ' ' -f 3)"
 					if [ "$_flag_existing_rpath" == "0" ]; then
 						install_name_tool -add_rpath "$_new_load_dylib" "$_file"
@@ -879,14 +984,14 @@ function __tweak_rpath_linux() {
 
 		local _rel_rpath=ON
 		local _abs_rpath=OFF
-		for o in $OPT; do 
+		for o in $OPT; do
 			[ "$o" == "REL_RPATH" ] && _rel_rpath=ON && _abs_rpath=OFF
 			[ "$o" == "ABS_RPATH" ] && _rel_rpath=OFF && _abs_rpath=ON
 		done
 
-		
 
-		
+
+
 		local _rpath_values=
 		local _new_rpath_values=
 		local _flag_change=
@@ -897,7 +1002,7 @@ function __tweak_rpath_linux() {
 		[ "$(objdump -p $_file | grep -E "$_field\s" | tr -s ' ' | cut -d ' ' -f 3)" == "" ] && _field="RUNPATH"
 
 		IFS=':' read -ra _rpath_values <<< $(objdump -p $_file | grep -E "$_field\s" | tr -s ' ' | cut -d ' ' -f 3)
-		
+
 		#_rpath_values=${_rpath_values/\$ORIGIN/\\\$ORIGIN}
 
 		for line in "${_rpath_values[@]}"; do
@@ -907,7 +1012,7 @@ function __tweak_rpath_linux() {
 
 		 			_path="$(__rel_to_abs_path "$line" $(__get_path_from_string $_file))"
 		 			echo "====> Transform $line to abs path $_path"
-		 			
+
 		 			_new_rpath_values="$_new_rpath_values:$_path"
 		 			_flag_change=1
 		 		else
@@ -915,16 +1020,16 @@ function __tweak_rpath_linux() {
 		 		fi
 		 	else
 			 	if [ "$_rel_rpath" == "ON" ]; then
-			 		if [ "$(__is_abs $line)" == "TRUE" ];then 
+			 		if [ "$(__is_abs $line)" == "TRUE" ];then
 			 			[ ! "$_flag_change" == "1" ] && echo "*** Fixing RPATH for $_file"
-			 			
+
 			 			_path="\$ORIGIN/$(__abs_to_rel_path "$line" $(__get_path_from_string $_file))"
 			 			echo "====> Transform $line to abs path : $_path"
 
 			 			_new_rpath_values="$_new_rpath_values:$_path"
 			 			_flag_change=1
 			 		else
-		 				_new_rpath_values="$_new_rpath_values:$line"	
+		 				_new_rpath_values="$_new_rpath_values:$line"
 			 		fi
 			 	fi
 			 fi
@@ -942,6 +1047,30 @@ function __tweak_rpath_linux() {
 }
 
 
+# check if binary have some specific rpath values
+function __have_rpath_linux() {
+	local _path="$1"
+	local _rpath_values="$2"
+	local _result=0
+	local t=
+	local r=
+
+	for r in $_rpath_values; do
+		printf %s "*** Checking if this RPATH value is missing : $r"
+		t=`otool -l $_path | grep -E "LC_RPATH" -A2 | grep -E "path $r \("`
+
+		if [ "$t" == "" ];then
+			printf %s " -- WARN RPATH is missing"
+			_result=1
+		else
+			printf %s " -- OK"
+		fi
+		echo
+	done
+
+	return $_result
+}
+
 # add rpath values by adding rpath values contained in list _rpath_list_values
 # and reorder all rpath values
 function __add_rpath_linux() {
@@ -955,7 +1084,7 @@ function __add_rpath_linux() {
 	fi
 
 	local msg=
-
+	# TODO replace by function
 	if [ ! "$(objdump -p "$_file" 2>/dev/null)" == "" ]; then
 
 
@@ -967,10 +1096,11 @@ function __add_rpath_linux() {
 			local old_rpath=
 
 			local _field="RPATH"
+			# TODO replace by function
 			[ "$(objdump -p $_file | grep -E "$_field\s" | tr -s ' ' | cut -d ' ' -f 3)" == "" ] && _field="RUNPATH"
 
 			IFS=':' read -ra _rpath_values <<< $(objdump -p $_file | grep -E "$_field\s" | tr -s ' ' | cut -d ' ' -f 3)
-			
+
 
 			for line in "${_rpath_values[@]}"; do
 				if [ "$line" == "$r" ]; then
@@ -979,21 +1109,138 @@ function __add_rpath_linux() {
 				old_rpath="$old_rpath:$line"
 			done
 
-		
+
 			if [ "$_flag_rpath" == "" ];then
 				msg="$msg -- adding RPATH value : $r"
 				old_rpath="$old_rpath:$r"
-			
+
 				__require "patchelf" "patchelf" "PREFER_STELLA"
 				patchelf --set-rpath "${old_rpath#?}" "$_file"
 				echo
 			fi
-			
+
 		done
 
 	fi
 
 	[ ! "$msg" == "" ] && echo "** Adding rpath values to $_file $msg"
+}
+
+# check rpath values of exexcutable binary and shared lib
+# 		NO_RPATH -- must no have any rpath
+# 		REL_RPATH -- rpath must be a relative path
+# 		ABS_RPATH -- rpath must be an absolute path
+#			MISSING_RPATH val1 val2 ... -- check some missing rpath
+function __check_rpath_linux() {
+	local _path=$1
+	local OPT="$2"
+	local t
+	local _result=0
+
+	if [ -d "$_path" ]; then
+		for f in  "$_path"/*; do
+			__check_rpath_linux "$f" "$OPT" || _result=1
+		done
+	fi
+
+
+	local _no_rpath=OFF
+	local _rel_rpath=OFF
+	local _abs_rpath=OFF
+	local _flag_missing_rpath=OFF
+	local _missing_rpath_values=
+	local _opt_missing_rpath=OFF
+
+	for o in $OPT; do
+		[ "$_flag_missing_rpath" == "ON" ] && _missing_rpath_values="$o $_missing_rpath_values"
+		[ "$o" == "MISSING_RPATH" ] && _flag_missing_rpath=ON && _opt_missing_rpath=ON
+		[ "$o" == "NO_RPATH" ] && _no_rpath=ON && _flag_missing_rpath=OFF
+		[ "$o" == "REL_RPATH" ] && _rel_rpath=ON && _abs_rpath=OFF && _flag_missing_rpath=OFF
+		[ "$o" == "ABS_RPATH" ] && _rel_rpath=OFF && _abs_rpath=ON && _flag_missing_rpath=OFF
+	done
+
+
+	if [ -f "$_path" ]; then
+		if [ "$(__is_linux_bin $_path)" == "TRUE" ]; then
+
+			local _rpath_values
+
+			local _field="RPATH"
+			[ "$(objdump -p $_path | grep -E "$_field\s" | tr -s ' ' | cut -d ' ' -f 3)" == "" ] && _field="RUNPATH"
+
+			IFS=':' read -ra _rpath_values <<< $(objdump -p $_path | grep -E "$_field\s" | tr -s ' ' | cut -d ' ' -f 3)
+
+
+			if [ "$_no_rpath" == "ON" ];then
+				printf %s "*** Checking if there is no RPATH setted "
+				if [ "$_rpath_values" == "" ]; then
+					printf %s " -- OK"
+					echo
+				else
+					printf %s " -- WARN RPATH is setted"
+					_result=1
+					echo
+					echo "*** List RPATH values in search order :"
+					echo $_rpath_values
+				fi
+
+			else
+
+				for line in "${_rpath_values[@]}"; do
+					printf %s "*** Checking RPATH value : $line "
+					if [ "$_abs_rpath" == "ON" ]; then
+						if [ "$(__is_abs $line)" == "TRUE" ];then
+							printf %s "-- is abs path : OK"
+						else
+							printf %s "-- is not an abs path : WARN"
+							_result=1
+						fi
+					fi
+
+					if [ "$_rel_rpath" == "ON" ]; then
+						if [ "$(__is_abs $line)" == "TRUE" ];then
+							printf %s "-- is not a rel path : WARN"
+							_result=1
+						else
+							printf %s "-- is rel path : OK"
+						fi
+					fi
+					echo
+				done
+			fi
+
+
+
+
+			# TODO replace with __have_rpath_linux
+			# TODO do not use STELLA_BUILD_RPATH
+			local _err=0
+			for r in $STELLA_BUILD_RPATH; do
+
+				printf %s "*** Checking if setted RPATH value is missing : $r"
+
+				for i in "${_rpath_values[@]}"; do
+					if [ "$i" == "$r" ]; then
+						 printf %s " -- OK"
+						 _err=1
+					fi
+				done
+				if [ "$_err" == "0" ]; then
+					printf %s " -- WARN RPATH is missing"
+					_result=1
+				fi
+				_err=0
+				echo
+			done
+
+
+		fi
+	fi
+
+
+
+	return $_result
+
 }
 
 
@@ -1007,6 +1254,7 @@ function __check_linked_lib_linux() {
 	local _file=$1
 	local t
 
+	local _result=0
 
 	#readelf -d "$_file" | grep NEEDED | cut -d ')' -f2
 	#t=`ldd $_file | grep "=>"`
@@ -1017,95 +1265,17 @@ function __check_linked_lib_linux() {
 	#cd $_CUR_DIR
 	#[ $VERBOSE_MODE -gt 0 ] && ldd $_file
 	if [ ! "$t" == "" ]; then
-		printf %s "-- WARN not found" 
+		printf %s "-- WARN not found"
+		_result=1
 		echo "		$t"
 	else
 		printf %s "-- OK"
 	fi
 
+	return $_result
+
 }
 
-
-# test rpath values
-function __check_rpath_linux() {
-	local _file=$1
-	local OPT="$2"
-	local t
-
-	
-	# NO_RPATH -- must no have any rpath
-	# REL_RPATH -- rpath must be a relative path
-	# ABS_RPATH -- rpath must be an absolute path
-	local _no_rpath=OFF
-	local _rel_rpath=OFF
-	local _abs_rpath=OFF
-	for o in $OPT; do
-		[ "$o" == "NO_RPATH" ] && _no_rpath=ON
-		[ "$o" == "REL_RPATH" ] && _rel_rpath=ON && _abs_rpath=OFF
-		[ "$o" == "ABS_RPATH" ] && _rel_rpath=OFF && _abs_rpath=ON
-	done
-
-	
-	local _rpath_values
-
-	local _field="RPATH"
-	[ "$(objdump -p $_file | grep -E "$_field\s" | tr -s ' ' | cut -d ' ' -f 3)" == "" ] && _field="RUNPATH"
-
-	IFS=':' read -ra _rpath_values <<< $(objdump -p $_file | grep -E "$_field\s" | tr -s ' ' | cut -d ' ' -f 3)
-
-
-	if [ "$_no_rpath" == "ON" ];then
-		printf %s "*** Checking if there is no RPATH setted "
-		if [ "$_rpath_values" == "" ]; then
-			printf %s " -- OK"
-			echo
-		else
-			printf %s " -- WARN RPATH is setted"
-			echo
-			echo "*** List RPATH values in search order :"
-			echo $_rpath_values
-		fi
-	else
-		for line in "${_rpath_values[@]}"; do
-			printf %s "*** Checking RPATH value : $line "
-			if [ "$_abs_rpath" == "ON" ]; then
-		 		if [ "$(__is_abs $line)" == "TRUE" ];then 
-		 			printf %s "-- is abs path : OK"
-		 		else
-		 			printf %s "-- is not an abs path : WARN"
-		 		fi
-		 	else
-			 	if [ "$_rel_rpath" == "ON" ]; then
-			 		if [ "$(__is_abs $line)" == "TRUE" ];then 
-			 			printf %s "-- is not a rel path : WARN"
-			 		else
-			 			printf %s "-- is rel path : OK"
-			 		fi
-			 	else
-			 		printf %s "-- OK"
-			 	fi
-			 fi
-		 	echo
-		done
-	fi
-
-	local _err=0
-	for r in $STELLA_BUILD_RPATH; do
-		
-		printf %s "*** Checking if setted RPATH value is missing : $r"
-	
-		for i in "${_rpath_values[@]}"; do
-			if [ "$i" == "$r" ]; then
-				 printf %s " -- OK"
-				 _err=1
-			fi
-		done
-		[ "$_err" == "0" ] && printf %s " -- WARN RPATH is missing"
-		_err=0
-		echo
-	done
-	
-}
 
 
 

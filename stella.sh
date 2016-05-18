@@ -2,8 +2,6 @@
 _STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $_STELLA_CURRENT_FILE_DIR/conf.sh
 
-#__timecount_start "id"
-
 
 function usage() {
 	echo "USAGE :"
@@ -32,8 +30,9 @@ function usage() {
 	echo " L     proxy register <name> --proxyhost=<host> --proxyport=<port> [--proxyuser=<string> --proxypass=<string>] : register this proxy"
 	echo " L     proxy register bypass --proxyhost=<host> : register a host that will bypass proxy"
 	echo " o-- bootstrap management :"
-	echo " L     boot stella shell : launch a shell with all stella env var setted"
-	echo " L     boot docker <docker-id> [commands] : launch a command on a docker container with stella mounted as /stella --  need docker installed on your system"
+	echo " L     boot shell <uri> : launch an interactive shell with all stella env var setted inside an <uri> (use local as current host)"
+	echo " L     boot cmd <uri> -- <command> : execute a command with all stella env var setted inside an <uri> (use local as current host)"
+	echo " L     boot script <uri> -- <path>"
 	echo " o-- system package management : WARN This will affect your system"
 	echo " L     sys install <package name> : install  a system package"
 	echo " L     sys remove <package name> : remove a system package"
@@ -43,13 +42,15 @@ function usage() {
 }
 
 
+
+
 # MAIN -----------------------------------------------------------------------------------
 
 # arguments
 PARAMETERS="
 DOMAIN=                          'domain'     		a           'app feature stella proxy sys boot'         										   				Action domain.
-ACTION=                         'action'   					a           'deploy docker stella version search remove on off register link api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature install list'         	Action to compute.
-ID=							 ''								s 			''
+ACTION=                         'action'   					a           'deploy script shell cmd version search remove on off register link api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature install list'         	Action to compute.
+ID=							 								''								s 						''
 "
 OPTIONS="
 FORCE=''                       	'f'    		''            		b     		0     		'1'           			Force operation.
@@ -71,7 +72,7 @@ CACHE=''                       	''    		''            		b     		0     		'1'     
 WORKSPACE=''                       	''    		''            		b     		0     		'1'           			Include workspace folder when deploying.
 "
 
-__argparse "$0" "$OPTIONS" "$PARAMETERS" "Lib Stella" "$(usage)" "" "$@"
+__argparse "$0" "$OPTIONS" "$PARAMETERS" "Lib Stella" "$(usage)" "OTHERARG" "$@"
 
 
 # --------------- APP ----------------------------
@@ -136,14 +137,17 @@ fi
 # --------------- BOOT ----------------------------
 if [ "$DOMAIN" == "boot" ]; then
 	__init_stella_env
-	if [ "$ACTION" == "stella" ]; then
-		if [ "$ID" == "shell" ]; then
-			__bootstrap_stella_env
-		fi
+
+	if [ "$ACTION" == "cmd" ]; then
+		__boot_cmd "$ID" "$OTHERARG"
 	fi
 
-	if [ "$ACTION" == "docker" ]; then
-		docker run -v $STELLA_ROOT:/stella -it $ID
+	if [ "$ACTION" == "shell" ]; then
+		__boot_shell "$ID"
+	fi
+
+	if [ "$ACTION" == "script" ]; then
+		__boot_script "$ID" "$OTHERARG"
 	fi
 fi
 
@@ -216,4 +220,3 @@ fi
 
 
 echo "** END **"
-#__timecount_stop "id"

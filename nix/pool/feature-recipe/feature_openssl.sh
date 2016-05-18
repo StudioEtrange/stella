@@ -103,7 +103,7 @@ function feature_openssl_install_source() {
 	# clean --------------------------------
 	rm -Rf $SRC_DIR
 
-	__inspect_build "$INSTALL_DIR" "EXCLUDE_INSPECT /share/man/"
+	__inspect_and_fix_build "$INSTALL_DIR" "EXCLUDE_INSPECT /share/man/"
 }
 
 

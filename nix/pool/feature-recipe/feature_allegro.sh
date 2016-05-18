@@ -114,8 +114,8 @@ function feature_allegro_install_source() {
 	rm -Rf "$SRC_DIR-build"
 
 	# inspect demos and examples
-	__inspect_build "$INSTALL_DIR/demos"
-	__inspect_build "$INSTALL_DIR/examples"
+	__inspect_and_fix_build "$INSTALL_DIR/demos"
+	__inspect_and_fix_build "$INSTALL_DIR/examples"
 
 
 	
