@@ -7,7 +7,7 @@ _STELLA_COMMON_APP_INCLUDED_=1
 # APP RESSOURCES & ENV MANAGEMENT ---------------
 
 function __transfert_app(){
-	# form is user@host:path
+	# target form is [USER@]HOST:[DEST]
 	local _target=$1
 
 	local _OPT=$2

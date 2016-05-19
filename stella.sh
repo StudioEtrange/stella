@@ -32,7 +32,7 @@ function usage() {
 	echo " o-- bootstrap management :"
 	echo " L     boot shell <uri> : launch an interactive shell with all stella env var setted inside an <uri> (use local as current host)"
 	echo " L     boot cmd <uri> -- <command> : execute a command with all stella env var setted inside an <uri> (use local as current host)"
-	echo " L     boot script <uri> -- <path>"
+	echo " L     boot script <uri> -- <script_path>"
 	echo " o-- system package management : WARN This will affect your system"
 	echo " L     sys install <package name> : install  a system package"
 	echo " L     sys remove <package name> : remove a system package"
@@ -40,8 +40,6 @@ function usage() {
 
 
 }
-
-
 
 
 # MAIN -----------------------------------------------------------------------------------

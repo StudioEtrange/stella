@@ -240,10 +240,6 @@ function __uri_parse() {
 	# uri capture
 	__stella_uri="$@"
 
-	# safe escaping
-	#__stella_uri="${__stella_uri//\`/%60}"
-	#__stella_uri="${__stella_uri//\"/%22}"
-
 	local path
 	local count
 	local query
@@ -290,39 +286,91 @@ function __uri_parse() {
 	return 0
 }
 
-function __transfert_stella(){
-	# target form is USER@]HOST[:PORT]/DEST
-	local _target=$1
+# [user@]host[:port][/#abs_or_rel_path]
+function __transfert_stella() {
+	local _uri="$1"
 
-	local _OPT=$2
-	local _opt_ex_cache="EXCLUDE_FILTER /$(__abs_to_rel_path $STELLA_INTERNAL_CACHE_DIR $STELLA_ROOT)/"
-	local _opt_ex_workspace="EXCLUDE_FILTER /$(__abs_to_rel_path $STELLA_INTERNAL_WORK_ROOT $STELLA_ROOT)/"
+	local _OPT="$2"
+	local _opt_ex_cache="EXCLUDE_FILTER stella/$(__abs_to_rel_path $STELLA_INTERNAL_CACHE_DIR $STELLA_ROOT)/"
+	local _opt_ex_workspace="EXCLUDE_FILTER stella/$(__abs_to_rel_path $STELLA_INTERNAL_WORK_ROOT $STELLA_ROOT)/"
+	local _opt_ex_env="EXCLUDE_FILTER stella/.stella-env"
 	for o in $_OPT; do
 		[ "$o" == "CACHE" ] && _opt_ex_cache=
 		[ "$o" == "WORKSPACE" ] && _opt_ex_workspace=
+		[ "$o" == "ENV" ] && _opt_ex_env=
 	done
 
-	__transfert_folder_rsync "$STELLA_ROOT" "$_target" "$_opt_ex_cache $_opt_ex_workspace"
+	__transfert_folder_rsync "$STELLA_ROOT" "$_uri" "$_opt_ex_cache $_opt_ex_workspace $_opt_ex_env"
 }
 
-function __transfert_folder_rsync(){
-	local _folder=$1
-	# target form is USER@]HOST[:PORT]/DEST
-	local _target=$2
+# [user@]host[:port][/#abs_or_rel_path]
+# path could be absolute path in the target system
+# or could be relavite path to the default folder when logging with ssh
+# example
+# __transfert_folder_rsync /foo/folder user@ip
+#			here path is empty, so folder will be sync inside home directory of user as /home/user/folder
+function __transfert_folder_rsync() {
+	local _folder="$1"
+	local _uri="$2"
+
+	# EXCLUDE_FILTER (repeat this option for each exclude filter to set)
+	# FOLDER_CONTENT will transfer only folder content not folder itself
+	local _OPT="$3"
+	local _flag_exclude_filter=OFF
+	local _exclude_filter=
+	local _opt_folder_content=OFF
+	for o in $_OPT; do
+		[ "$_flag_exclude_filter" == "ON" ] && _exclude_filter="--exclude $o $_exclude_filter" && _flag_exclude_filter=OFF
+		[ "$o" == "EXCLUDE_FILTER" ] && _flag_exclude_filter=ON
+		[ "$o" == "FOLDER_CONTENT" ] && _opt_folder_content=ON
+	done
 
 	__require "rsync" "rsync"
 	__require "ssh" "ssh"
 
-	local _OPT=$3
-	local _flag_exclude_filter=OFF
-	local _exclude_filter=
-	for o in $_OPT; do
-		[ "$_flag_exclude_filter" == "ON" ] && _exclude_filter="--exclude $o $_exclude_filter" && _flag_exclude_filter=OFF
-		[ "$o" == "EXCLUDE_FILTER" ] && _flag_exclude_filter=ON
-	done
+	__uri_parse "$_uri"
+
+	local _ssh_port="22"
+	[ ! "$__stella_uri_port" == "" ] && _ssh_port="$__stella_uri_port"
+
+	local _target="$__stella_uri_host":"${__stella_uri_fragment:1}"
+	[ ! "$__stella_uri_user" == "" ] && _target="$__stella_uri_user"@"$_target"
+
+	# $_folder must not finish with / or only folder content will be transfered, not folder itself
+	if [ "$_opt_folder_content" == "ON" ]; then
+		# remove last '/' char (tested on macos and linux)
+		_folder="$_folder/"
+	else
+		_folder="${_folder%/}"
+	fi
+
+	rsync $_exclude_filter --force --delete-excluded --delete -avz -e "ssh -p $_ssh_port" "$_folder" "$_target"
+}
 
 
-	rsync $_exclude_filter --force --delete-excluded --delete -avz -e 'ssh' "$_folder/" $_target/
+# [user@]host[:port][/#abs_or_rel_path]
+# path could be absolute path in the target system
+# or could be relavite path to the default folder when logging with ssh
+# if path end with a "/" it will be a destination folder, else it will be the name of the transfered file
+# example
+# __transfert_folder_rsync /foo/file1 user@ip:folder/file2
+#			file1 will be sync inside home directory of user as /home/user/folder/file2
+function __transfert_file_rsync() {
+	local _file="$1"
+	local _uri="$2"
+
+	__uri_parse "$_uri"
+
+	local _ssh_port="22"
+	[ ! "$__stella_uri_port" == "" ] && _ssh_port="$__stella_uri_port"
+
+	local _target="$__stella_uri_host":"${__stella_uri_fragment:1}"
+	[ ! "$__stella_uri_user" == "" ] && _target="$__stella_uri_user"@"$_target"
+
+	__require "rsync" "rsync"
+	__require "ssh" "ssh"
+
+	rsync -avz -e "ssh -p $_ssh_port" "$_file" "$_target"
 }
 
 function __daemonize() {

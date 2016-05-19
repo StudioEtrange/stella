@@ -2,12 +2,25 @@ if [ ! "$_STELLA_BOOT_INCLUDED_" == "1" ]; then
 _STELLA_BOOT_INCLUDED_=1
 
 # TODO : include into API
+# TODO : when booting a script, pass arg to script ?
 
-# boot shell local
-# boot cmd local -- '<command>'
+# When docker/dm
+#     stella requirement are installed
+#     stella is mounted on /
+#     current folder is stella_root or <path>
+#     script to execute is mounted on /<script.sh>
 
-# boot shell docker
-# boot cmd docker -- '<command>'
+# When ssh
+#     stella requirement are not installed
+#     current folder is <path> or default path when logging in ssh
+#     stella is sync in <path>/stella or default path/stella
+#     script is sync in <path>/<script.sh> or default_path/<script.sh>
+
+# When local
+#     stella requirement are not installed
+#     current folder do not change
+#     stella do not move
+#     script to execute do not move
 
 # MAIN FUNCTION -----------------------------------------
 function __boot_shell() {
@@ -52,7 +65,7 @@ function __boot_stella() {
   case $__stella_uri_schema in
     local )
       # local
-      # do not change folder -- keep current folder
+
       case $_mode in
         SHELL )
           __bootstrap_stella_env
@@ -90,20 +103,19 @@ function __boot_stella() {
       # folders
       local _boot_folder="${__stella_uri_fragment:1}"
       [ -z "$_boot_folder" ] && _boot_folder="/stella"
-      #TODO
       local _stella_folder="/stella"
-      local _boot_script_path="/stella-boot-script.sh"
+      local _boot_script_path="/$(__get_filename_from_string $_arg)"
 
       case $_mode in
         SHELL )
           _docker_opt="-it"
-          eval $(echo $_docker_prefix) docker run --rm -v "$STELLA_ROOT":"$_stella_folder" $_docker_opt ${__stella_uri_path:1} bash -c "cd $_boot_folder 1>/dev/null && $_stella_folder/stella.sh stella install dep 1>/dev/null && $_stella_folder/stella.sh boot shell local"
+          eval $(echo $_docker_prefix) && docker run --rm -v "$STELLA_ROOT":"$_stella_folder" $_docker_opt ${__stella_uri_path:1} bash -c "cd $_boot_folder && $_stella_folder/stella.sh stella install dep && $_stella_folder/stella.sh boot shell local"
           ;;
         CMD )
-          eval $(echo $_docker_prefix) docker run --rm -v "$STELLA_ROOT":"$_stella_folder" $_docker_opt ${__stella_uri_path:1} bash -c "cd $_boot_folder 1>/dev/null && $_stella_folder/stella.sh stella install dep 1>/dev/null && $_stella_folder/stella.sh boot cmd local -- '$_arg'"
+          eval $(echo $_docker_prefix) && docker run --rm -v "$STELLA_ROOT":"$_stella_folder" $_docker_opt ${__stella_uri_path:1} bash -c "cd $_boot_folder && $_stella_folder/stella.sh stella install dep && $_stella_folder/stella.sh boot cmd local -- '$_arg'"
           ;;
         SCRIPT )
-          eval $(echo $_docker_prefix) docker run --rm -v "$STELLA_ROOT":"$_stella_folder" -v "$_arg":"$_boot_script_path" $_docker_opt ${__stella_uri_path:1} bash -c "cd $_boot_folder 1>/dev/null && $_stella_folder/stella.sh stella install dep 1>/dev/null && $_stella_folder/stella.sh boot script local -- '$_boot_script_path'"
+          eval $(echo $_docker_prefix) && docker run --rm -v "$STELLA_ROOT":"$_stella_folder" -v "$_arg":"$_boot_script_path" $_docker_opt ${__stella_uri_path:1} bash -c "cd $_boot_folder && $_stella_folder/stella.sh stella install dep && $_stella_folder/stella.sh boot script local -- '$_boot_script_path'"
           ;;
       esac
       ;;
@@ -112,11 +124,39 @@ function __boot_stella() {
 
 
     ssh )
-      #ssh://user@host:port/path
+      #ssh://user@host:port/#abs_or_rel_path
+
+      local _ssh_port="22"
+    	[ ! "$__stella_uri_port" == "" ] && _ssh_port="$__stella_uri_port"
+      local _ssh_user=
+      [ ! "$__stella_uri_user" == "" ] && _ssh_user="$__stella_uri_user"@
+
       __require "ssh" "ssh" "PREFER_SYSTEM"
-      # target form is USER@]HOST[:PORT]/DEST
-      __transfert_stella "$__stella_uri_user@$__stella_uri_host:$_stella_uri_port$__stella_uri_path"
-      #ssh -p $_stella_uri_port
+
+      # [user@]host[:port][/#abs_or_rel_path]
+      __transfert_stella "$_uri"
+
+      # folders
+      [ "$__stella_uri_fragment" == "" ] && __stella_uri_fragment="."
+      [ "$__stella_uri_fragment" == "#" ] && __stella_uri_fragment="."
+      [ ! "$__stella_uri_fragment" == "." ] && __stella_uri_fragment=${__stella_uri_fragment:1}
+      local _boot_folder="$__stella_uri_fragment"
+      local _stella_folder="$__stella_uri_fragment"/stella
+      local _boot_script_path="$__stella_uri_fragment/$(__get_filename_from_string $_arg)"
+
+      # http://www.cyberciti.biz/faq/linux-unix-bsd-sudo-sorry-you-must-haveattytorun/
+      case $_mode in
+        SHELL )
+          ssh -t -p "$_ssh_port" "$_ssh_user$__stella_uri_host" "cd $_boot_folder && $_stella_folder/stella.sh stella install dep && $_stella_folder/stella.sh boot shell local"
+          ;;
+        CMD )
+          ssh -t -p "$_ssh_port" "$_ssh_user$__stella_uri_host" "cd $_boot_folder && $_stella_folder/stella.sh stella install dep && $_stella_folder/stella.sh boot cmd local -- '$_arg'"
+          ;;
+        SCRIPT )
+          __transfert_file_rsync "$_arg" "$_uri"
+          ssh -t -p "$_ssh_port" "$_ssh_user$__stella_uri_host" "cd $_boot_folder && $_stella_folder/stella.sh stella install dep && $_stella_folder/stella.sh boot script local -- '$_boot_script_path'"
+          ;;
+        esac
       ;;
 
   esac
@@ -139,36 +179,6 @@ HERE
 )
 }
 
-
-
-
-
-
-
-
-# TODO NOT USED
-function __bootstrap_stella_files_linux() {
-  local _cmd=$@
-
-  local _t="$(mktmp)"
-  local _d="$STELLA_APP_TEMP_DIR"/"$(__get_filename_from_string "$_t")"
-
-  mkdir -p "$_d"
-  rm -Rf $_t
-
-  cat <<EOT > $_d/stella-boot.sh
-#!/bin/bash
-export STELLA_ROOT=/stella
-STELLA_APP_ROOT=/stella
-source /stella/conf.sh
-__init_stella_env
-$_cmd
-EOT
-
-  chmod +x "$_d/stella-boot.sh"
-
-  echo "$_d"
-}
 
 
 fi
