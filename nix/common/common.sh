@@ -530,11 +530,10 @@ function __rel_to_abs_path() {
 				if [ -d "$_abs_root_path/$_rel_path" ]; then
 					result="$(cd "$_abs_root_path/$_rel_path" && pwd )"
 				else
-					#result="$_abs_root_path/$_rel_path"
 					# NOTE using this method if directory does not exist returned path is not real absolute (example : /tata/toto/../titi instead of /tata/titi)
-
-					[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && result=$(__rel_to_abs_path_alternative_1 "$_rel_path" "$_abs_root_path")
-					[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && result=$(__rel_to_abs_path_alternative_2 "$_rel_path" "$_abs_root_path")
+					result=$(__rel_to_abs_path_alternative_1 "$_rel_path" "$_abs_root_path")
+					#[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && result=$(__rel_to_abs_path_alternative_1 "$_rel_path" "$_abs_root_path")
+					#[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && result=$(__rel_to_abs_path_alternative_2 "$_rel_path" "$_abs_root_path")
 				fi
 				;;
 		esac
@@ -581,6 +580,7 @@ function __rel_to_abs_path_alternative_1(){
 
 # NOTE : http://stackoverflow.com/a/13599997
 # NOTE : use basename/dirname/readlink : follow symlink
+# NOTE : readlink option -m do not exists on some version
 function __rel_to_abs_path_alternative_2(){
 	local _rel_path=$1
 	local _abs_root_path=$2

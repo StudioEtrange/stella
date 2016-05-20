@@ -39,6 +39,9 @@ function __get_os_from_distro() {
 		boot2docker*)
 			echo "linuxgeneric"
 			;;
+		Alpine|alpine*)
+			echo "alpine"
+			;;
 		"Mac OS X"|macos)
 			echo "macos"
 			;;
@@ -55,7 +58,7 @@ function __get_platform_from_os() {
 	local _os=$1
 
 	case $_os in
-		centos|archlinux|ubuntu|debian|linuxgeneric|rhel)
+		centos|archlinux|ubuntu|debian|linuxgeneric|rhel|alpine)
 			echo "linux"
 			;;
 		macos)
@@ -112,24 +115,18 @@ function __set_current_platform_info() {
 	# http://stackoverflow.com/questions/246007/how-to-determine-whether-a-given-linux-is-32-bit-or-64-bit
 	# http://stackoverflow.com/a/10140985
 	# http://unix.stackexchange.com/a/24772
+	# http://www.cyberciti.biz/faq/linux-how-to-find-if-processor-is-64-bit-or-not/
 
 	# CPU 64Bits capable
-	# Linux
-	if [[ -n `which lscpu 2> /dev/null` ]]; then
-		_cpu=`lscpu | awk 'NR== 1 {print $2}' | grep 64`
-		if [ "$_cpu" == "" ]; then
-			STELLA_CPU_ARCH=32
-		else
-			STELLA_CPU_ARCH=64
-		fi
+	STELLA_CPU_ARCH=
+	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+		grep -q -o -w 'lm' /proc/cpuinfo && STELLA_CPU_ARCH=64 || echo STELLA_CPU_ARCH=32
+	fi
 
-	# Darwin
-	elif [[ -n `which sysctl 2> /dev/null` ]]; then
-		_cpu=`sysctl hw.cpu64bit_capable | egrep -i 'hw.cpu64bit_capable' | awk '{print $NF}'`
+	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+		local _cpu=`sysctl hw.cpu64bit_capable | egrep -i 'hw.cpu64bit_capable' | awk '{print $NF}'`
 		STELLA_CPU_ARCH=32
 		[ "$_cpu" == "1" ] && STELLA_CPU_ARCH=64
-	else
-		STELLA_CPU_ARCH=
 	fi
 
 
@@ -284,7 +281,7 @@ function __get_current_package_manager() {
 
 	case $STELLA_CURRENT_PLATFORM in
 		linux)
-				plist="apt-get yum"
+				plist="apt-get yum apk"
 			;;
 		darwin)
 				plist="brew"
@@ -340,6 +337,13 @@ function __sys_package_manager() {
 			yum)
 				sudo -E yum install -y $_packages
 				;;
+			apk)
+				type sudo &>/dev/null && \
+					sudo -E apk update && \
+					sudo -E apk add $_packages || \
+					apk update && \
+					apk add $_packages
+				;;
 			*)	echo " ** WARN : dont know how to install $_id"
 				;;
 		esac
@@ -355,6 +359,11 @@ function __sys_package_manager() {
 				;;
 			yum)
 				sudo -E yum remove -y $_packages
+				;;
+			apk)
+					type sudo &>/dev/null && \
+					sudo -E apk del $_packages || \
+					apk del $_packages
 				;;
 			*)	echo " ** WARN : dont know how to remove $_id"
 				;;
@@ -485,6 +494,12 @@ function __sys_remove_cmake() {
 	__sys_package_manager "REMOVE" "cmake" "apt-get cmake | brew cmake | yum cmake"
 }
 
+function __sys_install_git() {
+	__sys_package_manager "INSTALL" "git" "apt-get git | brew git | yum git | apk git"
+}
+function __sys_remove_git() {
+	__sys_package_manager "REMOVE" "git" "apt-get git | brew git | yum git | apk git"
+}
 
 
 fi

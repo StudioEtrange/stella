@@ -93,7 +93,10 @@ function __boot_stella() {
 
       if [ "$__stella_uri_schema" == "dm" ]; then
         __require "docker-machine" "docker-machine" "PREFER_SYSTEM"
+        # docker-machine create -d virtualbox $__stella_uri_host
+        # eval $(docker-machine env --no-proxy $__stella_uri_host)
         eval $(docker-machine env $__stella_uri_host)
+        __no_proxy_for $(docker-machine ip $__stella_uri_host)
       fi
 
       if [ "$__stella_uri_schema" == "docker" ]; then

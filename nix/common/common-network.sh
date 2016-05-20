@@ -1,11 +1,11 @@
-if [ ! "$_STELLA_COMMON_NET_INCLUDED_" == "1" ]; then 
+if [ ! "$_STELLA_COMMON_NET_INCLUDED_" == "1" ]; then
 _STELLA_COMMON_NET_INCLUDED_=1
 
 
 # --------------- PROXY INIT ----------------
 
 function __init_proxy() {
-	
+
 	__read_proxy_values
 	__set_proxy_values
 
@@ -16,7 +16,7 @@ function __init_proxy() {
 function __read_proxy_values() {
 	if [ -f "$STELLA_ENV_FILE" ]; then
 		__get_key "$STELLA_ENV_FILE" "STELLA_PROXY" "ACTIVE" "PREFIX"
-	
+
 		if [ ! "$STELLA_PROXY_ACTIVE" == "" ]; then
 			__get_key "$STELLA_ENV_FILE" "STELLA_PROXY_$STELLA_PROXY_ACTIVE" "PROXY_HOST" "PREFIX"
 			__get_key "$STELLA_ENV_FILE" "STELLA_PROXY_$STELLA_PROXY_ACTIVE" "PROXY_PORT" "PREFIX"
@@ -33,7 +33,7 @@ function __read_proxy_values() {
 
 			eval STELLA_PROXY_HOST=$(echo '$STELLA_PROXY_'$STELLA_PROXY_ACTIVE'_PROXY_HOST')
 			eval STELLA_PROXY_PORT=$(echo '$STELLA_PROXY_'$STELLA_PROXY_ACTIVE'_PROXY_PORT')
-			
+
 			eval STELLA_PROXY_USER=$(echo '$STELLA_PROXY_'$STELLA_PROXY_ACTIVE'_PROXY_USER')
 			if [ "$STELLA_PROXY_USER" == "" ]; then
 				STELLA_HTTP_PROXY=http://$STELLA_PROXY_HOST:$STELLA_PROXY_PORT
@@ -51,14 +51,14 @@ function __read_proxy_values() {
 }
 
 function __set_proxy_values() {
-	
+
 	if [ ! "$STELLA_PROXY_HOST" == "" ]; then
 		http_proxy="$STELLA_HTTP_PROXY"
 		export http_proxy="$STELLA_HTTP_PROXY"
 
 		HTTP_PROXY="$http_proxy"
 		export HTTP_PROXY="$http_proxy"
-	
+
 		https_proxy="$STELLA_HTTPS_PROXY"
 		export https_proxy="$STELLA_HTTPS_PROXY"
 
@@ -66,6 +66,7 @@ function __set_proxy_values() {
 		export HTTPS_PROXY="$https_proxy"
 
 		if [ ! "$STELLA_NO_PROXY" == "" ]; then
+			# NOTE : if NO_PROXY is setted, then no_proxy is ignored
 			no_proxy="$STELLA_NO_PROXY"
 			NO_PROXY="$STELLA_NO_PROXY"
 			export no_proxy="$STELLA_NO_PROXY"
@@ -75,7 +76,7 @@ function __set_proxy_values() {
 		fi
 	fi
 
-	
+
 
 	if [ ! "$STELLA_PROXY_HOST" == "" ]; then
 		echo "STELLA Proxy : $STELLA_PROXY_HOST:$STELLA_PROXY_PORT"
@@ -89,6 +90,7 @@ function __set_proxy_values() {
 function __proxy_override() {
 
 	# sudo do not preserve env var by default
+	type sudo &>/dev/null && \
 	function sudo() {
 		command sudo no_proxy="$STELLA_NO_PROXY" https_proxy="$STELLA_HTTPS_PROXY" http_proxy="$STELLA_HTTP_PROXY" "$@"
 	}
@@ -123,7 +125,7 @@ function __proxy_override() {
 		# -DnonProxyHosts=\""${STELLA_NO_PROXY//,/|}"\" ==> seems to not, work use instead -Dhttp.nonProxyHosts
 		[ ! "$STELLA_PROXY_USER" == "" ] && command mvn -DproxyActive=true -DproxyId="$STELLA_PROXY_ACTIVE" -DproxyHost="$STELLA_PROXY_HOST" -DproxyPort="$STELLA_PROXY_PORT" -Dhttp.nonProxyHosts=\""${STELLA_NO_PROXY//,/|}"\" -DproxyUsername="$STELLA_PROXY_USER" -DproxyPassword="$STELLA_PROXY_PASS" "$@"
 		[ "$STELLA_PROXY_USER" == "" ] && command mvn -DproxyActive=true  -DproxyId="$STELLA_PROXY_ACTIVE" -DproxyHost="$STELLA_PROXY_HOST" -DproxyPort="$STELLA_PROXY_PORT" -Dhttp.nonProxyHosts=\""${STELLA_NO_PROXY//,/|}"\" "$@"
-		
+
 	}
 
 	function npm() {
@@ -141,7 +143,7 @@ function __proxy_override() {
 	# DOCKER DAEMON
 	# Docker daemon rely on HTTP_PROXY env
 	#		but the env var need to be setted in daemon environement (not client)
-	#		Instead configure /etc/default/docker or /etc/sysconfig/docker and add 
+	#		Instead configure /etc/default/docker or /etc/sysconfig/docker and add
 	#			HTTP_PROXY="http://<proxy_host>:<proxy_port>"
 	#			HTTPS_PROXY="http://<proxy_host>:<proxy_port>"
 	#		Docker daemon is used when accessing docker hub (like for search, pull, ...)
@@ -159,11 +161,15 @@ function __proxy_override() {
 	# 		docker-machine create -d virtualbox --engine-env http_proxy=http://example.com:8080 --engine-env https_proxy=https://example.com:8080 --engine-env NO_PROXY=example2.com <machine-id>
 	# 		docker-machine create -d virtualbox --engine-env http_proxy=$STELLA_HTTP_PROXY --engine-env https_proxy=$STELLA_HTTPS_PROXY --engine-env NO_PROXY=$STELLA_NO_PROXY <machine-id>
 	# 		WARN : This will set /var/lib/boot2docker/profile with HTTP_PROXY ONLY for docker commands (not the other commands)
-	#		this file will will be used during the boot initialisation (after the automount) and before daemon start
+	#			this file will will be used during the boot initialisation (after the automount) and before daemon start
 	# How to retrieve ip of docker-machine
 	# 		docker-machine ip <machine-id>
+	# How to setup docker to use a docker machine
+	# 		eval $(docker-machine env <machine-id>)
 	# How to add to CURRENT no_proxy env vas ip of docker machine
 	# 		eval $(docker-machine env --no-proxy <machine-id>)
+	#			WARN : it will set 'no_proxy' var, not 'NO_PROXY' var. And if 'NO_PROXY' is setted, 'no_proxy' is not used
+	#						so use : __no_proxy_for $(docker-machine ip <machine-id>)
 	#
 	# DOCKER FILE
 	# into docker file, env var should be setted with ENV
@@ -219,12 +225,12 @@ function __register_no_proxy() {
 	done
 
 	if [ "$_exist" == "" ]; then
-		if [ "$STELLA_PROXY_NO_PROXY" == "" ]; then 
+		if [ "$STELLA_PROXY_NO_PROXY" == "" ]; then
 			STELLA_PROXY_NO_PROXY="$_host"
 		else
 			STELLA_PROXY_NO_PROXY="$STELLA_PROXY_NO_PROXY $_host"
 		fi
-		
+
 		__add_key "$STELLA_ENV_FILE" "STELLA_PROXY" "NO_PROXY" "${STELLA_PROXY_NO_PROXY// /,}"
 	fi
 }
@@ -233,16 +239,17 @@ function __register_no_proxy() {
 # will be reseted each time proxy values are read from env file
 function __no_proxy_for() {
 	local _host=$1
-	
+
 	local _exist=
-	STELLA_PROXY_NO_PROXY="${STELLA_NO_PROXY//,/ }"
-	for h in $STELLA_PROXY_NO_PROXY; do
+	local _tmp_no_proxy="${STELLA_NO_PROXY//,/ }"
+	for h in $_tmp_no_proxy; do
 		[ "$h" == "$_host" ] && _exist=1
 	done
 
 	if [ "$_exist" == "" ]; then
 		echo "STELLA Proxy : temp proxy bypass for $_host"
-		STELLA_NO_PROXY="${STELLA_PROXY_NO_PROXY// /,}"
+		[ ! "$STELLA_NO_PROXY" == "" ] && STELLA_NO_PROXY="$STELLA_NO_PROXY","$_host"
+		[ "$STELLA_NO_PROXY" == "" ] && STELLA_NO_PROXY="$_host"
 		__set_proxy_values
 	fi
 
