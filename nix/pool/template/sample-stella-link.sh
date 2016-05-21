@@ -1,4 +1,4 @@
-[ ! "$1" == "chaining" ] && STELLA_APP_ROOT=$_STELLA_LINK_CURRENT_FILE_DIR
+[ ! "$1" == "chaining" ] && export STELLA_APP_ROOT=$_STELLA_LINK_CURRENT_FILE_DIR
 
 if [ ! "$1" == "nothing" ]; then
 	if [ ! "$1" == "bootstrap" ]; then

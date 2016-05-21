@@ -7,7 +7,7 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 # BUILD WORKFLOW
 
 # SET SOME DEFAULT BUILD MODE
-#	__set_build_mode_default "RELOCATE" "ON"
+#		__set_build_mode_default "RELOCATE" "ON"
 #  	__set_build_mode_default "DARWIN_STDLIB" "LIBCPP"
 
 # START BUILD SESSION
@@ -1465,7 +1465,7 @@ function __fix_built_files() {
 				chmod +w "$path"
 				if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
 					if [ ! "$(__get_extension_from_string $path)" == "a" ]; then
-						#__add_rpath_linux "$path" "$STELLA_BUILD_RPATH"
+						#__add_rpath "$path" "$STELLA_BUILD_RPATH"
 						__tweak_rpath_linux "$path" "REL_RPATH"
 					fi
 				fi
@@ -1483,7 +1483,7 @@ function __fix_built_files() {
 						fi
 						if [ ! "$(__get_extension_from_string $path)" == "a" ]; then
 							__fix_linked_lib_darwin "$path" "REL_RPATH EXCLUDE_FILTER /System/Library|/usr/lib"
-							__add_rpath_darwin "$path" "$STELLA_BUILD_RPATH"
+							__add_rpath "$path" "$STELLA_BUILD_RPATH"
 						fi
 					else
 						if [ "$(__get_extension_from_string $path)" == "dylib" ]; then

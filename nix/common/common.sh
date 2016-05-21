@@ -531,6 +531,7 @@ function __rel_to_abs_path() {
 					result="$(cd "$_abs_root_path/$_rel_path" && pwd )"
 				else
 					# NOTE using this method if directory does not exist returned path is not real absolute (example : /tata/toto/../titi instead of /tata/titi)
+					# TODO : we rely on pure bash version, because readlink -m option used un alternative2 do not exist on some system
 					result=$(__rel_to_abs_path_alternative_1 "$_rel_path" "$_abs_root_path")
 					#[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && result=$(__rel_to_abs_path_alternative_1 "$_rel_path" "$_abs_root_path")
 					#[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && result=$(__rel_to_abs_path_alternative_2 "$_rel_path" "$_abs_root_path")
@@ -777,7 +778,7 @@ function __resource() {
 	# 	"REVERT" complete revert of the resource (only for HG or GIT)
 	# 	"DELETE" delete resource
 	#  	"VERSION" retrieve specific version (only for HG or GIT) when GET or UPDATE
-	#	"DEST_ERASE" when GET, will erase FINAL_DESTINATION first
+	#		"DEST_ERASE" when GET, will erase FINAL_DESTINATION first
 	# TODO : remove illegal characters in NAME. NAME is used in flag file name when merging
 
 	local _opt_merge=OFF
@@ -1047,12 +1048,18 @@ function __uncompress() {
 			[ "$_opt_strip" == "ON" ] && __unzip-strip "$FILE_PATH" "$UNZIP_DIR"
 			;;
 		*.gz | *.tgz)
-			[ "$_opt_strip" == "OFF" ] && tar xf "$FILE_PATH"
-			[ "$_opt_strip" == "ON" ] && tar xf "$FILE_PATH" --strip-components=1
+			if [ "$_opt_strip" == "OFF" ]; then
+				tar xzf "$FILE_PATH"
+			else
+				tar xzf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-strip "$FILE_PATH" "$UNZIP_DIR"
+			fi
 			;;
 		*.xz | *.bz2)
-			[ "$_opt_strip" == "OFF" ] && tar xf "$FILE_PATH"
-			[ "$_opt_strip" == "ON" ] && tar xf "$FILE_PATH" --strip-components=1
+			if [ "$_opt_strip" == "OFF" ]; then
+				tar xzf "$FILE_PATH"
+			else
+				tar xzf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-strip "$FILE_PATH" "$UNZIP_DIR"
+			fi
 			;;
 		*.7z)
 			__require "7z" "7z" "PREFER_SYSTEM"
@@ -1068,8 +1075,6 @@ function __download() {
 	local URL
 	local FILE_NAME
 	local DEST_DIR
-
-
 
 	URL="$1"
 	FILE_NAME="$2"
@@ -1096,11 +1101,12 @@ function __download() {
 
 	if [ ! -f "$STELLA_APP_CACHE_DIR/$FILE_NAME" ]; then
 
-		if [[ -n `which wget 2> /dev/null` ]]; then
-			wget "$URL" -O "$STELLA_APP_CACHE_DIR/$FILE_NAME" --no-check-certificate || rm -f "$STELLA_APP_CACHE_DIR/$FILE_NAME"
+		# NOTE : curl seems to be more compatible
+		if [[ -n `which curl 2> /dev/null` ]]; then
+			curl -fSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL" || curl -fkSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL"
 		else
-			if [[ -n `which curl 2> /dev/null` ]]; then
-				curl -fSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL" || curl -fkSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL"
+			if [[ -n `which wget 2> /dev/null` ]]; then
+				wget "$URL" -O "$STELLA_APP_CACHE_DIR/$FILE_NAME" --no-check-certificate || rm -f "$STELLA_APP_CACHE_DIR/$FILE_NAME"
 			else
 				__require "curl" "curl" "PREFER_SYSTEM"
 			fi
@@ -1124,6 +1130,26 @@ function __download() {
 	else
 		echo "** ERROR downloading $URL"
 	fi
+}
+
+# when --strip-components option on tar does not exist
+function __untar-strip() {
+	local zip=$1
+	local dest=${2:-.}
+	local temp=$(mktmpdir)
+
+	cd "$temp"
+	tar xzf "$FILE_PATH"
+
+	shopt -s dotglob
+	local f=("$temp"/*)
+
+	if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
+			mv "$temp"/*/* "$dest"
+	else
+			mv "$temp"/* "$dest"
+	fi
+	rm -Rf "$temp"
 }
 
 function __unzip-strip() (
@@ -1378,9 +1404,7 @@ function __argparse(){
 	$PARAMETERS
 	"
 
-
 	#GETOPT_CMD is an env variable we can choose a getopt command instead of default "getopt"
-
 
 	# Debug mode
 	#export ARGP_DEBUG=1

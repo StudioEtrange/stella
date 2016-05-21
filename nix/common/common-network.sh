@@ -103,6 +103,7 @@ function __proxy_override() {
 	# use_proxy = on
 	# wait = 15
 	function wget() {
+		# NOTE a lot of these wget option do not exist on different wget version
 		[ ! "$STELLA_PROXY_USER" == "" ] && command wget --wait=15 --http-proxy="$STELLA_HTTP_PROXY" --https-proxy="$STELLA_HTTPS_PROXY" --proxy-user="$STELLA_PROXY_USER" --proxy-password="$STELLA_PROXY_PASS" "$@"
 		[ "$STELLA_PROXY_USER" == "" ] && command wget --wait=15 --http-proxy="$STELLA_HTTP_PROXY" --https-proxy="$STELLA_HTTPS_PROXY" --proxy-user="$STELLA_PROXY_USER" --proxy-password="$STELLA_PROXY_PASS" "$@"
 	}
@@ -180,7 +181,12 @@ function __proxy_override() {
 			shift 1
 			command docker-machine create --engine-env http_proxy="$STELLA_HTTP_PROXY" --engine-env https_proxy="$STELLA_HTTPS_PROXY" --engine-env no_proxy="$STELLA_NO_PROXY" "$@"
 		else
-			command docker-machine "$@"
+			if [ "$1" == "env" ]; then
+				__no_proxy_for $(docker-machine ip $2) 1>/dev/null
+				command docker-machine "$@"
+			else
+			  command docker-machine "$@"
+			fi
 		fi
 	}
 

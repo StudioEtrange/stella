@@ -42,7 +42,7 @@ case $ACTION in
 	remove)
 		__feature_remove $ID
 		;;
-    install)
+  install)
 		[ ! "$BUILDARCH" == "" ] && __set_build_mode_default "ARCH" "$BUILDARCH"
 		case $ID in
 			*)

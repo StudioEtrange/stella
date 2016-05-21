@@ -39,7 +39,7 @@ function __get_os_from_distro() {
 		boot2docker*)
 			echo "linuxgeneric"
 			;;
-		Alpine|alpine*)
+		Alpine*|alpine*)
 			echo "alpine"
 			;;
 		"Mac OS X"|macos)
@@ -99,7 +99,6 @@ function __set_current_platform_info() {
 	STELLA_CURRENT_OS=$(__get_os_from_distro "$distro")
 	STELLA_CURRENT_PLATFORM=$(__get_platform_from_os "$STELLA_CURRENT_OS")
 	STELLA_CURRENT_PLATFORM_SUFFIX=$(__get_platform_suffix "$STELLA_CURRENT_PLATFORM")
-
 
 	# linux
 	if [[ -n `which nproc 2> /dev/null` ]]; then
@@ -197,6 +196,7 @@ function __ask_install_requirements() {
 }
 
 
+# TODO
 function __stella_requirement() {
 	case $STELLA_CURRENT_OS in
 		*);;
@@ -328,8 +328,11 @@ function __sys_package_manager() {
 	if [ "$_action" == "INSTALL" ]; then
 		case $_package_manager in
 			apt-get)
-				sudo -E apt-get update
-				sudo -E apt-get -y install $_packages
+				type sudo &>/dev/null && \
+					sudo -E apt-get update && \
+					sudo -E apt-get -y install $_packages || \
+					apt-get update && \
+					apt-get -y install $_packages
 				;;
 			brew)
 				brew install $_packages
@@ -351,8 +354,11 @@ function __sys_package_manager() {
 	if [ "$_action" == "REMOVE" ]; then
 		case $_package_manager in
 			apt-get)
-				sudo -E apt-get update
-				sudo -E apt-get -y autoremove --purge $_packages
+				type sudo &>/dev/null && \
+					sudo -E apt-get update && \
+					sudo -E apt-get -y autoremove --purge $_packages || \
+					apt-get update && \
+					apt-get -y autoremove --purge $_packages
 				;;
 			brew)
 				brew uninstall $_packages
@@ -437,14 +443,14 @@ function __sys_install_build-chain-standard() {
 
 	else
 		#bison util-linux build-essential gcc-multilib g++-multilib g++ pkg-config
-		__sys_package_manager "INSTALL" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib | yum gcc gcc-c++ make kernel-devel"
+		__sys_package_manager "INSTALL" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib | yum gcc gcc-c++ make kernel-devel | apk gcc g++ make"
 	fi
 }
 function __sys_remove_build-chain-standard() {
 	if [ "$STELLA_CURRENT_OS" == "macos" ]; then
 		echo " ** Remove Xcode and Command Line Development Tools by hand"
 	else
-		__sys_package_manager "REMOVE" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib | yum gcc gcc-c++ make kernel-devel"
+		__sys_package_manager "REMOVE" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib | yum gcc gcc-c++ make kernel-devel | apk gcc g++ make"
 	fi
 
 }

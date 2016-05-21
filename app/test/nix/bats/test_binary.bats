@@ -48,147 +48,134 @@ __test_prepare_dynamic_lib_file_darwin() {
 	assert_failure
 }
 
-@test "__is_darwin_bin" {
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-		_test_file="$(__test_prepare_bin_file)"
+# DARWIN ----------------------------------------------------------------
+@test "__is_bin" {
+	_test_file="$(__test_prepare_bin_file)"
 
-		run __is_darwin_bin "$_test_file"
-		assert_output "TRUE"
+	run __is_bin "$_test_file"
+	assert_output "TRUE"
 
-		__test_clean_file "$_test_file"
-	fi
+	__test_clean_file "$_test_file"
 }
-
 
 # DARWIN : INSTALL NAME --------------------------------
 @test "__get_install_name_darwin" {
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-
-		run __get_install_name_darwin "/usr/lib/libz.1.dylib"
-		assert_output "/usr/lib/libz.1.dylib"
-
-	fi
+	[ "$STELLA_CURRENT_PLATFORM" != "darwin" ] && skip
+	run __get_install_name_darwin "/usr/lib/libz.1.dylib"
+	assert_output "/usr/lib/libz.1.dylib"
 }
 
 @test "__tweak_install_name_darwin" {
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-		_test_file="$(__test_prepare_dynamic_lib_file_darwin)"
+	[ "$STELLA_CURRENT_PLATFORM" != "darwin" ] && skip
+	_test_file="$(__test_prepare_dynamic_lib_file_darwin)"
 
-		run __tweak_install_name_darwin "$_test_file" "PATH"
-		assert_success
-		run __get_install_name_darwin "$_test_file"
-		assert_output "$_test_file"
+	run __tweak_install_name_darwin "$_test_file" "PATH"
+	assert_success
+	run __get_install_name_darwin "$_test_file"
+	assert_output "$_test_file"
 
-		run __tweak_install_name_darwin "$_test_file" "RPATH"
-		assert_success
-		run __get_install_name_darwin "$_test_file"
-		assert_output "@rpath/libz.1.dylib"
+	run __tweak_install_name_darwin "$_test_file" "RPATH"
+	assert_success
+	run __get_install_name_darwin "$_test_file"
+	assert_output "@rpath/libz.1.dylib"
 
-		__test_clean_file "$_test_file"
-	fi
+	__test_clean_file "$_test_file"
 }
 
 
-# DARWIN : RPATH --------------------------------
-@test "__get_rpath_darwin" {
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-		_test_file="$(__test_prepare_bin_file)"
+# RPATH --------------------------------
+@test "__get_rpath" {
+	_test_file="$(__test_prepare_bin_file)"
 
-		run __get_rpath_darwin "$_test_file"
-		assert_output ""
+	run __get_rpath "$_test_file"
+	assert_output ""
 
-		__test_clean_file "$_test_file"
-	fi
+	__test_clean_file "$_test_file"
 }
 
-@test "__add_rpath_darwin AND __remove_all_rpath_darwin" {
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-		_test_file="$(__test_prepare_bin_file)"
 
-		run __remove_all_rpath_darwin "$_test_file"
-		run __get_rpath_darwin "$_test_file"
-		assert_output ""
+@test "__add_rpath AND __remove_all_rpath" {
+	_test_file="$(__test_prepare_bin_file)"
 
-		run __add_rpath_darwin "$_test_file" "test/rpath1 test/rpath2" "FIRST"
-		assert_success
+	run __remove_all_rpath "$_test_file"
+	run __get_rpath "$_test_file"
+	assert_output ""
 
-		run __get_rpath_darwin "$_test_file"
-		assert_output "test/rpath1 test/rpath2"
+	run __add_rpath "$_test_file" "test/rpath1 test/rpath2" "FIRST"
+	assert_success
 
-		run __add_rpath_darwin "$_test_file" "test/rpath3" "LAST"
-		assert_success
+	run __get_rpath "$_test_file"
+	assert_output "test/rpath1 test/rpath2"
 
-		run __get_rpath_darwin "$_test_file"
-		assert_output "test/rpath1 test/rpath2 test/rpath3"
+	run __add_rpath "$_test_file" "test/rpath3" "LAST"
+	assert_success
 
-		run __remove_all_rpath_darwin "$_test_file"
-		run __get_rpath_darwin "$_test_file"
-		assert_output ""
+	run __get_rpath "$_test_file"
+	assert_output "test/rpath1 test/rpath2 test/rpath3"
 
-		__test_clean_file "$_test_file"
-	fi
+	run __remove_all_rpath "$_test_file"
+	run __get_rpath "$_test_file"
+	assert_output ""
+
+	__test_clean_file "$_test_file"
 }
 
 
 @test "__tweak_rpath_darwin" {
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-		_test_file="$(__test_prepare_bin_file)"
-		_root_path="$(__get_path_from_string $_test_file)"
+	[ "$STELLA_CURRENT_PLATFORM" != "darwin" ] && skip
+	_test_file="$(__test_prepare_bin_file)"
+	_root_path="$(__get_path_from_string $_test_file)"
 
-		run __remove_all_rpath_darwin "$_test_file"
-		run __get_rpath_darwin "$_test_file"
-		assert_output ""
+	run __remove_all_rpath "$_test_file"
+	run __get_rpath "$_test_file"
+	assert_output ""
 
-		run __add_rpath_darwin "$_test_file" "test/rpath1 ./rpath2"
-		assert_success
-		run __get_rpath_darwin "$_test_file"
-		assert_output "test/rpath1 ./rpath2"
-
-
-		run __tweak_rpath_darwin "$_test_file" "ABS_RPATH"
-		assert_success
-		run __get_rpath_darwin "$_test_file"
-		assert_output "$_root_path/test/rpath1 $_root_path/rpath2"
+	run __add_rpath "$_test_file" "test/rpath1 ./rpath2"
+	assert_success
+	run __get_rpath "$_test_file"
+	assert_output "test/rpath1 ./rpath2"
 
 
-		run __add_rpath_darwin "$_test_file" "test/rpath3"
-		assert_success
-		run __get_rpath_darwin "$_test_file"
-		assert_output "test/rpath3 $_root_path/test/rpath1 $_root_path/rpath2"
+	run __tweak_rpath_darwin "$_test_file" "ABS_RPATH"
+	assert_success
+	run __get_rpath "$_test_file"
+	assert_output "$_root_path/test/rpath1 $_root_path/rpath2"
 
-		run __tweak_rpath_darwin "$_test_file" "REL_RPATH"
-		assert_success
-		run __get_rpath_darwin "$_test_file"
-		assert_output "test/rpath3 @loader_path/test/rpath1 @loader_path/rpath2"
 
-		__test_clean_file "$_test_file"
-	fi
+	run __add_rpath "$_test_file" "test/rpath3"
+	assert_success
+	run __get_rpath "$_test_file"
+	assert_output "test/rpath3 $_root_path/test/rpath1 $_root_path/rpath2"
+
+	run __tweak_rpath_darwin "$_test_file" "REL_RPATH"
+	assert_success
+	run __get_rpath "$_test_file"
+	assert_output "test/rpath3 @loader_path/test/rpath1 @loader_path/rpath2"
+
+	__test_clean_file "$_test_file"
 }
 
 
 
-# DARWIN : LINKED LIB --------------------------------
-
+# LINKED LIB --------------------------------
 @test "__get_linked_lib_darwin" {
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-		_test_file="$(__test_prepare_bin_file_linked)"
+	[ "$STELLA_CURRENT_PLATFORM" != "darwin" ] && skip
+	_test_file="$(__test_prepare_bin_file_linked)"
 
-		run __get_linked_lib_darwin "$_test_file"
-		assert_output ""
+	run __get_linked_lib_darwin "$_test_file"
+	assert_output ""
 
-		__test_clean_file "$_test_file"
-	fi
+	__test_clean_file "$_test_file"
 }
 
 
 @test "__check_linked_lib_darwin" {
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-		_test_file="$(__test_prepare_bin_file_linked)"
+	[ "$STELLA_CURRENT_PLATFORM" != "darwin" ] && skip
+	_test_file="$(__test_prepare_bin_file_linked)"
 
-		run __check_linked_lib_darwin "$_test_file"
-		assert_output_not_contains "WARN"
-		assert_success
+	run __check_linked_lib_darwin "$_test_file"
+	assert_output_not_contains "WARN"
+	assert_success
 
-		__test_clean_file "$_test_file"
-	fi
+	__test_clean_file "$_test_file"
 }

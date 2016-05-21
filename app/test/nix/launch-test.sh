@@ -5,7 +5,6 @@ source $_CURRENT_FILE_DIR/stella-link.sh include
 
 __require "bats" "bats#SNAPSHOT" "PREFER_STELLA"
 
-
 function test_launch_bats() {
 	local domain=$1
 
@@ -14,7 +13,7 @@ function test_launch_bats() {
   declare -f >>"$_v"
 
 	#bats --verbose test_binary.bats
-	__BATS_STELLA_DECLARE="$_v" bats "bats/test_$domain".bats
+	__BATS_STELLA_DECLARE="$_v" bats "$STELLA_APP_ROOT/bats/test_$domain".bats
 
   rm -f "$_v"
 }

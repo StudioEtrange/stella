@@ -1,4 +1,4 @@
-if [ ! "$_R_INCLUDED_" == "1" ]; then 
+if [ ! "$_R_INCLUDED_" == "1" ]; then
 _R_INCLUDED_=1
 
 
@@ -23,7 +23,7 @@ function feature_r() {
 
 function feature_r_3_2_2() {
 	FEAT_VERSION=3_2_2
-	
+
 	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 bzip2#1_0_6 gmp#6_0_0a"
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -58,14 +58,14 @@ function feature_r_darwin() {
 	# https://github.com/Homebrew/homebrew-science/blob/master/r.rb
 
 	# gfortran
-	# NOTE gfortran-4.2.3 recommanded by http://r.research.att.com/tools/ does not work 
+	# NOTE gfortran-4.2.3 recommanded by http://r.research.att.com/tools/ does not work
 	# -- so we use gfortran 4.8.2 as recipe from R evolution R : https://github.com/RevolutionAnalytics/RRO/blob/fe7546d74b6306d23c14c58ffdf26e08ceed1d14/RRO-src/OSX/build-setup.sh
 
 	# MAIN INSPIRATION : https://github.com/RevolutionAnalytics/RRO/blob/d9aca68f3231473c7cee28f065630c14efd61c74/RRO-src/OSX/build-OSX.sh
 	# and https://github.com/RevolutionAnalytics/RRO/blob/fe7546d74b6306d23c14c58ffdf26e08ceed1d14/RRO-src/OSX/build-setup.sh
 
 
-	# download	
+	# download
 	__get_resource "gfortran darwin" "http://coudert.name/software/gfortran-5.2-Yosemite.dmg" "HTTP" "$STELLA_APP_CACHE_DIR"
 
 
@@ -75,6 +75,7 @@ function feature_r_darwin() {
 	mkdir -p "$SRC_DIR"/gfortran
 	cd "$SRC_DIR"/gfortran
 	hdiutil mount "$STELLA_APP_CACHE_DIR/gfortran-5.2-Yosemite.dmg"
+	# TODO use function uncompress
 	tar xzf "/Volumes/gfortran-5.2-Yosemite/gfortran-5.2-Yosemite/gfortran.pkg/Contents/Archive.pax.gz" --strip-components=4
 	hdiutil unmount "/Volumes/gfortran-5.2-Yosemite"
 
@@ -108,13 +109,13 @@ function feature_r_darwin() {
 function feature_r_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
+
 	__set_toolset "STANDARD"
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
-	
-	
+
+
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
 	AUTO_INSTALL_CONF_FLAG_POSTFIX=
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
@@ -122,7 +123,7 @@ function feature_r_install_source() {
 
 	__feature_callback
 
-	
+
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP NO_OUT_OF_TREE_BUILD"
 
 
