@@ -48,6 +48,7 @@ source $STELLA_COMMON/common-platform.sh
 source $STELLA_COMMON/common.sh
 source $STELLA_COMMON/common-feature.sh
 source $STELLA_COMMON/common-app.sh
+source $STELLA_COMMON/lib-parse-bin.sh
 source $STELLA_COMMON/common-binary.sh
 source $STELLA_COMMON/common-build.sh
 source $STELLA_COMMON/common-api.sh
@@ -115,8 +116,8 @@ done
 
 # SYS PACKAGE --------------------------------------------
 # list of available installable system package
-[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && STELLA_SYS_PACKAGE_LIST="brew x11 build-chain-standard sevenzip wget curl unzip cmake"
-[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && STELLA_SYS_PACKAGE_LIST="build-chain-standard sevenzip wget curl unzip cmake"
+[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && STELLA_SYS_PACKAGE_LIST="git brew x11 build-chain-standard sevenzip wget curl unzip cmake"
+[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && STELLA_SYS_PACKAGE_LIST="git build-chain-standard sevenzip wget curl unzip cmake"
 
 
 

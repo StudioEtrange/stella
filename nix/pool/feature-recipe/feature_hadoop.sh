@@ -1,4 +1,4 @@
-if [ ! "$_hadoop_INCLUDED_" == "1" ]; then 
+if [ ! "$_hadoop_INCLUDED_" == "1" ]; then
 _hadoop_INCLUDED_=1
 
 
@@ -6,7 +6,7 @@ _hadoop_INCLUDED_=1
 function feature_hadoop() {
 	FEAT_NAME=hadoop
 	FEAT_LIST_SCHEMA="2_7_2:binary 2_6_4:binary"
-	FEAT_DEFAULT_VERSION=2_6_4
+	FEAT_DEFAULT_VERSION=2_7_2
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }

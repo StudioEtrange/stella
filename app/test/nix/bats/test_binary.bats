@@ -49,10 +49,10 @@ __test_prepare_dynamic_lib_file_darwin() {
 }
 
 # DARWIN ----------------------------------------------------------------
-@test "__is_bin" {
+@test "__is_object_bin" {
 	_test_file="$(__test_prepare_bin_file)"
 
-	run __is_bin "$_test_file"
+	run __is_object_bin "$_test_file"
 	assert_output "TRUE"
 
 	__test_clean_file "$_test_file"
@@ -121,7 +121,7 @@ __test_prepare_dynamic_lib_file_darwin() {
 }
 
 
-@test "__tweak_rpath_darwin" {
+@test "__tweak_rpath" {
 	[ "$STELLA_CURRENT_PLATFORM" != "darwin" ] && skip
 	_test_file="$(__test_prepare_bin_file)"
 	_root_path="$(__get_path_from_string $_test_file)"
@@ -136,7 +136,7 @@ __test_prepare_dynamic_lib_file_darwin() {
 	assert_output "test/rpath1 ./rpath2"
 
 
-	run __tweak_rpath_darwin "$_test_file" "ABS_RPATH"
+	run __tweak_rpath "$_test_file" "ABS_RPATH"
 	assert_success
 	run __get_rpath "$_test_file"
 	assert_output "$_root_path/test/rpath1 $_root_path/rpath2"
@@ -147,7 +147,7 @@ __test_prepare_dynamic_lib_file_darwin() {
 	run __get_rpath "$_test_file"
 	assert_output "test/rpath3 $_root_path/test/rpath1 $_root_path/rpath2"
 
-	run __tweak_rpath_darwin "$_test_file" "REL_RPATH"
+	run __tweak_rpath "$_test_file" "REL_RPATH"
 	assert_success
 	run __get_rpath "$_test_file"
 	assert_output "test/rpath3 @loader_path/test/rpath1 @loader_path/rpath2"
@@ -158,22 +158,21 @@ __test_prepare_dynamic_lib_file_darwin() {
 
 
 # LINKED LIB --------------------------------
-@test "__get_linked_lib_darwin" {
-	[ "$STELLA_CURRENT_PLATFORM" != "darwin" ] && skip
+@test "__get_linked_lib" {
 	_test_file="$(__test_prepare_bin_file_linked)"
 
-	run __get_linked_lib_darwin "$_test_file"
+	run __get_linked_lib "$_test_file"
 	assert_output ""
 
 	__test_clean_file "$_test_file"
 }
 
 
-@test "__check_linked_lib_darwin" {
+@test "__check_linked_lib" {
 	[ "$STELLA_CURRENT_PLATFORM" != "darwin" ] && skip
 	_test_file="$(__test_prepare_bin_file_linked)"
 
-	run __check_linked_lib_darwin "$_test_file"
+	run __check_linked_lib "$_test_file"
 	assert_output_not_contains "WARN"
 	assert_success
 

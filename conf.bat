@@ -94,7 +94,7 @@ set "NPM=npm"
 
 
 :: FEATURE LIST ---------------------------------------------
-set "__STELLA_FEATURE_LIST=rust tcpview libsquish bzip2 diffutils jpeg curl libogg mode-export freetype libpng zlib git docker-swarm socat nginx mingw-w64 go-build-chain go-crosscompile-chain go docker-bundle docker docker-machine oracle-jdk maven spark nikpeviewer dependencywalker conemu goconfig-cli ninja jom cmake packer perl ruby rubydevkit nasm python vagrant openssh wget unzip sevenzip patch gnumake"
+set "__STELLA_FEATURE_LIST=wsusoffline rust tcpview libsquish bzip2 diffutils jpeg curl libogg mode-export freetype libpng zlib git docker-swarm socat nginx mingw-w64 go-build-chain go-crosscompile-chain go docker-bundle docker docker-machine oracle-jdk maven spark nikpeviewer dependencywalker conemu goconfig-cli ninja jom cmake packer perl ruby rubydevkit nasm python vagrant openssh wget unzip sevenzip patch gnumake"
 
 :: SYS PACKAGE --------------------------------------------
 :: list of available installable system package
@@ -102,7 +102,7 @@ set "STELLA_SYS_PACKAGE_LIST=chocolatey vs2015community"
 
 
 :: BUILD SYSTEM---------------------------------------------
-:: Define linking mode. 
+:: Define linking mode.
 :: have an effect only for feature linked with link_feature_libray (do not ovveride specific FORCE_STATIC or FORCE_DYNAMIC)
 :: DEFAULT | STATIC | DYNAMIC
 call %STELLA_COMMON%\common-build.bat :set_build_mode_default "LINK_MODE" "DEFAULT"
@@ -124,7 +124,7 @@ call %STELLA_COMMON%\common-build.bat :set_build_mode_default "RELOCATE" "OFF"
 :: supported build toolset
 REM CONFIG TOOL | BUILD TOOL 		| COMPIL FRONTEND
 REM    cmake	|	ninja	 		|   gcc 	===> depend on env CC or CMAKE_C_COMPILER (path or exe name)
-REM    cmake	|	ninja	 		|   cl 		===> 
+REM    cmake	|	ninja	 		|   cl 		===>
 REM    cmake	|	nmake	 		|   cl
 REM    cmake	|	jom		 		|   ?
 REM    cmake	|	mingw-make		|   gcc

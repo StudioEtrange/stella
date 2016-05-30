@@ -2,7 +2,7 @@
 call %*
 goto :eof
 
-
+REM TODO update this version to INTERNAL version (see wget recipe)
 
 :feature_unzip
 	set "FEAT_NAME=unzip"
@@ -15,7 +15,7 @@ goto :eof
 
 :feature_unzip_5_51_1
 	set "FEAT_VERSION=5_51_1"
-	
+
 	set FEAT_SOURCE_DEPENDENCIES=
 	set FEAT_BINARY_DEPENDENCIES=
 

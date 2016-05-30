@@ -7,19 +7,25 @@ _STELLA_BOOT_INCLUDED_=1
 # When docker/dm
 #     stella requirement are installed
 #     stella is mounted on /
+#     stella env file is conserved
 #     current folder is stella_root or <path>
 #     script to execute is mounted on /<script.sh>
+
+# When dm
+#     if -f option is used then docker-machine is created
 
 # When ssh
 #     stella requirement are not installed
 #     current folder is <path> or default path when logging in ssh
 #     stella is sync in <path>/stella or default path/stella
+#     stella env file is conserved
 #     script is sync in <path>/<script.sh> or default_path/<script.sh>
 
 # When local
 #     stella requirement are not installed
 #     current folder do not change
 #     stella do not move
+#     stella env file is conserved
 #     script to execute do not move
 
 # MAIN FUNCTION -----------------------------------------
@@ -93,8 +99,9 @@ function __boot_stella() {
 
       if [ "$__stella_uri_schema" == "dm" ]; then
         __require "docker-machine" "docker-machine" "PREFER_SYSTEM"
-        # docker-machine create -d virtualbox $__stella_uri_host
-        # eval $(docker-machine env --no-proxy $__stella_uri_host)
+        [ ! -z "$FORCE" ] && docker-machine create --driver virtualbox $__stella_uri_host
+        docker-machine start $__stella_uri_host
+        # will also set docker-machine ip as no_proxy
         eval $(docker-machine env $__stella_uri_host)
       fi
 
@@ -135,15 +142,15 @@ function __boot_stella() {
 
       __require "ssh" "ssh" "PREFER_SYSTEM"
 
-      # [user@]host[:port][/#abs_or_rel_path]
-      __transfert_stella "$_uri"
+      __transfert_stella "$_uri" "ENV"
 
       # folders
       [ "$__stella_uri_fragment" == "" ] && __stella_uri_fragment="."
       [ "$__stella_uri_fragment" == "#" ] && __stella_uri_fragment="."
       [ ! "$__stella_uri_fragment" == "." ] && __stella_uri_fragment=${__stella_uri_fragment:1}
       local _boot_folder="$__stella_uri_fragment"
-      local _stella_folder="$__stella_uri_fragment"/stella
+      #local _stella_folder="$__stella_uri_fragment"/stella
+      local _stella_folder="./stella"
       local _boot_script_path="$__stella_uri_fragment/$(__get_filename_from_string $_arg)"
 
       # http://www.cyberciti.biz/faq/linux-unix-bsd-sudo-sorry-you-must-haveattytorun/
@@ -159,7 +166,12 @@ function __boot_stella() {
           ssh -t -p "$_ssh_port" "$_ssh_user$__stella_uri_host" "cd $_boot_folder && $_stella_folder/stella.sh stella install dep && $_stella_folder/stella.sh boot script local -- '$_boot_script_path'"
           ;;
         esac
-      ;;
+    ;;
+
+
+    vagrant)
+      echo TODO
+    ;;
 
   esac
 

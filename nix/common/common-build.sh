@@ -1359,6 +1359,7 @@ function __set_build_env() {
 
 # INSPECT BUILD ------------------------------------------------------------------------------------------------------------------------------
 # inspect and fix files built by stella
+# TODO review ?
 function __inspect_and_fix_build() {
 	local path="$1"
 	local OPT="$2"
@@ -1413,21 +1414,18 @@ function __check_built_files() {
 
 
 	if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
-		#__check_binary_files "$path" "$OPT RELOCATE ARCH $STELLA_BUILD_ARCH MISSING_RPATH $STELLA_BUILD_RPATH"
-		__check_binary_files "$path" "$OPT RELOCATE"
+		__check_binary_files "$path" "$OPT RELOCATE ARCH $STELLA_BUILD_ARCH MISSING_RPATH $STELLA_BUILD_RPATH"
+		#__check_binary_files "$path" "$OPT RELOCATE"
 	else
-		# __check_binary_files "$path" "$OPT NON_RELOCATE ARCH $STELLA_BUILD_ARCH MISSING_RPATH $STELLA_BUILD_RPATH"
-		__check_binary_files "$path" "$OPT"
+		 __check_binary_files "$path" "$OPT NON_RELOCATE ARCH $STELLA_BUILD_ARCH MISSING_RPATH $STELLA_BUILD_RPATH"
+		#__check_binary_files "$path" "$OPT"
 	fi
 }
 
 
 
-
-
-
-
 # FIX BUILD ------------------------------------------------------------------------------------
+# TODO review ?
 function __fix_built_files() {
 	local path="$1"
 	local OPT="$2"
@@ -1466,7 +1464,7 @@ function __fix_built_files() {
 				if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
 					if [ ! "$(__get_extension_from_string $path)" == "a" ]; then
 						#__add_rpath "$path" "$STELLA_BUILD_RPATH"
-						__tweak_rpath_linux "$path" "REL_RPATH"
+						__tweak_rpath "$path" "REL_RPATH"
 					fi
 				fi
 				#[ ! "$(__get_extension_from_string $path)" == "a" ] && __fix_linked_lib_linux "$path" "REL_RPATH EXCLUDE_FILTER /System/Library|/usr/lib"

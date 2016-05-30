@@ -49,7 +49,7 @@ function feature_bats_install_source() {
 	#__set_toolset "STANDARD"
 
 
-	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE $SOURCE_OPTION"
+	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE"
 
 	cd "$SRC_DIR"
 	./install.sh "$INSTALL_DIR"

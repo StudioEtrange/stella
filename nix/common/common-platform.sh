@@ -215,11 +215,11 @@ function __require() {
 	local _id="$2" # feature name (for stella) or sys name (for package manager)
 	local _OPT="$3"
 
+	local _result=0
+
 	# OPTIONAL
 	# PREFER_SYSTEM
 	# PREFER_STELLA
-
-
 	local _opt_optional=OFF
 	local _opt_prefer_system=ON
 	local _opt_prefer_stella=OFF
@@ -231,11 +231,11 @@ function __require() {
 		[ "$o" == "PREFER_STELLA" ] && _opt_prefer_system=OFF && _opt_prefer_stella=ON
 	done
 
-
 	local _err=
-	if [[ ! -n `which $_artefact 2> /dev/null` ]]; then
-		_err=1
-	fi
+	# if [[ ! -n `which $_artefact 2> /dev/null` ]]; then
+	# 	_err=1
+	# fi
+	type $_artefact &>/dev/null || _err=1
 
 	if [ "$_err" == "1" ]; then
 		if [ "$_opt_optional" == "ON" ]; then
@@ -254,6 +254,7 @@ function __require() {
 			if [ "$_opt_prefer_system" == "ON" ]; then
 				echo "** ERROR -- Please install $_artefact"
 				echo "** Try stella.sh sys install $_id OR your regular OS package manager"
+				_result=1
 				exit 1
 			else
 				if [ "$_opt_prefer_stella" == "ON" ]; then
@@ -262,12 +263,14 @@ function __require() {
 					echo "** ERROR -- Please install $_artefact"
 					echo "-- For a system install : try stella.sh sys install $_id OR your regular OS package manager"
 					echo "-- For an install from Stella : try stella.sh feature install $_id"
+					_result=1
 					exit 1
 				fi
 			fi
 		fi
 	fi
 
+	return $_result
 }
 
 # PACKAGE SYSTEM ----------------------------
@@ -466,24 +469,24 @@ function __sys_remove_x11() {
 }
 
 function __sys_install_sevenzip() {
-	__sys_package_manager "INSTALL" "7z" "apt-get p7zip-full | brew p7zip | yum p7zip"
+	__sys_package_manager "INSTALL" "7z" "apt-get p7zip-full | brew p7zip | yum p7zip | apk p7zip"
 }
 function __sys_remove_sevenzip() {
-	__sys_package_manager "REMOVE" "7z" "apt-get p7zip-full | brew p7zip | yum p7zip"
+	__sys_package_manager "REMOVE" "7z" "apt-get p7zip-full | brew p7zip | yum p7zip | apk p7zip"
 }
 
 function __sys_install_curl() {
-	__sys_package_manager "INSTALL" "curl" "apt-get curl | brew curl | yum curl"
+	__sys_package_manager "INSTALL" "curl" "apt-get curl | brew curl | yum curl | apk curl"
 }
 function __sys_remove_curl() {
-	__sys_package_manager "REMOVE" "curl" "apt-get curl | brew curl | yum curl"
+	__sys_package_manager "REMOVE" "curl" "apt-get curl | brew curl | yum curl | apk curl"
 }
 
 function __sys_install_wget() {
-	__sys_package_manager "INSTALL" "wget" "apt-get wget | brew wget | yum wget"
+	__sys_package_manager "INSTALL" "wget" "apt-get wget | brew wget | yum wget | apk get"
 }
 function __sys_remove_wget() {
-	__sys_package_manager "REMOVE" "wget" "apt-get wget | brew wget | yum wget"
+	__sys_package_manager "REMOVE" "wget" "apt-get wget | brew wget | yum wget | apk get"
 }
 
 function __sys_install_unzip() {
@@ -494,10 +497,10 @@ function __sys_remove_unzip() {
 }
 
 function __sys_install_cmake() {
-	__sys_package_manager "INSTALL" "cmake" "apt-get cmake | brew cmake | yum cmake"
+	__sys_package_manager "INSTALL" "cmake" "apt-get cmake | brew cmake | yum cmake | apk cmake"
 }
 function __sys_remove_cmake() {
-	__sys_package_manager "REMOVE" "cmake" "apt-get cmake | brew cmake | yum cmake"
+	__sys_package_manager "REMOVE" "cmake" "apt-get cmake | brew cmake | yum cmake | apk cmake"
 }
 
 function __sys_install_git() {

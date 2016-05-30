@@ -15,7 +15,7 @@ goto :eof
 
 
 
-:feature_rust_1_17_1
+:feature_wget_1_17_1
 	set "FEAT_VERSION=1_17_1"
 
 
@@ -25,7 +25,7 @@ goto :eof
 	set FEAT_SOURCE_URL=
 	set FEAT_SOURCE_URL_FILENAME=
 	set FEAT_SOURCE_URL_PROTOCOL=
-	
+
 	set "FEAT_BINARY_URL_x64=https://eternallybored.org/misc/wget/releases/wget-1.17.1-win64.zip"
 	set "FEAT_BINARY_URL_FILENAME_x64=wget-1.17.1-win64.zip"
 	set "FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP"
@@ -58,7 +58,7 @@ goto :eof
 	set "FEAT_BINARY_URL_x86=%STELLA_ARTEFACT%\wget-1.17.1-win32.zip"
 	set "FEAT_BINARY_URL_FILENAME_x86=wget-1.17.1-win32.zip"
 	set "FEAT_BINARY_URL_PROTOCOL_x86=FILE_ZIP"
-	
+
 	set FEAT_SOURCE_CALLBACK=
 	set FEAT_BINARY_CALLBACK=
 	set FEAT_ENV_CALLBACK=
@@ -70,9 +70,5 @@ goto :eof
 
 
 :feature_wget_install_binary
-	call %STELLA_COMMON%\common.bat :get_resource "!FEAT_NAME!" "!FEAT_BINARY_URL!" "!FEAT_BINARY_URL_PROTOCOL!" "!FEAT_INSTALL_ROOT!" "STRIP FORCE_NAME !FEAT_BINARY_URL_FILENAME!"	
+	call %STELLA_COMMON%\common.bat :get_resource "!FEAT_NAME!" "!FEAT_BINARY_URL!" "!FEAT_BINARY_URL_PROTOCOL!" "!FEAT_INSTALL_ROOT!" "STRIP FORCE_NAME !FEAT_BINARY_URL_FILENAME!"
 goto :eof
-
-
-
-

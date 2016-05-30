@@ -668,8 +668,7 @@ function __abs_to_rel_path() {
 
 }
 
-
-
+# init stella environment
 function __init_stella_env() {
 	__feature_init_installed
 	# PROXY
@@ -1056,9 +1055,9 @@ function __uncompress() {
 			;;
 		*.xz | *.bz2)
 			if [ "$_opt_strip" == "OFF" ]; then
-				tar xzf "$FILE_PATH"
+				tar xf "$FILE_PATH"
 			else
-				tar xzf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-strip "$FILE_PATH" "$UNZIP_DIR"
+				tar xf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-strip "$FILE_PATH" "$UNZIP_DIR"
 			fi
 			;;
 		*.7z)
@@ -1103,10 +1102,14 @@ function __download() {
 
 		# NOTE : curl seems to be more compatible
 		if [[ -n `which curl 2> /dev/null` ]]; then
-			curl -fSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL" || curl -fkSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL"
+			curl -fSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL" || \
+			curl -fkSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL" || \
+			rm -f "$STELLA_APP_CACHE_DIR/$FILE_NAME"
 		else
 			if [[ -n `which wget 2> /dev/null` ]]; then
-				wget "$URL" -O "$STELLA_APP_CACHE_DIR/$FILE_NAME" --no-check-certificate || rm -f "$STELLA_APP_CACHE_DIR/$FILE_NAME"
+				wget "$URL" -O "$STELLA_APP_CACHE_DIR/$FILE_NAME" --no-check-certificate || \
+				wget "$URL" -O "$STELLA_APP_CACHE_DIR/$FILE_NAME" || \
+				rm -f "$STELLA_APP_CACHE_DIR/$FILE_NAME"
 			else
 				__require "curl" "curl" "PREFER_SYSTEM"
 			fi

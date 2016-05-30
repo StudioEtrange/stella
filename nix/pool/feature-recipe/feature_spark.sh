@@ -1,16 +1,39 @@
-if [ ! "$_SPARK_INCLUDED_" == "1" ]; then 
+if [ ! "$_SPARK_INCLUDED_" == "1" ]; then
 _SPARK_INCLUDED_=1
 
 
 
 function feature_spark() {
 	FEAT_NAME=spark
-	FEAT_LIST_SCHEMA="1_3_0_HADOOP_2_4:binary 1_3_1_HADOOP_2_4:binary 1_4_0_HADOOP_2_4:binary 1_4_1_HADOOP_2_4:binary 1_5_1_HADOOP_2_4:binary 1_5_2_HADOOP_2_4:binary 1_5_2_HADOOP_2_6:binary 1_6_0_HADOOP_2_4:binary"
-	FEAT_DEFAULT_VERSION=1_3_1_HADOOP_2_4
+	FEAT_LIST_SCHEMA="1_3_0_HADOOP_2_4:binary 1_3_1_HADOOP_2_4:binary 1_4_0_HADOOP_2_4:binary 1_4_1_HADOOP_2_4:binary 1_5_1_HADOOP_2_4:binary 1_5_2_HADOOP_2_4:binary 1_5_2_HADOOP_2_6:binary 1_6_0_HADOOP_2_4:binary 1_6_0:binary 1_6_1:binary"
+	FEAT_DEFAULT_VERSION=1_6_0_HADOOP_2_4
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
+
+function feature_spark_1_6_1() {
+	FEAT_VERSION=1_6_1
+
+	FEAT_BINARY_URL=http://archive.apache.org/dist/spark/spark-1.6.1/spark-1.6.1-bin-without-hadoop.tgz
+	FEAT_BINARY_URL_FILENAME=spark-1.6.1-bin-without-hadoop.tgz
+	FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/spark-shell
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin:"$FEAT_INSTALL_ROOT"/sbin
+
+}
+
+function feature_spark_1_6_0() {
+	FEAT_VERSION=1_6_0
+
+	FEAT_BINARY_URL=http://archive.apache.org/dist/spark/spark-1.6.0/spark-1.6.0-bin-without-hadoop.tgz
+	FEAT_BINARY_URL_FILENAME=spark-1.6.0-bin-without-hadoop.tgz
+	FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/spark-shell
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin:"$FEAT_INSTALL_ROOT"/sbin
+}
 
 function feature_spark_1_6_0_HADOOP_2_4() {
 	FEAT_VERSION=1_6_0_HADOOP_2_4

@@ -161,8 +161,8 @@ function __proxy_override() {
 	# How to set proxy as env var inside docker-machine (ie : HTTP_PROXY)
 	# 		docker-machine create -d virtualbox --engine-env http_proxy=http://example.com:8080 --engine-env https_proxy=https://example.com:8080 --engine-env NO_PROXY=example2.com <machine-id>
 	# 		docker-machine create -d virtualbox --engine-env http_proxy=$STELLA_HTTP_PROXY --engine-env https_proxy=$STELLA_HTTPS_PROXY --engine-env NO_PROXY=$STELLA_NO_PROXY <machine-id>
-	# 		WARN : This will set /var/lib/boot2docker/profile with HTTP_PROXY ONLY for docker commands (not the other commands)
-	#			this file will will be used during the boot initialisation (after the automount) and before daemon start
+	# 		NOTE :
+	#				This will only affect docker daemon configuration file inside the VM machine (/var/lib/boot2docker/profile) and set some HTTP_PROXY env vars
 	# How to retrieve ip of docker-machine
 	# 		docker-machine ip <machine-id>
 	# How to setup docker to use a docker machine
@@ -182,8 +182,10 @@ function __proxy_override() {
 			command docker-machine create --engine-env http_proxy="$STELLA_HTTP_PROXY" --engine-env https_proxy="$STELLA_HTTPS_PROXY" --engine-env no_proxy="$STELLA_NO_PROXY" "$@"
 		else
 			if [ "$1" == "env" ]; then
-				__no_proxy_for $(docker-machine ip $2) 1>/dev/null
-				command docker-machine "$@"
+				echo "
+__no_proxy_for $(command docker-machine ip $2);
+$(command docker-machine "$@");
+"
 			else
 			  command docker-machine "$@"
 			fi
