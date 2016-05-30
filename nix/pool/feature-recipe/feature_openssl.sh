@@ -1,13 +1,13 @@
-if [ ! "$_OPENSSL_INCLUDED_" == "1" ]; then 
+if [ ! "$_OPENSSL_INCLUDED_" == "1" ]; then
 _OPENSSL_INCLUDED_=1
 
-# TODO 
+# TODO
 # Require perl (from system is enough), to configure source code
 # Require system "build-system"
 # build with an arch
 
 # NOTE : On darwin openssl lib in lib/engines folder does not have LC_ID_DYLIB
-	
+
 
 function feature_openssl() {
 	FEAT_NAME=openssl
@@ -56,7 +56,7 @@ function feature_openssl_install_source() {
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
-	
+
 	ARCH=$STELLA_BUILD_ARCH
 	[ "$ARCH" == "" ] && ARCH="x64"
 
@@ -103,7 +103,7 @@ function feature_openssl_install_source() {
 	# clean --------------------------------
 	rm -Rf $SRC_DIR
 
-	__inspect_and_fix_build "$INSTALL_DIR" "EXCLUDE_INSPECT /share/man/"
+	__inspect_and_fix_build "$INSTALL_DIR" "EXCLUDE_FILTER /share/man/"
 }
 
 

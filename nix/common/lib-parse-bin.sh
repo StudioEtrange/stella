@@ -1,6 +1,13 @@
 if [ ! "$_STELLA_LIB_BINARY_INCLUDED_" == "1" ]; then
 _STELLA_LIB_BINARY_INCLUDED_=1
 
+
+# GENERIC
+# __is_bin
+# __is_shareable_bin
+# __is_static_lib
+# __is_executable_or_shareable_bin
+
 # LINUX & MACOS :
 # 		hexdump -- not always present by default (see ubuntu official docker image)
 # 		od -- should always be present ?
@@ -26,6 +33,8 @@ _STELLA_LIB_BINARY_INCLUDED_=1
 # ./stella.sh boot cmd local -- '__info_bin /usr/lib/libQMIParser.a'
 
 
+# INSIDE Archive, it could be Elf OR Macho File
+#	INSIDE Macho Universal, it could be Archive OR MachO File
 
 # # Mach O ------------------------------------------------------
 # -------------
@@ -109,7 +118,7 @@ __MACHO_UNIVERSAL_HEADER_SIZE__=$((__FAT_HEADER_SIZE__ + 4 * __FAT_ARCH_SIZE__))
 __AR_HEADER_SIZE__=8
 __AR_OBJECT_HEADER_SIZE__=60
 # we extend ar object header for SYSTEM V wich put object name after header
-__AR_OBJECT_HEADER_EXTENDED_SIZE__=100
+__AR_OBJECT_HEADER_EXTENDED_SIZE__=120
 __ELF_HEADER_SIZE__=20
 
 # GENERIC ---------------------------------------------------------------
@@ -157,11 +166,11 @@ function __info_ar() {
 	echo "Magic : $(__ar_magic "$_header")"
 	# ENDIAN ---
 	echo "Endian : $(__ar_endian)"
+	# BITS ---
+	echo "Global Bits : $(__ar_bit "$_file" "$_offset")"
 	# NB OBJ ---
 	local _nbobj=$(__ar_nb_object "$_file" "$_offset" "$_size")
 	echo "Nb object : $_nbobj"
-	# TODO : __ar_global_arch ?
-	#echo "Global Arch : $(__ar_global_arch "$_file")"
 	local _ar_object_header
 	local _obj_pos
 	local _data_pos
@@ -203,6 +212,8 @@ function __info_macho() {
 	# MAGIC and ENDIAN ---
 	echo "Magic : $(__macho_magic "$_header")"
 	echo "Endian : $(__macho_endian "$_header")"
+	# BITS ---
+	echo "Bits : $(__macho_bit "$_header")"
 	# CPU TYPE ---
 	echo "CPU Type : $(__macho_cputype "$_header")"
 	# CPU SUBTYPE ---
@@ -272,6 +283,8 @@ function __info_elf() {
 	echo "Data : $(__elf_data "$_header")"
 	local _endian="$(__elf_endian "$_header")"
 	echo "Endian : $_endian"
+	# BITS ---
+	echo "Bits : $(__elf_bit "$_header")"
 	# VERSION (we skip this) (field 6)
 	# OS/ABI
 	echo "OS/ABI : $(__elf_osabi "$_header")"
@@ -281,6 +294,27 @@ function __info_elf() {
 	echo "File type : $(__elf_filetype "$_header")"
 	# MACHINE
 	echo "Machine : $(__elf_machine "$_header")"
+}
+
+function __bit_bin() {
+	local _file="$1"
+  # Usefull to read files in archive
+  local _offset="$2"
+  [ "$_offset" == "" ] && _offset=0
+	local _bit
+	local _type="$(__type_bin "$_file" "$_offset")"
+	case $_type in
+		FILE_MACHO )
+				_bit="$(__macho_bit "$(__macho_header "$_file" "$_offset")")"
+		;;
+		FILE_ELF )
+			_bit="$(__elf_bit "$(__macho_header "$_file" "$_offset")")"
+		;;
+		FILE_AR )
+			_bit="$(__ar_bit "$_file" "$_offset")"
+		;;
+	esac
+	echo "$_bit"
 }
 
 function __type_bin() {
@@ -312,15 +346,19 @@ function __is_macho_universal() {
 
 function __is_macho() {
   local _file="$1"
+	local _offset="$2"
+	[ "$_offset" == "" ] && _offset=0
   local _result=1
-  [[ "$(__type_bin "$_file")" =~ FILE_MACHO ]] && _result=0
+  [[ "$(__type_bin "$_file" "$_offset")" =~ FILE_MACHO ]] && _result=0
   return $_result
 }
 
 function __is_elf() {
   local _file="$1"
+	local _offset="$2"
+	[ "$_offset" == "" ] && _offset=0
   local _result=1
-  [[ "$(__type_bin "$_file")" =~ FILE_ELF ]] && _result=0
+  [[ "$(__type_bin "$_file" "$_offset")" =~ FILE_ELF ]] && _result=0
   return $_result
 }
 
@@ -330,6 +368,87 @@ function __is_archive() {
   local _result=1
   [[ "$(__type_bin "$_file")" =~ FILE_AR ]] && _result=0
   return $_result
+}
+
+
+
+# is a binary object (static lib, shared lib, executable)
+function __is_bin() {
+		local _file="$1"
+		local _result=1
+
+		if [ -f "$_file" ]; then
+			local _type_bin="$(__type_bin "$_file")"
+			case $_type_bin in
+				FILE_MACHO|FILE_MACHO_UNIVERSAL|FILE_AR|FILE_ELF)
+						_result=0
+					;;
+			esac
+		fi
+		return $_result
+}
+
+function __is_static_lib() {
+	local _file="$1"
+	local _result=1
+
+	if [ -f "$_file" ]; then
+		local _type_bin="$(__type_bin "$_file")"
+		case $_type_bin in
+			FILE_MACHO_UNIVERSAL)
+					[ "$(__macho_universal_global_filetype "$_file")" == "UNIXARCH" ] && _result=0
+				;;
+			FILE_AR)
+				_result=0
+				;;
+		esac
+	fi
+	return $_result
+}
+
+# object is shareable (shared lib or executable)
+# NOTE on linux it happens that executable file have DYN flag instead of EXEC flag
+# http://stackoverflow.com/a/34522357
+function __is_shareable_bin() {
+	local _file="$1"
+	local _result=1
+	if [ -f "$_file" ]; then
+		local _type_bin="$(__type_bin "$_file")"
+		case $_type_bin in
+			FILE_MACHO)
+					[[ "$(__macho_filetype "$(__macho_header "$_file")")" =~ MH_DYLIB ]] && _result=0
+				;;
+			FILE_MACHO_UNIVERSAL)
+					[[ "$(__macho_universal_global_filetype "$_file")" =~ MH_DYLIB ]] && _result=0
+				;;
+			FILE_ELF)
+					[[ "$(__elf_filetype "$(__elf_header "$_file")")" =~ ET_DYN ]] && _result=0
+				;;
+		esac
+	fi
+	return $_result
+}
+
+
+# dynamic lib and executable bin
+function __is_executable_or_shareable_bin() {
+	local _file="$1"
+	local _result=1
+	if [ -f "$_file" ]; then
+		local _type_bin="$(__type_bin "$_file")"
+		case $_type_bin in
+			FILE_MACHO)
+					[[ "$(__macho_filetype "$(__macho_header "$_file")")" =~ MH_EXECUTE|MH_DYLIB ]] && _result=0
+				;;
+			FILE_MACHO_UNIVERSAL)
+					[[ "$(__macho_universal_global_filetype "$_file")" =~ MH_EXECUTE|MH_DYLIB ]] && _result=0
+				;;
+			FILE_ELF)
+					[[ "$(__elf_filetype "$(__elf_header "$_file")")" =~ ET_EXEC|ET_DYN ]] && _result=0
+				;;
+		esac
+	fi
+	return $_result
 }
 
 
@@ -450,6 +569,17 @@ function __ar_endian() {
 	echo "BIG"
 }
 
+function __ar_bit() {
+	local _file="$1"
+	local _offset="$2"
+	# Pick object 2 inside ar because first one is often a symbol table
+	local _pos=$(__ar_object_data_pos "$_file" "2" "$_offset")
+	local _bit="32"
+	local _test="0"
+	__is_macho "$_file" "$_pos" && _test="1" && _bit="$(__macho_bit "$(__macho_header "$_file" "$_pos")")"
+	[ "$_test" == "0" ] && __is_elf "$_file" "$_pos" && _bit="$(__elf_bit "$(__elf_header "$_file" "$_pos")")"
+	echo "$_bit"
+}
 
 # we need offset and size in case of we are inside a macho Univeral Binary which may contains several archive
 function __ar_nb_object() {
@@ -653,6 +783,15 @@ function __macho_endian() {
   return 0
 }
 
+function __macho_bit() {
+	local _header="$1"
+	# TODO : do not base on magic but on CPU TYPE and CPU SUBTYPE ?
+  local _magic="$(__macho_magic "$_header")"
+	local _bit="32"
+	[[ $_magic =~ 64 ]] && _bit=64
+	echo "$_bit"
+}
+
 function __macho_cputype() {
   local _header="$1"
   local _endian="$(__macho_endian "$_header")"
@@ -753,6 +892,7 @@ function __macho_universal_nbarch() {
   echo $((_x_nb_arch))
   return 0
 }
+
 
 
 function __macho_universal_cputype() {
@@ -860,6 +1000,16 @@ function __elf_magic() {
   [ "$_opt" == "KEY" ] && echo "$_key_magic" || echo "$_format"
   return 0
 }
+
+
+function __elf_bit() {
+	local _header="$1"
+  local _class="$(__elf_class "$_header")"
+	local _bit="32"
+	[[ $_class =~ 64 ]] && _bit=64
+	echo "$_bit"
+}
+
 
 function __elf_class() {
   local _header="$1"

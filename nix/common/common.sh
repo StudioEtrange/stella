@@ -291,9 +291,9 @@ function __transfert_stella() {
 	local _uri="$1"
 
 	local _OPT="$2"
-	local _opt_ex_cache="EXCLUDE_FILTER stella/$(__abs_to_rel_path $STELLA_INTERNAL_CACHE_DIR $STELLA_ROOT)/"
-	local _opt_ex_workspace="EXCLUDE_FILTER stella/$(__abs_to_rel_path $STELLA_INTERNAL_WORK_ROOT $STELLA_ROOT)/"
-	local _opt_ex_env="EXCLUDE_FILTER stella/.stella-env"
+	local _opt_ex_cache="EXCLUDE stella/$(__abs_to_rel_path $STELLA_INTERNAL_CACHE_DIR $STELLA_ROOT)/"
+	local _opt_ex_workspace="EXCLUDE stella/$(__abs_to_rel_path $STELLA_INTERNAL_WORK_ROOT $STELLA_ROOT)/"
+	local _opt_ex_env="EXCLUDE stella/.stella-env"
 	for o in $_OPT; do
 		[ "$o" == "CACHE" ] && _opt_ex_cache=
 		[ "$o" == "WORKSPACE" ] && _opt_ex_workspace=
@@ -313,15 +313,15 @@ function __transfert_folder_rsync() {
 	local _folder="$1"
 	local _uri="$2"
 
-	# EXCLUDE_FILTER (repeat this option for each exclude filter to set)
+	# EXCLUDE (repeat this option for each exclude filter to set)
 	# FOLDER_CONTENT will transfer only folder content not folder itself
 	local _OPT="$3"
-	local _flag_exclude_filter=OFF
-	local _exclude_filter=
+	local _flag_exclude=OFF
+	local _exclude=
 	local _opt_folder_content=OFF
 	for o in $_OPT; do
-		[ "$_flag_exclude_filter" == "ON" ] && _exclude_filter="--exclude $o $_exclude_filter" && _flag_exclude_filter=OFF
-		[ "$o" == "EXCLUDE_FILTER" ] && _flag_exclude_filter=ON
+		[ "$_flag_exclude" == "ON" ] && _exclude="--exclude $o $_exclude" && _flag_exclude=OFF
+		[ "$o" == "EXCLUDE" ] && _flag_exclude_filter=ON
 		[ "$o" == "FOLDER_CONTENT" ] && _opt_folder_content=ON
 	done
 
@@ -344,7 +344,7 @@ function __transfert_folder_rsync() {
 		_folder="${_folder%/}"
 	fi
 
-	rsync $_exclude_filter --force --delete-excluded --delete -avz -e "ssh -p $_ssh_port" "$_folder" "$_target"
+	rsync $_exclude --force --delete-excluded --delete -avz -e "ssh -p $_ssh_port" "$_folder" "$_target"
 }
 
 

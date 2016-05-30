@@ -11,8 +11,8 @@ function __transfert_app(){
 	local _target=$1
 
 	local _OPT=$2
-	local _opt_ex_cache="EXCLUDE_FILTER /$(__abs_to_rel_path $STELLA_APP_CACHE_DIR $STELLA_APP_ROOT)/"
-	local _opt_ex_workspace="EXCLUDE_FILTER /$(__abs_to_rel_path $STELLA_APP_WORK_ROOT $STELLA_APP_ROOT)/"
+	local _opt_ex_cache="EXCLUDE /$(__abs_to_rel_path $STELLA_APP_CACHE_DIR $STELLA_APP_ROOT)/"
+	local _opt_ex_workspace="EXCLUDE /$(__abs_to_rel_path $STELLA_APP_WORK_ROOT $STELLA_APP_ROOT)/"
 	for o in $_OPT; do
 		[ "$o" == "CACHE" ] && _opt_ex_cache=
 		[ "$o" == "WORKSPACE" ] && _opt_ex_workspace=

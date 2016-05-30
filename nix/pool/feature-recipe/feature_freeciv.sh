@@ -83,7 +83,7 @@ function feature_freeciv_install_source() {
 
 	
 
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP BUILD_KEEP EXCLUDE_INSPECT /share"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP BUILD_KEEP EXCLUDE /share"
 	
 	
 

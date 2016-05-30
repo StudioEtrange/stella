@@ -147,7 +147,9 @@ function __auto_build() {
 	INSTALL_DIR="$3"
 	OPT="$4"
 	# DEBUG SOURCE_KEEP BUILD_KEEP NO_CONFIG NO_BUILD NO_OUT_OF_TREE_BUILD NO_inspect_and_fix_build NO_INSTALL
-	# EXCLUDE_INSPECT
+	# INCLUDE_FILTER <expr> -- include these files for inspect and fix
+	# EXCLUDE_FILTER <expr> -- exclude these files for inspect and fix
+	# INCLUDE_FILTER is apply first, before EXCLUDE_FILTER
 
 	# keep source code after build (default : FALSE)
 	local _opt_source_keep=
@@ -580,6 +582,7 @@ function __link_feature_library() {
 			;;
 	esac
 
+	# TODO do not base lib isolation on file extension but on result of function __is_*__bin from lib-parse-bin
 	if [ "$_flag_lib_isolation" == "TRUE" ]; then
 		echo "*** Isolate dependencies into $LIB_TARGET_FOLDER"
 		__del_folder "$LIB_TARGET_FOLDER"
@@ -587,15 +590,10 @@ function __link_feature_library() {
 		__copy_folder_content_into "$REQUIRED_LIB_ROOT"/"$_lib_folder" "$LIB_TARGET_FOLDER" "*"$LIB_EXTENSION"*"
 
 		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-			for f in "$LIB_TARGET_FOLDER"/*".dylib"*; do
-				if [ -f "$f" ]; then
-					[ "$STELLA_BUILD_RELOCATE" == "ON" ] && __tweak_install_name_darwin "$f" "RPATH"
-					[ "$STELLA_BUILD_RELOCATE" == "OFF" ] && __tweak_install_name_darwin "$f" "PATH"
-				fi
-			done
+			[ "$STELLA_BUILD_RELOCATE" == "ON" ] && __tweak_install_name_darwin "$LIB_TARGET_FOLDER" "RPATH"
+			[ "$STELLA_BUILD_RELOCATE" == "OFF" ] && __tweak_install_name_darwin "$LIB_TARGET_FOLDER" "PATH"
 		fi
 	fi
-
 
 	# RESULTS
 
@@ -694,8 +692,8 @@ function __export_env() {
 	if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
 		echo "*** We are in RELOCATION mode !"
 		if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+			# TODO REVIEW
 			__set_build_mode_default "RELOCATE" "OFF"
-			__require "patchelf" "patchelf" "PREFER_STELLA"
 			__set_build_mode_default "RELOCATE" "ON"
 			__set_build_mode "RELOCATE" "ON"
 		fi
@@ -731,9 +729,7 @@ function __export_env() {
 
 		if [ ! "$LINKED_LIBS_PATH" == "" ]; then
 			if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-				for f in "$LIB_TARGET_FOLDER"/*".dylib"*; do
-					[ -f "$f" ] && __tweak_install_name_darwin "$f" "RPATH"
-				done
+				__tweak_install_name_darwin "$LIB_TARGET_FOLDER" "RPATH"
 			fi
 			# TODO : NOTE : $ORIGIN may have problem on some systems, see : http://www.cmake.org/pipermail/cmake/2008-January/019290.html
 			if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
@@ -1352,35 +1348,40 @@ function __set_build_env() {
 	fi
 
 
-
-
 }
 
 
-# INSPECT BUILD ------------------------------------------------------------------------------------------------------------------------------
+# INSPECT CHECK and FIX BUILT FILES ------------------------------------------------------------------------------------------------------------------------------
 # inspect and fix files built by stella
-# TODO review ?
 function __inspect_and_fix_build() {
 	local path="$1"
 	local OPT="$2"
+	local _result=0
+
+	# INCLUDE_LINKED_LIB <expr> -- include these linked libs
+	# EXCLUDE_LINKED_LIB <expr> -- exclude these linked libs
+	# INCLUDE_LINKED_LIB is apply first, before EXCLUDE_LINKED_LIB
+	# INCLUDE_FILTER <expr> -- include these files
+	# EXCLUDE_FILTER <expr> -- exclude these files
+	# INCLUDE_FILTER is apply first, before EXCLUDE_FILTER
 
 	[ "$1" == "" ] && return
 
-	# EXCLUDE_INSPECT -- ignore these files
-
-	local _filter
-	local _flag_filter=OFF
+	local _flag_exclude_filter=OFF
+	local _exclude_filter=
+	local _invert_filter=
+	local _flag_include_filter=OFF
+	local _include_filter=
 	local _opt_filter=OFF
-
-
 	for o in $OPT; do
-		[ "$_flag_filter" == "ON" ] && _filter=$o && _flag_filter=OFF
-		[ "$o" == "EXCLUDE_INSPECT" ] && _flag_filter=ON && _opt_filter=ON
+		[ "$_flag_include_filter" == "ON" ] && _include_filter="$o" && _flag_include_filter=OFF
+		[ "$o" == "INCLUDE_FILTER" ] && _flag_include_filter=ON && _opt_filter=ON
+		[ "$_flag_exclude_filter" == "ON" ] && _exclude_filter="$o" && _flag_exclude_filter=OFF
+		[ "$o" == "EXCLUDE_FILTER" ] && _flag_exclude_filter=ON && _invert_filter="-Ev" && _opt_filter=ON
 	done
-
 	if [ "$_opt_filter" == "ON" ]; then
-		if [ ! "$(echo $path | grep -E "$_filter")" == "" ]; then
-			return
+		if [ ! "$(echo $path | grep -E "$_include_filter" | grep $_invert_filter $_exclude_filter)" == "" ]; then
+			return $_result
 		fi
 	fi
 
@@ -1391,116 +1392,45 @@ function __inspect_and_fix_build() {
 		done
 	fi
 
-
 	if [ -f "$path" ]; then
-
 		# fixing built files
 		__fix_built_files "$path" "$OPT"
-
 		# checking built files
-		# TODO remove function
-		__check_built_files "$path" "$OPT"
+		__check_built_files "$path" "$OPT" || _result=1
 	fi
+
+	return $_result
 }
 
-
-# CHECK  ------------------------------------------------------------------------------------------------------------------------------
-# TODO remove function
-function __check_built_files() {
-	local path="$1"
-	local OPT="$2"
-
-	# EXCLUDE_INSPECT -- ignore these files
-
-
-	if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
-		__check_binary_files "$path" "$OPT RELOCATE ARCH $STELLA_BUILD_ARCH MISSING_RPATH $STELLA_BUILD_RPATH"
-		#__check_binary_files "$path" "$OPT RELOCATE"
-	else
-		 __check_binary_files "$path" "$OPT NON_RELOCATE ARCH $STELLA_BUILD_ARCH MISSING_RPATH $STELLA_BUILD_RPATH"
-		#__check_binary_files "$path" "$OPT"
-	fi
-}
-
-
-
-# FIX BUILD ------------------------------------------------------------------------------------
-# TODO review ?
 function __fix_built_files() {
 	local path="$1"
 	local OPT="$2"
-
-	# EXCLUDE_INSPECT -- ignore these files
-
-	local _filter=
-	local _flag_filter=OFF
-	local _opt_filter=OFF
-
-	for o in $OPT; do
-		[ "$_flag_filter" == "ON" ] && _filter=$o && _flag_filter=OFF
-		[ "$o" == "EXCLUDE_INSPECT" ] && _flag_filter=ON && _opt_filter=ON
-	done
-
-	if [ "$_opt_filter" == "ON" ]; then
-		if [ ! "$(echo $path | grep -E "$_filter")" == "" ]; then
-			return 0
-		fi
+	if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
+		__tweak_binary_file "$path" "$OPT RELOCATE WANTED_RPATH $STELLA_BUILD_RPATH EXCLUDE_LINKED_LIB /System/Library|/usr/lib"
 	fi
-
-	local f=
-	if [ -d "$path" ]; then
-		for f in  "$path"/*; do
-			__fix_built_files "$f" "$OPT"
-		done
+	if [ "$STELLA_BUILD_RELOCATE" == "OFF" ]; then
+		# TODO non relocatable will change binary, maybe we dont want... ==> USE DEFAULT RELOCATE ?
+		#__tweak_binary_file "$path" "$OPT NON_RELOCATE WANTED_RPATH $STELLA_BUILD_RPATH EXCLUDE_LINKED_LIB /System/Library|/usr/lib"
+		__tweak_binary_file "$path" "$OPT WANTED_RPATH $STELLA_BUILD_RPATH EXCLUDE_LINKED_LIB /System/Library|/usr/lib"
 	fi
-
-	if [ -f "$path" ]; then
-
-		case $STELLA_CURRENT_PLATFORM in
-			linux)
-
-				# fix write permission
-				chmod +w "$path"
-				if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
-					if [ ! "$(__get_extension_from_string $path)" == "a" ]; then
-						#__add_rpath "$path" "$STELLA_BUILD_RPATH"
-						__tweak_rpath "$path" "REL_RPATH"
-					fi
-				fi
-				#[ ! "$(__get_extension_from_string $path)" == "a" ] && __fix_linked_lib_linux "$path" "REL_RPATH EXCLUDE_FILTER /System/Library|/usr/lib"
-			;;
-
-			darwin)
-					# fix write permission
-					chmod +w "$path"
-					if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
-						#[ "$(__get_extension_from_string $path)" == "dylib" ] && __fix_dynamiclib_install_name_darwin "$path" "RPATH"
-						#[ "$(__get_extension_from_string $path)" == "so" ] && __fix_dynamiclib_install_name_darwin "$path" "RPATH"
-						if [[ "$path" =~ .*dylib.* ]]; then
-							__tweak_install_name_darwin "$path" "RPATH"
-						fi
-						if [ ! "$(__get_extension_from_string $path)" == "a" ]; then
-							__fix_linked_lib_darwin "$path" "REL_RPATH EXCLUDE_FILTER /System/Library|/usr/lib"
-							__add_rpath "$path" "$STELLA_BUILD_RPATH"
-						fi
-					else
-						if [ "$(__get_extension_from_string $path)" == "dylib" ]; then
-							__tweak_install_name_darwin "$path" "PATH"
-						fi
-					fi
-
-			;;
-		esac
-	fi
-
-
 }
 
+function __check_built_files() {
+	local path="$1"
+	local OPT="$2"
+	local _result=0
+	local _check_arch=
+	[ ! "$STELLA_BUILD_ARCH" == "" ] && _check_arch="ARCH $STELLA_BUILD_ARCH"
+	if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
+		__check_binary_file "$path" "$OPT RELOCATE $_check_arch MISSING_RPATH $STELLA_BUILD_RPATH" || _result=1
+	fi
+	if [ "$STELLA_BUILD_RELOCATE" == "OFF" ]; then
+		# TODO check non relocatable is useless ?, maybe we dont want... ==> USE DEFAULT RELOCATE ?
+		__check_binary_file "$path" "$OPT NON_RELOCATE $_check_arch MISSING_RPATH $STELLA_BUILD_RPATH" || _result=1
+	fi
 
-
-
-
-
+	return $_result
+}
 
 
 fi
