@@ -235,6 +235,7 @@ function __require() {
 	# if [[ ! -n `which $_artefact 2> /dev/null` ]]; then
 	# 	_err=1
 	# fi
+
 	type $_artefact &>/dev/null || _err=1
 
 	if [ "$_err" == "1" ]; then

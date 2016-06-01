@@ -1,24 +1,24 @@
-if [ ! "$_hfst_INCLUDED_" == "1" ]; then 
+if [ ! "$_hfst_INCLUDED_" == "1" ]; then
 _hfst_INCLUDED_=1
 
 #http://wiki.apertium.org/wiki/Hfst#Building_and_installing_HFST
-
+#https://hfst.github.io/
 function feature_hfst() {
 	FEAT_NAME=hfst
-	FEAT_LIST_SCHEMA="3_8_3:source"
-	FEAT_DEFAULT_VERSION=3_8_3
+	FEAT_LIST_SCHEMA="3_9_2:source"
+	FEAT_DEFAULT_VERSION=3_9_2
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_hfst_3_8_3() {
-	FEAT_VERSION=3_8_3
+function feature_hfst_3_9_2() {
+	FEAT_VERSION=3_9_2
 
 	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8"
 	FEAT_BINARY_DEPENDENCIES=
 
-	FEAT_SOURCE_URL=http://sourceforge.net/projects/hfst/files/hfst/source/hfst-3.8.3.tar.gz
-	FEAT_SOURCE_URL_FILENAME=hfst-3.8.3.tar.gz
+	FEAT_SOURCE_URL=https://github.com/hfst/hfst/releases/download/v3.9.2/hfst-3.9.2.tar.gz
+	FEAT_SOURCE_URL_FILENAME=hfst-3.9.2.tar.gz
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
 	FEAT_BINARY_URL=
@@ -43,7 +43,7 @@ function feature_hfst_link() {
 function feature_hfst_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 

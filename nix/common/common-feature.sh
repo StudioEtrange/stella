@@ -27,21 +27,9 @@ function __feature_init() {
 
 	__internal_feature_context "$_SCHEMA"
 
-	#local _flag=0
-	#local a
-	local _tmp_feat=
-
 	if [[ ! " ${FEATURE_LIST_ENABLED[@]} " =~ " $FEAT_NAME#$FEAT_VERSION " ]]; then
 
-
-	#for a in $FEATURE_LIST_ENABLED; do
-	#	[ "$FEAT_NAME#$FEAT_VERSION" == "$a" ] && _flag=1
-	#done
-
-	#if [ "$_flag" == "0" ]; then
-
-
-		__feature_inspect $FEAT_SCHEMA_SELECTED
+		__feature_inspect "$FEAT_SCHEMA_SELECTED"
 		if [ "$TEST_FEATURE" == "1" ]; then
 
 			if [ ! "$FEAT_BUNDLE" == "" ]; then
@@ -72,8 +60,6 @@ function __feature_init() {
 				PATH="$FEAT_SEARCH_PATH:$PATH"
 			fi
 
-
-
 			local c
 			for c in $FEAT_ENV_CALLBACK; do
 				$c
@@ -102,11 +88,14 @@ function __feature_match_installed() {
 
 	local _tested=
 	local _found=
+
+	if [ "$_SCHEMA" == "" ]; then
+		__internal_feature_context
+		return
+	fi
 	# we are NOT inside a bundle, because FEAT_BUNDLE_MODE is NOT set
 	if [ "$FEAT_BUNDLE_MODE" == "" ]; then
-
 		__translate_schema "$_SCHEMA" "__VAR_FEATURE_NAME" "__VAR_FEATURE_VER" "__VAR_FEATURE_ARCH" "__VAR_FEATURE_FLAVOUR"
-
 		[ ! "$__VAR_FEATURE_VER" == "" ] && _tested="$__VAR_FEATURE_VER"
 		[ ! "$__VAR_FEATURE_ARCH" == "" ] && _tested="$_tested"@"$__VAR_FEATURE_ARCH"
 
@@ -165,6 +154,7 @@ function __feature_inspect() {
 	local _SCHEMA="$1"
 	TEST_FEATURE=0
 
+	[ "$_SCHEMA" == "" ] && return
 	__feature_match_installed "$_SCHEMA"
 
 	if [ ! "$FEAT_SCHEMA_SELECTED" == "" ]; then
@@ -579,7 +569,6 @@ function __feature_install() {
 
 
 function __feature_init_installed() {
-
 	local _tested_feat_name=
 	local _tested_feat_ver=
 	# init internal features
@@ -703,7 +692,7 @@ function __internal_feature_context() {
 
 
 	if [ "$_SCHEMA" == "" ]; then
-		return 0
+		return
 	fi
 
 	if [ ! "$_SCHEMA" == "" ]; then
@@ -764,6 +753,7 @@ function __internal_feature_context() {
 		fi
 	else
 		# we grab only os option
+		# TODO why we grab os option ?
 		__translate_schema "$_SCHEMA" "NONE" "NONE" "NONE" "NONE" "FEAT_SCHEMA_OS_RESTRICTION" "FEAT_SCHEMA_OS_EXCLUSION"
 	fi
 }
@@ -801,10 +791,8 @@ function __select_official_schema() {
 	local _TR_FEATURE_FLAVOUR=${!_VAR_FEATURE_FLAVOUR}
 	local _TR_FEATURE_OS_RESTRICTION=${!_VAR_FEATURE_OS_RESTRICTION}
 	local _TR_FEATURE_OS_EXCLUSION=${!_VAR_FEATURE_OS_EXCLUSION}
-
 	local _official=0
 	if [[ " ${__STELLA_FEATURE_LIST[@]} " =~ " ${_TR_FEATURE_NAME} " ]]; then
-
 		# grab feature info
 		source $STELLA_FEATURE_RECIPE/feature_$_TR_FEATURE_NAME.sh
 		feature_$_TR_FEATURE_NAME
@@ -922,6 +910,9 @@ function __translate_schema() {
 
 
 	if [ ! "$_VAR_FEATURE_NAME" == "" ]; then eval $_VAR_FEATURE_NAME="$(echo $_tr_schema | sed 's,^\([^:/\\#]*\).*$,\1,')"; fi
+
+	# Debug log
+	#echo TRANSLATE RESULT N: $_VAR_FEATURE_NAME = $(eval echo \$${_VAR_FEATURE_NAME})  V: $_VAR_FEATURE_VER = $(eval echo \$${_VAR_FEATURE_VER}) OSR: $_VAR_FEATURE_OS_RESTRICTION = $(eval echo \$${_VAR_FEATURE_OS_RESTRICTION})
 }
 
 

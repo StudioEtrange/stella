@@ -289,7 +289,6 @@ function __uri_parse() {
 # [user@]host[:port][/#abs_or_rel_path]
 function __transfert_stella() {
 	local _uri="$1"
-
 	local _OPT="$2"
 	local _opt_ex_cache="EXCLUDE stella/$(__abs_to_rel_path $STELLA_INTERNAL_CACHE_DIR $STELLA_ROOT)/"
 	local _opt_ex_workspace="EXCLUDE stella/$(__abs_to_rel_path $STELLA_INTERNAL_WORK_ROOT $STELLA_ROOT)/"
@@ -321,7 +320,7 @@ function __transfert_folder_rsync() {
 	local _opt_folder_content=OFF
 	for o in $_OPT; do
 		[ "$_flag_exclude" == "ON" ] && _exclude="--exclude $o $_exclude" && _flag_exclude=OFF
-		[ "$o" == "EXCLUDE" ] && _flag_exclude_filter=ON
+		[ "$o" == "EXCLUDE" ] && _flag_exclude=ON
 		[ "$o" == "FOLDER_CONTENT" ] && _opt_folder_content=ON
 	done
 
@@ -390,6 +389,51 @@ function __get_active_path() {
 }
 
 
+
+function __filter_list() {
+	local _list="$1"
+	local _opt="$2"
+
+	local _result_list=
+
+	[ -z "$_list" ] && return
+
+	# INCLUDE_TAG -- option name of include option -- must be setted before using INCLUDE_TAG
+	# EXCLUDE_TAG -- option name of exclude option -- must be setted before using EXCLUDE_TAG
+	# ${INCLUDE_TAG} <expr> -- include these linked libs
+	# ${EXCLUDE_TAG} <expr> -- exclude these linked libs
+	# ${INCLUDE_TAG} is apply first, before ${EXCLUDE_TAG}
+
+	local _tag_include=
+	local _flag_tag_include=OFF
+	local _tag_exclude=
+	local _flag_tag_exclude=OFF
+	local _flag_exclude_filter=OFF
+	local _exclude_filter=
+	local _invert_filter=
+	local _flag_include_filter=OFF
+	local _include_filter=
+	local _opt_filter=OFF
+	for o in $_opt; do
+		[ "$_flag_include_filter" == "ON" ] && _include_filter="$o" && _flag_include_filter=OFF
+		[ ! "$_tag_include" == "" ] && [ "$o" == "$_tag_include" ] && _flag_include_filter=ON && _opt_filter=ON
+		[ "$_flag_exclude_filter" == "ON" ] && _exclude_filter="$o" && _flag_exclude_filter=OFF
+		[ ! "$_tag_exclude" == "" ] && [ "$o" == "$_tag_exclude" ] && _flag_exclude_filter=ON && _invert_filter="-Ev" && _opt_filter=ON
+		[ "$_flag_tag_include" == "ON" ] && _tag_include="$o" && _flag_tag_include=OFF
+		[ "$o" == "INCLUDE_TAG" ] && _flag_tag_include=ON
+		[ "$_flag_tag_exclude" == "ON" ] && _tag_exclude="$o" && _flag_tag_exclude=OFF
+		[ "$o" == "EXCLUDE_TAG" ] && _flag_tag_exclude=ON
+	done
+
+	if [ "$_opt_filter" == "OFF" ]; then
+		echo "$_list"
+	else
+		for l in $_list; do
+			[ -z "$(echo "$l" | grep -E "$_include_filter" | grep $_invert_filter "$_exclude_filter")" ] || _result_list="$_result_list $l"
+		done
+		echo "$_result_list"
+	fi
+}
 
 
 # http://stackoverflow.com/questions/369758/how-to-trim-whitespace-from-a-bash-variable
@@ -492,8 +536,8 @@ function __get_extension_from_string() {
 
 
 function __is_abs() {
-	local _path=$1
-
+	local _path="$1"
+	# alternative : [ -z "${_path##/*}" ]
 	case $_path in
 		/*)
 			echo "TRUE"
@@ -506,8 +550,8 @@ function __is_abs() {
 
 # NOTE by default path is determined giving by the current running directory
 function __rel_to_abs_path() {
-	local _rel_path=$1
-	local _abs_root_path=$2
+	local _rel_path="$1"
+	local _abs_root_path="$2"
 	local result
 
 	if [ "$_abs_root_path" == "" ]; then

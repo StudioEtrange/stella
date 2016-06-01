@@ -128,7 +128,9 @@ function __set_toolset() {
 
 
 function __require_current_toolset() {
-	[ "$STELLA_BUILD_BUILD_TOOL" == "cmake" ] &&  __require "cmake" "cmake" "OPTIONAL"
+	[ "$STELLA_BUILD_BUILD_TOOL" == "cmake" ] &&  __require "cmake" "cmake" "PREFER_STELLA"
+	[ "$STELLA_BUILD_CONFIG_TOOL" == "cmake" ] && __require "cmake" "cmake" "PREFER_STELLA"
+	[ "$STELLA_BUILD_BUILD_TOOL" == "make" ] &&  __require "make" "build-chain-standard" "PREFER_SYSTEM"
 	[ "$STELLA_BUILD_COMPIL_FRONTEND" == "gcc-clang" ] &&  __require "gcc" "build-chain-standard" "PREFER_SYSTEM"
 }
 
@@ -200,7 +202,6 @@ function __auto_build() {
 	[ "$_opt_configure" == "ON" ] && _check=1
 	[ "$_opt_build" == "ON" ] && _check=1
 	[ "$_check" == "1" ] && __require_current_toolset
-
 
 	# set build env
 	__prepare_build "$INSTALL_DIR" "$SOURCE_DIR" "$BUILD_DIR"
@@ -742,8 +743,8 @@ function __export_env() {
 			fi
 
 			# create a link into build dir in case some temporary built files needs to be run with dependencies
-			ln -s "$INSTALL_DIR/stella-dep" "$SOURCE_DIR/stella-dep"
-			ln -s "$INSTALL_DIR/stella-dep" "$BUILD_DIR/stella-dep"
+			[ "$INSTALL_DIR" == "$SOURCE_DIR" ] && ln -s "$INSTALL_DIR/stella-dep" "$SOURCE_DIR/stella-dep"
+			[ "$INSTALL_DIR" == "$BUILD_DIR" ] && ln -s "$INSTALL_DIR/stella-dep" "$BUILD_DIR/stella-dep"
 		fi
 
 
@@ -1367,23 +1368,8 @@ function __inspect_and_fix_build() {
 
 	[ "$1" == "" ] && return
 
-	local _flag_exclude_filter=OFF
-	local _exclude_filter=
-	local _invert_filter=
-	local _flag_include_filter=OFF
-	local _include_filter=
-	local _opt_filter=OFF
-	for o in $OPT; do
-		[ "$_flag_include_filter" == "ON" ] && _include_filter="$o" && _flag_include_filter=OFF
-		[ "$o" == "INCLUDE_FILTER" ] && _flag_include_filter=ON && _opt_filter=ON
-		[ "$_flag_exclude_filter" == "ON" ] && _exclude_filter="$o" && _flag_exclude_filter=OFF
-		[ "$o" == "EXCLUDE_FILTER" ] && _flag_exclude_filter=ON && _invert_filter="-Ev" && _opt_filter=ON
-	done
-	if [ "$_opt_filter" == "ON" ]; then
-		if [ ! "$(echo $path | grep -E "$_include_filter" | grep $_invert_filter $_exclude_filter)" == "" ]; then
-			return $_result
-		fi
-	fi
+	[ -z "$(__filter_list "$path" "INCLUDE_TAG INCLUDE_FILTER EXCLUDE_TAG EXCLUDE_FILTER $OPT")" ] && return $_result
+
 
 	local f=
 	if [ -d "$path" ]; then
@@ -1406,12 +1392,12 @@ function __fix_built_files() {
 	local path="$1"
 	local OPT="$2"
 	if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
-		__tweak_binary_file "$path" "$OPT RELOCATE WANTED_RPATH $STELLA_BUILD_RPATH EXCLUDE_LINKED_LIB /System/Library|/usr/lib"
+		__tweak_binary_file "$path" "$OPT RELOCATE WANTED_RPATH $STELLA_BUILD_RPATH"
 	fi
 	if [ "$STELLA_BUILD_RELOCATE" == "OFF" ]; then
-		# TODO non relocatable will change binary, maybe we dont want... ==> USE DEFAULT RELOCATE ?
-		#__tweak_binary_file "$path" "$OPT NON_RELOCATE WANTED_RPATH $STELLA_BUILD_RPATH EXCLUDE_LINKED_LIB /System/Library|/usr/lib"
-		__tweak_binary_file "$path" "$OPT WANTED_RPATH $STELLA_BUILD_RPATH EXCLUDE_LINKED_LIB /System/Library|/usr/lib"
+		# TODO non relocatable will change binary, maybe we dont want that...
+		#__tweak_binary_file "$path" "$OPT NON_RELOCATE WANTED_RPATH $STELLA_BUILD_RPATH"
+		__tweak_binary_file "$path" "$OPT WANTED_RPATH $STELLA_BUILD_RPATH"
 	fi
 }
 
@@ -1422,11 +1408,11 @@ function __check_built_files() {
 	local _check_arch=
 	[ ! "$STELLA_BUILD_ARCH" == "" ] && _check_arch="ARCH $STELLA_BUILD_ARCH"
 	if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
-		__check_binary_file "$path" "$OPT RELOCATE $_check_arch MISSING_RPATH $STELLA_BUILD_RPATH" || _result=1
+		__check_binary_file "$path" "$OPT RELOCATE $_check_arch WANTED_RPATH $STELLA_BUILD_RPATH" || _result=1
 	fi
 	if [ "$STELLA_BUILD_RELOCATE" == "OFF" ]; then
-		# TODO check non relocatable is useless ?, maybe we dont want... ==> USE DEFAULT RELOCATE ?
-		__check_binary_file "$path" "$OPT NON_RELOCATE $_check_arch MISSING_RPATH $STELLA_BUILD_RPATH" || _result=1
+		# if we are in export mode or in default mode, linked libs should be relocatable
+		__check_binary_file "$path" "$OPT NON_RELOCATE $_check_arch WANTED_RPATH $STELLA_BUILD_RPATH" || _result=1
 	fi
 
 	return $_result

@@ -32,9 +32,9 @@ _STELLA_COMMON_BINARY_INCLUDED_=1
 #			LINUX ELF TOOLS
 #					objdump (needed to analysis) -- in sys package gnu binutils
 #					ldd (needed for linked lib analys) -- present by default ==> security warning
-#					patchelf (needed to analysis AND modify rpath) -- in stella recipe patchelf
+#					patchelf (needed to analysis AND modify rpath) -- in stella recipe 'patchelf'
 #					scanelf (needed to analysis) -- in stella recipe pax-utils
-#					readelf (needed to analysis)-- in sys package gnu binutils
+#					readelf (needed to analysis)-- in sys package gnu 'binutils'
 #			MACOS BINARY TOOLS :
 #					otool (needed to analysis) -- in ??
 #					install_name_tool (needed to modify) -- in ??
@@ -141,54 +141,33 @@ function __check_binary_file() {
 		done
 	fi
 
-	# INCLUDE_FILTER <expr> -- include these files
-	# EXCLUDE_FILTER <expr> -- exclude these files
+	# INCLUDE_LINKED_LIB <expr> -- include these linked libs while checking
+	# EXCLUDE_LINKED_LIB <expr> -- exclude these linked libs while checking
+	# INCLUDE_LINKED_LIB is apply first, before EXCLUDE_LINKED_LIB
+	# INCLUDE_FILTER <expr> -- include these files to check
+	# EXCLUDE_FILTER <expr> -- exclude these files to check
 	# INCLUDE_FILTER is apply first, before EXCLUDE_FILTER
 	# RELOCATE -- binary file should be relocatable
 	# NON_RELOCATE -- binary file should be non relocatable
 	# ARCH <arch> -- test a specific arch
-	# MISSING_RPATH val1 val2 ... -- test if binary files have some specific values as rpath
-	local _flag_exclude_filter=OFF
-	local _exclude_filter=
-	local _invert_filter=
-	local _flag_include_filter=OFF
-	local _include_filter=
-	local _opt_filter=OFF
+	# WANTED_RPATH val1 val2 ... -- test if binary files have some specific values as rpath
 	local _arch=
 	local _flag_arch=OFF
 	local _opt_arch=OFF
 	local _flag_relocate=DEFAULT
-	local _flag_missing_rpath=OFF
-	local _missing_rpath_values=
-	local _opt_missing_rpath=OFF
 	for o in $OPT; do
-		[ "$_flag_include_filter" == "ON" ] && _include_filter="$o" && _flag_include_filter=OFF
-		[ "$o" == "INCLUDE_FILTER" ] && _flag_include_filter=ON && _opt_filter=ON && _flag_missing_rpath=OFF
-		[ "$_flag_exclude_filter" == "ON" ] && _exclude_filter="$o" && _flag_exclude_filter=OFF
-		[ "$o" == "EXCLUDE_FILTER" ] && _flag_exclude_filter=ON && _invert_filter="-Ev" && _opt_filter=ON && _flag_missing_rpath=OFF
 		[ "$_flag_arch" == "ON" ] && _arch=$o && _flag_arch=OFF
-		[ "$o" == "ARCH" ] && _opt_arch=ON && _flag_arch=ON && _flag_missing_rpath=OFF
-		[ "$_flag_missing_rpath" == "ON" ] && _missing_rpath_values="$o $_missing_rpath_values"
-		[ "$o" == "MISSING_RPATH" ] && _flag_missing_rpath=ON && _opt_missing_rpath=ON
-
-		[ "$o" == "RELOCATE" ] && _flag_relocate=YES && _flag_missing_rpath=OFF
-		[ "$o" == "NON_RELOCATE" ] && _flag_relocate=NO && _flag_missing_rpath=OFF
+		[ "$o" == "ARCH" ] && _opt_arch=ON && _flag_arch=ON
+		[ "$o" == "RELOCATE" ] && _flag_relocate=YES
+		[ "$o" == "NON_RELOCATE" ] && _flag_relocate=NO
 	done
 
-	if [ "$_opt_filter" == "ON" ]; then
-		if [ ! "$(echo $path | grep -E "$_include_filter" | grep $_invert_filter $_exclude_filter)" == "" ]; then
-			return $_result
-		fi
-	fi
+	[ -z "$(__filter_list "$path" "INCLUDE_TAG INCLUDE_FILTER EXCLUDE_TAG EXCLUDE_FILTER $OPT")" ] && return $_result
 
 	if __is_bin "$path"; then
-		local _check_rpath_opt=
-		if [ "$_opt_missing_rpath" == "ON" ];then
-			_check_rpath_opt="MISSING_RPATH $_missing_rpath_values"
-		fi
 
 		echo
-		echo "** Analysing $path"
+		echo "-*--*-** Analysing $path **-*--*-"
 
 		if [ "$_opt_arch" == "ON" ]; then
 			__check_arch "$path" "$_arch" || _result=1
@@ -197,25 +176,28 @@ function __check_binary_file() {
 		case $_flag_relocate in
 			YES)
 				if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-					__check_install_name_darwin "$path" "RPATH" || _result=1
+					__check_install_name_darwin "$path" "RPATH $OPT" || _result=1
 				fi
-				__check_rpath "$path" "REL_RPATH $_check_rpath_opt" || _result=1
+				__check_rpath "$path" "REL_RPATH $OPT" || _result=1
+				__check_linked_lib "$path" "REL_PATH $OPT"  || _result=1
 				;;
 			NO)
 				if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-					__check_install_name_darwin "$path" "PATH" || _result=1
+					__check_install_name_darwin "$path" "PATH $OPT" || _result=1
 				fi
-				__check_rpath "$path" "ABS_RPATH $_check_rpath_opt" || _result=1
+				__check_rpath "$path" "ABS_RPATH $OPT" || _result=1
+				__check_linked_lib "$path" "ABS_PATH $OPT" || _result=1
 				;;
 			DEFAULT)
 				if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-					__check_install_name_darwin "$path" || _result=1
+					__check_install_name_darwin "$path" "$OPT" || _result=1
 				fi
-				__check_rpath "$path" "$_check_rpath_opt" || _result=1
+				__check_rpath "$path" "$OPT" || _result=1
+				__check_linked_lib "$path" "$OPT" || _result=1
+
 				;;
 		esac
 
-		__check_linked_lib "$path" || _result=1
 		echo
 	fi
 
@@ -238,79 +220,53 @@ function __tweak_binary_file() {
 		done
 	fi
 
-	# INCLUDE_LINKED_LIB <expr> -- include these linked libs
-	# EXCLUDE_LINKED_LIB <expr> -- exclude these linked libs
+	# INCLUDE_LINKED_LIB <expr> -- include these linked libs while tweaking
+	# EXCLUDE_LINKED_LIB <expr> -- exclude these linked libs while tweaking
 	# INCLUDE_LINKED_LIB is apply first, before EXCLUDE_LINKED_LIB
-	# INCLUDE_FILTER <expr> -- include these files
-	# EXCLUDE_FILTER <expr> -- exclude these files
+	# INCLUDE_FILTER <expr> -- include these files to tweak
+	# EXCLUDE_FILTER <expr> -- exclude these files to tweak
 	# INCLUDE_FILTER is apply first, before EXCLUDE_FILTER
 	# RELOCATE -- binary have to be relocatable
 	# NON_RELOCATE -- binary have to be non relocatable
 	# WANTED_RPATH val1 val2 ... -- binary rpath values to set
-	local _flag_exclude_filter=OFF
-	local _exclude_filter=
-	local _invert_filter=
-	local _flag_include_filter=OFF
-	local _include_filter=
-	local _opt_filter=OFF
 	local _flag_relocate=DEFAULT
 	local _flag_wanted_rpath=OFF
 	local _wanted_rpath_values=
 	local _opt_wanted_rpath=OFF
 	for o in $OPT; do
-		[ "$_flag_include_filter" == "ON" ] && _include_filter="$o" && _flag_include_filter=OFF
-		[ "$o" == "INCLUDE_FILTER" ] && _flag_include_filter=ON && _flag_missing_rpath=OFF && _flag_wanted_rpath=OFF
-		[ "$_flag_exclude_filter" == "ON" ] && _exclude_filter="$o" && _flag_exclude_filter=OFF
-		[ "$o" == "EXCLUDE_FILTER" ] && _flag_exclude_filter=ON && _invert_filter="-Ev" && _opt_filter=ON && _flag_wanted_rpath=OFF
 		[ "$_flag_wanted_rpath" == "ON" ] && _wanted_rpath_values="$o $_wanted_rpath_values"
 		[ "$o" == "WANTED_RPATH" ] && _flag_wanted_rpath=ON && _opt_wanted_rpath=ON
 		[ "$o" == "RELOCATE" ] && _flag_relocate=YES && _flag_wanted_rpath=OFF
 		[ "$o" == "NON_RELOCATE" ] && _flag_relocate=NO && _flag_wanted_rpath=OFF
 	done
 
-	if [ "$_opt_filter" == "ON" ]; then
-		if [ ! "$(echo $_path | grep -E "$_include_filter" | grep $_invert_filter $_exclude_filter)" == "" ]; then
-			return
-		fi
-	fi
+	[ -z "$(__filter_list "$_path" "INCLUDE_TAG INCLUDE_FILTER EXCLUDE_TAG EXCLUDE_FILTER $OPT")" ] && return
 
 	if __is_bin "$_path"; then
 
-
 		echo
-		echo "** Fixing if necessary $_path"
-
-		# TODO - write permission ?
-		# fix write permission
-		chmod +w "$_path"
+		echo "-*--*-** Fixing if necessary $_path **-*--*-"
 
 		case $_flag_relocate in
 			YES)
 				if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-					__tweak_install_name_darwin "$_path" "RPATH"
+					__tweak_install_name_darwin "$_path" "RPATH $OPT"
 				fi
-				# TODO
-				#__tweak_linked_lib "$_path" "REL_RPATH EXCLUDE_LINKED_LIB /System/Library|/usr/lib"
-				__tweak_linked_lib "$_path" "REL_RPATH $OPT"
+				__tweak_linked_lib "$_path" "ABS_LINK_TO_REL $OPT"
 				if [ "$_wanted_rpath_values" == "" ]; then
+					# TODO test seems to not work
 					if ! __have_rpath "$_path" "$_wanted_rpath_values"; then
 						__add_rpath "$_path" "$_wanted_rpath_values"
 					fi
 				fi
-				__tweak_rpath "$_path" "REL_RPATH"
+				__tweak_rpath "$_path" "REL_RPATH $OPT"
 				;;
 			NO)
 				if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-					__tweak_install_name_darwin "$path" "PATH"
+					__tweak_install_name_darwin "$_path" "PATH $OPT"
 				fi
-				# TODO
-				#__tweak_linked_lib "$_path" "REL_RPATH EXCLUDE_LINKED_LIB /System/Library|/usr/lib"
-				__tweak_linked_lib "$_path" "REL_RPATH $OPT"
-				if [ "$_wanted_rpath_values" == "" ]; then
-					if ! __have_rpath "$_path" "$_wanted_rpath_values"; then
-						__add_rpath "$_path" "$_wanted_rpath_values"
-					fi
-				fi
+				__tweak_linked_lib "$_path" "REL_LINK_TO_ABS $OPT"
+				__remove_all_rpath "$_path"
 				;;
 			DEFAULT)
 				if [ "$_wanted_rpath_values" == "" ]; then
@@ -321,6 +277,7 @@ function __tweak_binary_file() {
 				;;
 		esac
 
+		echo
 	fi
 }
 
@@ -344,7 +301,7 @@ function __get_rpath() {
 		if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
 			local _field='RUNPATH'
 			IFS=':' read -ra _rpath_values <<< $(objdump -p $_file | grep -E "$_field\s" | tr -s ' ' | cut -d ' ' -f 3)
-			if [ "$_rpath" == "" ]; then
+			if [ "$_rpath_values" == "" ]; then
 				_field="RPATH"
 				IFS=':' read -ra _rpath_values <<< $(objdump -p $_file | grep -E "$_field\s" | tr -s ' ' | cut -d ' ' -f 3)
 			fi
@@ -365,8 +322,8 @@ function __get_rpath() {
 function __tweak_rpath() {
 	local _path=$1
 	local _OPT="$2"
-	# INCLUDE_FILTER <expr> -- include these files
-	# EXCLUDE_FILTER <expr> -- exclude these files
+	# INCLUDE_FILTER <expr> -- include these files to tweak
+	# EXCLUDE_FILTER <expr> -- exclude these files to tweak
 	# INCLUDE_FILTER is apply first, before EXCLUDE_FILTER
 
 	if [ -d "$_path" ]; then
@@ -375,29 +332,14 @@ function __tweak_rpath() {
 		done
 	fi
 
-	local _flag_exclude_filter=OFF
-	local _exclude_filter=
-	local _invert_filter=
-	local _flag_include_filter=OFF
-	local _include_filter=
-	local _opt_filter=OFF
 	local _rel_rpath=ON
 	local _abs_rpath=OFF
 	for o in $_OPT; do
-		[ "$_flag_include_filter" == "ON" ] && _include_filter="$o" && _flag_include_filter=OFF
-		[ "$o" == "INCLUDE_FILTER" ] && _flag_include_filter=ON && _opt_filter=ON
-		[ "$_flag_exclude_filter" == "ON" ] && _exclude_filter="$o" && _flag_exclude_filter=OFF
-		[ "$o" == "EXCLUDE_FILTER" ] && _flag_exclude_filter=ON && _invert_filter="-Ev" && _opt_filter=ON
 		[ "$o" == "REL_RPATH" ] && _rel_rpath=ON && _abs_rpath=OFF
 		[ "$o" == "ABS_RPATH" ] && _rel_rpath=OFF && _abs_rpath=ON
 	done
 
-
-	if [ "$_opt_filter" == "ON" ]; then
-		if [ ! "$(echo $_path | grep -E "$_include_filter" | grep $_invert_filter $_exclude_filter)" == "" ]; then
-			return
-		fi
-	fi
+	[ -z "$(__filter_list "$_path" "INCLUDE_TAG INCLUDE_FILTER EXCLUDE_TAG EXCLUDE_FILTER $_OPT")" ] && return
 
 	if __is_executable_or_shareable_bin "$_path"; then
 		local _rpath_values=
@@ -452,7 +394,7 @@ function __tweak_rpath() {
 
 # remove all rpath values to all binaries in the path
 function __remove_all_rpath() {
-	local _path=$1
+	local _path="$1"
 
 	local _rpath_list_values
 	local msg=
@@ -463,9 +405,10 @@ function __remove_all_rpath() {
 		done
 	fi
 
-	if __is_executable_or_shareable_bin "$_file"; then
+	if __is_executable_or_shareable_bin "$_path"; then
 		_rpath_list_values="$(__get_rpath $_path)"
-
+		# fix write permission
+		chmod +w "$_path"
 		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 			for r in $_rpath_list_values; do
 				msg="$msg -- deleting RPATH value : $r"
@@ -473,8 +416,9 @@ function __remove_all_rpath() {
 			done
 		fi
 		if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-			__require "patchelf" "patchelf" "PREFER_STELLA"
-			patchelf --set-rpath "" "$_path"
+			__require "patchelf" "patchelf#0_9" "PREFER_STELLA"
+				msg="$msg -- deleting all RPATH values."
+			patchelf --remove-rpath "$_path"
 		fi
 		[ ! "$msg" == "" ] && echo "** Deleting rpath values from $_path $msg"
 	fi
@@ -496,11 +440,11 @@ function __have_rpath() {
 		done
 	fi
 
-	if [ -f "$_file" ]; then
+	if [ -f "$_path" ]; then
 		local _existing_rpath="$(__get_rpath $_path)"
 
 		for r in $_rpath_values; do
-			printf %s "*** Checking if this RPATH value is missing : $r"
+			printf %s "====> checking if this RPATH value is setted : $r"
 			for j in $_existing_rpath; do
 				[ "$j" == "$r" ] && _result=0
 			done
@@ -570,6 +514,8 @@ function __add_rpath() {
 
 		# adding values
 		_new_rpath="$(__trim $_new_rpath)"
+		# fix write permission
+		chmod +w "$_path"
 		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 			for p in $_new_rpath; do
 				msg="$msg -- adding RPATH value : $p"
@@ -577,7 +523,7 @@ function __add_rpath() {
 			done
 		fi
 		if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-			__require "patchelf" "patchelf" "PREFER_STELLA"
+			__require "patchelf" "patchelf#0_9" "PREFER_STELLA"
 			patchelf --set-rpath "${_new_rpath// /:}" "$_path"
 			msg="$msg -- adding : $_new_rpath"
 		fi
@@ -591,9 +537,9 @@ function __add_rpath() {
 # 		NO_RPATH -- must not have any rpath
 # 		REL_RPATH -- rpath must be a relative path
 # 		ABS_RPATH -- rpath must be an absolute path
-#			MISSING_RPATH val1 val2 ... -- check some missing rpath
-# 		INCLUDE_FILTER <expr> -- include these files
-#			EXCLUDE_FILTER <expr> -- exclude these files
+#			WANTED_RPATH val1 val2 ... -- check some missing rpath
+# 		INCLUDE_FILTER <expr> -- include these files to check
+#			EXCLUDE_FILTER <expr> -- exclude these files to check
 # 		INCLUDE_FILTER is apply first, before EXCLUDE_FILTER
 function __check_rpath() {
 	local _path="$1"
@@ -607,12 +553,6 @@ function __check_rpath() {
 		done
 	fi
 
-	local _flag_exclude_filter=OFF
-	local _exclude_filter=
-	local _invert_filter=
-	local _flag_include_filter=OFF
-	local _include_filter=
-	local _opt_filter=OFF
 	local _no_rpath=OFF
 	local _rel_rpath=OFF
 	local _abs_rpath=OFF
@@ -620,43 +560,34 @@ function __check_rpath() {
 	local _missing_rpath_values=
 	local _opt_missing_rpath=OFF
 	for o in $OPT; do
-		[ "$_flag_include_filter" == "ON" ] && _include_filter="$o" && _flag_include_filter=OFF
-		[ "$o" == "INCLUDE_FILTER" ] && _flag_include_filter=ON && _opt_filter=ON && _flag_missing_rpath=OFF
-		[ "$_flag_exclude_filter" == "ON" ] && _exclude_filter="$o" && _flag_exclude_filter=OFF
-		[ "$o" == "EXCLUDE_FILTER" ] && _flag_exclude_filter=ON && _invert_filter="-Ev" && _opt_filter=ON && _flag_missing_rpath=OFF
 		[ "$_flag_missing_rpath" == "ON" ] && _missing_rpath_values="$o $_missing_rpath_values"
-		[ "$o" == "MISSING_RPATH" ] && _flag_missing_rpath=ON && _opt_missing_rpath=ON
+		[ "$o" == "WANTED_RPATH" ] && _flag_missing_rpath=ON && _opt_missing_rpath=ON
 		[ "$o" == "NO_RPATH" ] && _no_rpath=ON && _flag_missing_rpath=OFF
 		[ "$o" == "REL_RPATH" ] && _rel_rpath=ON && _abs_rpath=OFF && _flag_missing_rpath=OFF
 		[ "$o" == "ABS_RPATH" ] && _rel_rpath=OFF && _abs_rpath=ON && _flag_missing_rpath=OFF
 	done
 
-	if [ "$_opt_filter" == "ON" ]; then
-		if [ ! "$(echo $_path | grep -E "$_include_filter" | grep $_invert_filter $_exclude_filter)" == "" ]; then
-			return $_result
-		fi
-	fi
+	[ -z "$(__filter_list "$_path" "INCLUDE_TAG INCLUDE_FILTER EXCLUDE_TAG EXCLUDE_FILTER $OPT")" ] && return $_result
 
 	if __is_executable_or_shareable_bin "$_path"; then
 		t="$(__get_rpath $_path)"
-
+		echo "*** Checking rpath"
+		echo "====> setted rpath in search order : $t"
 		if [ "$_no_rpath" == "ON" ];then
-			printf %s "*** Checking if there is no RPATH setted "
+			printf %s "====> checking if there is no RPATH setted "
 			if [ "$t" == "" ]; then
 				printf %s " -- OK"
 				echo
 			else
-				printf %s " -- WARN RPATH is setted"
+				printf %s " -- RPATH is setted : WARN"
 				_result=1
 				echo
-				echo "*** List RPATH values in search order :"
-				echo $t
 			fi
 
 		else
 
 			for r in $t; do
-				printf %s "*** Checking RPATH value : $r "
+				printf %s "====> checking $r "
 				if [ "$_abs_rpath" == "ON" ]; then
 					if [ "$(__is_abs $r)" == "TRUE" ];then
 						printf %s "-- is abs path : OK"
@@ -669,7 +600,7 @@ function __check_rpath() {
 				if [ "$_rel_rpath" == "ON" ]; then
 					if [ "$(__is_abs $r)" == "TRUE" ];then
 						printf %s "-- is not a rel path : WARN"
-					_result=1
+						_result=1
 					else
 						printf %s "-- is rel path : OK"
 					fi
@@ -678,7 +609,8 @@ function __check_rpath() {
 			done
 
 			__have_rpath "$_path" "$_missing_rpath_values" || _result=1
-
+			[ $_result ] && echo "*** Checking rpath : OK" || \
+			echo "*** Checking rpath : ERROR"
 		fi
 	fi
 
@@ -703,28 +635,20 @@ function __get_linked_lib() {
 	# EXCLUDE_LINKED_LIB <expr> -- exclude these linked libs
 	# INCLUDE_LINKED_LIB is apply first, before EXCLUDE_LINKED_LIB
 
-	local _flag_exclude_filter=OFF
-	local _exclude_filter=
-	local _invert_filter=
-	local _flag_include_filter=OFF
-	local _include_filter=
-	for o in $_opt; do
-		[ "$_flag_include_filter" == "ON" ] && _include_filter="$o" && _flag_include_filter=OFF
-		[ "$o" == "INCLUDE_LINKED_LIB" ] && _flag_include_filter=ON
-		[ "$_flag_exclude_filter" == "ON" ] && _exclude_filter="$o" && _flag_exclude_filter=OFF
-		[ "$o" == "EXCLUDE_LINKED_LIB" ] && _flag_exclude_filter=ON && _invert_filter="-Ev"
-	done
-
-
 	local _linked_lib
 	if __is_executable_or_shareable_bin "$_file"; then
+
 		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-			_linked_lib="$(otool -l "$_file" | grep -E "LC_LOAD_DYLIB" -A2 | awk '/LC_LOAD_DYLIB/{for(i=2;i;--i)getline; print $0 }' | grep -E "$_include_filter" | grep $_invert_filter "$_exclude_filter" | tr -s ' ' | cut -d ' ' -f 3 |  tr '\n' ' ')"
+			_linked_lib="$(otool -l "$_file" | grep -E "LC_LOAD_DYLIB" -A2 | awk '/LC_LOAD_DYLIB/{for(i=2;i;--i)getline; print $0 }' | tr -s ' ' | cut -d ' ' -f 3 | tr '\n' ' ')"
+			# we do not exclude STELLA_BINARY_DEFAULT_LIB_IGNORED here, because we may want all linked libs
+			_linked_lib="$(__filter_list "$_linked_lib" "INCLUDE_TAG INCLUDE_LINKED_LIB EXCLUDE_TAG EXCLUDE_LINKED_LIB $_opt")"
 			echo "$(__trim $_linked_lib)"
 		fi
 
 		if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-			_linked_lib="$(objdump -p $_file | grep -E "NEEDED" | grep -E "$_include_filter" | grep $_invert_filter "$_exclude_filter" | tr -s ' ' | cut -d ' ' -f 3 |  tr '\n' ' ')"
+			_linked_lib="$(objdump -p $_file | grep -E "NEEDED" | tr -s ' ' | cut -d ' ' -f 3 | tr '\n' ' ')"
+			# we do not exclude STELLA_BINARY_DEFAULT_LIB_IGNORED here, because we may want all linked libs
+			_linked_lib="$(__filter_list "$_linked_lib" "INCLUDE_TAG INCLUDE_LINKED_LIB EXCLUDE_TAG EXCLUDE_LINKED_LIB $_opt")"
 			echo "$(__trim $_linked_lib)"
 		fi
 	fi
@@ -737,10 +661,15 @@ function __get_linked_lib() {
 function __check_linked_lib() {
 	local _path="$1"
 	local _OPT="$2"
-	# INCLUDE_FILTER <expr> -- include these files
-	# EXCLUDE_FILTER <expr> -- exclude these files
+	# linked lib filter :
+	# INCLUDE_LINKED_LIB <expr> -- include these linked libraries while checking
+	# EXCLUDE_LINKED_LIB <expr> -- exclude these linked libraries while checking
+	# INCLUDE_LINKED_LIB is apply first, before EXCLUDE_LINKED_LIB
+	# INCLUDE_FILTER <expr> -- include these files to check
+	# EXCLUDE_FILTER <expr> -- exclude these files to check
 	# INCLUDE_FILTER is apply first, before EXCLUDE_FILTER
-
+	# REL_PATH -- linked lib should be linked with relative path
+	# ABS_PATH -- linked lib should be linked with absolute path
 	local line=
 	local linked_lib_list=
 	local linked_lib=
@@ -753,27 +682,37 @@ function __check_linked_lib() {
 		done
 	fi
 
-	local _flag_exclude_filter=OFF
-	local _exclude_filter=
-	local _invert_filter=
-	local _flag_include_filter=OFF
-	local _include_filter=
-	local _opt_filter=OFF
+	local _opt_rel_path=OFF
+	local _opt_abs_path=OFF
 	for o in $_OPT; do
-		[ "$_flag_include_filter" == "ON" ] && _include_filter="$o" && _flag_include_filter=OFF
-		[ "$o" == "INCLUDE_FILTER" ] && _flag_include_filter=ON && _opt_filter=ON
-		[ "$_flag_exclude_filter" == "ON" ] && _exclude_filter="$o" && _flag_exclude_filter=OFF
-		[ "$o" == "EXCLUDE_FILTER" ] && _flag_exclude_filter=ON && _invert_filter="-Ev" && _opt_filter=ON
+		[ "$o" == "REL_PATH" ] && _opt_rel_path=ON && _opt_abs_path=OFF
+		[ "$o" == "ABS_PATH" ] && _opt_abs_path=ON && _opt_rel_path=OFF
 	done
 
-	if [ "$_opt_filter" == "ON" ]; then
-		if [ ! "$(echo $_path | grep -E "$_include_filter" | grep $_invert_filter $_exclude_filter)" == "" ]; then
-			return $_result
-		fi
-	fi
+	[ -z "$(__filter_list "$_path" "INCLUDE_TAG INCLUDE_FILTER EXCLUDE_TAG EXCLUDE_FILTER $_OPT")" ] && return $_result
 
 	if __is_executable_or_shareable_bin "$_path"; then
-		echo "*** Checking missing dynamic library at runtime"
+
+		# First checking linked lib path
+		echo "*** Checking form of linked lib path"
+		# get all lib -- do not filter here
+		local _lib_list="$(__get_linked_lib "$_path")"
+		echo "====> Linked libraries : $_lib_list"
+		for line in $_lib_list; do
+			if [ "$_opt_rel_path" == "ON" ]; then
+				[ "$(__is_abs "$line")" == "TRUE" ] && echo "  ====> $line is NOT relative" && _result=1
+			fi
+			if [ "$_opt_abs_path" == "ON" ]; then
+				[ "$(__is_abs "$line")" == "FALSE" ] && echo "  ====> $line is NOT absolute" && _result=1
+			fi
+		done
+
+		if [ "$_result" == "1" ]; then
+			echo "*** Checking form of linked lib path : WARN"
+		else
+			echo "*** Checking form of linked lib path : OK"
+		fi
+		# second checking : see if we can resolve linked lib
 		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 			__find_linked_lib_darwin "$_path" || _result=1
 		fi
@@ -787,36 +726,43 @@ function __check_linked_lib() {
 
 
 # try to resolve linked libs of all binaries in path
+# OR resolve a specific linked lib
 function __find_linked_lib_darwin() {
 	local _path="$1"
+	local _specific_linked_lib="$2"
 	local _result=0
-
+	local _mode="DEFAULT"
+	local _lib_list=
 	if [ -d "$_path" ]; then
 		for f in  "$_path"/*; do
-			__find_linked_lib_darwin "$f" || _result=1
+			__find_linked_lib_darwin "$f" "$_specific_linked_lib" || _result=1
 		done
 	fi
 
 	if __is_executable_or_shareable_bin "$_path"; then
-		local _lib_list="$(__get_linked_lib "$_path")"
-		echo "====> Binary : $_path"
-		echo "====> Linked libraries : $_lib_list"
-		local _rpath=
-		_rpath="$(__get_rpath $_path)"
-		echo "====> setted rpath : $_rpath"
+		local _rpath="$(__get_rpath $_path)"
 		local loader_path="$(__get_path_from_string "$_path")"
-		echo "====> loader path (computed) : $loader_path"
-		echo "====> install name (not used while resolving libs) : $(__get_install_name_darwin "$_path")"
 
+		[ "$_specific_linked_lib" == "" ] && _mode="DEFAULT" || _mode="GET"
+		if [ "$_mode" == "DEFAULT" ]; then
+			echo "*** Checking missing dynamic library at runtime"
+			_lib_list="$(__get_linked_lib "$_path")"
+			echo "====> Binary : $_path"
+			echo "====> Linked libraries : $_lib_list"
+			echo "====> setted rpath : $_rpath"
+			echo "====> loader path (guessed) : $loader_path"
+			echo "====> install name (not used here while resolving libs) : $(__get_install_name_darwin "$_path")"
+		fi
 		local _match
 		local line
 		local linked_lib
 		local p
 		local original_rpath_value
 
+		[ "$_mode" == "GET" ] && _lib_list="$_specific_linked_lib"
 		for line in $_lib_list; do
-			printf %s "====> checking lib : $line "
 			_match=
+			[ "$_mode" == "DEFAULT" ] && printf %s "====> checking linked lib : $line "
 			# @rpath case
 			if [ -z "${line##*@rpath*}" ]; then
 
@@ -828,7 +774,7 @@ function __find_linked_lib_darwin() {
 					fi
 					linked_lib="${line/@rpath/$p}"
 					if [ -f "$linked_lib" ]; then
-						printf %s "-- OK -- [$original_rpath_value] ==> $linked_lib"
+						[ "$_mode" == "DEFAULT" ] && printf %s "-- OK -- [$original_rpath_value] ==> $linked_lib"
 						_match=1
 						break
 					fi
@@ -838,51 +784,79 @@ function __find_linked_lib_darwin() {
 				if [ -z "${line##*@loader_path*}" ]; then
 					linked_lib="${line/@loader_path/$loader_path}"
 					if [ -f "$linked_lib" ]; then
-						printf %s "-- OK -- [$line] ==> $linked_lib"
+						[ "$_mode" == "DEFAULT" ] && printf %s "-- OK -- [$line] ==> $linked_lib"
 						_match=1
 					fi
 				else
 					if [ -f "$line" ]; then
-						printf %s "-- OK"
+						[ "$_mode" == "DEFAULT" ] && printf %s "-- OK"
+						linked_lib="$line"
 						_match=1
 					fi
 				fi
 			fi
 			if [ "$_match" == "" ]; then
-				printf %s "-- WARN not found"
+				[ "$_mode" == "DEFAULT" ] && printf %s "-- WARN not found"
 				_result=1
 			fi
-			echo
+			[ "$_mode" == "DEFAULT" ] && echo
 		done
+		if [ "$_mode" == "DEFAULT" ]; then
+			[ "$_result" == "1" ] && echo "*** Checking missing dynamic library at runtime : ERROR" || \
+			echo "*** Checking missing dynamic library at runtime : OK"
+		fi
+
+		if [ "$_mode" == "GET" ]; then
+			[ "$_result" == "0" ] && echo "$linked_lib"
+		fi
+
 	fi
 
 	return $_result
 }
 
 # try to resolve linked libs
+# OR resolve a specific linked lib
 function __find_linked_lib_linux() {
 	local _path="$1"
+	local _specific_linked_lib="$2"
 	local _result=0
+	local _mode=
+	[ "$_specific_linked_lib" == "" ] && _mode="DEFAULT" || _mode="GET"
 
 	if [ -d "$_path" ]; then
 		for f in  "$_path"/*; do
-			__find_linked_lib_linux "$f" || _result=1
+			__find_linked_lib_linux "$f" "$_specific_linked_lib" || _result=1
 		done
 	fi
 	if __is_executable_or_shareable_bin "$_path"; then
-		local _lib_list="$(__get_linked_lib "$_path")"
-		echo "====> Binary : $_path"
-		echo "====> Linked libraries : $_lib_list"
-		local _rpath=
-		_rpath="$(__get_rpath $_path)"
-		echo "====> setted binary rpath : $_rpath"
-		local loader_path="$(__get_path_from_string "$_path")"
-		echo "====> loader path (computed) : $loader_path"
 
-		$STELLA_ARTEFACT/lddtree/lddtree.sh -m --no-recursive --no-header $_path || _result=1
+		if [ "$_mode" == "DEFAULT" ]; then
+			echo "*** Checking missing dynamic library at runtime"
+			local _lib_list="$(__get_linked_lib "$_path")"
+			echo "====> Binary : $_path"
+			echo "====> Linked libraries : $_lib_list"
+			local _rpath=
+			_rpath="$(__get_rpath "$_path")"
+			echo "====> setted binary rpath : $_rpath"
+			local loader_path="$(__get_path_from_string "$_path")"
+			echo "====> loader path (guessed) : $loader_path"
+
+			__require "readelf" "binutils" "SYSTEM"
+			$STELLA_ARTEFACT/lddtree/lddtree.sh -b readelf -m --no-recursive --no-header $_path || _result=1
+			[ "$_result" == "1" ] && echo "*** Checking missing dynamic library at runtime : ERROR" || \
+			echo "*** Checking missing dynamic library at runtime : OK"
+		fi
+		if [ "$_mode" == "GET" ]; then
+			__require "readelf" "binutils" "SYSTEM"
+			local _output="$($STELLA_ARTEFACT/lddtree/lddtree.sh -b readelf -m --no-recursive --no-header $_path)" || _result=1
+			_result=$?
+			echo "$_output" | grep "$_specific_linked_lib" | cut -d '=' -f 2 | sed 's/> //'
+		fi
 	fi
 	return $_result
 }
+
 
 
 
@@ -891,16 +865,16 @@ function __find_linked_lib_linux() {
 
 # fix linked shared lib by modifying LOAD_DYLIB and adding rpath values
 # 	- before you can filter libs to tweak with filters
-# 				INCLUDE_FILTER <expr> -- include these files
-# 				EXCLUDE_FILTER <expr> -- exclude these files
+# 				INCLUDE_FILTER <expr> -- include these files to tweak
+# 				EXCLUDE_FILTER <expr> -- exclude these files to tweak
 # 				INCLUDE_FILTER is apply first, before EXCLUDE_FILTER
 # 	-	first choose linked lib to modify path
-# 				INCLUDE_LINKED_LIB <expr> -- include these linked libs
-# 				EXCLUDE_LINKED_LIB <expr> -- exclude these linked libs
+# 				INCLUDE_LINKED_LIB <expr> -- include these linked libs while tweaking
+# 				EXCLUDE_LINKED_LIB <expr> -- exclude these linked libs while tweaking
 # 				INCLUDE_LINKED_LIB is apply first, before EXCLUDE_LINKED_LIB
 #		-	second transform path to linked lib -- you can choose to :
-#				-	transform all linked libs with rel path to abs path (ABS_RPATH) (for MachO : including @loader_path, but do not change @rpath or @executable_path because we cant determine the path)
-#				-	transform all linked libs with abs path to rel path (REL_RPATH) (for ELF : set linked lib with lib file name and add an RPATH value corresponding to the relative path to the file with $ORIGIN)
+#				-	transform all linked libs with rel path to abs path (REL_LINK_TO_ABS) (for MachO : excluding @executable_path because we cant determine the path)
+#				-	transform all linked libs with abs path to rel path (ABS_LINK_TO_REL) (for ELF : set linked lib with lib file name and add an RPATH value corresponding to the relative path to the file with $ORIGIN)
 #																																					(for MachO : set linked lib as @rpath/lib and add an RPATH value corresponding to the relative path to the file with @loader_path/)
 #				-	force a specific path (FIXED_PATH <path>) for all lib -- so each linked lib is registered now with path/linked_lib
 function __tweak_linked_lib() {
@@ -919,16 +893,9 @@ function __tweak_linked_lib() {
 	# EXCLUDE_LINKED_LIB <expr> -- exclude from the transformation these linked libraries
 	# INCLUDE_LINKED_LIB is apply first, before EXCLUDE_LINKED_LIB
 	# path management :
-	# ABS_RPATH -- turn linked lib path into an absolute path (only linked libs with rel path are selected (for MachO : including @loader_path not @rpath or @executable_path because we cant determine the path))
-	# REL_RPATH [DEFAULT MODE] -- turn linked lib path into a relative path (only linked libs with absolute paths are selected)
+	# REL_LINK_TO_ABS -- turn linked lib path into an absolute path (only linked libs with rel path are selected (for MachO : excluding @executable_path because we cant determine the path))
+	# ABS_LINK_TO_REL [DEFAULT MODE] -- turn linked lib path into a relative path (only linked libs with absolute paths are selected)
 	# FIXED_PATH <path> -- fix with a given path -- so each linked lib is registered now with fixed_path/linked_lib
-
-	local _flag_exclude_filter_files=OFF
-	local _exclude_filter_files=
-	local _invert_filter_files=
-	local _flag_include_filter_files=OFF
-	local _include_filter_files=
-	local _opt_filter_files=OFF
 
 	local _abs_rpath=OFF
 	local _rel_rpath=ON
@@ -937,52 +904,41 @@ function __tweak_linked_lib() {
 	local _fixed_path=OFF
 
 	for o in $OPT; do
-		[ "$o" == "FIX_RPATH" ] && echo "ERROR : deprecated -- use FIXED_PATH instead" && exit 1
-
 		[ "$_flag_fixed_path" == "ON" ] && _force_path="$o" && _flag_fixed_path=OFF && _fixed_path=ON && _rel_rpath=OFF && _abs_rpath=OFF
 		[ "$o" == "FIXED_PATH" ] && _flag_fixed_path=ON
-		[ "$_flag_include_filter" == "ON" ] && _include_filter="$o" && _flag_include_filter=OFF
-		[ "$o" == "INCLUDE_FILTER" ] && _flag_include_filter=ON
-		[ "$_flag_exclude_filter" == "ON" ] && _exclude_filter="$o" && _flag_exclude_filter=OFF
-		[ "$o" == "EXCLUDE_FILTER" ] && _flag_exclude_filter=ON && _invert_filter="-Ev"
 
-		[ "$o" == "REL_RPATH" ] && _rel_rpath=ON && _abs_rpath=OFF && _fixed_path=OFF
-		[ "$o" == "ABS_RPATH" ] && _rel_rpath=OFF && _abs_rpath=ON && _fixed_path=OFF
-
+		[ "$o" == "FIX_RPATH" ] && echo "ERROR : deprecated -- use FIXED_PATH instead" && exit 1
+		[ "$o" == "REL_RPATH" ] && echo "ERROR : deprecated -- use ABS_LINK_TO_REL" && exit 1
+		[ "$o" == "ABS_RPATH" ] && echo "ERROR : deprecated -- use REL_LINK_TO_ABS" && exit 1
 		[ "$o" == "ABS_LINK_TO_REL" ] && _rel_rpath=ON && _abs_rpath=OFF && _fixed_path=OFF
 		[ "$o" == "REL_LINK_TO_ABS" ] && _rel_rpath=OFF && _abs_rpath=ON && _fixed_path=OFF
 	done
 
-	if [ "$_opt_filter_files" == "ON" ]; then
-		if [ ! "$(echo $_file | grep -E "$_include_filter_files" | grep $_invert_filter_files $_exclude_filter_files)" == "" ]; then
-			return
-		fi
-	fi
+	[ -z "$(__filter_list "$_file" "INCLUDE_TAG INCLUDE_FILTER EXCLUDE_TAG EXCLUDE_FILTER $OPT")" ] && return
 
 	if __is_executable_or_shareable_bin "$_file"; then
 		local _new_load_lib=
 		local line=
 		local _linked_lib_filename=
-		local _filename
 		local _linked_lib_list=
 		local _flag_existing_rpath=
 
 		# get all linked libs
-		# INCLUDE_LINKED_LIB and EXCLUDE_LINKED_LIB apply here
-		local __all_linked_libs="$(__get_linked_lib "$_file" "$OPT")"
+		local __all_linked_libs="$(__get_linked_lib "$_file")"
 
 		# get existing linked lib
 		for line in $__all_linked_libs; do
+
 			# FIXED_PATH : pick all filtered libraries
 			if [ "$_fixed_path" == "ON" ]; then
 				_linked_lib_list="$_linked_lib_list $line"
 			fi
 
-			# ABS_RPATH : pick only rel path (for MachO pick also @loader_path - do not pick @rpath or @executable_path because we cant determine the path )
+			# REL_LINK_TO_ABS : pick only rel path (for MachO do not pick @executable_path because we cant determine the path )
 			if [ "$_abs_rpath" == "ON" ]; then
 				case $line in
-					@rpath*|@executable_path*);;
-					@loader_path)
+					@executable_path*);;
+					@rpath*|@loader_path)
 						_linked_lib_list="$_linked_lib_list $line"
 						;;
 					*)
@@ -992,7 +948,8 @@ function __tweak_linked_lib() {
 						;;
 				esac
 			fi
-			# REL_RPATH : pick only abs path
+
+			# ABS_LINK_TO_REL : pick only abs path
 			if [ "$_rel_rpath" == "ON" ]; then
 				if [ "$(__is_abs "$line")" == "TRUE" ]; then
 					_linked_lib_list="$_linked_lib_list $line"
@@ -1000,43 +957,91 @@ function __tweak_linked_lib() {
 			fi
 		done
 
+
 		if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-			__require "patchelf" "patchelf" "PREFER_STELLA"
+			__require "patchelf" "patchelf#0_9" "PREFER_STELLA"
 		fi
+
+		local _resolved_lib
+		local _resolved="0"
+		local _lib_to_filter=
+		local _filename="$(__get_filename_from_string $_file)"
 		for l in $_linked_lib_list; do
-			_filename=$(__get_filename_from_string $_file)
 			_linked_lib_filename="$(__get_filename_from_string $l)"
 
-			echo "** Fixing $_filename linked to $_linked_lib_filename shared lib"
+			echo "*** Fixing $_filename linked to $_linked_lib_filename shared lib"
 
+			# FILTERS -- filters are applied on resolved libs
+			[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] &&	_resolved_lib="$(__find_linked_lib_darwin "$_file" "$l")"
+			[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && _resolved_lib="$(__find_linked_lib_linux "$_file" "$l")"
+			[ "$_resolved_lib" == "" ] && _resolved="0" || _resolved="1"
+			if [ "$_resolved" == "1" ]; then
+				_lib_to_filter="$_resolved_lib"
+				echo "====> lib resolved as : $_resolved_lib"
+			else
+				_lib_to_filter="$l"
+				echo "====> lib not resolved : WARN"
+			fi
+
+			# filter linked libs
+			if [ -z "$(__filter_list "$_lib_to_filter" "INCLUDE_TAG INCLUDE_LINKED_LIB EXCLUDE_TAG EXCLUDE_LINKED_LIB $OPT")" ]; then
+				echo "====> lib has been filtered -- link is not processed"
+				continue
+			fi
+			# default filter
+			if [ ! "$STELLA_BINARY_DEFAULT_LIB_IGNORED" == "" ]; then
+				if [ -z "$(__filter_list "$_lib_to_filter" "EXCLUDE_TAG EXCLUDE_LINKED_LIB EXCLUDE_LINKED_LIB $STELLA_BINARY_DEFAULT_LIB_IGNORED")" ]; then
+					echo "====> lib has been filtered -- link is not processed"
+					continue
+				fi
+			fi
+
+			# FIXED_PATH
 			if [ "$_fixed_path" == "ON" ]; then
-				if [ "$STELLA_CURRENT_PLATFORM" == "linux"]; then
+				# fix write permission
+				chmod +w "$_file"
+				if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
 					echo "====> setting NEEDED : $_force_path/$_linked_lib_filename"
 					patchelf --replace-needed "$l" "$_force_path/$_linked_lib_filename" "$_file"
 				fi
-				if [ "$STELLA_CURRENT_PLATFORM" == "darwin"]; then
+				if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 					echo "====> setting LC_LOAD_DYLIB : $_force_path/$_linked_lib_filename"
 					install_name_tool -change "$l" "$_force_path/$_linked_lib_filename" "$_file"
 				fi
 			fi
 
+			# REL_LINK_TO_ABS
 			if [ "$_abs_rpath" == "ON" ]; then
-				if [ "$STELLA_CURRENT_PLATFORM" == "linux"]; then
-					_new_load_lib="$(__get_path_from_string $l)"
-					echo "====> setting NEEDED : $_new_load_lib/$_linked_lib_filename"
-					patchelf --replace-needed "$l" "$_new_load_lib/$_linked_lib_filename" "$_file"
+				# fix write permission
+				chmod +w "$_file"
+				if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+					if [ "$_resolved" == "1" ]; then
+						echo "====> setting NEEDED : $_resolved_lib"
+						patchelf --replace-needed "$l" "$_resolved_lib" "$_file"
+					else
+						echo "====> can not determine absolute path for $l"
+					fi
 				fi
-				if [ "$STELLA_CURRENT_PLATFORM" == "darwin"]; then
-					_new_load_lib="$(__get_path_from_string $l)"
-					echo "====> setting LC_LOAD_DYLIB : $_new_load_lib/$_linked_lib_filename"
-					install_name_tool -change "$l" "$_new_load_lib/$_linked_lib_filename" "$_file"
+				if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+					if [ "$_resolved" == "1" ]; then
+						echo "====> setting LC_LOAD_DYLIB : $_resolved_lib"
+						install_name_tool -change "$l" "$_resolved_lib" "$_file"
+					else
+						echo "====> can not determine absolute path for $l"
+						#_new_load_lib="$(__get_path_from_string $l)"
+						#install_name_tool -change "$l" "$_new_load_lib/$_linked_lib_filename" "$_file"
+					fi
 				fi
 			fi
 
-
+			# ABS_LINK_TO_REL
 			if [ "$_rel_rpath" == "ON" ]; then
-				if [ "$STELLA_CURRENT_PLATFORM" == "linux"]; then
-					_new_load_lib="\$ORIGIN/$(__abs_to_rel_path $_new_load_lib $(__get_path_from_string $_file))"
+				# fix write permission
+				chmod +w "$_file"
+				# TODO we could use resolved linked lib instead of __abs_to_rel_path $(__get_path_from_string $l) $(__get_path_from_string $_file)
+				# like in REL_LINK_TO_ABS ?
+				if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+					_new_load_lib="\$ORIGIN/$(__abs_to_rel_path $(__get_path_from_string $l) $(__get_path_from_string $_file))"
 					echo "====> setting NEEDED : $_linked_lib_filename"
 					patchelf --replace-needed "$l" "$_linked_lib_filename" "$_file"
 
@@ -1044,8 +1049,8 @@ function __tweak_linked_lib() {
 					#__set_build_mode "RPATH" "ADD" "$_new_load_lib"
 					__add_rpath "$_file" "$_new_load_lib"
 				fi
-				if [ "$STELLA_CURRENT_PLATFORM" == "darwin"]; then
-					_new_load_lib="@loader_path/$(__abs_to_rel_path $_new_load_lib $(__get_path_from_string $_file))"
+				if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+					_new_load_lib="@loader_path/$(__abs_to_rel_path $(__get_path_from_string $l) $(__get_path_from_string $_file))"
 					echo "====> setting LC_LOAD_DYLIB : @rpath/$_linked_lib_filename"
 					install_name_tool -change "$l" "@rpath/$_linked_lib_filename" "$_file"
 
@@ -1083,8 +1088,8 @@ function __get_install_name_darwin() {
 # check ID/Install Name value
 # 		RPATH -- check if install_name has @rpath
 # 		PATH -- check if install_name is a standard path and is matching current file location
-# INCLUDE_FILTER <expr> -- include these files
-# EXCLUDE_FILTER <expr> -- exclude these files
+# INCLUDE_FILTER <expr> -- include these files to check
+# EXCLUDE_FILTER <expr> -- exclude these files to check
 # INCLUDE_FILTER is apply first, before EXCLUDE_FILTER
 function __check_install_name_darwin() {
 	local _path=$1
@@ -1099,29 +1104,14 @@ function __check_install_name_darwin() {
 		done
 	fi
 
-	local _flag_exclude_filter=OFF
-	local _exclude_filter=
-	local _invert_filter=
-	local _flag_include_filter=OFF
-	local _include_filter=
-	local _opt_filter=OFF
 	local _opt_rpath=OFF
 	local _opt_path=OFF
 	for o in $OPT; do
-		[ "$_flag_include_filter" == "ON" ] && _include_filter="$o" && _flag_include_filter=OFF
-		[ "$o" == "INCLUDE_FILTER" ] && _flag_include_filter=ON && _opt_filter=ON
-		[ "$_flag_exclude_filter" == "ON" ] && _exclude_filter="$o" && _flag_exclude_filter=OFF
-		[ "$o" == "EXCLUDE_FILTER" ] && _flag_exclude_filter=ON && _invert_filter="-Ev" && _opt_filter=ON
 		[ "$o" == "RPATH" ] && _opt_rpath=ON && _opt_path=OFF
 		[ "$o" == "PATH" ] && _opt_rpath=OFF && _opt_path=ON
 	done
 
-	if [ "$_opt_filter" == "ON" ]; then
-		if [ ! "$(echo $_path | grep -E "$_include_filter" | grep $_invert_filter $_exclude_filter)" == "" ]; then
-			return $_result
-		fi
-	fi
-
+	[ -z "$(__filter_list "$_path" "INCLUDE_TAG INCLUDE_FILTER EXCLUDE_TAG EXCLUDE_FILTER $OPT")" ] && return $_result
 
 	if __is_shareable_bin "$_path"; then
 		if __is_macho "$_path" || __is_macho_universal "$_path"; then
@@ -1174,8 +1164,8 @@ function __check_install_name_darwin() {
 # we cannot pass '-Wl,install_name @rpath/library_name' during build time because we do not know the library name yet
 # 		RPATH -- tweak install_name with @rpath [DEFAULT]
 # 		PATH -- tweak install_name with current location
-# INCLUDE_FILTER <expr> -- include these files
-# EXCLUDE_FILTER <expr> -- exclude these files
+# INCLUDE_FILTER <expr> -- include these files to tweak
+# EXCLUDE_FILTER <expr> -- exclude these files to tweak
 # INCLUDE_FILTER is apply first, before EXCLUDE_FILTER
 function __tweak_install_name_darwin() {
 	local _path=$1
@@ -1191,28 +1181,14 @@ function __tweak_install_name_darwin() {
 		done
 	fi
 
-	local _flag_exclude_filter=OFF
-	local _exclude_filter=
-	local _invert_filter=
-	local _flag_include_filter=OFF
-	local _include_filter=
-	local _opt_filter=OFF
 	local _opt_rpath=ON
 	local _opt_path=OFF
 	for o in $OPT; do
-		[ "$_flag_include_filter" == "ON" ] && _include_filter="$o" && _flag_include_filter=OFF
-		[ "$o" == "INCLUDE_FILTER" ] && _flag_include_filter=ON && _opt_filter=ON
-		[ "$_flag_exclude_filter" == "ON" ] && _exclude_filter="$o" && _flag_exclude_filter=OFF
-		[ "$o" == "EXCLUDE_FILTER" ] && _flag_exclude_filter=ON && _invert_filter="-Ev" && _opt_filter=ON
 		[ "$o" == "RPATH" ] && _opt_rpath=ON && _opt_path=OFF
 		[ "$o" == "PATH" ] && _opt_rpath=OFF && _opt_path=ON
 	done
 
-	if [ "$_opt_filter" == "ON" ]; then
-		if [ ! "$(echo $_path | grep -E "$_include_filter" | grep $_invert_filter $_exclude_filter)" == "" ]; then
-			return
-		fi
-	fi
+	[ -z "$(__filter_list "$_path" "INCLUDE_TAG INCLUDE_FILTER EXCLUDE_TAG EXCLUDE_FILTER $OPT")" ] && return
 
 	if __is_shareable_bin "$_path"; then
 		if __is_macho "$_path" || __is_macho_universal "$_path"; then
@@ -1229,23 +1205,29 @@ function __tweak_install_name_darwin() {
 			case "$_original_install_name" in
 				@rpath*)
 					if [ "$_opt_path" == "ON" ]; then
+						# fix write permission
+						chmod +w "$_path"
 						_new_install_name="$(__get_path_from_string $_path)/$(__get_filename_from_string $_original_install_name)"
-						echo "** Fixing install_name for $_path with value : FROM $_original_install_name TO $_new_install_name"
+						echo "*** Fixing install_name for $_path with value : FROM $_original_install_name TO $_new_install_name"
 						install_name_tool -id "$_new_install_name" $_path
 					fi
 				;;
 
 				*)
 					if [ "$_opt_rpath" == "ON" ]; then
+						# fix write permission
+						chmod +w "$_path"
 						_new_install_name="@rpath/$(__get_filename_from_string $_original_install_name)"
-						echo "** Fixing install_name for $_path with value : FROM $_original_install_name TO $_new_install_name"
+						echo "*** Fixing install_name for $_path with value : FROM $_original_install_name TO $_new_install_name"
 						install_name_tool -id "$_new_install_name" $_path
 					fi
 					if [ "$_opt_path" == "ON" ]; then
+						# fix write permission
+						chmod +w "$_path"
 						# location path is not the good one
 						if [ ! "$(dirname $_path)" == "$(dirname $_original_install_name)" ]; then
 							_new_install_name="$(__get_path_from_string $_path)/$(__get_filename_from_string $_original_install_name)"
-							echo "** Fixing install_name for $_path with value : FROM $_original_install_name TO $_new_install_name"
+							echo "*** Fixing install_name for $_path with value : FROM $_original_install_name TO $_new_install_name"
 							install_name_tool -id "$_new_install_name" $_path
 						fi
 					fi

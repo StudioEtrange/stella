@@ -44,7 +44,7 @@ goto :eof
 
 			if not "!FEAT_BUNDLE!"=="" (
 				set "save_opt_hidden_feature=!_opt_hidden_feature!"
-				
+
 				call :push_schema_context
 
 				set "FEAT_BUNDLE_MODE=!FEAT_BUNDLE!"
@@ -61,11 +61,11 @@ goto :eof
 				call :pop_schema_context
 				set "_opt_hidden_feature=!save_opt_hidden_feature!"
 			)
-			
+
 			if not "!_opt_hidden_feature!"=="ON" set "FEATURE_LIST_ENABLED=!FEATURE_LIST_ENABLED! !FEAT_NAME!#!FEAT_VERSION!"
 			if not "!FEAT_SEARCH_PATH!"=="" set "PATH=!FEAT_SEARCH_PATH!;!PATH!"
 
-			
+
 			for %%p in (!FEAT_ENV_CALLBACK!) do (
 				call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :%%p
 			)
@@ -90,47 +90,52 @@ goto :eof
 	set "_tested="
 	set "_found="
 
-	REM we are NOT inside a bundle, because FEAT_BUNDLE_MODE is NOT set
-	if "!FEAT_BUNDLE_MODE!"=="" (
-		call :translate_schema !_match_SCHEMA! "__VAR_FEATURE_NAME" "__VAR_FEATURE_VER" "__VAR_FEATURE_ARCH" "__VAR_FEATURE_FLAVOUR"
 
-		if not "!__VAR_FEATURE_VER!"=="" (
-			set "_tested=!__VAR_FEATURE_VER!"
-		)
-		if not "!__VAR_FEATURE_ARCH!"=="" (
-			set "_tested=!_tested!@!__VAR_FEATURE_ARCH!"
-		)
-		if exist "!STELLA_APP_FEATURE_ROOT!\!__VAR_FEATURE_NAME!" (
-			REM for each detected version
-			for /D %%F in ( !STELLA_APP_FEATURE_ROOT!\!__VAR_FEATURE_NAME!\* ) do (
-				set "_f=%%~nxF"
+	if "!_match_SCHEMA!"=="" (
+		call :internal_feature_context
+	) else (
 
-				if "!_tested!"=="" (
-					set "_found=!_f!"
-				) else (
-					call %STELLA_COMMON%\common.bat :match_exp ".*!_tested!.*" "!_f!"
-					if "!_match_exp!"=="TRUE" (
+		REM we are NOT inside a bundle, because FEAT_BUNDLE_MODE is NOT set
+		if "!FEAT_BUNDLE_MODE!"=="" (
+			call :translate_schema !_match_SCHEMA! "__VAR_FEATURE_NAME" "__VAR_FEATURE_VER" "__VAR_FEATURE_ARCH" "__VAR_FEATURE_FLAVOUR"
+
+			if not "!__VAR_FEATURE_VER!"=="" (
+				set "_tested=!__VAR_FEATURE_VER!"
+			)
+			if not "!__VAR_FEATURE_ARCH!"=="" (
+				set "_tested=!_tested!@!__VAR_FEATURE_ARCH!"
+			)
+			if exist "!STELLA_APP_FEATURE_ROOT!\!__VAR_FEATURE_NAME!" (
+				REM for each detected version
+				for /D %%F in ( !STELLA_APP_FEATURE_ROOT!\!__VAR_FEATURE_NAME!\* ) do (
+					set "_f=%%~nxF"
+
+					if "!_tested!"=="" (
 						set "_found=!_f!"
+					) else (
+						call %STELLA_COMMON%\common.bat :match_exp ".*!_tested!.*" "!_f!"
+						if "!_match_exp!"=="TRUE" (
+							set "_found=!_f!"
+						)
 					)
 				)
 			)
-		)
 
-		if not "!_found!"=="" (
-			if not "!__VAR_FEATURE_FLAVOUR!"=="" (
-				call :internal_feature_context "!__VAR_FEATURE_NAME!#!_found!:!__VAR_FEATURE_FLAVOUR!"
+			if not "!_found!"=="" (
+				if not "!__VAR_FEATURE_FLAVOUR!"=="" (
+					call :internal_feature_context "!__VAR_FEATURE_NAME!#!_found!:!__VAR_FEATURE_FLAVOUR!"
+				) else (
+					call :internal_feature_context "!__VAR_FEATURE_NAME!#!_found!"
+				)
 			) else (
-				call :internal_feature_context "!__VAR_FEATURE_NAME!#!_found!"
-			)	
+				REM empty info values
+				call :internal_feature_context
+			)
+
 		) else (
-			REM empty info values
-			call :internal_feature_context
+			call :internal_feature_context !_match_SCHEMA!
 		)
-
-	) else (
-		call :internal_feature_context !_match_SCHEMA!
 	)
-
 goto :eof
 
 
@@ -154,47 +159,49 @@ goto :eof
 
 	set TEST_FEATURE=0
 
-	call :feature_match_installed !_inspect_SCHEMA!
-	set "_inspect_SCHEMA=!feature_inspect_ORIGINAL_SCHEMA!"
+	if not "!_inspect_SCHEMA!"=="" (
+		call :feature_match_installed !_inspect_SCHEMA!
+		set "_inspect_SCHEMA=!feature_inspect_ORIGINAL_SCHEMA!"
 
-	if not "!FEAT_SCHEMA_SELECTED!"=="" (
-		if not "!FEAT_BUNDLE!"=="" (
-			set "_t=1"
-			
-			call :push_schema_context
+		if not "!FEAT_SCHEMA_SELECTED!"=="" (
+			if not "!FEAT_BUNDLE!"=="" (
+				set "_t=1"
 
-			set "FEAT_BUNDLE_MODE=!FEAT_BUNDLE!"
-			for %%p in (!FEAT_BUNDLE_ITEM!) do (
-				set "TEST_FEATURE=0"
-				call :feature_inspect %%p
-				if "!TEST_FEATURE!"=="0" (
-					set "_t=0"
+				call :push_schema_context
+
+				set "FEAT_BUNDLE_MODE=!FEAT_BUNDLE!"
+				for %%p in (!FEAT_BUNDLE_ITEM!) do (
+					set "TEST_FEATURE=0"
+					call :feature_inspect %%p
+					if "!TEST_FEATURE!"=="0" (
+						set "_t=0"
+					)
 				)
-			)
-			set "FEAT_BUNDLE_MODE="
+				set "FEAT_BUNDLE_MODE="
 
-			call :pop_schema_context
+				call :pop_schema_context
 
-			set "TEST_FEATURE=!_t!"
-			if "!TEST_FEATURE!"=="1" (
-				if not "!FEAT_INSTALL_TEST!"=="" (
-					for %%f in (!FEAT_INSTALL_TEST!) do (
-						if not exist "%%f" (
-							set "TEST_FEATURE=0"
+				set "TEST_FEATURE=!_t!"
+				if "!TEST_FEATURE!"=="1" (
+					if not "!FEAT_INSTALL_TEST!"=="" (
+						for %%f in (!FEAT_INSTALL_TEST!) do (
+							if not exist "%%f" (
+								set "TEST_FEATURE=0"
+							)
 						)
 					)
 				)
-			)
-		) else (	
-			set "TEST_FEATURE=1"
-			for %%f in (!FEAT_INSTALL_TEST!) do (
-				if not exist "%%f" (
-					set "TEST_FEATURE=0"
+			) else (
+				set "TEST_FEATURE=1"
+				for %%f in (!FEAT_INSTALL_TEST!) do (
+					if not exist "%%f" (
+						set "TEST_FEATURE=0"
+					)
 				)
 			)
+		) else (
+			call :feature_catalog_info !_inspect_SCHEMA!
 		)
-	) else (
-		call :feature_catalog_info !_inspect_SCHEMA!
 	)
 goto :eof
 
@@ -212,7 +219,7 @@ goto :eof
 	)
 
 	call :feature_inspect !_remove_SCHEMA!
-	
+
 	if not "!FEAT_SCHEMA_OS_RESTRICTION!"=="" (
 			if not "!FEAT_SCHEMA_OS_RESTRICTION!"=="!STELLA_CURRENT_OS!" goto :eof
 	)
@@ -252,7 +259,7 @@ goto :eof
 			set "FEAT_BUNDLE_MODE="
 			call :pop_schema_context
 			call %STELLA_COMMON%\common.bat :stack_pop "_remove_SCHEMA"
-			
+
 		) else (
 			echo Remove !FEAT_NAME! version !FEAT_VERSION! from !FEAT_INSTALL_ROOT!
 			call %STELLA_COMMON%\common.bat :del_folder !FEAT_INSTALL_ROOT!
@@ -315,7 +322,7 @@ goto :eof
 		)
 	)
 
-	
+
 
 	:: EXPORT / PORTABLE MODE ------------------------------------
 	if "!_export_mode!"=="ON" (
@@ -333,7 +340,7 @@ goto :eof
 	if "!_portable_mode!"=="ON" (
 		set _opt_internal_feature=OFF
 		set _opt_hidden_feature=ON
-		
+
 		set "FEAT_MODE_EXPORT_SCHEMA=!_SCHEMA!"
 		set "_SCHEMA=mode-export"
 
@@ -417,10 +424,10 @@ goto :eof
 				if "!FEAT_SCHEMA_FLAVOUR!"=="binary" (
 					set "_dependencies=!FEAT_BINARY_DEPENDENCIES!"
 				)
-				
+
 				for %%p in (!_dependencies!) do (
 					echo Installing dependency %%p
-					
+
 					call :feature_install %%p "!_OPT! HIDDEN"
 					if "!TEST_FEATURE!"=="0" (
 						echo ** Error while installing dependency feature !FEAT_SCHEMA_SELECTED!
@@ -428,20 +435,20 @@ goto :eof
 				)
 
 				call :pop_schema_context
-				call %STELLA_COMMON%\common.bat :stack_pop "_SCHEMA"			
-				
+				call %STELLA_COMMON%\common.bat :stack_pop "_SCHEMA"
+
 				set "FORCE=!save_FORCE!"
 			)
 
 
 			REM bundle
 			if not "!FEAT_BUNDLE!"=="" (
-				
-				
+
+
 				:: save export/portable mode
 				call %STELLA_COMMON%\common.bat :stack_push "!_export_mode!"
 				call %STELLA_COMMON%\common.bat :stack_push "!_portable_mode!"
-		
+
 
 				if not "!FEAT_BUNDLE_ITEM!"=="" (
 					call %STELLA_COMMON%\common.bat :stack_push "!_SCHEMA!"
@@ -458,14 +465,14 @@ goto :eof
 					) else (
 						set "_flag_hidden=HIDDEN"
 					)
-					
-					
+
+
 
 					for %%p in (!FEAT_BUNDLE_ITEM!) do (
 						call :feature_install %%p "!_OPT! !_flag_hidden!"
 					)
-					
-					
+
+
 
 					if not "!FEAT_BUNDLE_MODE!"=="LIST" (
 						set "FORCE=!save_FORCE!"
@@ -474,15 +481,15 @@ goto :eof
 					set "FEAT_BUNDLE_MODE="
 					call :pop_schema_context
 					call %STELLA_COMMON%\common.bat :stack_pop "_SCHEMA"
-					
+
 				)
-				
-				
+
+
 				:: restore export/portable mode
 				call %STELLA_COMMON%\common.bat :stack_pop "_portable_mode"
 				call %STELLA_COMMON%\common.bat :stack_pop "_export_mode"
-	
-				
+
+
 				REM automatic call of callback
 				call :feature_callback
 			) else (
@@ -490,7 +497,7 @@ goto :eof
 				call %STELLA_COMMON%\common.bat :stack_push "!_SCHEMA!"
 				call :push_schema_context
 				echo Installing !FEAT_NAME! version !FEAT_VERSION! in !FEAT_INSTALL_ROOT!
-				if "!FEAT_SCHEMA_FLAVOUR!"=="source" ( 
+				if "!FEAT_SCHEMA_FLAVOUR!"=="source" (
 					call %STELLA_COMMON%\common-build.bat :start_build_session
 				)
 				call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :feature_!FEAT_NAME!_install_!FEAT_SCHEMA_FLAVOUR!
@@ -511,7 +518,7 @@ goto :eof
 						cd /D %STELLA_APP_ROOT%
 					)
 				)
-			)					
+			)
 
 		) else (
 			echo ** Feature !_SCHEMA! already installed
@@ -523,7 +530,7 @@ goto :eof
 		if "!_export_mode!"=="ON" (
 			set "STELLA_APP_FEATURE_ROOT=!_save_app_feature_root!"
 		)
-		
+
 		if "!_portable_mode!"=="ON" (
 			set "STELLA_APP_FEATURE_ROOT=!_save_app_feature_root!"
 			call %STELLA_COMMON%\common-build.bat :set_build_mode_default "RELOCATE" "!_save_relocate_default_mode!"
@@ -536,7 +543,7 @@ goto :eof
 			set "STELLA_APP_TEMP_DIR=!_save_app_temp_dir!"
 		)
 
-		
+
 	) else (
 		echo ** Error unknow feature !_SCHEMA!
 	)
@@ -552,7 +559,7 @@ goto :eof
 	REM init internal features
 	REM internal feature are not prioritary over app features
 	if not "%STELLA_INTERNAL_FEATURE_ROOT%"=="%STELLA_APP_FEATURE_ROOT%" (
-	
+
 		set "_save_app_feature_root=!STELLA_APP_FEATURE_ROOT!"
 		set "STELLA_APP_FEATURE_ROOT=!STELLA_INTERNAL_FEATURE_ROOT!"
 
@@ -577,7 +584,7 @@ goto :eof
 		set "_folder=%%~nxA"
 		REM check for official feature
 		for %%F in (%__STELLA_FEATURE_LIST%) do (
-			if "%%F"=="!_folder!" ( 
+			if "%%F"=="!_folder!" (
 				REM for each detected version
 				for /D %%V in ( %STELLA_APP_FEATURE_ROOT%\%%F\* ) do (
 					set "_ver=%%~nxV"
@@ -587,7 +594,7 @@ goto :eof
 		)
 	)
 
-	
+
 
 	if not "!FEATURE_LIST_ENABLED!"=="" echo ** Features initialized : !FEATURE_LIST_ENABLED!
 goto :eof
@@ -606,10 +613,10 @@ goto :eof
 			call "%STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat" :%%p
 		)
 	) else (
-		
+
 		if "!FEAT_SCHEMA_FLAVOUR!"=="source" (
 			for %%p in (!FEAT_SOURCE_CALLBACK!) do (
-				call "%STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat" :%%p				
+				call "%STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat" :%%p
 			)
 		)
 
@@ -628,7 +635,7 @@ REM init feature context (properties, variables, ...)
 	set "feature_context_ORIGINAL_SCHEMA=%~1"
 
 	set "FEAT_ARCH="
-	
+
 	set "TMP_FEAT_SCHEMA_NAME="
 	set "TMP_FEAT_SCHEMA_VERSION="
 	set "FEAT_SCHEMA_SELECTED="
@@ -637,7 +644,7 @@ REM init feature context (properties, variables, ...)
 	set "FEAT_SCHEMA_OS_EXCLUSION="
 
 
-	
+
 	set "FEAT_NAME="
 	set "FEAT_LIST_SCHEMA="
 	set "FEAT_DEFAULT_VERSION="
@@ -666,13 +673,13 @@ REM init feature context (properties, variables, ...)
 
 	if not "!__SCHEMA!"=="" (
 		call :select_official_schema !__SCHEMA! "FEAT_SCHEMA_SELECTED" "TMP_FEAT_SCHEMA_NAME" "TMP_FEAT_SCHEMA_VERSION" "FEAT_ARCH" "FEAT_SCHEMA_FLAVOUR" "FEAT_SCHEMA_OS_RESTRICTION" "FEAT_SCHEMA_OS_EXCLUSION"
-	
+
 
 		if not "!FEAT_SCHEMA_SELECTED!"=="" (
 
 			REM call :translate_schema "!FEAT_SCHEMA_SELECTED!" "TMP_FEAT_SCHEMA_NAME" "TMP_FEAT_SCHEMA_VERSION" "FEAT_ARCH" "FEAT_SCHEMA_FLAVOUR" "FEAT_SCHEMA_OS_RESTRICTION" "FEAT_SCHEMA_OS_EXCLUSION"
 
-			REM set install root (FEAT_INSTALL_ROOT)	
+			REM set install root (FEAT_INSTALL_ROOT)
 			if "!FEAT_BUNDLE_MODE!"=="" (
 				if not "!FEAT_ARCH!"=="" (
 					set "FEAT_INSTALL_ROOT=!STELLA_APP_FEATURE_ROOT!\!TMP_FEAT_SCHEMA_NAME!\!TMP_FEAT_SCHEMA_VERSION!@!FEAT_ARCH!"
@@ -756,10 +763,10 @@ REM and may return split schema properties
 	if not "!_RESULT_SCHEMA!"=="" (
 		set "!_RESULT_SCHEMA!="
 	)
-	
+
 	call :translate_schema "!_SCHEMA!" "!_select_VAR_FEATURE_NAME!" "!_select_VAR_FEATURE_VER!" "!_select_VAR_FEATURE_ARCH!" "!_select_VAR_FEATURE_FLAVOUR!" "!_select_VAR_FEATURE_OS_RESTRICTION!" "!_select_VAR_FEATURE_OS_EXCLUSION!"
 
- 
+
  	set "_TR_FEATURE_NAME=!%_select_VAR_FEATURE_NAME%!"
  	set "_TR_FEATURE_VER=!%_select_VAR_FEATURE_VER%!"
  	set "_TR_FEATURE_ARCH=!%_select_VAR_FEATURE_ARCH%!"
@@ -798,16 +805,16 @@ REM and may return split schema properties
 		if not "!_TR_FEATURE_ARCH!"=="" (
 			set "_FILLED_SCHEMA=!_FILLED_SCHEMA!@!_TR_FEATURE_ARCH!"
 		)
-		if not "!_TR_FEATURE_FLAVOUR!"=="" ( 
+		if not "!_TR_FEATURE_FLAVOUR!"=="" (
 			set "_FILLED_SCHEMA=!_FILLED_SCHEMA!:!_TR_FEATURE_FLAVOUR!"
 		)
-		
+
 		REM ADDING OS restriction and OS exclusion
 		set _OS_OPTION=
-		if not "!_TR_FEATURE_OS_RESTRICTION!"=="" ( 
+		if not "!_TR_FEATURE_OS_RESTRICTION!"=="" (
 			set "_OS_OPTION=!_OS_OPTION!/!_TR_FEATURE_OS_RESTRICTION!"
 		)
-		if not "!_TR_FEATURE_OS_EXCLUSION!"=="" ( 
+		if not "!_TR_FEATURE_OS_EXCLUSION!"=="" (
 			set "_OS_OPTION=!_OS_OPTION!\!_TR_FEATURE_OS_EXCLUSION!"
 		)
 
@@ -894,7 +901,7 @@ REM example: wget/ubuntu#1_2@x86:source wget/ubuntu#1_2@x86:source\macos
 			set "!_VAR_FEATURE_OS_RESTRICTION!=!_tmp!"
 		)
 	)
-	
+
 	REM \
 	set "_tmp="
 	if not "!_VAR_FEATURE_OS_EXCLUSION!"=="" (
@@ -923,7 +930,7 @@ REM example: wget/ubuntu#1_2@x86:source wget/ubuntu#1_2@x86:source\macos
 			set "!_VAR_FEATURE_VER!=!_tmp!"
 		)
 	)
-	
+
 
 	REM @
 	set "_tmp="
@@ -940,8 +947,3 @@ REM example: wget/ubuntu#1_2@x86:source wget/ubuntu#1_2@x86:source\macos
 	)
 
 goto :eof
-
-
-
-
-

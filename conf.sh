@@ -121,7 +121,7 @@ done
 
 
 
-# BUILD SYSTEM---------------------------------------------
+# BUILD MODULE ---------------------------------------------
 # Define linking mode.
 # have an effect only for feature linked with __link_feature_libray (do not ovveride specific FORCE_STATIC or FORCE_DYNAMIC)
 # DEFAULT | STATIC | DYNAMIC
@@ -169,6 +169,11 @@ STELLA_BUILD_RPATH_DEFAULT=""
 
 # buid engine reset
 __reset_build_env
+
+# BINARY MODULE ---------------------------
+# linked libs we do not want to tweak (change link to)
+STELLA_BINARY_DEFAULT_LIB_IGNORED='^/System/Library|^/usr/lib|^/lib'
+
 
 # API ---------------------------------------------
 STELLA_API_COMMON_PUBLIC="get_active_path uncompress daemonize rel_to_abs_path is_abs argparse get_filename_from_string \

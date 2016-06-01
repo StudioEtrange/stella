@@ -1,4 +1,4 @@
-if [ ! "$_LIBPNG_INCLUDED_" == "1" ]; then 
+if [ ! "$_LIBPNG_INCLUDED_" == "1" ]; then
 _LIBPNG_INCLUDED_=1
 
 # darwin -- OK -- 20151012
@@ -15,7 +15,7 @@ function feature_libpng_1_6_17() {
 	FEAT_VERSION=1_6_17
 
 
-	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 cmake"
+	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8"
 	FEAT_BINARY_DEPENDENCIES=
 	FEAT_SOURCE_URL=http://downloads.sourceforge.net/project/libpng/libpng16/older-releases/1.6.17/libpng-1.6.17.tar.xz
 	FEAT_SOURCE_URL_FILENAME=libpng-1.6.17.tar.xz
@@ -43,13 +43,12 @@ function feature_libpng_link() {
 function feature_libpng_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
-	#__set_toolset "CUSTOM" "CONFIG_TOOL cmake"
+
 	__set_toolset "CMAKE"
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
-	
+
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
 	#AUTO_INSTALL_CONF_FLAG_POSTFIX="--disable-dependency-tracking"
@@ -60,9 +59,9 @@ function feature_libpng_install_source() {
 	__feature_callback
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD"
-	
 
-	
+
+
 
 }
 
