@@ -416,10 +416,10 @@ function __is_shareable_bin() {
 		local _type_bin="$(__type_bin "$_file")"
 		case $_type_bin in
 			FILE_MACHO)
-					[[ "$(__macho_filetype "$(__macho_header "$_file")")" =~ MH_DYLIB ]] && _result=0
+					[[ "$(__macho_filetype "$(__macho_header "$_file")")" =~ MH_DYLIB|MH_BUNDLE ]] && _result=0
 				;;
 			FILE_MACHO_UNIVERSAL)
-					[[ "$(__macho_universal_global_filetype "$_file")" =~ MH_DYLIB ]] && _result=0
+					[[ "$(__macho_universal_global_filetype "$_file")" =~ MH_DYLIB|MH_BUNDLE ]] && _result=0
 				;;
 			FILE_ELF)
 					[[ "$(__elf_filetype "$(__elf_header "$_file")")" =~ ET_DYN ]] && _result=0
@@ -438,10 +438,10 @@ function __is_executable_or_shareable_bin() {
 		local _type_bin="$(__type_bin "$_file")"
 		case $_type_bin in
 			FILE_MACHO)
-					[[ "$(__macho_filetype "$(__macho_header "$_file")")" =~ MH_EXECUTE|MH_DYLIB ]] && _result=0
+					[[ "$(__macho_filetype "$(__macho_header "$_file")")" =~ MH_EXECUTE|MH_DYLIB|MH_BUNDLE ]] && _result=0
 				;;
 			FILE_MACHO_UNIVERSAL)
-					[[ "$(__macho_universal_global_filetype "$_file")" =~ MH_EXECUTE|MH_DYLIB ]] && _result=0
+					[[ "$(__macho_universal_global_filetype "$_file")" =~ MH_EXECUTE|MH_DYLIB|MH_BUNDLE ]] && _result=0
 				;;
 			FILE_ELF)
 					[[ "$(__elf_filetype "$(__elf_header "$_file")")" =~ ET_EXEC|ET_DYN ]] && _result=0

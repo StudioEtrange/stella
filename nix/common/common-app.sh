@@ -51,13 +51,15 @@ function __create_app_samples() {
 	cp -f "$STELLA_TEMPLATE/sample-stella.properties" "$_approot/sample-stella.properties"
 }
 
+
+
 # align stella installation to current app one (recreate stella-link file)
 # align workspace and cache folder paths of the current one (change stella properties path)
 function __link_app() {
-	local _target_approot=$1
+	local _target_approot="$1"
 	#local _stella_root=$2
 
-	local _OPT=$2
+	local _OPT="$2"
 	local _opt_share_cache=OFF
 	local _opt_share_workspace=OFF
 	local _flag_stella_root=OFF
