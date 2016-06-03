@@ -867,7 +867,7 @@ function __find_linked_lib_linux() {
 			__require "readelf" "binutils" "SYSTEM"
 			local _output="$($STELLA_ARTEFACT/lddtree/lddtree.sh -b readelf -m --no-recursive --no-header $_path)" || _result=1
 			_result=$?
-			echo "$_output" | grep "$_specific_linked_lib" | cut -d '=' -f 2 | sed 's/> //'
+			echo "$_output" | grep "$_specific_linked_lib" | cut -d '=' -f 2 | sed 's/> //' | sed 's/not found//g'
 		fi
 	fi
 	return $_result
