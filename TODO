@@ -10,8 +10,8 @@ TODO
 [ ] function get_ressource : change option STRIP to option NO_STRIP. STRIP will be by default if possible
 [ ] windows : review link feature library and lib isolation
 [ ] windows : portable mode review copy dependencies
-[ ] windows add recipes for these libs : 
-https://ryzomcore.atlassian.net/wiki/display/RC/MinGW+External+Libraries 
+[ ] windows add recipes for these libs :
+https://ryzomcore.atlassian.net/wiki/display/RC/MinGW+External+Libraries
 https://ryzomcore.atlassian.net/wiki/display/RC/Create+External+Libs
 https://github.com/Alexpux/MINGW-packages
 
@@ -48,3 +48,7 @@ http://stackoverflow.com/questions/3668665/is-there-a-static-analysis-tool-like-
 http://man.he.net/man1/checkbashisms ===> test portability
 https://github.com/duggan/shlint ===> test portability
 https://github.com/SublimeLinter/SublimeLinter-shellcheck
+
+
+# FIRST PUSH OF stella pre version
+https://bitbucket.org/StudioEtrange/ryzomcore-script/src/1308706a1dc3f1dde7d65b048e9b16f2a2f2f518

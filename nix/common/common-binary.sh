@@ -223,6 +223,7 @@ function __tweak_binary_file() {
 	# INCLUDE_LINKED_LIB <expr> -- include these linked libs while tweaking
 	# EXCLUDE_LINKED_LIB <expr> -- exclude these linked libs while tweaking
 	# INCLUDE_LINKED_LIB is apply first, before EXCLUDE_LINKED_LIB
+	# FIX_LINKED_LIB <path> -- change path to linked lib to path (relative path will be computed)
 	# INCLUDE_FILTER <expr> -- include these files to tweak
 	# EXCLUDE_FILTER <expr> -- exclude these files to tweak
 	# INCLUDE_FILTER is apply first, before EXCLUDE_FILTER
@@ -230,12 +231,17 @@ function __tweak_binary_file() {
 	# NON_RELOCATE -- binary have to be non relocatable
 	# WANTED_RPATH val1 val2 ... -- binary rpath values to set
 	local _flag_relocate=DEFAULT
+	local _fix_linked_lib=
+	local _flag_fix_linked_lib=OFF
+	local _opt_fix_linked_lib=OFF
 	local _flag_wanted_rpath=OFF
 	local _wanted_rpath_values=
 	local _opt_wanted_rpath=OFF
 	for o in $OPT; do
 		[ "$_flag_wanted_rpath" == "ON" ] && _wanted_rpath_values="$o $_wanted_rpath_values"
 		[ "$o" == "WANTED_RPATH" ] && _flag_wanted_rpath=ON && _opt_wanted_rpath=ON
+		[ "$_flag_fix_linked_lib" == "ON" ] && _fix_linked_lib="$o" && _flag_fix_linked_lib=OFF
+		[ "$o" == "FIX_LINKED_LIB" ] && _flag_fix_linked_lib=ON && _opt_fix_linked_lib=ON && _flag_wanted_rpath=OFF
 		[ "$o" == "RELOCATE" ] && _flag_relocate=YES && _flag_wanted_rpath=OFF
 		[ "$o" == "NON_RELOCATE" ] && _flag_relocate=NO && _flag_wanted_rpath=OFF
 	done
@@ -247,36 +253,42 @@ function __tweak_binary_file() {
 		echo
 		echo "-*--*-** Fixing if necessary $_path **-*--*-"
 
-		case $_flag_relocate in
-			YES)
-				if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-					__tweak_install_name_darwin "$_path" "RPATH $OPT"
-				fi
-				__tweak_linked_lib "$_path" "ABS_LINK_TO_REL $OPT"
-				if [ "$_wanted_rpath_values" == "" ]; then
-					# TODO test seems to not work
-					if ! __have_rpath "$_path" "$_wanted_rpath_values"; then
-						__add_rpath "$_path" "$_wanted_rpath_values"
-					fi
-				fi
-				__tweak_rpath "$_path" "REL_RPATH $OPT"
-				;;
-			NO)
-				if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-					__tweak_install_name_darwin "$_path" "PATH $OPT"
-				fi
-				__tweak_linked_lib "$_path" "REL_LINK_TO_ABS $OPT"
-				__remove_all_rpath "$_path"
-				;;
-			DEFAULT)
-				if [ "$_wanted_rpath_values" == "" ]; then
-					if ! __have_rpath "$_path" "$_wanted_rpath_values"; then
-						__add_rpath "$_path" "$_wanted_rpath_values"
-					fi
-				fi
-				;;
-		esac
+		if [ "$_opt_fix_linked_lib" == "ON" ]; then
+			if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+				__tweak_install_name_darwin "$_path" "RPATH $OPT"
+			fi
+			__remove_all_rpath "$_path"
+			__tweak_linked_lib "$_path" "REL_LINK_FORCE $_fix_linked_lib $OPT"
+			if [ ! "$_wanted_rpath_values" == "" ]; then
+				__have_rpath "$_path" "$_wanted_rpath_values" || __add_rpath "$_path" "$_wanted_rpath_values"
+			fi
+		else
 
+			case $_flag_relocate in
+				YES)
+					if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+						__tweak_install_name_darwin "$_path" "RPATH $OPT"
+					fi
+					if [ ! "$_wanted_rpath_values" == "" ]; then
+						__have_rpath "$_path" "$_wanted_rpath_values" || __add_rpath "$_path" "$_wanted_rpath_values"
+					fi
+					__tweak_linked_lib "$_path" "ABS_LINK_TO_REL $OPT"
+					__tweak_rpath "$_path" "REL_RPATH $OPT"
+					;;
+				NO)
+					if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+						__tweak_install_name_darwin "$_path" "PATH $OPT"
+					fi
+					__tweak_linked_lib "$_path" "REL_LINK_TO_ABS $OPT"
+					__remove_all_rpath "$_path"
+					;;
+				DEFAULT)
+					if [ ! "$_wanted_rpath_values" == "" ]; then
+						__have_rpath "$_path" "$_wanted_rpath_values" || __add_rpath "$_path" "$_wanted_rpath_values"
+					fi
+					;;
+			esac
+		fi
 		echo
 	fi
 }
@@ -429,29 +441,33 @@ function __remove_all_rpath() {
 function __have_rpath() {
 	local _path="$1"
 	local _rpath_values="$2"
-	local _result=1
+	local _result=0
 	local j
 	local r
 
-
 	if [ -d "$_path" ]; then
 		for f in  "$_path"/*; do
-			__have_rpath "$f" || _result=1
+			__have_rpath "$f" "$_rpath_values" || _result=1
 		done
 	fi
 
-	if [ -f "$_path" ]; then
+	[ -z "$_rpath_values" ] && return $_result
+
+	if __is_executable_or_shareable_bin "$_path"; then
 		local _existing_rpath="$(__get_rpath $_path)"
+		echo "*** Checking missing rpath values : $_rpath_values"
 
 		for r in $_rpath_values; do
-			printf %s "====> checking if this RPATH value is setted : $r"
+			local _match=0
+			printf %s "====> checking : $r"
 			for j in $_existing_rpath; do
-				[ "$j" == "$r" ] && _result=0
+				[ "$j" == "$r" ] && _match=1
 			done
-			if [ "$_result" == "1" ];then
-				printf %s " -- WARN RPATH is missing"
-			else
+			if [ "$_match" == "1" ]; then
 				printf %s " -- OK"
+			else
+				printf %s " -- WARN RPATH is missing"
+				_result=1
 			fi
 			echo
 		done
@@ -478,7 +494,7 @@ function __add_rpath() {
 
 	local msg=
 
-	if __is_executable_or_shareable_bin "$_file"; then
+	if __is_executable_or_shareable_bin "$_path"; then
 		local _flag_first_place=ON
 		local _flag_last_place=OFF
 		for o in $OPT; do
@@ -528,7 +544,7 @@ function __add_rpath() {
 			msg="$msg -- adding : $_new_rpath"
 		fi
 
-		[ ! "$msg" == "" ] && echo "** Adding rpath values to $_path $msg"
+		[ ! "$msg" == "" ] && echo "*** Adding rpath values to $_path $msg"
 	fi
 }
 
@@ -873,10 +889,12 @@ function __find_linked_lib_linux() {
 # 				EXCLUDE_LINKED_LIB <expr> -- exclude these linked libs while tweaking
 # 				INCLUDE_LINKED_LIB is apply first, before EXCLUDE_LINKED_LIB
 #		-	second transform path to linked lib -- you can choose to :
-#				-	transform all linked libs with rel path to abs path (REL_LINK_TO_ABS) (for MachO : excluding @executable_path because we cant determine the path)
-#				-	transform all linked libs with abs path to rel path (ABS_LINK_TO_REL) (for ELF : set linked lib with lib file name and add an RPATH value corresponding to the relative path to the file with $ORIGIN)
-#																																					(for MachO : set linked lib as @rpath/lib and add an RPATH value corresponding to the relative path to the file with @loader_path/)
-#				-	force a specific path (FIXED_PATH <path>) for all lib -- so each linked lib is registered now with path/linked_lib
+#				-	transform all linked libs with a rel path to abs path (REL_LINK_TO_ABS) - Try to find elf with information contained in file and turn it into abs path
+#				-	transform all linked libs with an abs path to rel path (ABS_LINK_TO_REL) (for ELF : set linked lib with lib file name and add an RPATH value corresponding to the relative path to the lib with $ORIGIN/<computed_rel_path_to_lib>)
+#																																					(for MachO : set linked lib as @rpath/lib and add an RPATH value corresponding to the relative path to the lib with @loader_path/<computed_rel_path_to_lib>)
+#				- force all linked libs with a given path (ABS_LINK_FORCE) (for ELF and Macho : each linked lib will be <path>/linked_lib_file)
+#				- force a relative path to the linked libs with a given path (REL_LINK_FORCE) (for MachO : set linked lib as @rpath/linked_lib_file and add an RPATH value corresponding to the relative path to the given <path> with @loader_path/<computed_rel_path_to_path>)
+#																																						(for Elf : set linked lib as linked_lib_file and add an RPATH value corresponding to the relative path to the given <path> with $ORIGIN/<computed_rel_path_to_path>)
 function __tweak_linked_lib() {
 	local _file=$1
 	local OPT="$2"
@@ -893,31 +911,41 @@ function __tweak_linked_lib() {
 	# EXCLUDE_LINKED_LIB <expr> -- exclude from the transformation these linked libraries
 	# INCLUDE_LINKED_LIB is apply first, before EXCLUDE_LINKED_LIB
 	# path management :
-	# REL_LINK_TO_ABS -- turn linked lib path into an absolute path (only linked libs with rel path are selected (for MachO : excluding @executable_path because we cant determine the path))
-	# ABS_LINK_TO_REL [DEFAULT MODE] -- turn linked lib path into a relative path (only linked libs with absolute paths are selected)
-	# FIXED_PATH <path> -- fix with a given path -- so each linked lib is registered now with fixed_path/linked_lib
+	# ABS_LINK_FORCE <path>
+	# REL_LINK_FORCE <path>
+	# REL_LINK_TO_ABS
+	# ABS_LINK_TO_REL [DEFAULT MODE]
 
-	local _abs_rpath=OFF
-	local _rel_rpath=ON
+	local _rel_link_to_abs=OFF
+	local _abs_link_to_rel=ON
 	local _flag_fixed_path=OFF
-	local _force_path=
-	local _fixed_path=OFF
 
+	local _rel_link_force=
+	local _opt_rel_link_force=OFF
+	local _flag_rel_link_force=OFF
+	local _abs_link_force=
+	local _opt_abs_link_force=OFF
+	local _flag_abs_link_force=OFF
 	for o in $OPT; do
-		[ "$_flag_fixed_path" == "ON" ] && _force_path="$o" && _flag_fixed_path=OFF && _fixed_path=ON && _rel_rpath=OFF && _abs_rpath=OFF
-		[ "$o" == "FIXED_PATH" ] && _flag_fixed_path=ON
-
-		[ "$o" == "FIX_RPATH" ] && echo "ERROR : deprecated -- use FIXED_PATH instead" && exit 1
+		#[ "$_flag_fixed_path" == "ON" ] && _force_path="$o" && _flag_fixed_path=OFF && _fixed_path=ON && _abs_link_to_rel=OFF && _rel_link_to_abs=OFF
+		#[ "$o" == "FIXED_PATH" ] && _flag_fixed_path=ON
+		[ "$o" == "FIXED_PATH" ] && echo "ERROR : deprecated -- use ABS_LINK_FORCE instead" && exit 1
+		[ "$o" == "FIX_RPATH" ] && echo "ERROR : deprecated -- use ABS_LINK_FORCE instead" && exit 1
 		[ "$o" == "REL_RPATH" ] && echo "ERROR : deprecated -- use ABS_LINK_TO_REL" && exit 1
 		[ "$o" == "ABS_RPATH" ] && echo "ERROR : deprecated -- use REL_LINK_TO_ABS" && exit 1
-		[ "$o" == "ABS_LINK_TO_REL" ] && _rel_rpath=ON && _abs_rpath=OFF && _fixed_path=OFF
-		[ "$o" == "REL_LINK_TO_ABS" ] && _rel_rpath=OFF && _abs_rpath=ON && _fixed_path=OFF
+		[ "$o" == "ABS_LINK_TO_REL" ] && _abs_link_to_rel=ON && _rel_link_to_abs=OFF && _opt_rel_link_force=OFF && _opt_abs_link_force=OFF
+		[ "$o" == "REL_LINK_TO_ABS" ] && _abs_link_to_rel=OFF && _rel_link_to_abs=ON && _opt_rel_link_force=OFF && _opt_abs_link_force=OFF
+		[ "$_flag_rel_link_force" == "ON" ] && _rel_link_force="$o" && _flag_rel_link_force=OFF
+		[ "$o" == "REL_LINK_FORCE" ] && _flag_rel_link_force=ON && _abs_link_to_rel=OFF && _rel_link_to_abs=OFF && _opt_rel_link_force=ON && _opt_abs_link_force=OFF
+		[ "$_flag_abs_link_force" == "ON" ] && _abs_link_force="$o" && _flag_abs_link_force=OFF
+		[ "$o" == "ABS_LINK_FORCE" ] && _flag_abs_link_force=ON && _abs_link_to_rel=OFF && _rel_link_to_abs=OFF && _opt_rel_link_force=OFF && _opt_abs_link_force=ON
 	done
 
 	[ -z "$(__filter_list "$_file" "INCLUDE_TAG INCLUDE_FILTER EXCLUDE_TAG EXCLUDE_FILTER $OPT")" ] && return
 
 	if __is_executable_or_shareable_bin "$_file"; then
 		local _new_load_lib=
+		local _new_rpath=
 		local line=
 		local _linked_lib_filename=
 		local _linked_lib_list=
@@ -929,13 +957,18 @@ function __tweak_linked_lib() {
 		# get existing linked lib
 		for line in $__all_linked_libs; do
 
-			# FIXED_PATH : pick all filtered libraries
-			if [ "$_fixed_path" == "ON" ]; then
+			# ABS_LINK_FORCE : pick all linked libraries
+			if [ "$_opt_abs_link_force" == "ON" ]; then
+				_linked_lib_list="$_linked_lib_list $line"
+			fi
+
+			# REL_LINK_FORCE : pick all linked libraries
+			if [ "$_opt_rel_link_force" == "ON" ]; then
 				_linked_lib_list="$_linked_lib_list $line"
 			fi
 
 			# REL_LINK_TO_ABS : pick only rel path (for MachO do not pick @executable_path because we cant determine the path )
-			if [ "$_abs_rpath" == "ON" ]; then
+			if [ "$_rel_link_to_abs" == "ON" ]; then
 				case $line in
 					@executable_path*);;
 					@rpath*|@loader_path)
@@ -950,7 +983,7 @@ function __tweak_linked_lib() {
 			fi
 
 			# ABS_LINK_TO_REL : pick only abs path
-			if [ "$_rel_rpath" == "ON" ]; then
+			if [ "$_abs_link_to_rel" == "ON" ]; then
 				if [ "$(__is_abs "$line")" == "TRUE" ]; then
 					_linked_lib_list="$_linked_lib_list $line"
 				fi
@@ -971,47 +1004,74 @@ function __tweak_linked_lib() {
 
 			echo "*** Fixing $_filename linked to $_linked_lib_filename shared lib"
 
+			echo "==> Try to resolve linked lib, and filter some of them"
 			# FILTERS -- filters are applied on resolved libs
 			[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] &&	_resolved_lib="$(__find_linked_lib_darwin "$_file" "$l")"
 			[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && _resolved_lib="$(__find_linked_lib_linux "$_file" "$l")"
 			[ "$_resolved_lib" == "" ] && _resolved="0" || _resolved="1"
 			if [ "$_resolved" == "1" ]; then
 				_lib_to_filter="$_resolved_lib"
-				echo "====> lib resolved as : $_resolved_lib"
+				echo "====> linked lib resolved as : $_resolved_lib"
 			else
 				_lib_to_filter="$l"
-				echo "====> lib not resolved : WARN"
+				echo "====> linked lib not resolved : WARN"
 			fi
 
 			# filter linked libs
 			if [ -z "$(__filter_list "$_lib_to_filter" "INCLUDE_TAG INCLUDE_LINKED_LIB EXCLUDE_TAG EXCLUDE_LINKED_LIB $OPT")" ]; then
-				echo "====> lib has been filtered -- link is not processed"
+				echo "====> linked lib has been filtered -- link is not processed"
 				continue
 			fi
 			# default filter
 			if [ ! "$STELLA_BINARY_DEFAULT_LIB_IGNORED" == "" ]; then
 				if [ -z "$(__filter_list "$_lib_to_filter" "EXCLUDE_TAG EXCLUDE_LINKED_LIB EXCLUDE_LINKED_LIB $STELLA_BINARY_DEFAULT_LIB_IGNORED")" ]; then
-					echo "====> lib has been filtered -- link is not processed"
+					echo "====> linked lib has been filtered -- link is not processed"
 					continue
 				fi
 			fi
 
-			# FIXED_PATH
-			if [ "$_fixed_path" == "ON" ]; then
+			# ABS_LINK_FORCE
+			if [ "$_opt_abs_link_force" == "ON" ]; then
 				# fix write permission
 				chmod +w "$_file"
 				if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-					echo "====> setting NEEDED : $_force_path/$_linked_lib_filename"
-					patchelf --replace-needed "$l" "$_force_path/$_linked_lib_filename" "$_file"
+					echo "====> setting NEEDED : $_abs_link_force/$_linked_lib_filename"
+					patchelf --replace-needed "$l" "$_abs_link_force/$_linked_lib_filename" "$_file"
 				fi
 				if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-					echo "====> setting LC_LOAD_DYLIB : $_force_path/$_linked_lib_filename"
-					install_name_tool -change "$l" "$_force_path/$_linked_lib_filename" "$_file"
+					echo "====> setting LC_LOAD_DYLIB : $_abs_link_force/$_linked_lib_filename"
+					install_name_tool -change "$l" "$_abs_link_force/$_linked_lib_filename" "$_file"
+				fi
+			fi
+
+			# REL_LINK_FORCE
+			if [ "$_opt_rel_link_force" == "ON" ]; then
+				# fix write permission
+				chmod +w "$_file"
+				if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+					echo "====> setting NEEDED : $_linked_lib_filename"
+					patchelf --replace-needed "$l" "$_linked_lib_filename" "$_file"
+
+					_new_rpath="$(__abs_to_rel_path "$_rel_link_force" "$(__get_path_from_string $_file)")"
+					[ "$_new_rpath" == "." ] && _new_rpath=
+					_new_rpath="\$ORIGIN/$_new_rpath)"
+					echo "====> Adding RPATH value : $_new_rpath"
+					__add_rpath "$_file" "$_new_rpath"
+				fi
+				if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+					echo "====> setting LC_LOAD_DYLIB : @rpath/$_linked_lib_filename"
+					install_name_tool -change "$l" "@rpath/$_linked_lib_filename" "$_file"
+
+					_new_rpath="$(__abs_to_rel_path "$_rel_link_force" "$(__get_path_from_string $_file)")"
+					[ "$_new_rpath" == "." ] && _new_rpath="@loader_path" || \
+								_new_rpath="@loader_path/$_new_rpath"
+					echo "====> Adding RPATH value : $_new_rpath"
+					__add_rpath "$_file" "$_new_rpath"
 				fi
 			fi
 
 			# REL_LINK_TO_ABS
-			if [ "$_abs_rpath" == "ON" ]; then
+			if [ "$_rel_link_to_abs" == "ON" ]; then
 				# fix write permission
 				chmod +w "$_file"
 				if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
@@ -1028,35 +1088,35 @@ function __tweak_linked_lib() {
 						install_name_tool -change "$l" "$_resolved_lib" "$_file"
 					else
 						echo "====> can not determine absolute path for $l"
-						#_new_load_lib="$(__get_path_from_string $l)"
-						#install_name_tool -change "$l" "$_new_load_lib/$_linked_lib_filename" "$_file"
 					fi
 				fi
 			fi
 
 			# ABS_LINK_TO_REL
-			if [ "$_rel_rpath" == "ON" ]; then
+			if [ "$_abs_link_to_rel" == "ON" ]; then
 				# fix write permission
 				chmod +w "$_file"
 				# TODO we could use resolved linked lib instead of __abs_to_rel_path $(__get_path_from_string $l) $(__get_path_from_string $_file)
-				# like in REL_LINK_TO_ABS ?
+				# like in REL_LINK_TO_ABS ? -- but what if linked lib can not be resolved ?
 				if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-					_new_load_lib="\$ORIGIN/$(__abs_to_rel_path $(__get_path_from_string $l) $(__get_path_from_string $_file))"
 					echo "====> setting NEEDED : $_linked_lib_filename"
 					patchelf --replace-needed "$l" "$_linked_lib_filename" "$_file"
 
-					echo "====> Adding RPATH value : $_new_load_lib"
-					#__set_build_mode "RPATH" "ADD" "$_new_load_lib"
-					__add_rpath "$_file" "$_new_load_lib"
+					_new_rpath="$(__abs_to_rel_path $(__get_path_from_string $l) $(__get_path_from_string $_file))"
+					[ "$_new_rpath" == "." ] && _new_rpath=
+					_new_rpath="\$ORIGIN/$_new_rpath"
+					echo "====> Adding RPATH value : $_new_rpath"
+					__add_rpath "$_file" "$_new_rpath"
 				fi
 				if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-					_new_load_lib="@loader_path/$(__abs_to_rel_path $(__get_path_from_string $l) $(__get_path_from_string $_file))"
 					echo "====> setting LC_LOAD_DYLIB : @rpath/$_linked_lib_filename"
 					install_name_tool -change "$l" "@rpath/$_linked_lib_filename" "$_file"
 
-					echo "====> Adding RPATH value : $_new_load_lib"
-					#__set_build_mode "RPATH" "ADD" "$_new_load_lib"
-					__add_rpath "$_file" "$_new_load_lib"
+					_new_rpath="$(__abs_to_rel_path $(__get_path_from_string $l) $(__get_path_from_string $_file))"
+					[ "$_new_rpath" == "." ] && _new_rpath="@loader_path" || \
+								_new_rpath="@loader_path/$_new_rpath"
+					echo "====> Adding RPATH value : $_new_rpath"
+					__add_rpath "$_file" "$_new_rpath"
 				fi
 			fi
 		done
@@ -1161,8 +1221,8 @@ function __check_install_name_darwin() {
 
 
 # tweak install name with @rpath/lib_name OR tweak install name replacing @rpath/lib_name with /lib/path/lib_name
-# we cannot pass '-Wl,install_name @rpath/library_name' during build time because we do not know the library name yet
-# 		RPATH -- tweak install_name with @rpath [DEFAULT]
+# we cannot pass '-Wl,install_name @rpath/library_filename' during build time because we do not know the library name yet
+# 		RPATH -- tweak install_name with @rpath/library_filename [DEFAULT]
 # 		PATH -- tweak install_name with current location
 # INCLUDE_FILTER <expr> -- include these files to tweak
 # EXCLUDE_FILTER <expr> -- exclude these files to tweak
@@ -1193,47 +1253,52 @@ function __tweak_install_name_darwin() {
 	if __is_shareable_bin "$_path"; then
 		if __is_macho "$_path" || __is_macho_universal "$_path"; then
 
-
 			_original_install_name="$(__get_install_name_darwin $_path)"
 
-			if [ "$_original_install_name" == "" ]; then
-				echo " ** WARN $_path do not have any install name (LC_ID_DYLIB field)"
-				_result=1
-				return $_result
+			if [ "$_opt_path" == "ON" ]; then
+				if [ "$_original_install_name" == "" ]; then
+					# location path is not the good one
+					if [ ! "$(dirname $_path)" == "$(dirname $_original_install_name)" ]; then
+						_new_install_name="$(__get_path_from_string $_path)/$(__get_filename_from_string $_path)"
+					fi
+				else
+					case "$_original_install_name" in
+						@rpath*)
+							_new_install_name="$(__get_path_from_string $_path)/$(__get_filename_from_string $_original_install_name)"
+						;;
+						*)
+							# location path is not the good one
+							if [ ! "$(dirname $_path)" == "$(dirname $_original_install_name)" ]; then
+								# use original install_name
+								_new_install_name="$(__get_path_from_string $_path)/$(__get_filename_from_string $_original_install_name)"
+							fi
+						;;
+					esac
+				fi
 			fi
 
-			case "$_original_install_name" in
-				@rpath*)
-					if [ "$_opt_path" == "ON" ]; then
-						# fix write permission
-						chmod +w "$_path"
-						_new_install_name="$(__get_path_from_string $_path)/$(__get_filename_from_string $_original_install_name)"
-						echo "*** Fixing install_name for $_path with value : FROM $_original_install_name TO $_new_install_name"
-						install_name_tool -id "$_new_install_name" $_path
-					fi
-				;;
+			if [ "$_opt_rpath" == "ON" ]; then
+				if [ "$_original_install_name" == "" ]; then
+					_new_install_name="@rpath/$(__get_filename_from_string $_path)"
+				else
+					case "$_original_install_name" in
+						@rpath*);;
+						*)
+							# use original install_name
+							_new_install_name="@rpath/$(__get_filename_from_string $_original_install_name)"
+						;;
+					esac
+				fi
+			fi
 
-				*)
-					if [ "$_opt_rpath" == "ON" ]; then
-						# fix write permission
-						chmod +w "$_path"
-						_new_install_name="@rpath/$(__get_filename_from_string $_original_install_name)"
-						echo "*** Fixing install_name for $_path with value : FROM $_original_install_name TO $_new_install_name"
-						install_name_tool -id "$_new_install_name" $_path
-					fi
-					if [ "$_opt_path" == "ON" ]; then
-						# fix write permission
-						chmod +w "$_path"
-						# location path is not the good one
-						if [ ! "$(dirname $_path)" == "$(dirname $_original_install_name)" ]; then
-							_new_install_name="$(__get_path_from_string $_path)/$(__get_filename_from_string $_original_install_name)"
-							echo "*** Fixing install_name for $_path with value : FROM $_original_install_name TO $_new_install_name"
-							install_name_tool -id "$_new_install_name" $_path
-						fi
-					fi
-				;;
 
-			esac
+			if [ ! "$_new_install_name" == "" ]; then
+				# fix write permission
+				chmod +w "$_path"
+				echo "*** Fixing install_name for $_path with value : FROM $_original_install_name TO $_new_install_name"
+				install_name_tool -id "$_new_install_name" $_path
+			fi
+
 		fi
 	fi
 }

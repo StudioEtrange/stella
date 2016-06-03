@@ -1,4 +1,4 @@
-if [ ! "$_STELLA_COMMON_API_INCLUDED_" == "1" ]; then 
+if [ ! "$_STELLA_COMMON_API_INCLUDED_" == "1" ]; then
 _STELLA_COMMON_API_INCLUDED_=1
 
 
@@ -41,17 +41,19 @@ function __api_list() {
 function __api_connect() {
 	local _approot=$1
 
+	# TODO saveSTELLA_APP_ROOT
 	saveSTELLA_APP_ROOT=$STELLA_APP_ROOT
 	STELLA_APP_ROOT=
-    _STELLA_CONF_INCLUDED_=
-    source $_approot/stella-link.sh include
+  _STELLA_CONF_INCLUDED_=
+  source $_approot/stella-link.sh include
 }
 
 # reconnect api to current stella application
 function __api_disconnect() {
 	STELLA_APP_ROOT=
-    _STELLA_CONF_INCLUDED_=
-    source $saveSTELLA_APP_ROOT/stella-link.sh include
+  _STELLA_CONF_INCLUDED_=
+	# TODO saveSTELLA_APP_ROOT
+  source $saveSTELLA_APP_ROOT/stella-link.sh include
 }
 
 fi

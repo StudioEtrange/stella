@@ -1,4 +1,4 @@
-if [ ! "$_ALLEGRO_INCLUDED_" == "1" ]; then 
+if [ ! "$_ALLEGRO_INCLUDED_" == "1" ]; then
 _ALLEGRO_INCLUDED_=1
 
 
@@ -38,18 +38,18 @@ function feature_allegro_5_0_11() {
 	FEAT_SOURCE_URL=http://sourceforge.net/projects/alleg/files/allegro/5.0.11/allegro-5.0.11.tar.gz
 	FEAT_SOURCE_URL_FILENAME=allegro-5.0.11.tar.gz
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
-	
+
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
-	
+
 	FEAT_SOURCE_CALLBACK=feature_allegro_link
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/liballegro-static.a
 	FEAT_SEARCH_PATH=
-	
+
 }
 
 function feature_allegro_link() {
@@ -68,7 +68,7 @@ function feature_allegro_link() {
 function feature_allegro_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 	__set_toolset "CMAKE"
@@ -82,14 +82,14 @@ function feature_allegro_install_source() {
 
 	# build static
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="-DSHARED=OFF -DWANT_DEMO=OFF -DWANT_EXAMPLES=OFF -DWANT_DOCS=OFF -DWANT_NATIVE_IMAGE_LOADER=OFF"
-	# WANT_NATIVE_IMAGE_LOADER=OFF : use our version of jpeg, png 
+	# WANT_NATIVE_IMAGE_LOADER=OFF : use our version of jpeg, png
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP"
 
 
 
 	# build shared
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="-DSHARED=ON -DWANT_DEMO=ON -DWANT_EXAMPLES=ON -DWANT_DOCS=OFF -DWANT_NATIVE_IMAGE_LOADER=OFF"
-	# WANT_NATIVE_IMAGE_LOADER=OFF : use our version of jpeg, png 
+	# WANT_NATIVE_IMAGE_LOADER=OFF : use our version of jpeg, png
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP BUILD_KEEP"
 
 
@@ -103,8 +103,8 @@ function feature_allegro_install_source() {
 
 	# examples are mislinked
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-		__fix_linked_lib_darwin "$INSTALL_DIR/examples" "INCLUDE_FILTER $SRC_DIR-build FIXED_PATH @loader_path/../lib"
-		__fix_linked_lib_darwin "$INSTALL_DIR/demos" "INCLUDE_FILTER $SRC_DIR-build FIXED_PATH @loader_path/../../../../../lib"
+		__tweak_linked_lib "$INSTALL_DIR/examples" "INCLUDE_FILTER $SRC_DIR-build REL_LINK_FORCE ../lib"
+		__tweak_linked_lib "$INSTALL_DIR/demos" "INCLUDE_FILTER $SRC_DIR-build REL_LINK_FORCE ../../../../../lib"
 	fi
 
 	# clean
@@ -118,7 +118,7 @@ function feature_allegro_install_source() {
 	__inspect_and_fix_build "$INSTALL_DIR/examples"
 
 
-	
+
 
 
 }

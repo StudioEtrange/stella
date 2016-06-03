@@ -17,7 +17,7 @@ _STELLA_BOOT_INCLUDED_=1
 # When ssh
 #     stella requirement are not installed
 #     current folder is <path> or default path when logging in ssh
-#     stella is sync in <path>/stella or default path/stella
+#     stella is sync in default path/stella
 #     stella env file is conserved
 #     script is sync in <path>/<script.sh> or default_path/<script.sh>
 
