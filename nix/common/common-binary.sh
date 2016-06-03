@@ -1053,8 +1053,8 @@ function __tweak_linked_lib() {
 					patchelf --replace-needed "$l" "$_linked_lib_filename" "$_file"
 
 					_new_rpath="$(__abs_to_rel_path "$_rel_link_force" "$(__get_path_from_string $_file)")"
-					[ "$_new_rpath" == "." ] && _new_rpath=
-					_new_rpath="\$ORIGIN/$_new_rpath)"
+					[ "$_new_rpath" == "." ] && _new_rpath="\$ORIGIN" || \
+						_new_rpath="\$ORIGIN/$_new_rpath"
 					echo "====> Adding RPATH value : $_new_rpath"
 					__add_rpath "$_file" "$_new_rpath"
 				fi
@@ -1103,8 +1103,8 @@ function __tweak_linked_lib() {
 					patchelf --replace-needed "$l" "$_linked_lib_filename" "$_file"
 
 					_new_rpath="$(__abs_to_rel_path $(__get_path_from_string $l) $(__get_path_from_string $_file))"
-					[ "$_new_rpath" == "." ] && _new_rpath=
-					_new_rpath="\$ORIGIN/$_new_rpath"
+					[ "$_new_rpath" == "." ] && _new_rpath="\$ORIGIN" || \
+						_new_rpath="\$ORIGIN/$_new_rpath"
 					echo "====> Adding RPATH value : $_new_rpath"
 					__add_rpath "$_file" "$_new_rpath"
 				fi
