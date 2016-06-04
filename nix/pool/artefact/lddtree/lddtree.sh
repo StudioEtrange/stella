@@ -72,7 +72,7 @@ elf_specs_readelf() {
 }
 
 elf_specs() {
-	elf_specs_$BACKEND "$@"
+	[ "$1" == "" ] || elf_specs_$BACKEND "$@"
 }
 
 elf_get_rpath_scanelf() {
@@ -89,7 +89,7 @@ elf_get_rpath_readelf() {
 }
 
 elf_get_rpath() {
-	elf_get_rpath_$BACKEND "$@"
+	[ "$1" == "" ] || elf_get_rpath_$BACKEND "$@"
 }
 
 elf_get_interp_scanelf() {
@@ -103,7 +103,7 @@ elf_get_interp_readelf() {
 }
 
 elf_get_interp() {
-	elf_get_interp_$BACKEND "$@"
+	[ "$1" == "" ] || elf_get_interp_$BACKEND "$@"
 }
 
 elf_get_linked_lib_scanelf() {
@@ -117,7 +117,7 @@ elf_get_linked_lib_readelf() {
 }
 
 elf_get_linked_lib() {
-	elf_get_linked_lib_$BACKEND "$@"
+	[ "$1" == "" ] || elf_get_linked_lib_$BACKEND "$1"
 }
 
 
@@ -178,7 +178,8 @@ find_elf() {
 
 		if [ -n "${LD_LIBRARY_PATH}" ] ; then
 			# search in LD_LIBRARY_PATH
-			check_paths "${elf}" "${LD_LIBRARY_PATH}"
+			# FIXED stop search if found
+			check_paths "${elf}" "${LD_LIBRARY_PATH}" && return 0
 		fi
 
 		if ! ${c_ldso_paths_loaded} ; then
@@ -309,10 +310,11 @@ show_elf() {
 
 		if [ -r "${interp}" ] ; then
 			# Extract the default lib paths out of the ldso.
+			# FIXED reading path ldso should not contain space
 			lib_paths_ldso=$(
 				strings "${interp}" | \
 				sed -nr -e "/^\/.*lib/{s|^/?|${ROOT}|;s|/$||;s|/?:/?|:${ROOT}|g;p}"
-			)
+			) | sed 's/ /:/g'
 		fi
 		interp=${interp##*/}
 	fi
@@ -355,7 +357,6 @@ show_elf() {
 
 
 # main
-
 SHOW_ALL=false
 SET_X=false
 LIST=false
