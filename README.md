@@ -3,10 +3,11 @@
 Stella is a collection of tools, libraries and a framework for command line application.
 It supports Nix (including MacOS) and Windows platform, and provide usefull tools and functions for bash and batch application.
 
-Stella try to run on any bash system with no dependencies. It does not change your operating system and do not require sudo/root. platform mainly tested are Ubuntu, MacOs, Centos and Alpine.
-The only dependencies you will need is a standard build system if you want to install a package from source.
+On Nix systems, Stella try to run on any bash system with no dependencies. It does not change your operating system and do not require sudo/root. Platforms mainly tested are Ubuntu, MacOs, Centos and  Alpine.
 
-On Windows, stella have the same features in batch.
+On Windows, stella have the same features in batch. Platform mainly tested is Windows 7.
+
+The only dependencies you will need is a standard build system if you want to install a package from source. And Stella can help you too install it (even on windows)
 
 It includes
 * a package manager (120+ recipes) - see available recipe in nix/pool/feature-recipe or win/pool/feature-recipe
