@@ -1,4 +1,4 @@
-if [ ! "$_NCURSES_INCLUDED_" == "1" ]; then 
+if [ ! "$_NCURSES_INCLUDED_" == "1" ]; then
 _NCURSES_INCLUDED_=1
 
 
@@ -66,14 +66,14 @@ function feature_ncurses_5_9() {
 function feature_ncurses_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
+
 	#__set_toolset "CUSTOM" "CONFIG_TOOL configure"
 	__set_toolset "STANDARD"
 
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
-	
+
 	# with wide encoding
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="
@@ -85,8 +85,7 @@ function feature_ncurses_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP EXCLUDE /lib/terminfo|/share"
-
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP EXCLUDE_FILTER /lib/terminfo|/share"
 
 	# standard build
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
@@ -94,14 +93,13 @@ function feature_ncurses_install_source() {
 			--disable-dependency-tracking \
 			--with-shared           \
             --without-debug         \
-            --enable-pc-files "
+            --enable-pc-files"
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "EXCLUDE /lib/terminfo|/share"
-	
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "EXCLUDE_FILTER /lib/terminfo|/share"
 
-	
+
 
 }
 

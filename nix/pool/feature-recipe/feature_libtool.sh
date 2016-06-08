@@ -1,4 +1,4 @@
-if [ ! "$_LIBTOOL_INCLUDED_" == "1" ]; then 
+if [ ! "$_LIBTOOL_INCLUDED_" == "1" ]; then
 _LIBTOOL_INCLUDED_=1
 
 
@@ -12,14 +12,14 @@ function feature_libtool() {
 
 function feature_libtool_2_4_2() {
 	FEAT_VERSION=2_4_2
-	
+
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://ftp.gnu.org/gnu/libtool/libtool-2.4.2.tar.gz
 	FEAT_SOURCE_URL_FILENAME=libtool-2.4.2.tar.gz
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
-	
+
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
@@ -37,11 +37,11 @@ function feature_libtool_2_4_2() {
 function feature_libtool_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
+
 
 	#__set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL make"
 	__set_toolset "STANDARD"
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 
@@ -53,6 +53,8 @@ function feature_libtool_install_source() {
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
 
+	# some script call libtoolize as glibtoolize
+ 	ln -s "$FEAT_INSTALL_ROOT"/bin/libtoolize "$FEAT_INSTALL_ROOT"/bin/glibtoolize
 }
 
 fi

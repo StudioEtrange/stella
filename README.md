@@ -1,7 +1,37 @@
 # Stella
 
 Stella is a collection of tools, libraries and a framework for command line application.
-It supports Nix (including MacOS) and Windows platform, and provide usefull tools and functions for bash and batch application
+It supports Nix (including MacOS) and Windows platform, and provide usefull tools and functions for bash and batch application.
+
+Stella try to run on any bash system with no dependencies. It does not change your operating system and do not require sudo/root. platform mainly tested are Ubuntu, MacOs, Centos and Alpine.
+The only dependencies you will need is a standard build system if you want to install a package from source.
+
+On Windows, stella have the same feature, but with batch.
+
+It includes
+* a package manager (120+ recipes) - see available recipe in nix/pool/feature-recipe or win/pool/feature-recipe
+* app system - you can declare nested dependencies of your app, auto build/install them, maintain properties
+* a full build system (make, autotools, cmake, ninja, ...) - can turn binary into portable, tweak dependencies
+* features to deploy/execute code remotely (ssh) and "cloudly" (vagrant/docker)
+* a bunch of bash functions through an API
+
+For now, the code really needs to be cleaned ! And more unit test to be written ! And documentation too !
+
+## License
+
+Copyright 2013-2016 Sylvain Boucault @ StudioEtrange
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this file except in compliance with the License. You may obtain a copy of
+the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.
 
 ## Installation
 
@@ -25,9 +55,9 @@ As a library or tools collection inside your project
 
 ### Windows - Standalone installation
 
-	
+
 	powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/StudioEtrange/stella/master/win/pool/stella-bridge.bat', 'stella-bridge.bat')" && stella-bridge.bat standalone & del /q stella-bridge.bat
-	
+
 
 ### Windows - Bootstrap a brand new application
 
@@ -62,39 +92,3 @@ _NOTE : You dont really need this, because all previous installation methods wil
 * Auto install :
 
 	./stella.sh stella install dep
-
-
-## Advanced Usage
-
-### stella link
-
-* Each stella application have a stella-link file. It is link to a stella version and a stella path. If you want to recreate this file, you should do
-
--
-	./stella/stella.sh app link ./your-app
-
-
-
-### Linked or Nested Applications
-
-* If a stella application is launched by another stella application, the second one will automaticly share the stella installation of the first one.
-
-* At launch, a stella application will look for a stella installation according to its stella-link file. But if at this location it found a stella application instead, it will look for a stella installation according to the last one.
-
-* There is an API function link_app that could be use to link a stella application to a specific stella installation (by default to the current one)
-
-_
-
-	from app1.sh :
-	$STELLA_API link_app "STELLA_ROOT $STELLA_APP_WORK_ROOT/app2 WORKSPACE CACHE"
-
-Then app2.sh will use the same stella folder than app1.sh, and the same workspace and cache folder
-
-* From app1 you can use STELLA API functions connected to another app2 (means : in the context of app2)
-
-_
-
-	from app1.sh :
-	$STELLA_API api_connect $APP_PATH/app2
-	$STELLA_API feature_inspect wget
-	$STELLA_API api_disconnect

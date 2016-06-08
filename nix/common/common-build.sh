@@ -148,11 +148,19 @@ function __auto_build() {
 	SOURCE_DIR="$2"
 	INSTALL_DIR="$3"
 	OPT="$4"
-	# DEBUG SOURCE_KEEP BUILD_KEEP NO_CONFIG NO_BUILD NO_OUT_OF_TREE_BUILD NO_inspect_and_fix_build NO_INSTALL
+	# DEBUG
+	# SOURCE_KEEP
+	# BUILD_KEEP
+	# NO_CONFIG
+	# NO_BUILD
+	# NO_OUT_OF_TREE_BUILD
+	# NO_INSPECT
+	# NO_INSTALL
+	# POST_BUILD_STEP
 	# INCLUDE_FILTER <expr> -- include these files for inspect and fix
 	# EXCLUDE_FILTER <expr> -- exclude these files for inspect and fix
 	# INCLUDE_FILTER is apply first, before EXCLUDE_FILTER
-
+	# BUILD_ACTION <action1> <action2>
 	# keep source code after build (default : FALSE)
 	local _opt_source_keep=
 	# keep build dir after build (default : FALSE)
@@ -171,7 +179,7 @@ function __auto_build() {
 		[ "$o" == "NO_CONFIG" ] && _opt_configure=OFF
 		[ "$o" == "NO_BUILD" ] && _opt_build=OFF
 		[ "$o" == "NO_OUT_OF_TREE_BUILD" ] && _opt_out_of_tree_build=OFF
-		[ "$o" == "NO_inspect_and_fix_build" ] && _opt_inspect_and_fix_build=OFF
+		[ "$o" == "NO_INSPECT" ] && _opt_inspect_and_fix_build=OFF
 	done
 
 	# can not build out of tree without configure first
@@ -327,14 +335,18 @@ function __launch_build() {
 	local _opt_configure=ON
 	# install step activation (default : TRUE)
 	local _opt_install=ON
+	# build steps after building (in order)
+	local _flag_opt_post_build_step=OFF
+	local _post_build_step=
 	for o in $OPT; do
-		[ "$o" == "DEBUG" ] && _debug=ON
-		[ "$o" == "NO_CONFIG" ] && _opt_configure=OFF
-		[ "$o" == "NO_INSTALL" ] && _opt_install=OFF
-
+		[ "$o" == "DEBUG" ] && _debug=ON && _flag_opt_post_build_step=OFF
+		[ "$o" == "NO_CONFIG" ] && _opt_configure=OFF && _flag_opt_post_build_step=OFF
+		[ "$o" == "NO_INSTALL" ] && _opt_install=OFF && _flag_opt_post_build_step=OFF
+		[ "$_flag_opt_post_build_step" == "ON" ] && _post_build_step="$o $_post_build_step"
+		[ "$o" == "POST_BUILD_STEP" ] && _flag_opt_post_build_step=ON
 	done
 
-	# FLAGs
+	# FLAGS (declared as global)
 	# AUTO_INSTALL_BUILD_FLAG_PREFIX
 	# AUTO_INSTALL_BUILD_FLAG_POSTFIX
 
@@ -343,6 +355,19 @@ function __launch_build() {
 	mkdir -p "$AUTO_BUILD_DIR"
 	cd "$AUTO_BUILD_DIR"
 
+	# POST_BUILD_STEP
+	if __string_contains "$_post_build_step" "install"; then
+		if [ "$_opt_install" == "OFF" ]; then
+			_post_build_step="${_post_build_step/install/}"
+		fi
+	else
+		if [ "$_opt_install" == "ON" ]; then
+			# we add install in first place if not alread present
+			_post_build_step="install $_post_build_step"
+		fi
+	fi
+
+	local _step
 	case $STELLA_BUILD_BUILD_TOOL in
 
 		make)
@@ -350,67 +375,77 @@ function __launch_build() {
 			[ "$_debug" == "ON" ] && _debug="--debug=b" #--debug=a
 			if [ "$AUTO_INSTALL_BUILD_FLAG_PREFIX" == "" ]; then
 				if [ "$_opt_configure" == "ON" ]; then
+					# First step : build
 					make $_debug $_FLAG_PARALLEL \
 					$AUTO_INSTALL_BUILD_FLAG_POSTFIX
 
-					if [ "$_opt_install" == "ON" ]; then
+					# Other build step
+					for _step in $_post_build_step; do
 						make $_debug \
 						$AUTO_INSTALL_BUILD_FLAG_POSTFIX \
-						install
-					fi
+						$_step
+					done
 				else
 					#make $_debug $_FLAG_PARALLEL \
 					#CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" \
 					#PREFIX="$AUTO_INSTALL_DIR" $AUTO_INSTALL_BUILD_FLAG_POSTFIX
 
+					# First step : build
 					make $_debug $_FLAG_PARALLEL \
 					PREFIX="$AUTO_INSTALL_DIR" prefix="$AUTO_INSTALL_DIR" \
 					$AUTO_INSTALL_BUILD_FLAG_POSTFIX
 
-					#if [ "$_opt_install" == "ON" ]; then
+					#for _step in $_post_build_step; do
 						#make $_debug \
 						#CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" \
 						#PREFIX="$AUTO_INSTALL_DIR" $AUTO_INSTALL_BUILD_FLAG_POSTFIX \
-						#install
-					#fi
-					if [ "$_opt_install" == "ON" ]; then
+						#$_step
+					#done
+
+					# Other build step
+					for _step in $_post_build_step; do
 						make $_debug \
 						PREFIX="$AUTO_INSTALL_DIR" prefix="$AUTO_INSTALL_DIR" \
 						$AUTO_INSTALL_BUILD_FLAG_POSTFIX \
-						install
-					fi
+						$_step
+					done
 				fi
 			else
 				if [ "$_opt_configure" == "ON" ]; then
+					# First step : build
 					eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) make $_debug $_FLAG_PARALLEL \
 					$AUTO_INSTALL_BUILD_FLAG_POSTFIX
 
-					if [ "$_opt_install" == "ON" ]; then
+					# Other build step
+					for _step in $_post_build_step; do
 						eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) make $_debug \
 						$AUTO_INSTALL_BUILD_FLAG_POSTFIX \
-						install
-					fi
+						$_step
+					done
 				else
 					#eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) make $_debug  $_FLAG_PARALLEL \
 					#CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" \
 					#PREFIX="$AUTO_INSTALL_DIR" $AUTO_INSTALL_BUILD_FLAG_POSTFIX
 
+					# First step : build
 					eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) make $_debug $_FLAG_PARALLEL \
 					PREFIX="$AUTO_INSTALL_DIR" prefix="$AUTO_INSTALL_DIR" \
 					$AUTO_INSTALL_BUILD_FLAG_POSTFIX
 
-					#if [ "$_opt_install" == "ON" ]; then
+					#for _step in $_post_build_step; do
 						#eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) make $_debug \
 						#CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" \
 						#PREFIX="$AUTO_INSTALL_DIR" $AUTO_INSTALL_BUILD_FLAG_POSTFIX \
-						#install
-					#fi
-					if [ "$_opt_install" == "ON" ]; then
+						#$_step
+					#done
+
+					# Other build step
+					for _step in $_post_build_step; do
 						eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) make $_debug \
 						PREFIX="$AUTO_INSTALL_DIR" prefix="$AUTO_INSTALL_DIR" \
 						$AUTO_INSTALL_BUILD_FLAG_POSTFIX \
-						install
-					fi
+						$_step
+					done
 				fi
 			fi
 		;;
@@ -424,11 +459,19 @@ function __launch_build() {
 			fi
 			[ "$_debug" == "ON" ] && _debug="-v"
 			if [ "$AUTO_INSTALL_BUILD_FLAG_PREFIX" == "" ]; then
+				# First step : build
 				ninja $_debug $_FLAG_PARALLEL $AUTO_INSTALL_BUILD_FLAG_POSTFIX
-				[ "$_opt_install" == "ON" ] && ninja $_debug $AUTO_INSTALL_BUILD_FLAG_POSTFIX install
+				# Other build step
+				for _step in $_post_build_step; do
+					ninja $_debug $AUTO_INSTALL_BUILD_FLAG_POSTFIX $_step
+				done
 			else
+				# First step : build
 				eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) ninja $_debug $_FLAG_PARALLEL $AUTO_INSTALL_BUILD_FLAG_POSTFIX
-				[ "$_opt_install" == "ON" ] && eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) ninja $_debug $AUTO_INSTALL_BUILD_FLAG_POSTFIX install
+				# Other build step
+				for _step in $_post_build_step; do
+					eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) ninja $_debug $AUTO_INSTALL_BUILD_FLAG_POSTFIX $_step
+				done
 			fi
 		;;
 
@@ -743,8 +786,8 @@ function __export_env() {
 			fi
 
 			# create a link into build dir in case some temporary built files needs to be run with dependencies
-			[ "$INSTALL_DIR" == "$SOURCE_DIR" ] && ln -s "$INSTALL_DIR/stella-dep" "$SOURCE_DIR/stella-dep"
-			[ "$INSTALL_DIR" == "$BUILD_DIR" ] && ln -s "$INSTALL_DIR/stella-dep" "$BUILD_DIR/stella-dep"
+			[ ! "$INSTALL_DIR" == "$SOURCE_DIR" ] && ln -s "$INSTALL_DIR/stella-dep" "$SOURCE_DIR/stella-dep"
+			[ ! "$INSTALL_DIR" == "$BUILD_DIR" ] && ln -s "$INSTALL_DIR/stella-dep" "$BUILD_DIR/stella-dep"
 		fi
 
 

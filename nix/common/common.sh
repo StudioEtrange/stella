@@ -765,17 +765,19 @@ function __del_folder() {
 
 # copy content of folder ARG1 into folder ARG2
 function __copy_folder_content_into() {
+	local source="$1"
+	local dest="$2"
 	local select_filter="$3"
 	if [ "$select_filter" == "" ]; then
 		select_filter="*"
 	fi
 
 	if [ $(__count_folder_item $1 $select_filter) -gt 0 ]; then
-		mkdir -p $2
+		mkdir -p "$dest"
 		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-			cp -fa $1/$select_filter $2
+			cp -fa "$source/"$select_filter "$dest"
 		else
-			cp -fa $1/$select_filter --target-directory=$2
+			cp -fa "$source/"$select_filter --target-directory="$dest"
 		fi
 	fi
 }

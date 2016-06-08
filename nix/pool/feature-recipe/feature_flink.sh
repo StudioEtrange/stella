@@ -1,7 +1,8 @@
-if [ ! "$_flink_INCLUDED_" == "1" ]; then 
+if [ ! "$_flink_INCLUDED_" == "1" ]; then
 _flink_INCLUDED_=1
 
 
+# need java
 
 function feature_flink() {
 	FEAT_NAME=flink

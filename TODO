@@ -1,16 +1,23 @@
 TODO
 
+NOTE :
+RECIPE inspiration
+* nixos (https://github.com/NixOS/nixpkgs)
+* homebrew (https://github.com/Homebrew/homebrew-core)
+
 [ ] Update README
-[ ] Make commentary in code
+  [ ] history : FIRST PUSH OF stella pre version : https://bitbucket.org/StudioEtrange/ryzomcore-script/src/1308706a1dc3f1dde7d65b048e9b16f2a2f2f518
+
+[ ] COMMENTS code
 [ ] Format output (log system)
 [ ] Test and remove DEST_ERASE in each feature_recipe : cause problem when bundled in merge mode. But only for binary ? keep it for source? only when get binary
 
 [ ] Test and fix path with space
-[ ] windows : function require
-[ ] function get_ressource : change option STRIP to option NO_STRIP. STRIP will be by default if possible
-[ ] windows : review link feature library and lib isolation
-[ ] windows : portable mode review copy dependencies
-[ ] windows add recipes for these libs :
+[ ] win : function require
+[ ] function get_resource : change option STRIP to option NO_STRIP. STRIP will be by default if possible
+[ ] win : review link feature library and lib isolation
+[ ] win : portable mode review copy dependencies
+[ ] win add recipes for these libs :
 https://ryzomcore.atlassian.net/wiki/display/RC/MinGW+External+Libraries
 https://ryzomcore.atlassian.net/wiki/display/RC/Create+External+Libs
 https://github.com/Alexpux/MINGW-packages
@@ -18,18 +25,18 @@ https://github.com/Alexpux/MINGW-packages
 [ ] Default build arch equivalent to current cpu arch ? (and change option name buildarch with forcearch) (set STELLA_BUILD_ARCH_DEFAULT)
 [ ] feature system : FEAT_DEFAULT_ARCH must be fill with current cpu arch
 [ ] feature built from source must pick an arch and be installed in a folder with version@arch -- buildarch option should be remove -- by default built arch should be current cpu arch
-[ ] windows : replace patch from gnuwin32 (pb with UAC)
-[ ] linux : FORCE_RENAME on link_feature_library (see windows implementation)
-[X] windows : check library dynamic dependencies - use dependencywalker in console mode ? use dumpbin http://stackoverflow.com/a/475323 ? use CMAKE GetPrerequisites. FINISH check_linked_lib.cmake use it with cmake -P check_linked_lib.cmake -DMY_BINARY_LOCATION=<path>
-[ ] linux : when ckecking dependencies dynamic -- print all libs
+[ ] win : replace patch from gnuwin32 (pb with UAC)
+[ ] nix : FORCE_RENAME on link_feature_library (see windows implementation)
+[X] win : check library dynamic dependencies - use dependencywalker in console mode ? use dumpbin http://stackoverflow.com/a/475323 ? use CMAKE GetPrerequisites. FINISH check_linked_lib.cmake use it with cmake -P check_linked_lib.cmake -DMY_BINARY_LOCATION=<path>
+[ ] nix : when ckecking dependencies dynamic -- print all libs
 [ ] add possibility of a last step before/after install, to do some test like make test or make check (i.e : for gmp lib)
-[ ] windows : sys_install_vs2015community => this chocolatey recipe do not install all VC Tools by default
+[ ] win : sys_install_vs2015community => this chocolatey recipe do not install all VC Tools by default
 [ ] stella-env file : make it local or global with an option ?
 [ ] "no_proxy" should be in stella-env file
 [ ] proxy values in stella-env should be local or global
-[X] windows : link-app : add option to align workspace/cache path (like on nix)
+[X] win : link-app : add option to align workspace/cache path (like on nix)
 
-[ ] windows : build mingw-w64 compiler https://github.com/niXman/mingw-builds
+[ ] win : build mingw-w64 compiler https://github.com/niXman/mingw-builds
 
 [ ] ssh : launch stella app through ssh
 https://thornelabs.net/2013/08/21/simple-ways-to-send-multiple-line-commands-over-ssh.html
@@ -49,6 +56,16 @@ http://man.he.net/man1/checkbashisms ===> test portability
 https://github.com/duggan/shlint ===> test portability
 https://github.com/SublimeLinter/SublimeLinter-shellcheck
 
+[ ] configuration of feature recipe
+    nix : use augeas https://github.com/hercules-team/augeas ? -- see ryba ? (nodejs) -- use simple sed ? -- use
+    win : ?
 
-# FIRST PUSH OF stella pre version
-https://bitbucket.org/StudioEtrange/ryzomcore-script/src/1308706a1dc3f1dde7d65b048e9b16f2a2f2f518
+[ ] turn stella/bin folder into module ?
+    module/core
+    module/feature
+    module/app
+    module/boot
+
+[ ] unit test : app/test/nix app/text/win
+    nix : bats
+    win : ?

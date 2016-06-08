@@ -1,4 +1,4 @@
-if [ ! "$_DASH_INCLUDED_" == "1" ]; then 
+if [ ! "$_DASH_INCLUDED_" == "1" ]; then
 _DASH_INCLUDED_=1
 
 
@@ -41,7 +41,7 @@ function feature_dash_0_5_8() {
 function feature_dash_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
+
 	__set_toolset "STANDARD"
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
@@ -51,14 +51,14 @@ function feature_dash_install_source() {
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="--disable-dependency-tracking \
 						--with-libedit \
 						--enable-fnmatch \
-                        --enable-glob"
+            --enable-glob"
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
-	
 
-	
+
+
 
 }
 

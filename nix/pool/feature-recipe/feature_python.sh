@@ -1,7 +1,7 @@
-if [ ! "$_PYTHON_INCLUDED_" == "1" ]; then 
+if [ ! "$_PYTHON_INCLUDED_" == "1" ]; then
 _PYTHON_INCLUDED_=1
 
-# Python 2.7.9 and later (on the python2 series), and Python 3.4 and later include PIP by default 
+# Python 2.7.9 and later (on the python2 series), and Python 3.4 and later include PIP by default
 # But not python from code source
 # (http://pip.readthedocs.org/en/latest/installing.html#pip-included-with-python)
 
@@ -16,7 +16,7 @@ function feature_python() {
 
 function feature_python_2_7_9() {
 	FEAT_VERSION=2_7_9
-	
+
 	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 FORCE_ORIGIN_STELLA openssl#1_0_2d"
 
 	FEAT_BINARY_DEPENDENCIES=
@@ -50,13 +50,12 @@ function feature_python_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
-	#__set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL make"
 	__set_toolset "STANDARD"
 
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
-	
+
 	__feature_callback
 
 	# auto relocate failed, because adding rpath there is not enough rpath in headers

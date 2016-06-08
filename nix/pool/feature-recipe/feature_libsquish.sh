@@ -1,4 +1,4 @@
-if [ ! "$_LIBSQUISH_INCLUDED_" == "1" ]; then 
+if [ ! "$_LIBSQUISH_INCLUDED_" == "1" ]; then
 _LIBSQUISH_INCLUDED_=1
 
 function feature_libsquish() {
@@ -39,10 +39,8 @@ function feature_libsquish_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	
-
-	#__set_toolset "CUSTOM"  "CONFIG_TOOL cmake BUILD_TOOL make"
 	__set_toolset "CMAKE"
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE"
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
@@ -55,7 +53,7 @@ function feature_libsquish_install_source() {
 
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="-DBUILD_SQUISH_WITH_SSE2=ON -DBUILD_SQUISH_WITH_ALTIVEC=OFF -DBUILD_SHARED_LIBS=OFF -DBUILD_SQUISH_EXTRA=OFF"
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
-	
+
 
 }
 

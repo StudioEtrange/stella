@@ -10,6 +10,8 @@ if [ "$STELLA_CURRENT_RUNNING_DIR" == "" ]; then
 	#STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
 	STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "." )" && pwd )"
 fi
+_STELLA_CONF_CURRENT_FILE="$_STELLA_CONF_CURRENT_FILE_DIR/$(basename ${BASH_SOURCE[0]})"
+
 
 # for I in $(seq 0 $(expr ${#BASH_SOURCE[@]} - 1) ); do
 #         echo BASH_SOURCE\[$I\] ${BASH_SOURCE[$I]}
