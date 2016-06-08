@@ -1,6 +1,6 @@
 # Stella
 
-Stella is a collection of tools, libraries and a framework for command line application.
+Stella is a collection of tools, libraries and a framework for command line application, environment management or sandboxing.
 It supports Nix (including MacOS) and Windows systems, and provide usefull tools and functions for bash and batch application.
 
 On Nix systems, Stella try to run on any bash system with no dependencies. It does not change your operating system and do not require sudo/root. Platforms mainly tested are Ubuntu, MacOs, Centos and  Alpine.
