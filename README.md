@@ -18,6 +18,13 @@ It includes
 
 For now, the code really needs to be cleaned ! And more unit test to be written ! And documentation too !
 
+## Commands
+
+For the whole list of commands use
+
+	./stella.sh -h
+	stella.bat -h
+
 ## License
 
 Copyright 2013-2016 Sylvain Boucault @ StudioEtrange
@@ -82,13 +89,7 @@ _NOTE : You dont really need this, because all previous installation methods wil
 
 	stella.bat stella install dep
 
-### Ubuntu/Debian requirements
-
-* Auto install :
-
-	./stella.sh stella install dep
-
-### MacOS requirements
+### Nix requirements
 
 * Auto install :
 
