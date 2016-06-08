@@ -6,14 +6,14 @@ It supports Nix (including MacOS) and Windows platform, and provide usefull tool
 Stella try to run on any bash system with no dependencies. It does not change your operating system and do not require sudo/root. platform mainly tested are Ubuntu, MacOs, Centos and Alpine.
 The only dependencies you will need is a standard build system if you want to install a package from source.
 
-On Windows, stella have the same feature, but with batch.
+On Windows, stella have the same features in batch.
 
 It includes
 * a package manager (120+ recipes) - see available recipe in nix/pool/feature-recipe or win/pool/feature-recipe
 * app system - you can declare nested dependencies of your app, auto build/install them, maintain properties
 * a full build system (make, autotools, cmake, ninja, ...) - can turn binary into portable, tweak dependencies
 * features to deploy/execute code remotely (ssh) and "cloudly" (vagrant/docker)
-* a bunch of bash functions through an API
+* a bunch of bash/batch functions through an API
 
 For now, the code really needs to be cleaned ! And more unit test to be written ! And documentation too !
 
@@ -21,17 +21,17 @@ For now, the code really needs to be cleaned ! And more unit test to be written 
 
 Copyright 2013-2016 Sylvain Boucault @ StudioEtrange
 
-Licensed under the Apache License, Version 2.0 (the "License"); you may not
-use this file except in compliance with the License. You may obtain a copy of
-the License at
+	Licensed under the Apache License, Version 2.0 (the "License"); you may not
+	use this file except in compliance with the License. You may obtain a copy of
+	the License at
 
-http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-License for the specific language governing permissions and limitations under
-the License.
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+	WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+	License for the specific language governing permissions and limitations under
+	the License.
 
 ## Installation
 
