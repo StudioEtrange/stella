@@ -919,39 +919,6 @@ function __translate_schema() {
 # --------------- DEPRECATED ---------------------------------------------
 
 
-# TODO : migrate to separate recipe
-function __texinfo() {
-	URL=http://ftp.gnu.org/gnu/texinfo/texinfo-5.1.tar.xz
-	VER=5.1
-	FILE_NAME=texinfo-5.1.tar.xz
-	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools"
-	SRC_DIR="$STELLA_APP_FEATURE_ROOT/texinfo-$VER-src"
-	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/texinfo-$VER-build"
-
-	AUTO_INSTALL_FLAG_PREFIX=
-	AUTO_INSTALL_FLAG_POSTFIX=
-
-
-	__auto_build "configure" "texinfo" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
-
-}
-
-function __bc() {
-	#http://www.gnu.org/software/bc/bc.html
-
-	URL=http://alpha.gnu.org/gnu/bc/bc-1.06.95.tar.bz2
-	VER=1.06.95
-	FILE_NAME=bc-1.06.95.tar.bz2
-	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools"
-	SRC_DIR="$STELLA_APP_FEATURE_ROOT/bc-$VER-src"
-	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/bc-$VER-build"
-
-	AUTO_INSTALL_FLAG_PREFIX=
-	AUTO_INSTALL_FLAG_POSTFIX=
-
-	__auto_build "configure" "bc" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
-}
-
 function __file5() {
 	URL=ftp://ftp.astron.com/pub/file/file-5.15.tar.gz
 	VER=5.15

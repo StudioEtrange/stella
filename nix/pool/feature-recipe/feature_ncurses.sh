@@ -85,7 +85,7 @@ function feature_ncurses_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP EXCLUDE_FILTER /lib/terminfo|/share"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP NO_INSPECT"
 
 	# standard build
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
@@ -97,7 +97,7 @@ function feature_ncurses_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "EXCLUDE_FILTER /lib/terminfo|/share"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "EXCLUDE_FILTER /lib/terminfo|/share|/man"
 
 
 

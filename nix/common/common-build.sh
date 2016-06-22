@@ -17,7 +17,7 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 #		__get_resource
 
 #		SET TOOLSET
-#		__set_toolset STANDARD|CMAKE|CUSTOM ====> MUST BE CALLED
+#		__set_toolset AUTOTOOLS|STANDARD|CMAKE|CUSTOM ====> MUST BE CALLED
 
 # 		SET CUSTOM BUILD MODE
 #		__set_build_mode ARCH x86
@@ -59,7 +59,7 @@ function __start_build_session() {
 
 # TOOLSET ------------------------------------------------------------------------------------------------------------------------------
 function __set_toolset() {
-	# CUSTOM | STANDARD | CMAKE
+	# CUSTOM | STANDARD | CMAKE | AUTOTOOLS
 	local MODE="$1"
 	local OPT="$2"
 
@@ -87,6 +87,17 @@ function __set_toolset() {
 			done
 
 			;;
+		AUTOTOOLS)
+			STELLA_BUILD_TOOLSET=AUTOTOOLS
+			_flag_configure=FORCE
+			CONFIG_TOOL=configure
+
+			BUILD_TOOL=make
+
+			_flag_frontend=FORCE
+			COMPIL_FRONTEND=gcc-clang
+			;;
+
 		STANDARD)
 			STELLA_BUILD_TOOLSET=STANDARD
 
@@ -128,10 +139,14 @@ function __set_toolset() {
 
 
 function __require_current_toolset() {
+	echo "** Require build toolset : $STELLA_BUILD_TOOLSET"
+	[ "$STELLA_BUILD_TOOLSET" == "AUTOTOOLS" ] && __require "autoconf" "autotools-bundle#1" "PREFER_STELLA"
 	[ "$STELLA_BUILD_BUILD_TOOL" == "cmake" ] &&  __require "cmake" "cmake" "PREFER_STELLA"
 	[ "$STELLA_BUILD_CONFIG_TOOL" == "cmake" ] && __require "cmake" "cmake" "PREFER_STELLA"
 	[ "$STELLA_BUILD_BUILD_TOOL" == "make" ] &&  __require "make" "build-chain-standard" "PREFER_SYSTEM"
 	[ "$STELLA_BUILD_COMPIL_FRONTEND" == "gcc-clang" ] &&  __require "gcc" "build-chain-standard" "PREFER_SYSTEM"
+	echo "** END Require build toolset : $STELLA_BUILD_TOOLSET"
+	echo
 }
 
 # BUILD ------------------------------------------------------------------------------------------------------------------------------
@@ -151,6 +166,7 @@ function __auto_build() {
 	# DEBUG
 	# SOURCE_KEEP
 	# BUILD_KEEP
+	# NO AUTOGEN (do not launch autogen.sh when using autotools)
 	# NO_CONFIG
 	# NO_BUILD
 	# NO_OUT_OF_TREE_BUILD
@@ -249,18 +265,30 @@ function __launch_configure() {
 
 	# debug mode (default : OFF)
 	local _debug=
-
+	# using autogen.sh (default : TRUE)
+	local _opt_autogen=ON
 	for o in $OPT; do
 		[ "$o" == "DEBUG" ] && _debug=ON
+		[ "$o" == "NO_AUTOGEN" ] && _opt_autogen=OFF
 	done
 
 	mkdir -p "$AUTO_BUILD_DIR"
 	cd "$AUTO_BUILD_DIR"
 
+	case $STELLA_BUILD_TOOLSET in
+		AUTOTOOLS)
+			if [ "$_opt_autogen" == "ON" ]; then
+				if [ -f "$AUTO_SOURCE_DIR/autogen.sh" ]; then
+					chmod +x "$AUTO_SOURCE_DIR/autogen.sh"
+					"$AUTO_SOURCE_DIR/autogen.sh"
+				fi
+			fi
+			;;
+	esac
+
 	# GLOBAL FLAGs
 	# AUTO_INSTALL_CONF_FLAG_PREFIX
 	# AUTO_INSTALL_CONF_FLAG_POSTFIX
-
 
 	case $STELLA_BUILD_CONFIG_TOOL in
 

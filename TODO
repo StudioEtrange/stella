@@ -70,3 +70,7 @@ https://github.com/SublimeLinter/SublimeLinter-shellcheck
 [ ] unit test : app/test/nix app/text/win
     nix : bats
     win : ?
+
+[ ] speed up grep http://applocator.blogspot.fr/2013/10/speed-up-bash-scripts-that-use-grep.html
+
+[ ] nix : explore https://github.com/alebcay/awesome-shell

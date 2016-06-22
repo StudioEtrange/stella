@@ -244,6 +244,7 @@ function __require() {
 		[ "$o" == "PREFER_STELLA" ] && _opt_prefer_system=OFF && _opt_prefer_stella=ON
 	done
 
+	echo "** REQUIRE $_id"
 	local _err=
 	# if [[ ! -n `which $_artefact 2> /dev/null` ]]; then
 	# 	_err=1
@@ -272,7 +273,9 @@ function __require() {
 				exit 1
 			else
 				if [ "$_opt_prefer_stella" == "ON" ]; then
-					__feature_install "$_id" "INTERNAL HIDDEN"
+					echo "** REQUIRE $_id : installing it from stella"
+					(__feature_install "$_id" "INTERNAL HIDDEN")
+					__feature_init "$_id"
 				else
 					echo "** ERROR -- Please install $_artefact"
 					echo "-- For a system install : try stella.sh sys install $_id OR your regular OS package manager"

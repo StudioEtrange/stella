@@ -26,7 +26,7 @@ function feature_augeas_1_5_0() {
 	FEAT_VERSION=1_5_0
 
 
-	FEAT_SOURCE_DEPENDENCIES="autotools-bundle#1 libxml2#2_9_1"
+	FEAT_SOURCE_DEPENDENCIES="libxml2#2_9_1"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://download.augeas.net/augeas-1.5.0.tar.gz
@@ -60,7 +60,7 @@ function feature_augeas_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
-	__set_toolset "STANDARD"
+	__set_toolset "AUTOTOOLS"
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
@@ -72,7 +72,7 @@ function feature_augeas_install_source() {
 
 	__feature_callback
 
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD NO_AUTOGEN"
 
 }
 

@@ -155,6 +155,7 @@ __set_build_mode_default "MIX_CPP_C_FLAGS" "OFF"
 #    NULL		|	make		 	|   gcc clang
 
 # STANDARD TOOLSET : configure	|	make|   gcc clang
+# AUTOTOOLS TOOLSET : configure | make|		gcc clang --- this toolset require autotools and will launch autogen.sh before configure
 # NINJA TOOLSET : cmake	|	ninja |   gcc clang
 # CMAKE TOOLSET : cmake	|	make  |   gcc clang
 STELLA_BUILD_DEFAULT_CONFIG_TOOL=configure

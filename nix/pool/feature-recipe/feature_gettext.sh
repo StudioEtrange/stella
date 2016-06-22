@@ -1,4 +1,4 @@
-if [ ! "$_GETTEXT_INCLUDED_" == "1" ]; then 
+if [ ! "$_GETTEXT_INCLUDED_" == "1" ]; then
 _GETTEXT_INCLUDED_=1
 
 # https://github.com/Homebrew/homebrew/blob/master/Library/Formula/gettext.rb
@@ -16,7 +16,7 @@ function feature_gettext() {
 
 function feature_gettext_0_19_4() {
 	FEAT_VERSION=0_19_4
-	
+
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -38,12 +38,11 @@ function feature_gettext_0_19_4() {
 
 
 function feature_gettext_install_source() {
-	
+
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
 
-	#__set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL make"
+
 	__set_toolset "STANDARD"
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
@@ -68,7 +67,7 @@ function feature_gettext_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
-	
+
 }
 
 fi
