@@ -28,7 +28,7 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 #		LINK BUILD TO OTHER LIBRARY
 #		__link_feature_library
 
-#		AUTOMATIC BUILD
+#		AUTOMATIC BUILD AND INSTALL
 #		__auto_build
 
 
@@ -327,7 +327,7 @@ function __launch_build() {
 	AUTO_BUILD_DIR="$3"
 	OPT="$4"
 	# parallelize build
-	local _opt_parallelize=$STELLA_BUILD_PARALLELIZE
+	local _opt_parallelize="$STELLA_BUILD_PARALLELIZE"
 
 	# debug mode (default : OFF)
 	local _debug=
@@ -358,7 +358,7 @@ function __launch_build() {
 	# POST_BUILD_STEP
 	if __string_contains "$_post_build_step" "install"; then
 		if [ "$_opt_install" == "OFF" ]; then
-			_post_build_step="${_post_build_step/install/}"
+			_post_build_step=$(echo "$_post_build_step" | sed 's/^install$//' | sed 's/^install //' | sed 's/ install$//' | sed 's/ install / /g' )
 		fi
 	else
 		if [ "$_opt_install" == "ON" ]; then

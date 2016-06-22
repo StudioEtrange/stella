@@ -4,7 +4,10 @@ _hadoop_INCLUDED_=1
 # NOTE : for hadoop common native libraries
 # see http://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/NativeLibraries.html
 
-# Include YARN service, HDFS service and MapReduce framework
+# Include Hadoop Common, YARN service, HDFS service and MapReduce framework
+
+
+
 function feature_hadoop() {
 	FEAT_NAME=hadoop
 	FEAT_LIST_SCHEMA="2_7_2:binary 2_6_4:binary"

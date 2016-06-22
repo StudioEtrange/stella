@@ -1,7 +1,17 @@
 if [ ! "$_augeas_INCLUDED_" == "1" ]; then
 _augeas_INCLUDED_=1
 
+# https://github.com/hercules-team/augeas/wiki/Loading-specific-files
 
+#AUGEAS_ROOT="/" augtool --echo --noload --noautoload
+# when module (.aug files) are not autoloaded, we have to use "Xml.lns" syntaxes. If autoloaded we can use "@Xml" instead
+#set /augeas/load/Xml/lens "Xml.lns"
+#set /augeas/load/Xml/incl "/Users/nomorgan/WORK/stella/workspace/feature_darwin/macos/hbase/1_1_5/conf/hbase-site.xml"
+#load
+#print /files
+#set /files/Users/nomorgan/WORK/stella/workspace/feature_darwin/macos/hbase/1_1_5/conf/hbase-site.xml/configuration/foo/lol/bar/trust/me/#text "test"
+#save
+#print /files
 
 function feature_augeas() {
 	FEAT_NAME=augeas
@@ -10,8 +20,6 @@ function feature_augeas() {
 	FEAT_DEFAULT_VERSION=1_5_0
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
-
-
 }
 
 function feature_augeas_1_5_0() {
@@ -64,9 +72,8 @@ function feature_augeas_install_source() {
 
 	__feature_callback
 
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD"
 
 }
-
 
 fi

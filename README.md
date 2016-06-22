@@ -7,7 +7,7 @@ On Nix systems, Stella try to run on any bash system with no dependencies. It do
 
 On Windows, stella have the same features in batch. Platform mainly tested is Windows 7.
 
-The only dependencies you will need is a standard build system if you want to install a package from source. And Stella can help you too install it (even on windows)
+The only dependencies you will need is a standard build system but ONLY if you want to install a package from source. And Stella can help you to install it (even on windows)
 
 It includes
 * a package manager (120+ recipes) : see available recipe in nix/pool/feature-recipe or win/pool/feature-recipe

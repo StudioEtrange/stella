@@ -94,8 +94,14 @@ function __get_platform_suffix() {
 
 function __set_current_platform_info() {
 
+	# call screenFetch
+	# https://github.com/KittyKatt/screenFetch
+	exit() {
+	:
+	}
+	source $STELLA_ARTEFACT/screenFetch/screenfetch-dev -n -E 1>/dev/null 2>&1
+	unset exit
 
-	detectdistro
 	STELLA_CURRENT_OS=$(__get_os_from_distro "$distro")
 	STELLA_CURRENT_PLATFORM=$(__get_platform_from_os "$STELLA_CURRENT_OS")
 	STELLA_CURRENT_PLATFORM_SUFFIX=$(__get_platform_suffix "$STELLA_CURRENT_PLATFORM")
@@ -138,6 +144,13 @@ function __set_current_platform_info() {
 	# The getconf LONG_BIT get the default bit size of the C library
 	STELLA_C_ARCH=$(getconf LONG_BIT)
 	STELLA_USERSPACE_ARCH=unknown
+
+
+
+	STELLA_DEFAULT_INTERFACE=$(netstat -rn | awk '/^0.0.0.0/ {thif=substr($0,74,10); print thif;} /^default.*UG/ {thif=substr($0,65,10); print thif;}')
+	STELLA_HOST_DEFAULT_IP=$(ifconfig ${STELLA_DEFAULT_INTERFACE} | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*')
+	STELLA_HOST_IP=$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*')
+
 
 	__override_platform_command
 

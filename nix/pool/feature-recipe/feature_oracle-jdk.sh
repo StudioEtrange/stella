@@ -156,6 +156,7 @@ function feature_oracle-jdk_7u80() {
 
 function feature_oracle-jdk_install_binary() {
 
+	mkdir -p "$STELLA_APP_CACHE_DIR"
 	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
 		if [ ! -f "$STELLA_APP_CACHE_DIR/$FEAT_BINARY_URL_FILENAME" ]; then
 			wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "$FEAT_BINARY_URL" -O "$STELLA_APP_CACHE_DIR/$FEAT_BINARY_URL_FILENAME"

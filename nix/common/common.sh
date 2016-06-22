@@ -343,7 +343,7 @@ function __transfert_folder_rsync() {
 		_folder="${_folder%/}"
 	fi
 
-	rsync $_exclude --force --delete-excluded --delete -avz -e "ssh -p $_ssh_port" "$_folder" "$_target"
+	rsync $_exclude --force --delete -avz -e "ssh -p $_ssh_port" "$_folder" "$_target"
 }
 
 
@@ -1110,6 +1110,12 @@ function __uncompress() {
 			__require "7z" "7z" "PREFER_SYSTEM"
 			[ "$_opt_strip" == "OFF" ] && 7z x "$FILE_PATH" -y -o"$UNZIP_DIR"
 			[ "$_opt_strip" == "ON" ] && __sevenzip-strip "$FILE_PATH" "$UNZIP_DIR"
+			;;
+		*.deb)
+			# STRIP not supported. Often in debian packages, there is a lot of folder at first level
+			# https://www.g-loaded.eu/2008/01/28/how-to-extract-rpm-or-deb-packages/
+			ar p "$FILE_PATH" data.tar.xz | tar x 2>/dev/null || \
+				ar p "$FILE_PATH" data.tar.gz | tar xz
 			;;
 		*)
 			echo " ** ERROR : Unknown archive format"

@@ -72,24 +72,24 @@ elf_specs_readelf() {
 }
 
 elf_specs() {
-	[ "$1" == "" ] || elf_specs_$BACKEND "$@"
+	[ "$1" != "" ] && elf_specs_$BACKEND "$@"
 }
 
 elf_get_rpath_scanelf() {
 	local _file="$1"
 	# NOTE fixed g flag on sed
-	scanelf -qF '#F%r' "${_file}" | sed -e "s:[$]ORIGIN:${_file%/*}:g"
+	scanelf -qF '#F%r' "${_file}" | sed -e "s:[$]ORIGIN:${_file%/*}:g" | sed -e "s:[$]{ORIGIN}:${_file%/*}:g"
 }
 
 elf_get_rpath_readelf() {
 	local _file="$1"
-	local _tmp_rpath=$(readelf -d "${needed_by}" | grep RUNPATH | cut -d '[' -f 2 | sed 's/]//' | sed -e "s:[$]ORIGIN:${needed_by%/*}:g")
-	[ "$_tmp_rpath" = "" ] && _tmp_rpath=$(readelf -d "${needed_by}" | grep RPATH | cut -d '[' -f 2 | sed 's/]//' | sed -e "s:[$]ORIGIN:${needed_by%/*}:g")
+	local _tmp_rpath=$(readelf -d "${needed_by}" | grep RUNPATH | cut -d '[' -f 2 | sed 's/]//' | sed -e "s:[$]ORIGIN:${needed_by%/*}:g" | sed -e "s:[$]{ORIGIN}:${needed_by%/*}:g")
+	[ "$_tmp_rpath" = "" ] && _tmp_rpath=$(readelf -d "${needed_by}" | grep RPATH | cut -d '[' -f 2 | sed 's/]//' | sed -e "s:[$]ORIGIN:${needed_by%/*}:g" | sed -e "s:[$]{ORIGIN}:${needed_by%/*}:g")
 	echo "${_tmp_rpath}"
 }
 
 elf_get_rpath() {
-	[ "$1" == "" ] || elf_get_rpath_$BACKEND "$@"
+	[ "$1" != "" ] && elf_get_rpath_$BACKEND "$@"
 }
 
 elf_get_interp_scanelf() {
@@ -103,7 +103,7 @@ elf_get_interp_readelf() {
 }
 
 elf_get_interp() {
-	[ "$1" == "" ] || elf_get_interp_$BACKEND "$@"
+	[ "$1" != "" ] && elf_get_interp_$BACKEND "$@"
 }
 
 elf_get_linked_lib_scanelf() {
@@ -117,7 +117,7 @@ elf_get_linked_lib_readelf() {
 }
 
 elf_get_linked_lib() {
-	[ "$1" == "" ] || elf_get_linked_lib_$BACKEND "$1"
+	[ "$1" != "" ] && elf_get_linked_lib_$BACKEND "$1"
 }
 
 

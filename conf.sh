@@ -44,7 +44,6 @@ STELLA_DIST_URL="$STELLA_URL/dist"
 
 # STELLA INCLUDE ---------------------------------------------
 
-source $STELLA_COMMON/screenfetch-dev
 source $STELLA_COMMON/stack.sh
 source $STELLA_COMMON/common-platform.sh
 source $STELLA_COMMON/common.sh
@@ -54,7 +53,7 @@ source $STELLA_COMMON/lib-parse-bin.sh
 source $STELLA_COMMON/common-binary.sh
 source $STELLA_COMMON/common-build.sh
 source $STELLA_COMMON/common-api.sh
-source $STELLA_COMMON/make-sfx.sh
+source $STELLA_COMMON/lib-sfx.sh
 source $STELLA_COMMON/common-network.sh
 source $STELLA_COMMON/common-boot.sh
 

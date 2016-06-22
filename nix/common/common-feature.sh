@@ -919,7 +919,7 @@ function __translate_schema() {
 # --------------- DEPRECATED ---------------------------------------------
 
 
-# TODO : migrate to separate recipe (or erase?)
+# TODO : migrate to separate recipe
 function __texinfo() {
 	URL=http://ftp.gnu.org/gnu/texinfo/texinfo-5.1.tar.xz
 	VER=5.1
@@ -967,20 +967,7 @@ function __file5() {
 
 }
 
-function __m4() {
 
-	URL=http://ftp.gnu.org/gnu/m4/m4-1.4.17.tar.gz
-	VER=1.4.17
-	FILE_NAME=m4-1.4.17.tar.gz
-	INSTALL_DIR="$STELLA_APP_FEATURE_ROOT/cross-tools"
-	SRC_DIR="$STELLA_APP_FEATURE_ROOT/m4-$VER-src"
-	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/m4-$VER-build"
-
-	AUTO_INSTALL_FLAG_PREFIX=
-	AUTO_INSTALL_FLAG_POSTFIX=
-
-	__auto_build "configure" "m4" "$FILE_NAME" "$URL" "$SRC_DIR" "$BUILD_DIR" "$INSTALL_DIR" "STRIP"
-}
 
 function __binutils() {
 	#TODO configure flag

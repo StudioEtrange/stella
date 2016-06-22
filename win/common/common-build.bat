@@ -24,14 +24,14 @@ goto :eof
 ::		LINK BUILD TO OTHER LIBRARY
 ::		__link_feature_library
 
-::		AUTOMATIC BUILD
+::		AUTOMATIC BUILD AND INSTALL
 ::		__auto_build
 
 ::				SET BUILD ENV AND FLAGS
 ::				__prepare_build
 ::						EXPORT / RPATH
 ::						__export_env ====> MUST BE CALLED if we used __link_feature_library
-::						
+::
 ::						call set_env_vars_for_gcc
 :: 						call set_env_vars_for_cl
 ::						call set_env_vars_for_cmake
@@ -42,7 +42,7 @@ goto :eof
 ::				__launch_build
 
 ::				__inspect_and_fix_build
-::						call __fix_built_files 
+::						call __fix_built_files
 ::						call __check_built_files
 
 
@@ -68,7 +68,7 @@ goto :eof
 	:: compiler frontend
 	set _flag_frontend=
 	set "COMPIL_FRONTEND=!STELLA_BUILD_DEFAULT_COMPIL_FRONTEND!"
-	
+
 	if "!MODE!"=="CUSTOM" (
 		for %%O in (%OPT%) do (
 			if "!_flag_configure!"=="ON" (
@@ -97,25 +97,25 @@ goto :eof
 
 	if "!MODE!"=="STANDARD" (
 		set "STELLA_BUILD_TOOLSET=STANDARD"
-		
+
 		set "_flag_configure=FORCE"
 		set "CONFIG_TOOL=cmake"
-		
+
 		set "BUILD_TOOL=mingw-make"
-		
+
 		set "_flag_frontend=FORCE"
 		set "COMPIL_FRONTEND=gcc"
 	)
 
-	
+
 	if "!MODE!"=="MS" (
 		set "STELLA_BUILD_TOOLSET=MS"
-		
+
 		set "_flag_configure=FORCE"
 		set "CONFIG_TOOL=cmake"
-		
+
 		set "BUILD_TOOL=nmake"
-		
+
 		set "_flag_frontend=FORCE"
 		set "COMPIL_FRONTEND=cl"
 	)
@@ -137,7 +137,7 @@ goto :eof
 	set "STELLA_BUILD_BUILD_TOOL=!BUILD_TOOL!"
 	set "STELLA_BUILD_COMPIL_FRONTEND=!COMPIL_FRONTEND!"
 
-	
+
 goto :eof
 
 :require_current_toolset
@@ -186,13 +186,13 @@ goto :eof
 	:: folder stuff
 	set "BUILD_DIR=!SOURCE_DIR!"
 	if "!_opt_out_of_tree_build!"=="ON" (
-		call %STELLA_COMMON%\common.bat :dirname "t1" "!SOURCE_DIR!" 
-		call %STELLA_COMMON%\common.bat :basename "t2" "!SOURCE_DIR!" 
+		call %STELLA_COMMON%\common.bat :dirname "t1" "!SOURCE_DIR!"
+		call %STELLA_COMMON%\common.bat :basename "t2" "!SOURCE_DIR!"
 		set "BUILD_DIR=!t1!\!!t2!-build"
 	)
 
 	if not exist "!INSTALL_DIR!" mkdir "!INSTALL_DIR!"
-	
+
 	if "!_opt_out_of_tree_build!"=="ON" (
 		echo ** Out of tree build is active
 		if "!FORCE!"=="1" (
@@ -261,7 +261,7 @@ goto :eof
 
 	:: debug mode (default : OFF)
 	set _debug=
-	
+
 	for %%O in (%OPT%) do (
 		if "%%O"=="DEBUG" (
 			set "_debug=ON"
@@ -272,7 +272,7 @@ goto :eof
 
 	if not exist "!AUTO_BUILD_DIR!" mkdir "!AUTO_BUILD_DIR!"
 	cd /D "!AUTO_BUILD_DIR!"
-	
+
 	:: GLOBAL FLAGs
 	:: AUTO_INSTALL_CONF_FLAG_PREFIX -- TODO NOT USED
 	:: AUTO_INSTALL_CONF_FLAG_POSTFIX
@@ -316,11 +316,11 @@ goto :eof
 		-DCMAKE_SYSTEM_INCLUDE_PATH:PATH="!CMAKE_INCLUDE_PATH!" -DCMAKE_SYSTEM_LIBRARY_PATH:PATH="!CMAKE_LIBRARY_PATH!" ^
 		-G "!CMAKE_GENERATOR!"
 
-		
+
 
 	)
 
-		
+
 goto :eof
 
 
@@ -332,7 +332,7 @@ goto :eof
 
 	:: parallelize build
 	set "_opt_parallelize=!STELLA_BUILD_PARALLELIZE!"
-	
+
 	:: debug mode (default : OFF)
 	set "_debug="
 	:: configure step activation (default : TRUE)
@@ -353,7 +353,7 @@ goto :eof
 		)
 	)
 
-	
+
 	:: FLAGs
 	:: AUTO_INSTALL_BUILD_FLAG_PREFIX -- TODO NOT USED
 	:: AUTO_INSTALL_BUILD_FLAG_POSTFIX
@@ -431,11 +431,11 @@ goto :eof
 :dep_choose_origin
 	set "_result_dep_choose_origin=%~1"
 	set "_SCHEMA=%~2"
-	
+
 
 	call %STELLA_COMMON%\common-feature.bat :translate_schema "!_SCHEMA!" "_CHOOSE_ORIGIN_FEATURE_NAME"
 
-	
+
 
 	set "_origin=STELLA"
 	for %%u in (!STELLA_BUILD_DEP_FROM_SYSTEM!) do (
@@ -457,7 +457,7 @@ goto :eof
 	set _BIN=
 	set _LIB=
 	set _INCLUDE=
-	
+
 
 	set _folders=OFF
 	set _var_folders=
@@ -591,7 +591,7 @@ goto :eof
 			call :dep_choose_origin "_origin" "!SCHEMA!"
 		)
 	)
-	
+
 	if "!_origin!"=="SYSTEM" (
 		echo We do not link against STELLA version of !SCHEMA!, but from SYSTEM.
 		goto :eof
@@ -602,7 +602,7 @@ goto :eof
 	:: INSPECT required lib through schema
 	call %STELLA_COMMON%\common-feature.bat :push_schema_context
 	call %STELLA_COMMON%\common-feature.bat :feature_inspect !SCHEMA!
-	
+
 	if "!TEST_FEATURE!"=="1" (
 		set "REQUIRED_LIB_ROOT=!FEAT_INSTALL_ROOT!"
 	) else (
@@ -618,7 +618,7 @@ goto :eof
 
 		set "LIB_TARGET_FOLDER=!REQUIRED_LIB_ROOT!\stella-dep-static"
 		echo *** Isolate dependencies into !LIB_TARGET_FOLDER!
-		
+
 		call %STELLA_COMMON%\common.bat :del_folder "!LIB_TARGET_FOLDER!"
 		mkdir "!LIB_TARGET_FOLDER!"
 
@@ -648,7 +648,7 @@ goto :eof
 
 		set "LIB_TARGET_FOLDER=!REQUIRED_LIB_ROOT!\stella-dep-dynamic"
 		echo *** Isolate dependencies into !LIB_TARGET_FOLDER!
-		
+
 		call %STELLA_COMMON%\common.bat :del_folder "!LIB_TARGET_FOLDER!"
 		mkdir "!LIB_TARGET_FOLDER!"
 
@@ -704,7 +704,7 @@ goto :eof
 	set "_BIN=!REQUIRED_LIB_ROOT!\bin"
 	set "_INCLUDE=!REQUIRED_LIB_ROOT!\!_include_folder!"
 	set "_LIB=!LIB_TARGET_FOLDER!"
-	
+
 
 	set "LINKED_LIBS_PATH=!LINKED_LIBS_PATH! !_opt_flavour! !_LIB!"
 
@@ -971,12 +971,12 @@ goto :eof
 
 
 	:: CMAKE Flags
-	:: note : 
+	:: note :
 	::	- these flags have to be passed to the cmake command line, as cmake do not read en var
 	::	- list of environment variables read by cmake http://www.cmake.org/Wiki/CMake_Useful_Variables:Environment_Variables
 	set "CMAKE_C_FLAGS=!STELLA_C_CXX_FLAGS!"
 	set "CMAKE_CXX_FLAGS=!STELLA_C_CXX_FLAGS!"
-	
+
 	:: Linker flags to be used to create shared libraries
 	set "CMAKE_SHARED_LINKER_FLAGS=!STELLA_LINK_FLAGS! !STELLA_DYNAMIC_LINK_FLAGS!"
 	:: Linker flags to be used to create module
@@ -991,7 +991,7 @@ goto :eof
 	call %STELLA_COMMON%\common.bat :trim "LINKED_LIBS_CMAKE_INCLUDE_PATH" "!LINKED_LIBS_CMAKE_INCLUDE_PATH!"
 	set "CMAKE_LIBRARY_PATH=!LINKED_LIBS_CMAKE_LIBRARY_PATH!"
 	set "CMAKE_INCLUDE_PATH=!LINKED_LIBS_CMAKE_INCLUDE_PATH!"
-	:: -DCMAKE_MODULE_PATH="$CMAKE_MODULE_PATH" 
+	:: -DCMAKE_MODULE_PATH="$CMAKE_MODULE_PATH"
 
 	:: TODO do we need this ?
 	if not "!CMAKE_LIBRARY_PATH!"=="" set "CMAKE_LIBRARY_PATH=%CMAKE_LIBRARY_PATH:\=\\%"
@@ -1037,8 +1037,8 @@ goto :eof
 
 :: set flags and env for standard build tools (NMAKE,...)
 :set_env_vars_for_cl
-	
-	
+
+
 	:: ADD linked libraries flags
 	call %STELLA_COMMON%\common.bat :trim "LINKED_LIBS_C_CXX_FLAGS" "!LINKED_LIBS_C_CXX_FLAGS!"
 	call %STELLA_COMMON%\common.bat :trim "LINKED_LIBS_CPP_FLAGS" "!LINKED_LIBS_CPP_FLAGS!"
@@ -1061,7 +1061,7 @@ goto :eof
 	:: https://msdn.microsoft.com/en-us/library/6y6t9esh.aspx
 	REM do not work == make link.exe to not found an UNKNOW link.obj file when we use LINK env var
 	REM set "LINK=!STELLA_LINK_FLAGS!"
-	
+
 goto :eof
 
 
@@ -1070,7 +1070,7 @@ goto :eof
 	set "_arg1=%~1"
 	set "_arg2=%~2"
 	set "_arg3=%~3"
-	
+
 	if "!_arg1!"=="DEP_FROM_SYSTEM" (
 		set "_var=STELLA_BUILD_!_arg1!_DEFAULT"
 		set "!_var!=!_arg2! !_arg3!"
@@ -1104,12 +1104,12 @@ goto :eof
 
 	:: BINARIES RELOCATABLE -----------------------------------------------------------------
 	:: ON | OFF
-	::		every dependency will be added to a DT_NEEDED field in elf files 
+	::		every dependency will be added to a DT_NEEDED field in elf files
 	:: 				on linux : DT_NEEDED contain dependency filename only
 	:: 				on macos : ????? contain dependency filename only
 	::		if OFF : RPATH values will be added for each dependency by absolute path
 	::		if ON : RPATH values will contain relative values to a nested lib folder containing dependencies
-	if "%~1"=="RELOCATE" ( 
+	if "%~1"=="RELOCATE" (
 		set "STELLA_BUILD_RELOCATE=%~2"
 	)
 
@@ -1139,15 +1139,15 @@ goto :eof
 :set_build_env
 	:: CPU_INSTRUCTION_SCOPE -----------------------------------------------------------------
 	:: http://sdf.org/~riley/blog/2014/10/30/march-mtune/
-	if "%~1"=="CPU_INSTRUCTION_SCOPE" ( 
+	if "%~1"=="CPU_INSTRUCTION_SCOPE" (
 		if "!STELLA_BUILD_COMPIL_FRONTEND!"=="gcc" (
-			if "%~2"=="CURRENT" ( 
+			if "%~2"=="CURRENT" (
 				set "STELLA_C_CXX_FLAGS=!STELLA_C_CXX_FLAGS! -march=native"
 			)
-			if "%~2"=="SAME_FAMILY" ( 
+			if "%~2"=="SAME_FAMILY" (
 				set "STELLA_C_CXX_FLAGS=!STELLA_C_CXX_FLAGS! -mtune=native"
 			)
-			if "%~2"=="GENERIC" ( 
+			if "%~2"=="GENERIC" (
 				set "STELLA_C_CXX_FLAGS=!STELLA_C_CXX_FLAGS! -mtune=generic"
 			)
 		)
@@ -1180,14 +1180,14 @@ goto :eof
 		)
 	)
 
-	
+
 goto :eof
 
 
 :: CHECK BUILD ------------------------------------------------------------------------------------------------------------------------------
 :inspect_and_fix_build
 	set "_path=%~1"
-	
+
 	set _test_tool=
 	call %STELLA_COMMON%\common.bat :which "_test1" "dumpbin"
 	if not "!_test1!"=="" (
@@ -1201,7 +1201,7 @@ goto :eof
 
 
 	if not "!_test_tool!"=="" (
-		
+
 		for %%f in (!_path!\*) do (
 			:: checking built files
 			call :check_built_files "%%f"
@@ -1284,7 +1284,7 @@ goto :eof
 :: VARIOUS ------------------------------------------------------------------------------------------------------------------------------
 
 :: check if file.lib is an import lib or a static lib
-:: by setting 
+:: by setting
 ::		UNKNOW, STATIC, IMPORT
 :: first argument is the file to test
 :is_import_or_static_lib
@@ -1351,7 +1351,7 @@ REM https://ryzomcore.atlassian.net/wiki/display/RC/Building+Ryzom+MFC+Tools+wit
 REM http://www.microsoft.com/en-us/download/details.aspx?id=11800
 REM _wdk_path example : set "_wdk_path=E:\CODE\WinDDK\7600.16385.1"
 :_mfc_atl_wdk_tweak
-	:: x86 | x64 
+	:: x86 | x64
 	set "_target_arch=%~1"
 	set "_wdk_path=%~2"
 	echo ** Use MFC and ATL from WDK
@@ -1448,14 +1448,14 @@ goto :eof
 			if "!_target_arch!"=="" (
 				call "!vcpath!\vcvarsall.bat"
 			)
-			if "!_target_arch!"=="x64" ( 
+			if "!_target_arch!"=="x64" (
 				call "!vcpath!\vcvarsall.bat" amd64
 			)
-			if "!_target_arch!"=="x86" ( 
+			if "!_target_arch!"=="x86" (
 				call "!vcpath!\vcvarsall.bat" x86
 			)
 		) else (
-			echo ** WARNING : VC does not exist OR vcvarsall.bat does not exist 
+			echo ** WARNING : VC does not exist OR vcvarsall.bat does not exist
 			echo ** Please install VC
 		)
 	)
@@ -1470,4 +1470,3 @@ goto :eof
 	REM Reinit PATH Values
 	call %STELLA_COMMON%\common-feature.bat :feature_reinit_installed
 goto :eof
-

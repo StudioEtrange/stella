@@ -1,7 +1,7 @@
-if [ ! "$_STELLA_COMMON_MAKE_SFX_INCLUDED_" == "1" ]; then 
+if [ ! "$_STELLA_COMMON_MAKE_SFX_INCLUDED_" == "1" ]; then
 _STELLA_COMMON_MAKE_SFX_INCLUDED_=1
 
-# SFX stand for auto extractible archive
+# SFX means auto extractible archive
 # Alternative implementation see http://megastep.org/makeself/
 
 
@@ -21,7 +21,7 @@ function __make_sevenzip_sfx_bin() {
 	local _opt="$4"
 
 	local _opt_target_is_sevenzip=OFF
-	for o in $_opt; do 
+	for o in $_opt; do
 		[ "$o" == "7Z" ] && _opt_target_is_sevenzip=ON
 	done
 
@@ -32,7 +32,7 @@ function __make_sevenzip_sfx_bin() {
 	else
 		tp_7z=$(mktmp)
 	fi
-	
+
 	if [ "$_opt_target_is_sevenzip" == "OFF" ]; then
 		__compress "7Z" "$_target" "$tp_7z"
 	fi
@@ -41,15 +41,15 @@ function __make_sevenzip_sfx_bin() {
 	local extractor_binary
 	case $_platform in
 		win)
-			__download "$STELLA_POOL_URL/common/sfx_for_7z/7z9.20Win32Con.sfx" "_AUTO_"
+			__download "$STELLA_POOL_URL/common/sfx_for_7z/7z9.20Win32Con.sfx"
 			extractor_binary="$STELLA_APP_CACHE_DIR/7z9.20Win32Con.sfx"
 			;;
 		linux)
-			__download "$STELLA_POOL_URL/common/sfx_for_7z/7z9.20LinuxI386Con.sfx" "_AUTO_"
+			__download "$STELLA_POOL_URL/common/sfx_for_7z/7z9.20LinuxI386Con.sfx"
 			extractor_binary="$STELLA_APP_CACHE_DIR/7z9.20LinuxI386Con.sfx"
 			;;
 		darwin)
-			__download "$STELLA_POOL_URL/common/sfx_for_7z/7z9.20Macosx10.6I386.sfx"  "_AUTO_"
+			__download "$STELLA_POOL_URL/common/sfx_for_7z/7z9.20Macosx10.6I386.sfx"
 			extractor_binary="$STELLA_APP_CACHE_DIR/7z9.20Macosx10.6I386.sfx"
 			;;
 	esac
@@ -75,7 +75,7 @@ function __make_targz_sfx_shell() {
 	local _opt="$3"
 
 	local _opt_target_is_targz=OFF
-	for o in $_opt; do 
+	for o in $_opt; do
 		[ "$o" == "TARGZ" ] && _opt_target_is_targz=ON
 	done
 
@@ -88,7 +88,7 @@ function __make_targz_sfx_shell() {
 	else
 		tp_gz=$(mktmp)
 	fi
-	
+
 
 	echo "#!/bin/sh" > "$tp_header"
 	echo "ARCHIVE=\`awk '/^__ARCHIVE_BELOW__/ {print NR + 1; exit 0; }' \$0\`" >> "$tp_header"
@@ -111,5 +111,3 @@ function __make_targz_sfx_shell() {
 
 
 fi
-
-

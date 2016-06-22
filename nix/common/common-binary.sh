@@ -788,6 +788,10 @@ function __find_linked_lib_darwin() {
 					if [ -z "${p##*@loader_path*}" ]; then
 						p="${p/@loader_path/$loader_path}"
 					fi
+					#replace @executable_path
+					if [ -z "${p##*@executable_path*}" ]; then
+						p="${p/@executable_path/$loader_path}"
+					fi
 					linked_lib="${line/@rpath/$p}"
 					if [ -f "$linked_lib" ]; then
 						[ "$_mode" == "DEFAULT" ] && printf %s "-- OK -- [$original_rpath_value] ==> $linked_lib"
@@ -799,6 +803,13 @@ function __find_linked_lib_darwin() {
 				# @loader_path case
 				if [ -z "${line##*@loader_path*}" ]; then
 					linked_lib="${line/@loader_path/$loader_path}"
+					if [ -f "$linked_lib" ]; then
+						[ "$_mode" == "DEFAULT" ] && printf %s "-- OK -- [$line] ==> $linked_lib"
+						_match=1
+					fi
+				# @executable_path case
+				elif [ -z "${line##*@executable_path*}" ]; then
+					linked_lib="${line/@executable_path/$loader_path}"
 					if [ -f "$linked_lib" ]; then
 						[ "$_mode" == "DEFAULT" ] && printf %s "-- OK -- [$line] ==> $linked_lib"
 						_match=1
