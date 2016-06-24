@@ -244,7 +244,7 @@ function __require() {
 		[ "$o" == "PREFER_STELLA" ] && _opt_prefer_system=OFF && _opt_prefer_stella=ON
 	done
 
-	echo "** REQUIRE $_id"
+	echo "** REQUIRE $_id ($_artefact)"
 	local _err=
 	# if [[ ! -n `which $_artefact 2> /dev/null` ]]; then
 	# 	_err=1

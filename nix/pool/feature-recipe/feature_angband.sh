@@ -66,8 +66,6 @@ function feature_angband_install_source() {
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP FORCE_NAME $FEAT_SOURCE_URL_FILENAME"
 
-	#cd "$SRC_DIR"
-	#./autogen.sh
 
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=

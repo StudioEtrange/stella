@@ -49,6 +49,7 @@ function feature_ambari_install_source() {
 
 	export _JAVA_OPTIONS="-Xmx2048m -XX:MaxPermSize=512m -Djava.awt.headless=true"
 
+	# TODO : global ?
 	npm install -g brunch@1.7.17
 
 	cd "$SRC_DIR/ambari-metrics"

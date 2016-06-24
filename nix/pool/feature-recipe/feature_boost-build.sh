@@ -1,7 +1,8 @@
-if [ ! "$_BOOSTBUILD_INCLUDED_" == "1" ]; then 
+if [ ! "$_BOOSTBUILD_INCLUDED_" == "1" ]; then
 _BOOSTBUILD_INCLUDED_=1
 
-
+# http://www.boost.org/build/
+# tool to build c++ project
 
 function feature_boost-build() {
 	FEAT_NAME=boost-build
@@ -13,7 +14,7 @@ function feature_boost-build() {
 
 function feature_boost-build_2014_10() {
 	FEAT_VERSION=2014_10
-	
+
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -46,9 +47,9 @@ function feature_boost-build_install_source() {
 
 	cd $SRC_DIR
 	./bootstrap.sh
-    ./b2 --prefix="$INSTALL_DIR" install
+  ./b2 --prefix="$INSTALL_DIR" install
 
-    __del_folder "$SRC_DIR"
+  __del_folder "$SRC_DIR"
 
 }
 

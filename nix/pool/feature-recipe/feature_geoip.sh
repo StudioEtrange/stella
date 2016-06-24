@@ -1,27 +1,29 @@
-if [ ! "$_texinfo_INCLUDED_" == "1" ]; then
-_texinfo_INCLUDED_=1
+if [ ! "$_geoip_INCLUDED_" == "1" ]; then
+_geoip_INCLUDED_=1
 
+# database file : http://dev.maxmind.com/geoip/legacy/geolite/
+# auto update database file : http://dev.maxmind.com/geoip/geoipupdate/
 
-function feature_texinfo() {
-	FEAT_NAME=texinfo
+function feature_geoip() {
+	FEAT_NAME=geoip
 
-	FEAT_LIST_SCHEMA="5_1:source"
-	FEAT_DEFAULT_VERSION=5_1
+	FEAT_LIST_SCHEMA="1_6_9:source"
+	FEAT_DEFAULT_VERSION=1_6_9
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 
 
 }
 
-function feature_texinfo_5_1() {
-	FEAT_VERSION=5_1
+function feature_geoip_1_6_9() {
+	FEAT_VERSION=1_6_9
 
 
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
-	FEAT_SOURCE_URL=http://ftp.gnu.org/gnu/texinfo/texinfo-5.1.tar.xz
-	FEAT_SOURCE_URL_FILENAME=texinfo-5.1.tar.xz
+	FEAT_SOURCE_URL=https://github.com/maxmind/geoip-api-c/releases/download/v1.6.9/GeoIP-1.6.9.tar.gz
+	FEAT_SOURCE_URL_FILENAME=GeoIP-1.6.9.tar.gz
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
 	FEAT_BINARY_URL=
@@ -32,13 +34,13 @@ function feature_texinfo_5_1() {
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/texindex
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/geoiplookup
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 
 }
 
 
-function feature_texinfo_install_source() {
+function feature_geoip_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
@@ -53,7 +55,7 @@ function feature_texinfo_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
 
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "POST_BUILD_STEP check install"
 
 
 }

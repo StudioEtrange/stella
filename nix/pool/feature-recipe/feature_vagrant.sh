@@ -1,7 +1,7 @@
 if [ ! "$_vagrant_INCLUDED_" == "1" ]; then
 _vagrant_INCLUDED_=1
 
-# for linux, the downloaded .deb file contains compiled libraries but these libraries may not work on some linux distro 
+# for linux, the downloaded .deb file contains compiled libraries but these libraries may not work on some linux distro
 # https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/tools/vagrant/default.nix
 
 function feature_vagrant() {
@@ -90,7 +90,7 @@ function feature_vagrant_install_binary() {
 		__copy_folder_content_into "$STELLA_APP_TEMP_DIR/opt/vagrant" "$FEAT_INSTALL_ROOT"
 		__copy_folder_content_into "$STELLA_APP_TEMP_DIR/usr/bin" "$FEAT_INSTALL_ROOT"
 
-		sed -i "s,/opt/vagrant,$FEAT_INSTALL_ROOT," "$FEAT_INSTALL_ROOT"/vagrant
+		sed -i".bak" "s,/opt/vagrant,$FEAT_INSTALL_ROOT," "$FEAT_INSTALL_ROOT"/vagrant
 
 		#__tweak_binary_file "$FEAT_INSTALL_ROOT"/bin "FIX_LINKED_LIB $FEAT_INSTALL_ROOT/embedded/lib"
 		__tweak_binary_file "$FEAT_INSTALL_ROOT"/embedded/bin "FIX_LINKED_LIB $FEAT_INSTALL_ROOT/embedded/lib"

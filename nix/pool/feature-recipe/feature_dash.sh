@@ -58,8 +58,6 @@ function feature_dash_install_source() {
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
 
 
-
-
 }
 
 

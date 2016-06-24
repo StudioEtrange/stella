@@ -39,7 +39,6 @@ function feature_libtool_install_source() {
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
 
-	#__set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL make"
 	__set_toolset "STANDARD"
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
@@ -53,7 +52,7 @@ function feature_libtool_install_source() {
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
 
-	# some script call libtoolize as glibtoolize
+	# some scripts call libtoolize as glibtoolize
  	ln -s "$FEAT_INSTALL_ROOT"/bin/libtoolize "$FEAT_INSTALL_ROOT"/bin/glibtoolize
 }
 

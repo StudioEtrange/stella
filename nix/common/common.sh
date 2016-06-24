@@ -514,7 +514,11 @@ function __is_dir_empty() {
 
 
 function __get_path_from_string() {
-	echo ${1%/*}
+	if [ "$1" == "${1%/*}" ]; then
+		echo "."
+	else
+		echo ${1%/*}
+	fi
 }
 
 function __get_filename_from_string() {

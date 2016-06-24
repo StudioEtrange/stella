@@ -57,8 +57,10 @@ http://man.he.net/man1/checkbashisms ===> test portability
 https://github.com/duggan/shlint ===> test portability
 https://github.com/SublimeLinter/SublimeLinter-shellcheck
 
-[ ] configuration of feature recipe
-    nix : use augeas https://github.com/hercules-team/augeas ? -- see ryba ? (nodejs) -- use simple sed ? -- use
+[ ] migrate to posix shell ? or dash ? https://wiki.ubuntu.com/DashAsBinSh
+
+[ ] configuration step for each feature recipe
+    nix : use augeas https://github.com/hercules-team/augeas ? -- see ryba ? (nodejs) -- use simple sed ?
     win : ?
 
 [ ] turn stella/bin folder into module ?

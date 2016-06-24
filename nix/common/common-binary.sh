@@ -223,7 +223,7 @@ function __tweak_binary_file() {
 	# INCLUDE_LINKED_LIB <expr> -- include these linked libs while tweaking
 	# EXCLUDE_LINKED_LIB <expr> -- exclude these linked libs while tweaking
 	# INCLUDE_LINKED_LIB is apply first, before EXCLUDE_LINKED_LIB
-	# FIX_LINKED_LIB <path> -- change path to linked lib to path (relative path will be computed)
+	# FIX_LINKED_LIB <path> -- change path of linked libs to path (relative path will be computed)
 	# INCLUDE_FILTER <expr> -- include these files to tweak
 	# EXCLUDE_FILTER <expr> -- exclude these files to tweak
 	# INCLUDE_FILTER is apply first, before EXCLUDE_FILTER
@@ -815,9 +815,10 @@ function __find_linked_lib_darwin() {
 						_match=1
 					fi
 				else
-					if [ -f "$line" ]; then
+					linked_lib="$line"
+					[ ! "$(__is_abs "$line")" == "TRUE" ] && linked_lib="$loader_path/$line"
+					if [ -f "$linked_lib" ]; then
 						[ "$_mode" == "DEFAULT" ] && printf %s "-- OK"
-						linked_lib="$line"
 						_match=1
 					fi
 				fi
