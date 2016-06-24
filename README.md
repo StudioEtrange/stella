@@ -44,11 +44,19 @@ Copyright 2013-2016 Sylvain Boucault @ StudioEtrange
 
 ## Installation
 
-### Nix - Standalone installation
+### Dev version
+
+git clone https://github.com/StudioEtrange/stella
+
+### Stable Version
+
+*DO NOT USE YET*
+
+* Nix - Standalone installation
 
 	curl -sSL https://raw.githubusercontent.com/StudioEtrange/stella/master/nix/pool/stella-bridge.sh | bash -s -- standalone [stella folder]
 
-### Nix - Bootstrap a brand new application
+* Nix - Bootstrap a brand new application
 
 As a library or tools collection inside your project
 
@@ -56,25 +64,25 @@ As a library or tools collection inside your project
 	curl -sSL https://raw.githubusercontent.com/StudioEtrange/stella/master/nix/pool/stella-bridge.sh | bash -s -- bootstrap [stella folder]
 
 
-### Nix - Bootstrap an existing application built with stella
+* Nix - Bootstrap an existing application built with stella
 
 	cd your_project
 	./stella-link.sh bootstrap
 
 
-### Windows - Standalone installation
+* Windows - Standalone installation
 
 
 	powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/StudioEtrange/stella/master/win/pool/stella-bridge.bat', 'stella-bridge.bat')" && stella-bridge.bat standalone & del /q stella-bridge.bat
 
 
-### Windows - Bootstrap a brand new application
+* Windows - Bootstrap a brand new application
 
 	cd your_project
 	powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/StudioEtrange/stella/master/win/pool/stella-bridge.bat', 'stella-bridge.bat')" && stella-bridge.bat bootstrap & del /q stella-bridge.bat
 
 
-### Windows - Bootstrap an existing application built with stella
+* Windows - Bootstrap an existing application built with stella
 
 	cd your_project
 	stella-link.bat bootstrap
