@@ -48,11 +48,10 @@ Copyright 2013-2016 Sylvain Boucault @ StudioEtrange
 
 git clone https://github.com/StudioEtrange/stella
 
-### Stable Version
+### Stable Version **DO NOT USE YET**
 
-*DO NOT USE YET*
 
-* Nix -
+* Nix
 
 Standalone installation
 
@@ -90,16 +89,12 @@ Bootstrap an existing application built with stella
 
 ## Requirements
 
-_NOTE : You dont really need this, because all previous installation methods will install requirements_
+_NOTE : You dont really need this, because all previous installation methods for stable version will install requirements_
 
-### Windows requirements
-
-* Auto install :
+* Windows requirements
 
 	stella.bat stella install dep
 
-### Nix requirements
-
-* Auto install :
+* Nix requirements
 
 	./stella.sh stella install dep
