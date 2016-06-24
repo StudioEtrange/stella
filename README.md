@@ -52,37 +52,37 @@ git clone https://github.com/StudioEtrange/stella
 
 *DO NOT USE YET*
 
-* Nix - Standalone installation
+* Nix -
+
+Standalone installation
 
 	curl -sSL https://raw.githubusercontent.com/StudioEtrange/stella/master/nix/pool/stella-bridge.sh | bash -s -- standalone [stella folder]
 
-* Nix - Bootstrap a brand new application
-
-As a library or tools collection inside your project
+Bootstrap a brand new application and use stella as a library or tools collection inside your project
 
 	cd your_project
 	curl -sSL https://raw.githubusercontent.com/StudioEtrange/stella/master/nix/pool/stella-bridge.sh | bash -s -- bootstrap [stella folder]
 
-
-* Nix - Bootstrap an existing application built with stella
+Bootstrap an existing application built with stella
 
 	cd your_project
 	./stella-link.sh bootstrap
 
 
-* Windows - Standalone installation
+* Windows
 
+Standalone installation
 
 	powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/StudioEtrange/stella/master/win/pool/stella-bridge.bat', 'stella-bridge.bat')" && stella-bridge.bat standalone & del /q stella-bridge.bat
 
 
-* Windows - Bootstrap a brand new application
+Bootstrap a brand new application
 
 	cd your_project
 	powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/StudioEtrange/stella/master/win/pool/stella-bridge.bat', 'stella-bridge.bat')" && stella-bridge.bat bootstrap & del /q stella-bridge.bat
 
 
-* Windows - Bootstrap an existing application built with stella
+Bootstrap an existing application built with stella
 
 	cd your_project
 	stella-link.bat bootstrap
