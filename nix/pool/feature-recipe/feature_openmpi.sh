@@ -5,7 +5,7 @@ _openmpi_INCLUDED_=1
 # see https://github.com/Homebrew/homebrew-core/blob/master/Formula/open-mpi.rb
 
 
-# TODO not finished
+# TODO link to stella libz
 
 function feature_openmpi() {
 	FEAT_NAME=openmpi
@@ -19,7 +19,7 @@ function feature_openmpi_1_10_3() {
 	FEAT_VERSION=1_10_3
 
 
-	FEAT_SOURCE_DEPENDENCIES="libevent#2_0_22"
+	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 libevent#2_0_22 oracle-jdk#8u91"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://www.open-mpi.org/software/ompi/v1.10/downloads/openmpi-1.10.3.tar.gz
@@ -34,14 +34,16 @@ function feature_openmpi_1_10_3() {
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/openmpi-server
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/ompi_info
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 
 }
 
 
 function feature_openmpi_link() {
-  __link_feature_library "libevent" "GET_FOLDER _libevent NO_SET_FLAGS"
+	__link_feature_library "zlib#1_2_8"
+  __link_feature_library "libevent#2_0_22" "GET_FOLDER _libevent NO_SET_FLAGS"
+	__link_feature_library "oracle-jdk#8u91" "GET_FOLDER _jdk NO_SET_FLAGS"
 }
 
 function feature_openmpi_install_source() {
@@ -56,16 +58,21 @@ function feature_openmpi_install_source() {
   __feature_callback
 
   AUTO_INSTALL_CONF_FLAG_PREFIX=
-  AUTO_INSTALL_CONF_FLAG_POSTFIX="--enable-mpi-thread-multiple --disable-mpi-fortran disable-dependency-tracking \
+  AUTO_INSTALL_CONF_FLAG_POSTFIX="--enable-mpi-thread-multiple --disable-mpi-fortran --disable-dependency-tracking \
       --disable-silent-rules \
       --with-sge \
-      --with-libevent=$_libevent \
-      --enable-ipv6"
+      --with-libevent=$_libevent_ROOT \
+      --enable-ipv6 \
+			--with-jdk-dir=$_jdk_ROOT \
+			--enable-mpi-java"
   AUTO_INSTALL_BUILD_FLAG_PREFIX=
   AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
+	# flag -Wl,-no-undefined not supported
+	# https://github.com/open-mpi/ompi/issues/648
+	[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && __set_build_mode LINK_FLAGS_DEFAULT OFF
 
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "INCLUDE_FILTER bin/|lib/"
 
 }
 

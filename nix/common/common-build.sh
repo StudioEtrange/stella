@@ -122,6 +122,7 @@ function __set_toolset() {
 			;;
 	esac
 
+	# autoselect ninja instead of make
 	if [ "$CONFIG_TOOL" == "cmake" ]; then
 		if [ ! "$_flag_build" == "FORCE" ]; then
 			if [[ -n `which ninja 2> /dev/null` ]]; then
@@ -898,10 +899,11 @@ function __reset_build_env() {
 	STELLA_BUILD_LINK_MODE="$STELLA_BUILD_LINK_MODE_DEFAULT"
 	STELLA_BUILD_DEP_FROM_SYSTEM="$STELLA_BUILD_DEP_FROM_SYSTEM_DEFAULT"
 	STELLA_BUILD_ARCH="$STELLA_BUILD_ARCH_DEFAULT"
-	# NOTE : STELLA_BUILD_DARWIN_STDLIB_DEFAULT is empty by default
+	# NOTE : STELLA_BUILD_DARWIN_STDLIB_DEFAULT is never initialized by a set_build_mode_default call
 	STELLA_BUILD_DARWIN_STDLIB="$STELLA_BUILD_DARWIN_STDLIB_DEFAULT"
 	STELLA_BUILD_MACOSX_DEPLOYMENT_TARGET="$STELLA_BUILD_MACOSX_DEPLOYMENT_TARGET_DEFAULT"
 	STELLA_BUILD_MIX_CPP_C_FLAGS="$STELLA_BUILD_MIX_CPP_C_FLAGS_DEFAULT"
+	STELLA_BUILD_LINK_FLAGS_DEFAULT="$STELLA_BUILD_LINK_FLAGS_DEFAULT_DEFAULT"
 
 	# EXTERNAL VARIABLE
 	# reset variable from outside stella
@@ -942,6 +944,7 @@ function __prepare_build() {
 	__set_build_env OPTIMIZATION $STELLA_BUILD_OPTIMIZATION
 	__set_build_env MACOSX_DEPLOYMENT_TARGET $STELLA_BUILD_MACOSX_DEPLOYMENT_TARGET
 	__set_build_env DARWIN_STDLIB $STELLA_BUILD_DARWIN_STDLIB
+	__set_build_env LINK_FLAGS_DEFAULT $STELLA_BUILD_LINK_FLAGS_DEFAULT
 
 	[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && __set_build_env RUNPATH_OVER_RPATH
 
@@ -1122,16 +1125,7 @@ function __set_env_vars_for_gcc-clang() {
 	# flags to pass to the C preprocessor. Used when compiling C and C++ (Used to pass -Iinclude_folder)
 	export CPPFLAGS="$STELLA_CPP_FLAGS"
 	# flags to pass to the linker
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-		# TODO experimental new flags ===> transform into set_build_env
-		# https://sourceware.org/binutils/docs/ld/Options.html
-		# http://www.kaizou.org/2015/01/linux-libraries/
-		#export LDFLAGS="$STELLA_LINK_FLAGS"
-		export LDFLAGS="-Wl,--copy-dt-needed-entries -Wl,--as-needed -Wl,--no-allow-shlib-undefined -Wl,--no-undefined $STELLA_LINK_FLAGS"
-	else
-		export LDFLAGS="$STELLA_LINK_FLAGS"
-	fi
-
+	export LDFLAGS="$STELLA_LINK_FLAGS"
 }
 
 
@@ -1151,6 +1145,10 @@ function __set_build_mode_default() {
 
 # TOOLSET agnostic
 function __set_build_mode() {
+
+	# LINK_FLAGS_DEFAULT -----------------------------------------------------------------
+	# activate default link flags
+	[ "$1" == "LINK_FLAGS_DEFAULT" ] && STELLA_BUILD_LINK_FLAGS_DEFAULT=$2
 
 	# MIX_CPP_C_FLAGS -----------------------------------------------------------------
 	# set CFLAGS and CXXFLAGS with CPPFLAGS
@@ -1221,8 +1219,22 @@ function __set_build_mode() {
 # settings compiler flags -- depend on toolset (configure tool, build tool, compiler frontend)
 function __set_build_env() {
 
-
-
+	# LINK_FLAGS_DEFAULT -----------------------------------------------------------------
+	# Activate some default link flags
+	# TODO experimental new flags ===> transform into set_build_env
+	# https://sourceware.org/binutils/docs/ld/Options.html
+	# http://www.kaizou.org/2015/01/linux-libraries/
+	if [ "$1" == "LINK_FLAGS_DEFAULT" ]; then
+		if [ "$STELLA_BUILD_COMPIL_FRONTEND" == "gcc-clang" ]; then
+			if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+				case $2 in
+					ON)
+						STELLA_LINK_FLAGS="-Wl,--copy-dt-needed-entries -Wl,--as-needed -Wl,--no-allow-shlib-undefined -Wl,--no-undefined $STELLA_LINK_FLAGS"
+					;;
+				esac
+			fi
+		fi
+	fi
 
 	# CPU_INSTRUCTION_SCOPE -----------------------------------------------------------------
 	# http://sdf.org/~riley/blog/2014/10/30/march-mtune/

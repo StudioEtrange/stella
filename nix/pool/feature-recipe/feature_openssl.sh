@@ -53,6 +53,7 @@ function feature_openssl_install_source() {
 
 	__set_toolset "STANDARD"
 
+	__require "perl" "perl" "PREFER_SYSTEM"
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
@@ -79,8 +80,9 @@ function feature_openssl_install_source() {
 
 	__feature_callback
 
-	__prepare_build "$INSTALL_DIR"
+	__prepare_build "$INSTALL_DIR" "$SRC_DIR" "$SRC_DIR"
 
+	cd "$SRC_DIR"
 	# configure --------------------------------
 	# http://stackoverflow.com/questions/16601895/how-can-one-build-openssl-on-ubuntu-with-a-specific-version-of-zlib
 	# zlib zlib-dynamic --with-zlib-lib and --with-zlib-include do not work properly to link openssl against a specific zlib version

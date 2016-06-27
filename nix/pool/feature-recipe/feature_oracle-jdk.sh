@@ -57,6 +57,8 @@ function feature_oracle-jdk_8u91() {
 		PKG_NAME="JDK 8 Update 91.pkg"
 	fi
 
+	FEAT_SOURCE_CALLBACK=
+	FEAT_BINARY_CALLBACK=feature_oracle-jdk_fix_jni_header
 	FEAT_ENV_CALLBACK=feature_oraclesejdk_env
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/java"
@@ -100,7 +102,7 @@ function feature_oracle-jdk_8u45() {
 
 
 	FEAT_SOURCE_CALLBACK=
-	FEAT_BINARY_CALLBACK=
+	FEAT_BINARY_CALLBACK=feature_oracle-jdk_fix_jni_header
 	FEAT_ENV_CALLBACK=feature_oraclesejdk_env
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/java"
@@ -143,7 +145,7 @@ function feature_oracle-jdk_7u80() {
 	fi
 
 	FEAT_SOURCE_CALLBACK=
-	FEAT_BINARY_CALLBACK=
+	FEAT_BINARY_CALLBACK=feature_oracle-jdk_fix_jni_header
 	FEAT_ENV_CALLBACK=feature_oraclesejdk_env
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/java"
@@ -151,7 +153,18 @@ function feature_oracle-jdk_7u80() {
 
 }
 
-
+# fix problems with jni_md.h
+# http://stackoverflow.com/a/24996278
+function feature_oracle-jdk_fix_jni_header() {
+	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+		ln -s $FEAT_INSTALL_ROOT/include/darwin/jni_md.h $FEAT_INSTALL_ROOT/include/jni_md.h
+		ln -s $FEAT_INSTALL_ROOT/include/darwin/jawt_md.h $FEAT_INSTALL_ROOT/include/jawt_md.h
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+		ln -s $FEAT_INSTALL_ROOT/include/linux/jni_md.h $FEAT_INSTALL_ROOT/include/jni_md.h
+		ln -s $FEAT_INSTALL_ROOT/include/linux/jawt_md.h $FEAT_INSTALL_ROOT/include/jawt_md.h
+	fi
+}
 
 
 function feature_oracle-jdk_install_binary() {
@@ -201,6 +214,8 @@ function feature_oracle-jdk_install_binary() {
 		rm -Rf "$FEAT_INSTALL_ROOT/Contents"
 		rm -Rf "$STELLA_APP_TEMP_DIR/$FEAT_VERSION"
 	fi
+
+	__feature_callback
 
 
 }

@@ -238,12 +238,12 @@ function __tweak_binary_file() {
 	local _wanted_rpath_values=
 	local _opt_wanted_rpath=OFF
 	for o in $OPT; do
-		[ "$_flag_wanted_rpath" == "ON" ] && _wanted_rpath_values="$o $_wanted_rpath_values"
-		[ "$o" == "WANTED_RPATH" ] && _flag_wanted_rpath=ON && _opt_wanted_rpath=ON
 		[ "$_flag_fix_linked_lib" == "ON" ] && _fix_linked_lib="$o" && _flag_fix_linked_lib=OFF
 		[ "$o" == "FIX_LINKED_LIB" ] && _flag_fix_linked_lib=ON && _opt_fix_linked_lib=ON && _flag_wanted_rpath=OFF
 		[ "$o" == "RELOCATE" ] && _flag_relocate=YES && _flag_wanted_rpath=OFF
 		[ "$o" == "NON_RELOCATE" ] && _flag_relocate=NO && _flag_wanted_rpath=OFF
+		[ "$_flag_wanted_rpath" == "ON" ] && _wanted_rpath_values="$o $_wanted_rpath_values"
+		[ "$o" == "WANTED_RPATH" ] && _flag_wanted_rpath=ON && _opt_wanted_rpath=ON
 	done
 
 	[ -z "$(__filter_list "$_path" "INCLUDE_TAG INCLUDE_FILTER EXCLUDE_TAG EXCLUDE_FILTER $OPT")" ] && return
@@ -576,11 +576,11 @@ function __check_rpath() {
 	local _missing_rpath_values=
 	local _opt_missing_rpath=OFF
 	for o in $OPT; do
-		[ "$_flag_missing_rpath" == "ON" ] && _missing_rpath_values="$o $_missing_rpath_values"
-		[ "$o" == "WANTED_RPATH" ] && _flag_missing_rpath=ON && _opt_missing_rpath=ON
 		[ "$o" == "NO_RPATH" ] && _no_rpath=ON && _flag_missing_rpath=OFF
 		[ "$o" == "REL_RPATH" ] && _rel_rpath=ON && _abs_rpath=OFF && _flag_missing_rpath=OFF
 		[ "$o" == "ABS_RPATH" ] && _rel_rpath=OFF && _abs_rpath=ON && _flag_missing_rpath=OFF
+		[ "$_flag_missing_rpath" == "ON" ] && _missing_rpath_values="$o $_missing_rpath_values"
+		[ "$o" == "WANTED_RPATH" ] && _flag_missing_rpath=ON && _opt_missing_rpath=ON
 	done
 
 	[ -z "$(__filter_list "$_path" "INCLUDE_TAG INCLUDE_FILTER EXCLUDE_TAG EXCLUDE_FILTER $OPT")" ] && return $_result
@@ -742,27 +742,37 @@ function __check_linked_lib() {
 
 
 # try to resolve linked libs of all binaries in path
-# OR resolve a specific linked lib
+# OR resolve a list of specific linked libs
 function __find_linked_lib_darwin() {
 	local _path="$1"
-	local _specific_linked_lib="$2"
+	local _opt="$2"
 	local _result=0
-	local _mode="DEFAULT"
-	local _lib_list=
+
 	if [ -d "$_path" ]; then
 		for f in  "$_path"/*; do
-			__find_linked_lib_darwin "$f" "$_specific_linked_lib" || _result=1
+			__find_linked_lib_darwin "$f" "$_opt" || _result=1
 		done
 	fi
+
+	local _opt_verbose=ON
+	local _flag_lib_list=OFF
+	local _lib_list
+	local _opt_lib_list=OFF
+	for o in $_opt; do
+		[ "$o" == "NO_VERBOSE" ] && _opt_verbose=OFF && _flag_lib_list=OFF
+		[ "$_flag_lib_list" == "ON" ] && _lib_list="$o $_lib_list"
+		[ "$o" == "LIB_LIST" ] && _flag_lib_list=ON && _opt_lib_list=ON
+	done
+
 
 	if __is_executable_or_shareable_bin "$_path"; then
 		local _rpath="$(__get_rpath $_path)"
 		local loader_path="$(__get_path_from_string "$_path")"
 
-		[ "$_specific_linked_lib" == "" ] && _mode="DEFAULT" || _mode="GET"
-		if [ "$_mode" == "DEFAULT" ]; then
+		[ "$_opt_lib_list" = "OFF" ] && _lib_list="$(__get_linked_lib "$_path")"
+
+		if [ "$_opt_verbose" == "ON" ]; then
 			echo "*** Checking missing dynamic library at runtime"
-			_lib_list="$(__get_linked_lib "$_path")"
 			echo "====> Binary : $_path"
 			echo "====> Linked libraries : $_lib_list"
 			echo "====> setted rpath : $_rpath"
@@ -772,13 +782,14 @@ function __find_linked_lib_darwin() {
 		local _match
 		local line
 		local linked_lib
+		local linked_lib_result
 		local p
 		local original_rpath_value
 
-		[ "$_mode" == "GET" ] && _lib_list="$_specific_linked_lib"
 		for line in $_lib_list; do
+			linked_lib=
 			_match=
-			[ "$_mode" == "DEFAULT" ] && printf %s "====> checking linked lib : $line "
+			[ "$_opt_verbose" == "ON" ] && printf %s "====> checking linked lib : $line "
 			# @rpath case
 			if [ -z "${line##*@rpath*}" ]; then
 
@@ -794,7 +805,7 @@ function __find_linked_lib_darwin() {
 					fi
 					linked_lib="${line/@rpath/$p}"
 					if [ -f "$linked_lib" ]; then
-						[ "$_mode" == "DEFAULT" ] && printf %s "-- OK -- [$original_rpath_value] ==> $linked_lib"
+						[ "$_opt_verbose" == "ON" ] && printf %s "-- OK -- [$original_rpath_value] ==> $linked_lib"
 						_match=1
 						break
 					fi
@@ -804,38 +815,40 @@ function __find_linked_lib_darwin() {
 				if [ -z "${line##*@loader_path*}" ]; then
 					linked_lib="${line/@loader_path/$loader_path}"
 					if [ -f "$linked_lib" ]; then
-						[ "$_mode" == "DEFAULT" ] && printf %s "-- OK -- [$line] ==> $linked_lib"
+						[ "$_opt_verbose" == "ON" ] && printf %s "-- OK -- [$line] ==> $linked_lib"
 						_match=1
 					fi
 				# @executable_path case
 				elif [ -z "${line##*@executable_path*}" ]; then
 					linked_lib="${line/@executable_path/$loader_path}"
 					if [ -f "$linked_lib" ]; then
-						[ "$_mode" == "DEFAULT" ] && printf %s "-- OK -- [$line] ==> $linked_lib"
+						[ "$_opt_verbose" == "ON" ] && printf %s "-- OK -- [$line] ==> $linked_lib"
 						_match=1
 					fi
 				else
 					linked_lib="$line"
 					[ ! "$(__is_abs "$line")" == "TRUE" ] && linked_lib="$loader_path/$line"
 					if [ -f "$linked_lib" ]; then
-						[ "$_mode" == "DEFAULT" ] && printf %s "-- OK"
+						[ "$_opt_verbose" == "ON" ] && printf %s "-- OK"
 						_match=1
 					fi
 				fi
 			fi
 			if [ "$_match" == "" ]; then
-				[ "$_mode" == "DEFAULT" ] && printf %s "-- WARN not found"
+				[ "$_opt_verbose" == "ON" ] && printf %s "-- WARN not found"
 				_result=1
 			fi
-			[ "$_mode" == "DEFAULT" ] && echo
+			[ "$_opt_verbose" == "ON" ] && echo
+			linked_lib_result="$linked_lib_result $linked_lib"
 		done
-		if [ "$_mode" == "DEFAULT" ]; then
-			[ "$_result" == "1" ] && echo "*** Checking missing dynamic library at runtime : ERROR" || \
-			echo "*** Checking missing dynamic library at runtime : OK"
+
+		if [ "$_opt_verbose" == "OFF" ]; then
+			[ "$_result" == "0" ] && echo "$(__trim "$linked_lib_result")"
 		fi
 
-		if [ "$_mode" == "GET" ]; then
-			[ "$_result" == "0" ] && echo "$linked_lib"
+		if [ "$_opt_verbose" == "ON" ]; then
+			[ "$_result" == "1" ] && echo "*** Checking missing dynamic library at runtime : ERROR" || \
+			echo "*** Checking missing dynamic library at runtime : OK"
 		fi
 
 	fi
@@ -843,43 +856,66 @@ function __find_linked_lib_darwin() {
 	return $_result
 }
 
-# try to resolve linked libs
-# OR resolve a specific linked lib
+
+# try to resolve linked libs of all binaries in path
+# OR resolve a list of specific linked libs
 function __find_linked_lib_linux() {
 	local _path="$1"
-	local _specific_linked_lib="$2"
+	local _opt="$2"
 	local _result=0
-	local _mode=
-	[ "$_specific_linked_lib" == "" ] && _mode="DEFAULT" || _mode="GET"
 
 	if [ -d "$_path" ]; then
 		for f in  "$_path"/*; do
-			__find_linked_lib_linux "$f" "$_specific_linked_lib" || _result=1
+			__find_linked_lib_linux "$f" "$_opt" || _result=1
 		done
 	fi
-	if __is_executable_or_shareable_bin "$_path"; then
 
-		if [ "$_mode" == "DEFAULT" ]; then
+	local _opt_verbose=ON
+	local _flag_lib_list=OFF
+	local _lib_list
+	local _opt_lib_list=OFF
+	for o in $_opt; do
+		[ "$o" == "NO_VERBOSE" ] && _opt_verbose=OFF && _flag_lib_list=OFF
+		[ "$_flag_lib_list" == "ON" ] && _lib_list="$o $_lib_list"
+		[ "$o" == "LIB_LIST" ] && _flag_lib_list=ON && _opt_lib_list=ON
+	done
+
+
+	if __is_executable_or_shareable_bin "$_path"; then
+		local _rpath="$(__get_rpath $_path)"
+		local loader_path="$(__get_path_from_string "$_path")"
+
+		[ "$_opt_lib_list" = "OFF" ] && _lib_list="$(__get_linked_lib "$_path")"
+
+		if [ "$_opt_verbose" == "ON" ]; then
 			echo "*** Checking missing dynamic library at runtime"
-			local _lib_list="$(__get_linked_lib "$_path")"
 			echo "====> Binary : $_path"
 			echo "====> Linked libraries : $_lib_list"
-			local _rpath=
-			_rpath="$(__get_rpath "$_path")"
-			echo "====> setted binary rpath : $_rpath"
-			local loader_path="$(__get_path_from_string "$_path")"
+			echo "====> setted rpath : $_rpath"
 			echo "====> loader path (guessed) : $loader_path"
+		fi
 
+		if [ "$_opt_verbose" == "ON" ]; then
 			__require "readelf" "binutils" "SYSTEM"
 			$STELLA_ARTEFACT/lddtree/lddtree.sh -b readelf -m --no-recursive --no-header $_path || _result=1
+
 			[ "$_result" == "1" ] && echo "*** Checking missing dynamic library at runtime : ERROR" || \
 			echo "*** Checking missing dynamic library at runtime : OK"
 		fi
-		if [ "$_mode" == "GET" ]; then
-			__require "readelf" "binutils" "SYSTEM"
+
+		if [ "$_opt_verbose" == "OFF" ]; then
+			local linked_lib_result
+
+			__require "readelf" "binutils" "SYSTEM" 1>/dev/null 2>&1
 			local _output="$($STELLA_ARTEFACT/lddtree/lddtree.sh -b readelf -m --no-recursive --no-header $_path)" || _result=1
 			_result=$?
-			echo "$_output" | grep "$_specific_linked_lib" | cut -d '=' -f 2 | sed 's/> //' | sed 's/not found//g'
+			if [ "$_result" == "0" ]; then
+				for l in $_lib_list; do
+					l="$(__get_filename_from_string "$l")"
+					linked_lib_result="$linked_lib_result $(echo "$_output" | grep "$l =>" | cut -d '=' -f 2 | sed 's/> //' | sed 's/not found//g')"
+				done
+				echo "$(__trim "$linked_lib_result")"
+			fi
 		fi
 	fi
 	return $_result
@@ -955,6 +991,9 @@ function __tweak_linked_lib() {
 
 	[ -z "$(__filter_list "$_file" "INCLUDE_TAG INCLUDE_FILTER EXCLUDE_TAG EXCLUDE_FILTER $OPT")" ] && return
 
+	# NOTE : do not use STELLA_CURRENT_RUNNING_DIR which is not refreshed when we are in shell mode
+	_file="$(__rel_to_abs_path "$_file" "$( cd "$( dirname "." )" && pwd )")"
+
 	if __is_executable_or_shareable_bin "$_file"; then
 		local _new_load_lib=
 		local _new_rpath=
@@ -1016,10 +1055,10 @@ function __tweak_linked_lib() {
 
 			echo "*** Fixing $_filename linked to $_linked_lib_filename shared lib"
 
-			echo "==> Try to resolve linked lib, and filter some of them"
+			echo "==> Try to resolve $l"
 			# FILTERS -- filters are applied on resolved libs
-			[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] &&	_resolved_lib="$(__find_linked_lib_darwin "$_file" "$l")"
-			[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && _resolved_lib="$(__find_linked_lib_linux "$_file" "$l")"
+			[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] &&	_resolved_lib="$(__find_linked_lib_darwin "$_file" "NO_VERBOSE LIB_LIST $l")"
+			[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && _resolved_lib="$(__find_linked_lib_linux "$_file" "NO_VERBOSE LIB_LIST $l")"
 			[ "$_resolved_lib" == "" ] && _resolved="0" || _resolved="1"
 			if [ "$_resolved" == "1" ]; then
 				_lib_to_filter="$_resolved_lib"
@@ -1108,27 +1147,35 @@ function __tweak_linked_lib() {
 			if [ "$_abs_link_to_rel" == "ON" ]; then
 				# fix write permission
 				chmod +w "$_file"
-				# TODO we could use resolved linked lib instead of __abs_to_rel_path $(__get_path_from_string $l) $(__get_path_from_string $_file)
-				# like in REL_LINK_TO_ABS ? -- but what if linked lib can not be resolved ?
 				if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-					echo "====> setting NEEDED : $_linked_lib_filename"
-					patchelf --replace-needed "$l" "$_linked_lib_filename" "$_file"
+					if [ "$_resolved" == "1" ]; then
+						echo "====> setting NEEDED : $_linked_lib_filename"
+						patchelf --replace-needed "$l" "$_linked_lib_filename" "$_file"
 
-					_new_rpath="$(__abs_to_rel_path $(__get_path_from_string $l) $(__get_path_from_string $_file))"
-					[ "$_new_rpath" == "." ] && _new_rpath="\$ORIGIN" || \
-						_new_rpath="\$ORIGIN/$_new_rpath"
-					echo "====> Adding RPATH value : $_new_rpath"
-					__add_rpath "$_file" "$_new_rpath"
+						#_new_rpath="$(__abs_to_rel_path $(__get_path_from_string $l) $(__get_path_from_string $_file))"
+						_new_rpath="$(__abs_to_rel_path $(__get_path_from_string $_resolved_lib) $(__get_path_from_string $_file))"
+						[ "$_new_rpath" == "." ] && _new_rpath="\$ORIGIN" || \
+							_new_rpath="\$ORIGIN/$_new_rpath"
+						echo "====> Adding RPATH value : $_new_rpath"
+						__add_rpath "$_file" "$_new_rpath"
+					else
+						echo "====> can not determine absolute path for $l"
+					fi
 				fi
 				if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-					echo "====> setting LC_LOAD_DYLIB : @rpath/$_linked_lib_filename"
-					install_name_tool -change "$l" "@rpath/$_linked_lib_filename" "$_file"
+					if [ "$_resolved" == "1" ]; then
+						echo "====> setting LC_LOAD_DYLIB : @rpath/$_linked_lib_filename"
+						install_name_tool -change "$l" "@rpath/$_linked_lib_filename" "$_file"
 
-					_new_rpath="$(__abs_to_rel_path $(__get_path_from_string $l) $(__get_path_from_string $_file))"
-					[ "$_new_rpath" == "." ] && _new_rpath="@loader_path" || \
-								_new_rpath="@loader_path/$_new_rpath"
-					echo "====> Adding RPATH value : $_new_rpath"
-					__add_rpath "$_file" "$_new_rpath"
+						#_new_rpath="$(__abs_to_rel_path $(__get_path_from_string $l) $(__get_path_from_string $_file))"
+						_new_rpath="$(__abs_to_rel_path $(__get_path_from_string $_resolved_lib) $(__get_path_from_string $_file))"
+						[ "$_new_rpath" == "." ] && _new_rpath="@loader_path" || \
+									_new_rpath="@loader_path/$_new_rpath"
+						echo "====> Adding RPATH value : $_new_rpath"
+						__add_rpath "$_file" "$_new_rpath"
+					else
+						echo "====> can not determine absolute path for $l"
+					fi
 				fi
 			fi
 		done
@@ -1235,7 +1282,7 @@ function __check_install_name_darwin() {
 # tweak install name with @rpath/lib_name OR tweak install name replacing @rpath/lib_name with /lib/path/lib_name
 # we cannot pass '-Wl,install_name @rpath/library_filename' during build time because we do not know the library name yet
 # 		RPATH -- tweak install_name with @rpath/library_filename [DEFAULT]
-# 		PATH -- tweak install_name with current location
+# 		PATH -- tweak install_name with location of the file
 # INCLUDE_FILTER <expr> -- include these files to tweak
 # EXCLUDE_FILTER <expr> -- exclude these files to tweak
 # INCLUDE_FILTER is apply first, before EXCLUDE_FILTER

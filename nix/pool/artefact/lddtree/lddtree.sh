@@ -78,13 +78,13 @@ elf_specs() {
 elf_get_rpath_scanelf() {
 	local _file="$1"
 	# NOTE fixed g flag on sed
-	scanelf -qF '#F%r' "${_file}" | sed -e "s:[$]ORIGIN:${_file%/*}:g" | sed -e "s:[$]{ORIGIN}:${_file%/*}:g"
+	scanelf -qF '#F%r' "${_file}" | sed -e "s:[$]ORIGIN:${_file%/*}:g" | sed -e "s:[$]{ORIGIN}:${_file%/*}:g" | sed -e "s,:\.,:${_file%/*},g" | sed -e "s,^\.,${_file%/*},g"
 }
 
 elf_get_rpath_readelf() {
 	local _file="$1"
-	local _tmp_rpath=$(readelf -d "${needed_by}" | grep RUNPATH | cut -d '[' -f 2 | sed 's/]//' | sed -e "s:[$]ORIGIN:${needed_by%/*}:g" | sed -e "s:[$]{ORIGIN}:${needed_by%/*}:g")
-	[ "$_tmp_rpath" = "" ] && _tmp_rpath=$(readelf -d "${needed_by}" | grep RPATH | cut -d '[' -f 2 | sed 's/]//' | sed -e "s:[$]ORIGIN:${needed_by%/*}:g" | sed -e "s:[$]{ORIGIN}:${needed_by%/*}:g")
+	local _tmp_rpath=$(readelf -d "${needed_by}" | grep RUNPATH | cut -d '[' -f 2 | sed 's/]//' | sed -e "s:[$]ORIGIN:${needed_by%/*}:g" | sed -e "s:[$]{ORIGIN}:${needed_by%/*}:g" | sed -e "s,:\.,:${_file%/*},g" | sed -e "s,^\.,${_file%/*},g")
+	[ "$_tmp_rpath" = "" ] && _tmp_rpath=$(readelf -d "${needed_by}" | grep RPATH | cut -d '[' -f 2 | sed 's/]//' | sed -e "s:[$]ORIGIN:${needed_by%/*}:g" | sed -e "s:[$]{ORIGIN}:${needed_by%/*}:g" | sed -e "s,:\.,:${_file%/*},g" | sed -e "s,^\.,${_file%/*},g")
 	echo "${_tmp_rpath}"
 }
 
@@ -129,7 +129,7 @@ done
 c_ldso_paths_loaded='false'
 find_elf() {
 	_find_elf=''
-	local elf=$1 needed_by=$2
+	local elf="$1" needed_by="$2"
 	if [ "${elf}" != "${elf##*/}" ] && [ -e "${elf}" ] ; then
 		_find_elf=${elf}
 		return 0
@@ -145,7 +145,7 @@ find_elf() {
 
 				: ${path:=${PWD}}
 
-				# if path is relative (because of replacing $ORIGIN rpath with a relative elf path)
+				# if path is relative (because of replacing $ORIGIN rpath or just because setted rpath is relative)
 				# adding absolute path with current directory
 				[ -z "${path##/*}" ] || path="${PWD}/${path}"
 
@@ -249,7 +249,7 @@ resolv_links() {
 }
 
 show_elf() {
-	local elf=$1 indent=$2 parent_elfs=$3 recurs=$4
+	local elf="$1" indent="$2" parent_elfs="$3" recurs="$4"
 	local rlib lib libs
 	local interp resolved
 	find_elf "${elf}"
