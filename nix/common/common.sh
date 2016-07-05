@@ -786,6 +786,7 @@ function __copy_folder_content_into() {
 	fi
 }
 
+
 #RESSOURCES MANAGEMENT ---------------------------------------------------
 function __get_resource() {
 	local OPT="$5"

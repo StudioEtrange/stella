@@ -141,6 +141,7 @@ __set_build_mode_default "OPTIMIZATION" "2"
 # everything will be sticked to your stella shared lib installation path
 # this will affect rpath values (and install_name for darwin)
 __set_build_mode_default "RELOCATE" "OFF"
+
 # ARCH x86 x64
 # By default we do not provide any build arch information
 #__set_build_mode_default "ARCH" ""
@@ -169,8 +170,7 @@ STELLA_BUILD_DEFAULT_COMPIL_FRONTEND=gcc-clang
 # $ORIGIN and @loader_path is directory of the file who wants to load a shared library
 # NOTE : '@loader_path' does not work, you have to write '@loader_path/.'
 # NOTE : $ORIGIN may have problem with cmake, see : http://www.cmake.org/pipermail/cmake/2008-January/019290.html
-# TODO : NOT USED ?
-STELLA_BUILD_RPATH_DEFAULT=""
+STELLA_BUILD_RPATH_DEFAULT=
 
 # buid engine reset
 __reset_build_env

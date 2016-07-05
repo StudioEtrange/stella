@@ -1,4 +1,4 @@
-if [ ! "$_EXPORTMODE_INCLUDED_" == "1" ]; then 
+if [ ! "$_EXPORTMODE_INCLUDED_" == "1" ]; then
 _EXPORTMODE_INCLUDED_=1
 
 function feature_mode-export() {
@@ -7,12 +7,12 @@ function feature_mode-export() {
 	FEAT_DEFAULT_VERSION=1
 	FEAT_DEFAULT_ARCH=
 
-	FEAT_BUNDLE=LIST
+	FEAT_BUNDLE=MERGE_LIST
 }
 
 function feature_mode-export_1() {
 	FEAT_VERSION=1
-	
+
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -24,7 +24,7 @@ function feature_mode-export_1() {
 
 	FEAT_INSTALL_TEST=
 	FEAT_SEARCH_PATH=
-	
+
 }
 
 

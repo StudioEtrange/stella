@@ -104,8 +104,8 @@ function __proxy_override() {
 	# wait = 15
 	function wget() {
 		# NOTE a lot of these wget option do not exist on different wget version
-		[ ! "$STELLA_PROXY_USER" == "" ] && command wget --wait=15 --http-proxy="$STELLA_HTTP_PROXY" --https-proxy="$STELLA_HTTPS_PROXY" --proxy-user="$STELLA_PROXY_USER" --proxy-password="$STELLA_PROXY_PASS" "$@"
-		[ "$STELLA_PROXY_USER" == "" ] && command wget --wait=15 --http-proxy="$STELLA_HTTP_PROXY" --https-proxy="$STELLA_HTTPS_PROXY" --proxy-user="$STELLA_PROXY_USER" --proxy-password="$STELLA_PROXY_PASS" "$@"
+		[ ! "$STELLA_PROXY_USER" == "" ] && no_proxy="$STELLA_NO_PROXY" https_proxy="$STELLA_HTTPS_PROXY" http_proxy="$STELLA_HTTP_PROXY" command wget --wait=15 --proxy=on --proxy-user="$STELLA_PROXY_USER" --proxy-password="$STELLA_PROXY_PASS" "$@"
+		[ "$STELLA_PROXY_USER" == "" ] && no_proxy="$STELLA_NO_PROXY" https_proxy="$STELLA_HTTPS_PROXY" http_proxy="$STELLA_HTTP_PROXY" command wget --wait=15 --proxy=on --proxy-user="$STELLA_PROXY_USER" --proxy-password="$STELLA_PROXY_PASS" "$@"
 	}
 
 	function curl() {

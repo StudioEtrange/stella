@@ -1,8 +1,6 @@
 if [ ! "$_STELLA_COMMON_BUILD_INCLUDED_" == "1" ]; then
 _STELLA_COMMON_BUILD_INCLUDED_=1
 
-# NOTE : homebrew flag setting system : https://github.com/Homebrew/homebrew/blob/master/Library/Homebrew/extend/ENV/super.rb
-
 
 # BUILD WORKFLOW
 
@@ -11,7 +9,7 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 #  	__set_build_mode_default "DARWIN_STDLIB" "LIBCPP"
 
 # START BUILD SESSION
-#	__start_build_session (reset everything to default values or empty)
+#	__start_build_session (__reset_build_env : reset every __set_build_mode values to default or empty)
 
 #		GET SOURCE CODE
 #		__get_resource
@@ -36,7 +34,7 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 #				SET BUILD ENV AND FLAGS
 #				__prepare_build
 #						EXPORT / RPATH
-#						__export_env ====> MUST BE CALLED if we use __link_feature_library
+#						__export_env  TODO DEPRECATED
 #
 #						call set_env_vars_for_gcc-clang
 #						call set_env_vars_for_cmake
@@ -54,7 +52,11 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 
 function __start_build_session() {
 	__reset_build_env
-
+	local OPT="$1"
+	for o in $OPT; do
+		# TODO : this OPT is never used when calling __start_build_session - useless, to supress ?
+		[ "$o" == "RELOCATE" ] && __set_build_mode "RELOCATE" "ON"
+	done
 }
 
 # TOOLSET ------------------------------------------------------------------------------------------------------------------------------
@@ -538,7 +540,7 @@ function __link_feature_library() {
 	# FORCE_DYNAMIC -- force link to dynamic version of lib (by isolating it)
 	# TODO (see windows impl.) : FORCE_RENAME -- rename files when isolating files -- only apply when FORCE_STATIC or FORCE_DYNAMIC is ON
 	# FORCE_LIB_FOLDER <path> -- folder prefix where lib resides, default "/lib"
-	# FORCE_BIN_FOLDER <path>
+	# FORCE_BIN_FOLDER <path> -- folder prefix where bin resides, default "/bin"
 	# FORCE_INCLUDE_FOLDER <path> -- folder prefix where include resides, default "/include"
 	# GET_FLAGS <prefix> -- init prefix_C_CXX_FLAGS, prefix_CPP_FLAGS, prefix_LINK_FLAGS with correct flags
 	# GET_FOLDER <prefix> -- init prefix_ROOT, prefix_LIB, prefix_BIN, prefix_INCLUDE with correct path
@@ -627,6 +629,8 @@ function __link_feature_library() {
 
 	[ "$STELLA_BUILD_COMPIL_FRONTEND" == "" ] && echo "** WARN : compil frontend empty - did you set a toolset ?"
 
+
+
 	# INSPECT required lib through schema
 	__push_schema_context
 	__feature_inspect $SCHEMA
@@ -635,12 +639,19 @@ function __link_feature_library() {
 		__pop_schema_context
 		return
 	fi
+	LINKED_LIBS_LIST="$LINKED_LIBS_LIST $SCHEMA"
 	local REQUIRED_LIB_ROOT="$FEAT_INSTALL_ROOT"
+	local REQUIRED_LIB_NAME="$FEAT_NAME"
 	__pop_schema_context
 
 
+	# 	REQUIRED_LIB_ROOT="$FEAT_INSTALL_ROOT/stella-dep/$REQUIRED_LIB_NAME"
+	# 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	# 		[ "$STELLA_BUILD_RELOCATE" == "ON" ] && __tweak_install_name_darwin "$REQUIRED_LIB_ROOT" "RPATH"
+	# 		[ "$STELLA_BUILD_RELOCATE" == "OFF" ] && __tweak_install_name_darwin "$REQUIRED_LIB_ROOT" "PATH"
+	# 	fi
 
-	# ISOLATE LIBS
+	# ISOLATE STATIC OR DYNAMIC LIBS
 	# if we want specific static or dynamic linking, we isolate specific version
 	# by default, linker use dynamic version first and then static version if dynamic is not found
 	local _flag_lib_isolation=FALSE
@@ -678,7 +689,10 @@ function __link_feature_library() {
 		fi
 	fi
 
-	# RESULTS
+
+
+
+	# RETURN RESULTS
 
 	# root folder
 	_ROOT="$REQUIRED_LIB_ROOT"
@@ -690,14 +704,37 @@ function __link_feature_library() {
 	_LIB="$LIB_TARGET_FOLDER"
 
 
-	LINKED_LIBS_PATH="$LINKED_LIBS_PATH $_opt_flavour $_LIB"
+	#LINKED_LIBS_PATH="$LINKED_LIBS_PATH $_opt_flavour $_LIB"
 
 	# set stella build system flags ----
-	[ "$_opt_set_flags" == "ON" ] && __set_link_flags "$_LIB" "$_INCLUDE" "$_libs_name"
+	if [ "$_opt_set_flags" == "ON" ]; then
+		__set_link_flags "$_LIB" "$_INCLUDE" "$_libs_name"
+
+		# NOTE : we cannot really set rpath now, each built binary may have a different path, so rpath might be false
+		# if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
+		# 	local p="$(__abs_to_rel_path "$_LIB" "$FEAT_INSTALL_ROOT")"
+		# 	# NOTE : $ORIGIN may have problem on some systems, see : http://www.cmake.org/pipermail/cmake/2008-January/019290.html
+		# 	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+		# 		# from root
+		# 		__set_build_mode "RPATH" "ADD_FIRST" '$ORIGIN/'$p
+		# 		# from lib or bin folder
+		# 		__set_build_mode "RPATH" "ADD_FIRST" '$ORIGIN/../'$p
+		# 	fi
+		# 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+		# 		# from root
+		# 		__set_build_mode "RPATH" "ADD_FIRST" "@loader_path/$p"
+		# 		# from lib or bin folder
+		# 		__set_build_mode "RPATH" "ADD_FIRST" "@loader_path/../$p"
+		# 	fi
+		# fi
+	fi
 
 
+	# RESULT
 	# set <var> flags ----
-	[ ! "$_var_flags" == "" ] && __link_flags "$STELLA_BUILD_COMPIL_FRONTEND" "$_var_flags" "$_LIB" "$_INCLUDE" "$_libs_name"
+	if [ ! "$_var_flags" == "" ]; then
+		__link_flags "$STELLA_BUILD_COMPIL_FRONTEND" "$_var_flags" "$_LIB" "$_INCLUDE" "$_libs_name"
+	fi
 
 	# set <folder> vars ----
 	if [ ! "$_var_folders" == "" ]; then
@@ -756,114 +793,52 @@ function __link_flags_gcc-clang() {
 		_LINK_FLAGS="$_LINK_FLAGS -l$l"
 	done
 
-
 	eval "$_var_flags"_C_CXX_FLAGS=\"$_C_CXX_FLAGS\"
 	eval "$_var_flags"_CPP_FLAGS=\"$_CPP_FLAGS\"
 	eval "$_var_flags"_LINK_FLAGS=\"$_LINK_FLAGS\"
 
 }
 
-
-
-# manage RPATH values considering EXPORT mode or PORTABLE mode
-# and copy if necessary dependencies
-function __export_env() {
-	local INSTALL_DIR="$1"
-	local SOURCE_DIR="$2"
-	local BUILD_DIR="$3"
-	# relocation mode
-	if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
-		echo "*** We are in RELOCATION mode !"
-		if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-			# TODO REVIEW
-			__set_build_mode_default "RELOCATE" "OFF"
-			__set_build_mode_default "RELOCATE" "ON"
-			__set_build_mode "RELOCATE" "ON"
-		fi
+# NOTE : NOT USED
+function __link_rpath_flags() {
+	local _frontend="$1"
+	local _var_flags="$2"
+	local _linked_target_path="$3"
+	local _linked_lib_path="$4"
+	if [ "$_frontend" == "gcc-clang" ]; then
+		__link_rpath_flags_gcc-clang "$_var_flags" "$_linked_target_path" "$_linked_lib_path"
 	fi
-
-	# Copy each linked feature into a folder stella-dep
-	# we copy each dep into stella-dep folder
-	# 		but we do NOT use them while BUILDING
-	# 		they are used only at RUNTIME (based on rpath values)
-	if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
-
-		local LIB_TARGET_FOLDER="$INSTALL_DIR/stella-dep"
-		LINKED_LIBS_PATH="$(__trim $LINKED_LIBS_PATH)"
-		local _flavor=
-		local _cpt=0
-		for j in $LINKED_LIBS_PATH; do
-			if [ $(( _cpt % 2 )) -eq 0 ]; then
-				_flavor=$j
-				_cpt=$(( _cpt + 1 ))
-				continue
-			fi
-			if [ "$(__is_abs $j)" == "TRUE" ]; then
-				echo "*** Moving dependencies from $j to $LIB_TARGET_FOLDER"
-				__copy_folder_content_into "$j" "$LIB_TARGET_FOLDER"
-				# copy dependencies of dependency
-				if [ -d "$j/../stella-dep" ]; then
-					echo "*** Moving dependencies of dependency from $j/../stella-dep to $LIB_TARGET_FOLDER"
-					__copy_folder_content_into "$j/../stella-dep" "$LIB_TARGET_FOLDER"
-				fi
-			fi
-		done
-
-
-		if [ ! "$LINKED_LIBS_PATH" == "" ]; then
-			if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-				__tweak_install_name_darwin "$LIB_TARGET_FOLDER" "RPATH"
-			fi
-			# TODO : NOTE : $ORIGIN may have problem on some systems, see : http://www.cmake.org/pipermail/cmake/2008-January/019290.html
-			if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-				__set_build_mode "RPATH" "ADD_FIRST" '$ORIGIN/../stella-dep'
-				__set_build_mode "RPATH" "ADD_FIRST" '$ORIGIN/stella-dep'
-			fi
-			if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-				__set_build_mode "RPATH" "ADD_FIRST" "@loader_path/../stella-dep"
-				__set_build_mode "RPATH" "ADD_FIRST" "@loader_path/stella-dep"
-			fi
-
-			# create a link into build dir in case some temporary built files needs to be run with dependencies
-			[ ! "$INSTALL_DIR" == "$SOURCE_DIR" ] && ln -s "$INSTALL_DIR/stella-dep" "$SOURCE_DIR/stella-dep"
-			[ ! "$INSTALL_DIR" == "$BUILD_DIR" ] && ln -s "$INSTALL_DIR/stella-dep" "$BUILD_DIR/stella-dep"
-		fi
-
-
-
-
-
-
-	else
-
-
-
-
-		# when we are NOT on PORTABLE mode BUT only on EXPORT mode
-		# 	On darwin we do not use RPATH because lib are linked with path
-		# 	On Linux we must use RPATH because libs are linked without path
-		if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-			LINKED_LIBS_PATH="$(__trim $LINKED_LIBS_PATH)"
-			local _flavor=
-			local _cpt=0
-			for j in $LINKED_LIBS_PATH; do
-				if [ $(( _cpt % 2 )) -eq 0 ]; then
-					_flavor=$j
-					_cpt=$(( _cpt + 1 ))
-					continue
-				fi
-				if [ ! "$_flavor" == "FORCE_STATIC" ]; then
-					echo "** Adding RPATH $j"
-					__set_build_mode "RPATH" "ADD" "$j"
-				fi
-			done
-		fi
-	fi
-
-	# BEFORE building, so rpath values are setted with correct path before building
-	echo "** Computing RPATH values"
-	echo "** RPATH setted : $STELLA_BUILD_RPATH"
 }
+
+# NOTE : NOT USED
+function __link_rpath_flags_gcc-clang() {
+	local _var_flags="$1"
+	local _linked_target_path="$2"
+	local _linked_lib_path="$3"
+
+	local _p="$(__abs_to_rel_path "$_linked_lib_path" "$_linked_target_path")"
+	local _LINK_RPATH_FLAGS
+	local _rpath
+
+	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+		# to avoid problem with $$ORIGIN -- only usefull with standard build tools (do not need this with cmake)
+		# relative to /lib or /root folder
+		_rpath='$ORIGIN/../'$p
+		_rpath=${_rpath/\$ORIGIN/\$\$ORIGIN}
+		_LINK_RPATH_FLAGS="-Wl,-rpath='"$_rpath"'"
+		# relative to root folder
+		_rpath='$ORIGIN/'$p
+		_rpath=${_rpath/\$ORIGIN/\$\$ORIGIN}
+		_LINK_RPATH_FLAGS="$_LINK_RPATH_FLAGS -Wl,-rpath='"$_rpath"'"
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+		# NOTE : if we use ' or " around $r, it will be used as rpath value
+		_LINK_RPATH_FLAGS="-Wl,-rpath,@loader_path/$p -Wl,-rpath,@loader_path/../$p"
+	fi
+
+	eval "$_var_flags"_LINK_RPATH_FLAGS=\"$_LINK_RPATH_FLAGS\"
+}
+
 
 
 
@@ -883,10 +858,11 @@ function __reset_build_env() {
 	STELLA_CMAKE_RPATH_DARWIN=
 
 	# LINKED LIBRARIES
+	LINKED_LIBS_LIST=
 	LINKED_LIBS_C_CXX_FLAGS=
 	LINKED_LIBS_CPP_FLAGS=
 	LINKED_LIBS_LINK_FLAGS=
-	LINKED_LIBS_PATH=
+	#LINKED_LIBS_PATH=
 	LINKED_LIBS_CMAKE_LIBRARY_PATH=
 	LINKED_LIBS_CMAKE_INCLUDE_PATH=
 
@@ -934,8 +910,6 @@ function __prepare_build() {
 	local SOURCE_DIR="$2"
 	local BUILD_DIR="$3"
 
-	# export/rpath
-	__export_env "$INSTALL_DIR" "$SOURCE_DIR" "$BUILD_DIR"
 
 
 	# set env
@@ -977,7 +951,8 @@ function __prepare_build() {
 	echo "** BUILD INFO"
 	echo "====> Build arch directive : $STELLA_BUILD_ARCH"
 	echo "====> Parallelized (if supported) : $STELLA_BUILD_PARALLELIZE"
-	echo "====> Relocation : $STELLA_BUILD_RELOCATE"
+	echo "====> Relocatable : $STELLA_BUILD_RELOCATE"
+	echo "====> Linked lib features : $LINKED_LIBS_LIST"
 	echo "** FOLDERS"
 	echo "====> Install directory : $INSTALL_DIR"
 	echo "====> Source directory : $SOURCE_DIR"
@@ -1000,13 +975,13 @@ function __prepare_build() {
 # set flags and env for CMAKE
 function __set_env_vars_for_cmake() {
 
-
 	# RPATH Management
+	local _rpath=
+	for r in $STELLA_BUILD_RPATH; do
+		_rpath="$r;$_rpath"
+	done
+
 	if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
-		local _rpath=
-		for r in $STELLA_BUILD_RPATH; do
-			_rpath="$r;$_rpath"
-		done
 
 		# all phase
 		[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && __set_build_env "CMAKE_RPATH" "ALL_PHASE_USE_RPATH_DARWIN"
@@ -1017,25 +992,20 @@ function __set_env_vars_for_cmake() {
 
 		# cmake install phase
 		__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_USE_FINAL_RPATH"
-		#__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_NO_RPATH"
-		__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_ADD_FINAL_RPATH" "$_rpath"
+
+		[ ! "$_rpath" == "" ] && __set_build_env "CMAKE_RPATH" "INSTALL_PHASE_ADD_FINAL_RPATH" "$_rpath"
 	else
 
 		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-			## force install_name with hard path
+			# force install_name with hard path
 			__set_build_env "CMAKE_RPATH" "ALL_PHASE_USE_RPATH" # -- we need this for forcing install_name
 			__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_USE_FINAL_RPATH" # -- we need this for forcing install_name
 			# \${CMAKE_INSTALL_PREFIX}/lib is correct because when building we pass INSTALL_LIB_DIR with /lib
 			STELLA_CMAKE_EXTRA_FLAGS="$STELLA_CMAKE_EXTRA_FLAGS -DCMAKE_INSTALL_NAME_DIR=\${CMAKE_INSTALL_PREFIX}/lib"
 
-			# on darwin we dont need setting rpath values, because libs are linked with harcoded path
+			[ ! "$_rpath" == "" ] && __set_build_env "CMAKE_RPATH" "INSTALL_PHASE_ADD_FINAL_RPATH" "$_rpath"
 		fi
 		if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-			# on linux we need rpath values, for linked libs
-			local _rpath=
-			for r in $STELLA_BUILD_RPATH; do
-				_rpath="$r;$_rpath"
-			done
 
 			__set_build_env "CMAKE_RPATH" "ALL_PHASE_USE_RPATH"
 
@@ -1044,9 +1014,9 @@ function __set_env_vars_for_cmake() {
 
 			# cmake install phase
 			__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_USE_FINAL_RPATH"
-			# add dependent lib directories to rpath value. (maybe redundant with rpath values computed in __export_env)
+			# add dependent lib directories to rpath value.
 			__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_ADD_DEPENDENT_LIB"
-			__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_ADD_FINAL_RPATH" "$_rpath"
+			[ ! "$_rpath" == "" ] && __set_build_env "CMAKE_RPATH" "INSTALL_PHASE_ADD_FINAL_RPATH" "$_rpath"
 		fi
 	fi
 
@@ -1085,8 +1055,6 @@ function __set_env_vars_for_cmake() {
 
 # set flags and env for standard build tools (GNU MAKE,...)
 function __set_env_vars_for_gcc-clang() {
-
-
 
 	# RPATH Management
 	for r in $STELLA_BUILD_RPATH; do
@@ -1172,12 +1140,13 @@ function __set_build_mode() {
 	# ON | OFF
 	#		every dependency will be added to a DT_NEEDED field in elf files
 	# 				on linux : DT_NEEDED contain dependency filename only
-	# 				on macos : ????? contain dependency filename only
+	# 				on macos : LC_LOAD_DYLIB contain a dependency with a couple of @rpath/@loader_path
 	#		if OFF : RPATH values will be added for each dependency by absolute path
 	#		if ON : RPATH values will contain relative values to a nested lib folder containing dependencies
 	[ "$1" == "RELOCATE" ] && STELLA_BUILD_RELOCATE=$2
 
-	# GENERIC RPATH (runtime search path values)
+
+	# GENERIC RPATH (runtime search path values) -----------------------------------------------------------------
 	if [ "$1" == "RPATH" ]; then
 		case $2 in
 			ADD)

@@ -6,8 +6,15 @@ _BOOST_INCLUDED_=1
 # Note for windows : http://stackoverflow.com/questions/7282645/how-to-build-boost-iostreams-with-gzip-and-bzip2-support-on-windows
 # for boost.python see : https://gist.github.com/tdsmith/893df85e1c4d952fd150
 
+# http://www.boost.org/doc/libs/1_58_0/libs/iostreams/doc/installation.html
+
 # TODO Apply debian patch : https://packages.debian.org/sid/libboost1.60-dev
 
+
+	# TODO do not find pyconfig.h
+	# TODO BUGGGGG
+	# http://stackoverflow.com/questions/19810940/ubuntu-linking-boost-python-fatal-error-pyconfig-cannot-be-found
+# http://stackoverflow.com/questions/19810940/ubuntu-linking-boost-python-fatal-error-pyconfig-cannot-be-found
 function feature_boost() {
 	FEAT_NAME=boost
 	FEAT_LIST_SCHEMA="1_61_0:source 1_58_0:source"
@@ -76,7 +83,7 @@ function boost_set_env() {
 	export BOOST_ROOT="$FEAT_INSTALL_ROOT"
 }
 
-#http://www.boost.org/doc/libs/1_58_0/libs/iostreams/doc/installation.html
+
 function feature_boost_dep() {
 
 	__link_feature_library "bzip2" "LIBS_NAME bz2 GET_FOLDER _bzip2 NO_SET_FLAGS"
@@ -130,7 +137,7 @@ function feature_boost_install_source() {
 
 
 	# building Boost.MPI with shared, static, single thread and multi thread do not work, we have to split builds
-	#https://svn.boost.org/trac/boost/ticket/8841
+	# https://svn.boost.org/trac/boost/ticket/8841
 
 	# FIRST Building All (except python) with single thread ----
 	local without_lib="$(echo $without_lib_base,python | sed s/^,//)"
@@ -153,11 +160,9 @@ function feature_boost_install_source() {
 	--user-config="$SRC_DIR/user-config.jam"
 
 
-	# TODO do not find pyconfig.h
-	# BUGGGGG
 
 
-	# SECOND Building python single and multi -------
+	# THIRD Building python single and multi -------
 	# For specify several python version (from debian):
 	# for pyver in $(pyversions); do \
 	# 	echo "using python : $$pyver : /usr ;" >> $@; \

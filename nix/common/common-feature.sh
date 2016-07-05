@@ -305,10 +305,10 @@ function __feature_install() {
 		[ "$o" == "DEP_FORCE" ] && _opt_force_reinstall_dep=1
 		# DEP_IGNORE : ignore installation step of all dependencies
 		[ "$o" == "DEP_IGNORE" ] && _opt_ignore_dep=ON
-		# EXPORT <dir> : will install feature in this specified root directory - so it will not be detected as active features
+		# EXPORT <dir> : will install feature in this specified root directory
 		[ "$_flag_export" == "ON" ] && _dir_export="$o" && _export_mode=ON && _flag_export=OFF
 		[ "$o" == "EXPORT" ] && _flag_export=ON
-		# PORTABLE <dir> : will install feature in this specified root directory in a portable (=chroot) way - so it will not be detected as active features - and this folder will ship every dependencies
+		# PORTABLE <dir> : will install feature in this specified root directory in a portable way - this folder will ship every dependencies
 		[ "$_flag_portable" == "ON" ] && _dir_portable="$o" && _portable_mode=ON && _flag_portable=OFF
 		[ "$o" == "PORTABLE" ] && _flag_portable=ON
 	done
@@ -329,6 +329,7 @@ function __feature_install() {
 		_OPT="${_OPT//EXPORT/__}"
 	fi
 
+	# TODO REVIEW PORTABLE MODE
 	if [ "$_portable_mode" == "ON" ]; then
 		_opt_internal_feature=OFF
 		_opt_hidden_feature=ON
@@ -392,7 +393,7 @@ function __feature_install() {
 				fi
 			fi
 		else
-			__feature_inspect $FEAT_SCHEMA_SELECTED
+			__feature_inspect "$FEAT_SCHEMA_SELECTED"
 		fi
 
 
@@ -473,9 +474,10 @@ function __feature_install() {
 					fi
 
 					# should be  MERGE or NESTED or LIST
-					# NESTED : each item will be installed inside the bundle path in a separate directory (with each feature name but without version)
+					# NESTED : each item will be installed inside the bundle path in a separate directory (with each feature name but without version) (bundle_name/bunle_version/item_name)
 					# MERGE : each item will be installed in the bundle path (without each feature name/version)
-					# LIST : this bundle is just a list of item that will be installed normally
+					# LIST : this bundle is just a list of items that will be installed normally (without bundle name nor version in path: item_name/item_version )
+					# MERGE_LIST : this bundle is a list of items that will be installed in a MERGED way (without bundle name nor version AND without each feature name/version)
 
 					local _flag_hidden
 					if [ "$FEAT_BUNDLE_MODE" == "LIST" ]; then
@@ -502,8 +504,10 @@ function __feature_install() {
 				__stack_pop "_portable_mode"
 				__stack_pop "_export_mode"
 
-				# automatic call of bundle callback after installation of each items
+				# automatic call of bundle's callback after installation of all items
 				__feature_callback
+
+
 			else
 
 				echo " ** Installing $FEAT_NAME version $FEAT_VERSION in $FEAT_INSTALL_ROOT"
@@ -687,7 +691,7 @@ function __internal_feature_context() {
 	FEAT_ENV_CALLBACK=
 	FEAT_BUNDLE_ITEM=
 	FEAT_BUNDLE_CALLBACK=
-	# MERGE / NESTED / LIST
+	# MERGE / NESTED / LIST / MERGE_LIST
 	FEAT_BUNDLE=
 
 
@@ -709,6 +713,7 @@ function __internal_feature_context() {
 				FEAT_INSTALL_ROOT="$STELLA_APP_FEATURE_ROOT"/"$TMP_FEAT_SCHEMA_NAME"/"$TMP_FEAT_SCHEMA_VERSION"
 			fi
 		else
+
 			if [ "$FEAT_BUNDLE_MODE" == "MERGE" ]; then
 				FEAT_INSTALL_ROOT="$FEAT_BUNDLE_PATH"
 			fi
@@ -721,6 +726,9 @@ function __internal_feature_context() {
 				else
 					FEAT_INSTALL_ROOT="$STELLA_APP_FEATURE_ROOT"/"$TMP_FEAT_SCHEMA_NAME"/"$TMP_FEAT_SCHEMA_VERSION"
 				fi
+			fi
+			if [ "$FEAT_BUNDLE_MODE" == "MERGE_LIST" ]; then
+				FEAT_INSTALL_ROOT="$STELLA_APP_FEATURE_ROOT"
 			fi
 		fi
 

@@ -827,7 +827,12 @@ function __find_linked_lib_darwin() {
 					fi
 				else
 					linked_lib="$line"
-					[ ! "$(__is_abs "$line")" == "TRUE" ] && linked_lib="$loader_path/$line"
+					# NOTE : if a lib is linked in relative (relative path, or just filename),
+					# it will be resolved relative to current running dir, not relative to the binary to wich it is linked
+					# So it might be a problem. For relative path to the binary, its better to use @loader_path
+					if [ "$(__is_abs "$linked_lib")" == "FALSE" ]; then
+						[ "$_opt_verbose" == "ON" ] && printf %s "-- WARN : pure relative path - consider use @loader_path or @rpath"
+					fi
 					if [ -f "$linked_lib" ]; then
 						[ "$_opt_verbose" == "ON" ] && printf %s "-- OK"
 						_match=1
