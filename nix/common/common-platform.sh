@@ -290,6 +290,24 @@ function __require() {
 	return $_result
 }
 
+# RUNTIME specific ----------------------------
+
+# retrieve current pyconfig.h
+function __python_get_pyconfig() {
+	python -c 'import sysconfig;print sysconfig.get_config_h_filename();'
+	# or use python-config binary
+}
+
+# get python lib folder
+function __python_get_lib_path() {
+	python -c 'import sysconfig;print sysconfig.get_path("stdlib");'
+}
+
+# get python version on 2 digits (2.7, 3.4, ...)
+function __python_short_version() {
+	python -c 'import sys;print str(sys.version_info.major) + "." + str(sys.version_info.minor)'
+}
+
 # PACKAGE SYSTEM ----------------------------
 
 

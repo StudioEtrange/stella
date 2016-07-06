@@ -1458,7 +1458,7 @@ function __fix_built_files() {
 		__tweak_binary_file "$path" "$OPT RELOCATE WANTED_RPATH $STELLA_BUILD_RPATH"
 	fi
 	if [ "$STELLA_BUILD_RELOCATE" == "OFF" ]; then
-		# TODO non relocatable will change binary, maybe we dont want that...
+		# TODO NON_RELOCATE will change binary, maybe we dont want that...
 		#__tweak_binary_file "$path" "$OPT NON_RELOCATE WANTED_RPATH $STELLA_BUILD_RPATH"
 		__tweak_binary_file "$path" "$OPT WANTED_RPATH $STELLA_BUILD_RPATH"
 	fi

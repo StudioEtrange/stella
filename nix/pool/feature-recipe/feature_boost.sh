@@ -1,20 +1,11 @@
 if [ ! "$_BOOST_INCLUDED_" == "1" ]; then
 _BOOST_INCLUDED_=1
 
-
-# https://github.com/Homebrew/homebrew-core/blob/master/Formula/boost.rb
 # Note for windows : http://stackoverflow.com/questions/7282645/how-to-build-boost-iostreams-with-gzip-and-bzip2-support-on-windows
-# for boost.python see : https://gist.github.com/tdsmith/893df85e1c4d952fd150
 
-# http://www.boost.org/doc/libs/1_58_0/libs/iostreams/doc/installation.html
-
-# TODO Apply debian patch : https://packages.debian.org/sid/libboost1.60-dev
+# TODO Apply debian patch ? : https://packages.debian.org/sid/libboost1.60-dev
 
 
-	# TODO do not find pyconfig.h
-	# TODO BUGGGGG
-	# http://stackoverflow.com/questions/19810940/ubuntu-linking-boost-python-fatal-error-pyconfig-cannot-be-found
-# http://stackoverflow.com/questions/19810940/ubuntu-linking-boost-python-fatal-error-pyconfig-cannot-be-found
 function feature_boost() {
 	FEAT_NAME=boost
 	FEAT_LIST_SCHEMA="1_61_0:source 1_58_0:source"
@@ -72,7 +63,7 @@ function feature_boost_1_58_0() {
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK="boost_set_env"
 
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libboost_wave.a
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libboost_wave.aTODO
 	FEAT_SEARCH_PATH=
 
 }
@@ -136,10 +127,12 @@ function feature_boost_install_source() {
 
 
 
-	# building Boost.MPI with shared, static, single thread and multi thread do not work, we have to split builds
+	# building Boost.MPI with shared, static, single thread and multi thread do not work, we have to split builds in THREE steps
 	# https://svn.boost.org/trac/boost/ticket/8841
 
-	# FIRST Building All (except python) with single thread ----
+
+
+	# FIRST STEP : Building All (except python) with single thread ----
 	local without_lib="$(echo $without_lib_base,python | sed s/^,//)"
 
 	# building Boost.MPI require a user-config.jam
@@ -152,7 +145,7 @@ function feature_boost_install_source() {
 	-sBZIP2_INCLUDE="$BZIP2_INCLUDE" -sBZIP2_LIBPATH="$BZIP2_LIBPATH" -sZLIB_INCLUDE="$ZLIB_INCLUDE" -sZLIB_LIBPATH="$ZLIB_LIBPATH" \
 	--user-config="$SRC_DIR/user-config.jam"
 
-	# SECOND Building All (except python) with multi thread ----
+	# SECOND STEP : Building All (except python) with multi thread ----
 	cd "$SRC_DIR"
 	./bootstrap.sh --prefix="$INSTALL_DIR" --libdir="$INSTALL_DIR/lib" --includedir="$INSTALL_DIR/include" --with-icu="$ICU_ROOT" --without-libraries="$without_lib"
 	./b2 --prefix="$INSTALL_DIR" --libdir="$INSTALL_DIR/lib" --includedir="$INSTALL_DIR/include" -d2 -j$STELLA_NB_CPU --layout=tagged install threading=multi link=shared,static \
@@ -162,28 +155,47 @@ function feature_boost_install_source() {
 
 
 
-	# THIRD Building python single and multi -------
-	# For specify several python version (from debian):
-	# for pyver in $(pyversions); do \
-	# 	echo "using python : $$pyver : /usr ;" >> $@; \
-	# done
+	# THIRD STEP : Building python single and multi ------
+	# http://stackoverflow.com/questions/15136671/unable-to-build-boost-python
+	# https://github.com/ianblenke/homebrew-taps/blob/master/boost-python.rb
 	echo "using mpi : $OPENMPI_BIN/mpicc ;" > "$SRC_DIR/user-config.jam"
-	echo "using python ;" >> "$SRC_DIR/user-config.jam"
+
+	_pyconfig_path="$(dirname $(__python_get_pyconfig))"
+	_python_ver="$(__python_short_version)"
+	if [ ! -f $_pyconfig_path/pyconfig.h ]; then
+		echo "WARN -- not building python -- missing python headers"
+	else
+
+		cd "$SRC_DIR"
+		./bootstrap.sh --prefix="$INSTALL_DIR" --libdir="$INSTALL_DIR/lib" --includedir="$INSTALL_DIR/include" --with-icu="$ICU_ROOT" --with-libraries="python"
+
+		# disable auto detected values for python
+		sed -i".bak" "s/using python/#using python/" $SRC_DIR/project-config.jam
+	 	# inject wanted version
+		# using python 			 	: two digit version
+		#                     : python binary path
+	  #                     : python include folder
+	  #                     : python lib folder
 
 
-	cd "$SRC_DIR"
-	./bootstrap.sh --prefix="$INSTALL_DIR" --libdir="$INSTALL_DIR/lib" --includedir="$INSTALL_DIR/include" --with-icu="$ICU_ROOT" --with-libraries="python"
-	./b2 --prefix="$INSTALL_DIR" --libdir="$INSTALL_DIR/lib" --includedir="$INSTALL_DIR/include" -d2 -j$STELLA_NB_CPU --layout=tagged install threading=multi,single link=shared,static \
-	-sBZIP2_INCLUDE="$BZIP2_INCLUDE" -sBZIP2_LIBPATH="$BZIP2_LIBPATH" -sZLIB_INCLUDE="$ZLIB_INCLUDE" -sZLIB_LIBPATH="$ZLIB_LIBPATH" \
-	--user-config="$SRC_DIR/user-config.jam"
+		echo "using python : $_python_ver : $(which python) : $_pyconfig_path : $(__python_get_lib_path) ;" >> "$SRC_DIR/user-config.jam"
 
+		# NOTE to insert several python versions use this example :
+		# for pyver in $(pyversions); do \
+		# 	echo "using python : $$pyver : /usr ;" >> user-config.jam; \
+		# done
+		#./b2 ... --python-buildid=$_python_ver
+
+		./b2 --prefix="$INSTALL_DIR" --libdir="$INSTALL_DIR/lib" --includedir="$INSTALL_DIR/include" -d2 -j$STELLA_NB_CPU --layout=tagged install threading=multi,single link=shared,static \
+		-sBZIP2_INCLUDE="$BZIP2_INCLUDE" -sBZIP2_LIBPATH="$BZIP2_LIBPATH" -sZLIB_INCLUDE="$ZLIB_INCLUDE" -sZLIB_LIBPATH="$ZLIB_LIBPATH" \
+		--debug-configuration --user-config="$SRC_DIR/user-config.jam"
+	fi
 
 
 	__del_folder "$SRC_DIR"
 
-	[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && __tweak_install_name_darwin "$FEAT_INSTALL_ROOT/lib" "PATH"
-	__inspect_and_fix_build "$FEAT_INSTALL_ROOT/lib"
 
+	__inspect_and_fix_build "$FEAT_INSTALL_ROOT/lib"
 
 }
 
