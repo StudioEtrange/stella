@@ -33,8 +33,6 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 
 #				SET BUILD ENV AND FLAGS
 #				__prepare_build
-#						EXPORT / RPATH
-#						__export_env  TODO DEPRECATED
 #
 #						call set_env_vars_for_gcc-clang
 #						call set_env_vars_for_cmake
@@ -639,12 +637,14 @@ function __link_feature_library() {
 		__pop_schema_context
 		return
 	fi
+	# TODO here : full reinit (or call of FEAT_ENV_CALLBACK) of the feature to override other versions of the feature
+
 	LINKED_LIBS_LIST="$LINKED_LIBS_LIST $SCHEMA"
 	local REQUIRED_LIB_ROOT="$FEAT_INSTALL_ROOT"
 	local REQUIRED_LIB_NAME="$FEAT_NAME"
 	__pop_schema_context
 
-
+	# TODO useless ?
 	# 	REQUIRED_LIB_ROOT="$FEAT_INSTALL_ROOT/stella-dep/$REQUIRED_LIB_NAME"
 	# 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 	# 		[ "$STELLA_BUILD_RELOCATE" == "ON" ] && __tweak_install_name_darwin "$REQUIRED_LIB_ROOT" "RPATH"
@@ -952,7 +952,7 @@ function __prepare_build() {
 	echo "====> Build arch directive : $STELLA_BUILD_ARCH"
 	echo "====> Parallelized (if supported) : $STELLA_BUILD_PARALLELIZE"
 	echo "====> Relocatable : $STELLA_BUILD_RELOCATE"
-	echo "====> Linked lib features : $LINKED_LIBS_LIST"
+	echo "====> Linked lib from stella features : $LINKED_LIBS_LIST"
 	echo "** FOLDERS"
 	echo "====> Install directory : $INSTALL_DIR"
 	echo "====> Source directory : $SOURCE_DIR"
@@ -1140,7 +1140,7 @@ function __set_build_mode() {
 	# ON | OFF
 	#		every dependency will be added to a DT_NEEDED field in elf files
 	# 				on linux : DT_NEEDED contain dependency filename only
-	# 				on macos : LC_LOAD_DYLIB contain a dependency with a couple of @rpath/@loader_path
+	# 				on macos : LC_LOAD_DYLIB contain a dependency with using couple of values : @rpath and @loader_path
 	#		if OFF : RPATH values will be added for each dependency by absolute path
 	#		if ON : RPATH values will contain relative values to a nested lib folder containing dependencies
 	[ "$1" == "RELOCATE" ] && STELLA_BUILD_RELOCATE=$2

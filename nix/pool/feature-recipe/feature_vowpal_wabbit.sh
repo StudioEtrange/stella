@@ -18,7 +18,7 @@ function feature_vowpal_wabbit_8_2_0() {
 	FEAT_VERSION=8_2_0
 
 	#  boost +no_single +no_static +openmpi +python27
-	FEAT_SOURCE_DEPENDENCIES="boost openmpi"
+	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 boost#1_61_0 openmpi#1_10_3 FORCE_ORIGIN_SYSTEM python"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://github.com/JohnLangford/vowpal_wabbit/archive/8.2.0.tar.gz
@@ -40,9 +40,9 @@ function feature_vowpal_wabbit_8_2_0() {
 
 
 function feature_vowpal_wabbit_link() {
-	__link_feature_library "openmpi"
-  #__link_feature_library "libevent#2_0_22" "GET_FOLDER _libevent NO_SET_FLAGS"
-	#__link_feature_library "oracle-jdk#8u91" "GET_FOLDER _jdk NO_SET_FLAGS"
+	__link_feature_library "openmpi#1_10_3"
+	__link_feature_library "zlib#1_2_8" "GET_FOLDER _zlib NO_SET_FLAGS LIBS_NAME z"
+	__link_feature_library "boost#1_61_0" "NO_SET_FLAGS"
 }
 
 function feature_vowpal_wabbit_install_source() {
@@ -59,7 +59,6 @@ function feature_vowpal_wabbit_install_source() {
 
 	__feature_callback
 
-	# TODO with openmpi
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
 	#if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ];then
 	#	AUTO_INSTALL_CONF_FLAG_POSTFIX="--enable-libc++ --disable-dependency-tracking --with-boost=$BOOST_ROOT"
@@ -77,7 +76,7 @@ function feature_vowpal_wabbit_install_source() {
   #                         libraries are located.
 	#
 
-		AUTO_INSTALL_CONF_FLAG_POSTFIX="--disable-dependency-tracking --with-boost=$BOOST_ROOT"
+		AUTO_INSTALL_CONF_FLAG_POSTFIX="--disable-dependency-tracking --with-boost=$BOOST_ROOT --with-zlib=$_zlib_ROOT"
 	#fi
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
