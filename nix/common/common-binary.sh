@@ -37,7 +37,7 @@ _STELLA_COMMON_BINARY_INCLUDED_=1
 #					readelf (needed to analysis)-- in sys package gnu 'binutils'
 #			MACOS BINARY TOOLS :
 #					otool (needed to analysis) -- in ??
-#					install_name_tool (needed to modify) -- in ??
+#					install_name_tool (needed to modify rpath, install_name and already linked lib. Cannot add or remove linked lib) -- in ??
 #			MACOS : install_name, rpath, loader_path, executable_path
 # 					https://mikeash.com/pyblog/friday-qa-2009-11-06-linking-and-install-names.html
 #
@@ -58,6 +58,9 @@ _STELLA_COMMON_BINARY_INCLUDED_=1
 #						LINUX	TOOLS :
 #								https://github.com/gentoo/pax-utils
 #								https://github.com/ncopa/lddtree
+#
+#						MACOS :
+#								Use DYLD_LIBRARY_PATH instead of LD_LIBRARY_PATH
 #
 # 	 	LINUX RPATH : PATCHELF
 #							using patchelf  "--set-rpath, --shrink-rpath and --print-rpath now prefer DT_RUNPATH over DT_RPATH,
@@ -928,11 +931,7 @@ function __find_linked_lib_linux() {
 
 
 
-
-
-
-
-# fix linked shared lib by modifying LOAD_DYLIB and adding rpath values
+# fix already linked shared lib by modifying LOAD_DYLIB and adding rpath values
 # 	- before you can filter libs to tweak with filters
 # 				INCLUDE_FILTER <expr> -- include these files to tweak
 # 				EXCLUDE_FILTER <expr> -- exclude these files to tweak
@@ -941,13 +940,15 @@ function __find_linked_lib_linux() {
 # 				INCLUDE_LINKED_LIB <expr> -- include these linked libs while tweaking
 # 				EXCLUDE_LINKED_LIB <expr> -- exclude these linked libs while tweaking
 # 				INCLUDE_LINKED_LIB is apply first, before EXCLUDE_LINKED_LIB
-#		-	second transform path to linked lib -- you can choose to :
-#				-	transform all linked libs with a rel path to abs path (REL_LINK_TO_ABS) - Try to find elf with information contained in file and turn it into abs path
-#				-	transform all linked libs with an abs path to rel path (ABS_LINK_TO_REL) (for ELF : set linked lib with lib file name and add an RPATH value corresponding to the relative path to the lib with $ORIGIN/<computed_rel_path_to_lib>)
+#		-	second transform path of linked lib -- you can choose between (exclusive choices) :
+#				-	REL_LINK_TO_ABS -- transform all linked libs with a rel path to abs path - Try to find elf with information contained in file and turn it into abs path
+#				-	ABS_LINK_TO_REL -- transform all linked libs with an abs path to rel path (for ELF : set linked lib with lib file name and add an RPATH value corresponding to the relative path to the lib with $ORIGIN/<computed_rel_path_to_lib>)
 #																																					(for MachO : set linked lib as @rpath/lib and add an RPATH value corresponding to the relative path to the lib with @loader_path/<computed_rel_path_to_lib>)
-#				- force all linked libs with a given path (ABS_LINK_FORCE) (for ELF and Macho : each linked lib will be <path>/linked_lib_file)
-#				- force a relative path to the linked libs with a given path (REL_LINK_FORCE) (for MachO : set linked lib as @rpath/linked_lib_file and add an RPATH value corresponding to the relative path to the given <path> with @loader_path/<computed_rel_path_to_path>)
-#																																						(for Elf : set linked lib as linked_lib_file and add an RPATH value corresponding to the relative path to the given <path> with $ORIGIN/<computed_rel_path_to_path>)
+#				- ABS_LINK_FORCE <path> -- force linked libs with a given path injecting an abs path. (for ELF and Macho : each linked lib will be <path>/linked_lib_file)
+#				- REL_LINK_FORCE <path> -- force linked libs with a given path injecting an rpath value.  (for MachO : set linked lib as @rpath/linked_lib_file and add an RPATH value corresponding to the relative path to the given <path> with @loader_path/<computed_rel_path_to_path>)
+#																																					(for Elf : set linked lib as linked_lib_file and add an RPATH value corresponding to the relative path to the given <path> with $ORIGIN/<computed_rel_path_to_path>)
+#				- ABS_RELINK <path_to_lib> -- switch linked lib to another lib with a given path injecting an abs path.
+#				- REL_RELINK <path_to_lib> -- switch linked lib to another lib with a given path injecting an rpath value.
 function __tweak_linked_lib() {
 	local _file=$1
 	local OPT="$2"
@@ -968,7 +969,8 @@ function __tweak_linked_lib() {
 	# REL_LINK_FORCE <path>
 	# REL_LINK_TO_ABS
 	# ABS_LINK_TO_REL [DEFAULT MODE]
-
+	# ABS_RELINK <path_to_lib>
+	# REL_RELINK <path_to_lib>
 	local _rel_link_to_abs=OFF
 	local _abs_link_to_rel=ON
 	local _flag_fixed_path=OFF
@@ -976,9 +978,18 @@ function __tweak_linked_lib() {
 	local _rel_link_force=
 	local _opt_rel_link_force=OFF
 	local _flag_rel_link_force=OFF
+
 	local _abs_link_force=
 	local _opt_abs_link_force=OFF
 	local _flag_abs_link_force=OFF
+
+	local _abs_relink=
+	local _opt_abs_relink=OFF
+	local _flag_abs_relink=OFF
+
+	local _rel_relink=
+	local _opt_rel_relink=OFF
+	local _flag_rel_relink=OFF
 	for o in $OPT; do
 		#[ "$_flag_fixed_path" == "ON" ] && _force_path="$o" && _flag_fixed_path=OFF && _fixed_path=ON && _abs_link_to_rel=OFF && _rel_link_to_abs=OFF
 		#[ "$o" == "FIXED_PATH" ] && _flag_fixed_path=ON
@@ -986,12 +997,17 @@ function __tweak_linked_lib() {
 		[ "$o" == "FIX_RPATH" ] && echo "ERROR : deprecated -- use ABS_LINK_FORCE instead" && exit 1
 		[ "$o" == "REL_RPATH" ] && echo "ERROR : deprecated -- use ABS_LINK_TO_REL" && exit 1
 		[ "$o" == "ABS_RPATH" ] && echo "ERROR : deprecated -- use REL_LINK_TO_ABS" && exit 1
-		[ "$o" == "ABS_LINK_TO_REL" ] && _abs_link_to_rel=ON && _rel_link_to_abs=OFF && _opt_rel_link_force=OFF && _opt_abs_link_force=OFF
-		[ "$o" == "REL_LINK_TO_ABS" ] && _abs_link_to_rel=OFF && _rel_link_to_abs=ON && _opt_rel_link_force=OFF && _opt_abs_link_force=OFF
+		[ "$o" == "ABS_LINK_TO_REL" ] && _abs_link_to_rel=ON && _rel_link_to_abs=OFF && _opt_rel_link_force=OFF && _opt_abs_link_force=OFF && _opt_rel_relink=OFF && _opt_abs_relink=OFF
+		[ "$o" == "REL_LINK_TO_ABS" ] && _abs_link_to_rel=OFF && _rel_link_to_abs=ON && _opt_rel_link_force=OFF && _opt_abs_link_force=OFF && _opt_rel_relink=OFF && _opt_abs_relink=OFF
 		[ "$_flag_rel_link_force" == "ON" ] && _rel_link_force="$o" && _flag_rel_link_force=OFF
-		[ "$o" == "REL_LINK_FORCE" ] && _flag_rel_link_force=ON && _abs_link_to_rel=OFF && _rel_link_to_abs=OFF && _opt_rel_link_force=ON && _opt_abs_link_force=OFF
+		[ "$o" == "REL_LINK_FORCE" ] && _flag_rel_link_force=ON && _abs_link_to_rel=OFF && _rel_link_to_abs=OFF && _opt_rel_link_force=ON && _opt_abs_link_force=OFF && _opt_rel_relink=OFF && _opt_abs_relink=OFF
 		[ "$_flag_abs_link_force" == "ON" ] && _abs_link_force="$o" && _flag_abs_link_force=OFF
-		[ "$o" == "ABS_LINK_FORCE" ] && _flag_abs_link_force=ON && _abs_link_to_rel=OFF && _rel_link_to_abs=OFF && _opt_rel_link_force=OFF && _opt_abs_link_force=ON
+		[ "$o" == "ABS_LINK_FORCE" ] && _flag_abs_link_force=ON && _abs_link_to_rel=OFF && _rel_link_to_abs=OFF && _opt_rel_link_force=OFF && _opt_abs_link_force=ON && _opt_rel_relink=OFF && _opt_abs_relink=OFF
+
+		[ "$_flag_abs_relink" == "ON" ] && _abs_relink="$o" && _flag_abs_relink=OFF
+		[ "$o" == "ABS_RELINK" ] && _flag_abs_relink=ON && _opt_abs_relink=ON && _abs_link_to_rel=OFF && _rel_link_to_abs=OFF && _opt_rel_link_force=OFF && _opt_abs_link_force=OFF && _opt_rel_relink=OFF
+		[ "$_flag_rel_relink" == "ON" ] && _rel_relink="$o" && _flag_rel_relink=OFF
+		[ "$o" == "REL_RELINK" ] && _flag_rel_relink=ON && _opt_rel_relink=ON && _abs_link_to_rel=OFF && _rel_link_to_abs=OFF && _opt_rel_link_force=OFF && _opt_abs_link_force=OFF && _opt_abs_relink=OFF
 	done
 
 	[ -z "$(__filter_list "$_file" "INCLUDE_TAG INCLUDE_FILTER EXCLUDE_TAG EXCLUDE_FILTER $OPT")" ] && return
@@ -1012,6 +1028,16 @@ function __tweak_linked_lib() {
 
 		# get existing linked lib
 		for line in $__all_linked_libs; do
+
+			# ABS_RELINK : pick all linked libraries
+			if [ "$_opt_abs_relink" == "ON" ]; then
+				_linked_lib_list="$_linked_lib_list $line"
+			fi
+
+			# REL_RELINK : pick all linked libraries
+			if [ "$_opt_rel_relink" == "ON" ]; then
+				_linked_lib_list="$_linked_lib_list $line"
+			fi
 
 			# ABS_LINK_FORCE : pick all linked libraries
 			if [ "$_opt_abs_link_force" == "ON" ]; then
@@ -1083,6 +1109,50 @@ function __tweak_linked_lib() {
 				if [ -z "$(__filter_list "$_lib_to_filter" "EXCLUDE_TAG EXCLUDE_LINKED_LIB EXCLUDE_LINKED_LIB $STELLA_BINARY_DEFAULT_LIB_IGNORED")" ]; then
 					echo "====> linked lib has been filtered -- link is not processed"
 					continue
+				fi
+			fi
+
+			# ABS_RELINK
+			if [ "$_opt_abs_relink" == "ON" ]; then
+				local _new_linked_lib_filename="$(__get_filename_from_string $_abs_relink)"
+				echo "====> switch link from $_linked_lib_filename to $_new_linked_lib_filename"
+				# fix write permission
+				chmod +w "$_file"
+				if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+					echo "====> setting NEEDED : $_abs_relink"
+					patchelf --replace-needed "$l" "$_abs_relink" "$_file"
+				fi
+				if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+					echo "====> setting LC_LOAD_DYLIB : $_abs_relink"
+					install_name_tool -change "$l" "$_abs_relink" "$_file"
+				fi
+			fi
+
+			# REL_RELINK
+			if [ "$_opt_rel_relink" == "ON" ]; then
+				local _new_linked_lib_filename="$(__get_filename_from_string $_rel_relink)"
+				echo "====> switch link from $_linked_lib_filename to $_new_linked_lib_filename"
+				# fix write permission
+				chmod +w "$_file"
+				if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+					echo "====> setting NEEDED : $_new_linked_lib_filename"
+					patchelf --replace-needed "$l" "$_new_linked_lib_filename" "$_file"
+
+					_new_rpath="$(__abs_to_rel_path "$(__get_path_from_string $_rel_relink)" "$(__get_path_from_string $_file)")"
+					[ "$_new_rpath" == "." ] && _new_rpath="\$ORIGIN" || \
+						_new_rpath="\$ORIGIN/$_new_rpath"
+					echo "====> Adding RPATH value : $_new_rpath"
+					__add_rpath "$_file" "$_new_rpath"
+				fi
+				if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+					echo "====> setting LC_LOAD_DYLIB : @rpath/$_new_linked_lib_filename"
+					install_name_tool -change "$l" "@rpath/$_new_linked_lib_filename" "$_file"
+
+					_new_rpath="$(__abs_to_rel_path "$(__get_path_from_string $_rel_relink)" "$(__get_path_from_string $_file)")"
+					[ "$_new_rpath" == "." ] && _new_rpath="@loader_path" || \
+								_new_rpath="@loader_path/$_new_rpath"
+					echo "====> Adding RPATH value : $_new_rpath"
+					__add_rpath "$_file" "$_new_rpath"
 				fi
 			fi
 

@@ -917,7 +917,7 @@ function __translate_schema() {
 	fi
 
 
-	if [ ! "$_VAR_FEATURE_NAME" == "" ]; then eval $_VAR_FEATURE_NAME="$(echo $_tr_schema | sed 's,^\([^:/\\#]*\).*$,\1,')"; fi
+	if [ ! "$_VAR_FEATURE_NAME" == "" ]; then eval $_VAR_FEATURE_NAME="$(echo $_tr_schema | sed 's,^\([^:/\\#@]*\).*$,\1,')"; fi
 
 	# Debug log
 	#echo TRANSLATE RESULT N: $_VAR_FEATURE_NAME = $(eval echo \$${_VAR_FEATURE_NAME})  V: $_VAR_FEATURE_VER = $(eval echo \$${_VAR_FEATURE_VER}) OSR: $_VAR_FEATURE_OS_RESTRICTION = $(eval echo \$${_VAR_FEATURE_OS_RESTRICTION})

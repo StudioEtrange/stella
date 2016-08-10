@@ -1,8 +1,6 @@
 if [ ! "$_vowpal_wabbit_INCLUDED_" == "1" ]; then
 _vowpal_wabbit_INCLUDED_=1
 
-# TODO : not finished
-
 function feature_vowpal_wabbit() {
 	FEAT_NAME=vowpal_wabbit
 
@@ -59,29 +57,21 @@ function feature_vowpal_wabbit_install_source() {
 
 	__feature_callback
 
-	AUTO_INSTALL_CONF_FLAG_PREFIX=
-	#if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ];then
-	#	AUTO_INSTALL_CONF_FLAG_POSTFIX="--enable-libc++ --disable-dependency-tracking --with-boost=$BOOST_ROOT"
-	#fi
-	#if [ "$STELLA_CURRENT_PLATFORM" == "linux" ];then
-	# --with-zlib=DIR
-	# --with-boost[=ARG]      use Boost library from a standard location
-  #                         (ARG=yes), from the specified location (ARG=<path>),
-  #                         or disable it (ARG=no) [ARG=yes]
-  # --with-boost-libdir=LIB_DIR
-  #                         Force given directory for boost libraries. Note that
-  #                         this will override library path detection, so use
-  #                         this parameter only if default library detection
-  #                         fails and you know exactly where your boost
-  #                         libraries are located.
-	#
 
-		AUTO_INSTALL_CONF_FLAG_POSTFIX="--disable-dependency-tracking --with-boost=$BOOST_ROOT --with-zlib=$_zlib_ROOT"
-	#fi
+
+	AUTO_INSTALL_CONF_FLAG_PREFIX=
+	AUTO_INSTALL_CONF_FLAG_POSTFIX="--disable-dependency-tracking --with-boost=$BOOST_ROOT --with-zlib=$_zlib_ROOT"
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP NO_OUT_OF_TREE_BUILD POST_BUILD_STEP test install"
+
+	__copy_folder_content_into "$SRC_DIR/python" "$INSTALL_DIR/samples/python"
+	__copy_folder_content_into "$SRC_DIR/R" "$INSTALL_DIR/samples/R"
+	__copy_folder_content_into "$SRC_DIR/java" "$INSTALL_DIR/samples/java"
+	__copy_folder_content_into "$SRC_DIR/demo" "$INSTALL_DIR/samples/demo"
+
+	__del_folder "$SRC_DIR"
 
 }
 

@@ -248,7 +248,6 @@ function __auto_build() {
 		[ ! "$_opt_build_keep" == "ON" ] && rm -Rf "$BUILD_DIR"
 	fi
 
-
 	[ "$_opt_inspect_and_fix_build" == "ON" ] && __inspect_and_fix_build "$INSTALL_DIR" "$OPT"
 
 	echo " ** Done"

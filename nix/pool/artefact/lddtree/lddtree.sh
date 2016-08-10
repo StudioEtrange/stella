@@ -83,8 +83,8 @@ elf_get_rpath_scanelf() {
 
 elf_get_rpath_readelf() {
 	local _file="$1"
-	local _tmp_rpath=$(readelf -d "${needed_by}" | grep RUNPATH | cut -d '[' -f 2 | sed 's/]//' | sed -e "s:[$]ORIGIN:${needed_by%/*}:g" | sed -e "s:[$]{ORIGIN}:${needed_by%/*}:g" | sed -e "s,:\.,:${_file%/*},g" | sed -e "s,^\.,${_file%/*},g")
-	[ "$_tmp_rpath" = "" ] && _tmp_rpath=$(readelf -d "${needed_by}" | grep RPATH | cut -d '[' -f 2 | sed 's/]//' | sed -e "s:[$]ORIGIN:${needed_by%/*}:g" | sed -e "s:[$]{ORIGIN}:${needed_by%/*}:g" | sed -e "s,:\.,:${_file%/*},g" | sed -e "s,^\.,${_file%/*},g")
+	local _tmp_rpath=$(readelf -d "${_file}" | grep RUNPATH | cut -d '[' -f 2 | sed 's/]//' | sed -e "s:[$]ORIGIN:${_file%/*}:g" | sed -e "s:[$]{ORIGIN}:${_file%/*}:g" | sed -e "s,:\.,:${_file%/*},g" | sed -e "s,^\.,${_file%/*},g")
+	[ "$_tmp_rpath" = "" ] && _tmp_rpath=$(readelf -d "${_file}" | grep RPATH | cut -d '[' -f 2 | sed 's/]//' | sed -e "s:[$]ORIGIN:${_file%/*}:g" | sed -e "s:[$]{ORIGIN}:${_file%/*}:g" | sed -e "s,:\.,:${_file%/*},g" | sed -e "s,^\.,${_file%/*},g")
 	echo "${_tmp_rpath}"
 }
 
