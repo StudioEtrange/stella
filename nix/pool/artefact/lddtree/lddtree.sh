@@ -4,13 +4,6 @@
 # Copyright 2014-2015 Natanael Copa <ncopa@alpinelinux.org>
 # Distributed under the terms of the GNU General Public License v2
 
-# StudioEtrange <nomorgan@gmail.com>
-# 	New option -b : to choose a backend tool (scanelf [by default] or readelf)
-# 	Bug fixed with replace of $ORIGIN in RPATH
-#		Bug fixed when elf path passed as arg is relative, RPATH values are turned into relative path with $ORIGIN and might not be resolved
-#		New option --no-recursive : do not try to resolve dependencies of dependencies
-#		New option --no-header : do not print first line (scaned elf file and interpreter information)
-
 argv0=${0##*/}
 version=1.25-CURRENT
 
@@ -18,9 +11,6 @@ version=1.25-CURRENT
 
 [ "${ROOT}" = "${ROOT%/}" ] && ROOT="${ROOT}/"
 [ "${ROOT}" = "${ROOT#/}" ] && ROOT="${PWD}/${ROOT}"
-
-# Default backend tool to analyse elf
-BACKEND="scanelf"
 
 usage() {
 	cat <<-EOF
@@ -30,16 +20,15 @@ usage() {
 
 	Options:
 	  -a              Show all duplicated dependencies
+	  -x              Run with debugging
+	  -b <backend>    Force use of specific backend tools (scanelf or readelf)
 	  -R <root>       Use this ROOT filesystem tree
 	  --no-auto-root  Do not automatically prefix input ELFs with ROOT
-	  -l              List binary, interpreter and found dependencies files and their resolved links
-	  -m              List dependencies in flat output
-	  -b              Change default backend tools (default is scanelf, alternative is readelf)
 	  --no-recursive  Do not recursivly parse dependencies
-	  --no-header     Do not show header first line (including interpreter)
-
+	  --no-header     Do not show header (binary and interpreter info)
+	  -l              Display output in a flat format
+	  -m              Display a map of resolved linked libraries
 	  -h              Show this help output
-	  -x              Run with debugging
 	  -V              Show version information
 	EOF
 	exit ${1:-0}
@@ -55,73 +44,69 @@ error() {
 	return 1
 }
 
+# functions for scanelf backend
+elf_rpath_scanelf() {
+	scanelf -qF '#F%r' "$@"
+}
+elf_interp_scanelf() {
+	scanelf -qF '#F%i' "$@"
+}
 
+elf_needed_scanelf() {
+	scanelf -qF '#F%n' "$@"
+}
 
-# Backend functions
 elf_specs_scanelf() {
-	local _file="$1"
+	# %a = machine (EM) type
+	# %M = EI class
+	# %D = endian
+	# %I = osabi
+
 	# With glibc, the NONE, SYSV, GNU, and LINUX OSABI's are compatible.
 	# LINUX and GNU are the same thing, as are NONE and SYSV, so normalize
 	# GNU & LINUX to NONE. #442024 #464380
-	scanelf -BF '#F%a %M %D %I' "$_file" | sed -r 's: (LINUX|GNU)$: NONE:'
+	scanelf -BF '#F%a %M %D %I' "$1" | \
+		sed -r 's: (LINUX|GNU)$: NONE:'
+}
+
+
+
+# functions for readelf backend
+elf_rpath_readelf() {
+	readelf -d "$1" | awk '$2 == "(RPATH)" || $2 == "(RUNPATH)" { print $5 }' | cut -d '[' -f 2 | sed 's/]//'
+}
+
+elf_interp_readelf() {
+	# readelf -p .interp ouputs:
+	#
+	# String dump of section '.interp':
+	#  [     0]  /lib/ld-musl-x86_64.so.1
+	#
+	readelf  -p .interp "$1" | sed -E -n '/\[\s*[0-9]\]/s/^\s*\[.*\]\s*(.*)/\1/p'
+}
+
+elf_needed_readelf() {
+	readelf -d "$1" | grep "NEEDED" | grep -o -E "\[[^]]*\]" | grep -o -E "[^][]*" | tr '\n' ',' | sed 's/,$//'
 }
 
 elf_specs_readelf() {
-	local _file="$1"
-	readelf -h "$_file" | grep -E 'Class:|Data:|Machine:' | cut -d ':' -f 2 | sed 's/^ *//g' | tr '\n' ' '
-}
-
-elf_specs() {
-	[ "$1" != "" ] && elf_specs_$BACKEND "$@"
-}
-
-elf_get_rpath_scanelf() {
-	local _file="$1"
-	# NOTE fixed g flag on sed
-	scanelf -qF '#F%r' "${_file}" | sed -e "s:[$]ORIGIN:${_file%/*}:g" | sed -e "s:[$]{ORIGIN}:${_file%/*}:g" | sed -e "s,:\.,:${_file%/*},g" | sed -e "s,^\.,${_file%/*},g"
-}
-
-elf_get_rpath_readelf() {
-	local _file="$1"
-	local _tmp_rpath=$(readelf -d "${_file}" | grep RUNPATH | cut -d '[' -f 2 | sed 's/]//' | sed -e "s:[$]ORIGIN:${_file%/*}:g" | sed -e "s:[$]{ORIGIN}:${_file%/*}:g" | sed -e "s,:\.,:${_file%/*},g" | sed -e "s,^\.,${_file%/*},g")
-	[ "$_tmp_rpath" = "" ] && _tmp_rpath=$(readelf -d "${_file}" | grep RPATH | cut -d '[' -f 2 | sed 's/]//' | sed -e "s:[$]ORIGIN:${_file%/*}:g" | sed -e "s:[$]{ORIGIN}:${_file%/*}:g" | sed -e "s,:\.,:${_file%/*},g" | sed -e "s,^\.,${_file%/*},g")
-	echo "${_tmp_rpath}"
-}
-
-elf_get_rpath() {
-	[ "$1" != "" ] && elf_get_rpath_$BACKEND "$@"
-}
-
-elf_get_interp_scanelf() {
-	local _file="$1"
-	scanelf -qF '#F%i' "${_file}"
-}
-
-elf_get_interp_readelf() {
-	local _file="$1"
-	readelf -e "${_file}" | grep "interpreter:" | cut -d ':' -f 2 | sed 's/]//g' | sed 's/^ *//g'
-}
-
-elf_get_interp() {
-	[ "$1" != "" ] && elf_get_interp_$BACKEND "$@"
-}
-
-elf_get_linked_lib_scanelf() {
-	local _file="$1"
-	scanelf -qF '#F%n' "${_file}"
-}
-
-elf_get_linked_lib_readelf() {
-	local _file="$1"
-	readelf -d "${_file}" | grep "NEEDED" | grep -o -E "\[[^]]*\]" | grep -o -E "[^][]*" | tr '\n' ',' | sed 's/,$//'
-}
-
-elf_get_linked_lib() {
-	[ "$1" != "" ] && elf_get_linked_lib_$BACKEND "$1"
+	# get Class, Data, Machine and OS/ABI.
+	# the OS/ABI 'GNU', 'System V' and 'Linux' are compatible so normalize
+	readelf -h "$1" \
+		| awk -F: '$1 ~ /Class|Data|Machine|OS.ABI/ {gsub(/^ +/, "", $2); print $2}' \
+		| sed -E -e 's/UNIX - (System V|Linux|GNU)/UNIX/' \
+		| tr '\n' ' '
 }
 
 
-# Other functions
+
+
+# elf wrapper functions
+elf_rpath() { [ ! -z "$1" ] && elf_rpath_$BACKEND "$@" | sed -e "s:[$]ORIGIN:${1%/*}:g" -e "s:[$]{ORIGIN}:${1%/*}:g" -e "s,:\.,:${1%/*},g" -e "s,^\.,${1%/*},g"; }
+elf_interp() { [ ! -z "$1" ] && elf_interp_$BACKEND "$@"; }
+elf_needed() { [ ! -z "$1" ] && elf_needed_$BACKEND "$@"; }
+elf_specs() { [ ! -z "$1" ] && elf_specs_$BACKEND "$1"; }
+
 unset lib_paths_fallback
 for p in ${ROOT}lib* ${ROOT}usr/lib* ${ROOT}usr/local/lib*; do
 	lib_paths_fallback="${lib_paths_fallback}${lib_paths_fallback:+:}${p}"
@@ -129,6 +114,7 @@ done
 c_ldso_paths_loaded='false'
 find_elf() {
 	_find_elf=''
+
 	local elf="$1" needed_by="$2"
 	if [ "${elf}" != "${elf##*/}" ] && [ -e "${elf}" ] ; then
 		_find_elf=${elf}
@@ -142,11 +128,11 @@ find_elf() {
 			unset IFS
 			local path pe
 			for path ; do
-
 				: ${path:=${PWD}}
 
-				# if path is relative (because of replacing $ORIGIN rpath or just because setted rpath is relative)
-				# adding absolute path with current directory
+				# FIX : if path is relative (because of replacing $ORIGIN rpath
+				# or just because setted rpath is relative)
+				# we add absolute path with current directory
 				[ -z "${path##/*}" ] || path="${PWD}/${path}"
 
 				if [ "${path#${ROOT}}" = "${path}" ]; then
@@ -165,21 +151,15 @@ find_elf() {
 
 		if [ "${c_last_needed_by}" != "${needed_by}" ] ; then
 			c_last_needed_by="${needed_by}"
-			c_last_needed_by_rpaths=
-			if [ ! "${needed_by}" = "" ]; then
-				c_last_needed_by_rpaths="$(elf_get_rpath "${needed_by}")"
-			fi
+			c_last_needed_by_rpaths=$(elf_rpath "${needed_by}")
 		fi
-
 		if [ -n "${c_last_needed_by_rpaths}" ]; then
-			# search in rpath
 			check_paths "${elf}" "${c_last_needed_by_rpaths}" && return 0
 		fi
 
 		if [ -n "${LD_LIBRARY_PATH}" ] ; then
-			# search in LD_LIBRARY_PATH
-			# FIXED stop search if found
-			check_paths "${elf}" "${LD_LIBRARY_PATH}" && return 0
+			# FIX : stop search if found
+			check_paths "${elf}" "${LD_LIBRARY_PATH}"  && return 0
 		fi
 
 		if ! ${c_ldso_paths_loaded} ; then
@@ -209,10 +189,9 @@ find_elf() {
 			fi
 		fi
 		if [ -n "${c_ldso_paths}" ] ; then
-			# search in ld.so configured paths
 			check_paths "${elf}" "${c_ldso_paths}" && return 0
 		fi
-		# search in default ld.so path and some fallback path
+
 		check_paths "${elf}" "${lib_paths_ldso:-${lib_paths_fallback}}" && return 0
 	fi
 	return 1
@@ -230,8 +209,9 @@ list_existing_file() {
 # global variable _resolv_links
 resolv_links() {
 	_resolv_links="$1"
+	_list_files="$2"
 	local oldpwd="$PWD"
-	list_existing_file "${_resolv_links}"
+	[ "$_list_files" = yes ] && list_existing_file "${_resolv_links}"
 	cd "${_resolv_links%/*}"
 	while [ -L "$_resolv_links" ]; do
 		_resolv_links=$(readlink "$_resolv_links")
@@ -243,7 +223,7 @@ resolv_links() {
 			;;
 		esac
 		_resolv_links=$(pwd -P)/${_resolv_links##*/}
-		list_existing_file "${_resolv_links}"
+		[ "$_list_files" = yes ] && list_existing_file "${_resolv_links}"
 	done
 	cd "$oldpwd"
 }
@@ -258,20 +238,15 @@ show_elf() {
 
 	if [ ${indent} -eq 0 ]; then
 		if ${HEADER}; then
-			if ${MATCH_LIST} ; then
-				printf "%s%s => " "" "${elf}"
-			else
-				${LIST} || printf "%${indent}s%s => " "" "${elf}"
-			fi
+			${LIST} || printf "%${indent}s%s => " "" "${elf}"
 		fi
 	else
-		if ${MATCH_LIST} ; then
+		if ${MAP_LIST} ; then
 			printf "%s%s => " "" "${elf}"
 		else
 			${LIST} || printf "%${indent}s%s => " "" "${elf}"
 		fi
 	fi
-
 
 	case ",${parent_elfs}," in
 	*,${elf},*)
@@ -280,40 +255,43 @@ show_elf() {
 		;;
 	esac
 	parent_elfs="${parent_elfs},${elf}"
-	if [ ${indent} -eq 0 ]; then
-		if ${HEADER}; then
-			${LIST} && resolv_links "${resolved:-$1}" || \
-			printf "${resolved:-not found}"
-			[ -z "${resolved}" ] && ret=1
-		fi
+
+	# FIX : add error exit code 2 when link item not found
+	if ${LIST} ; then
+		resolv_links "${resolved:-$1}" yes
+		[ -z "${resolved}" ] && ret=2
 	else
-		${LIST} && resolv_links "${resolved:-$1}" || \
-		printf "${resolved:-not found}"
-		[ -z "${resolved}" ] && ret=1
+		resolv_links "${resolved:-$1}" no
+		[ -z "${resolved}" ] && ret=2
+		if [ ${indent} -eq 0 ] ; then
+			${HEADER} && printf "${resolved:-not found}"
+		else
+			printf "${resolved:-not found}"
+		fi
 	fi
 
+	resolved=${_resolv_links}
 	if [ ${indent} -eq 0 ] ; then
 		elf_specs=$(elf_specs "${resolved}")
-		interp="$(elf_get_interp "${resolved}")"
-
+		interp=$(elf_interp "${resolved}")
 		# ignore interpreters that do not have absolute path
 		[ "${interp#/}" = "${interp}" ] && interp=
 		[ -n "${interp}" ] && interp="${ROOT}${interp#/}"
 
 		if ${HEADER} ; then
 			if ${LIST} ; then
-				[ -n "${interp}" ] && resolv_links "${interp}"
+				[ -n "${interp}" ] && resolv_links "${interp}" yes
 			else
 				printf " (interpreter => ${interp:-none})"
 			fi
 		fi
-
 		if [ -r "${interp}" ] ; then
 			# Extract the default lib paths out of the ldso.
-			# FIXED reading path ldso should not contain space
+			# FIX : reading path ldso should not contain space
 			lib_paths_ldso=$(
 				strings "${interp}" | \
-				sed -nr -e "/^\/.*lib/{s|^/?|${ROOT}|;s|/$||;s|/?:/?|:${ROOT}|g;p}"
+				sed -nr -e "/^\/.*lib/{s|^/?|${ROOT}|;s|/$||;s|/?:/?|:${ROOT}|g;p}" | \
+				tr '\n' ':'
 			) | sed 's/ /:/g'
 		fi
 		interp=${interp##*/}
@@ -326,12 +304,11 @@ show_elf() {
 		${LIST} || printf "\n"
 	fi
 
-
-
 	[ -z "${resolved}" ] && return
 	if ${recurs} ; then
-		libs="$(elf_get_linked_lib "${resolved}")"
+		libs=$(elf_needed "${resolved}")
 	fi
+
 	local my_allhits
 	if ! ${SHOW_ALL} ; then
 		my_allhits="${allhits}"
@@ -344,40 +321,39 @@ show_elf() {
 	IFS="$oifs"
 
 	for lib; do
-		# FIXED : do not remove path yet. So if we have an absolute path as linked lib, it could be matched in find_elf
+		# FIX : do not remove path yet. So if we have an absolute path as linked lib
+		# it could be matched in find_elf
 		#lib=${lib##*/}
 		case ",${my_allhits}," in
 			*,${lib},*) continue;;
 		esac
 		find_elf "${lib}" "${resolved}"
 		rlib=${_find_elf}
-		show_elf "${rlib:-${lib}}" $((indent + 4)) "${parent_elfs}" ${RECURSIVE}
+		show_elf "${rlib:-${lib}}" $((indent + 4)) "${parent_elfs}" ${readelf}
 	done
 }
 
-
-# main
 SHOW_ALL=false
 SET_X=false
 LIST=false
 AUTO_ROOT=true
-MATCH_LIST=false
-# Recursive parse dependent libs
 RECURSIVE=true
 HEADER=true
+MAP_LIST=false
 
-while getopts haxVb:R:ml-:  OPT ; do
+while getopts haxmVb:R:l-:  OPT ; do
 	case ${OPT} in
 	a) SHOW_ALL=true;;
 	x) SET_X=true;;
 	h) usage;;
 	V) version;;
-	b) BACKEND="${OPTARG%}";;
 	R) ROOT="${OPTARG%/}/";;
 	l) LIST=true
-		 MATCH_LIST=false;;
-	m) MATCH_LIST=true
+		 MAP_LIST=false;;
+	m) MAP_LIST=true
+		 HEADER=false
 		 LIST=false;;
+	b) BACKEND="${OPTARG}";;
 	-) # Long opts ftw.
 		case ${OPTARG} in
 		no-auto-root) AUTO_ROOT=false;;
@@ -389,22 +365,29 @@ while getopts haxVb:R:ml-:  OPT ; do
 	?) usage 1;;
 	esac
 done
-
-
 shift $(( $OPTIND - 1))
 [ -z "$1" ] && usage 1
 
 ${SET_X} && set -x
+
+if [ -z "${BACKEND}" ]; then
+	if which scanelf >/dev/null; then
+		BACKEND=scanelf
+	elif which readelf >/dev/null; then
+		BACKEND=readelf
+	else
+		error "This tool needs either scanelf or readelf"
+		exit 1
+	fi
+fi
+
 ret=0
 for elf ; do
 	unset lib_paths_ldso
 	unset c_last_needed_by
-
-	# if auto root is setted and elf path is absolute
 	if ${AUTO_ROOT} && [ -z "${elf##/*}" ] ; then
 		elf="${ROOT}${elf#/}"
 	fi
-
 	if [ ! -e "${elf}" ] ; then
 		error "${elf}: file does not exist"
 	elif [ ! -r "${elf}" ] ; then
