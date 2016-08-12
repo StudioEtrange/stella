@@ -95,7 +95,12 @@ function __proxy_override() {
 		command sudo no_proxy="$STELLA_NO_PROXY" https_proxy="$STELLA_HTTPS_PROXY" http_proxy="$STELLA_HTTP_PROXY" "$@"
 	}
 
-	#wget
+	#bazel :
+	# proxy arg for bazel (not tested)
+	# https://github.com/bazelbuild/bazel/issues/587
+	#bazel --host_jvm_args=-Dhttp.proxyHost=my.proxy -Dhttp.proxyPort=8888 -Dhttps.proxyHost=....
+
+	#wget :
 	#use env var
 	# http_proxy = http://votre_proxy:port_proxy/
 	# proxy_user = votre_user_proxy

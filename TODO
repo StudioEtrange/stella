@@ -80,3 +80,5 @@ https://github.com/SublimeLinter/SublimeLinter-shellcheck
 [ ] nix : explore https://github.com/alebcay/awesome-shell
 
 [ ] macos : download homebrew binary  https://homebrew.bintray.com/bottles/libzip-1.0.1.el_capitan.bottle.tar.gz
+
+[ ] portable feature installation : embedded all dependencies,including system ?

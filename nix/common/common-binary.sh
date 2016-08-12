@@ -215,7 +215,7 @@ function __check_binary_file() {
 function __tweak_binary_file() {
 	local _path="$1"
 	local OPT="$2"
-	# EXCLUDE -- ignore these files
+	
 	local f
 	if [ -d "$_path" ]; then
 		for f in  "$_path"/*; do
