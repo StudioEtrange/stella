@@ -192,6 +192,7 @@ STELLA_API_BINARY_PUBLIC="tweak_linked_lib get_rpath add_rpath check_rpath check
 STELLA_API_BUILD_PUBLIC=""
 STELLA_API_PLATFORM_PUBLIC="sys_install sys_remove require"
 STELLA_API_NETWORK_PUBLIC="enable_proxy disable_proxy no_proxy_for register_proxy"
+STELLA_API_BOOT_PUBLIC="boot_shell boot_cmd boot_script"
 
 STELLA_API_RETURN_FUNCTION="list_feature_version get_active_path rel_to_abs_path trim is_abs mercurial_project_version git_project_version get_stella_version list_active_features get_filename_from_string get_key"
 STELLA_API=__api_proxy
