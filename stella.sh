@@ -7,8 +7,7 @@ source $_STELLA_CURRENT_FILE_DIR/conf.sh
 if [ "$1" == "env" ]; then
 	__init_stella_env
 	echo "** Current env is setted/refreshed with stella env"
-	exit
-fi
+else
 
 function usage() {
 	echo "USAGE :"
@@ -230,3 +229,4 @@ fi
 
 
 echo "** END **"
+fi

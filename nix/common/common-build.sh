@@ -142,7 +142,8 @@ function __set_toolset() {
 function __require_current_toolset() {
 	echo "** Require build toolset : $STELLA_BUILD_TOOLSET"
 	[ "$STELLA_BUILD_TOOLSET" == "AUTOTOOLS" ] && __require "autoconf" "autotools-bundle#1" "PREFER_STELLA"
-	[ "$STELLA_BUILD_BUILD_TOOL" == "cmake" ] &&  __require "cmake" "cmake" "PREFER_STELLA"
+	# TODO cmake is never a build_tool ?
+	# [ "$STELLA_BUILD_BUILD_TOOL" == "cmake" ] &&  __require "cmake" "cmake" "PREFER_STELLA"
 	[ "$STELLA_BUILD_CONFIG_TOOL" == "cmake" ] && __require "cmake" "cmake" "PREFER_STELLA"
 	[ "$STELLA_BUILD_BUILD_TOOL" == "make" ] && __require "make" "build-chain-standard" "PREFER_SYSTEM"
 	[ "$STELLA_BUILD_COMPIL_FRONTEND" == "gcc-clang" ] &&  __require "gcc" "build-chain-standard" "PREFER_SYSTEM"
