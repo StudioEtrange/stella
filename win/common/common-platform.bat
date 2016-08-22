@@ -190,6 +190,7 @@ goto :eof
 	call %STELLA_COMMON%\common-feature.bat :feature_install unzip#5_51_1 "HIDDEN INTERNAL"
 	call %STELLA_COMMON%\common-feature.bat :feature_install wget#1_17_1_INTERNAL@x86:binary "HIDDEN INTERNAL"
 	call %STELLA_COMMON%\common-feature.bat :feature_install sevenzip#9_38 "HIDDEN INTERNAL"
+	REM TODO in fact, maybe we really need cmake as requirement (in common build module) ? - to verify
 	REM call %STELLA_COMMON%\common-feature.bat :feature_install cmake#3_3_2@x86:binary "HIDDEN INTERNAL"
 	call %STELLA_COMMON%\common-feature.bat :feature_install patch#2_5_9_INTERNAL:binary "HIDDEN INTERNAL"
 goto :eof
@@ -206,7 +207,7 @@ REM REQUIRE ---------------------
 	REM OPTIONAL
 	REM PREFER_SYSTEM
 	REM PREFER_STELLA
-	set "OPT=%~3"
+	set "OPT_require=%~3"
 
 	REM TODO : return-code to return ?
 	set _result=0
@@ -214,7 +215,7 @@ REM REQUIRE ---------------------
 	set _opt_optional=OFF
 	set _opt_prefer_system=ON
 	set _opt_prefer_stella=OFF
-	for %%O in (%OPT%) do (
+	for %%O in (%OPT_require%) do (
 		if "%%O"=="OPTIONAL" set _opt_optional=ON
 		if "%%O"=="PREFER_SYSTEM" (
 			set _opt_prefer_system=ON
@@ -232,11 +233,11 @@ REM REQUIRE ---------------------
 	call %STELLA_COMMON%\common.bat :which "_found" "!_artefact!"
 
 	if "!_found!" == "" (
-		if "!_opt_optional" == "ON" (
-			if "!_opt_prefer_system" == "ON" (
+		if "!_opt_optional!" == "ON" (
+			if "!_opt_prefer_system!" == "ON" (
 				echo ** WARN -- You should install !_artefact! -- Try stella.bat sys install !_id! OR install it manually
 			) else (
-				if "!_opt_prefer_stella" == "ON" (
+				if "!_opt_prefer_stella!" == "ON" (
 					echo ** WARN -- You should install !_artefact! -- Try stella.bat feature install !_id!
 				) else (
 					echo ** WARN -- You should install !_artefact!
@@ -245,14 +246,14 @@ REM REQUIRE ---------------------
 				)
 			)
 		) else (
-			if "!_opt_prefer_system" == "ON" (
+			if "!_opt_prefer_system!" == "ON" (
 				echo ** ERROR -- Please install !_artefact!
 				echo ** Try stella.bat sys install !_id! OR install it manually
 				set "_result=1"
 				@echo off
 				goto :end
 			) else (
-				if "!_opt_prefer_stella" == "ON" (
+				if "!_opt_prefer_stella!" == "ON" (
 					echo ** REQUIRE !_id! : installing it from stella
 					call %STELLA_COMMON%\common-feature.bat :feature_install !_id!
 
