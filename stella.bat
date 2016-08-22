@@ -19,11 +19,11 @@ if "%DOMAIN%"=="app" (
 	if not "%-approot%"=="" set "_app_options=!_app_options! -approot=%-approot%"
 	if not "%-workroot%"=="" set "_app_options=!_app_options! -workroot=%-workroot%"
 	if not "%-cachedir%"=="" set "_app_options=!_app_options! -cachedir=%-cachedir%"
-	if not "%-stellaroot%"=="" set "_app_options=!_app_options! -stellaroot=%-stellaroot%"	
+	if not "%-stellaroot%"=="" set "_app_options=!_app_options! -stellaroot=%-stellaroot%"
 
 	if "%-samples%"=="1" set "_app_options=!_app_options! -samples"
 	if "%-f%"=="1" set "_app_options=!_app_options! -f"
-	
+
 	call %STELLA_BIN%\app.bat %ACTION% %id% !_app_options!
 	@echo off
 	goto :end
@@ -40,14 +40,14 @@ if "%DOMAIN%"=="feature" (
 	if not "%-buildarch%"=="" set "_feature_options=!_feature_options! -buildarch !-buildarch!"
 	if "%-depforce%"=="1" set "_feature_options=!_feature_options! -depforce"
 	if "%-depignore%"=="1" set "_feature_options=!_feature_options! -depignore"
-	
+
 	if not "%-export%"=="" set "_feature_options=!_feature_options! -export=!-export!"
 	if not "%-portable%"=="" set "_feature_options=!_feature_options! -portable=!-portable!"
 
 	call %STELLA_BIN%\feature.bat %ACTION% %id% !_feature_options!
 	@echo off
 	goto :end
-	
+
 )
 if "%DOMAIN%"=="feature" goto :end
 
@@ -56,11 +56,11 @@ if "%DOMAIN%"=="sys" (
 	call %STELLA_COMMON%\common.bat :init_stella_env
 
 	if "%ACTION%"=="install" (
-		call %STELLA_COMMON%\common-platform.bat :sys_install_%id%
+		call %STELLA_COMMON%\common-platform.bat :sys_install "%id%"
 		goto :end
 	)
 	if "%ACTION%"=="remove" (
-		call %STELLA_COMMON%\common-platform.bat :sys_remove_%id%
+		call %STELLA_COMMON%\common-platform.bat :sys_remove "%id%"
 		goto :end
 	)
 	if "%ACTION%"=="list" (
@@ -102,7 +102,7 @@ if "%DOMAIN%"=="proxy" (
 		call %STELLA_COMMON%\common-network.bat :register_proxy %id% %-proxyhost% %-proxyport% %-proxyuser% %-proxypass%
 		goto :end
 	)
-	
+
 )
 if "%DOMAIN%"=="proxy" goto :end
 
@@ -111,7 +111,7 @@ if "%DOMAIN%"=="proxy" goto :end
 REM --------------- STELLA ----------------------------
 if "%DOMAIN%"=="stella" (
 	call %STELLA_COMMON%\common.bat :init_stella_env
-	
+
 	if "%ACTION%"=="api" (
 		if "%id%"=="list" (
 			call %STELLA_COMMON%\common-api.bat :api_list "VAR"
@@ -127,7 +127,7 @@ if "%DOMAIN%"=="stella" (
 		)
 	)
 
-	
+
 
 	if "%ACTION%"=="version" (
 		if "%id%"=="print" (
@@ -136,7 +136,7 @@ if "%DOMAIN%"=="stella" (
 			echo !VAR1! -- !VAR2!
 			goto :end
 		)
-		
+
 	)
 
 	if "%ACTION%"=="search" (

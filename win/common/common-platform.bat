@@ -97,7 +97,7 @@ goto :eof
 		set "%_return_var%=linux"
 		goto :eof
 	)
-	
+
 	if "!_os!"=="archlinux" (
 		set "%_return_var%=linux"
 		goto :eof
@@ -155,7 +155,7 @@ goto :eof
 
 :: TODO : TO FINISH see nix version
 :set_current_platform_info
-	
+
 	REM alternative https://support.microsoft.com/fr-fr/kb/556009
 	if "!PROCESSOR_ARCHITECTURE!"=="x86" (
 		set "STELLA_CPU_ARCH=32"
@@ -166,7 +166,7 @@ goto :eof
 		set "STELLA_CPU_ARCH=64"
 		set "STELLA_KERNEL_ARCH=64"
 	)
-	
+
 
 	set "STELLA_NB_CPU=!NUMBER_OF_PROCESSORS!"
 
@@ -190,7 +190,7 @@ goto :eof
 	call %STELLA_COMMON%\common-feature.bat :feature_install unzip#5_51_1 "HIDDEN INTERNAL"
 	call %STELLA_COMMON%\common-feature.bat :feature_install wget#1_17_1_INTERNAL@x86:binary "HIDDEN INTERNAL"
 	call %STELLA_COMMON%\common-feature.bat :feature_install sevenzip#9_38 "HIDDEN INTERNAL"
-	call %STELLA_COMMON%\common-feature.bat :feature_install cmake#3_3_2@x86:binary "HIDDEN INTERNAL"
+	REM call %STELLA_COMMON%\common-feature.bat :feature_install cmake#3_3_2@x86:binary "HIDDEN INTERNAL"
 	call %STELLA_COMMON%\common-feature.bat :feature_install patch#2_5_9_INTERNAL:binary "HIDDEN INTERNAL"
 goto :eof
 
@@ -198,8 +198,82 @@ goto :eof
 REM REQUIRE ---------------------
 
 :require
-	echo TODO require
+	REM binary to test
+	set "_artefact=%~1"
+	REM feature name (for stella) or sys name (for package manager)
+	set "_id=%~2"
 
+	REM OPTIONAL
+	REM PREFER_SYSTEM
+	REM PREFER_STELLA
+	set "OPT=%~3"
+
+	REM TODO : return-code to return ?
+	set _result=0
+
+	set _opt_optional=OFF
+	set _opt_prefer_system=ON
+	set _opt_prefer_stella=OFF
+	for %%O in (%OPT%) do (
+		if "%%O"=="OPTIONAL" set _opt_optional=ON
+		if "%%O"=="PREFER_SYSTEM" (
+			set _opt_prefer_system=ON
+			set _opt_prefer_stella=OFF
+		)
+		if "%%O"=="PREFER_STELLA" (
+			set _opt_prefer_stella=ON
+			set _opt_prefer_system=OFF
+		)
+	)
+
+	echo ** REQUIRE !_id! (!_artefact!)
+
+	set "_found="
+	call %STELLA_COMMON%\common.bat :which "_found" "!_artefact!"
+
+	if "!_found!" == "" (
+		if "!_opt_optional" == "ON" (
+			if "!_opt_prefer_system" == "ON" (
+				echo ** WARN -- You should install !_artefact! -- Try stella.bat sys install !_id! OR install it manually
+			) else (
+				if "!_opt_prefer_stella" == "ON" (
+					echo ** WARN -- You should install !_artefact! -- Try stella.bat feature install !_id!
+				) else (
+					echo ** WARN -- You should install !_artefact!
+					echo -- For a system install : try stella.bat sys install !_id! OR install it manually
+					echo -- For an install from Stella : try stella.bat feature install !_id!
+				)
+			)
+		) else (
+			if "!_opt_prefer_system" == "ON" (
+				echo ** ERROR -- Please install !_artefact!
+				echo ** Try stella.bat sys install !_id! OR install it manually
+				set "_result=1"
+				@echo off
+				goto :end
+			) else (
+				if "!_opt_prefer_stella" == "ON" (
+					echo ** REQUIRE !_id! : installing it from stella
+					call %STELLA_COMMON%\common-feature.bat :feature_install !_id!
+
+					REM echo -- For an install from Stella : try stella.bat feature install !_id!
+					REM @echo off
+					REM goto :end
+					REM TODO fork this to not pertubate current feature_install
+					REM but first review stella api boot on windows
+					REM call %STELLA_COMMON%\common-feature.bat :feature_install "!_id!" "INTERNAL HIDDEN"
+					REM __feature_init "$_id"
+				) else (
+					echo ** ERROR -- Please install !_artefact!
+					echo -- For a system install : try stella.bat sys install !_id! OR install it manually
+					echo -- For an install from Stella : try stella.bat feature install !_id!
+					set "_result=1"
+					@echo off
+					goto :end
+				)
+			)
+		)
+	)
 goto :eof
 
 
@@ -209,11 +283,18 @@ REM PACKAGE SYSTEM ---------
 	set "_result_get_manager=%~1"
 
 	set "!_result_get_manager!=chocolatey"
-	
+
 	REM TODO for MSYS or CYGWIN package manager could be specific
-	
+
 goto :eof
 
+:sys_install
+	call :sys_install_%~1
+goto :eof
+
+:sys_remove
+	call :sys_remove_%~1
+goto :eof
 
 :sys_package_manager
 	REM INSTALL or REMOVE

@@ -141,8 +141,40 @@ goto :eof
 goto :eof
 
 :require_current_toolset
+	echo ** Require build toolset : !STELLA_BUILD_TOOLSET!
+	if "!STELLA_BUILD_TOOLSET!" == "MS" (
+		call %STELLA_COMMON%\common-platform.bat :require "cl" "vs2015community" "PREFER_SYSTEM"
+	)
+	if "!STELLA_BUILD_TOOLSET!" == "STANDARD" (
+		call %STELLA_COMMON%\common-platform.bat :require "gcc" "mingw-w64" "PREFER_STELLA"
+	)
 
-	echo TODO require_current_toolset
+	if "!STELLA_BUILD_CONFIG_TOOL!" == "cmake" (
+		call %STELLA_COMMON%\common-platform.bat :require "cmake" "cmake#3_3_2@x86:binary" "PREFER_STELLA"
+	)
+
+	if "!STELLA_BUILD_BUILD_TOOL!" == "ninja" (
+		call %STELLA_COMMON%\common-platform.bat :require "ninja" "ninja" "PREFER_STELLA"
+	)
+	if "!STELLA_BUILD_BUILD_TOOL!" == "mingw-make" (
+		call %STELLA_COMMON%\common-platform.bat :require "make" "mingw-w64" "PREFER_STELLA"
+	)
+	if "!STELLA_BUILD_BUILD_TOOL!" == "nmake" (
+		call %STELLA_COMMON%\common-platform.bat :require "nmake" "vs2015community" "PREFER_SYSTEM"
+	)
+
+	if "!STELLA_BUILD_COMPIL_FRONTEND!" == "gcc" (
+		call %STELLA_COMMON%\common-platform.bat :require "gcc" "mingw-w64" "PREFER_STELLA"
+	)
+	if "!STELLA_BUILD_COMPIL_FRONTEND!" == "jom" (
+		call %STELLA_COMMON%\common-platform.bat :require "jom" "jom" "PREFER_STELLA"
+	)
+	if "!STELLA_BUILD_COMPIL_FRONTEND!" == "cl" (
+		call %STELLA_COMMON%\common-platform.bat :require "cl" "vs2015community" "PREFER_SYSTEM"
+	)
+
+	echo ** Require build toolset : !STELLA_BUILD_TOOLSET!
+
 goto :eof
 
 :: BUILD ------------------------------------------------------------------------------------------------------------------------------
@@ -152,7 +184,7 @@ goto :eof
 	set "INSTALL_DIR=%~3"
 	set "OPT=%~4"
 
-	:: DEBUG SOURCE_KEEP BUILD_KEEP NO_CONFIG NO_BUILD NO_OUT_OF_TREE_BUILD NO_inspect_and_fix_build NO_INSTALL
+	:: DEBUG SOURCE_KEEP BUILD_KEEP NO_CONFIG NO_BUILD NO_OUT_OF_TREE_BUILD NO_INSPECT NO_INSTALL
 
 
 	:: keep source code after build (default : FALSE)
@@ -173,7 +205,7 @@ goto :eof
 		if "%%O"=="NO_CONFIG" set _opt_configure=OFF
 		if "%%O"=="NO_BUILD" set _opt_build=OFF
 		if "%%O"=="NO_OUT_OF_TREE_BUILD" set _opt_out_of_tree_build=OFF
-		if "%%O"=="NO_inspect_and_fix_build" set _opt_inspect_and_fix_build=OFF
+		if "%%O"=="NO_INSPECT" set _opt_inspect_and_fix_build=OFF
 	)
 
 	:: can not build out of tree without configure first
