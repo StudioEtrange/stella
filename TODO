@@ -82,3 +82,5 @@ https://github.com/SublimeLinter/SublimeLinter-shellcheck
 [ ] macos : download homebrew binary  https://homebrew.bintray.com/bottles/libzip-1.0.1.el_capitan.bottle.tar.gz
 
 [ ] portable feature installation : embedded all dependencies,including system ?
+
+[ ] distinguish PATH env for current stella app with PATH from stella in 2 variable, and give the possibility to retrieve them in a separate way

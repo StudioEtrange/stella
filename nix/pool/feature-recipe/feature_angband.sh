@@ -6,7 +6,7 @@ _angband_INCLUDED_=1
 # http://rephial.org/
 # https://github.com/angband/angband/
 
-# TODO On MacOS SDL version do not play well, should build instead with src/Makefile.osx ? or do not provide SDL version MacOS ?
+# TODO On MacOS, SDL version do not play well, should build instead with src/Makefile.osx ? or do not provide SDL version MacOS ?
 
 # launch curses based : angband -mgcu
 # launch sdl based : angband -msdl -ssdl

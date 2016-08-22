@@ -5,15 +5,13 @@ _STELLA_COMMON_NET_INCLUDED_=1
 # --------------- PROXY INIT ----------------
 
 function __init_proxy() {
-
+	__reset_proxy_values
 	__read_proxy_values
-	__set_proxy_values
-
+	__set_system_proxy_values
 }
 
-
-
 function __read_proxy_values() {
+
 	if [ -f "$STELLA_ENV_FILE" ]; then
 		__get_key "$STELLA_ENV_FILE" "STELLA_PROXY" "ACTIVE" "PREFIX"
 
@@ -23,6 +21,7 @@ function __read_proxy_values() {
 			__get_key "$STELLA_ENV_FILE" "STELLA_PROXY_$STELLA_PROXY_ACTIVE" "PROXY_USER" "PREFIX"
 			__get_key "$STELLA_ENV_FILE" "STELLA_PROXY_$STELLA_PROXY_ACTIVE" "PROXY_PASS" "PREFIX"
 
+			# read NO_PROXY values from env file
 			__get_key "$STELLA_ENV_FILE" "STELLA_PROXY" "NO_PROXY" "PREFIX"
 			if [ "$STELLA_PROXY_NO_PROXY" == "" ]; then
 				STELLA_NO_PROXY="$STELLA_DEFAULT_NO_PROXY"
@@ -50,9 +49,22 @@ function __read_proxy_values() {
 	fi
 }
 
-function __set_proxy_values() {
+# reset stella proxy values
+function 	__reset_proxy_values() {
+	STELLA_PROXY_ACTIVE=
+	STELLA_PROXY_HOST=
+	STELLA_PROXY_USER=
+	STELLA_PROXY_PASS=
+	STELLA_HTTP_PROXY=
+	STELLA_HTTPS_PROXY=
+	STELLA_PROXY_NO_PROXY=
+	STELLA_NO_PROXY=
+}
 
-	if [ ! "$STELLA_PROXY_HOST" == "" ]; then
+function __set_system_proxy_values() {
+
+	# override already existing system proxy env var only if stella proxy is active
+	if [ ! "$STELLA_PROXY_ACTIVE" == "" ]; then
 		http_proxy="$STELLA_HTTP_PROXY"
 		export http_proxy="$STELLA_HTTP_PROXY"
 
@@ -66,7 +78,7 @@ function __set_proxy_values() {
 		export HTTPS_PROXY="$https_proxy"
 
 		if [ ! "$STELLA_NO_PROXY" == "" ]; then
-			# NOTE : if NO_PROXY is setted, then no_proxy is ignored
+			# NOTE : on nix system, if NO_PROXY is setted, then no_proxy is ignored
 			no_proxy="$STELLA_NO_PROXY"
 			NO_PROXY="$STELLA_NO_PROXY"
 			export no_proxy="$STELLA_NO_PROXY"
@@ -82,6 +94,23 @@ function __set_proxy_values() {
 		echo "STELLA Proxy : $STELLA_PROXY_HOST:$STELLA_PROXY_PORT"
 		__proxy_override
 	fi
+}
+
+
+# reset system proxy env (for example when disabling previously activated stella proxy)
+function __reset_system_proxy_values() {
+	http_proxy=
+	export http_proxy=
+	HTTP_PROXY=
+	export HTTP_PROXY=
+	https_proxy=
+	export https_proxy=
+	HTTPS_PROXY=
+	export HTTPS_PROXY=
+	no_proxy=
+	NO_PROXY=
+	export no_proxy=
+	export NO_PROXY=
 }
 
 
@@ -221,8 +250,11 @@ function __enable_proxy() {
 }
 
 function __disable_proxy() {
-	__enable_proxy
+	__add_key "$STELLA_ENV_FILE" "STELLA_PROXY" "ACTIVE"
+
 	echo "STELLA Proxy Disabled"
+	__reset_proxy_values
+	__reset_system_proxy_values
 }
 
 
@@ -248,7 +280,7 @@ function __register_no_proxy() {
 	fi
 }
 
-# Temporary no proxy
+# only temporary no proxy
 # will be reseted each time proxy values are read from env file
 function __no_proxy_for() {
 	local _host=$1
@@ -263,7 +295,7 @@ function __no_proxy_for() {
 		echo "STELLA Proxy : temp proxy bypass for $_host"
 		[ ! "$STELLA_NO_PROXY" == "" ] && STELLA_NO_PROXY="$STELLA_NO_PROXY","$_host"
 		[ "$STELLA_NO_PROXY" == "" ] && STELLA_NO_PROXY="$_host"
-		__set_proxy_values
+		__set_system_proxy_values
 	fi
 
 }

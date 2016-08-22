@@ -2,6 +2,13 @@
 _STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $_STELLA_CURRENT_FILE_DIR/conf.sh
 
+# NOTE : use this with source command only
+# NOTE : warn some env var (like PATH) are cumulative
+if [ "$1" == "env" ]; then
+	__init_stella_env
+	echo "** Current env is setted/refreshed with stella env"
+	exit
+fi
 
 function usage() {
 	echo "USAGE :"
@@ -30,13 +37,17 @@ function usage() {
 	echo " L     proxy register <name> --proxyhost=<host> --proxyport=<port> [--proxyuser=<string> --proxypass=<string>] : register this proxy"
 	echo " L     proxy register bypass --proxyhost=<host> : register a host that will bypass proxy"
 	echo " o-- bootstrap management :"
-	echo " L     boot shell <uri> : launch an interactive shell with all stella env var setted inside an <uri> (use 'local' for current host)"
+	echo " L     boot shell <uri> : launch an interactive new shell with all stella env var setted inside an <uri> (use 'local' for current host)"
 	echo " L     boot cmd <uri> -- <command> : execute a command with all stella env var setted inside an <uri> (use 'local' for current host)"
 	echo " L     boot script <uri> -- <script_path>"
 	echo " o-- system package management : WARN This will affect your system"
 	echo " L     sys install <package name> : install  a system package"
 	echo " L     sys remove <package name> : remove a system package"
 	echo " L     sys list all : list all available system package name"
+	echo ""
+	echo "Special Usage"
+	echo " o-- env management :"
+	echo " L     source <stella.sh|stella-link.sh> env : set the current shell env with all stella env var setted"
 
 
 }
@@ -143,6 +154,7 @@ if [ "$DOMAIN" == "boot" ]; then
 	if [ "$ACTION" == "shell" ]; then
 		__boot_shell "$ID"
 	fi
+
 
 	if [ "$ACTION" == "script" ]; then
 		__boot_script "$ID" "$OTHERARG"

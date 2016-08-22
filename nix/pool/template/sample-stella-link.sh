@@ -20,7 +20,11 @@ case $ACTION in
 		source "$STELLA_ROOT/conf.sh"
 		__init_stella_env
 		;;
-
+	env)
+		source "$STELLA_ROOT/conf.sh"
+		__init_stella_env
+		echo "** Current env is setted/refreshed with stella env"
+		;;
 	bootstrap)
 		cd "$_STELLA_LINK_CURRENT_FILE_DIR"
 		curl -sSL https://raw.githubusercontent.com/StudioEtrange/stella/master/nix/pool/stella-bridge.sh -o stella-bridge.sh

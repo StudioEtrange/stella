@@ -1,4 +1,4 @@
-if [ ! "$_SMARTMONTOOLS_INCLUDED_" == "1" ]; then 
+if [ ! "$_SMARTMONTOOLS_INCLUDED_" == "1" ]; then
 _SMARTMONTOOLS_INCLUDED_=1
 
 
@@ -24,14 +24,14 @@ function feature_smartmontools_6_3() {
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
-	
+
 	FEAT_SOURCE_CALLBACK=
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/sbin/smartctl
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/sbin
-	
+
 }
 
 
@@ -41,7 +41,6 @@ function feature_smartmontools_install_source() {
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
 
-	#__set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL make"
 	__set_toolset "STANDARD"
 
 
@@ -52,7 +51,7 @@ function feature_smartmontools_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
-	
+
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
 
