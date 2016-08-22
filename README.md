@@ -46,7 +46,19 @@ Copyright 2013-2016 Sylvain Boucault @ StudioEtrange
 
 ### Dev version
 
-git clone https://github.com/StudioEtrange/stella
+* with git on Nix or Windows
+
+	git clone https://github.com/StudioEtrange/stella
+
+* with git behind a proxy on Nix
+
+	https_proxy="http://my.proxy.com"  http_proxy="http://my.proxy.com" git clone https://github.com/StudioEtrange/stella
+
+* with git behind a proxy on Windows
+
+	set "https_proxy=http://my.proxy.com"
+	set "http_proxy="http://my.proxy.com"
+	git clone https://github.com/StudioEtrange/stella
 
 ### Stable Version **DO NOT USE YET**
 
