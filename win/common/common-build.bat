@@ -157,7 +157,7 @@ goto :eof
 		call %STELLA_COMMON%\common-platform.bat :require "ninja" "ninja" "PREFER_STELLA"
 	)
 	if "!STELLA_BUILD_BUILD_TOOL!" == "mingw-make" (
-		call %STELLA_COMMON%\common-platform.bat :require "make" "mingw-w64" "PREFER_STELLA"
+		call %STELLA_COMMON%\common-platform.bat :require "mingw32-make" "mingw-w64" "PREFER_STELLA"
 	)
 	if "!STELLA_BUILD_BUILD_TOOL!" == "nmake" (
 		call %STELLA_COMMON%\common-platform.bat :require "nmake" "vs2015community" "PREFER_SYSTEM"
@@ -373,7 +373,7 @@ goto :eof
 	set "_opt_install=ON"
 
 
-	for %%O in (%OPT%) do (
+	for %%O in (!OPT!) do (
 		if "%%O"=="DEBUG" (
 			set "_debug=ON"
 		)
