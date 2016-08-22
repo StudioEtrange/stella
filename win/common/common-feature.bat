@@ -460,6 +460,12 @@ goto :eof
 						set "FORCE=0"
 					)
 
+					REM should be  MERGE or NESTED or LIST or MERGE_LIST
+					REM NESTED : each item will be installed inside the bundle path in a separate directory (with each feature name but without version) (bundle_name/bunle_version/item_name)
+					REM MERGE : each item will be installed in the bundle path (without each feature name/version)
+					REM LIST : this bundle is just a list of items that will be installed normally (without bundle name nor version in path: item_name/item_version )
+					REM MERGE_LIST : this bundle is a list of items that will be installed in a MERGED way (without bundle name nor version AND without each feature name/version)
+
 					if "!FEAT_BUNDLE_MODE!"=="LIST" (
 						set " _flag_hidden="
 					) else (
@@ -668,7 +674,7 @@ REM init feature context (properties, variables, ...)
 	set "FEAT_ENV_CALLBACK="
 	set "FEAT_BUNDLE_ITEM="
 	set "FEAT_BUNDLE_CALLBACK="
-	REM MERGE / NESTED / LIST
+	REM MERGE / NESTED / LIST / MERGE_LIST
 	set "FEAT_BUNDLE="
 
 	if not "!__SCHEMA!"=="" (
@@ -699,6 +705,9 @@ REM init feature context (properties, variables, ...)
 					) else (
 						set "FEAT_INSTALL_ROOT=!STELLA_APP_FEATURE_ROOT!\!TMP_FEAT_SCHEMA_NAME!\!TMP_FEAT_SCHEMA_VERSION!"
 					)
+				)
+				if "!FEAT_BUNDLE_MODE!"=="MERGE_LIST" (
+					set "FEAT_INSTALL_ROOT=!STELLA_APP_FEATURE_ROOT!"
 				)
 			)
 

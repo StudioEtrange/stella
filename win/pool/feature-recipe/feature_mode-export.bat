@@ -9,7 +9,7 @@ goto :eof
 	set "FEAT_DEFAULT_VERSION=1"
 	set "FEAT_DEFAULT_ARCH="
 
-	set "FEAT_BUNDLE=LIST"
+	set "FEAT_BUNDLE=MERGE_LIST"
 goto :eof
 
 
@@ -18,7 +18,7 @@ goto :eof
 
 	set FEAT_SOURCE_DEPENDENCIES=
 	set FEAT_BINARY_DEPENDENCIES=
-	
+
 	set "FEAT_BUNDLE_ITEM=!FEAT_MODE_EXPORT_SCHEMA!"
 
 	set FEAT_ENV_CALLBACK=
@@ -28,4 +28,3 @@ goto :eof
 	set FEAT_SEARCH_PATH=
 
 goto :eof
-

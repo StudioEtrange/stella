@@ -473,7 +473,7 @@ function __feature_install() {
 						FORCE=0
 					fi
 
-					# should be  MERGE or NESTED or LIST
+					# should be  MERGE or NESTED or LIST or MERGE_LIST
 					# NESTED : each item will be installed inside the bundle path in a separate directory (with each feature name but without version) (bundle_name/bunle_version/item_name)
 					# MERGE : each item will be installed in the bundle path (without each feature name/version)
 					# LIST : this bundle is just a list of items that will be installed normally (without bundle name nor version in path: item_name/item_version )

@@ -84,3 +84,5 @@ https://github.com/SublimeLinter/SublimeLinter-shellcheck
 [ ] portable feature installation : embedded all dependencies,including system ?
 
 [ ] distinguish PATH env for current stella app with PATH from stella in 2 variable, and give the possibility to retrieve them in a separate way
+
+[ ] win/nix : remove FORCE global option, add it as option for each function
