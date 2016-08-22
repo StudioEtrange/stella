@@ -258,7 +258,7 @@ function __disable_proxy() {
 }
 
 
-# no_proxy is setted only if a stella proxy is setted
+# no_proxy is setted only if a stella proxy is active
 function __register_no_proxy() {
 	local _host="$1"
 	__get_key "$STELLA_ENV_FILE" "STELLA_PROXY" "NO_PROXY" "PREFIX"
