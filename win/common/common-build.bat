@@ -29,8 +29,7 @@ goto :eof
 
 ::				SET BUILD ENV AND FLAGS
 ::				__prepare_build
-::						EXPORT / RPATH
-::						__export_env ====> MUST BE CALLED if we used __link_feature_library
+::						
 ::
 ::						call set_env_vars_for_gcc
 :: 						call set_env_vars_for_cl
@@ -250,7 +249,7 @@ goto :eof
 	)
 
 	:: set build env
-	call :prepare_build "!INSTALL_DIR!"
+	call :prepare_build "!INSTALL_DIR!" "!SOURCE_DIR!" "!BUILD_DIR!"
 
 	:: launch process
 	if "!_opt_configure!"=="ON" (
@@ -384,7 +383,6 @@ goto :eof
 			set "_opt_install=OFF"
 		)
 	)
-
 
 	:: FLAGs
 	:: AUTO_INSTALL_BUILD_FLAG_PREFIX -- TODO NOT USED
@@ -855,11 +853,6 @@ goto :eof
 	set "%_t%=!_LINK_FLAGS!"
 goto :eof
 
-:export_env
-	set "_install_dir=%~1"
-	echo TODO export_env
-goto :eof
-
 :: ENV and FLAGS management---------------------------------------------------------------------------------------------------------------------------------------
 
 :reset_build_env
@@ -924,9 +917,9 @@ goto :eof
 
 :prepare_build
 	set "_install_dir=%~1"
-
-	:: export mode
-	call :export_env "!_install_dir!"
+	set "_source_dir=%~2"
+	set "_build_dir=%~3"
+	
 
 	:: set env
 	call :set_build_env "ARCH" "!STELLA_BUILD_ARCH!"
@@ -982,16 +975,27 @@ goto :eof
 
 	:: print build info ------------
 	echo ** BUILD TOOLSET
-	echo ====^> Configuration Tool : !STELLA_BUILD_CONFIG_TOOL!
+	echo ====^> Configuration Tool : !STELLA_BUILD_CONFIG_TOOL!$
 	echo ====^> Build management Tool : !STELLA_BUILD_BUILD_TOOL!
 	echo ====^> Compiler Frontend : !STELLA_BUILD_COMPIL_FRONTEND!
 	echo ** BUILD INFO
 	echo ====^> Build arch directive : !STELLA_BUILD_ARCH!
-	echo ====^> Parallelized build (if supported) : !STELLA_BUILD_PARALLELIZE!
-	echo ====^> Relocation : !STELLA_BUILD_RELOCATE!
+	echo ====^> Parallelized (if supported) : !STELLA_BUILD_PARALLELIZE!
+	echo ====^> Relocatable : !STELLA_BUILD_RELOCATE!
+	echo ====^> Linked lib from stella features : !LINKED_LIBS_LIST!
 	echo ** FOLDERS
-	echo ====^> Install directory : !_install_dir!
-
+	echo ====^> Install directory : !INSTALL_DIR!
+	echo ====^> Source directory : !SOURCE_DIR!
+	echo ====^> Build directory : !BUILD_DIR!
+	echo ** SOME FLAGS
+	echo ====^> STELLA_C_CXX_FLAGS : !STELLA_C_CXX_FLAGS!
+	echo ====^> STELLA_CPP_FLAGS : !STELLA_CPP_FLAGS!
+	echo ====^> STELLA_LINK_FLAGS : !STELLA_LINK_FLAGS!
+	echo ====^> STELLA_DYNAMIC_LINK_FLAGS : !STELLA_DYNAMIC_LINK_FLAGS!
+	echo ====^> STELLA_STATIC_LINK_FLAGS : !STELLA_STATIC_LINK_FLAGS!
+	echo ====^> CMAKE_LIBRARY_PATH : !CMAKE_LIBRARY_PATH!
+	echo ====^> CMAKE_INCLUDE_PATH : !CMAKE_INCLUDE_PATH!
+	echo ====^> STELLA_CMAKE_EXTRA_FLAGS : !STELLA_CMAKE_EXTRA_FLAGS!
 goto :eof
 
 
@@ -1053,7 +1057,7 @@ goto :eof
 	set "CFLAGS=!STELLA_C_CXX_FLAGS!"
 	:: flags to pass to the C++ compiler.
 	set "CXXFLAGS=!STELLA_C_CXX_FLAGS!"
-	:: flags to pass to the C preprocessor. Used when compiling C and C++ (Used to pass -Iinclude_folder)
+	:: flags to pass to the C preprocessor. Used when compiling C and C++ (Used to pass include_folder)
 	set "CPPFLAGS=!STELLA_CPP_FLAGS!"
 
 	:: flags to pass to the linker

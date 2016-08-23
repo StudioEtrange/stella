@@ -17,8 +17,8 @@ REM																				https://sourceforge.net/projects/mingw-w64/files/Toolchai
 
 :feature_mingw-w64
 	set "FEAT_NAME=mingw-w64"
-	set "FEAT_LIST_SCHEMA=mingw4_gcc4_9_3_winthread@x64:binary mingw4_gcc4_9_3_winthread@x86:binary mingw4_gcc4_9_3_posixthread@x64:binary mingw4_gcc4_9_3_posixthread@x86:binary"
-	set "FEAT_DEFAULT_VERSION=mingw4_gcc4_9_3_winthread"
+	set "FEAT_LIST_SCHEMA=mingw4_gcc4_9_2_winthread@x64:binary mingw4_gcc4_9_2_winthread@x86:binary mingw4_gcc4_9_2_posixthread@x64:binary mingw4_gcc4_9_2_posixthread@x86:binary"
+	set "FEAT_DEFAULT_VERSION=mingw4_gcc4_9_2_winthread"
 	set "FEAT_DEFAULT_ARCH=x64"
 	set "FEAT_DEFAULT_FLAVOUR=binary"
 
@@ -26,8 +26,8 @@ goto :eof
 
 
 
-:feature_mingw-w64_mingw4_gcc4_9_3_winthread
-	set "FEAT_VERSION=mingw4_gcc4_9_3_winthread"
+:feature_mingw-w64_mingw4_gcc4_9_2_winthread
+	set "FEAT_VERSION=mingw4_gcc4_9_2_winthread"
 
 	set FEAT_SOURCE_DEPENDENCIES=
 	set FEAT_BINARY_DEPENDENCIES=
@@ -40,11 +40,11 @@ goto :eof
 
 	REM win32 or posix
 	set MINGW_THREADS=win32
-	set MINGW_GCC_VERSION=4.9.3
+	set MINGW_GCC_VERSION=4.9.2
 	REM mingw branch
 	set MINGW_MAJOR_VERSION=4
 	REM package revision
-	set MINGW_ZIP_REVISION=1
+	set MINGW_ZIP_REVISION=4
 
 	set FEAT_SOURCE_URL=
 	set FEAT_SOURCE_URL_FILENAME=
@@ -71,8 +71,8 @@ goto :eof
 goto :eof
 
 
-:feature_mingw-w64_mingw4_gcc4_9_3_posixthread
-	set "FEAT_VERSION=mingw4_gcc4_9_3_posixthread"
+:feature_mingw-w64_mingw4_gcc4_9_2_posixthread
+	set "FEAT_VERSION=mingw4_gcc4_9_2_posixthread"
 
 	set FEAT_SOURCE_DEPENDENCIES=
 	set FEAT_BINARY_DEPENDENCIES=
@@ -85,11 +85,11 @@ goto :eof
 
 	REM win32 or posix
 	set MINGW_THREADS=posix
-	set MINGW_GCC_VERSION=4.9.3
+	set MINGW_GCC_VERSION=4.9.2
 	REM mingw branch
 	set MINGW_MAJOR_VERSION=4
 	REM package revision
-	set MINGW_ZIP_REVISION=1
+	set MINGW_ZIP_REVISION=4
 
 	set FEAT_SOURCE_URL=
 	set FEAT_SOURCE_URL_FILENAME=
