@@ -679,7 +679,7 @@ goto :eof
 
 	if "!_opt_strip!"=="OFF" (
 		if "%EXTENSION%"==".7z" (
-			"%SEVENZIP%" x "%FILE_PATH%" -y -o"%UNZIP_DIR%" 1>NUL
+			"%SEVENZIP%" x "%FILE_PATH%" -y -o"%UNZIP_DIR%"
 		)
 		if "%EXTENSION%"==".exe" (
 			"%SEVENZIP%" x "%FILE_PATH%" -y -o"%UNZIP_DIR%"
@@ -714,7 +714,7 @@ goto :eof
 			"%UZIP%" -q -o "%FILE_PATH%" -d "%STELLA_APP_TEMP_DIR%\%_FILENAME%"
 		)
 		if "%EXTENSION%"==".7z" (
-			"%SEVENZIP%" x "%FILE_PATH%" -y -o"%STELLA_APP_TEMP_DIR%\%_FILENAME%" 1>NUL
+			"%SEVENZIP%" x "%FILE_PATH%" -y -o"%STELLA_APP_TEMP_DIR%\%_FILENAME%"
 		)
 		if "%EXTENSION%"==".exe" (
 			"%SEVENZIP%" x "%FILE_PATH%" -y -o"%STELLA_APP_TEMP_DIR%\%_FILENAME%"
@@ -748,14 +748,15 @@ goto :eof
 		)
 		if "!_only_one_folder_exist!"=="TRUE" (
 			for /D %%i in (*) do (
-				REM for /D %%i in (*) do xcopy /q /y /e /i %%i "%UNZIP_DIR%"
-				cd /D %%i
-				for /D %%j in (*) do move /y %%j "%UNZIP_DIR%\" 1>NUL
-				for %%j in (*) do move /y %%j "%UNZIP_DIR%\" 1>NUL
+				call :copy_folder_content_into "%%i" "%UNZIP_DIR%"
+				REM cd /D %%i
+				REM for /D %%j in (*) do move /y %%j "%UNZIP_DIR%\" 1>NUL
+				REM for %%j in (*) do move /y %%j "%UNZIP_DIR%\" 1>NUL
 			)
 		) else (
-			for /D %%j in (*) do move /y %%j "%UNZIP_DIR%\" 1>NUL
-			for %%j in (*) do move /y %%j "%UNZIP_DIR%\" 1>NUL
+			call :copy_folder_content_into "%STELLA_APP_TEMP_DIR%\%_FILENAME%" "%UNZIP_DIR%"
+			REM for /D %%j in (*) do move /y %%j "%UNZIP_DIR%\" 1>NUL
+			REM for %%j in (*) do move /y %%j "%UNZIP_DIR%\" 1>NUL
 		)
 		set "_only_one_folder_exist=NONE"
 		cd /D "%STELLA_APP_WORK_ROOT%"
