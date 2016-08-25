@@ -50,7 +50,7 @@ function feature_maven_3_3_3() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	FEAT_BINARY_URL=http://www.eu.apache.org/dist/maven/maven-3/3.3.3/binaries/apache-maven-3.3.3-bin.tar.gz
+	FEAT_BINARY_URL=http://archive.apache.org/dist/maven/maven-3/3.3.3/binaries/apache-maven-3.3.3-bin.tar.gz
 	FEAT_BINARY_URL_FILENAME=apache-maven-3.3.3-bin.tar.gz
 	FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 
@@ -74,7 +74,7 @@ function feature_maven_3_3_1() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	FEAT_BINARY_URL=http://www.eu.apache.org/dist/maven/maven-3/3.3.1/binaries/apache-maven-3.3.1-bin.tar.gz
+	FEAT_BINARY_URL=http://archive.apache.org/dist/maven/maven-3/3.3.1/binaries/apache-maven-3.3.1-bin.tar.gz
 	FEAT_BINARY_URL_FILENAME=apache-maven-3.3.1-bin.tar.gz
 	FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 

@@ -24,6 +24,9 @@ RECIPE inspiration
 https://ryzomcore.atlassian.net/wiki/display/RC/MinGW+External+Libraries
 https://ryzomcore.atlassian.net/wiki/display/RC/Create+External+Libs
 https://github.com/Alexpux/MINGW-packages
+[ ] win : build some library with mingw-w64 :
+http://www.gaia-gis.it/spatialite-3.0.0-BETA/mingw64_how_to.html
+[ ] win : build mingw-w64 compiler from source https://github.com/niXman/mingw-builds
 
 [ ] Default build arch equivalent to current cpu arch ? (and change option name buildarch with forcearch) (set STELLA_BUILD_ARCH_DEFAULT)
 [ ] feature system : FEAT_DEFAULT_ARCH must be fill with current cpu arch
@@ -39,7 +42,7 @@ https://github.com/Alexpux/MINGW-packages
 [ ] proxy values in stella-env should be local or global
 [X] win : link-app : add option to align workspace/cache path (like on nix)
 
-[ ] win : build mingw-w64 compiler https://github.com/niXman/mingw-builds
+
 
 [ ] ssh : launch stella app through ssh
 https://thornelabs.net/2013/08/21/simple-ways-to-send-multiple-line-commands-over-ssh.html
