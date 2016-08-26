@@ -33,8 +33,9 @@ function usage() {
 	echo " o-- network management :"
 	echo " L     proxy on <name> : active proxy"
 	echo " L     proxy off now : disable proxy"
-	echo " L     proxy register <name> --proxyhost=<host> --proxyport=<port> [--proxyuser=<string> --proxypass=<string>] : register this proxy"
-	echo " L     proxy register bypass --proxyhost=<host> : register a host that will bypass proxy"
+	echo " L     proxy register <name> --proxyhost=<host> --proxyport=<port> [--proxyuser=<string> --proxypass=<string>] : register a web proxy"
+	echo " L     proxy register bypass --proxyhost=<host> : register a host that will not used proxy"
+	echo " L		 proxy tunnel <name> --bridge=<user:password@host> : set a ssh tunnel from localhost to registered proxy <name> through a bridge, and set web traffic to use this tunnel as web proxy"
 	echo " o-- bootstrap management :"
 	echo " L     boot shell <uri> : launch an interactive new shell with all stella env var setted inside an <uri> (use 'local' for current host)"
 	echo " L     boot cmd <uri> -- <command> : execute a command with all stella env var setted inside an <uri> (use 'local' for current host)"
@@ -67,6 +68,7 @@ WORKROOT='' 					'' 			'path'				s 			0			''						Work app path (default equal t
 CACHEDIR=''						'' 			'path'				s 			0			''						Cache folder path
 STELLAROOT=''                   ''          'path'              s           0           ''                      Stella path to link.
 SAMPLES=''                      ''         ''                  b           0       '1'                     Generate app samples.
+BRIDGE='' 						'' 			'uri'				s 			0			''					bridge uri in case of a web proxy tunnel
 PROXYHOST='' 					'' 			'host'				s 			0			''					proxy host
 PROXYPORT='' 					'' 			'port'				s 			0			''					proxy port
 PROXYUSER='' 					'' 			'user'				s 			0			''					proxy user
@@ -164,6 +166,9 @@ fi
 if [ "$DOMAIN" == "proxy" ]; then
 	__init_stella_env
 
+	if [ "$ACTION" == "tunnel" ]; then
+		__proxy_tunnel "$ID" "$BRIDGE"
+	fi
 	if [ "$ACTION" == "on" ]; then
 		__enable_proxy "$ID"
 	fi

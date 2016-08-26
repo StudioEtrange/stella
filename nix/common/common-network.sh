@@ -230,6 +230,25 @@ $(command docker-machine "$@");
 
 # -------------------- FUNCTIONS-----------------
 
+function __proxy_tunnel() {
+	local _target_proxy_name="$1"
+	local _bridge_uri="$2"
+
+
+	local _target_proxy_host=$(echo '$STELLA_PROXY_'$_target_proxy_name'_PROXY_HOST')
+	local _target_proxy_port=$(echo '$STELLA_PROXY_'$_target_proxy_name'_PROXY_PORT')
+
+	__register_proxy "_STELLA_TUNNEL_" "localhost" "7999"
+	__enable_proxy "_STELLA_TUNNEL_"
+
+	# TODO : what if targeted proxy require a user/password ?
+
+	ssh -N -L 7999:$_target_proxy_host:$_target_proxy_port $_bridge_uri
+
+	__disable_proxy
+}
+
+
 function __register_proxy() {
 	local _name=$1
 	local _host=$2

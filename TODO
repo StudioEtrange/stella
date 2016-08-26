@@ -89,3 +89,5 @@ https://github.com/SublimeLinter/SublimeLinter-shellcheck
 [ ] distinguish PATH env for current stella app with PATH from stella in 2 variable, and give the possibility to retrieve them in a separate way
 
 [ ] win/nix : remove FORCE global option, add it as option for each function
+
+[ ] change proxyport, proxyhost, proxyuser, proxypassword in stella.sh command line as a unique arg --proxy=uri, and use __uri_parse
