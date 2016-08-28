@@ -248,18 +248,20 @@ function __proxy_tunnel() {
 	__disable_proxy
 }
 
-
 function __register_proxy() {
-	local _name=$1
-	local _host=$2
-	local _port=$3
-	local _user=$4
-	local _pass=$5
+	local _proxy_name="$1"
 
-	__add_key "$STELLA_ENV_FILE" "STELLA_PROXY_$_name" "PROXY_HOST" "$_host"
-	__add_key "$STELLA_ENV_FILE" "STELLA_PROXY_$_name" "PROXY_PORT" "$_port"
-	__add_key "$STELLA_ENV_FILE" "STELLA_PROXY_$_name" "PROXY_USER" "$_user"
-	__add_key "$STELLA_ENV_FILE" "STELLA_PROXY_$_name" "PROXY_PASS" "$_pass"
+	__uri_parse "$2"
+
+	local _host="$__stella_uri_host"
+	local _port="$__stella_uri_port"
+	local _user="$__stella_uri_user"
+	local _pass="$__stella_uri_password"
+
+	__add_key "$STELLA_ENV_FILE" "STELLA_PROXY_$_proxy_name" "PROXY_HOST" "$_host"
+	__add_key "$STELLA_ENV_FILE" "STELLA_PROXY_$_proxy_name" "PROXY_PORT" "$_port"
+	__add_key "$STELLA_ENV_FILE" "STELLA_PROXY_$_proxy_name" "PROXY_USER" "$_user"
+	__add_key "$STELLA_ENV_FILE" "STELLA_PROXY_$_proxy_name" "PROXY_PASS" "$_pass"
 }
 
 function __enable_proxy() {

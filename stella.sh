@@ -31,10 +31,10 @@ function usage() {
 	echo " L     stella search path : print current system search path"
 	echo " L     stella deploy <user@host:path> [--cache] [--workspace] : deploy current stella version to an other target via ssh. [--cache] : include stella cache folder. [--workspace] : include stella workspace folder"
 	echo " o-- network management :"
-	echo " L     proxy on <name> : active proxy"
+	echo " L     proxy on <name> : active a registered proxy"
 	echo " L     proxy off now : disable proxy"
-	echo " L     proxy register <name> --proxyhost=<host> --proxyport=<port> [--proxyuser=<string> --proxypass=<string>] : register a web proxy"
-	echo " L     proxy register bypass --proxyhost=<host> : register a host that will not used proxy"
+	echo " L     proxy register <name> --proxy=<user:password@host:port> : register a web proxy"
+	echo " L     proxy bypass <host> : register a host that will not used proxy"
 	echo " L		 proxy tunnel <name> --bridge=<user:password@host> : set a ssh tunnel from localhost to registered proxy <name> through a bridge, and set web traffic to use this tunnel as web proxy"
 	echo " o-- bootstrap management :"
 	echo " L     boot shell <uri> : launch an interactive new shell with all stella env var setted inside an <uri> (use 'local' for current host)"
@@ -69,10 +69,7 @@ CACHEDIR=''						'' 			'path'				s 			0			''						Cache folder path
 STELLAROOT=''                   ''          'path'              s           0           ''                      Stella path to link.
 SAMPLES=''                      ''         ''                  b           0       '1'                     Generate app samples.
 BRIDGE='' 						'' 			'uri'				s 			0			''					bridge uri in case of a web proxy tunnel
-PROXYHOST='' 					'' 			'host'				s 			0			''					proxy host
-PROXYPORT='' 					'' 			'port'				s 			0			''					proxy port
-PROXYUSER='' 					'' 			'user'				s 			0			''					proxy user
-PROXYPASS='' 					'' 			'password'			s 			0			''					proxy password
+PROXY='' 					'' 			'uri'				s 			0			''					proxy uri
 DEPFORCE=''						''    		''            		b     		0     		'1'           			Force reinstallation of all dependencies.
 DEPIGNORE=''					''    		''            		b     		0     		'1'           		Will not process any dependencies.
 EXPORT=''                     ''          'path'              s           0           ''                      	Export feature to this dir.
@@ -82,7 +79,7 @@ CACHE=''                       	''    		''            		b     		0     		'1'     
 WORKSPACE=''                       	''    		''            		b     		0     		'1'           			Include workspace folder when deploying.
 "
 
-__argparse "$0" "$OPTIONS" "$PARAMETERS" "Lib Stella" "$(usage)" "OTHERARG" "$@"
+__argparse "$0" "$OPTIONS" "$PARAMETERS" "Stella" "$(usage)" "OTHERARG" "$@"
 
 
 # --------------- APP ----------------------------
@@ -176,13 +173,11 @@ if [ "$DOMAIN" == "proxy" ]; then
 	if [ "$ACTION" == "off" ]; then
 		__disable_proxy
 	fi
-
+	if [ "$ACTION" == "bypass" ]; then
+		__register_no_proxy "$ID"
+	fi
 	if [ "$ACTION" == "register" ]; then
-		if [ "$ID" == "bypass" ]; then
-			__register_no_proxy "$PROXYHOST"
-		else
-			__register_proxy "$ID" "$PROXYHOST" "$PROXYPORT" "$PROXYUSER" "$PROXYPASS"
-		fi
+		__register_proxy "$ID" "$PROXY"
 	fi
 fi
 
