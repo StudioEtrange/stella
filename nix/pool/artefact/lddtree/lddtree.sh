@@ -15,9 +15,7 @@ version=1.25-CURRENT
 usage() {
 	cat <<-EOF
 	Display ELF dependencies as a tree
-
 	Usage: ${argv0} [options] <ELF file[s]>
-
 	Options:
 	  -a              Show all duplicated dependencies
 	  -x              Run with debugging
@@ -102,10 +100,10 @@ elf_specs_readelf() {
 
 
 # elf wrapper functions
-elf_rpath() { [ ! -z "$1" ] && elf_rpath_$BACKEND "$@" | sed -e "s:[$]ORIGIN:${1%/*}:g" -e "s:[$]{ORIGIN}:${1%/*}:g" -e "s,:\.,:${1%/*},g" -e "s,^\.,${1%/*},g"; }
-elf_interp() { [ ! -z "$1" ] && elf_interp_$BACKEND "$@"; }
-elf_needed() { [ ! -z "$1" ] && elf_needed_$BACKEND "$@"; }
-elf_specs() { [ ! -z "$1" ] && elf_specs_$BACKEND "$1"; }
+elf_rpath() { [ ! -z "$1" ] && [ -e "$@" ] && elf_rpath_$BACKEND "$@" | sed -e "s:[$]ORIGIN:${1%/*}:g" -e "s:[$]{ORIGIN}:${1%/*}:g" -e "s,:\.,:${1%/*},g" -e "s,^\.,${1%/*},g"; }
+elf_interp() { [ ! -z "$1" ] && [ -e "$@" ] && elf_interp_$BACKEND "$@"; }
+elf_needed() { [ ! -z "$1" ] && [ -e "$@" ] && elf_needed_$BACKEND "$@"; }
+elf_specs() { [ ! -z "$1" ] && [ -e "$1" ] && elf_specs_$BACKEND "$1"; }
 
 unset lib_paths_fallback
 for p in ${ROOT}lib* ${ROOT}usr/lib* ${ROOT}usr/local/lib*; do
@@ -212,19 +210,21 @@ resolv_links() {
 	_list_files="$2"
 	local oldpwd="$PWD"
 	[ "$_list_files" = yes ] && list_existing_file "${_resolv_links}"
-	cd "${_resolv_links%/*}"
-	while [ -L "$_resolv_links" ]; do
-		_resolv_links=$(readlink "$_resolv_links")
-		case "$_resolv_links" in
-		/*)	_resolv_links="${ROOT}${_resolv_links#/}"
-			cd "${_resolv_links%/*}"
-			;;
-		*/*)	cd "${_resolv_links%/*}"
-			;;
-		esac
-		_resolv_links=$(pwd -P)/${_resolv_links##*/}
-		[ "$_list_files" = yes ] && list_existing_file "${_resolv_links}"
-	done
+	if [ -e "${_resolv_links}" ]; then
+		cd "${_resolv_links%/*}"
+		while [ -L "$_resolv_links" ]; do
+			_resolv_links=$(readlink "$_resolv_links")
+			case "$_resolv_links" in
+			/*)	_resolv_links="${ROOT}${_resolv_links#/}"
+				cd "${_resolv_links%/*}"
+				;;
+			*/*)	cd "${_resolv_links%/*}"
+				;;
+			esac
+			_resolv_links=$(pwd -P)/${_resolv_links##*/}
+			[ "$_list_files" = yes ] && list_existing_file "${_resolv_links}"
+		done
+	fi
 	cd "$oldpwd"
 }
 

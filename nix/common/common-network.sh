@@ -234,11 +234,15 @@ function __proxy_tunnel() {
 	local _target_proxy_name="$1"
 	local _bridge_uri="$2"
 
+	__get_key "$STELLA_ENV_FILE" "STELLA_PROXY_$_target_proxy_name" "PROXY_HOST" "PREFIX"
+	__get_key "$STELLA_ENV_FILE" "STELLA_PROXY_$_target_proxy_name" "PROXY_PORT" "PREFIX"
+	__get_key "$STELLA_ENV_FILE" "STELLA_PROXY_$_target_proxy_name" "PROXY_USER" "PREFIX"
+	__get_key "$STELLA_ENV_FILE" "STELLA_PROXY_$_target_proxy_name" "PROXY_PASS" "PREFIX"
 
-	local _target_proxy_host=$(echo '$STELLA_PROXY_'$_target_proxy_name'_PROXY_HOST')
-	local _target_proxy_port=$(echo '$STELLA_PROXY_'$_target_proxy_name'_PROXY_PORT')
+	eval _target_proxy_host=$(echo '$STELLA_PROXY_'$_target_proxy_name'_PROXY_HOST')
+	eval _target_proxy_port=$(echo '$STELLA_PROXY_'$_target_proxy_name'_PROXY_PORT')
 
-	__register_proxy "_STELLA_TUNNEL_" "localhost" "7999"
+	__register_proxy "_STELLA_TUNNEL_" "localhost:7999"
 	__enable_proxy "_STELLA_TUNNEL_"
 
 	# TODO : what if targeted proxy require a user/password ?
@@ -281,8 +285,13 @@ function __disable_proxy() {
 
 # no_proxy is setted only if a stella proxy is active
 function __register_no_proxy() {
-	local _host="$1"
+	local _uri="$1"
 	__get_key "$STELLA_ENV_FILE" "STELLA_PROXY" "NO_PROXY" "PREFIX"
+
+	__uri_parse "$_uri"
+
+	local _host="$__stella_uri_host"
+
 
 	local _exist=
 	STELLA_PROXY_NO_PROXY="${STELLA_PROXY_NO_PROXY//,/ }"
@@ -298,6 +307,7 @@ function __register_no_proxy() {
 		fi
 
 		__add_key "$STELLA_ENV_FILE" "STELLA_PROXY" "NO_PROXY" "${STELLA_PROXY_NO_PROXY// /,}"
+		__init_proxy
 	fi
 }
 

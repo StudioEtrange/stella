@@ -145,12 +145,18 @@ function __set_current_platform_info() {
 	STELLA_C_ARCH=$(getconf LONG_BIT)
 	STELLA_USERSPACE_ARCH=unknown
 
+	local _err=
+	type netstat &>/dev/null || _err=1
+	if [ "$_err" == "" ]; then
+		STELLA_DEFAULT_INTERFACE=$(netstat -rn | awk '/^0.0.0.0/ {thif=substr($0,74,10); print thif;} /^default.*UG/ {thif=substr($0,65,10); print thif;}')
+	fi
 
-
-	STELLA_DEFAULT_INTERFACE=$(netstat -rn | awk '/^0.0.0.0/ {thif=substr($0,74,10); print thif;} /^default.*UG/ {thif=substr($0,65,10); print thif;}')
-	STELLA_HOST_DEFAULT_IP=$(ifconfig ${STELLA_DEFAULT_INTERFACE} | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*')
-	STELLA_HOST_IP=$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*')
-
+	_err=
+	type ifconfig &>/dev/null || _err=1
+	if [ "$_err" == "" ]; then
+		STELLA_HOST_DEFAULT_IP=$(ifconfig ${STELLA_DEFAULT_INTERFACE} | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*')
+		STELLA_HOST_IP=$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*')
+	fi
 
 	__override_platform_command
 
