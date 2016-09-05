@@ -1,4 +1,4 @@
-if [ ! "$_HTOP_INCLUDED_" == "1" ]; then 
+if [ ! "$_HTOP_INCLUDED_" == "1" ]; then
 _HTOP_INCLUDED_=1
 
 
@@ -53,8 +53,8 @@ function feature_htop_link() {
 function feature_htop_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
-	
+
+
 	#__set_toolset "CUSTOM" "CONFIG_TOOL configure"
 	__set_toolset "STANDARD"
 
@@ -71,9 +71,9 @@ function feature_htop_install_source() {
 	__feature_callback
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
-	
 
-	
+
+
 
 }
 

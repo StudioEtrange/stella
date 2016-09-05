@@ -689,6 +689,12 @@ function __link_feature_library() {
 		fi
 	fi
 
+	# On Darwin, the install_name of the linked lib is used to link the lib
+	# On linux we need to add an rpath value to the folder where reside the linked lib
+	#			if needed, we will remove rpath value and turn into a hard link after build
+	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+		__set_build_mode "RPATH" "ADD_FIRST" "$LIB_TARGET_FOLDER"
+	fi
 
 
 
@@ -1194,14 +1200,15 @@ function __set_build_env() {
 	# https://sourceware.org/binutils/docs/ld/Options.html
 	# http://www.kaizou.org/2015/01/linux-libraries/
 	if [ "$1" == "LINK_FLAGS_DEFAULT" ]; then
-		if [ "$STELLA_BUILD_COMPIL_FRONTEND" == "gcc-clang" ]; then
-			if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-				case $2 in
-					ON)
-						STELLA_LINK_FLAGS="-Wl,--copy-dt-needed-entries -Wl,--as-needed -Wl,--no-allow-shlib-undefined -Wl,--no-undefined $STELLA_LINK_FLAGS"
-					;;
-				esac
-			fi
+		if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+				if [ "$STELLA_BUILD_COMPIL_FRONTEND" == "gcc-clang" ]; then
+					case $2 in
+						ON)
+							# NOTE : these flags do not work when building static lib with "ar" tool
+							STELLA_DYNAMIC_LINK_FLAGS="-Wl,--copy-dt-needed-entries -Wl,--as-needed -Wl,--no-allow-shlib-undefined -Wl,--no-undefined $STELLA_DYNAMIC_LINK_FLAGS"
+						;;
+					esac
+				fi
 		fi
 	fi
 
