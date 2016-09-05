@@ -34,7 +34,7 @@ function usage() {
 	echo " L     proxy on <name> : active a registered proxy"
 	echo " L     proxy off now : disable proxy"
 	echo " L     proxy register <name> --proxy=<user:password@host:port> : register a web proxy"
-	echo " L     proxy bypass <host> : register a host that will not used proxy"
+	echo " L     proxy bypass <host> : register a host that will not use proxy"
 	echo " L		 proxy tunnel <name> --bridge=<user:password@host> : set a ssh tunnel from localhost to registered proxy <name> through a bridge, and set web traffic to use this tunnel as web proxy"
 	echo " o-- bootstrap management :"
 	echo " L     boot shell <uri> : launch an interactive new shell with all stella env var setted inside an <uri> (use 'local' for current host)"
