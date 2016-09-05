@@ -100,7 +100,7 @@ elf_specs_readelf() {
 
 
 # elf wrapper functions
-elf_rpath() { [ ! -z "$1" ] && [ -e "$@" ] && elf_rpath_$BACKEND "$@" | sed -e "s:[$]ORIGIN:${1%/*}:g" -e "s:[$]{ORIGIN}:${1%/*}:g" -e "s,:\.,:${1%/*},g" -e "s,^\.,${1%/*},g"; }
+elf_rpath() { [ ! -z "$1" ] && [ -e "$@" ] && elf_rpath_$BACKEND "$@" | sed -e "s,[$]ORIGIN,${1%/*},g" -e "s,[$]{ORIGIN},${1%/*},g" -e "s,:\.:,:${1%/*}:,g" -e "s,^\.$,${1%/*},g"; }
 elf_interp() { [ ! -z "$1" ] && [ -e "$@" ] && elf_interp_$BACKEND "$@"; }
 elf_needed() { [ ! -z "$1" ] && [ -e "$@" ] && elf_needed_$BACKEND "$@"; }
 elf_specs() { [ ! -z "$1" ] && [ -e "$1" ] && elf_specs_$BACKEND "$1"; }
