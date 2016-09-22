@@ -2,7 +2,7 @@ if [ ! "$_STELLA_BOOT_INCLUDED_" == "1" ]; then
 _STELLA_BOOT_INCLUDED_=1
 
 # TODO : include into API
-# TODO : when booting a script, pass arg to script ?
+# TODO : when booting a script, how pass arg to script ?
 
 # When docker/dm
 #     stella requirement are installed

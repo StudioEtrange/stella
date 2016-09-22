@@ -50,6 +50,8 @@ function feature_libtool_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
+
+	__set_build_mode "LINK_FLAGS_DEFAULT" "OFF"
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
 
 	# some scripts call libtoolize as glibtoolize

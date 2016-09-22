@@ -4,10 +4,10 @@ _CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
 source $_CURRENT_FILE_DIR/stella-link.sh include
 
 
-#				 			without			official		github		github 
-#				.git		.git 			site http		git 		http
+#				 						without			official		github		github
+#						.git		.git 			site http		git 		http
 #	STABLE 		-----		  X 				X 			----		 X
-#	DEV			  X 		----			   ----			 X 			----
+#	DEV			  X 			----			   ----			 X 			----
 
 # need build-system on host, because of some source dependencies
 
@@ -49,12 +49,12 @@ function stella_items_release() {
 		cd  "$STELLA_APP_WORK_ROOT/stella"
 		git clone https://github.com/StudioEtrange/stella
 		git checkout $_wanted_version
-		
+
 		_stella_root_="$STELLA_APP_WORK_ROOT/stella/stella"
 	fi
 
 	STELLA_RELEASE_POOL=$_stella_root_/app/stella-release/pool
-	
+
 	$STELLA_API copy_folder_content_into "$STELLA_RELEASE_POOL" "$STELLA_APP_WORK_ROOT/output/pool"
 	#pack_goconfig-cli
 }
@@ -70,7 +70,7 @@ function stella_stable_release() {
 	local _stella_root_
 
 	local _opt_auto_extract=OFF # make a self uncompress archive
-	for o in $_opt; do 
+	for o in $_opt; do
 		[ "$o" == "AUTO_EXTRACT" ] && _opt_auto_extract=ON
 	done
 
@@ -81,7 +81,7 @@ function stella_stable_release() {
 		cd  "$STELLA_APP_WORK_ROOT/stella"
 		git clone https://github.com/StudioEtrange/stella
 		git checkout $_wanted_version
-		
+
 		_stella_root_="$STELLA_APP_WORK_ROOT/stella/stella"
 	fi
 
@@ -90,7 +90,7 @@ function stella_stable_release() {
 
 	case $_platform in
 		win)
-			release_filename="stella-win-$version"	
+			release_filename="stella-win-$version"
 			;;
 		nix)
 			release_filename="stella-nix-$version"
@@ -102,7 +102,7 @@ function stella_stable_release() {
 
 	pack_stella "$_platform" "$release_filename" "$_stella_root_" "$_opt"
 
-	
+
 
 	rm -f "$_stella_root_/VERSION"
 }
@@ -117,7 +117,7 @@ function pack_stella() {
 	local _opt="$4"
 
 	local _opt_auto_extract=OFF # make a self uncompress archive
-	for o in $_opt; do 
+	for o in $_opt; do
 		[ "$o" == "AUTO_EXTRACT" ] && _opt_auto_extract=ON
 	done
 
@@ -144,7 +144,7 @@ function pack_stella() {
 			-f "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz -C "$_stella_root_/.." "${_stella_root_##*/}"
 		;;
 	esac
-	
+
 
 	if [ "$_opt_auto_extract" == "ON" ]; then
 		$STELLA_API make_targz_sfx_shell "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz.run "TARGZ"
@@ -261,7 +261,7 @@ case $ACTION in
 		$STELLA_API get_features
 		$STELLA_API copy_folder_content_into "$STELLA_APPLICATION/stella-release/pool/common/sfx_for_7z" "$STELLA_APP_CACHE_DIR"
 		;;
-    stella-dist)
+  stella-dist)
 		rm -Rf $STELLA_APP_WORK_ROOT/output/dist
 		mkdir -p $STELLA_APP_WORK_ROOT/output/dist
 		stella_stable_release nix "$VER" "AUTO_EXTRACT"

@@ -1,4 +1,4 @@
-if [ ! "$_BOOSTBCP_INCLUDED_" == "1" ]; then 
+if [ ! "$_BOOSTBCP_INCLUDED_" == "1" ]; then
 _BOOSTBCP_INCLUDED_=1
 
 # for more information see feature boost
@@ -45,11 +45,11 @@ function feature_boost-bcp_install_source() {
 	__prepare_build "$INSTALL_DIR"
 
 	cd "$SRC_DIR/tools/bcp"
-	  
+
 	b2 -d2 -j$STELLA_NB_CPU
-	
+
 	mkdir -p "$INSTALL_DIR/bin"
-    cp -f "$SRC_DIR/dist/bin/bcp" "$INSTALL_DIR/bin/"
+  cp -f "$SRC_DIR/dist/bin/bcp" "$INSTALL_DIR/bin/"
 
 	__del_folder "$SRC_DIR"
 

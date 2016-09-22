@@ -54,6 +54,7 @@ _STELLA_COMMON_BINARY_INCLUDED_=1
 #								http://blog.tremily.us/posts/rpath/
 # 							https://bbs.archlinux.org/viewtopic.php?id=6460
 # 							http://www.cyberciti.biz/tips/linux-shared-library-management.html
+#								http://www.kaizou.org/2015/01/linux-libraries/
 #
 #						LINUX	TOOLS :
 #								https://github.com/gentoo/pax-utils
@@ -61,6 +62,13 @@ _STELLA_COMMON_BINARY_INCLUDED_=1
 #
 #						MACOS :
 #								Use DYLD_LIBRARY_PATH instead of LD_LIBRARY_PATH
+#
+#						LINUX DEBUG :
+#								LD_TRACE_LOADED_OBJECTS=1 LD_DEBUG=libs ./program
+#								LD_DEBUG values http://www.bnikolic.co.uk/blog/linux-ld-debug.html
+#
+#						MACOS DEBUG :
+#								DYLD_PRINT_LIBRARIES=y ./program
 #
 # 	 	LINUX RPATH : PATCHELF
 #							using patchelf  "--set-rpath, --shrink-rpath and --print-rpath now prefer DT_RUNPATH over DT_RPATH,
@@ -215,7 +223,7 @@ function __check_binary_file() {
 function __tweak_binary_file() {
 	local _path="$1"
 	local OPT="$2"
-	
+
 	local f
 	if [ -d "$_path" ]; then
 		for f in  "$_path"/*; do

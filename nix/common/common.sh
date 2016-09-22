@@ -290,9 +290,9 @@ function __uri_parse() {
 function __transfert_stella() {
 	local _uri="$1"
 	local _OPT="$2"
-	local _opt_ex_cache="EXCLUDE stella/$(__abs_to_rel_path $STELLA_INTERNAL_CACHE_DIR $STELLA_ROOT)/"
-	local _opt_ex_workspace="EXCLUDE stella/$(__abs_to_rel_path $STELLA_INTERNAL_WORK_ROOT $STELLA_ROOT)/"
-	local _opt_ex_env="EXCLUDE stella/.stella-env"
+	local _opt_ex_cache="EXCLUDE /$(__abs_to_rel_path $STELLA_INTERNAL_CACHE_DIR $STELLA_ROOT)/"
+	local _opt_ex_workspace="EXCLUDE /$(__abs_to_rel_path $STELLA_INTERNAL_WORK_ROOT $STELLA_ROOT)/"
+	local _opt_ex_env="EXCLUDE /.stella-env"
 	for o in $_OPT; do
 		[ "$o" == "CACHE" ] && _opt_ex_cache=
 		[ "$o" == "WORKSPACE" ] && _opt_ex_workspace=
@@ -312,14 +312,14 @@ function __transfert_folder_rsync() {
 	local _folder="$1"
 	local _uri="$2"
 
-	# EXCLUDE (repeat this option for each exclude filter to set)
+	# EXCLUDE (repeat this option for each exclude filter to set - path are absolute to the root of the folder to transfert. example : /workspace/)
 	# FOLDER_CONTENT will transfer only folder content not folder itself
 	local _OPT="$3"
 	local _flag_exclude=OFF
 	local _exclude=
 	local _opt_folder_content=OFF
 	for o in $_OPT; do
-		[ "$_flag_exclude" == "ON" ] && _exclude="--exclude $o $_exclude" && _flag_exclude=OFF
+		[ "$_flag_exclude" == "ON" ] && _exclude="$o $_exclude" && _flag_exclude=OFF
 		[ "$o" == "EXCLUDE" ] && _flag_exclude=ON
 		[ "$o" == "FOLDER_CONTENT" ] && _opt_folder_content=ON
 	done
@@ -335,15 +335,24 @@ function __transfert_folder_rsync() {
 	local _target="$__stella_uri_host":"${__stella_uri_fragment:1}"
 	[ ! "$__stella_uri_user" == "" ] && _target="$__stella_uri_user"@"$_target"
 
+	local _base_folder=
 	# $_folder must not finish with / or only folder content will be transfered, not folder itself
 	if [ "$_opt_folder_content" == "ON" ]; then
 		# remove last '/' char (tested on macos and linux)
 		_folder="$_folder/"
 	else
 		_folder="${_folder%/}"
+		_base_folder="/$(basename $_folder)/"
 	fi
 
-	rsync $_exclude --force --delete -avz -e "ssh -p $_ssh_port" "$_folder" "$_target"
+	local _opt_exclude=
+	for o in $_exclude; do
+		_opt_exclude="--exclude $(echo $_base_folder$o | sed 's,//,/,') $_opt_exclude"
+	done
+
+
+
+	rsync $_opt_exclude --force --delete -avz -e "ssh -p $_ssh_port" "$_folder" "$_target"
 }
 
 
@@ -971,7 +980,7 @@ function __resource() {
 				__require "git" "git" "PREFER_SYSTEM"
 				if [ "$_opt_revert" == "ON" ]; then cd "$FINAL_DESTINATION"; git reset --hard; fi
 				if [ "$_opt_update" == "ON" ]; then cd "$FINAL_DESTINATION"; git pull;if [ ! "$_checkout_version" == "" ]; then git checkout $_checkout_version; fi; fi
-				if [ "$_opt_get" == "ON" ]; then git clone $URI "$FINAL_DESTINATION"; if [ ! "$_checkout_version" == "" ]; then cd "$FINAL_DESTINATION"; git checkout $_checkout_version; fi; fi
+				if [ "$_opt_get" == "ON" ]; then git clone --recursive $URI "$FINAL_DESTINATION"; if [ ! "$_checkout_version" == "" ]; then cd "$FINAL_DESTINATION"; git checkout $_checkout_version; fi; fi
 				# [ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
 			FILE)
@@ -1010,9 +1019,14 @@ function __download_uncompress() {
 		echo "** Guessed file name is $FILE_NAME"
 	fi
 
-	__download $URL $FILE_NAME
-	__uncompress "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$UNZIP_DIR" "$OPT"
-
+	__download "$URL" "$FILE_NAME"
+	if [ -f "$STELLA_APP_CACHE_DIR/$FILE_NAME" ]; then
+		__uncompress "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$UNZIP_DIR" "$OPT"
+	else
+		if [ -f "$STELLA_INTERNAL_CACHE_DIR/$FILE_NAME" ]; then
+			__uncompress "$STELLA_INTERNAL_CACHE_DIR/$FILE_NAME" "$UNZIP_DIR" "$OPT"
+		fi
+	fi
 
 }
 
@@ -1156,37 +1170,47 @@ function __download() {
 
 
 	if [ ! -f "$STELLA_APP_CACHE_DIR/$FILE_NAME" ]; then
-
-		# NOTE : curl seems to be more compatible
-		if [[ -n `which curl 2> /dev/null` ]]; then
-			curl -fSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL" || \
-			curl -fkSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL" || \
-			rm -f "$STELLA_APP_CACHE_DIR/$FILE_NAME"
-		else
-			if [[ -n `which wget 2> /dev/null` ]]; then
-				wget "$URL" -O "$STELLA_APP_CACHE_DIR/$FILE_NAME" --no-check-certificate || \
-				wget "$URL" -O "$STELLA_APP_CACHE_DIR/$FILE_NAME" || \
+		if [ ! -f "$STELLA_INTERNAL_CACHE_DIR/$FILE_NAME" ]; then
+			# NOTE : curl seems to be more compatible
+			if [[ -n `which curl 2> /dev/null` ]]; then
+				curl -fSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL" || \
+				curl -fkSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL" || \
 				rm -f "$STELLA_APP_CACHE_DIR/$FILE_NAME"
 			else
-				__require "curl" "curl" "PREFER_SYSTEM"
+				if [[ -n `which wget 2> /dev/null` ]]; then
+					wget "$URL" -O "$STELLA_APP_CACHE_DIR/$FILE_NAME" --no-check-certificate || \
+					wget "$URL" -O "$STELLA_APP_CACHE_DIR/$FILE_NAME" || \
+					rm -f "$STELLA_APP_CACHE_DIR/$FILE_NAME"
+				else
+					__require "curl" "curl" "PREFER_SYSTEM"
+				fi
 			fi
+		else
+			echo " ** Already downloaded"
 		fi
 	else
 		echo " ** Already downloaded"
 	fi
 
+	local _tmp_dir
 	if [ -f "$STELLA_APP_CACHE_DIR/$FILE_NAME" ]; then
+		_tmp_dir="$STELLA_APP_CACHE_DIR"
+	else
+		if [ -f "$STELLA_INTERNAL_CACHE_DIR/$FILE_NAME" ]; then
+			_tmp_dir="$STELLA_INTERNAL_CACHE_DIR"
+		fi
+	fi
 
+	if [ ! "$_tmp_dir" == "" ]; then
 		if [ ! "$DEST_DIR" == "" ]; then
 			if [ ! "$DEST_DIR" == "$STELLA_APP_CACHE_DIR" ]; then
 				if [ ! -d "$DEST_DIR" ]; then
 					mkdir -p "$DEST_DIR"
 				fi
-				cp "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$DEST_DIR/"
+				cp "$_tmp_dir/$FILE_NAME" "$DEST_DIR/"
 				echo "** Downloaded $FILE_NAME is in $DEST_DIR"
 			fi
 		fi
-
 	else
 		echo "** ERROR downloading $URL"
 	fi

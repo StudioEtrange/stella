@@ -106,6 +106,7 @@ FEATURE_LIST_ENABLED=
 VERBOSE_MODE=0
 STELLA_DEFAULT_NO_PROXY="localhost,127.0.0.1,localaddress,.localdomain.com"
 
+
 # FEATURE LIST---------------------------------------------
 __STELLA_FEATURE_LIST=
 for recipe in "$STELLA_FEATURE_RECIPE"/*.sh; do
@@ -150,18 +151,20 @@ __set_build_mode_default "MIX_CPP_C_FLAGS" "OFF"
 # activate some usefull default linker flags
 __set_build_mode_default "LINK_FLAGS_DEFAULT" "ON"
 
+[ "$STELLA_CURRENT_OS" == "macos" ] && __set_build_mode MACOSX_DEPLOYMENT_TARGET $(__get_macos_version)
+
 
 # supported build toolset
 # CONFIG TOOL 	| BUILD TOOL 		| COMPIL FRONTEND
-#    configure	|	make	 		|   gcc clang
-#    cmake		|	ninja	 		|   gcc clang
-#    cmake		|	make	 		|   gcc clang
-#    NULL		|	make		 	|   gcc clang
+#    configure	|	make	 		|   gcc-clang / clang-omp
+#    cmake		|	ninja	 		|   gcc-clang / clang-omp
+#    cmake		|	make	 		|   gcc-clang / clang-omp
+#    NULL		|	make		 	|   gcc-clang / clang-omp
 
-# STANDARD TOOLSET : configure	|	make|   gcc clang
-# AUTOTOOLS TOOLSET : configure | make|		gcc clang --- this toolset require autotools and will launch autogen.sh before configure
-# NINJA TOOLSET : cmake	|	ninja |   gcc clang
-# CMAKE TOOLSET : cmake	|	make  |   gcc clang
+# STANDARD TOOLSET : configure	|	make|   gcc-clang
+# AUTOTOOLS TOOLSET : configure | make|		gcc-clang --- this toolset require autotools and will launch autogen.sh before configure
+# NINJA TOOLSET : cmake	|	ninja |   gcc-clang
+# CMAKE TOOLSET : cmake	|	make  |   gcc-clang
 STELLA_BUILD_DEFAULT_CONFIG_TOOL=configure
 STELLA_BUILD_DEFAULT_BUILD_TOOL=make
 STELLA_BUILD_DEFAULT_COMPIL_FRONTEND=gcc-clang

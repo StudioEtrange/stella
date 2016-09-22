@@ -1,19 +1,19 @@
-if [ ! "$_kafka_INCLUDED_" == "1" ]; then 
+if [ ! "$_kafka_INCLUDED_" == "1" ]; then
 _kafka_INCLUDED_=1
 
 
 
 function feature_kafka() {
 	FEAT_NAME=kafka
-	FEAT_LIST_SCHEMA="0_9_0_0:binary"
-	FEAT_DEFAULT_VERSION=0_9_0_0
+	FEAT_LIST_SCHEMA="0_9_0_1:binary"
+	FEAT_DEFAULT_VERSION=0_9_0_1
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
 
-function feature_kafka_0_9_0_0() {
-	FEAT_VERSION=0_9_0_0
+function feature_kafka_0_9_0_1() {
+	FEAT_VERSION=0_9_0_1
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -21,8 +21,8 @@ function feature_kafka_0_9_0_0() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	FEAT_BINARY_URL=https://www.apache.org/dyn/closer.cgi?path=/kafka/0.9.0.0/kafka_2.11-0.9.0.0.tgz
-	FEAT_BINARY_URL_FILENAME=kafka_2.11-0.9.0.0.tgz
+	FEAT_BINARY_URL=https://archive.apache.org/dist/kafka/0.9.0.1/kafka_2.11-0.9.0.1.tgz
+	FEAT_BINARY_URL_FILENAME=kafka_2.11-0.9.0.1.tgz
 	FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 
 	FEAT_SOURCE_CALLBACK=
@@ -30,7 +30,7 @@ function feature_kafka_0_9_0_0() {
 	FEAT_ENV_CALLBACK=
 
 
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/kafka
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/kafka-server-start.sh
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 
 }

@@ -135,7 +135,6 @@ function __set_toolset() {
 	STELLA_BUILD_BUILD_TOOL=$BUILD_TOOL
 	STELLA_BUILD_COMPIL_FRONTEND=$COMPIL_FRONTEND
 
-
 }
 
 
@@ -147,6 +146,7 @@ function __require_current_toolset() {
 	[ "$STELLA_BUILD_CONFIG_TOOL" == "cmake" ] && __require "cmake" "cmake" "PREFER_STELLA"
 	[ "$STELLA_BUILD_BUILD_TOOL" == "make" ] && __require "make" "build-chain-standard" "PREFER_SYSTEM"
 	[ "$STELLA_BUILD_COMPIL_FRONTEND" == "gcc-clang" ] &&  __require "gcc" "build-chain-standard" "PREFER_SYSTEM"
+	[ "$STELLA_BUILD_COMPIL_FRONTEND" == "clang-omp" ] &&  __require "clang-omp" "clang-omp" "PREFER_STELLA"
 	echo "** Require build toolset : $STELLA_BUILD_TOOLSET"
 	echo
 }
@@ -345,7 +345,7 @@ function __launch_configure() {
 				-DINSTALL_BIN_DIR="$AUTO_INSTALL_DIR/bin" -DINSTALL_LIB_DIR="$AUTO_INSTALL_DIR/lib" \
 				-DCMAKE_LIBRARY_PATH="$CMAKE_LIBRARY_PATH" -DCMAKE_INCLUDE_PATH="$CMAKE_INCLUDE_PATH" \
 				-DCMAKE_FIND_FRAMEWORK=LAST -DCMAKE_FIND_APPBUNDLE=LAST \
-				-G "$CMAKE_GENERATOR"
+				-G "'"$CMAKE_GENERATOR"'"
 				#  -DCMAKE_DEBUG_POSTFIX=$DEBUG_POSTFIX
 				# -DBUILD_STATIC_LIBS:BOOL=TRUE -DBUILD_SHARED_LIBS:BOOL=TRUE \
 			fi
@@ -690,6 +690,11 @@ function __link_feature_library() {
 	fi
 
 	# On Darwin, the install_name of the linked lib is used to link the lib
+	#			BUT if install_name of the linked lib is "@rpath/lib" so we will miss the rpath value !
+	#			SO better to add a rpath value anyway
+	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+		__set_build_mode "RPATH" "ADD_FIRST" "$LIB_TARGET_FOLDER"
+	fi
 	# On linux we need to add an rpath value to the folder where reside the linked lib
 	#			if needed, we will remove rpath value and turn into a hard link after build
 	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
@@ -759,7 +764,7 @@ function __set_link_flags() {
 	local _libs_name="$3"
 
 	if [ ! "$STELLA_BUILD_CONFIG_TOOL" == "cmake" ]; then
-		if [ "$STELLA_BUILD_COMPIL_FRONTEND" == "gcc-clang" ]; then
+		if [ "$STELLA_BUILD_COMPIL_FRONTEND" = "gcc-clang" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND" = "clang-omp" ]; then
 			__link_flags_gcc-clang "_flags" "$_lib_path" "$_include_path" "$_libs_name"
 			LINKED_LIBS_C_CXX_FLAGS="$LINKED_LIBS_C_CXX_FLAGS $_flags_C_CXX_FLAGS"
 			LINKED_LIBS_CPP_FLAGS="$LINKED_LIBS_CPP_FLAGS $_flags_CPP_FLAGS"
@@ -916,6 +921,17 @@ function __prepare_build() {
 	local SOURCE_DIR="$2"
 	local BUILD_DIR="$3"
 
+	# select specific compiler frontend
+	if [ "$STELLA_BUILD_COMPIL_FRONTEND" == "clang-omp" ]; then
+		__link_feature_library "clang-omp" "GET_FOLDER _clang_omp"
+
+		# use clang-omp compiler
+		export CC=$_clang_omp_ROOT/bin/clang
+		export CXX=$_clang_omp_ROOT/bin/clang++
+
+		# activate clang openmp libs search folder at link time
+		export LIBRARY_PATH="$LIBRARY_PATH:$_clang_omp_LIB"
+	fi
 
 
 	# set env
@@ -934,6 +950,8 @@ function __prepare_build() {
 	STELLA_CPP_FLAGS="$(__trim $STELLA_CPP_FLAGS)"
 	STELLA_LINK_FLAGS="$(__trim $STELLA_LINK_FLAGS)"
 
+
+
 	# set flags -------------
 	case $STELLA_BUILD_CONFIG_TOOL in
 		cmake)
@@ -941,11 +959,12 @@ function __prepare_build() {
 		;;
 		configure)
 			[ "$STELLA_BUILD_COMPIL_FRONTEND" == "gcc-clang" ] && __set_env_vars_for_gcc-clang
+			[ "$STELLA_BUILD_COMPIL_FRONTEND" == "clang-omp" ] && __set_env_vars_for_gcc-clang
 		;;
 		*)
 			[ "$STELLA_BUILD_COMPIL_FRONTEND" == "gcc-clang" ] && __set_env_vars_for_gcc-clang
+			[ "$STELLA_BUILD_COMPIL_FRONTEND" == "clang-omp" ] && __set_env_vars_for_gcc-clang
 		;;
-
 	esac
 
 
@@ -972,8 +991,14 @@ function __prepare_build() {
 	echo "====> CMAKE_LIBRARY_PATH : $CMAKE_LIBRARY_PATH"
 	echo "====> CMAKE_INCLUDE_PATH : $CMAKE_INCLUDE_PATH"
 	echo "====> STELLA_CMAKE_EXTRA_FLAGS : $STELLA_CMAKE_EXTRA_FLAGS"
-
-
+	echo "** SOME ENV"
+	echo " compiler"
+	echo "====> CC : $CC"
+	echo "====> CXX : $CXX"
+	echo " search path for libs"
+	echo "====> LIBRARY_PATH (link time) : $LIBRARY_PATH"
+	echo "====> LD_LIBRARY_PATH (run time linux): $LD_LIBRARY_PATH"
+	echo "====> DYLD_LIBRARY_PATH (run time darwin): $DYLD_LIBRARY_PATH"
 
 
 }
@@ -1201,11 +1226,14 @@ function __set_build_env() {
 	# http://www.kaizou.org/2015/01/linux-libraries/
 	if [ "$1" == "LINK_FLAGS_DEFAULT" ]; then
 		if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-				if [ "$STELLA_BUILD_COMPIL_FRONTEND" == "gcc-clang" ]; then
+				if [ "$STELLA_BUILD_COMPIL_FRONTEND" = "gcc-clang" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND" = "clang-omp" ]; then
 					case $2 in
 						ON)
 							# NOTE : these flags do not work when building static lib with "ar" tool
 							STELLA_DYNAMIC_LINK_FLAGS="-Wl,--copy-dt-needed-entries -Wl,--as-needed -Wl,--no-allow-shlib-undefined -Wl,--no-undefined $STELLA_DYNAMIC_LINK_FLAGS"
+						;;
+						OFF)
+							STELLA_DYNAMIC_LINK_FLAGS=
 						;;
 					esac
 				fi
@@ -1215,7 +1243,7 @@ function __set_build_env() {
 	# CPU_INSTRUCTION_SCOPE -----------------------------------------------------------------
 	# http://sdf.org/~riley/blog/2014/10/30/march-mtune/
 	if [ "$1" == "CPU_INSTRUCTION_SCOPE" ]; then
-		if [ "$STELLA_BUILD_COMPIL_FRONTEND" == "gcc-clang" ]; then
+		if [ "$STELLA_BUILD_COMPIL_FRONTEND" = "gcc-clang" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND" = "clang-omp" ]; then
 			case $2 in
 				CURRENT)
 					STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS -march=native"
@@ -1232,7 +1260,7 @@ function __set_build_env() {
 
 	# set OPTIMIZATION -----------------------------------------------------------------
 	if [ "$1" == "OPTIMIZATION" ]; then
-		if [ "$STELLA_BUILD_COMPIL_FRONTEND" == "gcc-clang" ]; then
+		if [ "$STELLA_BUILD_COMPIL_FRONTEND" = "gcc-clang" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND" = "clang-omp" ]; then
 			[ ! "$2" == "" ] && STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS -O$2"
 		fi
 	fi
@@ -1240,7 +1268,7 @@ function __set_build_env() {
 	# ARCH -----------------------------------------------------------------
 	# Setting flags for a specific arch
 	if [ "$1" == "ARCH" ]; then
-		if [ "$STELLA_BUILD_COMPIL_FRONTEND" == "gcc-clang" ]; then
+		if [ "$STELLA_BUILD_COMPIL_FRONTEND" = "gcc-clang" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND" = "clang-omp" ]; then
 			if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
 				case $2 in
 					x86)
@@ -1273,7 +1301,7 @@ function __set_build_env() {
 	# not for x86 : http://stackoverflow.com/questions/7216244/why-is-fpic-absolutely-necessary-on-64-and-not-on-32bit-platforms -- http://stackoverflow.com/questions/6961832/does-32bit-x86-code-need-to-be-specially-pic-compiled-for-shared-library-files
 	# On MacOS it is active by default
 	if [ "$1" == "ARCH" ]; then
-		if [ "$STELLA_BUILD_COMPIL_FRONTEND" == "gcc-clang" ]; then
+		if [ "$STELLA_BUILD_COMPIL_FRONTEND" = "gcc-clang" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND" = "clang-omp" ]; then
 			if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
 				case $2 in
 					x64)
@@ -1315,7 +1343,7 @@ function __set_build_env() {
 	# prefer setting RUNPATH over setting RPATH
 	# enable-new-dtags : http://blog.tremily.us/posts/rpath/
 	if [ "$1" == "RUNPATH_OVER_RPATH" ]; then
-		if [ "$STELLA_BUILD_COMPIL_FRONTEND" == "gcc-clang" ]; then
+		if [ "$STELLA_BUILD_COMPIL_FRONTEND" = "gcc-clang" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND" = "clang-omp" ]; then
 			if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
 				STELLA_DYNAMIC_LINK_FLAGS="$STELLA_DYNAMIC_LINK_FLAGS -Wl,--enable-new-dtags"
 			fi

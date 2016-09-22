@@ -1,4 +1,4 @@
-if [ ! "$_SCALA_INCLUDED_" == "1" ]; then 
+if [ ! "$_SCALA_INCLUDED_" == "1" ]; then
 _SCALA_INCLUDED_=1
 
 
@@ -37,7 +37,6 @@ function feature_scala_2_11_6() {
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/scala
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-	
 
 }
 

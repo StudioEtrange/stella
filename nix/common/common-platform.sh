@@ -281,7 +281,7 @@ function __require() {
 				if [ "$_opt_prefer_stella" == "ON" ]; then
 					echo "** REQUIRE $_id : installing it from stella"
 					(__feature_install "$_id" "INTERNAL HIDDEN")
-					__feature_init "$_id"
+					__feature_init "$_id" "HIDDEN"
 				else
 					echo "** ERROR -- Please install $_artefact"
 					echo "-- For a system install : try stella.sh sys install $_id OR your regular OS package manager"

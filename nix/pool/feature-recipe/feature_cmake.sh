@@ -6,10 +6,38 @@ _CMAKE_INCLUDED_=1
 function feature_cmake() {
 
 	FEAT_NAME=cmake
-	FEAT_LIST_SCHEMA="2_8_12:source 2_8_12:binary 3_2_3:binary 3_2_3:source 3_3_1:binary 3_3_1:source"
-	FEAT_DEFAULT_VERSION=3_3_1
+	FEAT_LIST_SCHEMA="3_6_2:source 3_6_2:binary 2_8_12:source 2_8_12:binary 3_2_3:binary 3_2_3:source 3_3_1:binary 3_3_1:source"
+	FEAT_DEFAULT_VERSION=3_6_2
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
+}
+
+
+
+function feature_cmake_3_6_2() {
+	FEAT_VERSION=3_6_2
+	# TODO  ** NEED : cURL, libarchive and expat
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL=https://cmake.org/files/v3.6/cmake-3.6.2.tar.gz
+	FEAT_SOURCE_URL_FILENAME=cmake-3.6.2.tar.gz
+
+	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+		FEAT_BINARY_URL="https://cmake.org/files/v3.6/cmake-3.6.2-Darwin-x86_64.tar.gz"
+		FEAT_BINARY_URL_FILENAME=cmake-3.6.2-Darwin-x86_64.tar.gz
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+		FEAT_BINARY_URL="https://cmake.org/files/v3.6/cmake-3.6.2-Linux-x86_64.tar.gz"
+		FEAT_BINARY_URL_FILENAME=cmake-3.6.2-Linux-x86_64.tar.gz
+	fi
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/cmake
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+
+	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+		CMAKE_FILE_APP="CMake.app"
+	fi
 }
 
 function feature_cmake_2_8_12() {

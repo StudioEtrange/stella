@@ -28,13 +28,12 @@ function __feature_init() {
 	__internal_feature_context "$_SCHEMA"
 
 	if [[ ! " ${FEATURE_LIST_ENABLED[@]} " =~ " $FEAT_NAME#$FEAT_VERSION " ]]; then
-
 		__feature_inspect "$FEAT_SCHEMA_SELECTED"
+
 		if [ "$TEST_FEATURE" == "1" ]; then
 
 			if [ ! "$FEAT_BUNDLE" == "" ]; then
 				local p
-
 				__push_schema_context
 
 				FEAT_BUNDLE_MODE=$FEAT_BUNDLE
@@ -56,6 +55,7 @@ function __feature_init() {
 			if [ ! "$_opt_hidden_feature" == "ON" ]; then
 				FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $FEAT_NAME#$FEAT_VERSION"
 			fi
+
 			if [ ! "$FEAT_SEARCH_PATH" == "" ]; then
 				PATH="$FEAT_SEARCH_PATH:$PATH"
 			fi
@@ -99,24 +99,56 @@ function __feature_match_installed() {
 		[ ! "$__VAR_FEATURE_VER" == "" ] && _tested="$__VAR_FEATURE_VER"
 		[ ! "$__VAR_FEATURE_ARCH" == "" ] && _tested="$_tested"@"$__VAR_FEATURE_ARCH"
 
+		# first lookup inside app feature root
 		if [ -d "$STELLA_APP_FEATURE_ROOT/$__VAR_FEATURE_NAME" ]; then
-				# for each detected version
-				for _f in  "$STELLA_APP_FEATURE_ROOT"/"$__VAR_FEATURE_NAME"/*; do
-					if [ -d "$_f" ]; then
-						if [ "$_tested" == "" ]; then
-							_found="$_f"
-						else
-							case $_f in
-								*"$_tested"*)
-									_found="$_f"
-								;;
-								*)
-								;;
-							esac
-						fi
+			# for each detected version
+			for _f in  "$STELLA_APP_FEATURE_ROOT"/"$__VAR_FEATURE_NAME"/*; do
+				if [ -d "$_f" ]; then
+					if [ "$_tested" == "" ]; then
+						_found="$_f"
+					else
+						case $_f in
+							*"$_tested"*)
+								_found="$_f"
+							;;
+							*)
+							;;
+						esac
 					fi
-				done
+				fi
+			done
 		fi
+		# second lookup inside internal feature root
+		if [ "$_found" == "" ]; then
+			if [ ! "$STELLA_APP_FEATURE_ROOT" == "$STELLA_INTERNAL_FEATURE_ROOT" ]; then
+				if [ -d "$STELLA_INTERNAL_FEATURE_ROOT/$__VAR_FEATURE_NAME" ]; then
+					# for each detected version
+					for _f in  "$STELLA_INTERNAL_FEATURE_ROOT"/"$__VAR_FEATURE_NAME"/*; do
+						if [ -d "$_f" ]; then
+							if [ "$_tested" == "" ]; then
+								_found="$_f"
+							else
+								case $_f in
+									*"$_tested"*)
+										_found="$_f"
+									;;
+									*)
+									;;
+								esac
+							fi
+						fi
+					done
+				fi
+			fi
+			if [ ! "$_found" == "" ]; then
+				_found_internal=1
+				_save_app_feature_root=$STELLA_APP_FEATURE_ROOT
+				STELLA_APP_FEATURE_ROOT=$STELLA_INTERNAL_FEATURE_ROOT
+			fi
+
+		fi
+
+
 
 		if [ ! "$_found" == "" ]; then
 			# we fix the found version with the flavour of the requested schema
@@ -124,6 +156,10 @@ function __feature_match_installed() {
 				__internal_feature_context "$__VAR_FEATURE_NAME"#"$(__get_filename_from_string $_found)":"$__VAR_FEATURE_FLAVOUR"
 			else
 				__internal_feature_context "$__VAR_FEATURE_NAME"#"$(__get_filename_from_string $_found)"
+			fi
+			if [ "$_found_internal" == "1" ];then
+				STELLA_APP_FEATURE_ROOT=$_save_app_feature_root
+				_found_internal=0
 			fi
 		else
 			# empty info values

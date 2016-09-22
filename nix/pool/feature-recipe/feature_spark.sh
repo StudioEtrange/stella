@@ -17,7 +17,7 @@ function feature_spark_env() {
 
 
 function feature_spark_1_6_1_HADOOP_2_6() {
-	FEAT_VERSION=1_6_0_HADOOP_2_4
+	FEAT_VERSION=1_6_1_HADOOP_2_4
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 

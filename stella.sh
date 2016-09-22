@@ -3,7 +3,7 @@ _STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $_STELLA_CURRENT_FILE_DIR/conf.sh
 
 # NOTE : use this with source command only
-# NOTE : warn some env var (like PATH) are cumulative
+# NOTE : warn : some env var (like PATH) are cumulative
 if [ "$1" == "env" ]; then
 	__init_stella_env
 	echo "** Current env is setted/refreshed with stella env"
@@ -35,7 +35,7 @@ function usage() {
 	echo " L     proxy off now : disable proxy"
 	echo " L     proxy register <name> --proxy=<user:password@host:port> : register a web proxy"
 	echo " L     proxy bypass <host> : register a host that will not use proxy"
-	echo " L		 proxy tunnel <name> --bridge=<user:password@host> : set a ssh tunnel from localhost to registered proxy <name> through a bridge, and set web traffic to use this tunnel as web proxy"
+	echo " L     proxy tunnel <name> --bridge=<user:password@host> : set a ssh tunnel from localhost to registered proxy <name> through a bridge, and set web traffic to use this tunnel as web proxy"
 	echo " o-- bootstrap management :"
 	echo " L     boot shell <uri> : launch an interactive new shell with all stella env var setted inside an <uri> (use 'local' for current host)"
 	echo " L     boot cmd <uri> -- <command> : execute a command with all stella env var setted inside an <uri> (use 'local' for current host)"
@@ -48,8 +48,6 @@ function usage() {
 	echo "Special Usage"
 	echo " o-- env management :"
 	echo " L     source <stella.sh|stella-link.sh> env : set the current shell env with all stella env var setted"
-
-
 }
 
 
@@ -84,46 +82,102 @@ __argparse "$0" "$OPTIONS" "$PARAMETERS" "Stella" "$(usage)" "OTHERARG" "$@"
 
 # --------------- APP ----------------------------
 if [ "$DOMAIN" == "app" ]; then
-	_app_options=
-	if [ "$FORCE" == "1" ]; then
-		_app_options="$_app_options -f"
-	fi
-	if [ ! "$APPROOT" == "" ]; then
-		_app_options="$_app_options --approot=$APPROOT"
-	fi
-	if [ ! "$WORKROOT" == "" ]; then
-		_app_options="$_app_options --workroot=$WORKROOT"
-	fi
-	if [ ! "$CACHEDIR" == "" ]; then
-		_app_options="$_app_options --cachedir=$CACHEDIR"
-	fi
-	if [ ! "$STELLAROOT" == "" ]; then
-		_app_options="$_app_options --stellaroot=$STELLAROOT"
+	__init_stella_env
+
+	if [ "$ACTION" == "init" ]; then
+		[ "$APPROOT" == "" ] && APPROOT="$STELLA_CURRENT_RUNNING_DIR/$ID"
+		[ "$WORKROOT" == "" ] && WORKROOT="$APPROOT/workspace"
+		[ "$CACHEDIR" == "" ] && CACHEDIR="$APPROOT/cache"
+
+		__init_app "$ID" "$APPROOT" "$WORKROOT" "$CACHEDIR"
+		[ "$SAMPLES" ] && __create_app_samples $APPROOT
 	fi
 
+	if [ "$ACTION" == "link" ]; then
+		__link_app "$ID" "STELLA_ROOT $STELLAROOT"
+	fi
 
-	$STELLA_BIN/app.sh $ACTION $ID $_app_options
+	case $ACTION in
+		init|link);;
+		*)
+		if [ ! -f "$_STELLA_APP_PROPERTIES_FILE" ]; then
+				echo "** ERROR properties file does not exist"
+				exit
+		fi;;
+	esac
+
+	case $ACTION in
+		deploy)
+				_deploy_options=
+				[ "$CACHE" == "1" ] && _deploy_options="CACHE"
+				[ "$WORKSPACE" == "1" ] && _deploy_options="$_deploy_options WORKSPACE"
+				__transfert_app "$ID" "$_deploy_options"
+				;;
+		get-feature)
+				if [ "$ID" == "all" ]; then
+						__get_features
+				else
+						__get_feature "$ID"
+				fi
+				;;
+		get-data)
+		__get_data $ID;;
+		get-data-pack)
+		__get_data_pack $ID;;
+		get-assets)
+		__get_assets $ID;;
+		get-assets-pack)
+		__get_assets_pack $ID;;
+		delete-data)
+		__delete_data $ID;;
+		delete-assets)
+		__delete_assets $ID;;
+		delete-data-pack)
+		__delete_data_pack $ID;;
+		delete-assets-pack)
+		__delete_assets_pack $ID;;
+		udpate-data)
+		__update_data $ID;;
+		update-assets)
+		__update_assets $ID;;
+		revert-data)
+		__revert_data $ID;;
+		revert-assets)
+		__revert_assets $ID;;
+	esac
 fi
 
 
 
 # --------------- FEATURE ----------------------------
 if [ "$DOMAIN" == "feature" ]; then
-	_feature_options=
-	if [ "$FORCE" == "1" ]; then
-		_feature_options="$_feature_options -f"
-	fi
-	if [ ! "$BUILDARCH" == "" ]; then
-		_feature_options="$_feature_options --buildarch=$BUILDARCH"
-	fi
-	if [ ! "$EXPORT" == "" ]; then
-		_feature_options="$_feature_options --export=$EXPORT"
-	fi
-	if [ ! "$PORTABLE" == "" ]; then
-		_feature_options="$_feature_options --portable=$PORTABLE"
-	fi
-	$STELLA_BIN/feature.sh $ACTION $ID $_feature_options
-
+	__init_stella_env
+	case $ACTION in
+		remove)
+			__feature_remove $ID;;
+	  install)
+			[ ! "$BUILDARCH" == "" ] && __set_build_mode_default "ARCH" "$BUILDARCH"
+			_OPT=
+			[ "$DEPFORCE" == "1" ] && _OPT="$_OPT DEP_FORCE"
+			[ "$DEPIGNORE" == "1" ] && _OPT="$_OPT DEP_IGNORE"
+			[ ! "$EXPORT" == "" ] && _OPT="$_OPT EXPORT $EXPORT"
+			[ ! "$PORTABLE" == "" ] && _OPT="$_OPT PORTABLE $PORTABLE"
+			__feature_install $ID "$_OPT"
+			;;
+		list)
+			case $ID in
+				all)
+					echo "all -- $__STELLA_FEATURE_LIST"
+					;;
+				active)
+					echo $(__list_active_features)
+					;;
+				*)
+					echo $(__list_feature_version $ID)
+					;;
+			esac
+			;;
+	esac
 fi
 
 
@@ -148,12 +202,9 @@ if [ "$DOMAIN" == "boot" ]; then
 	if [ "$ACTION" == "cmd" ]; then
 		__boot_cmd "$ID" "$OTHERARG"
 	fi
-
 	if [ "$ACTION" == "shell" ]; then
 		__boot_shell "$ID"
 	fi
-
-
 	if [ "$ACTION" == "script" ]; then
 		__boot_script "$ID" "$OTHERARG"
 	fi
@@ -169,7 +220,6 @@ if [ "$DOMAIN" == "proxy" ]; then
 	if [ "$ACTION" == "on" ]; then
 		__enable_proxy "$ID"
 	fi
-
 	if [ "$ACTION" == "off" ]; then
 		__disable_proxy
 	fi
@@ -191,8 +241,6 @@ if [ "$DOMAIN" == "stella" ]; then
 		fi
 	fi
 
-
-
 	if [ "$ACTION" == "install" ]; then
 		if [ "$ID" == "dep" ]; then
 			__stella_requirement
@@ -205,14 +253,12 @@ if [ "$DOMAIN" == "stella" ]; then
 			v2=$(__get_stella_version)
 			echo $v1 -- $v2
 		fi
-
 	fi
 
-
 	if [ "$ACTION" == "search" ]; then
-	    if [ "$ID" == "path" ]; then
-	        echo "$(__get_active_path)"
-	    fi
+    if [ "$ID" == "path" ]; then
+        echo "$(__get_active_path)"
+    fi
 	fi
 
 	if [ "$ACTION" == "deploy" ]; then
@@ -223,9 +269,6 @@ if [ "$DOMAIN" == "stella" ]; then
 	fi
 
 fi
-
-
-
 
 
 echo "** END **"
