@@ -1,0 +1,6 @@
+cache:
+  directories:
+install:
+- ./stella.sh stella install dep
+script:
+- ./stella.sh feature install zlib
