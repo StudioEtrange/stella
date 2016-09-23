@@ -1,6 +1,8 @@
 cache:
   directories:
+langage: 
+- generic
 install:
-- gcc -v
+
 script:
 - ./stella.sh feature install zlib
