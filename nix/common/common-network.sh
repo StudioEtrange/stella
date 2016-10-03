@@ -129,6 +129,9 @@ function __proxy_override() {
 	# https://github.com/bazelbuild/bazel/issues/587
 	#bazel --host_jvm_args=-Dhttp.proxyHost=my.proxy -Dhttp.proxyPort=8888 -Dhttps.proxyHost=....
 
+	#yum
+	#use env var or yum.conf
+
 	#wget :
 	#use env var
 	# http_proxy = http://votre_proxy:port_proxy/

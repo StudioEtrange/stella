@@ -55,7 +55,7 @@ function feature_curseofwar_install_source() {
 
 	# curse of war have problem on darwin when using install script with make build tool (cause of 'install -D' flag which not exist)
 	# curse of war does not install when using cmake
-	__set_toolset "CUSTOM" "CONFIG_TOOL cmake"
+	__set_toolset "CMAKE"
 
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=

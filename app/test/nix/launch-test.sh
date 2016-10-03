@@ -3,7 +3,7 @@ _CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 _CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
 source $_CURRENT_FILE_DIR/stella-link.sh include
 
-__require "bats" "bats#SNAPSHOT" "PREFER_STELLA"
+__require "bats" "bats#SNAPSHOT" "STELLA_FEATURE"
 
 function test_launch_bats() {
 	local domain=$1

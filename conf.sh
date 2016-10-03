@@ -91,6 +91,8 @@ STELLA_INTERNAL_FEATURE_ROOT=$STELLA_INTERNAL_WORK_ROOT/feature_$STELLA_CURRENT_
 STELLA_INTERNAL_CACHE_DIR=$STELLA_ROOT/cache
 STELLA_INTERNAL_TEMP_DIR=$STELLA_INTERNAL_WORK_ROOT/temp
 
+STELLA_INTERNAL_TOOLSET_ROOT=$STELLA_INTERNAL_WORK_ROOT/toolset_$STELLA_CURRENT_PLATFORM_SUFFIX/$STELLA_CURRENT_OS
+
 # current config env
 # app env config has priority over stella config env
 STELLA_ENV_FILE=
@@ -151,23 +153,10 @@ __set_build_mode_default "MIX_CPP_C_FLAGS" "OFF"
 # activate some usefull default linker flags
 __set_build_mode_default "LINK_FLAGS_DEFAULT" "ON"
 
-[ "$STELLA_CURRENT_OS" == "macos" ] && __set_build_mode MACOSX_DEPLOYMENT_TARGET $(__get_macos_version)
+[ "$STELLA_CURRENT_OS" == "macos" ] && __set_build_mode_default MACOSX_DEPLOYMENT_TARGET $(__get_macos_version)
 
+STELLA_BUILD_DEFAULT_TOOLSET=STANDARD
 
-# supported build toolset
-# CONFIG TOOL 	| BUILD TOOL 		| COMPIL FRONTEND
-#    configure	|	make	 		|   gcc-clang / clang-omp
-#    cmake		|	ninja	 		|   gcc-clang / clang-omp
-#    cmake		|	make	 		|   gcc-clang / clang-omp
-#    NULL		|	make		 	|   gcc-clang / clang-omp
-
-# STANDARD TOOLSET : configure	|	make|   gcc-clang
-# AUTOTOOLS TOOLSET : configure | make|		gcc-clang --- this toolset require autotools and will launch autogen.sh before configure
-# NINJA TOOLSET : cmake	|	ninja |   gcc-clang
-# CMAKE TOOLSET : cmake	|	make  |   gcc-clang
-STELLA_BUILD_DEFAULT_CONFIG_TOOL=configure
-STELLA_BUILD_DEFAULT_BUILD_TOOL=make
-STELLA_BUILD_DEFAULT_COMPIL_FRONTEND=gcc-clang
 
 # . is current running directory
 # $ORIGIN and @loader_path is directory of the file who wants to load a shared library
@@ -190,9 +179,9 @@ get_key add_key del_key mercurial_project_version git_project_version get_stella
 make_sevenzip_sfx_bin make_targz_sfx_shell compress trim"
 STELLA_API_API_PUBLIC="api_connect api_disconnect"
 STELLA_API_APP_PUBLIC="get_app_property link_app get_data get_assets get_data_pack get_assets_pack delete_data delete_assets delete_data_pack delete_assets_pack update_data update_assets revert_data revert_assets update_data_pack update_assets_pack revert_data_pack revert_assets_pack get_feature get_features"
-STELLA_API_FEATURE_PUBLIC="list_feature_version feature_remove feature_catalog_info feature_install feature_install_list feature_init list_active_features feature_reinit_installed feature_inspect"
+STELLA_API_FEATURE_PUBLIC="feature_info list_feature_version feature_remove feature_catalog_info feature_install feature_install_list feature_init list_active_features feature_reinit_installed feature_inspect"
 STELLA_API_BINARY_PUBLIC="tweak_linked_lib get_rpath add_rpath check_rpath check_binary_file tweak_binary_file"
-STELLA_API_BUILD_PUBLIC=""
+STELLA_API_BUILD_PUBLIC="toolset_info set_toolset start_build_session set_build_mode auto_build"
 STELLA_API_PLATFORM_PUBLIC="sys_install sys_remove require"
 STELLA_API_NETWORK_PUBLIC="proxy_tunnel enable_proxy disable_proxy no_proxy_for register_proxy register_no_proxy"
 STELLA_API_BOOT_PUBLIC="boot_shell boot_cmd boot_script"

@@ -29,7 +29,7 @@ goto :eof
 
 ::				SET BUILD ENV AND FLAGS
 ::				__prepare_build
-::						
+::
 ::
 ::						call set_env_vars_for_gcc
 :: 						call set_env_vars_for_cl
@@ -142,34 +142,34 @@ goto :eof
 :require_current_toolset
 	echo ** Require build toolset : !STELLA_BUILD_TOOLSET!
 	if "!STELLA_BUILD_TOOLSET!" == "MS" (
-		call %STELLA_COMMON%\common-platform.bat :require "cl" "vs2015community" "PREFER_SYSTEM"
+		call %STELLA_COMMON%\common-platform.bat :require "cl" "vs2015community" "SYSTEM"
 	)
 	if "!STELLA_BUILD_TOOLSET!" == "STANDARD" (
-		call %STELLA_COMMON%\common-platform.bat :require "gcc" "mingw-w64" "PREFER_STELLA"
+		call %STELLA_COMMON%\common-platform.bat :require "gcc" "mingw-w64" "STELLA_FEATURE"
 	)
 
 	if "!STELLA_BUILD_CONFIG_TOOL!" == "cmake" (
-		call %STELLA_COMMON%\common-platform.bat :require "cmake" "cmake#3_3_2@x86:binary" "PREFER_STELLA"
+		call %STELLA_COMMON%\common-platform.bat :require "cmake" "cmake#3_3_2@x86:binary" "STELLA_FEATURE"
 	)
 
 	if "!STELLA_BUILD_BUILD_TOOL!" == "ninja" (
-		call %STELLA_COMMON%\common-platform.bat :require "ninja" "ninja" "PREFER_STELLA"
+		call %STELLA_COMMON%\common-platform.bat :require "ninja" "ninja" "STELLA_FEATURE"
 	)
 	if "!STELLA_BUILD_BUILD_TOOL!" == "mingw-make" (
-		call %STELLA_COMMON%\common-platform.bat :require "mingw32-make" "mingw-w64" "PREFER_STELLA"
+		call %STELLA_COMMON%\common-platform.bat :require "mingw32-make" "mingw-w64" "STELLA_FEATURE"
 	)
 	if "!STELLA_BUILD_BUILD_TOOL!" == "nmake" (
-		call %STELLA_COMMON%\common-platform.bat :require "nmake" "vs2015community" "PREFER_SYSTEM"
+		call %STELLA_COMMON%\common-platform.bat :require "nmake" "vs2015community" "SYSTEM"
 	)
 
 	if "!STELLA_BUILD_COMPIL_FRONTEND!" == "gcc" (
-		call %STELLA_COMMON%\common-platform.bat :require "gcc" "mingw-w64" "PREFER_STELLA"
+		call %STELLA_COMMON%\common-platform.bat :require "gcc" "mingw-w64" "STELLA_FEATURE"
 	)
 	if "!STELLA_BUILD_COMPIL_FRONTEND!" == "jom" (
-		call %STELLA_COMMON%\common-platform.bat :require "jom" "jom" "PREFER_STELLA"
+		call %STELLA_COMMON%\common-platform.bat :require "jom" "jom" "STELLA_FEATURE"
 	)
 	if "!STELLA_BUILD_COMPIL_FRONTEND!" == "cl" (
-		call %STELLA_COMMON%\common-platform.bat :require "cl" "vs2015community" "PREFER_SYSTEM"
+		call %STELLA_COMMON%\common-platform.bat :require "cl" "vs2015community" "SYSTEM"
 	)
 
 	echo ** Require build toolset : !STELLA_BUILD_TOOLSET!
@@ -919,7 +919,7 @@ goto :eof
 	set "_install_dir=%~1"
 	set "_source_dir=%~2"
 	set "_build_dir=%~3"
-	
+
 
 	:: set env
 	call :set_build_env "ARCH" "!STELLA_BUILD_ARCH!"

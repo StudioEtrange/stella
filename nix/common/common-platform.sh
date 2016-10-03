@@ -237,17 +237,20 @@ function __require() {
 	local _result=0
 
 	# OPTIONAL
-	# PREFER_SYSTEM
-	# PREFER_STELLA
+	# SYSTEM
+	# STELLA_FEATURE
+	## STELLA_TOOLSET # TODO DEPRECATED
 	local _opt_optional=OFF
-	local _opt_prefer_system=ON
-	local _opt_prefer_stella=OFF
+	local _opt_system=ON
+	local _opt_stella_feature=OFF
+	#local _opt_stella_toolset=OFF
 
 
 	for o in $_OPT; do
 		[ "$o" == "OPTIONAL" ] && _opt_optional=ON
-		[ "$o" == "PREFER_SYSTEM" ] && _opt_prefer_system=ON && _opt_prefer_stella=OFF
-		[ "$o" == "PREFER_STELLA" ] && _opt_prefer_system=OFF && _opt_prefer_stella=ON
+		[ "$o" == "SYSTEM" ] && _opt_system=ON && _opt_stella_feature=OFF && _opt_stella_toolset=OFF
+		[ "$o" == "STELLA_FEATURE" ] && _opt_system=OFF && _opt_stella_feature=ON && _opt_stella_toolset=OFF
+		#[ "$o" == "STELLA_TOOLSET" ] && _opt_system=OFF && _opt_stella_feature=OFF && _opt_stella_toolset=ON
 	done
 
 	echo "** REQUIRE $_id ($_artefact)"
@@ -260,34 +263,45 @@ function __require() {
 
 	if [ "$_err" == "1" ]; then
 		if [ "$_opt_optional" == "ON" ]; then
-			if [ "$_opt_prefer_system" == "ON" ]; then
+			if [ "$_opt_system" == "ON" ]; then
 				echo "** WARN -- You should install $_artefact -- Try stella.sh sys install $_id OR your regular OS package manager"
 			else
-				if [ "$_opt_prefer_stella" == "ON" ]; then
+				if [ "$_opt_stella_feature" == "ON" ]; then
 					echo "** WARN -- You should install $_artefact -- Try stella.sh feature install $_id"
 				else
-					echo "** WARN -- You should install $_artefact"
-					echo "-- For a system install : try stella.sh sys install $_id OR your regular OS package manager"
-					echo "-- For an install from Stella : try stella.sh feature install $_id"
+					if [ "$_opt_stella_toolset" == "ON" ]; then
+						# TODO optionnal toolset ? it shoud not exist
+						echo "** WARN -- You should install $_artefact -- Try stella.sh feature install $_id"
+					else
+						echo "** WARN -- You should install $_artefact"
+						echo "-- For a system install : try stella.sh sys install $_id OR your regular OS package manager"
+						echo "-- For an install from Stella : try stella.sh feature install $_id"
+					fi
 				fi
 			fi
 		else
-			if [ "$_opt_prefer_system" == "ON" ]; then
+			if [ "$_opt_system" == "ON" ]; then
 				echo "** ERROR -- Please install $_artefact"
 				echo "** Try stella.sh sys install $_id OR your regular OS package manager"
 				_result=1
 				exit 1
 			else
-				if [ "$_opt_prefer_stella" == "ON" ]; then
+				if [ "$_opt_stella_feature" == "ON" ]; then
 					echo "** REQUIRE $_id : installing it from stella"
 					(__feature_install "$_id" "INTERNAL HIDDEN")
 					__feature_init "$_id" "HIDDEN"
 				else
-					echo "** ERROR -- Please install $_artefact"
-					echo "-- For a system install : try stella.sh sys install $_id OR your regular OS package manager"
-					echo "-- For an install from Stella : try stella.sh feature install $_id"
-					_result=1
-					exit 1
+					if [ "$_opt_stella_toolset" == "ON" ]; then
+						echo "** REQUIRE TOOLSET $_id : installing it from stella"
+						__toolset_install "$_id"
+						__toolset_init "$_id"
+					else
+						echo "** ERROR -- Please install $_artefact"
+						echo "-- For a system install : try stella.sh sys install $_id OR your regular OS package manager"
+						echo "-- For an install from Stella : try stella.sh feature install $_id"
+						_result=1
+						exit 1
+					fi
 				fi
 			fi
 		fi
@@ -298,20 +312,47 @@ function __require() {
 
 # RUNTIME specific ----------------------------
 
+
 # retrieve current pyconfig.h
 function __python_get_pyconfig() {
+	# /Library/Frameworks/Python.framework/Versions/2.7/include/python2.7/pyconfig.h
 	python -c 'import sysconfig;print sysconfig.get_config_h_filename();'
-	# or use python-config binary
 }
 
 # get python lib folder
 function __python_get_lib_path() {
+	# /Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7
 	python -c 'import sysconfig;print sysconfig.get_path("stdlib");'
 }
 
 # get python version on 2 digits (2.7, 3.4, ...)
 function __python_short_version() {
+	# 2.7
 	python -c 'import sys;print str(sys.version_info.major) + "." + str(sys.version_info.minor)'
+}
+
+function __python_get_libs() {
+	# -lpython2.7 -ldl -framework CoreFoundation
+	python-config --libs
+}
+
+function __python_get_ldflags() {
+	#-L/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/config -lpython2.7 -ldl -framework CoreFoundation
+	python-config --ldflags
+}
+
+function __python_get_clags() {
+	#-I/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7 -I/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7 -fno-strict-aliasing -fno-common -dynamic -arch i386 -arch x86_64 -g -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes
+	python-config --cflags
+}
+
+function __python_get_prefix() {
+	# /Library/Frameworks/Python.framework/Versions/2.7
+	python-config --prefix
+}
+function __python_get_includes() {
+	#-I/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7 -I/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7
+	python-config --includes
 }
 
 # PACKAGE SYSTEM ----------------------------
@@ -422,6 +463,20 @@ function __sys_package_manager() {
 }
 
 # --------- SYSTEM RECIPES--------
+function __sys_install_docker() {
+	echo " ** Install Docker on your system"
+	if [ "$STELLA_CURRENT_OS" == "macos" ]; then
+		echo "ERROR : Docker is not directly available on macos"
+		return
+	fi
+
+	echo "WARN : it may modify your system config and ask you sudo/root access"
+	__download "https://get.docker.com" "docker-install.sh" "$STELLA_APP_TEMP_DIR"
+	chmod +x "$STELLA_APP_TEMP_DIR"/docker-install.sh
+	"$STELLA_APP_TEMP_DIR"/docker-install.sh
+
+}
+
 function __sys_install_brew() {
 	echo " ** Install Homebrew on your system"
 

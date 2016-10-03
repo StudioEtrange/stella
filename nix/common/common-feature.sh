@@ -56,6 +56,7 @@ function __feature_init() {
 				FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $FEAT_NAME#$FEAT_VERSION"
 			fi
 
+
 			if [ ! "$FEAT_SEARCH_PATH" == "" ]; then
 				PATH="$FEAT_SEARCH_PATH:$PATH"
 			fi
@@ -64,8 +65,6 @@ function __feature_init() {
 			for c in $FEAT_ENV_CALLBACK; do
 				$c
 			done
-
-
 		fi
 
 	fi
@@ -102,7 +101,7 @@ function __feature_match_installed() {
 		# first lookup inside app feature root
 		if [ -d "$STELLA_APP_FEATURE_ROOT/$__VAR_FEATURE_NAME" ]; then
 			# for each detected version
-			for _f in  "$STELLA_APP_FEATURE_ROOT"/"$__VAR_FEATURE_NAME"/*; do
+			for _f in "$STELLA_APP_FEATURE_ROOT"/"$__VAR_FEATURE_NAME"/*; do
 				if [ -d "$_f" ]; then
 					if [ "$_tested" == "" ]; then
 						_found="$_f"
@@ -184,7 +183,31 @@ function __pop_schema_context() {
 
 
 # test if a feature is installed
-# AND retrieve informations based on actually installed feature (looking inside STELLA_APP_FEATURE_ROOT)
+# AND retrieve informations based on actually installed feature into var
+# PREFIX_<info>
+function __feature_info() {
+	local SCHEMA="$1"
+	local PREFIX="$2"
+
+	__push_schema_context
+	__feature_inspect $SCHEMA
+	if [ "$TEST_FEATURE" == "0" ]; then
+		echo " ** ERROR : depend on lib $SCHEMA"
+		__pop_schema_context
+		return
+	fi
+	eval "$PREFIX"_TEST_FEATURE=\"$TEST_FEATURE\"
+	eval "$PREFIX"_FEAT_INSTALL_ROOT=\"$FEAT_INSTALL_ROOT\"
+	eval "$PREFIX"_FEAT_NAME=\"$FEAT_NAME\"
+	eval "$PREFIX"_FEAT_VERSION=\"$FEAT_VERSION\"
+	eval "$PREFIX"_FEAT_ARCH=\"$FEAT_ARCH\"
+	eval "$PREFIX"_FEAT_SEARCH_PATH=\"$FEAT_SEARCH_PATH\"
+
+	__pop_schema_context
+}
+
+# test if a feature is installed
+# AND retrieve informations based on actually installed feature
 # OR from feature recipe if not installed
 function __feature_inspect() {
 	local _SCHEMA="$1"
@@ -615,7 +638,7 @@ function __feature_init_installed() {
 	# internal feature are not prioritary over app features
 	if [ ! "$STELLA_APP_FEATURE_ROOT" == "$STELLA_INTERNAL_FEATURE_ROOT" ]; then
 
-		_save_app_feature_root=$STELLA_APP_FEATURE_ROOT
+		_save_app_feature_root_init_installed=$STELLA_APP_FEATURE_ROOT
 		STELLA_APP_FEATURE_ROOT=$STELLA_INTERNAL_FEATURE_ROOT
 
 
@@ -634,7 +657,7 @@ function __feature_init_installed() {
 				fi
 			fi
 		done
-		STELLA_APP_FEATURE_ROOT=$_save_app_feature_root
+		STELLA_APP_FEATURE_ROOT=$_save_app_feature_root_init_installed
 	fi
 
 

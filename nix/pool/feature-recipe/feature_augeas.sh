@@ -16,10 +16,34 @@ _augeas_INCLUDED_=1
 function feature_augeas() {
 	FEAT_NAME=augeas
 
-	FEAT_LIST_SCHEMA="1_5_0:source"
-	FEAT_DEFAULT_VERSION=1_5_0
+	FEAT_LIST_SCHEMA="1_6_0:source 1_5_0:source"
+	FEAT_DEFAULT_VERSION=1_6_0
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
+}
+
+
+function feature_augeas_1_6_0() {
+	FEAT_VERSION=1_6_0
+
+	FEAT_SOURCE_DEPENDENCIES="libxml2#2_9_1"
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL=http://download.augeas.net/augeas-1.6.0.tar.gz
+	FEAT_SOURCE_URL_FILENAME=augeas-1.6.0.tar.gz
+	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
+
+	FEAT_BINARY_URL=
+	FEAT_BINARY_URL_FILENAME=
+	FEAT_BINARY_URL_PROTOCOL=
+
+	FEAT_SOURCE_CALLBACK=feature_augeas_link
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/augtool
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+
 }
 
 function feature_augeas_1_5_0() {

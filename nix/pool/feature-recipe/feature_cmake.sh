@@ -1,8 +1,6 @@
 if [ ! "$_CMAKE_INCLUDED_" == "1" ]; then
 _CMAKE_INCLUDED_=1
 
-# TODO : replace __download_uncompress with get_resource
-
 function feature_cmake() {
 
 	FEAT_NAME=cmake
@@ -22,6 +20,7 @@ function feature_cmake_3_6_2() {
 
 	FEAT_SOURCE_URL=https://cmake.org/files/v3.6/cmake-3.6.2.tar.gz
 	FEAT_SOURCE_URL_FILENAME=cmake-3.6.2.tar.gz
+	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		FEAT_BINARY_URL="https://cmake.org/files/v3.6/cmake-3.6.2-Darwin-x86_64.tar.gz"
@@ -31,6 +30,7 @@ function feature_cmake_3_6_2() {
 		FEAT_BINARY_URL="https://cmake.org/files/v3.6/cmake-3.6.2-Linux-x86_64.tar.gz"
 		FEAT_BINARY_URL_FILENAME=cmake-3.6.2-Linux-x86_64.tar.gz
 	fi
+	FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/cmake
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
@@ -48,6 +48,7 @@ function feature_cmake_2_8_12() {
 
 	FEAT_SOURCE_URL=http://www.cmake.org/files/v2.8/cmake-2.8.12.2.tar.gz
 	FEAT_SOURCE_URL_FILENAME=cmake-2.8.12.2.tar.gz
+	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		FEAT_BINARY_URL=http://www.cmake.org/files/v2.8/cmake-2.8.12.2-Darwin64-universal.tar.gz
@@ -57,6 +58,7 @@ function feature_cmake_2_8_12() {
 		FEAT_BINARY_URL=http://www.cmake.org/files/v2.8/cmake-2.8.12.2-Linux-i386.tar.gz
 		FEAT_BINARY_URL_FILENAME=cmake-2.8.12.2-Linux-i386.tar.gz
 	fi
+	FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/cmake
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
@@ -76,6 +78,7 @@ function feature_cmake_3_2_3() {
 
 	FEAT_SOURCE_URL=http://www.cmake.org/files/v3.2/cmake-3.2.3.tar.gz
 	FEAT_SOURCE_URL_FILENAME=cmake-3.2.3.tar.gz
+	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		FEAT_BINARY_URL=http://www.cmake.org/files/v3.2/cmake-3.2.3-Darwin-x86_64.tar.gz
@@ -85,6 +88,7 @@ function feature_cmake_3_2_3() {
 		FEAT_BINARY_URL=http://www.cmake.org/files/v3.2/cmake-3.2.3-Linux-x86_64.tar.gz
 		FEAT_BINARY_URL_FILENAME=cmake-3.2.3-Linux-x86_64.tar.gz
 	fi
+	FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/cmake
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
@@ -103,6 +107,7 @@ function feature_cmake_3_3_1() {
 
 	FEAT_SOURCE_URL=http://www.cmake.org/files/v3.3/cmake-3.3.1.tar.gz
 	FEAT_SOURCE_URL_FILENAME=cmake-3.3.1.tar.gz
+	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		FEAT_BINARY_URL=http://www.cmake.org/files/v3.3/cmake-3.3.1-Darwin-x86_64.tar.gz
@@ -112,6 +117,7 @@ function feature_cmake_3_3_1() {
 		FEAT_BINARY_URL="http://www.cmake.org/files/v3.3/cmake-3.3.1-Linux-x86_64.tar.gz"
 		FEAT_BINARY_URL_FILENAME=cmake-3.3.1-Linux-x86_64.tar.gz
 	fi
+	FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/cmake
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
@@ -127,8 +133,7 @@ function feature_cmake_install_source() {
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-build"
 
-
-	__download_uncompress "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_FILENAME" "$SRC_DIR" "DEST_ERASE STRIP"
+	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 	__set_toolset "STANDARD"
 
@@ -156,8 +161,7 @@ function feature_cmake_install_source() {
 
 
 function feature_cmake_install_binary() {
-
-	__download_uncompress "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_FILENAME" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP"
+	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP"
 
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		ln -s "$FEAT_INSTALL_ROOT"/"$CMAKE_FILE_APP"/Contents/bin "$FEAT_INSTALL_ROOT"/bin

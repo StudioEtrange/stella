@@ -70,10 +70,7 @@ function feature_python_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
-	# fix min macos version, information needed for building python
-	# TODO
-	#[ "$STELLA_CURRENT_OS" == "macos" ] && __set_build_mode MACOSX_DEPLOYMENT_TARGET $(__get_macos_version)
-
+	# NOTE : on darwin, have to fix min macos version, information needed for building python
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD"
 

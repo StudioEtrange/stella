@@ -977,7 +977,7 @@ function __resource() {
 				# [ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
 			GIT)
-				__require "git" "git" "PREFER_SYSTEM"
+				__require "git" "git" "SYSTEM"
 				if [ "$_opt_revert" == "ON" ]; then cd "$FINAL_DESTINATION"; git reset --hard; fi
 				if [ "$_opt_update" == "ON" ]; then cd "$FINAL_DESTINATION"; git pull;if [ ! "$_checkout_version" == "" ]; then git checkout $_checkout_version; fi; fi
 				if [ "$_opt_get" == "ON" ]; then git clone --recursive $URI "$FINAL_DESTINATION"; if [ ! "$_checkout_version" == "" ]; then cd "$FINAL_DESTINATION"; git checkout $_checkout_version; fi; fi
@@ -1107,7 +1107,7 @@ function __uncompress() {
 
 	case "$FILE_PATH" in
 		*.zip)
-			__require "unzip" "unzip" "PREFER_SYSTEM"
+			__require "unzip" "unzip" "SYSTEM"
 			[ "$_opt_strip" == "OFF" ] && unzip -a -o "$FILE_PATH"
 			[ "$_opt_strip" == "ON" ] && __unzip-strip "$FILE_PATH" "$UNZIP_DIR"
 			;;
@@ -1126,7 +1126,7 @@ function __uncompress() {
 			fi
 			;;
 		*.7z)
-			__require "7z" "7z" "PREFER_SYSTEM"
+			__require "7z" "7z" "SYSTEM"
 			[ "$_opt_strip" == "OFF" ] && 7z x "$FILE_PATH" -y -o"$UNZIP_DIR"
 			[ "$_opt_strip" == "ON" ] && __sevenzip-strip "$FILE_PATH" "$UNZIP_DIR"
 			;;
@@ -1182,7 +1182,7 @@ function __download() {
 					wget "$URL" -O "$STELLA_APP_CACHE_DIR/$FILE_NAME" || \
 					rm -f "$STELLA_APP_CACHE_DIR/$FILE_NAME"
 				else
-					__require "curl" "curl" "PREFER_SYSTEM"
+					__require "curl" "curl" "SYSTEM"
 				fi
 			fi
 		else

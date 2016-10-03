@@ -6,7 +6,7 @@ _gcc_INCLUDED_=1
 # http://stackoverflow.com/questions/9450394/how-to-install-gcc-piece-by-piece-with-gmp-mpfr-mpc-elf-without-shared-libra
 
 # TODO do not work on DARWIN / but work on linux
-# TODO need autotools-bundle#1
+
 
 function feature_gcc() {
 	FEAT_NAME=gcc
@@ -63,7 +63,7 @@ function feature_gcc_install_source() {
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
-	__set_toolset "STANDARD"
+	__set_toolset "AUTOTOOLS"
 
   __feature_callback
 

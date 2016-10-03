@@ -53,7 +53,7 @@ function feature_openssl_install_source() {
 
 	__set_toolset "STANDARD"
 
-	__require "perl" "perl" "PREFER_SYSTEM"
+	__require "perl" "perl" "SYSTEM"
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 

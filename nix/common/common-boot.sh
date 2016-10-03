@@ -95,10 +95,10 @@ function __boot_stella() {
       # prepare docker
       local _docker_opt
       local _docker_prefix
-      __require "docker" "docker" "PREFER_SYSTEM"
+      __require "docker" "docker" "SYSTEM"
 
       if [ "$__stella_uri_schema" == "dm" ]; then
-        __require "docker-machine" "docker-machine" "PREFER_SYSTEM"
+        __require "docker-machine" "docker-machine" "SYSTEM"
         [ ! -z "$FORCE" ] && docker-machine create --driver virtualbox $__stella_uri_host
         docker-machine start $__stella_uri_host
         # will also set docker-machine ip as no_proxy
@@ -140,7 +140,7 @@ function __boot_stella() {
       local _ssh_user=
       [ ! "$__stella_uri_user" == "" ] && _ssh_user="$__stella_uri_user"@
 
-      __require "ssh" "ssh" "PREFER_SYSTEM"
+      __require "ssh" "ssh" "SYSTEM"
 
       __transfert_stella "$_uri" "ENV"
 

@@ -1,4 +1,4 @@
-if [ ! "$_SOCAT_INCLUDED_" == "1" ]; then 
+if [ ! "$_SOCAT_INCLUDED_" == "1" ]; then
 _SOCAT_INCLUDED_=1
 
 # OK
@@ -13,7 +13,7 @@ function feature_socat() {
 
 function feature_socat_1_7_3_0() {
 	FEAT_VERSION=1_7_3_0
-	
+
 	FEAT_SOURCE_DEPENDENCIES="openssl#1_0_2d"
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -24,14 +24,14 @@ function feature_socat_1_7_3_0() {
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
-	
+
 	FEAT_SOURCE_CALLBACK=feature_socat_link
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/socat
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-	
+
 }
 
 function feature_socat_link() {
@@ -42,13 +42,12 @@ function feature_socat_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	
-	#__set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL make"
 	__set_toolset "STANDARD"
 
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
-	
+
 	__feature_callback
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
@@ -57,8 +56,8 @@ function feature_socat_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
-	
-	
+
+
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
 
 

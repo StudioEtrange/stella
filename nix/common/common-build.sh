@@ -9,13 +9,15 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 #  	__set_build_mode_default "DARWIN_STDLIB" "LIBCPP"
 
 # START BUILD SESSION
-#	__start_build_session (__reset_build_env : reset every __set_build_mode values to default or empty)
+#	__start_build_session
+#														__reset_build_env : reset every __set_build_mode values to default or empty
+#														__set_toolset STELLA_BUILD_DEFAULT_TOOLSET
 
 #		GET SOURCE CODE
 #		__get_resource
 
 #		SET TOOLSET
-#		__set_toolset AUTOTOOLS|STANDARD|CMAKE|CUSTOM ====> MUST BE CALLED
+#		__set_toolset
 
 # 		SET CUSTOM BUILD MODE
 #		__set_build_mode ARCH x86
@@ -33,7 +35,7 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 
 #				SET BUILD ENV AND FLAGS
 #				__prepare_build
-#
+#						prepare specific compiler env
 #						call set_env_vars_for_gcc-clang
 #						call set_env_vars_for_cmake
 
@@ -48,6 +50,22 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 #						call __check_built_files
 
 
+
+# TOOLSET & BUILD TOOLS ----------------
+# Available tools :
+# CONFIG_TOOL : configure, cmake, autotools
+# BUILD_TOOL : make, ninja
+# COMPIL_FRONTEND : default (default builder present on system), clang-omp, gcc
+#
+# Available preconfigured toolset :
+# TOOLSET 		| CONFIG TOOL 				| BUILD TOOL 		| COMPIL FRONTEND
+# STANDARD		|	configure						|		make				|			default
+# AUTOTOOLS		|	autotools-bundle#1	|		make				|			default
+#	NINJA				| cmake								|		ninja				| 		default
+#	CMAKE				|	cmake								|		make				|			default
+
+
+
 function __start_build_session() {
 	__reset_build_env
 	local OPT="$1"
@@ -55,99 +73,236 @@ function __start_build_session() {
 		# TODO : this OPT is never used when calling __start_build_session - useless, to supress ?
 		[ "$o" == "RELOCATE" ] && __set_build_mode "RELOCATE" "ON"
 	done
+
+	__set_toolset "$STELLA_BUILD_DEFAULT_TOOLSET"
+}
+
+function __toolset_install() {
+	local _save_STELLA_APP_FEATURE_ROOT=$STELLA_APP_FEATURE_ROOT
+	local _save_FORCE=$FORCE
+	FORCE=
+	STELLA_APP_FEATURE_ROOT=$STELLA_INTERNAL_TOOLSET_ROOT
+	(__feature_install "$1")
+	STELLA_APP_FEATURE_ROOT=$_save_STELLA_APP_FEATURE_ROOT
+	FORCE=$_save_FORCE
+}
+
+function __toolset_info() {
+	local _save_STELLA_APP_FEATURE_ROOT=$STELLA_APP_FEATURE_ROOT
+	STELLA_APP_FEATURE_ROOT=$STELLA_INTERNAL_TOOLSET_ROOT
+	__feature_info "$1" "TOOLSET"
+	STELLA_APP_FEATURE_ROOT=$_save_STELLA_APP_FEATURE_ROOT
+}
+
+function __toolset_init() {
+	local _SCHEMA=$1
+	local _save_STELLA_APP_FEATURE_ROOT=$STELLA_APP_FEATURE_ROOT
+	STELLA_APP_FEATURE_ROOT=$STELLA_INTERNAL_TOOLSET_ROOT
+	__push_schema_context
+
+	__internal_feature_context "$_SCHEMA"
+	__feature_inspect "$FEAT_SCHEMA_SELECTED"
+
+	if [ "$TEST_FEATURE" == "1" ]; then
+		if [ ! "$FEAT_BUNDLE" == "" ]; then
+			local p
+			__push_schema_context
+
+			FEAT_BUNDLE_MODE=$FEAT_BUNDLE
+			for p in $FEAT_BUNDLE_ITEM; do
+				__internal_feature_context $p
+				if [ ! "$FEAT_SEARCH_PATH" == "" ]; then
+					STELLA_BUILD_TOOLSET_PATH="$FEAT_SEARCH_PATH:$STELLA_BUILD_TOOLSET_PATH"
+				fi
+				for c in $FEAT_ENV_CALLBACK; do
+					$c
+				done
+			done
+			FEAT_BUNDLE_MODE=
+			__pop_schema_context
+		fi
+
+		if [ ! "$FEAT_SEARCH_PATH" == "" ]; then
+			STELLA_BUILD_TOOLSET_PATH="$FEAT_SEARCH_PATH:$STELLA_BUILD_TOOLSET_PATH"
+		fi
+		local c
+		# TODO : warn : env vars should be uninitialized because use of a toolset is temporary
+		for c in $FEAT_ENV_CALLBACK; do
+			$c
+		done
+	fi
+	__pop_schema_context
+	STELLA_APP_FEATURE_ROOT=$_save_STELLA_APP_FEATURE_ROOT
 }
 
 # TOOLSET ------------------------------------------------------------------------------------------------------------------------------
 function __set_toolset() {
-	# CUSTOM | STANDARD | CMAKE | AUTOTOOLS
 	local MODE="$1"
 	local OPT="$2"
 
 	# configure tool
-	local _flag_configure=
-	local CONFIG_TOOL=$STELLA_BUILD_DEFAULT_CONFIG_TOOL
-
-	# build tool
-	local _flag_build=
-	local BUILD_TOOL=$STELLA_BUILD_DEFAULT_BUILD_TOOL
-
+	local CONFIG_TOOL=
+	# build toot
+	local BUILD_TOOL=
 	# compiler frontend
-	local _flag_frontend=
-	local COMPIL_FRONTEND=$STELLA_BUILD_DEFAULT_COMPIL_FRONTEND
+	local COMPIL_FRONTEND=
 
 	case $MODE in
 		CUSTOM)
+			STELLA_BUILD_TOOLSET=CUSTOM
+			local _flag_configure=
+			local _flag_frontend=
+			local _flag_build=
 			for o in $OPT; do
-				[ "$_flag_configure" == "ON" ] && CONFIG_TOOL=$o && _flag_configure=FORCE
+				[ "$_flag_configure" == "ON" ] && CONFIG_TOOL=$o && _flag_configure=OFF
 				[ "$o" == "CONFIG_TOOL" ] && _flag_configure=ON
-				[ "$_flag_build" == "ON" ] && BUILD_TOOL=$o && _flag_build=FORCE
+				[ "$_flag_build" == "ON" ] && BUILD_TOOL=$o && _flag_build=OFF
 				[ "$o" == "BUILD_TOOL" ] && _flag_build=ON
-				[ "$_flag_frontend" == "ON" ] && COMPIL_FRONTEND=$o && _flag_frontend=FORCE
+				[ "$_flag_frontend" == "ON" ] && COMPIL_FRONTEND=$o && _flag_frontend=OFF
 				[ "$o" == "COMPIL_FRONTEND" ] && _flag_frontend=ON
 			done
-
 			;;
+
 		AUTOTOOLS)
 			STELLA_BUILD_TOOLSET=AUTOTOOLS
-			_flag_configure=FORCE
-			CONFIG_TOOL=configure
-
+			CONFIG_TOOL=autotools-bundle#1
 			BUILD_TOOL=make
-
-			_flag_frontend=FORCE
-			COMPIL_FRONTEND=gcc-clang
+			COMPIL_FRONTEND=default
 			;;
 
 		STANDARD)
 			STELLA_BUILD_TOOLSET=STANDARD
-
-			_flag_configure=FORCE
 			CONFIG_TOOL=configure
-
 			BUILD_TOOL=make
-
-			_flag_frontend=FORCE
-			COMPIL_FRONTEND=gcc-clang
+			COMPIL_FRONTEND=default
 			;;
 		CMAKE)
 			STELLA_BUILD_TOOLSET=CMAKE
-
-			_flag_configure=FORCE
 			CONFIG_TOOL=cmake
-
 			BUILD_TOOL=make
-
-			_flag_frontend=FORCE
-			COMPIL_FRONTEND=gcc-clang
+			COMPIL_FRONTEND=default
+			;;
+		NINJA)
+			STELLA_BUILD_TOOLSET=NINJA
+			CONFIG_TOOL=cmake
+			BUILD_TOOL=ninja
+			COMPIL_FRONTEND=default
 			;;
 	esac
 
-	# autoselect ninja instead of make
-	if [ "$CONFIG_TOOL" == "cmake" ]; then
-		if [ ! "$_flag_build" == "FORCE" ]; then
-			if [[ -n `which ninja 2> /dev/null` ]]; then
-				BUILD_TOOL=ninja
-			fi
-		fi
-	fi
+	# TODO autoselect ninja instead of make if using cmake
+	#if [ "$CONFIG_TOOL" == "cmake" ]; then
+	#	if [ ! "$_flag_build" == "FORCE" ]; then
+	#		if [[ -n `which ninja 2> /dev/null` ]]; then
+	#			BUILD_TOOL=ninja
+	#		fi
+	#	fi
+	#fi
 
 	STELLA_BUILD_CONFIG_TOOL=$CONFIG_TOOL
 	STELLA_BUILD_BUILD_TOOL=$BUILD_TOOL
 	STELLA_BUILD_COMPIL_FRONTEND=$COMPIL_FRONTEND
 
+	case $STELLA_BUILD_CONFIG_TOOL in
+		configure)
+			STELLA_BUILD_CONFIG_TOOL_BIN=configure
+		;;
+		cmake*)
+			STELLA_BUILD_CONFIG_TOOL_BIN=cmake
+			;;
+		autotools*)
+			STELLA_BUILD_CONFIG_TOOL_BIN=configure
+			;;
+	esac
+
+	case $STELLA_BUILD_BUILD_TOOL in
+		make)
+			STELLA_BUILD_BUILD_TOOL_BIN=make
+		;;
+		ninja*)
+			STELLA_BUILD_BUILD_TOOL_BIN=ninja
+		;;
+	esac
+
+	case $STELLA_BUILD_COMPIL_FRONTEND in
+		default)
+			STELLA_BUILD_COMPIL_FRONTEND_BIN=gcc
+		;;
+		clang-omp*)
+			STELLA_BUILD_COMPIL_FRONTEND_BIN=clang-omp
+		;;
+		gcc*)
+			STELLA_BUILD_COMPIL_FRONTEND_BIN=gcc
+		;;
+	esac
+
+
+
 }
 
 
 function __require_current_toolset() {
-	echo "** Require build toolset : $STELLA_BUILD_TOOLSET"
-	[ "$STELLA_BUILD_TOOLSET" == "AUTOTOOLS" ] && __require "autoconf" "autotools-bundle#1" "PREFER_STELLA"
-	# TODO cmake is never a build_tool ?
-	# [ "$STELLA_BUILD_BUILD_TOOL" == "cmake" ] &&  __require "cmake" "cmake" "PREFER_STELLA"
-	[ "$STELLA_BUILD_CONFIG_TOOL" == "cmake" ] && __require "cmake" "cmake" "PREFER_STELLA"
-	[ "$STELLA_BUILD_BUILD_TOOL" == "make" ] && __require "make" "build-chain-standard" "PREFER_SYSTEM"
-	[ "$STELLA_BUILD_COMPIL_FRONTEND" == "gcc-clang" ] &&  __require "gcc" "build-chain-standard" "PREFER_SYSTEM"
-	[ "$STELLA_BUILD_COMPIL_FRONTEND" == "clang-omp" ] &&  __require "clang-omp" "clang-omp" "PREFER_STELLA"
-	echo "** Require build toolset : $STELLA_BUILD_TOOLSET"
+	echo "** Require build toolset : $STELLA_BUILD_TOOLSET [ config_tool:$STELLA_BUILD_CONFIG_TOOL build_tool:$STELLA_BUILD_BUILD_TOOL compil_frontend:$STELLA_BUILD_COMPIL_FRONTEND]"
+
+	case $STELLA_BUILD_CONFIG_TOOL in
+		configure)
+			#STELLA_BUILD_CONFIG_TOOL_BIN=configure
+		;;
+		cmake)
+			# if no version specified, prefer cmake already present
+			if [ "$(which cmake 2>/dev/null)" == "" ]; then
+				__toolset_install "$STELLA_BUILD_CONFIG_TOOL"
+				__toolset_init "$STELLA_BUILD_CONFIG_TOOL"
+			fi
+			#STELLA_BUILD_CONFIG_TOOL_BIN=cmake
+			;;
+		cmake*)
+			__toolset_install "$STELLA_BUILD_CONFIG_TOOL"
+			__toolset_init "$STELLA_BUILD_CONFIG_TOOL"
+			#STELLA_BUILD_CONFIG_TOOL_BIN=cmake
+			;;
+		autotools)
+			__toolset_install "autotools-bundle#1"
+			__toolset_init "autotools-bundle#1"
+			#STELLA_BUILD_CONFIG_TOOL_BIN=configure
+			;;
+		autotools*)
+			__toolset_install "$STELLA_BUILD_CONFIG_TOOL"
+			__toolset_init "$STELLA_BUILD_CONFIG_TOOL"
+			#STELLA_BUILD_CONFIG_TOOL_BIN=configure
+			;;
+	esac
+
+	case $STELLA_BUILD_BUILD_TOOL in
+		make)
+			__require "make" "build-chain-standard" "SYSTEM"
+			#STELLA_BUILD_BUILD_TOOL_BIN=make
+		;;
+		ninja*)
+			__toolset_install "$STELLA_BUILD_BUILD_TOOL"
+			__toolset_init "$STELLA_BUILD_BUILD_TOOL"
+			#STELLA_BUILD_BUILD_TOOL_BIN=ninja
+		;;
+	esac
+
+	case $STELLA_BUILD_COMPIL_FRONTEND in
+		default)
+			__require "gcc" "build-chain-standard" "SYSTEM"
+			#STELLA_BUILD_COMPIL_FRONTEND_BIN=gcc
+		;;
+		clang-omp*)
+			__toolset_install "$STELLA_BUILD_COMPIL_FRONTEND"
+			__toolset_init "$STELLA_BUILD_COMPIL_FRONTEND"
+			#STELLA_BUILD_COMPIL_FRONTEND_BIN=clang-omp
+		;;
+		gcc*)
+			__toolset_install "$STELLA_BUILD_COMPIL_FRONTEND"
+			__toolset_init "$STELLA_BUILD_COMPIL_FRONTEND"
+			#STELLA_BUILD_COMPIL_FRONTEND_BIN=gcc
+		;;
+	esac
+
+	echo "** Require build toolset : $STELLA_BUILD_TOOLSET [ config_tool:$STELLA_BUILD_CONFIG_TOOL build_tool:$STELLA_BUILD_BUILD_TOOL compil_frontend:$STELLA_BUILD_COMPIL_FRONTEND]"
 	echo
 }
 
@@ -209,6 +364,9 @@ function __auto_build() {
 
 	echo " ** buildset tools checking"
 	__require_current_toolset
+	local _save_path="$PATH"
+	PATH="$STELLA_BUILD_TOOLSET_PATH:$PATH"
+
 	#local _check=
 	#[ "$_opt_configure" == "ON" ] && _check=1
 	#[ "$_opt_build" == "ON" ] && _check=1
@@ -230,8 +388,6 @@ function __auto_build() {
 
 	mkdir -p "$BUILD_DIR"
 
-
-
 	# set build env
 	__prepare_build "$INSTALL_DIR" "$SOURCE_DIR" "$BUILD_DIR"
 
@@ -251,6 +407,7 @@ function __auto_build() {
 
 	[ "$_opt_inspect_and_fix_build" == "ON" ] && __inspect_and_fix_build "$INSTALL_DIR" "$OPT"
 
+	PATH=$_save_path
 	echo " ** Done"
 
 }
@@ -301,7 +458,7 @@ function __launch_configure() {
 	# AUTO_INSTALL_CONF_FLAG_PREFIX
 	# AUTO_INSTALL_CONF_FLAG_POSTFIX
 
-	case $STELLA_BUILD_CONFIG_TOOL in
+	case $STELLA_BUILD_CONFIG_TOOL_BIN in
 
 		configure)
 			chmod +x "$AUTO_SOURCE_DIR/configure"
@@ -314,10 +471,9 @@ function __launch_configure() {
 		;;
 
 
-
 		cmake)
-			[ "$STELLA_BUILD_BUILD_TOOL" == "make" ] && CMAKE_GENERATOR="Unix Makefiles"
-			[ "$STELLA_BUILD_BUILD_TOOL" == "ninja" ] && CMAKE_GENERATOR="Ninja"
+			[ "$STELLA_BUILD_BUILD_TOOL_BIN" == "make" ] && CMAKE_GENERATOR="Unix Makefiles"
+			[ "$STELLA_BUILD_BUILD_TOOL_BIN" == "ninja" ] && CMAKE_GENERATOR="Ninja"
 			[ "$_debug" == "ON" ] && _debug="--debug-output" #--trace --debug-output
 
 			if [ "$AUTO_INSTALL_CONF_FLAG_PREFIX" == "" ]; then
@@ -407,7 +563,7 @@ function __launch_build() {
 	fi
 
 	local _step
-	case $STELLA_BUILD_BUILD_TOOL in
+	case $STELLA_BUILD_BUILD_TOOL_BIN in
 
 		make)
 			[ "$_opt_parallelize" == "ON" ] && _FLAG_PARALLEL="-j$STELLA_NB_CPU"
@@ -744,7 +900,7 @@ function __link_feature_library() {
 	# RESULT
 	# set <var> flags ----
 	if [ ! "$_var_flags" == "" ]; then
-		__link_flags "$STELLA_BUILD_COMPIL_FRONTEND" "$_var_flags" "$_LIB" "$_INCLUDE" "$_libs_name"
+		__link_flags "$STELLA_BUILD_COMPIL_FRONTEND_BIN" "$_var_flags" "$_LIB" "$_INCLUDE" "$_libs_name"
 	fi
 
 	# set <folder> vars ----
@@ -763,8 +919,8 @@ function __set_link_flags() {
 	local _include_path="$2"
 	local _libs_name="$3"
 
-	if [ ! "$STELLA_BUILD_CONFIG_TOOL" == "cmake" ]; then
-		if [ "$STELLA_BUILD_COMPIL_FRONTEND" = "gcc-clang" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND" = "clang-omp" ]; then
+	if [ ! "$STELLA_BUILD_CONFIG_TOOL_BIN" == "cmake" ]; then
+		if [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "gcc" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "clang-omp" ]; then
 			__link_flags_gcc-clang "_flags" "$_lib_path" "$_include_path" "$_libs_name"
 			LINKED_LIBS_C_CXX_FLAGS="$LINKED_LIBS_C_CXX_FLAGS $_flags_C_CXX_FLAGS"
 			LINKED_LIBS_CPP_FLAGS="$LINKED_LIBS_CPP_FLAGS $_flags_CPP_FLAGS"
@@ -784,7 +940,7 @@ function __link_flags() {
 	local _include_path="$4"
 	local _libs_name="$5"
 
-	if [ "$_frontend" == "gcc-clang" ]; then
+	if [ "$_frontend" = "gcc" ] || [ "$_frontend" = "clang-omp" ]; then
 		__link_flags_gcc-clang "$_var_flags" "$_lib_path" "$_include_path" "$_libs_name"
 	fi
 }
@@ -816,7 +972,7 @@ function __link_rpath_flags() {
 	local _var_flags="$2"
 	local _linked_target_path="$3"
 	local _linked_lib_path="$4"
-	if [ "$_frontend" == "gcc-clang" ]; then
+	if [ "$_frontend" = "gcc" ] || [ "$_frontend" = "clang-omp" ]; then
 		__link_rpath_flags_gcc-clang "$_var_flags" "$_linked_target_path" "$_linked_lib_path"
 	fi
 }
@@ -905,13 +1061,19 @@ function __reset_build_env() {
 	unset CMAKE_MODULE_LINKER_FLAGS
 	unset CMAKE_STATIC_LINKER_FLAGS
 	unset CMAKE_EXE_LINKER_FLAGS
-
+	unset CC
+	unset CXX
+	unset LIBRARY_PATH
 
 	# TOOLSET
 	STELLA_BUILD_TOOLSET=
+	STELLA_BUILD_TOOLSET_PATH=
 	STELLA_BUILD_CONFIG_TOOL=
 	STELLA_BUILD_BUILD_TOOL=
 	STELLA_BUILD_COMPIL_FRONTEND=
+	STELLA_BUILD_CONFIG_TOOL_BIN=
+	STELLA_BUILD_BUILD_TOOL_BIN=
+	STELLA_BUILD_COMPIL_FRONTEND_BIN=
 }
 
 
@@ -921,17 +1083,29 @@ function __prepare_build() {
 	local SOURCE_DIR="$2"
 	local BUILD_DIR="$3"
 
+
 	# select specific compiler frontend
-	if [ "$STELLA_BUILD_COMPIL_FRONTEND" == "clang-omp" ]; then
-		__link_feature_library "clang-omp" "GET_FOLDER _clang_omp"
-
-		# use clang-omp compiler
-		export CC=$_clang_omp_ROOT/bin/clang
-		export CXX=$_clang_omp_ROOT/bin/clang++
-
-		# activate clang openmp libs search folder at link time
-		export LIBRARY_PATH="$LIBRARY_PATH:$_clang_omp_LIB"
-	fi
+	case $STELLA_BUILD_COMPIL_FRONTEND in
+		default)
+		;;
+		clang-omp*)
+			__toolset_info "$STELLA_BUILD_COMPIL_FRONTEND"
+			if [ "$TOOLSET_TEST_FEATURE" == "1" ]; then
+				export CC=$TOOLSET_FEAT_INSTALL_ROOT/bin/clang
+				export CXX=$TOOLSET_FEAT_INSTALL_ROOT/bin/clang++
+				# activate clang openmp libs search folder at link time
+				export LIBRARY_PATH="$LIBRARY_PATH:$TOOLSET_FEAT_INSTALL_ROOT/lib"
+			fi
+		;;
+		gcc*)
+			__toolset_info "$STELLA_BUILD_COMPIL_FRONTEND"
+			if [ "$TOOLSET_TEST_FEATURE" == "1" ]; then
+				export CC=$TOOLSET_FEAT_INSTALL_ROOT/bin/gcc
+				export CXX=$TOOLSET_FEAT_INSTALL_ROOT/bin/g++
+				export LIBRARY_PATH="$LIBRARY_PATH:$TOOLSET_FEAT_INSTALL_ROOT/lib"
+			fi
+		;;
+	esac
 
 
 	# set env
@@ -953,26 +1127,26 @@ function __prepare_build() {
 
 
 	# set flags -------------
-	case $STELLA_BUILD_CONFIG_TOOL in
+	case $STELLA_BUILD_CONFIG_TOOL_BIN in
 		cmake)
 			__set_env_vars_for_cmake
 		;;
-		configure)
-			[ "$STELLA_BUILD_COMPIL_FRONTEND" == "gcc-clang" ] && __set_env_vars_for_gcc-clang
-			[ "$STELLA_BUILD_COMPIL_FRONTEND" == "clang-omp" ] && __set_env_vars_for_gcc-clang
-		;;
 		*)
-			[ "$STELLA_BUILD_COMPIL_FRONTEND" == "gcc-clang" ] && __set_env_vars_for_gcc-clang
-			[ "$STELLA_BUILD_COMPIL_FRONTEND" == "clang-omp" ] && __set_env_vars_for_gcc-clang
+			if [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "gcc" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "clang-omp" ]; then
+				__set_env_vars_for_gcc-clang
+			fi
 		;;
 	esac
 
 
 	# print info ----------
 	echo "** BUILD TOOLSET"
-	echo "====> Configuration Tool : $STELLA_BUILD_CONFIG_TOOL"
-	echo "====> Build management Tool : $STELLA_BUILD_BUILD_TOOL"
-	echo "====> Compiler Frontend : $STELLA_BUILD_COMPIL_FRONTEND"
+	echo "====> Preconfigured Toolset : $STELLA_BUILD_TOOLSET"
+	echo "====> Configuration Tool : $STELLA_BUILD_CONFIG_TOOL [$STELLA_BUILD_CONFIG_TOOL_BIN]"
+	echo "====> Build management Tool : $STELLA_BUILD_BUILD_TOOL [$STELLA_BUILD_BUILD_TOOL_BIN]"
+	echo "====> Compiler Frontend : $STELLA_BUILD_COMPIL_FRONTEND [$STELLA_BUILD_COMPIL_FRONTEND_BIN]"
+	echo "====> env CC : $CC"
+	echo "====> env CXX : $CXX"
 	echo "** BUILD INFO"
 	echo "====> Build arch directive : $STELLA_BUILD_ARCH"
 	echo "====> Parallelized (if supported) : $STELLA_BUILD_PARALLELIZE"
@@ -992,13 +1166,9 @@ function __prepare_build() {
 	echo "====> CMAKE_INCLUDE_PATH : $CMAKE_INCLUDE_PATH"
 	echo "====> STELLA_CMAKE_EXTRA_FLAGS : $STELLA_CMAKE_EXTRA_FLAGS"
 	echo "** SOME ENV"
-	echo " compiler"
-	echo "====> CC : $CC"
-	echo "====> CXX : $CXX"
-	echo " search path for libs"
-	echo "====> LIBRARY_PATH (link time) : $LIBRARY_PATH"
-	echo "====> LD_LIBRARY_PATH (run time linux): $LD_LIBRARY_PATH"
-	echo "====> DYLD_LIBRARY_PATH (run time darwin): $DYLD_LIBRARY_PATH"
+	echo "====> LIBRARY_PATH (search path at link time) : $LIBRARY_PATH"
+	echo "====> LD_LIBRARY_PATH (search path at run time linux): $LD_LIBRARY_PATH"
+	echo "====> DYLD_LIBRARY_PATH (search path at run time darwin): $DYLD_LIBRARY_PATH"
 
 
 }
@@ -1226,7 +1396,7 @@ function __set_build_env() {
 	# http://www.kaizou.org/2015/01/linux-libraries/
 	if [ "$1" == "LINK_FLAGS_DEFAULT" ]; then
 		if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-				if [ "$STELLA_BUILD_COMPIL_FRONTEND" = "gcc-clang" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND" = "clang-omp" ]; then
+				if [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "gcc" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "clang-omp" ]; then
 					case $2 in
 						ON)
 							# NOTE : these flags do not work when building static lib with "ar" tool
@@ -1243,7 +1413,7 @@ function __set_build_env() {
 	# CPU_INSTRUCTION_SCOPE -----------------------------------------------------------------
 	# http://sdf.org/~riley/blog/2014/10/30/march-mtune/
 	if [ "$1" == "CPU_INSTRUCTION_SCOPE" ]; then
-		if [ "$STELLA_BUILD_COMPIL_FRONTEND" = "gcc-clang" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND" = "clang-omp" ]; then
+		if [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "gcc" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "clang-omp" ]; then
 			case $2 in
 				CURRENT)
 					STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS -march=native"
@@ -1260,7 +1430,7 @@ function __set_build_env() {
 
 	# set OPTIMIZATION -----------------------------------------------------------------
 	if [ "$1" == "OPTIMIZATION" ]; then
-		if [ "$STELLA_BUILD_COMPIL_FRONTEND" = "gcc-clang" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND" = "clang-omp" ]; then
+		if [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "gcc" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "clang-omp" ]; then
 			[ ! "$2" == "" ] && STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS -O$2"
 		fi
 	fi
@@ -1268,7 +1438,7 @@ function __set_build_env() {
 	# ARCH -----------------------------------------------------------------
 	# Setting flags for a specific arch
 	if [ "$1" == "ARCH" ]; then
-		if [ "$STELLA_BUILD_COMPIL_FRONTEND" = "gcc-clang" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND" = "clang-omp" ]; then
+		if [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "gcc" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "clang-omp" ]; then
 			if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
 				case $2 in
 					x86)
@@ -1301,7 +1471,7 @@ function __set_build_env() {
 	# not for x86 : http://stackoverflow.com/questions/7216244/why-is-fpic-absolutely-necessary-on-64-and-not-on-32bit-platforms -- http://stackoverflow.com/questions/6961832/does-32bit-x86-code-need-to-be-specially-pic-compiled-for-shared-library-files
 	# On MacOS it is active by default
 	if [ "$1" == "ARCH" ]; then
-		if [ "$STELLA_BUILD_COMPIL_FRONTEND" = "gcc-clang" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND" = "clang-omp" ]; then
+		if [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "gcc" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "clang-omp" ]; then
 			if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
 				case $2 in
 					x64)
@@ -1343,7 +1513,7 @@ function __set_build_env() {
 	# prefer setting RUNPATH over setting RPATH
 	# enable-new-dtags : http://blog.tremily.us/posts/rpath/
 	if [ "$1" == "RUNPATH_OVER_RPATH" ]; then
-		if [ "$STELLA_BUILD_COMPIL_FRONTEND" = "gcc-clang" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND" = "clang-omp" ]; then
+		if [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "gcc" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "clang-omp" ]; then
 			if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
 				STELLA_DYNAMIC_LINK_FLAGS="$STELLA_DYNAMIC_LINK_FLAGS -Wl,--enable-new-dtags"
 			fi

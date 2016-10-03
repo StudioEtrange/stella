@@ -205,25 +205,25 @@ REM REQUIRE ---------------------
 	set "_id=%~2"
 
 	REM OPTIONAL
-	REM PREFER_SYSTEM
-	REM PREFER_STELLA
+	REM SYSTEM
+	REM STELLA_FEATURE
 	set "OPT_require=%~3"
 
 	REM TODO : return-code to return ?
 	set _result=0
 
 	set _opt_optional=OFF
-	set _opt_prefer_system=ON
-	set _opt_prefer_stella=OFF
+	set _opt_system=ON
+	set _opt_stella_feature=OFF
 	for %%O in (%OPT_require%) do (
 		if "%%O"=="OPTIONAL" set _opt_optional=ON
-		if "%%O"=="PREFER_SYSTEM" (
-			set _opt_prefer_system=ON
-			set _opt_prefer_stella=OFF
+		if "%%O"=="SYSTEM" (
+			set _opt_system=ON
+			set _opt_stella_feature=OFF
 		)
-		if "%%O"=="PREFER_STELLA" (
-			set _opt_prefer_stella=ON
-			set _opt_prefer_system=OFF
+		if "%%O"=="STELLA_FEATURE" (
+			set _opt_stella_feature=ON
+			set _opt_system=OFF
 		)
 	)
 
@@ -234,10 +234,10 @@ REM REQUIRE ---------------------
 
 	if "!_found!" == "" (
 		if "!_opt_optional!" == "ON" (
-			if "!_opt_prefer_system!" == "ON" (
+			if "!_opt_system!" == "ON" (
 				echo ** WARN -- You should install !_artefact! -- Try stella.bat sys install !_id! OR install it manually
 			) else (
-				if "!_opt_prefer_stella!" == "ON" (
+				if "!_opt_stella_feature!" == "ON" (
 					echo ** WARN -- You should install !_artefact! -- Try stella.bat feature install !_id!
 				) else (
 					echo ** WARN -- You should install !_artefact!
@@ -246,14 +246,14 @@ REM REQUIRE ---------------------
 				)
 			)
 		) else (
-			if "!_opt_prefer_system!" == "ON" (
+			if "!_opt_system!" == "ON" (
 				echo ** ERROR -- Please install !_artefact!
 				echo ** Try stella.bat sys install !_id! OR install it manually
 				set "_result=1"
 				@echo off
 				goto :end
 			) else (
-				if "!_opt_prefer_stella!" == "ON" (
+				if "!_opt_stella_feature!" == "ON" (
 					echo ** REQUIRE !_id! : installing it from stella
 					call %STELLA_COMMON%\common-feature.bat :feature_install !_id!
 
