@@ -24,7 +24,7 @@ function feature_miniconda() {
 
 
 function feature_miniconda_4_1_11_PYTHON3() {
-	FEAT_VERSION=4_1_11_PYTHON2
+	FEAT_VERSION=4_1_11_PYTHON3
 
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=

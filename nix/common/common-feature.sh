@@ -189,10 +189,16 @@ function __feature_info() {
 	local SCHEMA="$1"
 	local PREFIX="$2"
 
+	eval "$PREFIX"_TEST_FEATURE=0
+	eval "$PREFIX"_FEAT_INSTALL_ROOT=
+	eval "$PREFIX"_FEAT_NAME=
+	eval "$PREFIX"_FEAT_VERSION=
+	eval "$PREFIX"_FEAT_ARCH=
+	eval "$PREFIX"_FEAT_SEARCH_PATH=
+
 	__push_schema_context
 	__feature_inspect $SCHEMA
 	if [ "$TEST_FEATURE" == "0" ]; then
-		echo " ** ERROR : depend on lib $SCHEMA"
 		__pop_schema_context
 		return
 	fi

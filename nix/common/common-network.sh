@@ -178,13 +178,15 @@ function __proxy_override() {
 
 	# PROXY for DOCKER ----------
 
-	# DOCKER DAEMON
+	# DOCKER ENGINE / DAEMON
 	# Docker daemon rely on HTTP_PROXY env
 	#		but the env var need to be setted in daemon environement (not client)
-	#		Instead configure /etc/default/docker or /etc/sysconfig/docker and add
+	#		Instead configure /etc/default/docker or /etc/sysconfig/docker or /etc/systemd/system/docker.service.d/http-proxy.conf
+	#			and add
 	#			HTTP_PROXY="http://<proxy_host>:<proxy_port>"
 	#			HTTPS_PROXY="http://<proxy_host>:<proxy_port>"
 	#		Docker daemon is used when accessing docker hub (like for search, pull, ...)
+	#		see https://docs.docker.com/engine/admin/systemd/#/http-proxy
 	#
 	# DOCKER CLIENT
 	# docker client rely on HTTP_PROXY env to communicate to docker daemon via http
