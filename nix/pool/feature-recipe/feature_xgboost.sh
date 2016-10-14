@@ -3,6 +3,8 @@ _xgboost_INCLUDED_=1
 
 # https://github.com/dmlc/xgboost
 
+# TODO not finished
+# xgboost is not well linked to clang-omp libs
 
 function feature_xgboost() {
 	FEAT_NAME=xgboost
@@ -60,6 +62,8 @@ function feature_xgboost_install_source() {
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD SOURCE_KEEP NO_INSTALL"
 
 	__copy_folder_content_into "$SRC_DIR" "$INSTALL_DIR"
+
+	__del_folder "$INSTALL_DIR"/CMakeFiles
 
 	__inspect_and_fix_build "$INSTALL_DIR"
 

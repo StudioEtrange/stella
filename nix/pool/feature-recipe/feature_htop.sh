@@ -55,7 +55,6 @@ function feature_htop_install_source() {
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
 
-	#__set_toolset "CUSTOM" "CONFIG_TOOL configure"
 	__set_toolset "STANDARD"
 
 

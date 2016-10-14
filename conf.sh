@@ -24,6 +24,7 @@ STELLA_POOL="$STELLA_ROOT/nix/pool"
 STELLA_PATCH="$STELLA_POOL/patch"
 STELLA_BIN="$STELLA_ROOT/nix/bin"
 STELLA_FEATURE_RECIPE="$STELLA_POOL/feature-recipe"
+STELLA_FEATURE_RECIPE_EXPERIMENTAL="$STELLA_FEATURE_RECIPE/exp"
 STELLA_ARTEFACT="$STELLA_POOL/artefact"
 STELLA_APPLICATION="$STELLA_ROOT/app"
 STELLA_TEMPLATE="$STELLA_POOL/template"
@@ -112,6 +113,12 @@ STELLA_DEFAULT_NO_PROXY="localhost,127.0.0.1,localaddress,.localdomain.com"
 # FEATURE LIST---------------------------------------------
 __STELLA_FEATURE_LIST=
 for recipe in "$STELLA_FEATURE_RECIPE"/*.sh; do
+	recipe=$(basename "$recipe")
+	recipe=${recipe#feature_}
+	recipe=${recipe%.sh}
+	__STELLA_FEATURE_LIST="$__STELLA_FEATURE_LIST $recipe"
+done
+for recipe in "$STELLA_FEATURE_RECIPE_EXPERIMENTAL"/*.sh; do
 	recipe=$(basename "$recipe")
 	recipe=${recipe#feature_}
 	recipe=${recipe%.sh}

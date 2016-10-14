@@ -798,7 +798,9 @@ function __internal_feature_context() {
 		fi
 
 		# grab feature info
-		source $STELLA_FEATURE_RECIPE/feature_$TMP_FEAT_SCHEMA_NAME.sh
+		[ -f "$STELLA_FEATURE_RECIPE/feature_$TMP_FEAT_SCHEMA_NAME.sh" ] \
+		 		&& source "$STELLA_FEATURE_RECIPE/feature_$TMP_FEAT_SCHEMA_NAME.sh" \
+				|| source "$STELLA_FEATURE_RECIPE_EXPERIMENTAL/feature_$TMP_FEAT_SCHEMA_NAME.sh"
 		feature_$TMP_FEAT_SCHEMA_NAME
 		feature_"$TMP_FEAT_SCHEMA_NAME"_"$TMP_FEAT_SCHEMA_VERSION"
 
@@ -867,7 +869,9 @@ function __select_official_schema() {
 	local _official=0
 	if [[ " ${__STELLA_FEATURE_LIST[@]} " =~ " ${_TR_FEATURE_NAME} " ]]; then
 		# grab feature info
-		source $STELLA_FEATURE_RECIPE/feature_$_TR_FEATURE_NAME.sh
+		[ -f "$STELLA_FEATURE_RECIPE/feature_$_TR_FEATURE_NAME.sh" ] \
+		 		&& source "$STELLA_FEATURE_RECIPE/feature_$_TR_FEATURE_NAME.sh" \
+				|| source "$STELLA_FEATURE_RECIPE_EXPERIMENTAL/feature_$_TR_FEATURE_NAME.sh"
 		feature_$_TR_FEATURE_NAME
 
 		# fill schema with default values

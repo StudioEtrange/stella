@@ -340,6 +340,9 @@ goto :eof
 :sys_install_chocolatey
 	echo  ** Install Chocolatey on your system
 	call %STELLA_COMMON%\common.bat :download "https://chocolatey.org/install.ps1" "chocolatey.ps1" "!STELLA_APP_TEMP_DIR!"
+	REM TODO manage web proxy
+	REM $env:chocolateyProxyLocation=!STELLA_PROXY_HOST!
+	REM $env:chocolateyProxyUser=!STELLA_PROXY_PORT!
 	powershell -NoProfile -ExecutionPolicy Bypass -Command "& '!STELLA_APP_TEMP_DIR!\chocolatey.ps1' %*"
 	set "PATH=!PATH!;C:\ProgramData\chocolatey\bin"
 	del /q "!STELLA_APP_CACHE_DIR!\chocolatey.ps1"
