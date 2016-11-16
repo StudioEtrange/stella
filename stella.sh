@@ -167,7 +167,8 @@ if [ "$DOMAIN" == "feature" ]; then
 		list)
 			case $ID in
 				all)
-					echo "all -- $__STELLA_FEATURE_LIST"
+					echo "STABLE : $__STELLA_FEATURE_LIST_STABLE"
+					echo "EXPERIMENTAL : $__STELLA_FEATURE_LIST_EXP"
 					;;
 				active)
 					echo $(__list_active_features)

@@ -181,7 +181,7 @@ function __proxy_override() {
 	# DOCKER ENGINE / DAEMON
 	# Docker daemon rely on HTTP_PROXY env
 	#		but the env var need to be setted in daemon environement (not client)
-	#		Instead configure /etc/default/docker or /etc/sysconfig/docker or /etc/systemd/system/docker.service.d/http-proxy.conf
+	#		Instead configure /etc/default/docker or /etc/sysconfig/docker or /etc/systemd/system/docker.service.d/http-proxy.conf (for rhel/centos) or /var/lib/boot2docker/profile (for boot2docker)
 	#			and add
 	#			HTTP_PROXY="http://<proxy_host>:<proxy_port>"
 	#			HTTPS_PROXY="http://<proxy_host>:<proxy_port>"
@@ -202,14 +202,14 @@ function __proxy_override() {
 	# 		docker-machine create -d virtualbox --engine-env http_proxy=$STELLA_HTTP_PROXY --engine-env https_proxy=$STELLA_HTTPS_PROXY --engine-env NO_PROXY=$STELLA_NO_PROXY <machine-id>
 	# 		NOTE :
 	#				This will only affect docker daemon configuration file inside the VM machine (/var/lib/boot2docker/profile) and set some HTTP_PROXY env vars
-	# How to retrieve ip of docker-machine
+	# How to retrieve ip of a docker-machine
 	# 		docker-machine ip <machine-id>
-	# How to setup docker to use a docker machine
+	# How to setup docker client to use a docker machine
 	# 		eval $(docker-machine env <machine-id>)
-	# How to add to CURRENT no_proxy env vas ip of docker machine
+	# How to set no_proxy in current shell with ip of a docker machine
 	# 		eval $(docker-machine env --no-proxy <machine-id>)
-	#			WARN : it will set 'no_proxy' var, not 'NO_PROXY' var. And if 'NO_PROXY' is setted, 'no_proxy' is not used
-	#						so use : __no_proxy_for $(docker-machine ip <machine-id>)
+	#			WARN : it will set 'no_proxy' env var, not 'NO_PROXY' env var. And if 'NO_PROXY' is setted, 'no_proxy' is not used
+	#						so use instead : __no_proxy_for $(docker-machine ip <machine-id>)
 	#
 	# DOCKER FILE
 	# into docker file, env var should be setted with ENV
@@ -230,6 +230,47 @@ $(command docker-machine "$@");
 			fi
 		fi
 	}
+
+	# minishift, which relies on a boot2docker VM , needs docker daemon env to be setted
+	function minishift() {
+		if [ "$1" == "start" ]; then
+			shift 1
+			command minishift start --docker-env http_proxy="$STELLA_HTTP_PROXY" --docker-env https_proxy="$STELLA_HTTP_PROXY" "$@"
+			# TODO : passing no_proxy to env is bugged in minishift args
+			#--docker-env no_proxy="$STELLA_NO_PROXY"
+			__no_proxy_for $(command minishift ip)
+		else
+			if [ "$1" == "docker-env" ]; then
+				echo "
+__no_proxy_for $(command minishift ip);
+$(command minishift "$@");
+"
+			else
+				command minishift "$@"
+			fi
+		fi
+	}
+
+	function minikube() {
+		if [ "$1" == "start" ]; then
+			shift 1
+			command minikube start --docker-env http_proxy="$STELLA_HTTP_PROXY" --docker-env https_proxy="$STELLA_HTTP_PROXY" "$@"
+			# TODO : passing no_proxy to env is bugged in minikube args
+			#--docker-env no_proxy="$STELLA_NO_PROXY"
+			__no_proxy_for $(command minikube ip)
+		else
+			if [ "$1" == "docker-env" ]; then
+				echo "
+__no_proxy_for $(command minikube ip);
+$(command minikube "$@");
+"
+			else
+				command minikube "$@"
+			fi
+		fi
+
+	}
+
 
 }
 

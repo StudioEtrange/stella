@@ -246,30 +246,25 @@ function __require_current_toolset() {
 
 	case $STELLA_BUILD_CONFIG_TOOL in
 		configure)
-			#STELLA_BUILD_CONFIG_TOOL_BIN=configure
 		;;
 		cmake)
-			# if no version specified, prefer cmake already present
+			# if no version specified, prefer cmake already present on system
 			if [ "$(which cmake 2>/dev/null)" == "" ]; then
 				__toolset_install "$STELLA_BUILD_CONFIG_TOOL"
 				__toolset_init "$STELLA_BUILD_CONFIG_TOOL"
 			fi
-			#STELLA_BUILD_CONFIG_TOOL_BIN=cmake
 			;;
 		cmake*)
 			__toolset_install "$STELLA_BUILD_CONFIG_TOOL"
 			__toolset_init "$STELLA_BUILD_CONFIG_TOOL"
-			#STELLA_BUILD_CONFIG_TOOL_BIN=cmake
 			;;
 		autotools)
 			__toolset_install "autotools-bundle#1"
 			__toolset_init "autotools-bundle#1"
-			#STELLA_BUILD_CONFIG_TOOL_BIN=configure
 			;;
 		autotools*)
 			__toolset_install "$STELLA_BUILD_CONFIG_TOOL"
 			__toolset_init "$STELLA_BUILD_CONFIG_TOOL"
-			#STELLA_BUILD_CONFIG_TOOL_BIN=configure
 			;;
 	esac
 
@@ -281,24 +276,22 @@ function __require_current_toolset() {
 		ninja*)
 			__toolset_install "$STELLA_BUILD_BUILD_TOOL"
 			__toolset_init "$STELLA_BUILD_BUILD_TOOL"
-			#STELLA_BUILD_BUILD_TOOL_BIN=ninja
 		;;
 	esac
 
 	case $STELLA_BUILD_COMPIL_FRONTEND in
 		default)
 			__require "gcc" "build-chain-standard" "SYSTEM"
-			#STELLA_BUILD_COMPIL_FRONTEND_BIN=gcc
 		;;
 		clang-omp*)
 			__toolset_install "$STELLA_BUILD_COMPIL_FRONTEND"
 			__toolset_init "$STELLA_BUILD_COMPIL_FRONTEND"
-			#STELLA_BUILD_COMPIL_FRONTEND_BIN=clang-omp
+
+			__set_build_mode "RPATH" "ADD" ""
 		;;
 		gcc*)
 			__toolset_install "$STELLA_BUILD_COMPIL_FRONTEND"
 			__toolset_init "$STELLA_BUILD_COMPIL_FRONTEND"
-			#STELLA_BUILD_COMPIL_FRONTEND_BIN=gcc
 		;;
 	esac
 
@@ -1095,6 +1088,8 @@ function __prepare_build() {
 				export CXX=$TOOLSET_FEAT_INSTALL_ROOT/bin/clang++
 				# activate clang openmp libs search folder at link time
 				export LIBRARY_PATH="$LIBRARY_PATH:$TOOLSET_FEAT_INSTALL_ROOT/lib"
+				# add a search path for clang openmp libs at runtime
+				__set_build_mode "RPATH" "ADD_FIRST" "$TOOLSET_FEAT_INSTALL_ROOT/lib"
 			fi
 		;;
 		gcc*)
@@ -1102,7 +1097,10 @@ function __prepare_build() {
 			if [ "$TOOLSET_TEST_FEATURE" == "1" ]; then
 				export CC=$TOOLSET_FEAT_INSTALL_ROOT/bin/gcc
 				export CXX=$TOOLSET_FEAT_INSTALL_ROOT/bin/g++
+				# activate gcc libs search folder at link time
 				export LIBRARY_PATH="$LIBRARY_PATH:$TOOLSET_FEAT_INSTALL_ROOT/lib"
+				# add a search path for gcc libs at runtime
+				__set_build_mode "RPATH" "ADD_FIRST" "$TOOLSET_FEAT_INSTALL_ROOT/lib"
 			fi
 		;;
 	esac

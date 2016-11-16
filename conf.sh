@@ -112,18 +112,21 @@ STELLA_DEFAULT_NO_PROXY="localhost,127.0.0.1,localaddress,.localdomain.com"
 
 # FEATURE LIST---------------------------------------------
 __STELLA_FEATURE_LIST=
+__STELLA_FEATURE_LIST_STABLE=
+__STELLA_FEATURE_LIST_EXP=
 for recipe in "$STELLA_FEATURE_RECIPE"/*.sh; do
 	recipe=$(basename "$recipe")
 	recipe=${recipe#feature_}
 	recipe=${recipe%.sh}
-	__STELLA_FEATURE_LIST="$__STELLA_FEATURE_LIST $recipe"
+	__STELLA_FEATURE_LIST_STABLE="$__STELLA_FEATURE_LIST_STABLE $recipe"
 done
 for recipe in "$STELLA_FEATURE_RECIPE_EXPERIMENTAL"/*.sh; do
 	recipe=$(basename "$recipe")
 	recipe=${recipe#feature_}
 	recipe=${recipe%.sh}
-	__STELLA_FEATURE_LIST="$__STELLA_FEATURE_LIST $recipe"
+	__STELLA_FEATURE_LIST_EXP="$__STELLA_FEATURE_LIST_EXP $recipe"
 done
+__STELLA_FEATURE_LIST="$__STELLA_FEATURE_LIST_STABLE $__STELLA_FEATURE_LIST_EXP"
 
 # SYS PACKAGE --------------------------------------------
 # list of available installable system package
