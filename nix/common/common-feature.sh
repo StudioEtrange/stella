@@ -197,7 +197,7 @@ function __feature_info() {
 	eval "$PREFIX"_FEAT_SEARCH_PATH=
 
 	__push_schema_context
-	__feature_inspect $SCHEMA
+	__feature_inspect "$SCHEMA"
 	if [ "$TEST_FEATURE" == "0" ]; then
 		__pop_schema_context
 		return

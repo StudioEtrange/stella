@@ -1,4 +1,4 @@
-if [ ! "_JPEG_INCLUDED_" == "1" ]; then 
+if [ ! "_JPEG_INCLUDED_" == "1" ]; then
 _JPEG_INCLUDED_=1
 
 
@@ -37,11 +37,10 @@ function feature_jpeg_9_0_0() {
 function feature_jpeg_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
 
-	#__set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL make"
+
 	__set_toolset "STANDARD"
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 

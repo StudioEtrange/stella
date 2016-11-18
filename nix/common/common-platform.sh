@@ -225,10 +225,11 @@ function __stella_requirement() {
 
 
 # REQUIRE -------------------------
-# require a feature.
-# By default the required feature is MANDATORY
-# Test if feature is present
-#		if feature is not OPTIONAL may install it from STELLA  or provide guideline to install it FROM SYSTEM
+# require a specific binary.
+# By default the required binary is MANDATORY
+# Test if binary is present, if not :
+#		if binary is OPTIONAL, just print warn and guidelines to install it as a STELLA_FEATURE or as a package SYSTEM
+#		if binary is not OPTIONAL, it will install it as a STELLA_FEATURE or provide guideline to install it as a package SYSTEM
 function __require() {
 	local _artefact="$1" # binary to test
 	local _id="$2" # feature name (for stella) or sys name (for package manager)
@@ -239,11 +240,11 @@ function __require() {
 	# OPTIONAL
 	# SYSTEM
 	# STELLA_FEATURE
-	## STELLA_TOOLSET # TODO DEPRECATED
+	# STELLA_TOOLSET # DEPRECATED
 	local _opt_optional=OFF
 	local _opt_system=ON
 	local _opt_stella_feature=OFF
-	#local _opt_stella_toolset=OFF
+	local _opt_stella_toolset=OFF
 
 
 	for o in $_OPT; do
@@ -270,8 +271,8 @@ function __require() {
 					echo "** WARN -- You should install $_artefact -- Try stella.sh feature install $_id"
 				else
 					if [ "$_opt_stella_toolset" == "ON" ]; then
-						# TODO optionnal toolset ? it shoud not exist
-						echo "** WARN -- You should install $_artefact -- Try stella.sh feature install $_id"
+						# TODO optionnal toolset ? it shoud not exist -- CHANGE warn message
+						echo "** WARN -- You should install $_artefact -- Try stella.sh toolset install $_id"
 					else
 						echo "** WARN -- You should install $_artefact"
 						echo "-- For a system install : try stella.sh sys install $_id OR your regular OS package manager"
@@ -308,6 +309,39 @@ function __require() {
 	fi
 
 	return $_result
+}
+
+# TOOLSET specific ----------------------------
+
+# http://stackoverflow.com/questions/5188267/checking-the-gcc-version-in-a-makefile
+# return X.Y.Z as version of current gcc
+# ex : 4.4.7
+function __gcc_version() {
+	gcc -dumpversion
+}
+
+# return an int representation of current gcc version
+# ex : 40407
+function __gcc_version_int() {
+	gcc -dumpversion | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$/&00/'
+}
+
+# check if current gcc version hit the minimal version required
+# first param : X_Y_Z (or X_Y)
+# return 1 if required minimal version is fullfilled
+function __gcc_check_min_version() {
+	local _required_ver=$1
+	expr $(__gcc_version_int) \<= $(echo $_required_ver | sed -e 's/_\([0-9][0-9]\)/\1/g' -e 's/_\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$/&00/')
+}
+
+# detect if current gcc binary is in fact clang (mainly for MacOS)
+# return 1 if gcc is clang
+function __gcc_is_clang() {
+	if [ "$(echo | gcc -dM -E - | grep __clang__)" == "" ]; then
+		echo "0"
+	else
+		echo "1"
+	fi
 }
 
 # RUNTIME specific ----------------------------

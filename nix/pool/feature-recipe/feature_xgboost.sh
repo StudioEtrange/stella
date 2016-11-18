@@ -49,7 +49,7 @@ function feature_xgboost_install_source() {
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "VERSION $FEAT_GIT_TAG"
 
-	__set_toolset "CUSTOM" "COMPIL_FRONTEND clang-omp CONFIG_TOOL cmake BUILD_TOOL make"
+	__set_toolset "CUSTOM" "COMPIL_FRONTEND clang-omp#3_9_0 CONFIG_TOOL cmake BUILD_TOOL make"
 
 	__feature_callback
 

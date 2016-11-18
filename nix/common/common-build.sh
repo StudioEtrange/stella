@@ -55,7 +55,7 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 # Available tools :
 # CONFIG_TOOL : configure, cmake, autotools
 # BUILD_TOOL : make, ninja
-# COMPIL_FRONTEND : default (default builder present on system), clang-omp, gcc
+# COMPIL_FRONTEND : default (default means already present on system), clang-omp, gcc
 #
 # Available preconfigured toolset :
 # TOOLSET 		| CONFIG TOOL 				| BUILD TOOL 		| COMPIL FRONTEND
@@ -64,7 +64,34 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 #	NINJA				| cmake								|		ninja				| 		default
 #	CMAKE				|	cmake								|		make				|			default
 
-
+# NOTE :
+# GCC ------------------------------------------------------
+# GCC stands for GNU Compiler Collection
+# GCC is a compiler collection that consists of a front end for each programming language, a middle end, and a back end for each architecture.
+# 	https://en.wikibooks.org/wiki/GNU_C_Compiler_Internals/GNU_C_Compiler_Architecture
+# 	http://blog.lxgcc.net/?p=181
+# 	gcc and g++ binaries are compiler driver and act as a 'driver' which pilots the call of a compiler, an assembler, and a linker
+#		a compiler is a FRONT-END/MIDDLE-END/BACK-END
+# 	each language have its specific compiler which is made of specific FRONT-END components and generic MIDDLE-END/BACK-END components.
+#  	a compiler driver might be seens as a kind of FRONT-END door
+#
+#		a compiler driver launch 			 : compiler (FRONT-END/MIDDLE-END/BACK-END)	---> assembler ---> 		linker
+#		(for C:)				gcc						 :								cc1													--->		as 		 ---> 	collect2/ld
+#
+# Structure of a compiler :
+#										FRONT-END													-------> 							MIDDLE-END 						------>						BACK-END
+#					(specific preprocessor/parser)																		optimizer
+#	[SOURCE]		->	[AST:SYNTAX TREE]		-> 	[GENERIC]			->				[GIMPLE]	->	[SSA]	->  [RTL]				->				[ASSEMBLY CODE]
+#
+# LLVM ------------------------------------------------------
+#
+#			http://stackoverflow.com/a/27591168/5027535
+#			LLVM is a generic MIDDLE-END and a BACK-END
+#			Clang is 3 diffirent things
+#					* Clang is a compiler driver
+#					* Clang is a compiler (FRONT-END/MIDDLE-END/BACK-END) using LLVM (MIDDLE-END/BACK-END)
+#					* libclang is the FRONT-END part (preprocessor/parser) of the Clang compiler
+#			libclang is the FRONT-END part of the Clang compiler using LLVM BACK-END
 
 function __start_build_session() {
 	__reset_build_env
@@ -131,8 +158,8 @@ function __toolset_init() {
 			$c
 		done
 	fi
-	__pop_schema_context
 	STELLA_APP_FEATURE_ROOT=$_save_STELLA_APP_FEATURE_ROOT
+	__pop_schema_context
 }
 
 # TOOLSET ------------------------------------------------------------------------------------------------------------------------------
@@ -226,6 +253,9 @@ function __set_toolset() {
 
 	case $STELLA_BUILD_COMPIL_FRONTEND in
 		default)
+			# NOTE : we use gcc binary as default compiler driver/front end
+			#				on macos, gcc binary is in fact clang.
+			#				So in default mode on linux, gcc will be used, on darwin, clang will be used
 			STELLA_BUILD_COMPIL_FRONTEND_BIN=gcc
 		;;
 		clang-omp*)
@@ -271,7 +301,6 @@ function __require_current_toolset() {
 	case $STELLA_BUILD_BUILD_TOOL in
 		make)
 			__require "make" "build-chain-standard" "SYSTEM"
-			#STELLA_BUILD_BUILD_TOOL_BIN=make
 		;;
 		ninja*)
 			__toolset_install "$STELLA_BUILD_BUILD_TOOL"
@@ -281,6 +310,7 @@ function __require_current_toolset() {
 
 	case $STELLA_BUILD_COMPIL_FRONTEND in
 		default)
+			# NOTE : will look for gcc (or clang on macos) and if not found ask to install default system compiler
 			__require "gcc" "build-chain-standard" "SYSTEM"
 		;;
 		clang-omp*)
@@ -290,8 +320,28 @@ function __require_current_toolset() {
 			__set_build_mode "RPATH" "ADD" ""
 		;;
 		gcc*)
-			__toolset_install "$STELLA_BUILD_COMPIL_FRONTEND"
-			__toolset_init "$STELLA_BUILD_COMPIL_FRONTEND"
+		 	__translate_schema "$STELLA_BUILD_COMPIL_FRONTEND" "_REQUIRED_TOOLSET_NAME" "_REQUIRED_TOOLSET_VER"
+			local _install_gcc=1
+
+			if $(type gcc &>/dev/null); then
+				_install_gcc=0
+				if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+					if [ "$(__gcc_is_clang)" == "1" ]; then
+						_install_gcc=1
+					fi
+				fi
+				if [ ! "$_REQUIRED_TOOLSET_VER" == "" ]; then
+					if [ "$(__gcc_check_min_version "$_REQUIRED_TOOLSET_VER")" == "0" ]; then
+						_install_gcc=1
+					fi
+				fi
+			fi
+
+			if [ "$_install_gcc" == "1" ]; then
+				__toolset_install "$STELLA_BUILD_COMPIL_FRONTEND"
+				__toolset_init "$STELLA_BUILD_COMPIL_FRONTEND"
+			fi
+
 		;;
 	esac
 
@@ -1496,6 +1546,7 @@ function __set_build_env() {
 	# http://stackoverflow.com/a/19637199
 	# On 10.8 and earlier libstdc++ is chosen by default, on version >= 10.9 libc++ is chosen by default.
 	# by default -mmacosx-version-min value is used to choose one of them
+	# about linux and macos c++ libs : # http://stackoverflow.com/a/19774902/5027535
 	if [ "$1" == "DARWIN_STDLIB" ]; then
 		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 			# we seems to need this on both cflags and ldflags (i.e for openttd)
