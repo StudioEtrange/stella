@@ -70,6 +70,18 @@ function feature_xgboost_install_source() {
 
 	__del_folder "$SRC_DIR"
 
+	local _ext="so"
+	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+		_ext="dylib"
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+		_ext="so"
+	fi
+
+	ln -s $INSTALL_DIR/liblibxgboost.$_ext $INSTALL_DIR/libxgboost.so
+	mkdir $INSTALL_DIR/lib
+	ln -s $INSTALL_DIR/liblibxgboost.$_ext $INSTALL_DIR/lib/libxgboost.so
+
 }
 
 
