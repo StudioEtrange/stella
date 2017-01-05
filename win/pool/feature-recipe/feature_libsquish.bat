@@ -31,7 +31,7 @@ goto :eof
 	set FEAT_ENV_CALLBACK=
 
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\lib\squish.lib"
-	set FEAT_SEARCH_PATH=	
+	set "FEAT_SEARCH_PATH="
 
 goto :eof
 

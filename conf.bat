@@ -94,7 +94,7 @@ set "NPM=npm"
 
 
 :: FEATURE LIST ---------------------------------------------
-set "__STELLA_FEATURE_LIST=fasttext wsusoffline rust tcpview libsquish bzip2 diffutils jpeg curl libogg mode-export freetype libpng zlib git docker-swarm socat nginx mingw-w64 go-build-chain go-crosscompile-chain go docker-bundle docker docker-machine oracle-jdk maven spark nikpeviewer dependencywalker conemu goconfig-cli ninja jom cmake packer perl ruby rubydevkit nasm python vagrant openssh wget unzip sevenzip patch gnumake"
+set "__STELLA_FEATURE_LIST=miniconda fasttext wsusoffline rust tcpview libsquish bzip2 diffutils jpeg curl libogg mode-export freetype libpng zlib git docker-swarm socat nginx mingw-w64 go-build-chain go-crosscompile-chain go docker-bundle docker docker-machine oracle-jdk maven spark nikpeviewer dependencywalker conemu goconfig-cli ninja jom cmake packer perl ruby rubydevkit nasm python vagrant openssh wget unzip sevenzip patch gnumake"
 
 :: SYS PACKAGE --------------------------------------------
 :: list of available installable system package
