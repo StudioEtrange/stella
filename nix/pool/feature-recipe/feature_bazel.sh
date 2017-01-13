@@ -6,21 +6,22 @@ _bazel_INCLUDED_=1
 
 function feature_bazel() {
 	FEAT_NAME=bazel
-	FEAT_LIST_SCHEMA="0_3_1:source 0_3_0:source 0_2_2b:source"
-	FEAT_DEFAULT_VERSION=0_3_1
+	FEAT_LIST_SCHEMA="0_4_2:source 0_3_2:source 0_2_2b:source"
+	FEAT_DEFAULT_VERSION=0_4_2
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_bazel_0_3_1() {
-	FEAT_VERSION=0_3_1
+
+function feature_bazel_0_4_2() {
+	FEAT_VERSION=0_4_2
 
 	# TODO : need jdk8
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
-	FEAT_SOURCE_URL=https://github.com/bazelbuild/bazel/archive/0.3.1.tar.gz
-	FEAT_SOURCE_URL_FILENAME=bazel-0.3.1.tar.gz
+	FEAT_SOURCE_URL=https://github.com/bazelbuild/bazel/releases/download/0.4.2/bazel-0.4.2-dist.zip
+	FEAT_SOURCE_URL_FILENAME=bazel-0.4.2-dist.zip
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
 	FEAT_BINARY_URL=
@@ -37,16 +38,15 @@ function feature_bazel_0_3_1() {
 }
 
 
-
-function feature_bazel_0_3_0() {
-	FEAT_VERSION=0_3_0
+function feature_bazel_0_3_2() {
+	FEAT_VERSION=0_3_2
 
 	# TODO : need jdk8
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
-	FEAT_SOURCE_URL=https://github.com/bazelbuild/bazel/archive/0.3.0.tar.gz
-	FEAT_SOURCE_URL_FILENAME=bazel-0.3.0.tar.gz
+	FEAT_SOURCE_URL=https://github.com/bazelbuild/bazel/archive/0.3.2.zip
+	FEAT_SOURCE_URL_FILENAME=bazel-0.3.2.zip
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
 	FEAT_BINARY_URL=
@@ -59,6 +59,7 @@ function feature_bazel_0_3_0() {
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bazel
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
+
 }
 
 

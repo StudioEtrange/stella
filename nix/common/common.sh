@@ -1,8 +1,9 @@
 if [ ! "$_STELLA_COMMON_INCLUDED_" == "1" ]; then
 _STELLA_COMMON_INCLUDED_=1
 
+# TODO : do not hash 
 #turns off bash's hash function
-set +h
+#set +h
 
 
 # VARIOUS-----------------------------

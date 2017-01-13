@@ -1,24 +1,24 @@
-if [ ! "$_DOCKERSWARM_INCLUDED_" == "1" ]; then 
+if [ ! "$_DOCKERSWARM_INCLUDED_" == "1" ]; then
 _DOCKERSWARM_INCLUDED_=1
 
 
 function feature_docker-swarm() {
 	FEAT_NAME="docker-swarm"
-	FEAT_LIST_SCHEMA="1_1_0_RC1:source"
-	FEAT_DEFAULT_VERSION="1_1_0_RC1"
+	FEAT_LIST_SCHEMA="1_2_5:source"
+	FEAT_DEFAULT_VERSION="1_2_5"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
 
 
-function feature_docker-swarm_1_1_0_RC1() {
-	FEAT_VERSION="1_1_0_RC1"
+function feature_docker-swarm_1_2_5() {
+	FEAT_VERSION="1_2_5"
 	FEAT_SOURCE_DEPENDENCIES="go-build-chain#1_5_3"
 	FEAT_BINARY_DEPENDENCIES=
 
-	FEAT_SOURCE_URL="https://github.com/docker/swarm/archive/v1.1.0-rc1.tar.gz"
-	FEAT_SOURCE_URL_FILENAME="docker-swarm-v1.1.0-rc1.tar.gz"
+	FEAT_SOURCE_URL="https://github.com/docker/swarm/archive/v1.2.5.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="docker-swarm-v1.2.5.tar.gz"
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
 	FEAT_BINARY_URL=
@@ -28,7 +28,7 @@ function feature_docker-swarm_1_1_0_RC1() {
 	FEAT_SOURCE_CALLBACK=
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
-	
+
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/swarm"
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 

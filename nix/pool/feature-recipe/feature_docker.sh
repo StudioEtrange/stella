@@ -13,16 +13,16 @@ _DOCKER_INCLUDED_=1
 
 function feature_docker() {
 	FEAT_NAME=docker
-	FEAT_LIST_SCHEMA="1_12_3:binary 1_8_1:binary 1_9_1:binary 1_10_3:binary 1_11_1:binary"
-	FEAT_DEFAULT_VERSION=1_12_3
+	FEAT_LIST_SCHEMA="1_12_6:binary 1_8_1:binary 1_9_1:binary 1_10_3:binary 1_11_1:binary"
+	FEAT_DEFAULT_VERSION=1_12_6
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
 
 
-function feature_docker_1_12_3() {
-	FEAT_VERSION=1_12_3
+function feature_docker_1_12_6() {
+	FEAT_VERSION=1_12_6
 
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -32,13 +32,13 @@ function feature_docker_1_12_3() {
 	FEAT_SOURCE_URL_PROTOCOL=
 
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-		FEAT_BINARY_URL=https://get.docker.com/builds/Darwin/x86_64/docker-1.12.3.tgz
-		FEAT_BINARY_URL_FILENAME=docker-client-1.12.3-darwin.tgz
+		FEAT_BINARY_URL=https://get.docker.com/builds/Darwin/x86_64/docker-1.12.6.tgz
+		FEAT_BINARY_URL_FILENAME=docker-client-1.12.6-darwin.tgz
 	fi
 
 	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-		FEAT_BINARY_URL=https://get.docker.com/builds/Linux/x86_64/docker-1.12.3.tgz
-		FEAT_BINARY_URL_FILENAME=docker-1.12.3-linux.tgz
+		FEAT_BINARY_URL=https://get.docker.com/builds/Linux/x86_64/docker-1.12.6.tgz
+		FEAT_BINARY_URL_FILENAME=docker-1.12.6-linux.tgz
 	fi
 	FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 

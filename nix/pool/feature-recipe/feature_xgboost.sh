@@ -58,8 +58,6 @@ function feature_xgboost_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
-	__set_build_mode "RPATH" "ADD" "$LIB_TARGET_FOLDER"
-
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD SOURCE_KEEP NO_INSTALL"
 
 	__copy_folder_content_into "$SRC_DIR" "$INSTALL_DIR"

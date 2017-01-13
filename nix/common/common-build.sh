@@ -13,13 +13,18 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 #														__reset_build_env : reset every __set_build_mode values to default or empty
 #														__set_toolset STELLA_BUILD_DEFAULT_TOOLSET
 
+
+
 #		GET SOURCE CODE
 #		__get_resource
 
 #		SET TOOLSET
 #		__set_toolset
 
-# 		SET CUSTOM BUILD MODE
+#		ADD EXTRA TOOLS
+#		__add_toolset("bazel")
+
+# 	SET CUSTOM BUILD MODE
 #		__set_build_mode ARCH x86
 
 #		SET CUSTOM FLAGS
@@ -31,10 +36,11 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 #		AUTOMATIC BUILD AND INSTALL
 #		__auto_build
 
-
+#				INSTALL/INIT REQUIRED TOOLSET
+#				__enable_current_toolset 	(included in __start_manual_build)
 
 #				SET BUILD ENV AND FLAGS
-#				__prepare_build
+#				__prepare_build 					(included in __start_manual_build)
 #						prepare specific compiler env
 #						call set_env_vars_for_gcc-clang
 #						call set_env_vars_for_cmake
@@ -49,6 +55,8 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 #						call __fix_built_files
 #						call __check_built_files
 
+#				DISABLE REQUIRED TOOLSET
+#				__disable_current_toolset	(included in __end_manual_build)
 
 
 # TOOLSET & BUILD TOOLS ----------------
@@ -163,6 +171,11 @@ function __toolset_init() {
 }
 
 # TOOLSET ------------------------------------------------------------------------------------------------------------------------------
+function __add_toolset() {
+	local _SCHEMA=$1
+	STELLA_BUILD_EXTRA_TOOLSET="$STELLA_BUILD_EXTRA_TOOLSET $_SCHEMA"
+}
+
 function __set_toolset() {
 	local MODE="$1"
 	local OPT="$2"
@@ -271,7 +284,7 @@ function __set_toolset() {
 }
 
 
-function __require_current_toolset() {
+function __enable_current_toolset() {
 	echo "** Require build toolset : $STELLA_BUILD_TOOLSET [ config_tool:$STELLA_BUILD_CONFIG_TOOL build_tool:$STELLA_BUILD_BUILD_TOOL compil_frontend:$STELLA_BUILD_COMPIL_FRONTEND]"
 
 	case $STELLA_BUILD_CONFIG_TOOL in
@@ -317,7 +330,6 @@ function __require_current_toolset() {
 			__toolset_install "$STELLA_BUILD_COMPIL_FRONTEND"
 			__toolset_init "$STELLA_BUILD_COMPIL_FRONTEND"
 
-			__set_build_mode "RPATH" "ADD" ""
 		;;
 		gcc*)
 		 	__translate_schema "$STELLA_BUILD_COMPIL_FRONTEND" "_REQUIRED_TOOLSET_NAME" "_REQUIRED_TOOLSET_VER"
@@ -347,9 +359,53 @@ function __require_current_toolset() {
 
 	echo "** Require build toolset : $STELLA_BUILD_TOOLSET [ config_tool:$STELLA_BUILD_CONFIG_TOOL build_tool:$STELLA_BUILD_BUILD_TOOL compil_frontend:$STELLA_BUILD_COMPIL_FRONTEND]"
 	echo
+
+	echo "** Require extra toolset : $STELLA_BUILD_EXTRA_TOOLSET"
+	for s in $STELLA_BUILD_EXTRA_TOOLSET; do
+		__toolset_install "$s"
+		__toolset_init "$s"
+	done
+	echo
+
+
+	echo "** Enable current toolset path"
+	_save_path_CURRENT_TOOLSET="$PATH"
+	PATH="$STELLA_BUILD_TOOLSET_PATH:$PATH"
+}
+
+
+function __disable_current_toolset() {
+	echo "** Disable current toolset path"
+	PATH="$_save_path_CURRENT_TOOLSET"
 }
 
 # BUILD ------------------------------------------------------------------------------------------------------------------------------
+function __start_manual_build() {
+	local NAME
+	local SOURCE_DIR
+	local INSTALL_DIR
+
+	NAME="$1"
+	SOURCE_DIR="$2"
+	INSTALL_DIR="$3"
+
+	echo " ** Manual-building $NAME"
+
+	__enable_current_toolset
+
+	# set build env
+	__prepare_build "$INSTALL_DIR" "$SOURCE_DIR"
+
+}
+
+
+function __end_manual_build() {
+
+	__disable_current_toolset
+	echo " ** Done"
+}
+
+
 function __auto_build() {
 
 	local NAME
@@ -405,15 +461,9 @@ function __auto_build() {
 
 	echo " ** Auto-building $NAME into $INSTALL_DIR for $STELLA_CURRENT_OS"
 
-	echo " ** buildset tools checking"
-	__require_current_toolset
-	local _save_path="$PATH"
-	PATH="$STELLA_BUILD_TOOLSET_PATH:$PATH"
 
-	#local _check=
-	#[ "$_opt_configure" == "ON" ] && _check=1
-	#[ "$_opt_build" == "ON" ] && _check=1
-	#[ "$_check" == "1" ] && __require_current_toolset
+	__enable_current_toolset
+
 
 	# folder stuff
 	BUILD_DIR="$SOURCE_DIR"
@@ -450,7 +500,7 @@ function __auto_build() {
 
 	[ "$_opt_inspect_and_fix_build" == "ON" ] && __inspect_and_fix_build "$INSTALL_DIR" "$OPT"
 
-	PATH=$_save_path
+	__disable_current_toolset
 	echo " ** Done"
 
 }
@@ -1111,6 +1161,7 @@ function __reset_build_env() {
 	# TOOLSET
 	STELLA_BUILD_TOOLSET=
 	STELLA_BUILD_TOOLSET_PATH=
+	STELLA_BUILD_EXTRA_TOOLSET=
 	STELLA_BUILD_CONFIG_TOOL=
 	STELLA_BUILD_BUILD_TOOL=
 	STELLA_BUILD_COMPIL_FRONTEND=
@@ -1195,6 +1246,7 @@ function __prepare_build() {
 	echo "====> Compiler Frontend : $STELLA_BUILD_COMPIL_FRONTEND [$STELLA_BUILD_COMPIL_FRONTEND_BIN]"
 	echo "====> env CC : $CC"
 	echo "====> env CXX : $CXX"
+	echo "====> Extra toolset : $STELLA_BUILD_EXTRA_TOOLSET"
 	echo "** BUILD INFO"
 	echo "====> Build arch directive : $STELLA_BUILD_ARCH"
 	echo "====> Parallelized (if supported) : $STELLA_BUILD_PARALLELIZE"

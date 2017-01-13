@@ -82,19 +82,20 @@ function feature_template_install_source() {
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
 
-	#__set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL make"
 	__set_toolset "STANDARD"
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP"
 
 	__feature_callback
 
-	__prepare_build "$INSTALL_DIR"
+	__start_manual_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
 
 	cd "$SRC_DIR"
 
 	make -j$STELLA_NB_CPU
 	make install && __del_folder $SRC_DIR
+
+	__end_manual_build
 }
 
 
@@ -103,7 +104,6 @@ function feature_template_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
-	#__set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL make"
 	__set_toolset "STANDARD"
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP"
@@ -112,7 +112,8 @@ function feature_template_install_source() {
 	__link_feature_library "zlib#1_2_8" "FORCE_DYNAMIC"
 
 	__set_build_mode "OPTIMIZATION" "2"
-	__prepare_build "$INSTALL_DIR"
+
+	__start_manual_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
 
 	cd "$SRC_DIR"
 
@@ -120,6 +121,8 @@ function feature_template_install_source() {
 	make install && __del_folder $SRC_DIR
 
 	__inspect_and_fix_build "$INSTALL_DIR"
+
+	__end_manual_build
 }
 
 

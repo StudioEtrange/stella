@@ -1,9 +1,12 @@
 if [ ! "$_STELLA_CONF_INCLUDED_" == "1" ]; then
 _STELLA_CONF_INCLUDED_=1
 
+# disable PATH lookup command cache
+set -h
+
 # DEBUG STELLA
 #set -x
-# set -xv
+#set -xv
 
 _STELLA_CONF_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 if [ "$STELLA_CURRENT_RUNNING_DIR" == "" ]; then
@@ -12,10 +15,6 @@ if [ "$STELLA_CURRENT_RUNNING_DIR" == "" ]; then
 fi
 _STELLA_CONF_CURRENT_FILE="$_STELLA_CONF_CURRENT_FILE_DIR/$(basename ${BASH_SOURCE[0]})"
 
-
-# for I in $(seq 0 $(expr ${#BASH_SOURCE[@]} - 1) ); do
-#         echo BASH_SOURCE\[$I\] ${BASH_SOURCE[$I]}
-# done
 
 # STELLA PATHS ---------------------------------------------
 STELLA_ROOT="$_STELLA_CONF_CURRENT_FILE_DIR"
