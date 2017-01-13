@@ -302,6 +302,7 @@ goto :eof
 	set "_action=%~1"
 	set "_id=%~2"
 	set "_packages_list=%~3"
+	set "_optional_args=%~4"
 
 	echo  ** !_action! !_id! on your system
 
@@ -324,12 +325,12 @@ goto :eof
 
 	if "!_action!"=="INSTALL" (
 		if "!_package_manager!"=="chocolatey" (
-			choco install !_packages!
+			choco install !_packages! !_optional_args!
 		)
 	)
 	if "!_action!"=="REMOVE" (
 		if "!_package_manager!"=="chocolatey" (
-			choco uninstall !_packages!
+			choco uninstall !_packages! !_optional_args!
 		)
 	)
 
@@ -356,10 +357,11 @@ goto :eof
 
 
 :sys_install_vs2015community
-	REM TODO  this chocolatey recipe do not install all VC Tools by default
+	REM NOTE : by default some visual studio tools are not installed
 	REM https://social.msdn.microsoft.com/Forums/en-US/1071be0e-2a46-4c30-9546-ea9d7c4755fa/where-is-vcvarsallbat-file?forum=visualstudiogeneral
 	call :sys_package_manager "INSTALL" "vs2015community" "chocolatey visualstudio2015community"
 goto :eof
+
 :sys_remove_vs2015community
 	call :sys_package_manager "REMOVE" "vs2015community" "chocolatey visualstudio2015community"
 goto :eof

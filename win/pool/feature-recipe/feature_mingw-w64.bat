@@ -13,7 +13,7 @@ REM https://ffmpeg.zeranoe.com/blog/?cat=4
 
 REM official website : http://mingw-w64.yaxm.org/doku.php/start
 REM download url from mingw-builds from : http://sourceforge.net/projects/mingw-w64/
-REM																				https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/
+REM					https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/
 
 :feature_mingw-w64
 	set "FEAT_NAME=mingw-w64"
