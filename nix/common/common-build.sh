@@ -34,7 +34,7 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 #		__link_feature_library
 
 #		AUTOMATIC BUILD AND INSTALL
-#		__auto_build
+#		__auto_build		OR __start_manual_build/__end_manual_build
 
 #				INSTALL/INIT REQUIRED TOOLSET
 #				__enable_current_toolset 	(included in __start_manual_build)

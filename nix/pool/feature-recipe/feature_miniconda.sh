@@ -85,11 +85,11 @@ function feature_miniconda_4_2_12_PYTHON2() {
 
 	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
 		FEAT_BINARY_URL_x86=https://repo.continuum.io/miniconda/Miniconda2-4.2.12-Linux-x86.sh
-		FEAT_BINARY_URL_FILENAME_x86=Miniconda3-4.2.12-Linux-x86.sh
+		FEAT_BINARY_URL_FILENAME_x86=Miniconda2-4.2.12-Linux-x86.sh
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP
 
 		FEAT_BINARY_URL_x64=https://repo.continuum.io/miniconda/Miniconda2-4.2.12-Linux-x86_64.sh
-		FEAT_BINARY_URL_FILENAME_x64=Miniconda3-4.2.12-Linux-x86_64.sh
+		FEAT_BINARY_URL_FILENAME_x64=Miniconda2-4.2.12-Linux-x86.sh
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
 	fi
 
