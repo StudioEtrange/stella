@@ -18,9 +18,9 @@ _STELLA_PLATFORM_INCLUDED_=1
 #			linux <---> linux
 
 function __get_os_from_distro() {
-	local _os=$1
+	local _distro=$1
 
-	case $_os in
+	case $_distro in
 		"Red Hat Enterprise Linux")
 			echo "rhel"
 			;;
@@ -45,7 +45,7 @@ function __get_os_from_distro() {
 		"Mac OS X"|macos)
 			echo "macos"
 			;;
-		windows*)
+		*Windows*|*windows*)
 			echo "windows"
 			;;
 		*)
@@ -53,6 +53,10 @@ function __get_os_from_distro() {
 			;;
 	esac
 }
+
+
+
+
 
 function __get_platform_from_os() {
 	local _os=$1
@@ -92,6 +96,26 @@ function __get_platform_suffix() {
 	esac
 }
 
+
+function __get_os_env_from_kernel() {
+	local _kernel=$1
+
+	case $kernel in
+		*MINGW64*)
+			echo "msys2-mingw64"
+			;;
+		*MINGW32*)
+			echo "msys2-mingw32"
+			;;
+		*MSYS*)
+			echo "msys2"
+			;;
+		*CYGWIN*)
+			echo "cygwin"
+			;;
+	esac
+}
+
 function __set_current_platform_info() {
 
 	# call screenFetch
@@ -102,14 +126,15 @@ function __set_current_platform_info() {
 	source $STELLA_ARTEFACT/screenFetch/screenfetch-dev -n -E 1>/dev/null 2>&1
 	unset exit
 
+
 	STELLA_CURRENT_OS=$(__get_os_from_distro "$distro")
+	STELLA_CURRENT_OS_ENV=$(__get_os_env_from_kernel "$kernel")
 	STELLA_CURRENT_PLATFORM=$(__get_platform_from_os "$STELLA_CURRENT_OS")
 	STELLA_CURRENT_PLATFORM_SUFFIX=$(__get_platform_suffix "$STELLA_CURRENT_PLATFORM")
 
-	# linux
+
 	if [[ -n `which nproc 2> /dev/null` ]]; then
 		STELLA_NB_CPU=`nproc`
-	# Darwin
 	elif [[ -n `which sysctl 2> /dev/null` ]]; then
 		STELLA_NB_CPU=`sysctl hw.ncpu 2> /dev/null | awk '{print $NF}'`
 	else
@@ -133,7 +158,6 @@ function __set_current_platform_info() {
 		STELLA_CPU_ARCH=32
 		[ "$_cpu" == "1" ] && STELLA_CPU_ARCH=64
 	fi
-
 
 	if [ "$(uname -m | grep 64)" == "" ]; then
 		STELLA_KERNEL_ARCH=32

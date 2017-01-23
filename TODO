@@ -15,6 +15,12 @@ msys2 + mingw-w64 RECIPES :
 
 # NOTE : homebrew flag setting system : https://github.com/Homebrew/homebrew/blob/master/Library/Homebrew/extend/ENV/super.rb
 
+
+# NOTE update screenFetch
+    rm -Rf nix/pool/artefact/screenFetch
+    cd nix/pool/artefact
+    git clone https://github.com/KittyKatt/screenFetch
+
 [ ] Update README
   [ ] history : FIRST PUSH OF stella pre version : https://bitbucket.org/StudioEtrange/ryzomcore-script/src/1308706a1dc3f1dde7d65b048e9b16f2a2f2f518
 
