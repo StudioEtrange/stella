@@ -28,7 +28,7 @@ goto :eof
 	set "FEAT_SOURCE_URL=http://foo.com/template-1_0_0-src.zip"
 	set "FEAT_SOURCE_URL_FILENAME="
 	set "FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP"
-	
+
 	REM Properties for BINARY flavour
 	set FEAT_BINARY_URL=
 	set FEAT_BINARY_URL_FILENAME=
@@ -47,13 +47,13 @@ goto :eof
 	REM automatic callback each time feature is initialized, to init env var
 	set FEAT_ENV_CALLBACK=feature_template_setenv
 
-	
+
 
 	REM List of files to test if feature is installed
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\bin\template.exe"
 	REM PATH to add to system PATH
 	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!\bin"
-	
+
 
 goto :eof
 
@@ -73,11 +73,11 @@ goto :eof
 	set "SRC_DIR=!FEAT_INSTALL_ROOT!\!FEAT_NAME!-!FEAT_VERSION!-src"
 	set "BUILD_DIR=!FEAT_INSTALL_ROOT!\!FEAT_NAME!-!FEAT_VERSION!-build"
 
-	call %STELLA_COMMON%\common-build.bat :set_toolset "STANDARD"
+	call %STELLA_COMMON%\common-build.bat :set_toolset "MS"
 	REM call %STELLA_COMMON%\common-build.bat :set_toolset "CUSTOM" "CONFIG_TOOL cmake"
 
 	call %STELLA_COMMON%\common.bat :get_resource "!FEAT_NAME!" "!FEAT_SOURCE_URL!" "!FEAT_SOURCE_URL_PROTOCOL!" "!SRC_DIR!" "DEST_ERASE STRIP"
-	
+
 	call %STELLA_COMMON%\common-feature :feature_callback
 
 	:: out of tree build do not work
@@ -93,11 +93,11 @@ goto :eof
 	set "SRC_DIR=!FEAT_INSTALL_ROOT!\!FEAT_NAME!-!FEAT_VERSION!-src"
 	set "BUILD_DIR=!FEAT_INSTALL_ROOT!\!FEAT_NAME!-!FEAT_VERSION!-build"
 
-	call %STELLA_COMMON%\common-build.bat :set_toolset "STANDARD"
+	call %STELLA_COMMON%\common-build.bat :set_toolset "MS"
 	REM call %STELLA_COMMON%\common-build.bat :set_toolset "CUSTOM" "CONFIG_TOOL cmake"
 
 	call %STELLA_COMMON%\common.bat :get_resource "!FEAT_NAME!" "!FEAT_SOURCE_URL!" "!FEAT_SOURCE_URL_PROTOCOL!" "!SRC_DIR!" "DEST_ERASE STRIP"
-	
+
 	call %STELLA_COMMON%\common-feature :feature_callback
 
 	call %STELLA_COMMON%\common-build.bat :prepare_build "!INSTALL_DIR!"
@@ -107,5 +107,3 @@ goto :eof
 	nmake -f %SRC_DIR%\Makefile
 
 goto :eof
-
-

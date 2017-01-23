@@ -45,6 +45,42 @@ goto :eof
 ::						call __check_built_files
 
 
+:: TOOLSET & BUILD TOOLS ----------------
+:: CURRENT supported build toolset
+REM CONFIG TOOL | BUILD TOOL 		| COMPIL FRONTEND
+REM    cmake	|	ninja	 				|   gcc 	===> depend on env CC or CMAKE_C_COMPILER (path or exe name)
+REM    cmake	|	ninja	 				|   cl 		===>
+REM    cmake	|	nmake	 				|   cl
+REM    cmake	|	jom		 				|   ?
+REM    cmake	|	mingw-make		|   gcc
+REM 	 NULL		|	nmake	 				|   cl
+REM 	 NULL		|	mingw-make		|   gcc
+
+REM TOOLSET
+REM STANDARD : 	cmake	|	mingw-make		|   gcc  ( cl OR gcc ?) (default?)
+REM MS  : 			cmake	|	nmake	 				|   cl
+
+
+:: TODO : NOT DONE : align code to implement these :
+:: Available tools :
+:: 	CONFIG_TOOL : cmake, configure
+:: 	BUILD_TOOL : nmake, ninja, jom, make
+:: 	COMPIL_FRONTEND : default (default - depend on env CC or CMAKE_C_COMPILER (path or exe name)), cl, gcc
+::										in reality COMPIL_FRONTEND should be called COMPIL_DRIVER
+::
+:: Available preconfigured toolset on windows system :
+:: 	TOOLSET 		| CONFIG TOOL 				| BUILD TOOL 							| COMPIL FRONTEND
+::	MS					|	cmake								|		nmake									|			cl
+:: 	MSYS2				| configure						|		make									|			gcc
+::	MINGW-W64		| NULL								|		make									|		( cl OR gcc ?) (default?)
+
+:: MSYS2 TOOLSET
+::		make AND gcc are installed from pacman : bundle : mingw64/mingw-w64-x86_64-toolchain or mingw32/mingw-w64-i686-toolchain
+::				we do not use make/gcc versions from msys2, but from mingw-w64 inside msys2
+::				WARN : bundle mingw-w64-x86_64-toolchain install a lot of binaries which may generate conflicts (ex:python)
+:: MINGW-W64 TOOLSET
+::		make AND gcc are part of default mingw-w64 env
+
 
 :start_build_session
 	call :reset_build_env

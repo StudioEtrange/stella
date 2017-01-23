@@ -5,14 +5,8 @@ goto :eof
 
 REM https://chocolatey.org/packages/mingw
 
-REM build some library with mingw-w64 :
-REM http://www.gaia-gis.it/spatialite-3.0.0-BETA/mingw64_how_to.html
-
-REM build from source
-REM https://ffmpeg.zeranoe.com/blog/?cat=4
-
-REM official website : http://mingw-w64.yaxm.org/doku.php/start
-REM download url from mingw-builds from : http://sourceforge.net/projects/mingw-w64/
+REM official website : http://mingw-w64.org/
+REM we use download url known as 'mingw-builds' (see : http://mingw-w64.org/doku.php/download)
 REM					https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/
 
 :feature_mingw-w64

@@ -3,7 +3,8 @@ call %*
 goto :eof
 
 
-REM TODO build socat from source do not work - maybe try with cygwin
+REM TODO build socat from source do not work - maybe try with cygwin or msys2 (https://github.com/Alexpux/MSYS2-packages/tree/master/socat)
+REM TODO NOT FINISHED
 
 :feature_socat
 	set "FEAT_NAME=socat"
@@ -22,7 +23,7 @@ goto :eof
 	set "FEAT_SOURCE_URL=http://www.dest-unreach.org/socat/download/socat-1.7.3.1.tar.gz"
 	set "FEAT_SOURCE_URL_FILENAME=socat-1.7.3.1.tar.gz"
 	set "FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP"
-	
+
 	set FEAT_BINARY_URL=
 	set FEAT_BINARY_URL_FILENAME=
 	set FEAT_BINARY_URL_PROTOCOL=
@@ -44,7 +45,7 @@ goto :eof
 	set FEAT_SOURCE_URL=
 	set FEAT_SOURCE_URL_FILENAME=
 	set FEAT_SOURCE_URL_PROTOCOL=
-	
+
 	set "FEAT_BINARY_URL=https://github.com/StudioEtrange/socat-windows/archive/1.7.2.1.zip"
 	set "FEAT_BINARY_URL_FILENAME=socat-windows-1.7.2.1.zip"
 	set "FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP"
@@ -69,8 +70,8 @@ goto :eof
 
 	call %STELLA_COMMON%\common.bat :get_resource "!FEAT_NAME!" "!FEAT_SOURCE_URL!" "!FEAT_SOURCE_URL_PROTOCOL!" "!SRC_DIR!" "DEST_ERASE STRIP FORCE_NAME !FEAT_BINARY_URL_FILENAME!"
 
-	call %STELLA_COMMON%\common-build.bat :set_toolset "CUSTOM" "CONFIG_TOOL NONE BUILD_TOOL mingw-make COMPIL_FRONTEND gcc"
-	
+	call %STELLA_COMMON%\common-build.bat :set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL mingw-make COMPIL_FRONTEND gcc"
+
 	set AUTO_INSTALL_CONF_FLAG_POSTFIX=
 	set AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 

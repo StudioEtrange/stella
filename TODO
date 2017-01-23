@@ -1,10 +1,17 @@
 TODO
 
 NOTE :
-RECIPE inspiration
+NIX RECIPE inspiration
 * nixos (https://github.com/NixOS/nixpkgs)
 * homebrew (https://github.com/Homebrew/homebrew-core)
 * 0install (http://0install.net/)
+
+mingw-w64 RECIPE :
+* http://www.gaia-gis.it/spatialite-3.0.0-BETA/mingw64_how_to.html
+
+msys2 + mingw-w64 RECIPES :
+* https://github.com/Alexpux/MINGW-packages
+* https://github.com/Alexpux/MSYS2-packages
 
 # NOTE : homebrew flag setting system : https://github.com/Homebrew/homebrew/blob/master/Library/Homebrew/extend/ENV/super.rb
 
@@ -23,9 +30,7 @@ RECIPE inspiration
 [ ] win add recipes for these libs :
 https://ryzomcore.atlassian.net/wiki/display/RC/MinGW+External+Libraries
 https://ryzomcore.atlassian.net/wiki/display/RC/Create+External+Libs
-https://github.com/Alexpux/MINGW-packages
-[ ] win : build some library with mingw-w64 :
-http://www.gaia-gis.it/spatialite-3.0.0-BETA/mingw64_how_to.html
+
 [ ] win : build mingw-w64 compiler from source https://github.com/niXman/mingw-builds
 
 [ ] Default build arch equivalent to current cpu arch ? (and change option name buildarch with forcearch) (set STELLA_BUILD_ARCH_DEFAULT)

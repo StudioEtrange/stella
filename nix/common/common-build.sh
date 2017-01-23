@@ -63,14 +63,16 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 # Available tools :
 # CONFIG_TOOL : configure, cmake, autotools
 # BUILD_TOOL : make, ninja
-# COMPIL_FRONTEND : default (default means already present on system), clang-omp, gcc
+# COMPIL_FRONTEND : default (default means gcc or other aliased compiler already present on system), clang-omp, gcc
+#										in reality COMPIL_FRONTEND should be called COMPIL_DRIVER
 #
-# Available preconfigured toolset :
+# Available preconfigured toolset on Nix system :
 # TOOLSET 		| CONFIG TOOL 				| BUILD TOOL 		| COMPIL FRONTEND
 # STANDARD		|	configure						|		make				|			default
 # AUTOTOOLS		|	autotools-bundle#1	|		make				|			default
 #	NINJA				| cmake								|		ninja				| 		default
 #	CMAKE				|	cmake								|		make				|			default
+
 
 # NOTE :
 # GCC ------------------------------------------------------
@@ -99,7 +101,7 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 #					* Clang is a compiler driver
 #					* Clang is a compiler (FRONT-END/MIDDLE-END/BACK-END) using LLVM (MIDDLE-END/BACK-END)
 #					* libclang is the FRONT-END part (preprocessor/parser) of the Clang compiler
-#			libclang is the FRONT-END part of the Clang compiler using LLVM BACK-END
+#						libclang is the FRONT-END part of the Clang compiler using LLVM BACK-END
 
 function __start_build_session() {
 	__reset_build_env
