@@ -1,7 +1,7 @@
 if [ ! "$_STELLA_COMMON_INCLUDED_" == "1" ]; then
 _STELLA_COMMON_INCLUDED_=1
 
-# TODO : do not hash 
+# TODO : do not hash
 #turns off bash's hash function
 #set +h
 
@@ -33,7 +33,7 @@ _STELLA_COMMON_INCLUDED_=1
 # 1.0.1 is more recent than 1.0.1beta so in ASC : 1.0.1beta 1.0.1 and in DESC : 1.0.1 1.0.1beta
 # To activate this behaviour use "ENDING_CHAR_REVERSE" option
 # we also need to indicate separator only if we use ENDING_CHAR_REVERSE and if there is any separator (obviously)
-function __sort_version() {
+__sort_version() {
 	local list=$1
 	local opt="$2"
 
@@ -159,7 +159,7 @@ function __sort_version() {
 
 
 
-function __url_encode() {
+__url_encode() {
 	if [ "$(which xxd 2>/dev/null)" == "" ]; then
 		__url_encode_1 "$@"
 	else
@@ -168,7 +168,7 @@ function __url_encode() {
 }
 
 # https://gist.github.com/cdown/1163649
-function __url_encode_1() {
+__url_encode_1() {
     old_lc_collate=$LC_COLLATE
     LC_COLLATE=C
 		# local LANG=C
@@ -186,7 +186,7 @@ function __url_encode_1() {
 
 # https://gist.github.com/cdown/1163649
 # xxd is used to suppoert wide characters
-function __url_encode_with_xxd() {
+__url_encode_with_xxd() {
   local length="${#1}"
   for (( i = 0; i < length; i++ )); do
     local c="${1:i:1}"
@@ -199,7 +199,7 @@ function __url_encode_with_xxd() {
 
 # Faster solution than __url_encode_1 ? (without xxd)
 # http://unix.stackexchange.com/a/60698
-function __url_encode_2() {
+__url_encode_2() {
 	string=$1; format=; set --
   while
     literal=${string%%[!-._~0-9A-Za-z]*}
@@ -223,7 +223,7 @@ function __url_encode_2() {
 }
 
 # https://gist.github.com/cdown/1163649
-function __url_decode() {
+__url_decode() {
 
     local url_encoded="${1//+/ }"
     printf '%b' "${url_encoded//%/\\x}"
@@ -237,7 +237,7 @@ function __url_decode() {
 # It returns 0 if parsing was successful or non-zero otherwise.
 #
 # [schema://][user[:password]@][host][:port][/path][?[arg1=val1]...][#fragment]
-function __uri_parse() {
+__uri_parse() {
 	# uri capture
 	__stella_uri="$@"
 
@@ -288,7 +288,7 @@ function __uri_parse() {
 }
 
 # [user@]host[:port][/#abs_or_rel_path]
-function __transfert_stella() {
+__transfert_stella() {
 	local _uri="$1"
 	local _OPT="$2"
 	local _opt_ex_cache="EXCLUDE /$(__abs_to_rel_path $STELLA_INTERNAL_CACHE_DIR $STELLA_ROOT)/"
@@ -309,7 +309,7 @@ function __transfert_stella() {
 # example
 # __transfert_folder_rsync /foo/folder user@ip
 #			here path is empty, so folder will be sync inside home directory of user as /home/user/folder
-function __transfert_folder_rsync() {
+__transfert_folder_rsync() {
 	local _folder="$1"
 	local _uri="$2"
 
@@ -364,7 +364,7 @@ function __transfert_folder_rsync() {
 # example
 # __transfert_folder_rsync /foo/file1 user@ip:folder/file2
 #			file1 will be sync inside home directory of user as /home/user/folder/file2
-function __transfert_file_rsync() {
+__transfert_file_rsync() {
 	local _file="$1"
 	local _uri="$2"
 
@@ -382,7 +382,7 @@ function __transfert_file_rsync() {
 	rsync -avz -e "ssh -p $_ssh_port" "$_file" "$_target"
 }
 
-function __daemonize() {
+__daemonize() {
 	local _item_path=$1
 	local _log_file=$2
 
@@ -394,13 +394,13 @@ function __daemonize() {
 
 }
 
-function __get_active_path() {
+__get_active_path() {
 	echo "$PATH"
 }
 
 
 
-function __filter_list() {
+__filter_list() {
 	local _list="$1"
 	local _opt="$2"
 
@@ -447,16 +447,16 @@ function __filter_list() {
 
 
 # http://stackoverflow.com/questions/369758/how-to-trim-whitespace-from-a-bash-variable
-function __trim3() {
+__trim3() {
 	echo -e "$1" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'
 }
 
 # trim whitespace
-function __trim2() {
+__trim2() {
 	echo $(echo "$1" | sed -e 's/^ *//' -e 's/ *$//')
 }
 
-function __trim() {
+__trim() {
     local var="$*"
     var="${var#"${var%%[![:space:]]*}"}"   # remove leading whitespace characters
     var="${var%"${var##*[![:space:]]}"}"   # remove trailing whitespace characters
@@ -464,11 +464,11 @@ function __trim() {
 }
 
 # http://stackoverflow.com/a/20460402
-function __string_contains() { [ -z "${1##*$2*}" ] && [ -n "$1" -o -z "$2" ]; }
+__string_contains() { [ -z "${1##*$2*}" ] && [ -n "$1" -o -z "$2" ]; }
 
 
 
-function __get_stella_version() {
+__get_stella_version() {
 	local _stella_root_="$1"
 
 	[ "$_stella_root_" == "" ] && _stella_root_="$STELLA_ROOT"
@@ -493,7 +493,7 @@ function __get_stella_version() {
 
 
 # return STABLE or DEV
-function __get_stella_flavour() {
+__get_stella_flavour() {
 	local _stella_root_="$1"
 	[ "$_stella_root_" == "" ] && _stella_root_="$STELLA_ROOT"
 
@@ -506,7 +506,7 @@ function __get_stella_flavour() {
 }
 
 
-function __is_dir_empty() {
+__is_dir_empty() {
 	if [ $(find "$1" -prune -empty -type d) ]; then
 		# dir is empty
 		echo "TRUE"
@@ -523,7 +523,7 @@ function __is_dir_empty() {
 # To get: filename
 
 
-function __get_path_from_string() {
+__get_path_from_string() {
 	if [ "$1" == "${1%/*}" ]; then
 		echo "."
 	else
@@ -531,17 +531,17 @@ function __get_path_from_string() {
 	fi
 }
 
-function __get_filename_from_string() {
+__get_filename_from_string() {
 	echo ${1##*/}
 }
 
-function __get_filename_from_url() {
+__get_filename_from_url() {
 	local _AFTER_SLASH
 	_AFTER_SLASH=${1##*/}
 	echo ${_AFTER_SLASH%%\?*}
 }
 
-function __get_extension_from_string() {
+__get_extension_from_string() {
 	local _AFTER_DOT
 	_AFTER_DOT=${1##*\.}
 	echo $_AFTER_DOT
@@ -549,7 +549,7 @@ function __get_extension_from_string() {
 }
 
 
-function __is_abs() {
+__is_abs() {
 	local _path="$1"
 	# alternative : [ -z "${_path##/*}" ]
 	case $_path in
@@ -563,7 +563,7 @@ function __is_abs() {
 }
 
 # NOTE by default path is determined giving by the current running directory
-function __rel_to_abs_path() {
+__rel_to_abs_path() {
 	local _rel_path="$1"
 	local _abs_root_path="$2"
 	local result
@@ -602,7 +602,7 @@ function __rel_to_abs_path() {
 
 # NOTE : http://stackoverflow.com/a/21951256
 # NOTE : pure BASH : do not use readlink or cd or pwd command BUT do not follow symlink
-function __rel_to_abs_path_alternative_1(){
+__rel_to_abs_path_alternative_1(){
 		local _rel_path=$1
 		local _abs_root_path=$2
 
@@ -640,7 +640,7 @@ function __rel_to_abs_path_alternative_1(){
 # NOTE : http://stackoverflow.com/a/13599997
 # NOTE : use basename/dirname/readlink : follow symlink
 # NOTE : readlink option -m do not exists on some version
-function __rel_to_abs_path_alternative_2(){
+__rel_to_abs_path_alternative_2(){
 	local _rel_path=$1
 	local _abs_root_path=$2
 
@@ -658,7 +658,7 @@ function __rel_to_abs_path_alternative_2(){
 # result ..
 # cd /path1/path2/.. is equivalent to /path1
 # NOTE by default relative to current running directory
-function __abs_to_rel_path() {
+__abs_to_rel_path() {
 	local _abs_path_to_translate="$1"/
 	local _abs_path_root="$2"
 
@@ -727,7 +727,7 @@ function __abs_to_rel_path() {
 }
 
 # init stella environment
-function __init_stella_env() {
+__init_stella_env() {
 	__feature_init_installed
 	# PROXY
 	__init_proxy
@@ -735,7 +735,7 @@ function __init_stella_env() {
 
 #MEASURE TOOL----------------------------------------------
 # __timecount_start "count_id"
-function __timecount_start() {
+__timecount_start() {
 	local _count_name_var=$1
 	local _id=$RANDOM$RANDOM
 
@@ -745,7 +745,7 @@ function __timecount_start() {
 }
 
 # elapsed_time=$(__timecount_stop "count_id")
-function __timecount_stop() {
+__timecount_stop() {
 	local _end_count="$(date +%s)"
 	local _ellapsed=
 	local _tmp="$1"
@@ -758,7 +758,7 @@ function __timecount_stop() {
 
 #FILE TOOLS----------------------------------------------
 #http://stackoverflow.com/a/17902999/5027535
-function __count_folder_item() {
+__count_folder_item() {
 	local _path="$1"
 	local _filter="$2"
 
@@ -772,13 +772,13 @@ function __count_folder_item() {
 
 }
 
-function __del_folder() {
+__del_folder() {
 	echo "** Deleting $1 folder"
 	[ -d $1 ] && rm -Rf $1
 }
 
 # copy content of folder ARG1 into folder ARG2
-function __copy_folder_content_into() {
+__copy_folder_content_into() {
 	local source="$1"
 	local dest="$2"
 	local select_filter="$3"
@@ -798,31 +798,31 @@ function __copy_folder_content_into() {
 
 
 #RESSOURCES MANAGEMENT ---------------------------------------------------
-function __get_resource() {
+__get_resource() {
 	local OPT="$5"
 	OPT="$OPT GET"
 	__resource "$1" "$2" "$3" "$4" "$OPT"
 }
 
-function __update_resource() {
+__update_resource() {
 	local OPT="$5"
 	OPT="$OPT UPDATE"
 	__resource "$1" "$2" "$3" "$4" "$OPT"
 }
 
-function __delete_resource() {
+__delete_resource() {
 	local OPT="$5"
 	OPT="$OPT DELETE"
 	__resource "$1" "$2" "$3" "$4" "$OPT"
 }
 
-function __revert_resource() {
+__revert_resource() {
 	local OPT="$5"
 	OPT="$OPT REVERT"
 	__resource "$1" "$2" "$3" "$4" "$OPT"
 }
 
-function __resource() {
+__resource() {
 	local NAME="$1"
 	local URI="$2"
 	local PROTOCOL="$3"
@@ -1000,7 +1000,7 @@ function __resource() {
 }
 
 #DOWNLOAD AND ZIP FUNCTIONS---------------------------------------------------
-function __download_uncompress() {
+__download_uncompress() {
 	local URL
 	local FILE_NAME
 	local UNZIP_DIR
@@ -1031,7 +1031,7 @@ function __download_uncompress() {
 
 }
 
-function __compress() {
+__compress() {
 	local _mode=$1
 	local _target=$2
 	local _output_archive=$3
@@ -1078,7 +1078,7 @@ function __compress() {
 
 }
 
-function __uncompress() {
+__uncompress() {
 	# TODO : progress bar
 	# http://stackoverflow.com/questions/238073/how-to-add-a-progress-bar-to-a-shell-script
 	local FILE_PATH
@@ -1142,7 +1142,7 @@ function __uncompress() {
 	esac
 }
 
-function __download() {
+__download() {
 	local URL
 	local FILE_NAME
 	local DEST_DIR
@@ -1218,7 +1218,7 @@ function __download() {
 }
 
 # when --strip-components option on tar does not exist
-function __untar-strip() {
+__untar-strip() {
 	local zip=$1
 	local dest=${2:-.}
 	local temp=$(mktmpdir)
@@ -1237,7 +1237,7 @@ function __untar-strip() {
 	rm -Rf "$temp"
 }
 
-function __unzip-strip() (
+__unzip-strip() (
     local zip=$1
     local dest=${2:-.}
     local temp=$(mktmpdir)
@@ -1254,7 +1254,7 @@ function __unzip-strip() (
     rm -Rf "$temp"
 )
 
-function __sevenzip-strip() (
+__sevenzip-strip() (
     local zip=$1
     local dest=${2:-.}
     local temp=$(mktmpdir)
@@ -1273,7 +1273,7 @@ function __sevenzip-strip() (
 # SCM ---------------------------------------------
 # https://vcversioner.readthedocs.org/en/latest/
 # TODO : should work only if at least one tag exist ?
-function __mercurial_project_version() {
+__mercurial_project_version() {
 	local _PATH=$1
 	local _OPT=$2
 
@@ -1294,7 +1294,7 @@ function __mercurial_project_version() {
 	fi
 }
 
-function __git_project_version() {
+__git_project_version() {
 	local _PATH=$1
 	local _OPT=$2
 
@@ -1317,7 +1317,7 @@ function __git_project_version() {
 
 
 # INI FILE MANAGEMENT---------------------------------------------------
-function __get_key() {
+__get_key() {
 	local _FILE=$1
 	local _SECTION=$2
 	local _KEY=$3
@@ -1343,7 +1343,7 @@ function __get_key() {
 
 }
 
-function __del_key() {
+__del_key() {
 	local _FILE=$1
 	local _SECTION=$2
 	local _KEY=$3
@@ -1351,7 +1351,7 @@ function __del_key() {
 	__ini_file "DEL" "$_FILE" "$_SECTION" "$_KEY"
 }
 
-function __add_key() {
+__add_key() {
 	local _FILE=$1
 	local _SECTION=$2
 	local _KEY=$3
@@ -1364,12 +1364,12 @@ function __add_key() {
 	__ini_file "ADD" "$_FILE" "$_SECTION" "$_KEY" "$_VALUE"
 }
 
-function __ini_file() {
+__ini_file() {
 	local _MODE=$1
 	local _FILE=$2
 	local _SECTION=$3
 	local _KEY=$4
-	if [ ! "$KEY" == "" ]; then
+	if [ ! "$_KEY" == "" ]; then
 		local _VALUE=$5
 	fi
 
@@ -1461,7 +1461,7 @@ function __ini_file() {
 #		https://code.google.com/p/opts-go/
 #		https://godoc.org/code.google.com/p/getopt
 #		https://github.com/kesselborn/go-getopt
-function __argparse(){
+__argparse(){
 	local PROGNAME=$(__get_filename_from_string "$1")
 	local OPTIONS="$2"
 	local PARAMETERS="$3"

@@ -23,8 +23,6 @@ msys2 + mingw-w64 RECIPES :
 
 ## DEVENV
 
-* Atom Editor
-
 * Shellcheck -- https://github.com/koalaman/shellcheck
 
 in Atom Editor
@@ -34,6 +32,17 @@ in Atom Editor
     apm install linter
     apm install linter-shellcheck
   ```
+
+use
+  `spellcheck stella.sh`
+
+* checkbashisms
+
+```
+  brew install checkbashisms
+  apm install linter
+  apm install linter-checkbashisms
+```
 
 [ ] Update README
   [ ] history : FIRST PUSH OF stella pre version : https://bitbucket.org/StudioEtrange/ryzomcore-script/src/1308706a1dc3f1dde7d65b048e9b16f2a2f2f518
@@ -82,6 +91,7 @@ SSHFS ? cache delivering only via HTTP ?
 http://carlosbecker.com/posts/lint-shell-scripts
 https://github.com/dokku/dokku/blob/master/tests.mk
 https://github.com/progrium/bashstyle
+http://wiki.bash-hackers.org/scripting/obsolete
 http://stackoverflow.com/questions/3668665/is-there-a-static-analysis-tool-like-lint-or-perlcritic-for-shell-scripts
 http://man.he.net/man1/checkbashisms ===> test portability
 https://github.com/duggan/shlint ===> test portability

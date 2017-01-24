@@ -43,7 +43,6 @@ STELLA_DIST_URL="$STELLA_URL/dist"
 # /dist
 
 # STELLA INCLUDE ---------------------------------------------
-
 source $STELLA_COMMON/stack.sh
 source $STELLA_COMMON/common-platform.sh
 source $STELLA_COMMON/common.sh
@@ -162,7 +161,7 @@ __set_build_mode_default "MIX_CPP_C_FLAGS" "OFF"
 # activate some usefull default linker flags
 __set_build_mode_default "LINK_FLAGS_DEFAULT" "ON"
 
-[ "$STELLA_CURRENT_OS" == "macos" ] && __set_build_mode_default MACOSX_DEPLOYMENT_TARGET $(__get_macos_version)
+[ "$STELLA_CURRENT_OS" == "macos" ] && __set_build_mode_default MACOSX_DEPLOYMENT_TARGET "$(__get_macos_version)"
 
 STELLA_BUILD_DEFAULT_TOOLSET=STANDARD
 

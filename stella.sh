@@ -1,5 +1,6 @@
 #!/bin/bash
 _STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+# shellcheck source=/dev/null
 source $_STELLA_CURRENT_FILE_DIR/conf.sh
 
 # NOTE : use this with source command only
@@ -9,7 +10,7 @@ if [ "$1" == "env" ]; then
 	echo "** Current env is setted/refreshed with stella env"
 else
 
-function usage() {
+usage() {
 	echo "USAGE :"
 	echo "----------------"
 	echo "List of commands"
@@ -90,7 +91,7 @@ if [ "$DOMAIN" == "app" ]; then
 		[ "$CACHEDIR" == "" ] && CACHEDIR="$APPROOT/cache"
 
 		__init_app "$ID" "$APPROOT" "$WORKROOT" "$CACHEDIR"
-		[ "$SAMPLES" ] && __create_app_samples $APPROOT
+		[ "$SAMPLES" ] && __create_app_samples "$APPROOT"
 	fi
 
 	if [ "$ACTION" == "link" ]; then
@@ -121,29 +122,29 @@ if [ "$DOMAIN" == "app" ]; then
 				fi
 				;;
 		get-data)
-		__get_data $ID;;
+		__get_data "$ID";;
 		get-data-pack)
-		__get_data_pack $ID;;
+		__get_data_pack "$ID";;
 		get-assets)
-		__get_assets $ID;;
+		__get_assets "$ID";;
 		get-assets-pack)
-		__get_assets_pack $ID;;
+		__get_assets_pack "$ID";;
 		delete-data)
-		__delete_data $ID;;
+		__delete_data "$ID";;
 		delete-assets)
-		__delete_assets $ID;;
+		__delete_assets "$ID";;
 		delete-data-pack)
-		__delete_data_pack $ID;;
+		__delete_data_pack "$ID";;
 		delete-assets-pack)
-		__delete_assets_pack $ID;;
+		__delete_assets_pack "$ID";;
 		udpate-data)
-		__update_data $ID;;
+		__update_data "$ID";;
 		update-assets)
-		__update_assets $ID;;
+		__update_assets "$ID";;
 		revert-data)
-		__revert_data $ID;;
+		__revert_data "$ID";;
 		revert-assets)
-		__revert_assets $ID;;
+		__revert_assets "$ID";;
 	esac
 fi
 
@@ -154,7 +155,7 @@ if [ "$DOMAIN" == "feature" ]; then
 	__init_stella_env
 	case $ACTION in
 		remove)
-			__feature_remove $ID;;
+			__feature_remove "$ID";;
 	  install)
 			[ ! "$BUILDARCH" == "" ] && __set_build_mode_default "ARCH" "$BUILDARCH"
 			_OPT=
@@ -162,7 +163,7 @@ if [ "$DOMAIN" == "feature" ]; then
 			[ "$DEPIGNORE" == "1" ] && _OPT="$_OPT DEP_IGNORE"
 			[ ! "$EXPORT" == "" ] && _OPT="$_OPT EXPORT $EXPORT"
 			[ ! "$PORTABLE" == "" ] && _OPT="$_OPT PORTABLE $PORTABLE"
-			__feature_install $ID "$_OPT"
+			__feature_install "$ID" "$_OPT"
 			;;
 		list)
 			case $ID in
@@ -171,10 +172,12 @@ if [ "$DOMAIN" == "feature" ]; then
 					echo "EXPERIMENTAL : $__STELLA_FEATURE_LIST_EXP"
 					;;
 				active)
-					echo $(__list_active_features)
+					#echo "$(__list_active_features)"
+					__list_active_features
 					;;
 				*)
-					echo $(__list_feature_version $ID)
+					#echo "$(__list_feature_version $ID)"
+					__list_feature_version "$ID"
 					;;
 			esac
 			;;
@@ -238,7 +241,8 @@ if [ "$DOMAIN" == "stella" ]; then
 
 	if [ "$ACTION" == "api" ]; then
 		if [ "$ID" == "list" ]; then
-			echo "$(__api_list)"
+			#echo "$(__api_list)"
+			__api_list
 		fi
 	fi
 
@@ -250,15 +254,16 @@ if [ "$DOMAIN" == "stella" ]; then
 
 	if [ "$ACTION" == "version" ]; then
 		if [ "$ID" == "print" ]; then
-			v1=$(__get_stella_flavour)
-			v2=$(__get_stella_version)
-			echo $v1 -- $v2
+			v1="$(__get_stella_flavour)"
+			v2="$(__get_stella_version)"
+			echo "$v1 -- $v2"
 		fi
 	fi
 
 	if [ "$ACTION" == "search" ]; then
     if [ "$ID" == "path" ]; then
-        echo "$(__get_active_path)"
+        #echo "$(__get_active_path)"
+				__get_active_path
     fi
 	fi
 
