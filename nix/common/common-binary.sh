@@ -705,7 +705,7 @@ function __check_linked_lib() {
 
 	if [ -d "$_path" ]; then
 		for f in  "$_path"/*; do
-			__check_linked_lib "$f" "$_OPT"|| _result=1
+			__check_linked_lib "$f" "$_OPT" || _result=1
 		done
 	fi
 

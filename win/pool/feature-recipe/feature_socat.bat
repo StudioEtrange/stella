@@ -70,18 +70,21 @@ goto :eof
 
 	call %STELLA_COMMON%\common.bat :get_resource "!FEAT_NAME!" "!FEAT_SOURCE_URL!" "!FEAT_SOURCE_URL_PROTOCOL!" "!SRC_DIR!" "DEST_ERASE STRIP FORCE_NAME !FEAT_BINARY_URL_FILENAME!"
 
-	call %STELLA_COMMON%\common-build.bat :set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL mingw-make COMPIL_FRONTEND gcc"
+	msys2_shell.cmd -mintty -msys2 --full-path -where $STELLA_APP_ROOT
+	msys2_shell.cmd -here -c "more stella.sh"
+	REM http://linuxcommand.org/man_pages/bash1.html
+	REM call %STELLA_COMMON%\common-build.bat :set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL mingw-make COMPIL_FRONTEND gcc"
+	try : "$STELLA_ROOT/stella.sh boot cmd local -- __auto_build"
+	REM set AUTO_INSTALL_CONF_FLAG_POSTFIX=
+	REM set AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
-	set AUTO_INSTALL_CONF_FLAG_POSTFIX=
-	set AUTO_INSTALL_BUILD_FLAG_POSTFIX=
+
+	REM call %STELLA_COMMON%\common-feature.bat :feature_callback
 
 
-	call %STELLA_COMMON%\common-feature.bat :feature_callback
+	REM call %STELLA_COMMON%\common-build.bat :auto_build "!FEAT_NAME!" "!SRC_DIR!" "!INSTALL_DIR!" "NO_CONFIG NO_INSTALL SOURCE_KEEP"
 
+	REM call %STELLA_COMMON%\common :copy_folder_content_into "!SRC_DIR!" "!INSTALL_DIR!"
 
-	call %STELLA_COMMON%\common-build.bat :auto_build "!FEAT_NAME!" "!SRC_DIR!" "!INSTALL_DIR!" "NO_CONFIG NO_INSTALL SOURCE_KEEP"
-
-	call %STELLA_COMMON%\common :copy_folder_content_into "!SRC_DIR!" "!INSTALL_DIR!"
-
-	call %STELLA_COMMON%\common.bat :del_folder "!SRC_DIR!"
+	REM call %STELLA_COMMON%\common.bat :del_folder "!SRC_DIR!"
 goto :eof
