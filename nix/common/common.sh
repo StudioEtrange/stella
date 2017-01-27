@@ -785,13 +785,14 @@ __copy_folder_content_into() {
 	if [ "$select_filter" == "" ]; then
 		select_filter="*"
 	fi
-
-	if [ $(__count_folder_item $1 $select_filter) -gt 0 ]; then
-		mkdir -p "$dest"
-		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-			cp -fa "$source/"$select_filter "$dest"
-		else
-			cp -fa "$source/"$select_filter --target-directory="$dest"
+	if [ -d "$source" ]; then
+		if [ $(__count_folder_item $1 $select_filter) -gt 0 ]; then
+			mkdir -p "$dest"
+			if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+				cp -fa "$source/"$select_filter "$dest"
+			else
+				cp -fa "$source/"$select_filter --target-directory="$dest"
+			fi
 		fi
 	fi
 }

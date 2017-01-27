@@ -1,4 +1,4 @@
-if [ ! "$_openttd_INCLUDED_" == "1" ]; then 
+if [ ! "$_openttd_INCLUDED_" == "1" ]; then
 _openttd_INCLUDED_=1
 
 
@@ -6,8 +6,8 @@ _openttd_INCLUDED_=1
 # patch ; https://bugs.openttd.org/task/6380
 function feature_openttd() {
 	FEAT_NAME=openttd
-	FEAT_LIST_SCHEMA="1_5_3:source"
-	FEAT_DEFAULT_VERSION=1_5_3
+	FEAT_LIST_SCHEMA="1_6_1:source"
+	FEAT_DEFAULT_VERSION=1_6_1
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -15,15 +15,15 @@ function feature_openttd() {
 
 
 
-function feature_openttd_1_5_3() {
-	FEAT_VERSION=1_5_3
-	
-	FEAT_SOURCE_DEPENDENCIES="lzo#2_09 libpng#1_6_17 zlib#1_2_8 xzutils#5_2_1 freetype#2_6_1 pkgconfig"
+function feature_openttd_1_6_1() {
+	FEAT_VERSION=1_6_1
+
+	FEAT_SOURCE_DEPENDENCIES="lzo#2_09 libpng#1_6_17 zlib#1_2_11 xzutils#5_2_1 freetype#2_6_1"
 	[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && FEAT_SOURCE_DEPENDENCIES="sdl#1_2_15 $FEAT_SOURCE_DEPENDENCIES"
 	FEAT_BINARY_DEPENDENCIES=
 
-	FEAT_SOURCE_URL=https://binaries.openttd.org/releases/1.5.3/openttd-1.5.3-source.tar.gz
-	FEAT_SOURCE_URL_FILENAME=openttd-1.5.3-source.tar.gz
+	FEAT_SOURCE_URL=http://binaries.openttd.org/releases/1.6.1/openttd-1.6.1-source.tar.xz
+	FEAT_SOURCE_URL_FILENAME=openttd-1.6.1-source.tar.xz
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
 	FEAT_BINARY_URL=
@@ -36,40 +36,47 @@ function feature_openttd_1_5_3() {
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/games/openttd
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/games
-	
+
 }
 
 function feature_openttd_link() {
-	[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && __link_feature_library "sdl#1_2_15" "GET_FOLDER sdl"
-	
-	__link_feature_library "xzutils#5_2_1" "GET_FOLDER xzutils"
-	__link_feature_library "lzo#2_09" "GET_FOLDER lzo"
-	__link_feature_library "zlib#1_2_8" "GET_FOLDER zlib"
-	__link_feature_library "libpng#1_6_17" "GET_FOLDER png"
-	__link_feature_library "freetype#2_6_1" "GET_FOLDER freetype"
+	[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && __link_feature_library "sdl#1_2_15" "GET_FOLDER sdl USE_PKG_CONFIG"
 
-	[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && export PKG_CONFIG_PATH="$xzutils_LIB/pkgconfig:$sdl_LIB/pkgconfig:$freetype_LIB/pkgconfig:$png_LIB/pkgconfig:$PKG_CONFIG_PATH"
-	[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && export PKG_CONFIG_PATH="$xzutils_LIB/pkgconfig:$freetype_LIB/pkgconfig:$png_LIB/pkgconfig:$PKG_CONFIG_PATH"
-	
-	AUTO_INSTALL_CONF_FLAG_POSTFIX="$AUTO_INSTALL_CONF_FLAG_POSTFIX --with-liblzo2=$lzo_LIB --with-zlib=$zlib_LIB --with-png --with-freetype"
-	
+	__link_feature_library "xzutils#5_2_1" "NO_SET_FLAGS USE_PKG_CONFIG"
+	__link_feature_library "lzo#2_09" "GET_FOLDER lzo"
+	__link_feature_library "zlib#1_2_11" "NO_SET_FLAGS USE_PKG_CONFIG"
+	__link_feature_library "libpng#1_6_17" "NO_SET_FLAGS USE_PKG_CONFIG"
+	__link_feature_library "freetype#2_6_1" "NO_SET_FLAGS USE_PKG_CONFIG"
+
+	#[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && export PKG_CONFIG_PATH="$xzutils_LIB/pkgconfig:$sdl_LIB/pkgconfig:$freetype_LIB/pkgconfig:$png_LIB/pkgconfig:$PKG_CONFIG_PATH"
+	#[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && export PKG_CONFIG_PATH="$xzutils_LIB/pkgconfig:$freetype_LIB/pkgconfig:$png_LIB/pkgconfig:$PKG_CONFIG_PATH"
+
+
+	AUTO_INSTALL_CONF_FLAG_POSTFIX="$AUTO_INSTALL_CONF_FLAG_POSTFIX --with-liblzo2=$lzo_LIB --with-png --with-freetype"
+
 }
 
 function feature_openttd_patch() {
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		__get_resource "patch openttd macoxminversion" "https://trac.macports.org/export/117147/trunk/dports/games/openttd/files/patch-config.lib-remove-deployment-target.diff" "HTTP" "$SRC_DIR"
-
 		cd "$SRC_DIR"
 		patch -Np0 < patch-config.lib-remove-deployment-target.diff
 
-
-		cp "$STELLA_PATCH/openttd/patch_osx_quartz_CMGetSystemProfile_deprecated.diff" "$SRC_DIR"
+		__get_resource "patch src__video__cocoa__wnd_quartz.mm-avoid-removed-cmgetsystemprofile" "https://bugs.openttd.org/task/6380/getfile/10390/patch-src__video__cocoa__wnd_quartz.mm-avoid-removed-cmgetsystemprofile.diff" "HTTP" "$SRC_DIR"
 		cd "$SRC_DIR"
-		patch -Np0 < patch_osx_quartz_CMGetSystemProfile_deprecated.diff
+		patch -Np0 < patch-src__video__cocoa__wnd_quartz.mm-avoid-removed-cmgetsystemprofile.diff
 
-		cp "$STELLA_PATCH/openttd/patch_osx_music_AudioComponentDescription.diff" "$SRC_DIR"
+		__get_resource "patch cocoa_m" "https://bugs.openttd.org/task/6380/getfile/10422/cocoa_m.patch" "HTTP" "$SRC_DIR"
 		cd "$SRC_DIR"
-		patch -Np0 < patch_osx_music_AudioComponentDescription.diff
+		patch -p1 < cocoa_m.patch
+
+		#cp "$STELLA_PATCH/openttd/patch_osx_quartz_CMGetSystemProfile_deprecated.diff" "$SRC_DIR"
+		#cd "$SRC_DIR"
+		#patch -Np0 < patch_osx_quartz_CMGetSystemProfile_deprecated.diff
+
+		#cp "$STELLA_PATCH/openttd/patch_osx_music_AudioComponentDescription.diff" "$SRC_DIR"
+		#cd "$SRC_DIR"
+		#patch -Np0 < patch_osx_music_AudioComponentDescription.diff
 	fi
 
 }
@@ -78,7 +85,7 @@ function feature_openttd_patch() {
 
 function feature_openttd_resource() {
 	# default resources
-	__get_resource "opengfx" "https://bundles.openttdcoop.org/opengfx/releases/0.5.2/opengfx-0.5.2.zip" "HTTP_ZIP" "$INSTALL_DIR/games/data/opengfx" "STRIP"
+	__get_resource "opengfx" "https://bundles.openttdcoop.org/opengfx/releases/0.5.4/opengfx-0.5.4.zip" "HTTP_ZIP" "$INSTALL_DIR/games/data/opengfx" "STRIP"
 	__get_resource "opensfx" "https://bundles.openttdcoop.org/opensfx/releases/0.2.3/opensfx-0.2.3.zip" "HTTP_ZIP" "$INSTALL_DIR/games/data/opensfx" "STRIP"
 	__get_resource "openmsx" "https://bundles.openttdcoop.org/openmsx/releases/0.3.1/openmsx-0.3.1.zip" "HTTP_ZIP" "$INSTALL_DIR/gm/openmsx" "STRIP"
 }
@@ -86,11 +93,11 @@ function feature_openttd_resource() {
 function feature_openttd_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 	__set_toolset "STANDARD"
-	
+
 	# configure script do not play well with CPPFLAGS
 	__set_build_mode "MIX_CPP_C_FLAGS" "ON"
 
@@ -106,11 +113,11 @@ function feature_openttd_install_source() {
 		AUTO_INSTALL_CONF_FLAG_POSTFIX="--with-cocoa --without-application-bundle"
 	fi
 
-	
+
 
 	__feature_callback
 
-	
+
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD"
 
 }
@@ -140,7 +147,7 @@ function feature_openttd_install_source() {
 #   --disable-network              disable network support
 #   --disable-assert               disable asserts (continue on errors)
 #   --enable-strip                 enable any possible stripping
-#   --without-osx-sysroot          disable the automatic adding of sysroot 
+#   --without-osx-sysroot          disable the automatic adding of sysroot
 #                                  (OSX ONLY)
 #   --without-application-bundle   disable generation of application bundle
 #                                  (OSX ONLY)

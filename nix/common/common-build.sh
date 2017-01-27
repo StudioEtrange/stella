@@ -796,7 +796,6 @@ function __link_feature_library() {
 	# NO_SET_FLAGS -- do not set stella build system flags
 	# LIBS_NAME -- libraries name to use with -l arg -- you can specify several libraries. If you do not use LIBS_NAME -l flag will not be setted, only -L will be setted
 
-
 	local _ROOT=
 	local _BIN=
 	local _LIB=
@@ -808,6 +807,7 @@ function __link_feature_library() {
 	local _flags=OFF
 	local _var_flags=
 	local _opt_flavour=
+	local _opt_use_pkg_config=OFF
 	local _flag_lib_folder=OFF
 	local _lib_folder=lib
 	local _flag_bin_folder=OFF
@@ -832,6 +832,7 @@ function __link_feature_library() {
 	esac
 
 	for o in $OPT; do
+		[ "$o" == "USE_PKG_CONFIG" ] && _opt_use_pkg_config=ON && _flag_libs_name=OFF
 		[ "$o" == "FORCE_STATIC" ] && _opt_flavour=$o && _flag_libs_name=OFF
 		[ "$o" == "FORCE_DYNAMIC" ] && _opt_flavour=$o && _flag_libs_name=OFF
 
@@ -933,6 +934,7 @@ function __link_feature_library() {
 		__del_folder "$LIB_TARGET_FOLDER"
 		echo "*** Copying items from $REQUIRED_LIB_ROOT/$_lib_folder to $LIB_TARGET_FOLDER"
 		__copy_folder_content_into "$REQUIRED_LIB_ROOT"/"$_lib_folder" "$LIB_TARGET_FOLDER" "*"$LIB_EXTENSION"*"
+		__copy_folder_content_into "$REQUIRED_LIB_ROOT"/"$_lib_folder/pkgconfig" "$LIB_TARGET_FOLDER/pkgconfig"
 
 		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 			[ "$STELLA_BUILD_RELOCATE" == "ON" ] && __tweak_install_name_darwin "$LIB_TARGET_FOLDER" "RPATH"
@@ -954,6 +956,18 @@ function __link_feature_library() {
 
 
 
+	# manage pkg-config ----
+	if [ "$_opt_use_pkg_config" == "ON" ]; then
+		__add_toolset "pkgconfig"
+		STELLA_BUILD_PKG_CONFIG_PATH=$LIB_TARGET_FOLDER/pkgconfig:$STELLA_BUILD_PKG_CONFIG_PATH
+		if [ "$_flag_lib_isolation" == "TRUE" ]; then
+			for f in $LIB_TARGET_FOLDER/pkgconfig/*.pc; do
+				#ed -i .bak "s,^prefix=.*,prefix=$LIB_TARGET_FOLDER," "$f"
+				sed -i .bak "s,^libdir=.*,libdir=$LIB_TARGET_FOLDER," "$f"
+			done
+		fi
+	fi
+
 	# RETURN RESULTS
 
 	# root folder
@@ -967,6 +981,7 @@ function __link_feature_library() {
 
 
 	#LINKED_LIBS_PATH="$LINKED_LIBS_PATH $_opt_flavour $_LIB"
+
 
 	# set stella build system flags ----
 	if [ "$_opt_set_flags" == "ON" ]; then
@@ -1142,6 +1157,7 @@ function __reset_build_env() {
 	STELLA_BUILD_MACOSX_DEPLOYMENT_TARGET="$STELLA_BUILD_MACOSX_DEPLOYMENT_TARGET_DEFAULT"
 	STELLA_BUILD_MIX_CPP_C_FLAGS="$STELLA_BUILD_MIX_CPP_C_FLAGS_DEFAULT"
 	STELLA_BUILD_LINK_FLAGS_DEFAULT="$STELLA_BUILD_LINK_FLAGS_DEFAULT_DEFAULT"
+	STELLA_BUILD_PKG_CONFIG_PATH=
 
 	# EXTERNAL VARIABLE
 	# reset variable from outside stella
@@ -1159,6 +1175,7 @@ function __reset_build_env() {
 	unset CC
 	unset CXX
 	unset LIBRARY_PATH
+	unset PKG_CONFIG_PATH #pkg-config research path
 
 	# TOOLSET
 	STELLA_BUILD_TOOLSET=
@@ -1208,6 +1225,9 @@ function __prepare_build() {
 		;;
 	esac
 
+
+	# pkg-config
+	export PKG_CONFIG_PATH=$STELLA_BUILD_PKG_CONFIG_PATH
 
 	# set env
 	__set_build_env ARCH $STELLA_BUILD_ARCH
@@ -1271,7 +1291,7 @@ function __prepare_build() {
 	echo "====> LIBRARY_PATH (search path at link time) : $LIBRARY_PATH"
 	echo "====> LD_LIBRARY_PATH (search path at run time linux): $LD_LIBRARY_PATH"
 	echo "====> DYLD_LIBRARY_PATH (search path at run time darwin): $DYLD_LIBRARY_PATH"
-
+	echo "====> PKG_CONFIG_PATH (search path for pkg-config): $PKG_CONFIG_PATH"
 
 }
 

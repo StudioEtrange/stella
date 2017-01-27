@@ -20,7 +20,7 @@ function feature_freeciv() {
 function feature_freeciv_2_5_1() {
 	FEAT_VERSION=2_5_1
 
-	FEAT_SOURCE_DEPENDENCIES="sdl#1_2_15 gettext#0_19_4 pkgconfig#0_29 curl#7_36_0 sdl-mixer#1_2_12 sdl-image#1_2_12 sdl-gfx#2_0_25 sdl-ttf#2_0_11"
+	FEAT_SOURCE_DEPENDENCIES="sdl#1_2_15 gettext#0_19_4 curl#7_36_0 sdl-mixer#1_2_12 sdl-image#1_2_12 sdl-gfx#2_0_25 sdl-ttf#2_0_11"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://downloads.sourceforge.net/project/freeciv/Freeciv%202.5/2.5.1/freeciv-2.5.1.tar.bz2
