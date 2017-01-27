@@ -11,11 +11,38 @@ _OPENSSL_INCLUDED_=1
 
 function feature_openssl() {
 	FEAT_NAME=openssl
-	FEAT_LIST_SCHEMA="1_0_2d:source"
-	FEAT_DEFAULT_VERSION=1_0_2d
+	FEAT_LIST_SCHEMA="1_0_2k:source 1_0_2d:source"
+	FEAT_DEFAULT_VERSION=1_0_2k
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
+
+
+
+
+function feature_openssl_1_0_2k() {
+	FEAT_VERSION=1_0_2k
+
+	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8"
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL=https://www.openssl.org/source/openssl-1.0.2k.tar.gz
+	FEAT_SOURCE_URL_FILENAME=openssl-1.0.2k.tar.gz
+	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
+
+	FEAT_BINARY_URL=
+	FEAT_BINARY_URL_FILENAME=
+	FEAT_BINARY_URL_PROTOCOL=
+
+	FEAT_SOURCE_CALLBACK=feature_openssl_link
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/openssl
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+
+}
+
 
 function feature_openssl_1_0_2d() {
 	FEAT_VERSION=1_0_2d
@@ -80,7 +107,8 @@ function feature_openssl_install_source() {
 
 	__feature_callback
 
-	__prepare_build "$INSTALL_DIR" "$SRC_DIR" "$SRC_DIR"
+	__start_manual_build
+	#__prepare_build "$INSTALL_DIR" "$SRC_DIR" "$SRC_DIR"
 
 	cd "$SRC_DIR"
 	# configure --------------------------------
@@ -102,6 +130,8 @@ function feature_openssl_install_source() {
 	# TODO : 'make test' do not work if we build for a different architecture than the host
 	#[ "$ARCH" == "x64" ] && make test
 
+	__end_manual_build
+	
 	# clean --------------------------------
 	rm -Rf $SRC_DIR
 
