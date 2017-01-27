@@ -81,7 +81,7 @@ function __link_app() {
 
 	_stella_root=$(__abs_to_rel_path "$_stella_root" "$_target_approot")
 
-	echo "#!/bin/bash" >$_target_approot/stella-link.sh.temp
+	echo "#!/usr/bin/env bash" >$_target_approot/stella-link.sh.temp
 	echo "_STELLA_LINK_CURRENT_FILE_DIR=\"\$( cd \"\$( dirname \"\${BASH_SOURCE[0]}\" )\" && pwd )\"" >>$_target_approot/stella-link.sh.temp
 	echo "export STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$_target_approot/stella-link.sh.temp
 	echo "STELLA_DEP_FLAVOUR=$_s_flavour" >>$_target_approot/stella-link.sh.temp
@@ -134,7 +134,7 @@ function __init_app() {
 
 
 
-	echo "#!/bin/bash" >$_approot/stella-link.sh.temp
+	echo "#!/usr/bin/env bash" >$_approot/stella-link.sh.temp
 	echo "_STELLA_LINK_CURRENT_FILE_DIR=\"\$( cd \"\$( dirname \"\${BASH_SOURCE[0]}\" )\" && pwd )\"" >>$_approot/stella-link.sh.temp
 	echo "export STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$_approot/stella-link.sh.temp
 	echo "STELLA_DEP_FLAVOUR=$_s_flavour" >>$_approot/stella-link.sh.temp

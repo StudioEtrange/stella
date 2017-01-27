@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 _STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # shellcheck source=/dev/null
 source $_STELLA_CURRENT_FILE_DIR/conf.sh
 
 # NOTE : use this with source command only
 # NOTE : warn : some env var (like PATH) are cumulative
-if [ "$1" == "env" ]; then
+if [ "$1" = "env" ]; then
 	__init_stella_env
 	echo "** Current env is setted/refreshed with stella env"
 else
@@ -82,19 +82,19 @@ __argparse "$0" "$OPTIONS" "$PARAMETERS" "Stella" "$(usage)" "OTHERARG" "$@"
 
 
 # --------------- APP ----------------------------
-if [ "$DOMAIN" == "app" ]; then
+if [ "$DOMAIN" = "app" ]; then
 	__init_stella_env
 
-	if [ "$ACTION" == "init" ]; then
-		[ "$APPROOT" == "" ] && APPROOT="$STELLA_CURRENT_RUNNING_DIR/$ID"
-		[ "$WORKROOT" == "" ] && WORKROOT="$APPROOT/workspace"
-		[ "$CACHEDIR" == "" ] && CACHEDIR="$APPROOT/cache"
+	if [ "$ACTION" = "init" ]; then
+		[ "$APPROOT" = "" ] && APPROOT="$STELLA_CURRENT_RUNNING_DIR/$ID"
+		[ "$WORKROOT" = "" ] && WORKROOT="$APPROOT/workspace"
+		[ "$CACHEDIR" = "" ] && CACHEDIR="$APPROOT/cache"
 
 		__init_app "$ID" "$APPROOT" "$WORKROOT" "$CACHEDIR"
 		[ "$SAMPLES" ] && __create_app_samples "$APPROOT"
 	fi
 
-	if [ "$ACTION" == "link" ]; then
+	if [ "$ACTION" = "link" ]; then
 		__link_app "$ID" "STELLA_ROOT $STELLAROOT"
 	fi
 
@@ -110,12 +110,12 @@ if [ "$DOMAIN" == "app" ]; then
 	case $ACTION in
 		deploy)
 				_deploy_options=
-				[ "$CACHE" == "1" ] && _deploy_options="CACHE"
-				[ "$WORKSPACE" == "1" ] && _deploy_options="$_deploy_options WORKSPACE"
+				[ "$CACHE" = "1" ] && _deploy_options="CACHE"
+				[ "$WORKSPACE" = "1" ] && _deploy_options="$_deploy_options WORKSPACE"
 				__transfert_app "$ID" "$_deploy_options"
 				;;
 		get-feature)
-				if [ "$ID" == "all" ]; then
+				if [ "$ID" = "all" ]; then
 						__get_features
 				else
 						__get_feature "$ID"
@@ -151,18 +151,18 @@ fi
 
 
 # --------------- FEATURE ----------------------------
-if [ "$DOMAIN" == "feature" ]; then
+if [ "$DOMAIN" = "feature" ]; then
 	__init_stella_env
 	case $ACTION in
 		remove)
 			__feature_remove "$ID";;
 	  install)
-			[ ! "$BUILDARCH" == "" ] && __set_build_mode_default "ARCH" "$BUILDARCH"
+			[ ! "$BUILDARCH" = "" ] && __set_build_mode_default "ARCH" "$BUILDARCH"
 			_OPT=
-			[ "$DEPFORCE" == "1" ] && _OPT="$_OPT DEP_FORCE"
-			[ "$DEPIGNORE" == "1" ] && _OPT="$_OPT DEP_IGNORE"
-			[ ! "$EXPORT" == "" ] && _OPT="$_OPT EXPORT $EXPORT"
-			[ ! "$PORTABLE" == "" ] && _OPT="$_OPT PORTABLE $PORTABLE"
+			[ "$DEPFORCE" = "1" ] && _OPT="$_OPT DEP_FORCE"
+			[ "$DEPIGNORE" = "1" ] && _OPT="$_OPT DEP_IGNORE"
+			[ ! "$EXPORT" = "" ] && _OPT="$_OPT EXPORT $EXPORT"
+			[ ! "$PORTABLE" = "" ] && _OPT="$_OPT PORTABLE $PORTABLE"
 			__feature_install "$ID" "$_OPT"
 			;;
 		list)
@@ -186,91 +186,91 @@ fi
 
 
 # --------------- SYS ----------------------------
-if [ "$DOMAIN" == "sys" ]; then
+if [ "$DOMAIN" = "sys" ]; then
 	__init_stella_env
-	if [ "$ACTION" == "install" ]; then
+	if [ "$ACTION" = "install" ]; then
 		__sys_install "$ID"
 	fi
-	if [ "$ACTION" == "remove" ]; then
+	if [ "$ACTION" = "remove" ]; then
 		__sys_remove "$ID"
 	fi
-	if [ "$ACTION" == "list" ]; then
+	if [ "$ACTION" = "list" ]; then
 		echo "$STELLA_SYS_PACKAGE_LIST"
 	fi
 fi
 
 # --------------- BOOT ----------------------------
-if [ "$DOMAIN" == "boot" ]; then
+if [ "$DOMAIN" = "boot" ]; then
 	__init_stella_env
 
-	if [ "$ACTION" == "cmd" ]; then
+	if [ "$ACTION" = "cmd" ]; then
 		__boot_cmd "$ID" "$OTHERARG"
 	fi
-	if [ "$ACTION" == "shell" ]; then
+	if [ "$ACTION" = "shell" ]; then
 		__boot_shell "$ID"
 	fi
-	if [ "$ACTION" == "script" ]; then
+	if [ "$ACTION" = "script" ]; then
 		__boot_script "$ID" "$OTHERARG"
 	fi
 fi
 
 # --------------- PROXY ----------------------------
-if [ "$DOMAIN" == "proxy" ]; then
+if [ "$DOMAIN" = "proxy" ]; then
 	__init_stella_env
 
-	if [ "$ACTION" == "tunnel" ]; then
+	if [ "$ACTION" = "tunnel" ]; then
 		__proxy_tunnel "$ID" "$BRIDGE"
 	fi
-	if [ "$ACTION" == "on" ]; then
+	if [ "$ACTION" = "on" ]; then
 		__enable_proxy "$ID"
 	fi
-	if [ "$ACTION" == "off" ]; then
+	if [ "$ACTION" = "off" ]; then
 		__disable_proxy
 	fi
-	if [ "$ACTION" == "bypass" ]; then
+	if [ "$ACTION" = "bypass" ]; then
 		__register_no_proxy "$ID"
 	fi
-	if [ "$ACTION" == "register" ]; then
+	if [ "$ACTION" = "register" ]; then
 		__register_proxy "$ID" "$PROXY"
 	fi
 fi
 
 # --------------- STELLA ----------------------------
-if [ "$DOMAIN" == "stella" ]; then
+if [ "$DOMAIN" = "stella" ]; then
 	__init_stella_env
 
-	if [ "$ACTION" == "api" ]; then
-		if [ "$ID" == "list" ]; then
+	if [ "$ACTION" = "api" ]; then
+		if [ "$ID" = "list" ]; then
 			#echo "$(__api_list)"
 			__api_list
 		fi
 	fi
 
-	if [ "$ACTION" == "install" ]; then
-		if [ "$ID" == "dep" ]; then
+	if [ "$ACTION" = "install" ]; then
+		if [ "$ID" = "dep" ]; then
 			__stella_requirement
 		fi
 	fi
 
-	if [ "$ACTION" == "version" ]; then
-		if [ "$ID" == "print" ]; then
+	if [ "$ACTION" = "version" ]; then
+		if [ "$ID" = "print" ]; then
 			v1="$(__get_stella_flavour)"
 			v2="$(__get_stella_version)"
 			echo "$v1 -- $v2"
 		fi
 	fi
 
-	if [ "$ACTION" == "search" ]; then
-    if [ "$ID" == "path" ]; then
+	if [ "$ACTION" = "search" ]; then
+    if [ "$ID" = "path" ]; then
         #echo "$(__get_active_path)"
 				__get_active_path
     fi
 	fi
 
-	if [ "$ACTION" == "deploy" ]; then
+	if [ "$ACTION" = "deploy" ]; then
 		_deploy_options=
-		[ "$CACHE" == "1" ] && _deploy_options="CACHE"
-		[ "$WORKSPACE" == "1" ] && _deploy_options="$_deploy_options WORKSPACE"
+		[ "$CACHE" = "1" ] && _deploy_options="CACHE"
+		[ "$WORKSPACE" = "1" ] && _deploy_options="$_deploy_options WORKSPACE"
 		__transfert_stella "$ID" "$_deploy_options"
 	fi
 

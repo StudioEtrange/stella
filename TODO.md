@@ -96,8 +96,9 @@ http://stackoverflow.com/questions/3668665/is-there-a-static-analysis-tool-like-
 http://man.he.net/man1/checkbashisms ===> test portability
 https://github.com/duggan/shlint ===> test portability
 https://github.com/SublimeLinter/SublimeLinter-shellcheck
-
-[ ] migrate to posix shell ? or dash ? https://wiki.ubuntu.com/DashAsBinSh
+https://wiki.ubuntu.com/DashAsBinSh
+http://mywiki.wooledge.org/Bashism
+http://stackoverflow.com/questions/733824/how-to-run-a-shell-script-on-a-unix-console-or-mac-terminal
 
 [ ] configuration step for each feature recipe
     nix : use augeas https://github.com/hercules-team/augeas ? -- see ryba ? (nodejs) -- use simple sed ?

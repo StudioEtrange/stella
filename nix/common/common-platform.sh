@@ -374,21 +374,33 @@ function __gcc_is_clang() {
 # retrieve current pyconfig.h
 function __python_get_pyconfig() {
 	# /Library/Frameworks/Python.framework/Versions/2.7/include/python2.7/pyconfig.h
-	python -c 'import sysconfig;print sysconfig.get_config_h_filename();'
+	python -c 'import sysconfig;print(sysconfig.get_config_h_filename());'
 }
 
 # get python lib folder
 function __python_get_lib_path() {
 	# /Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7
-	python -c 'import sysconfig;print sysconfig.get_path("stdlib");'
+	python -c 'import sysconfig;print(sysconfig.get_path("stdlib"));'
+}
+
+
+# get python version on 1 digits (2, 3, ...)
+function __python_major_version() {
+	# 2.7
+	python -c 'import sys;print(str(sys.version_info.major));'
 }
 
 # get python version on 2 digits (2.7, 3.4, ...)
 function __python_short_version() {
 	# 2.7
-	python -c 'import sys;print str(sys.version_info.major) + "." + str(sys.version_info.minor)'
+	python -c 'import sys;print(str(sys.version_info.major) + "." + str(sys.version_info.minor));'
 }
 
+# TODO python-config symbolic link do not exist on python 3.x
+# REPLACE with :
+# _python_version="$($STELLA_API python_short_version)"
+# _pyconf=python"$_python_version"-config
+# _python_path="$($pyconf--prefix)"
 function __python_get_libs() {
 	# -lpython2.7 -ldl -framework CoreFoundation
 	python-config --libs
