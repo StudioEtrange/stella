@@ -18,8 +18,8 @@ feature_zlib_1_2_11() {
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
-	FEAT_SOURCE_URL=http://zlib.net/zlib-1.2.11.tar.gz
-	FEAT_SOURCE_URL_FILENAME=zlib-1.2.11.tar.gz
+	FEAT_SOURCE_URL=https://github.com/madler/zlib/archive/v1.2.11.tar.gz
+	FEAT_SOURCE_URL_FILENAME=zlib-v1.2.11.tar.gz
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
 	FEAT_BINARY_URL=
@@ -41,8 +41,8 @@ feature_zlib_1_2_8() {
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
-	FEAT_SOURCE_URL=http://zlib.net/zlib-1.2.8.tar.gz
-	FEAT_SOURCE_URL_FILENAME=zlib-1.2.8.tar.gz
+	FEAT_SOURCE_URL=https://github.com/madler/zlib/archive/v1.2.8.tar.gz
+	FEAT_SOURCE_URL_FILENAME=zlib-v1.2.8.tar.gz
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
 	FEAT_BINARY_URL=
@@ -68,7 +68,7 @@ feature_zlib_install_source() {
 	__set_toolset "STANDARD"
 
 
-	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
+	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP FORCE_NAME $FEAT_SOURCE_URL_FILENAME"
 
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
@@ -80,7 +80,7 @@ feature_zlib_install_source() {
 	__feature_callback
 
 	# out of tree build do not work
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD SOURCE_KEEP"
 
 }
 
