@@ -107,7 +107,7 @@ feature_openssl_install_source() {
 
 	__feature_callback
 
-	__start_manual_build
+	__start_manual_build "openssl" "$SRC_DIR" "$INSTALL_DIR" 
 	#__prepare_build "$INSTALL_DIR" "$SRC_DIR" "$SRC_DIR"
 
 	cd "$SRC_DIR"
@@ -131,7 +131,7 @@ feature_openssl_install_source() {
 	#[ "$ARCH" == "x64" ] && make test
 
 	__end_manual_build
-	
+
 	# clean --------------------------------
 	rm -Rf $SRC_DIR
 
