@@ -5,7 +5,7 @@ _GETTEXT_INCLUDED_=1
 
 # TODO : link to ncurses
 
-function feature_gettext() {
+feature_gettext() {
 
 	FEAT_NAME=gettext
 	FEAT_LIST_SCHEMA="0_19_4:source"
@@ -14,7 +14,7 @@ function feature_gettext() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_gettext_0_19_4() {
+feature_gettext_0_19_4() {
 	FEAT_VERSION=0_19_4
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -37,7 +37,7 @@ function feature_gettext_0_19_4() {
 }
 
 
-function feature_gettext_install_source() {
+feature_gettext_install_source() {
 
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"

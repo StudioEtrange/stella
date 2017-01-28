@@ -4,7 +4,7 @@ _httrack_INCLUDED_=1
 
 
 
-function feature_httrack() {
+feature_httrack() {
 	FEAT_NAME=httrack
 	FEAT_LIST_SCHEMA="3_48_22:source"
 	FEAT_DEFAULT_VERSION=3_48_22
@@ -12,7 +12,7 @@ function feature_httrack() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_httrack_3_48_22() {
+feature_httrack_3_48_22() {
 	FEAT_VERSION=3_48_22
 
 	FEAT_SOURCE_DEPENDENCIES="openssl#1_0_2d zlib#1_2_8 libiconv#1_14"
@@ -34,14 +34,14 @@ function feature_httrack_3_48_22() {
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 }
 
-function feature_httrack_link() {
+feature_httrack_link() {
 	__link_feature_library "openssl#1_0_2d"
 	#__link_feature_library "zlib#1_2_8" "GET_FOLDER _zlib FORCE_DYNAMIC"
 	__link_feature_library "zlib#1_2_8" "FORCE_STATIC"
 	__link_feature_library "libiconv#1_14" "FORCE_STATIC"
 }
 
-function feature_httrack_install_source() {
+feature_httrack_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

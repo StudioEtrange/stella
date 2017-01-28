@@ -4,7 +4,7 @@ _wrk_INCLUDED_=1
 
 # NOTE : embed his own version of luajit
 
-function feature_wrk() {
+feature_wrk() {
 	FEAT_NAME=wrk
 	FEAT_LIST_SCHEMA="4_0_1:source"
 	FEAT_DEFAULT_VERSION=4_0_1
@@ -12,7 +12,7 @@ function feature_wrk() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_wrk_4_0_1() {
+feature_wrk_4_0_1() {
 	FEAT_VERSION=4_0_1
 
 
@@ -37,14 +37,14 @@ function feature_wrk_4_0_1() {
 }
 
 
-function feature_wrk_link() {
+feature_wrk_link() {
 	__link_feature_library "openssl#1_0_2d" "LIBS_NAME ssl crypto GET_FLAGS _openssl NO_SET_FLAGS"
 	sed -i .bak "s,\(-std=c99 -Wall -O2 -D_REENTRANT\),\1 $_openssl_CPP_FLAGS," "$SRC_DIR/Makefile"
 	sed -i .bak "s,\(-lpthread -lm -lcrypto -lssl\),-lpthread -lm $_openssl_LINK_FLAGS," "$SRC_DIR/Makefile"
 }
 
 
-function feature_wrk_install_source() {
+feature_wrk_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

@@ -2,7 +2,7 @@ if [ ! "$_libusb_INCLUDED_" == "1" ]; then
 _libusb_INCLUDED_=1
 
 
-function feature_libusb() {
+feature_libusb() {
 	FEAT_NAME=libusb
 	FEAT_LIST_SCHEMA="1_0_21:source"
 	FEAT_DEFAULT_VERSION=1_0_21
@@ -10,7 +10,7 @@ function feature_libusb() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_libusb_1_0_21() {
+feature_libusb_1_0_21() {
 	FEAT_VERSION=1_0_21
 
 
@@ -36,7 +36,7 @@ function feature_libusb_1_0_21() {
 }
 
 
-function feature_libusb_install_source() {
+feature_libusb_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

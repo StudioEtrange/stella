@@ -13,7 +13,7 @@ _augeas_INCLUDED_=1
 #save
 #print /files
 
-function feature_augeas() {
+feature_augeas() {
 	FEAT_NAME=augeas
 
 	FEAT_LIST_SCHEMA="1_6_0:source 1_5_0:source"
@@ -23,7 +23,7 @@ function feature_augeas() {
 }
 
 
-function feature_augeas_1_6_0() {
+feature_augeas_1_6_0() {
 	FEAT_VERSION=1_6_0
 
 	FEAT_SOURCE_DEPENDENCIES="libxml2#2_9_1"
@@ -46,7 +46,7 @@ function feature_augeas_1_6_0() {
 
 }
 
-function feature_augeas_1_5_0() {
+feature_augeas_1_5_0() {
 	FEAT_VERSION=1_5_0
 
 
@@ -70,7 +70,7 @@ function feature_augeas_1_5_0() {
 
 }
 
-function feature_augeas_link() {
+feature_augeas_link() {
 
 	__link_feature_library "libxml2#2_9_1" "GET_FLAGS _libxml2 LIBS_NAME xml2 FORCE_INCLUDE_FOLDER include/libxml2"
 	#export LIBXML_CFLAGS="$_libxml2_C_CXX_FLAGS $_libxml2_CPP_FLAGS"
@@ -80,7 +80,7 @@ function feature_augeas_link() {
 }
 
 
-function feature_augeas_install_source() {
+feature_augeas_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

@@ -4,7 +4,7 @@ _AMBARI_INCLUDED_=1
 #TODO not finished
 #https://cwiki.apache.org/confluence/display/AMBARI/Ambari+Development
 
-function feature_ambari() {
+feature_ambari() {
 	FEAT_NAME="ambari"
 	FEAT_LIST_SCHEMA="2_2_2:source"
 	FEAT_DEFAULT_VERSION="2_2_2"
@@ -13,7 +13,7 @@ function feature_ambari() {
 }
 
 
-function feature_ambari_2_2_2() {
+feature_ambari_2_2_2() {
 	FEAT_VERSION="2_2_2"
 	# need python
 	FEAT_SOURCE_DEPENDENCIES="python#2_7_9 maven#3_0_5:binary oracle-jdk#7u80@x64:binary nodejs#0_10_31@x64:binary"
@@ -38,7 +38,7 @@ function feature_ambari_2_2_2() {
 }
 
 
-function feature_ambari_install_source() {
+feature_ambari_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$FEAT_INSTALL_ROOT/src"
 	BUILD_DIR=

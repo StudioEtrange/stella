@@ -4,7 +4,7 @@ _flink_INCLUDED_=1
 
 # need java
 
-function feature_flink() {
+feature_flink() {
 	FEAT_NAME=flink
 	FEAT_LIST_SCHEMA="1_1_2_HADOOP_2_4:binary 0_10_1_HADOOP_2_4:binary"
 	FEAT_DEFAULT_VERSION=1_1_2_HADOOP_2_4
@@ -14,7 +14,7 @@ function feature_flink() {
 
 
 
-function feature_flink_1_1_2_HADOOP_2_4() {
+feature_flink_1_1_2_HADOOP_2_4() {
 	FEAT_VERSION=1_1_2_HADOOP_2_4
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -38,7 +38,7 @@ function feature_flink_1_1_2_HADOOP_2_4() {
 
 }
 
-function feature_flink_0_10_1_HADOOP_2_4() {
+feature_flink_0_10_1_HADOOP_2_4() {
 	FEAT_VERSION=0_10_1_HADOOP_2_4
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -61,7 +61,7 @@ function feature_flink_0_10_1_HADOOP_2_4() {
 
 }
 
-function feature_flink_install_binary() {
+feature_flink_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "STRIP"
 
 }

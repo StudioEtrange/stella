@@ -1,7 +1,7 @@
 if [ ! "$_CMAKE_INCLUDED_" == "1" ]; then
 _CMAKE_INCLUDED_=1
 
-function feature_cmake() {
+feature_cmake() {
 
 	FEAT_NAME=cmake
 	FEAT_LIST_SCHEMA="3_6_2:source 3_6_2:binary 2_8_12:source 2_8_12:binary 3_2_3:binary 3_2_3:source 3_3_1:binary 3_3_1:source"
@@ -12,7 +12,7 @@ function feature_cmake() {
 
 
 
-function feature_cmake_3_6_2() {
+feature_cmake_3_6_2() {
 	FEAT_VERSION=3_6_2
 	# TODO  ** NEED : cURL, libarchive and expat
 	FEAT_SOURCE_DEPENDENCIES=
@@ -40,7 +40,7 @@ function feature_cmake_3_6_2() {
 	fi
 }
 
-function feature_cmake_2_8_12() {
+feature_cmake_2_8_12() {
 	FEAT_VERSION=2_8_12
 	# TODO  ** NEED : cURL-7.32.0, libarchive-3.1.2 and expat-2.1.0
 	FEAT_SOURCE_DEPENDENCIES=
@@ -70,7 +70,7 @@ function feature_cmake_2_8_12() {
 }
 
 
-function feature_cmake_3_2_3() {
+feature_cmake_3_2_3() {
 	FEAT_VERSION=3_2_3
 	# TODO  ** NEED : cURL-7.32.0, libarchive-3.1.2 and expat-2.1.0
 	FEAT_SOURCE_DEPENDENCIES=
@@ -99,7 +99,7 @@ function feature_cmake_3_2_3() {
 }
 
 
-function feature_cmake_3_3_1() {
+feature_cmake_3_3_1() {
 	FEAT_VERSION=3_3_1
 	# TODO  ** NEED : cURL-7.32.0, libarchive-3.1.2 and expat-2.1.0
 	FEAT_SOURCE_DEPENDENCIES=
@@ -128,7 +128,7 @@ function feature_cmake_3_3_1() {
 }
 
 
-function feature_cmake_install_source() {
+feature_cmake_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	BUILD_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-build"
@@ -160,7 +160,7 @@ function feature_cmake_install_source() {
 }
 
 
-function feature_cmake_install_binary() {
+feature_cmake_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP"
 
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then

@@ -3,7 +3,7 @@ _LIBPNG_INCLUDED_=1
 
 # darwin -- OK -- 20151012
 
-function feature_libpng() {
+feature_libpng() {
 	FEAT_NAME=libpng
 	FEAT_LIST_SCHEMA="1_6_17:source"
 	FEAT_DEFAULT_VERSION=1_6_17
@@ -11,7 +11,7 @@ function feature_libpng() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_libpng_1_6_17() {
+feature_libpng_1_6_17() {
 	FEAT_VERSION=1_6_17
 
 
@@ -34,13 +34,13 @@ function feature_libpng_1_6_17() {
 
 }
 
-function feature_libpng_link() {
+feature_libpng_link() {
 	__link_feature_library "zlib#1_2_8" "FORCE_DYNAMIC LIBS_NAME z"
 	#__link_feature_library "zlib#1_2_8" "FORCE_STATIC"
 }
 
 
-function feature_libpng_install_source() {
+feature_libpng_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

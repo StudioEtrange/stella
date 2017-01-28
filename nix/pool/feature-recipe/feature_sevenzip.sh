@@ -3,7 +3,7 @@ _SEVENZIP_INCLUDED_=1
 
 
 #TODO do not work yet
-function feature_sevenzip() {
+feature_sevenzip() {
 	FEAT_NAME=sevenzip
 	FEAT_LIST_SCHEMA="9_20_1:source"
 	FEAT_DEFAULT_VERSION=9_20_1
@@ -11,7 +11,7 @@ function feature_sevenzip() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_sevenzip_9_20_1() {
+feature_sevenzip_9_20_1() {
 	FEAT_VERSION=9_20_1
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -32,7 +32,7 @@ function feature_sevenzip_9_20_1() {
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/lib
 }
 
-function feature_sevenzip_install_source() {
+feature_sevenzip_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

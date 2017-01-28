@@ -4,7 +4,7 @@ _wildfly_INCLUDED_=1
 # wildfly is the new name for JBOSS Application Server
 #  7.1.1.Final is the last version as JBOSS AS
 
-function feature_wildfly() {
+feature_wildfly() {
 	FEAT_NAME=wildfly
 	FEAT_LIST_SCHEMA="7_1_1_FINAL:binary 8_2_1_FINAL 9_0_2_FINAL 10_0_0_FINAL:binary"
 	FEAT_DEFAULT_VERSION=10_0_0_FINAL
@@ -13,7 +13,7 @@ function feature_wildfly() {
 }
 
 
-function feature_wildfly_10_0_0_FINAL() {
+feature_wildfly_10_0_0_FINAL() {
 	FEAT_VERSION=10_0_0_FINAL
 	# TODO NEED JAVA 8
 	FEAT_SOURCE_DEPENDENCIES=
@@ -37,7 +37,7 @@ function feature_wildfly_10_0_0_FINAL() {
 }
 
 
-function feature_wildfly_9_0_2_FINAL() {
+feature_wildfly_9_0_2_FINAL() {
 	FEAT_VERSION=9_0_2_FINAL
 	# TODO NEED JAVA 7
 	FEAT_SOURCE_DEPENDENCIES=
@@ -61,7 +61,7 @@ function feature_wildfly_9_0_2_FINAL() {
 }
 
 
-function feature_wildfly_8_2_1_FINAL() {
+feature_wildfly_8_2_1_FINAL() {
 	FEAT_VERSION=8_2_1_FINAL
 	# TODO NEED JAVA 7
 	FEAT_SOURCE_DEPENDENCIES=
@@ -86,7 +86,7 @@ function feature_wildfly_8_2_1_FINAL() {
 
 
 
-function feature_wildfly_7_1_1_FINAL() {
+feature_wildfly_7_1_1_FINAL() {
 	FEAT_VERSION=7_1_1_FINAL
 	# TODO NEED JAVA 6
 	FEAT_SOURCE_DEPENDENCIES=
@@ -110,7 +110,7 @@ function feature_wildfly_7_1_1_FINAL() {
 }
 
 
-function feature_wildfly_install_binary() {
+feature_wildfly_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "STRIP"
 
 

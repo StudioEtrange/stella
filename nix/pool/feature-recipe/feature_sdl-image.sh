@@ -8,7 +8,7 @@ _sdlimage_INCLUDED_=1
 # sdl 2.x ==> sdl-image 2_0_0
 # sdl 1.2.x ==> sdl-image 1_2_12
 
-function feature_sdl-image() {
+feature_sdl-image() {
 	FEAT_NAME=sdl-image
 	FEAT_LIST_SCHEMA="2_0_0:source 1_2_12:source"
 	FEAT_DEFAULT_VERSION=2_0_0
@@ -19,7 +19,7 @@ function feature_sdl-image() {
 
 
 
-function feature_sdl-image_2_0_0() {
+feature_sdl-image_2_0_0() {
 	FEAT_VERSION=2_0_0
 	
 	FEAT_SOURCE_DEPENDENCIES="sdl#2_0_3"
@@ -42,7 +42,7 @@ function feature_sdl-image_2_0_0() {
 	
 }
 
-function feature_sdl-image_1_2_12() {
+feature_sdl-image_1_2_12() {
 	FEAT_VERSION=1_2_12
 	
 	FEAT_SOURCE_DEPENDENCIES="sdl#1_2_15"
@@ -67,21 +67,21 @@ function feature_sdl-image_1_2_12() {
 
 
 
-function feature_sdl-image_link_sdl1() {
+feature_sdl-image_link_sdl1() {
 	__link_feature_library "sdl#1_2_15" "GET_FOLDER _sdl1 FORCE_INCLUDE_FOLDER include/SDL NO_SET_FLAGS"
 
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="$AUTO_INSTALL_CONF_FLAG_POSTFIX --with-sdl-prefix=$_sdl1_ROOT"
 }
 
 
-function feature_sdl-image_link_sdl2() {
+feature_sdl-image_link_sdl2() {
 	__link_feature_library "sdl#2_0_3" "GET_FOLDER _sdl2 FORCE_INCLUDE_FOLDER include/SDL NO_SET_FLAGS"
 
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="$AUTO_INSTALL_CONF_FLAG_POSTFIX --with-sdl-prefix=$_sdl2_ROOT"
 }
 
 
-function feature_sdl-image_install_source() {
+feature_sdl-image_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

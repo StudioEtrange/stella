@@ -2,7 +2,7 @@ if [ ! "$_curl_INCLUDED_" == "1" ]; then
 _curl_INCLUDED_=1
 
 
-function feature_curl() {
+feature_curl() {
 	FEAT_NAME=curl
 
 	FEAT_LIST_SCHEMA="7_36_0:source"
@@ -13,7 +13,7 @@ function feature_curl() {
 
 }
 
-function feature_curl_7_36_0() {
+feature_curl_7_36_0() {
 	FEAT_VERSION=7_36_0
 
 
@@ -38,12 +38,12 @@ function feature_curl_7_36_0() {
 }
 
 
-function feature_curl_link() {
+feature_curl_link() {
 	__link_feature_library "openssl#1_0_2d"
 	__link_feature_library "zlib#1_2_8" "LIBS_NAME z"
 }
 
-function feature_curl_install_source() {
+feature_curl_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	

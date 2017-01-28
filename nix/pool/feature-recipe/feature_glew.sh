@@ -1,7 +1,7 @@
 if [ ! "$_glew_INCLUDED_" == "1" ]; then 
 _glew_INCLUDED_=1
 
-function feature_glew() {
+feature_glew() {
 	FEAT_NAME=glew
 	FEAT_LIST_SCHEMA="1_13_0:source"
 	FEAT_DEFAULT_VERSION=1_13_0
@@ -12,7 +12,7 @@ function feature_glew() {
 
 
 
-function feature_glew_1_13_0() {
+feature_glew_1_13_0() {
 	FEAT_VERSION=1_13_0
 	
 	FEAT_SOURCE_DEPENDENCIES=
@@ -36,7 +36,7 @@ function feature_glew_1_13_0() {
 }
 
 
-function feature_glew_install_source() {
+feature_glew_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

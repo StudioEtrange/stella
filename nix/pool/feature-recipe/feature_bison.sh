@@ -6,7 +6,7 @@ _bison_INCLUDED_=1
 # https://github.com/NixOS/nixpkgs/tree/master/pkgs/development/tools/parsing/bison
 
 
-function feature_bison() {
+feature_bison() {
 	FEAT_NAME=bison
 
 	FEAT_LIST_SCHEMA="3_0_4:source"
@@ -15,7 +15,7 @@ function feature_bison() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_bison_3_0_4() {
+feature_bison_3_0_4() {
 	FEAT_VERSION=3_0_4
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -38,7 +38,7 @@ function feature_bison_3_0_4() {
 
 }
 
-function feature_bison_install_source() {
+feature_bison_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

@@ -2,7 +2,7 @@ if [ ! "$_TEMPLATE_INCLUDED_" == "1" ]; then
 _TEMPLATE_INCLUDED_=1
 
 
-function feature_template() {
+feature_template() {
 	FEAT_NAME=template
 	FEAT_LIST_SCHEMA="1_0_0@x64:binary 1_0_0@x86:binary"
 	FEAT_DEFAULT_VERSION=1_0_0
@@ -12,7 +12,7 @@ function feature_template() {
 
 
 
-function feature_template_1_0_0() {
+feature_template_1_0_0() {
 	# if FEAT_ARCH (ie:FEAT_BINARY_URL_x86) is not not null, properties FOO_ARCH=BAR will be selected and setted as FOO=BAR (ie:FEAT_BINARY_URL)
 	# if FOO_ARCH is empty, FOO will not be changed
 
@@ -54,12 +54,12 @@ function feature_template_1_0_0() {
 
 }
 
-function feature_template_setenv()  {
+feature_template_setenv()  {
 	TEMPLATE_HOME=$FEAT_INSTALL_ROOT
 	export TEMPLATE_HOME
 }
 
-function feature_template_install_binary() {
+feature_template_install_binary() {
 
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP FORCE_NAME $FEAT_BINARY_URL_FILENAME"
 
@@ -71,13 +71,13 @@ function feature_template_install_binary() {
 
 
 # ---------------------------------------------------------------------------------------------------------------------------
-function feature_template_1_0_0_source_callback() {
+feature_template_1_0_0_source_callback() {
 	__link_feature_library "libxml2#2_9_1" "GET_FLAGS _libxml2 LIBS_NAME xml2 FORCE_INCLUDE_FOLDER include/libxml2"
 	AUTO_INSTALL_CONF_FLAG_PREFIX="LIBXML_CFLAGS=\"$_libxml2_C_CXX_FLAGS $_libxml2_CPP_FLAGS\" LIBXML_LIBS=\"$_libxml2_LINK_FLAGS\""
 
 }
 
-function feature_template_install_source() {
+feature_template_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
@@ -100,7 +100,7 @@ function feature_template_install_source() {
 
 
 
-function feature_template_install_source() {
+feature_template_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
@@ -126,7 +126,7 @@ function feature_template_install_source() {
 }
 
 
-function feature_template_install_source() {
+feature_template_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

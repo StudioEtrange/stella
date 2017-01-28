@@ -3,7 +3,7 @@ _PCRE_INCLUDED_=1
 
 
 
-function feature_pcre() {
+feature_pcre() {
 
 	FEAT_NAME=pcre
 	FEAT_LIST_SCHEMA="8_36:source"
@@ -12,7 +12,7 @@ function feature_pcre() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_pcre_8_36() {
+feature_pcre_8_36() {
 	FEAT_VERSION=8_36
 
 	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 bzip2"
@@ -35,12 +35,12 @@ function feature_pcre_8_36() {
 
 }
 
-function feature_pcre_link() {
+feature_pcre_link() {
 	__link_feature_library "zlib#1_2_8"
 	__link_feature_library "bzip2"
 }
 
-function feature_pcre_install_source() {
+feature_pcre_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	

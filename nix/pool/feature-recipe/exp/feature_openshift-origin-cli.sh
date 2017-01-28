@@ -2,7 +2,7 @@
 if [ ! "$_openshiftorigincli_INCLUDED_" == "1" ]; then
 _openshiftorigincli_INCLUDED_=1
 
-function feature_openshift-origin-cli() {
+feature_openshift-origin-cli() {
 	FEAT_NAME=openshift-origin-cli
 	FEAT_LIST_SCHEMA="1_3_1:binary"
 	FEAT_DEFAULT_VERSION=1_3_1
@@ -11,7 +11,7 @@ function feature_openshift-origin-cli() {
 }
 
 # with openshift origin 1.3.1
-function feature_openshift-origin-cli_1_3_1() {
+feature_openshift-origin-cli_1_3_1() {
 	FEAT_VERSION=1_3_1
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -44,7 +44,7 @@ function feature_openshift-origin-cli_1_3_1() {
 
 
 
-function feature_openshift-origin-cli_install_binary() {
+feature_openshift-origin-cli_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT"
 
 }

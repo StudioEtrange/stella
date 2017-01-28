@@ -2,7 +2,7 @@ if [ ! "$_fasttext_INCLUDED_" == "1" ]; then
 _fasttext_INCLUDED_=1
 
 
-function feature_fasttext() {
+feature_fasttext() {
 	FEAT_NAME=fasttext
 	FEAT_LIST_SCHEMA=SNAPSHOT:source
 	FEAT_DEFAULT_VERSION=SNAPSHOT
@@ -11,7 +11,7 @@ function feature_fasttext() {
 }
 
 
-function feature_fasttext_SNAPSHOT() {
+feature_fasttext_SNAPSHOT() {
 	FEAT_VERSION=SNAPSHOT
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -33,7 +33,7 @@ function feature_fasttext_SNAPSHOT() {
 
 }
 
-function feature_fasttext_install_source() {
+feature_fasttext_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

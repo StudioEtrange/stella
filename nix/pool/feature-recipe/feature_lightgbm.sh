@@ -5,7 +5,7 @@ _lightgbm_INCLUDED_=1
 
 
 
-function feature_lightgbm() {
+feature_lightgbm() {
 	FEAT_NAME=lightgbm
 	FEAT_LIST_SCHEMA="SNAPSHOT:source"
 	FEAT_DEFAULT_VERSION=SNAPSHOT
@@ -15,7 +15,7 @@ function feature_lightgbm() {
 
 
 
-function feature_lightgbm_SNAPSHOT() {
+feature_lightgbm_SNAPSHOT() {
 	FEAT_VERSION=SNAPSHOT
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -43,7 +43,7 @@ function feature_lightgbm_SNAPSHOT() {
 
 
 
-function feature_lightgbm_install_source() {
+feature_lightgbm_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

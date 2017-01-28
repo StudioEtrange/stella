@@ -3,7 +3,7 @@ _bats_INCLUDED_=1
 
 
 
-function feature_bats() {
+feature_bats() {
 	FEAT_NAME=bats
 	FEAT_LIST_SCHEMA="SNAPSHOT:source"
 	FEAT_DEFAULT_VERSION=SNAPSHOT
@@ -13,12 +13,12 @@ function feature_bats() {
 
 
 
-function bats_internal_test() {
+bats_internal_test() {
 	cp -R "$SRC_DIR/test" "$INSTALL_DIR/test"
 }
 
 
-function feature_bats_SNAPSHOT() {
+feature_bats_SNAPSHOT() {
 	FEAT_VERSION=SNAPSHOT
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -42,7 +42,7 @@ function feature_bats_SNAPSHOT() {
 }
 
 
-function feature_bats_install_source() {
+feature_bats_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

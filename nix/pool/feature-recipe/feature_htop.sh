@@ -2,7 +2,7 @@ if [ ! "$_HTOP_INCLUDED_" == "1" ]; then
 _HTOP_INCLUDED_=1
 
 
-function feature_htop() {
+feature_htop() {
 	FEAT_NAME=htop
 	FEAT_LIST_SCHEMA="2_0_2:source"
 	FEAT_DEFAULT_VERSION=2_0_2
@@ -10,7 +10,7 @@ function feature_htop() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_htop_2_0_2() {
+feature_htop_2_0_2() {
 	FEAT_VERSION=2_0_2
 
 
@@ -35,13 +35,13 @@ function feature_htop_2_0_2() {
 
 }
 
-function feature_htop_link() {
+feature_htop_link() {
 	__link_feature_library "ncurses" "FORCE_DYNAMIC"
 
 }
 
 
-function feature_htop_install_source() {
+feature_htop_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

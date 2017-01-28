@@ -18,7 +18,7 @@ _minikube_INCLUDED_=1
 # use with docker
 # docker ps
 
-function feature_minikube() {
+feature_minikube() {
 	FEAT_NAME=minikube
 	FEAT_LIST_SCHEMA="0_11_0:binary"
 	FEAT_DEFAULT_VERSION=0_11_0
@@ -27,7 +27,7 @@ function feature_minikube() {
 }
 
 # with kubernetes v1.4.0
-function feature_minikube_0_11_0() {
+feature_minikube_0_11_0() {
 	FEAT_VERSION=0_11_0
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -60,7 +60,7 @@ function feature_minikube_0_11_0() {
 
 
 
-function feature_minikube_install_binary() {
+feature_minikube_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "FORCE_NAME $FEAT_BINARY_URL_FILENAME"
 
 	mv $FEAT_INSTALL_ROOT/$FEAT_BINARY_URL_FILENAME $FEAT_INSTALL_ROOT/minikube

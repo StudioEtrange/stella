@@ -2,7 +2,7 @@ if [ ! "$_DOCKERCOMPOSE_INCLUDED_" == "1" ]; then
 _DOCKERCOMPOSE_INCLUDED_=1
 
 
-function feature_docker-compose() {
+feature_docker-compose() {
 	FEAT_NAME=docker-compose
 	FEAT_LIST_SCHEMA="1_9_0@x64:binary 1_8_1@x64:binary 1_1_0@x64:binary 1_3_1@x64:binary 1_5_2@x64:binary 1_7_1@x64:binary"
 	FEAT_DEFAULT_VERSION=1_9_0
@@ -11,7 +11,7 @@ function feature_docker-compose() {
 }
 
 
-function feature_docker-compose_1_9_0() {
+feature_docker-compose_1_9_0() {
 	FEAT_VERSION=1_9_0
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -50,7 +50,7 @@ function feature_docker-compose_1_9_0() {
 
 
 
-function feature_docker-compose_1_8_1() {
+feature_docker-compose_1_8_1() {
 	FEAT_VERSION=1_8_1
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -87,7 +87,7 @@ function feature_docker-compose_1_8_1() {
 
 }
 
-function feature_docker-compose_1_7_1() {
+feature_docker-compose_1_7_1() {
 	FEAT_VERSION=1_7_1
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -125,7 +125,7 @@ function feature_docker-compose_1_7_1() {
 }
 
 
-function feature_docker-compose_1_5_2() {
+feature_docker-compose_1_5_2() {
 	FEAT_VERSION=1_5_2
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -166,7 +166,7 @@ function feature_docker-compose_1_5_2() {
 
 
 
-function feature_docker-compose_1_1_0() {
+feature_docker-compose_1_1_0() {
 	FEAT_VERSION=1_1_0
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -207,7 +207,7 @@ function feature_docker-compose_1_1_0() {
 
 
 
-function feature_docker-compose_1_3_1() {
+feature_docker-compose_1_3_1() {
 	FEAT_VERSION=1_3_1
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -244,7 +244,7 @@ function feature_docker-compose_1_3_1() {
 }
 
 
-function feature_docker-compose_install_binary() {
+feature_docker-compose_install_binary() {
 
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP FORCE_NAME $FEAT_BINARY_URL_FILENAME"
 

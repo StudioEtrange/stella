@@ -2,7 +2,7 @@ if [ ! "$_NINJA_INCLUDED_" == "1" ]; then
 _NINJA_INCLUDED_=1
 
 
-function feature_ninja() {
+feature_ninja() {
 
 	FEAT_NAME=ninja
 	FEAT_LIST_SCHEMA="1_7_2:source 1_7_2:binary 1_7_1:source 1_7_1:binary 1_6_0:source 1_6_0:binary"
@@ -12,7 +12,7 @@ function feature_ninja() {
 }
 
 
-function feature_ninja_1_7_2() {
+feature_ninja_1_7_2() {
 	FEAT_VERSION=1_7_2
 
 	# TODO echo " ** NEED : python"
@@ -44,7 +44,7 @@ function feature_ninja_1_7_2() {
 
 }
 
-function feature_ninja_1_7_1() {
+feature_ninja_1_7_1() {
 	FEAT_VERSION=1_7_1
 
 	# TODO echo " ** NEED : python"
@@ -76,7 +76,7 @@ function feature_ninja_1_7_1() {
 
 }
 
-function feature_ninja_1_6_0() {
+feature_ninja_1_6_0() {
 	FEAT_VERSION=1_6_0
 
 	# TODO echo " ** NEED : python"
@@ -108,7 +108,7 @@ function feature_ninja_1_6_0() {
 
 }
 
-function feature_ninja_install_source() {
+feature_ninja_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$INSTALL_DIR" "DEST_ERASE STRIP FORCE_NAME $FEAT_SOURCE_URL_FILENAME"
@@ -119,7 +119,7 @@ function feature_ninja_install_source() {
 }
 
 
-function feature_ninja_install_binary() {
+feature_ninja_install_binary() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$INSTALL_DIR" "STRIP FORCE_NAME $FEAT_BINARY_URL_FILENAME"

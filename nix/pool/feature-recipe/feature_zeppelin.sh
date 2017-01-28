@@ -2,7 +2,7 @@ if [ ! "$_zeppelin_INCLUDED_" == "1" ]; then
 _zeppelin_INCLUDED_=1
 
 
-function feature_zeppelin() {
+feature_zeppelin() {
 	FEAT_NAME=zeppelin
 	FEAT_LIST_SCHEMA="0_6_1:binary"
 	FEAT_DEFAULT_VERSION=0_6_1
@@ -13,7 +13,7 @@ function feature_zeppelin() {
 
 
 
-function feature_zeppelin_0_6_1() {
+feature_zeppelin_0_6_1() {
 	FEAT_VERSION=0_6_1
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -36,7 +36,7 @@ function feature_zeppelin_0_6_1() {
 
 }
 
-function feature_zeppelin_install_binary() {
+feature_zeppelin_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "STRIP"
 
 }

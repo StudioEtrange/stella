@@ -2,7 +2,7 @@ if [ ! "$_xzutils_INCLUDED_" == "1" ]; then
 _xzutils_INCLUDED_=1
 
 
-function feature_xzutils() {
+feature_xzutils() {
 	FEAT_NAME=xzutils
 	FEAT_LIST_SCHEMA="5_2_1:source"
 	FEAT_DEFAULT_VERSION=5_2_1
@@ -10,7 +10,7 @@ function feature_xzutils() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_xzutils_5_2_1() {
+feature_xzutils_5_2_1() {
 	FEAT_VERSION=5_2_1
 
 
@@ -36,7 +36,7 @@ function feature_xzutils_5_2_1() {
 
 
 
-function feature_xzutils_install_source() {
+feature_xzutils_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

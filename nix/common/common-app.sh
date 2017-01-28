@@ -6,7 +6,7 @@ _STELLA_COMMON_APP_INCLUDED_=1
 
 # APP RESSOURCES & ENV MANAGEMENT ---------------
 
-function __transfert_app(){
+__transfert_app(){
 	# target form is [USER@]HOST:[DEST]
 	local _target=$1
 
@@ -24,7 +24,7 @@ function __transfert_app(){
 
 # ARG 1 optional : specify an app path
 # return properties file path
-function __select_app() {
+__select_app() {
 	local _app_path=$1
 
 	local _properties_file=
@@ -42,7 +42,7 @@ function __select_app() {
 }
 
 
-function __create_app_samples() {
+__create_app_samples() {
 	local _approot=$1
 
 	cp -f "$STELLA_TEMPLATE/sample-app.sh" "$_approot/sample-app.sh"
@@ -55,7 +55,7 @@ function __create_app_samples() {
 
 # align stella installation to current app one (recreate stella-link file)
 # align workspace and cache folder paths of the current one (change stella properties path)
-function __link_app() {
+__link_app() {
 	local _target_approot="$1"
 	#local _stella_root=$2
 
@@ -101,7 +101,7 @@ function __link_app() {
 
 }
 
-function __init_app() {
+__init_app() {
 	local _app_name=$1
 	local _approot=$2
 	local _workroot=$3
@@ -163,7 +163,7 @@ function __init_app() {
 }
 
 # extract APP properties
-function __get_all_properties() {
+__get_all_properties() {
 	local _properties_file=$1
 
 	if [ -f "$_properties_file" ]; then
@@ -180,13 +180,13 @@ function __get_all_properties() {
 	fi
 }
 
-function __get_app_property() {
+__get_app_property() {
 	local _SECTION=$1
 	local _KEY=$2
 	__get_key "$_STELLA_APP_PROPERTIES_FILE" "$_SECTION" "$_KEY" "PREFIX"
 }
 
-function __get_data_properties() {
+__get_data_properties() {
 		local _properties_file=$1
 		local _list=$2
 
@@ -204,7 +204,7 @@ function __get_data_properties() {
 		fi
 }
 
-function __get_assets_properties() {
+__get_assets_properties() {
 	local _properties_file=$1
 	local _list=$2
 
@@ -222,19 +222,19 @@ function __get_assets_properties() {
 }
 
 
-function __remove_app_feature() {
+__remove_app_feature() {
 	local _SCHEMA=$1
 
 	__app_feature "REMOVE" $_SCHEMA
 }
 
-function __add_app_feature() {
+__add_app_feature() {
 	local _SCHEMA=$1
 
 	__app_feature "ADD" $_SCHEMA
 }
 
-function __app_feature() {
+__app_feature() {
 	# ADD or REMOVE
 	local _MODE=$1
 	local _SCHEMA=$2
@@ -295,12 +295,12 @@ function __app_feature() {
 }
 
 
-function __get_features() {
+__get_features() {
 	__feature_install_list "$STELLA_APP_FEATURE_LIST"
 }
 
 # install a feature listed in app feature list. Look for matching version in app feature list, so could match several version
-function __get_feature() {
+__get_feature() {
 	local _SCHEMA=$1
 
 	local _flag=0
@@ -333,13 +333,13 @@ function __get_feature() {
 
 
 # get a list of data by id
-function __get_data() {
+__get_data() {
 	local _list_id=$1
 	__app_resources "DATA" "GET" "$_list_id"
 }
 
 # get a list of assets by id
-function __get_assets() {
+__get_assets() {
 	local _list_id=$1
 	mkdir -p "$ASSETS_ROOT"
 	mkdir -p "$ASSETS_REPOSITORY"
@@ -347,39 +347,39 @@ function __get_assets() {
 	__app_resources "ASSETS" "GET" "$_list_id"
 }
 
-function __delete_data() {
+__delete_data() {
 	local _list_id=$1
 	__app_resources "DATA" "DELETE" "$_list_id"
 }
 
-function __delete_assets() {
+__delete_assets() {
 	local _list_id=$1
 	__app_resources "ASSETS" "DELETE" "$_list_id"
 }
 
-function __update_data() {
+__update_data() {
 	local _list_id=$1
 	__app_resources "DATA" "UPDATE" "$_list_id"
 }
 
-function __update_assets() {
+__update_assets() {
 	local _list_id=$1
 	__app_resources "ASSETS" "UPDATE" "$_list_id"
 }
 
-function __revert_data() {
+__revert_data() {
 	local _list_id=$1
 	__app_resources "DATA" "REVERT" "$_list_id"
 
 }
 
-function __revert_assets() {
+__revert_assets() {
 	local _list_id=$1
 	__app_resources "ASSETS" "REVERT" "$_list_id"
 }
 
 
-function __get_data_pack() {
+__get_data_pack() {
 	local _list_name=$1
 
 	__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "$_list_name" ""
@@ -388,7 +388,7 @@ function __get_data_pack() {
 	__get_data "$_list_pack"
 }
 
-function __get_assets_pack() {
+__get_assets_pack() {
 	local _list_name=$1
 
 	__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "$_list_name" ""
@@ -397,7 +397,7 @@ function __get_assets_pack() {
 	__get_assets "$_list_pack"
 }
 
-function __delete_data_pack() {
+__delete_data_pack() {
 	local _list_name=$1
 
 	__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "$_list_name" ""
@@ -406,7 +406,7 @@ function __delete_data_pack() {
 	__delete_data "$_list_pack"
 }
 
-function __delete_assets_pack() {
+__delete_assets_pack() {
 	local _list_name=$1
 
 	__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "$_list_name" ""
@@ -415,7 +415,7 @@ function __delete_assets_pack() {
 	__delete_assets "$_list_pack"
 }
 
-function __update_data_pack() {
+__update_data_pack() {
 	local _list_name=$1
 
 	__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "$_list_name" ""
@@ -424,7 +424,7 @@ function __update_data_pack() {
 	__update_data "$_list_pack"
 }
 
-function __update_assets_pack() {
+__update_assets_pack() {
 	local _list_name=$1
 
 	__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "$_list_name" ""
@@ -433,7 +433,7 @@ function __update_assets_pack() {
 	__update_assets "$_list_pack"
 }
 
-function __revert_data_pack() {
+__revert_data_pack() {
 	local _list_name=$1
 
 	__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "$_list_name" ""
@@ -442,7 +442,7 @@ function __revert_data_pack() {
 	__revert_data "$_list_pack"
 }
 
-function __revert_assets_pack() {
+__revert_assets_pack() {
 	local _list_name=$1
 
 	__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "$_list_name" ""
@@ -454,7 +454,7 @@ function __revert_assets_pack() {
 # ARG1 resource mode is DATA or ASSET
 # ARG2 operation is GET or UPDATE or REVERT or DELETE (UPDATE or REVERT if applicable)
 # ARG3 list of resource ID
-function __app_resources() {
+__app_resources() {
 	local _mode=$1
 	local _operation=$2
 	local _list_id=$3
@@ -523,7 +523,7 @@ function __app_resources() {
 
 
 
-function __ask_init_app() {
+__ask_init_app() {
 		echo "Do you wish to init your stella app (create properties files, link app to stella...) ?"
 		select yn in "Yes" "No"; do
 		    case $yn in

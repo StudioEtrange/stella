@@ -10,7 +10,7 @@ _FREETYPE_INCLUDED_=1
 # checking for BZ2_bzDecompress in -lbz2... no
 # checking for LIBPNG... no
 
-function feature_freetype() {
+feature_freetype() {
 	FEAT_NAME=freetype
 	FEAT_LIST_SCHEMA="2_6_0:source 2_6_1:source"
 	FEAT_DEFAULT_VERSION=2_6_1
@@ -19,7 +19,7 @@ function feature_freetype() {
 }
 
 
-function feature_freetype_2_6_1() {
+feature_freetype_2_6_1() {
 	FEAT_VERSION=2_6_1
 	FEAT_SOURCE_DEPENDENCIES="libpng#1_6_17 bzip2#1_0_6 zlib#1_2_8"
 	FEAT_BINARY_DEPENDENCIES=
@@ -40,7 +40,7 @@ function feature_freetype_2_6_1() {
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 }
 
-function feature_freetype_2_6_0() {
+feature_freetype_2_6_0() {
 	FEAT_VERSION=2_6_0
 	FEAT_SOURCE_DEPENDENCIES="libpng#1_6_17 bzip2#1_0_6 zlib#1_2_8"
 	FEAT_BINARY_DEPENDENCIES=
@@ -61,19 +61,19 @@ function feature_freetype_2_6_0() {
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 }
 
-function feature_freetype_2_6_0_patch() {
+feature_freetype_2_6_0_patch() {
 	__get_resource "freetype26 patch" "https://gist.githubusercontent.com/anonymous/b47d77c41a6801879fd2/raw/fc21c3516b465095da7ed13f98bea491a7d18bbd" "HTTP" "$SRC_DIR" "FORCE_NAME freetype26-patch-fc21c3516b465095da7ed13f98bea491a7d18bbd.patch"
 	cd "$SRC_DIR"
 	patch -Np1 < freetype26-patch-fc21c3516b465095da7ed13f98bea491a7d18bbd.patch
 }
 
-function feature_freetype_link() {
+feature_freetype_link() {
 	__link_feature_library "libpng#1_6_17" "FORCE_STATIC"
 	__link_feature_library "bzip2#1_0_6" "FORCE_STATIC"
 	__link_feature_library "zlib#1_2_8" "FORCE_DYNAMIC"
 }
 
-function feature_freetype_install_source() {
+feature_freetype_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	

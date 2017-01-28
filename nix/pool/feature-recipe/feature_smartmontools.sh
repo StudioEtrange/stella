@@ -4,7 +4,7 @@ _SMARTMONTOOLS_INCLUDED_=1
 
 # OK
 
-function feature_smartmontools() {
+feature_smartmontools() {
 	FEAT_NAME=smartmontools
 	FEAT_LIST_SCHEMA="6_3:source"
 	FEAT_DEFAULT_VERSION=6_3
@@ -12,7 +12,7 @@ function feature_smartmontools() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_smartmontools_6_3() {
+feature_smartmontools_6_3() {
 	FEAT_VERSION=6_3
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -36,7 +36,7 @@ function feature_smartmontools_6_3() {
 
 
 
-function feature_smartmontools_install_source() {
+feature_smartmontools_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

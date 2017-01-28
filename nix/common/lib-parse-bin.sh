@@ -122,7 +122,7 @@ __AR_OBJECT_HEADER_EXTENDED_SIZE__=120
 __ELF_HEADER_SIZE__=20
 
 # GENERIC ---------------------------------------------------------------
-function __info_bin() {
+__info_bin() {
 	local _file="$1"
   local _result=0
 
@@ -155,7 +155,7 @@ function __info_bin() {
 }
 
 # we need offset and size in case of we are inside a macho Univeral Binary which may contains several archive
-function __info_ar() {
+__info_ar() {
 	local _file="$1"
 	local _offset="$2"
 	local _size="$3"
@@ -202,7 +202,7 @@ function __info_ar() {
 	}
 }
 
-function __info_macho() {
+__info_macho() {
 	local _file="$1"
 	local _offset="$2"
 	[ "$_offset" = "" ] && _offset=0
@@ -222,7 +222,7 @@ function __info_macho() {
 	echo "File Type : $(__macho_filetype "$_header")"
 }
 
-function __info_macho_universal() {
+__info_macho_universal() {
 	local _file="$1"
 	# HEADER ---
 	echo "This is an Universal Binary"
@@ -269,7 +269,7 @@ function __info_macho_universal() {
 	}
 }
 
-function __info_elf() {
+__info_elf() {
 	local _file="$1"
 	local _offset="$2"
 	# HEADER ---
@@ -296,7 +296,7 @@ function __info_elf() {
 	echo "Machine : $(__elf_machine "$_header")"
 }
 
-function __bit_bin() {
+__bit_bin() {
 	local _file="$1"
   # Usefull to read files in archive
   local _offset="$2"
@@ -317,7 +317,7 @@ function __bit_bin() {
 	echo "$_bit"
 }
 
-function __type_bin() {
+__type_bin() {
   local _file="$1"
   # Usefull to read files in archive
   local _offset="$2"
@@ -337,14 +337,14 @@ function __type_bin() {
   return $_result
 }
 
-function __is_macho_universal() {
+__is_macho_universal() {
   local _file="$1"
   local _result=1
   [[ "$(__type_bin "$_file")" =~ FILE_MACHO_UNIVERSAL ]] && _result=0
   return $_result
 }
 
-function __is_macho() {
+__is_macho() {
   local _file="$1"
 	local _offset="$2"
 	[ "$_offset" == "" ] && _offset=0
@@ -353,7 +353,7 @@ function __is_macho() {
   return $_result
 }
 
-function __is_elf() {
+__is_elf() {
   local _file="$1"
 	local _offset="$2"
 	[ "$_offset" == "" ] && _offset=0
@@ -363,7 +363,7 @@ function __is_elf() {
 }
 
 # ar format used for static lib
-function __is_archive() {
+__is_archive() {
   local _file="$1"
   local _result=1
   [[ "$(__type_bin "$_file")" =~ FILE_AR ]] && _result=0
@@ -373,7 +373,7 @@ function __is_archive() {
 
 
 # is a binary object (static lib, shared lib, executable)
-function __is_bin() {
+__is_bin() {
 		local _file="$1"
 		local _result=1
 
@@ -388,7 +388,7 @@ function __is_bin() {
 		return $_result
 }
 
-function __is_static_lib() {
+__is_static_lib() {
 	local _file="$1"
 	local _result=1
 
@@ -409,7 +409,7 @@ function __is_static_lib() {
 # object is shareable (shared lib or executable)
 # NOTE on linux it happens that executable file have DYN flag instead of EXEC flag
 # http://stackoverflow.com/a/34522357
-function __is_shareable_bin() {
+__is_shareable_bin() {
 	local _file="$1"
 	local _result=1
 	if [ -f "$_file" ]; then
@@ -431,7 +431,7 @@ function __is_shareable_bin() {
 
 
 # dynamic lib and executable bin
-function __is_executable_or_shareable_bin() {
+__is_executable_or_shareable_bin() {
 	local _file="$1"
 	local _result=1
 	if [ -f "$_file" ]; then
@@ -455,7 +455,7 @@ function __is_executable_or_shareable_bin() {
 
 # INTERNAL ---------------------------------------------------------------
 # extract bytes from file
-function __extract_raw_bin() {
+__extract_raw_bin() {
   local _file="$1"
   local _size="$2"
   local _offset="$3"
@@ -470,7 +470,7 @@ function __extract_raw_bin() {
 
 
 # extract enough bytes from file to get file signature
-function __get_generic_magic_bin() {
+__get_generic_magic_bin() {
   local _file="$1"
   local _offset="$2"
   local _result=0
@@ -491,7 +491,7 @@ function __get_generic_magic_bin() {
 # NOTE : return an array - use it like this
 #       local head=( $(__build_header file) )
 #       http://stackoverflow.com/a/10589820
-function __build_array_bin() {
+__build_array_bin() {
   local _raw_bin="$1"
   #local _size="$2"
   local _result=0
@@ -514,7 +514,7 @@ function __build_array_bin() {
 
 # give an ordered string of bytes
 # with regard to endianness
-function __get_ordered_bin() {
+__get_ordered_bin() {
 	local _raw_bin="$1"
 	local _endian="$2"
 	# starting position
@@ -533,12 +533,12 @@ function __get_ordered_bin() {
 }
 
 
-function __print_ascii_code() {
+__print_ascii_code() {
 	echo -e "$(echo "$1" | sed 's/\(..\)/\\x\1/g')"
 }
 
 # AR FORMAT ---------------------------------------------------------------
-function __ar_header() {
+__ar_header() {
   local _file="$1"
 	local _offset="$2"
   local _size=$__AR_HEADER_SIZE__
@@ -548,7 +548,7 @@ function __ar_header() {
   return 0
 }
 
-function __ar_magic() {
+__ar_magic() {
   local _header="$1"
 	local _opt="$2"
   # FORMAT -- return file format
@@ -565,11 +565,11 @@ function __ar_magic() {
   return 0
 }
 
-function __ar_endian() {
+__ar_endian() {
 	echo "BIG"
 }
 
-function __ar_bit() {
+__ar_bit() {
 	local _file="$1"
 	local _offset="$2"
 	# Pick object 2 inside ar because first one is often a symbol table
@@ -582,7 +582,7 @@ function __ar_bit() {
 }
 
 # we need offset and size in case of we are inside a macho Univeral Binary which may contains several archive
-function __ar_nb_object() {
+__ar_nb_object() {
 	local _file="$1"
 	local _offset="$2"
 	local _size="$3"
@@ -612,7 +612,7 @@ function __ar_nb_object() {
 
 # ar header of an object contained in ar
 # each object embedded in archive have an ar header (plus its own header)
-function __ar_object_header() {
+__ar_object_header() {
 	local _file="$1"
 	local _obj_number="$2"
 	# represent the beginning of the ar if it is inside another file (Macho Universal Binary)
@@ -634,7 +634,7 @@ function __ar_object_header() {
   return 0
 }
 
-function __ar_object_pos() {
+__ar_object_pos() {
 	local _file="$1"
 	local _obj_number="$2"
 	# represent the beginning of the ar if it is inside another file (Macho Universal Binary)
@@ -657,7 +657,7 @@ function __ar_object_pos() {
 }
 
 # return the position of the real file inside archive
-function __ar_object_data_pos() {
+__ar_object_data_pos() {
 	local _file="$1"
 	local _obj_number="$2"
 	# represent the beginning of the ar if it is inside another file (Macho Universal Binary)
@@ -689,7 +689,7 @@ function __ar_object_data_pos() {
 }
 
 
-function __ar_object_name() {
+__ar_object_name() {
 	local _header="$1"
   local _endian="BIG"
   local _offset=0
@@ -708,7 +708,7 @@ function __ar_object_name() {
   return 0
 }
 
-function __ar_object_size() {
+__ar_object_size() {
 	local _header="$1"
   local _endian="BIG"
   local _offset=48
@@ -718,7 +718,7 @@ function __ar_object_size() {
 }
 
 # MACH-O FORMAT ---------------------------------------------------------------
-function __macho_header() {
+__macho_header() {
   local _file="$1"
 	local _offset="$2"
   local _size=$__MACHO_HEADER_SIZE__
@@ -728,7 +728,7 @@ function __macho_header() {
   return 0
 }
 
-function __macho_universal_header() {
+__macho_universal_header() {
   local _file="$1"
   local _size=$__MACHO_UNIVERSAL_HEADER_SIZE__
   local _raw_header="$(__extract_raw_bin "$_file" "$_size")"  || _result=$?
@@ -737,7 +737,7 @@ function __macho_universal_header() {
 }
 
 
-function __macho_magic() {
+__macho_magic() {
   local _header="$1"
   local _opt="$2"
   # FORMAT -- return file format
@@ -764,7 +764,7 @@ function __macho_magic() {
 }
 
 
-function __macho_endian() {
+__macho_endian() {
   local _header="$1"
   local _magic="$(__macho_magic "$_header")"
   # Default is little endian
@@ -783,7 +783,7 @@ function __macho_endian() {
   return 0
 }
 
-function __macho_bit() {
+__macho_bit() {
 	local _header="$1"
 	# TODO : do not base on magic but on CPU TYPE and CPU SUBTYPE ?
   local _magic="$(__macho_magic "$_header")"
@@ -792,7 +792,7 @@ function __macho_bit() {
 	echo "$_bit"
 }
 
-function __macho_cputype() {
+__macho_cputype() {
   local _header="$1"
   local _endian="$(__macho_endian "$_header")"
 	local _offset=4
@@ -801,7 +801,7 @@ function __macho_cputype() {
   return 0
 }
 
-function __macho_cpusubtype() {
+__macho_cpusubtype() {
   local _header="$1"
 	local _endian="$(__macho_endian "$_header")"
   local _offset=8
@@ -810,14 +810,14 @@ function __macho_cpusubtype() {
   return 0
 }
 
-function __macho_convert_cpusubtype() {
+__macho_convert_cpusubtype() {
 	# TODO : complete convert list ?
 	local _cpusubtype="$1"
 	local _x_cpusubtype="0x$_cpusubtype"
   echo "$_x_cpusubtype"
 }
 
-function __macho_convert_cputype() {
+__macho_convert_cputype() {
 	local _cpu_type="$1"
 	local _x_cpu_type="0x$_cpu_type"
   local _r_cpu_type
@@ -855,7 +855,7 @@ function __macho_convert_cputype() {
 }
 
 
-function __macho_filetype() {
+__macho_filetype() {
   local _header="$1"
 	local _endian="$(__macho_endian "$_header")"
 	local _offset=12
@@ -883,7 +883,7 @@ function __macho_filetype() {
 
 
 # nb arch supported by this universal binary
-function __macho_universal_nbarch() {
+__macho_universal_nbarch() {
   local _header="$1"
 	local _endian="BIG"
 	local _offset=4
@@ -895,7 +895,7 @@ function __macho_universal_nbarch() {
 
 
 
-function __macho_universal_cputype() {
+__macho_universal_cputype() {
   local _header="$1"
 	local _arch_number="$2"
 	[ "$_arch_number" == "" ] && _arch_number=1
@@ -907,7 +907,7 @@ function __macho_universal_cputype() {
   return 0
 }
 
-function __macho_universal_cpusubtype() {
+__macho_universal_cpusubtype() {
   local _header="$1"
 	local _arch_number="$2"
 	[ "$_arch_number" == "" ] && _arch_number=1
@@ -920,7 +920,7 @@ function __macho_universal_cpusubtype() {
 }
 
 # extract pos of an arch
-function __macho_universal_position() {
+__macho_universal_position() {
   local _header="$1"
   local _arch_number="$2"
 	[ "$_arch_number" == "" ] && _arch_number=1
@@ -933,7 +933,7 @@ function __macho_universal_position() {
   return 0
 }
 
-function __macho_universal_size() {
+__macho_universal_size() {
   local _header="$1"
 	local _arch_number="$2"
 	[ "$_arch_number" == "" ] && _arch_number=1
@@ -947,7 +947,7 @@ function __macho_universal_size() {
 }
 
 # Universal Binaries contains up to 4 architectures of the same file type
-function __macho_universal_global_filetype() {
+__macho_universal_global_filetype() {
 	local _file="$1"
 	local _header="$(__macho_universal_header "$_file")"
 	local _ftype=
@@ -971,7 +971,7 @@ function __macho_universal_global_filetype() {
 }
 
 # ELF FORMAT ---------------------------------------------------------------
-function __elf_header() {
+__elf_header() {
   local _file="$1"
 	local _offset="$2"
 	[ "$_offset" == "" ] && _offset=0
@@ -983,7 +983,7 @@ function __elf_header() {
 
 
 
-function __elf_magic() {
+__elf_magic() {
   local _header="$1"
   local _opt="$2"
   # FORMAT -- return file format
@@ -1002,7 +1002,7 @@ function __elf_magic() {
 }
 
 
-function __elf_bit() {
+__elf_bit() {
 	local _header="$1"
   local _class="$(__elf_class "$_header")"
 	local _bit="32"
@@ -1011,7 +1011,7 @@ function __elf_bit() {
 }
 
 
-function __elf_class() {
+__elf_class() {
   local _header="$1"
 	local _endian="LITTLE"
 	local _offset=4
@@ -1030,7 +1030,7 @@ function __elf_class() {
   return 0
 }
 
-function __elf_data() {
+__elf_data() {
 	local _header="$1"
 	local _endian="LITTLE"
 	local _offset=5
@@ -1049,7 +1049,7 @@ function __elf_data() {
   return 0
 }
 
-function __elf_endian() {
+__elf_endian() {
   local _header="$1"
   local _data="$(__elf_data "$_header")"
   # Default is little endian
@@ -1063,7 +1063,7 @@ function __elf_endian() {
 }
 
 
-function __elf_osabi() {
+__elf_osabi() {
   local _header="$1"
 	# only 1 byte
 	local _endian="LITTLE"
@@ -1101,7 +1101,7 @@ function __elf_osabi() {
   return 0
 }
 
-function __elf_abiver() {
+__elf_abiver() {
   local _header="$1"
 	# only 1 byte
 	local _endian="LITTLE"
@@ -1114,7 +1114,7 @@ function __elf_abiver() {
 }
 
 
-function __elf_filetype() {
+__elf_filetype() {
   local _header="$1"
 	local _endian="$(__elf_endian "$_header")"
 	local _offset=16
@@ -1140,7 +1140,7 @@ function __elf_filetype() {
 }
 
 # MACHINE -- we do not translate code machine, there is too much
-function __elf_machine() {
+__elf_machine() {
   local _header="$1"
 	local _endian="$(__elf_endian "$_header")"
 	local _offset=18

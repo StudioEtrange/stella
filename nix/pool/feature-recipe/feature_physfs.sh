@@ -3,7 +3,7 @@ _physfs_INCLUDED_=1
 
 
 
-function feature_physfs() {
+feature_physfs() {
 	FEAT_NAME=physfs
 	FEAT_LIST_SCHEMA="2_0_3:source"
 	FEAT_DEFAULT_VERSION=2_0_3
@@ -14,7 +14,7 @@ function feature_physfs() {
 
 
 
-function feature_physfs_2_0_3() {
+feature_physfs_2_0_3() {
 	FEAT_VERSION=2_0_3
 	
 	FEAT_SOURCE_DEPENDENCIES="readline zlib#1_2_8"
@@ -38,12 +38,12 @@ function feature_physfs_2_0_3() {
 }
 
 
-function feature_physfs_link() {
+feature_physfs_link() {
 	__link_feature_library "zlib#1_2_8"
 	__link_feature_library "readline"
 }
 
-function feature_physfs_install_source() {
+feature_physfs_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

@@ -25,7 +25,7 @@ _minishift_INCLUDED_=1
 
 
 
-function feature_minishift() {
+feature_minishift() {
 	FEAT_NAME=minishift
 	FEAT_LIST_SCHEMA="0_9_0:binary"
 	FEAT_DEFAULT_VERSION=0_9_0
@@ -34,7 +34,7 @@ function feature_minishift() {
 }
 
 # with openshift origin 1.3.1
-function feature_minishift_0_9_0() {
+feature_minishift_0_9_0() {
 	FEAT_VERSION=0_9_0
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -67,7 +67,7 @@ function feature_minishift_0_9_0() {
 
 
 
-function feature_minishift_install_binary() {
+feature_minishift_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "FORCE_NAME $FEAT_BINARY_URL_FILENAME"
 
 	mv $FEAT_INSTALL_ROOT/$FEAT_BINARY_URL_FILENAME $FEAT_INSTALL_ROOT/minishift

@@ -3,7 +3,7 @@ _zeromq_INCLUDED_=1
 
 # https://github.com/Homebrew/homebrew-core/blob/master/Formula/zeromq.rb
 
-function feature_zeromq() {
+feature_zeromq() {
 	FEAT_NAME=zeromq
 
 	FEAT_LIST_SCHEMA="4_1_5:source"
@@ -12,7 +12,7 @@ function feature_zeromq() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_zeromq_4_1_5() {
+feature_zeromq_4_1_5() {
 	FEAT_VERSION=4_1_5
 
 
@@ -37,7 +37,7 @@ function feature_zeromq_4_1_5() {
 }
 
 
-function feature_zeromq_install_source() {
+feature_zeromq_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

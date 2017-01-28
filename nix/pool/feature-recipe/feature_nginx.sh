@@ -6,7 +6,7 @@ _NGINX_INCLUDED_=1
 # for zlib and openssl : will use system installed version OR built by nginx makefile (see auto/options file : --with-zlib=SOURCE_DIR --with-openssl=SOURCE_DIR)
 # for pcre : built by nginx makefile (see auto/options file : --with-pcre=SOURCE_DIR)
 
-function feature_nginx() {
+feature_nginx() {
 	FEAT_NAME=nginx
 	FEAT_LIST_SCHEMA="1_7_11:source"
 	FEAT_DEFAULT_VERSION=1_7_11
@@ -14,7 +14,7 @@ function feature_nginx() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_nginx_1_7_11() {
+feature_nginx_1_7_11() {
 	FEAT_VERSION=1_7_11
 	
 	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 openssl#1_0_2d"
@@ -37,20 +37,20 @@ function feature_nginx_1_7_11() {
 
 }
 
-function feature_nginx_link() {
+feature_nginx_link() {
 	__link_feature_library "openssl#1_0_2d"
 	__link_feature_library "zlib#1_2_8"
 }
 
 
-function feature_nginx_get_pcre() {
+feature_nginx_get_pcre() {
 	# depend on pcre, but nginx have its own way of building it
 	__download_uncompress "https://downloads.sourceforge.net/project/pcre/pcre/8.36/pcre-8.36.tar.bz2" "pcre-8.36.tar.bz2" "$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src/pcre/pcre-8_36-src" "DEST_ERASE STRIP"
 
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="$AUTO_INSTALL_CONF_FLAG_POSTFIX --with-pcre=$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src/pcre/pcre-8_36-src"
 }
 
-function feature_nginx_install_source() {
+feature_nginx_install_source() {
 	
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src/nginx"

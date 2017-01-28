@@ -81,7 +81,7 @@ _STELLA_COMMON_BINARY_INCLUDED_=1
 
 
 # GENERIC -------------------------------------------------------------------
-function __is_multi_arch() {
+__is_multi_arch() {
 	local _file="$1"
 	local _result=1
 	if __is_bin "$_file"; then
@@ -90,7 +90,7 @@ function __is_multi_arch() {
 	return $_result
 }
 
-function __get_arch() {
+__get_arch() {
 	local _file="$1"
 	local _arch
 	if __is_bin "$_file"; then
@@ -108,7 +108,7 @@ function __get_arch() {
 }
 
 
-function __check_arch() {
+__check_arch() {
 	local _path="$1"
 	local _wanted_arch="$2"
 	local _arch=
@@ -140,7 +140,7 @@ function __check_arch() {
 
 
 # run some test for binary files
-function __check_binary_file() {
+__check_binary_file() {
 	local path="$1"
 	local OPT="$2"
 	local _result=0
@@ -220,7 +220,7 @@ function __check_binary_file() {
 
 
 
-function __tweak_binary_file() {
+__tweak_binary_file() {
 	local _path="$1"
 	local OPT="$2"
 
@@ -311,7 +311,7 @@ function __tweak_binary_file() {
 
 # RPATH -------------------------------------------------------------------
 # return rpath values in search order
-function __get_rpath() {
+__get_rpath() {
 	local _file="$1"
 	local _rpath_values
 
@@ -342,7 +342,7 @@ function __get_rpath() {
 # REL_RPATH [DEFAULT] : transform absolute rpath values to relative path
 #																-	FOR MACOS : rpath values turn from /path/foo to @loader_path/foo
 #																-	FOR LINUX : rpath values turn from /path/foo to $ORIGIN/foo
-function __tweak_rpath() {
+__tweak_rpath() {
 	local _path=$1
 	local _OPT="$2"
 	# INCLUDE_FILTER <expr> -- include these files to tweak
@@ -416,7 +416,7 @@ function __tweak_rpath() {
 
 
 # remove all rpath values to all binaries in the path
-function __remove_all_rpath() {
+__remove_all_rpath() {
 	local _path="$1"
 
 	local _rpath_list_values
@@ -449,7 +449,7 @@ function __remove_all_rpath() {
 
 
 # check if binary have some specific rpath values
-function __have_rpath() {
+__have_rpath() {
 	local _path="$1"
 	local _rpath_values="$2"
 	local _result=0
@@ -492,7 +492,7 @@ function __have_rpath() {
 # if a rpath value is already setted, it will be just reordered
 # 		FIRST (DEFAULT) : rpath values will be put in first order search
 #			LAST : rpath values will be put in last order search
-function __add_rpath() {
+__add_rpath() {
 	local _path=$1
 	local _rpath_list_values="$2"
 	local OPT="$3"
@@ -568,7 +568,7 @@ function __add_rpath() {
 # 		INCLUDE_FILTER <expr> -- include these files to check
 #			EXCLUDE_FILTER <expr> -- exclude these files to check
 # 		INCLUDE_FILTER is apply first, before EXCLUDE_FILTER
-function __check_rpath() {
+__check_rpath() {
 	local _path="$1"
 	local OPT="$2"
 	local t
@@ -654,7 +654,7 @@ function __check_rpath() {
 
 # LINKED LIB --------------------------------
 # return linked libs
-function __get_linked_lib() {
+__get_linked_lib() {
 	local _file="$1"
 	local _opt="$2"
 
@@ -685,7 +685,7 @@ function __get_linked_lib() {
 # Print out dynamic libraries loaded at runtime when launching a program :
 # 		on DARWIN : DYLD_PRINT_LIBRARIES=y program
 # 		on LINUX : LD_TRACE_LOADED_OBJECTS=1 program
-function __check_linked_lib() {
+__check_linked_lib() {
 	local _path="$1"
 	local _OPT="$2"
 	# linked lib filter :
@@ -754,7 +754,7 @@ function __check_linked_lib() {
 
 # try to resolve linked libs of all binaries in path
 # OR resolve a list of specific linked libs
-function __find_linked_lib_darwin() {
+__find_linked_lib_darwin() {
 	local _path="$1"
 	local _opt="$2"
 	local _result=0
@@ -875,7 +875,7 @@ function __find_linked_lib_darwin() {
 
 # try to resolve linked libs of all binaries in path
 # OR resolve a list of specific linked libs
-function __find_linked_lib_linux() {
+__find_linked_lib_linux() {
 	local _path="$1"
 	local _opt="$2"
 	local _result=0
@@ -957,7 +957,7 @@ function __find_linked_lib_linux() {
 #																																					(for Elf : set linked lib as linked_lib_file and add an RPATH value corresponding to the relative path to the given <path> with $ORIGIN/<computed_rel_path_to_path>)
 #				- ABS_RELINK <path_to_lib> -- switch linked lib to another lib with a given path injecting an abs path.
 #				- REL_RELINK <path_to_lib> -- switch linked lib to another lib with a given path injecting an rpath value.
-function __tweak_linked_lib() {
+__tweak_linked_lib() {
 	local _file=$1
 	local OPT="$2"
 
@@ -1276,7 +1276,7 @@ function __tweak_linked_lib() {
 
 
 # DARWIN : INSTALL NAME --------------------------------
-function __get_install_name_darwin() {
+__get_install_name_darwin() {
 	local _file=$1
 	if __is_shareable_bin "$_file"; then
 		if __is_macho "$_file" || __is_macho_universal "$_file"; then
@@ -1293,7 +1293,7 @@ function __get_install_name_darwin() {
 # INCLUDE_FILTER <expr> -- include these files to check
 # EXCLUDE_FILTER <expr> -- exclude these files to check
 # INCLUDE_FILTER is apply first, before EXCLUDE_FILTER
-function __check_install_name_darwin() {
+__check_install_name_darwin() {
 	local _path=$1
 	local OPT="$2"
 	local t
@@ -1369,7 +1369,7 @@ function __check_install_name_darwin() {
 # INCLUDE_FILTER <expr> -- include these files to tweak
 # EXCLUDE_FILTER <expr> -- exclude these files to tweak
 # INCLUDE_FILTER is apply first, before EXCLUDE_FILTER
-function __tweak_install_name_darwin() {
+__tweak_install_name_darwin() {
 	local _path=$1
 	local OPT="$2"
 	local _new_install_name

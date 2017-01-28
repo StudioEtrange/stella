@@ -8,7 +8,7 @@ _ORACLEJDK_INCLUDED_=1
 #		 Java SE Development Kit (=JDK) includes a JRE and all components needed to develop
 #		 Java EE Development Kit do NOT include any Java SE Development Kit (JDK) nor any JRE. It includes a server (and other examples stuff) implementing the Java EE rules
 
-function feature_oracle-jdk() {
+feature_oracle-jdk() {
 	FEAT_NAME=oracle-jdk
 	FEAT_LIST_SCHEMA="8u91@x86:binary 8u91@x64:binary 8u45@x86:binary 8u45@x64:binary 7u80@x86:binary 7u80@x64:binary"
 	FEAT_DEFAULT_VERSION=8u91
@@ -16,7 +16,7 @@ function feature_oracle-jdk() {
 	FEAT_DEFAULT_FLAVOUR=binary
 }
 
-function feature_oraclesejdk_env() {
+feature_oraclesejdk_env() {
 	export JAVA_HOME=$FEAT_INSTALL_ROOT
 }
 
@@ -24,7 +24,7 @@ function feature_oraclesejdk_env() {
 
 
 
-function feature_oracle-jdk_8u91() {
+feature_oracle-jdk_8u91() {
 	FEAT_VERSION=8u91
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -66,7 +66,7 @@ function feature_oracle-jdk_8u91() {
 }
 
 
-function feature_oracle-jdk_8u45() {
+feature_oracle-jdk_8u45() {
 	FEAT_VERSION=8u45
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -109,7 +109,7 @@ function feature_oracle-jdk_8u45() {
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 }
 
-function feature_oracle-jdk_7u80() {
+feature_oracle-jdk_7u80() {
 	FEAT_VERSION=7u80
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -155,7 +155,7 @@ function feature_oracle-jdk_7u80() {
 
 # fix problems with jni_md.h
 # http://stackoverflow.com/a/24996278
-function feature_oracle-jdk_fix_jni_header() {
+feature_oracle-jdk_fix_jni_header() {
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		ln -s $FEAT_INSTALL_ROOT/include/darwin/jni_md.h $FEAT_INSTALL_ROOT/include/jni_md.h
 		ln -s $FEAT_INSTALL_ROOT/include/darwin/jawt_md.h $FEAT_INSTALL_ROOT/include/jawt_md.h
@@ -167,7 +167,7 @@ function feature_oracle-jdk_fix_jni_header() {
 }
 
 
-function feature_oracle-jdk_install_binary() {
+feature_oracle-jdk_install_binary() {
 
 	mkdir -p "$STELLA_APP_CACHE_DIR"
 	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then

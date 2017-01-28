@@ -3,7 +3,7 @@ _libogg_INCLUDED_=1
 
 # darwin -- OK -- 20151012
 
-function feature_libogg() {
+feature_libogg() {
 	FEAT_NAME=libogg
 	# CMakeList.txt are not yet present in official release
 	FEAT_LIST_SCHEMA="DEV20150926:source"
@@ -12,7 +12,7 @@ function feature_libogg() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_libogg_DEV20150926() {
+feature_libogg_DEV20150926() {
 	FEAT_VERSION=DEV20150926
 
 
@@ -37,7 +37,7 @@ function feature_libogg_DEV20150926() {
 }
 
 
-function feature_libogg_install_source() {
+feature_libogg_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	

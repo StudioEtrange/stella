@@ -4,7 +4,7 @@ _PACKER_INCLUDED_=1
 
 
 
-function feature_packer() {
+feature_packer() {
 
 	FEAT_NAME=packer
 	FEAT_LIST_SCHEMA="0_6_0@x64:binary 0_6_0@x86:binary 0_7_5@x64:binary 0_7_5@x86:binary"
@@ -13,7 +13,7 @@ function feature_packer() {
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
-function feature_packer_0_6_0() {
+feature_packer_0_6_0() {
 	FEAT_VERSION=0_6_0
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -50,7 +50,7 @@ function feature_packer_0_6_0() {
 }
 
 
-function feature_packer_0_7_5() {
+feature_packer_0_7_5() {
 	FEAT_VERSION=0_7_5
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -88,7 +88,7 @@ function feature_packer_0_7_5() {
 
 
 # -----------------------------------------
-function feature_packer_install_binary() {
+feature_packer_install_binary() {
 
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "STRIP FORCE_NAME $FEAT_BINARY_URL_FILENAME"
 

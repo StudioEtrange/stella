@@ -3,7 +3,7 @@ _UPX_INCLUDED_=1
 
 # OK
 
-function feature_upx() {
+feature_upx() {
 	FEAT_NAME=upx
 	FEAT_LIST_SCHEMA="3_91:source"
 	FEAT_DEFAULT_VERSION=3_91
@@ -11,7 +11,7 @@ function feature_upx() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_upx_3_91() {
+feature_upx_3_91() {
 	FEAT_VERSION=3_91
 
 	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 ucl#1_03"
@@ -35,14 +35,14 @@ function feature_upx_3_91() {
 }
 
 
-function feature_ucl_link() {
+feature_ucl_link() {
 
 	__link_feature_library "ucl#1_03" "LIBS_NAME ucl FORCE_STATIC"
 	__link_feature_library "zlib#1_2_8" "LIBS_NAME z FORCE_DYNAMIC"
 	
 }
 
-function feature_upx_install_source() {
+feature_upx_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

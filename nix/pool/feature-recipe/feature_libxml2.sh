@@ -5,7 +5,7 @@ _libxml2_INCLUDED_=1
 # Version 2.9.4 : https://github.com/Homebrew/homebrew-core/blob/14387b68008911416401c13b7bac668c3aed9c8e/Formula/libxml2.rb
 # Version 2.9.4 : https://github.com/NixOS/nixpkgs/blob/dc13593b9fad3ea3728e2fd32f90841d5ec7662d/pkgs/development/libraries/libxml2/default.nix
 
-function feature_libxml2() {
+feature_libxml2() {
 	FEAT_NAME=libxml2
 
 	FEAT_LIST_SCHEMA="2_9_1:source"
@@ -16,7 +16,7 @@ function feature_libxml2() {
 
 }
 
-function feature_libxml2_2_9_1() {
+feature_libxml2_2_9_1() {
 	FEAT_VERSION=2_9_1
 
 
@@ -40,12 +40,12 @@ function feature_libxml2_2_9_1() {
 
 }
 
-function feature_libxml2_link() {
+feature_libxml2_link() {
 	__link_feature_library "libiconv#1_14"
 	__link_feature_library "zlib#1_2_8" "FORCE_DYNAMIC"
 }
 
-function feature_libxml2_2_9_1_patch() {
+feature_libxml2_2_9_1_patch() {
 	__get_resource "libxml2_2_9_1_patch" \
 	"http://security.debian.org/debian-security/pool/updates/main/libx/libxml2/libxml2_2.9.1+dfsg1-5+deb8u2.debian.tar.xz" \
 	"HTTP_ZIP" "$SRC_DIR/patch" "STRIP"
@@ -61,7 +61,7 @@ function feature_libxml2_2_9_1_patch() {
 }
 
 
-function feature_libxml2_install_source() {
+feature_libxml2_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

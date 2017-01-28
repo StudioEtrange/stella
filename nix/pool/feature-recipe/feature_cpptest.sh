@@ -2,7 +2,7 @@ if [ ! "$_cpptest_INCLUDED_" == "1" ]; then
 _cpptest_INCLUDED_=1
 
 
-function feature_cpptest() {
+feature_cpptest() {
 	FEAT_NAME=cpptest
 	FEAT_LIST_SCHEMA="1_1_2:source"
 	FEAT_DEFAULT_VERSION=1_1_2
@@ -10,7 +10,7 @@ function feature_cpptest() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_cpptest_1_1_2() {
+feature_cpptest_1_1_2() {
 	FEAT_VERSION=1_1_2
 
 
@@ -36,7 +36,7 @@ function feature_cpptest_1_1_2() {
 
 
 
-function feature_cpptest_install_source() {
+feature_cpptest_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

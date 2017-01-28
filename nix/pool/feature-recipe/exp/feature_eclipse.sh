@@ -13,7 +13,7 @@ _eclipse_INCLUDED_=1
 # maven ; org.eclipse.m2e.feature.feature.group
 # http://stackoverflow.com/questions/15262572/how-to-install-list-of-eclipse-plugins-from-a-script
 
-function feature_eclipse() {
+feature_eclipse() {
 	FEAT_NAME=eclipse
 	FEAT_LIST_SCHEMA="4_6:binary"
 	FEAT_DEFAULT_VERSION=4_6
@@ -21,7 +21,7 @@ function feature_eclipse() {
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
-function feature_eclipse_4_6() {
+feature_eclipse_4_6() {
 	FEAT_VERSION=4_6
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -46,12 +46,12 @@ function feature_eclipse_4_6() {
 
 }
 
-function feature_eclipse_env() {
+feature_eclipse_env() {
 	[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && ECLIPSE_BINARY="$FEAT_INSTALL_ROOT/eclipse"
 	[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && ECLIPSE_BINARY="$FEAT_INSTALL_ROOT/Eclipse.app/Contents/MacOS/eclipse"
 }
 
-function feature_eclipse_install_binary() {
+feature_eclipse_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "STRIP"
 
 }

@@ -3,7 +3,7 @@ _vorbis_INCLUDED_=1
 
 
 
-function feature_vorbis() {
+feature_vorbis() {
 	FEAT_NAME=vorbis
 	FEAT_LIST_SCHEMA="1_3_5:source"
 	FEAT_DEFAULT_VERSION=1_3_5
@@ -14,7 +14,7 @@ function feature_vorbis() {
 
 
 
-function feature_vorbis_1_3_5() {
+feature_vorbis_1_3_5() {
 	FEAT_VERSION=1_3_5
 	
 	FEAT_SOURCE_DEPENDENCIES="libogg#DEV20150926"
@@ -38,11 +38,11 @@ function feature_vorbis_1_3_5() {
 }
 
 
-function feature_vorbis_link() {
+feature_vorbis_link() {
 	__link_feature_library "libogg#DEV20150926"
 }
 
-function feature_vorbis_install_source() {
+feature_vorbis_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

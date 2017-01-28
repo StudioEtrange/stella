@@ -3,7 +3,7 @@ _SBT_INCLUDED_=1
 
 
 
-function feature_sbt() {
+feature_sbt() {
 	FEAT_NAME=sbt
 	FEAT_LIST_SCHEMA="0_13_7:binary"
 	FEAT_DEFAULT_VERSION=0_13_7
@@ -11,7 +11,7 @@ function feature_sbt() {
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
-function feature_sbt_0_13_7() {
+feature_sbt_0_13_7() {
 	FEAT_VERSION=0_13_7
 	# need jvm
 	FEAT_SOURCE_DEPENDENCIES=
@@ -35,7 +35,7 @@ function feature_sbt_0_13_7() {
 }
 
 
-function feature_sbt_install_binary() {
+feature_sbt_install_binary() {
 
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "STRIP"
 }

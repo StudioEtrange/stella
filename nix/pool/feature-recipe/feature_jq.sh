@@ -1,7 +1,7 @@
 if [ ! "$_JQ_INCLUDED_" == "1" ]; then 
 _JQ_INCLUDED_=1
 
-function feature_jq() {
+feature_jq() {
 	FEAT_NAME=jq
 	FEAT_LIST_SCHEMA="1_4@x64:binary 1_4@x86:binary 1_5@x64:binary 1_5@x86:binary"
 	FEAT_DEFAULT_VERSION=1_5
@@ -10,7 +10,7 @@ function feature_jq() {
 }
 
 
-function feature_jq_1_5() {
+feature_jq_1_5() {
 	FEAT_VERSION=1_5
 	
 	FEAT_SOURCE_DEPENDENCIES=
@@ -48,7 +48,7 @@ function feature_jq_1_5() {
 }
 
 
-function feature_jq_1_4() {
+feature_jq_1_4() {
 	FEAT_VERSION=1_4
 	
 	FEAT_SOURCE_DEPENDENCIES=
@@ -86,7 +86,7 @@ function feature_jq_1_4() {
 }
 
 
-function feature_jq_install_binary() {
+feature_jq_install_binary() {
 	
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP FORCE_NAME $FEAT_BINARY_URL_FILENAME"
 

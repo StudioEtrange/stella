@@ -10,7 +10,7 @@ _R_INCLUDED_=1
 # try to mimic recipe  installation from RRO (revolution r open) https://mran.revolutionanalytics.com/download/#download
 
 
-function feature_r() {
+feature_r() {
 	FEAT_NAME=r
 	FEAT_LIST_SCHEMA="3_2_2:source"
 	FEAT_DEFAULT_VERSION=3_2_2
@@ -21,7 +21,7 @@ function feature_r() {
 
 
 
-function feature_r_3_2_2() {
+feature_r_3_2_2() {
 	FEAT_VERSION=3_2_2
 
 	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 bzip2#1_0_6 gmp#6_0_0a"
@@ -45,14 +45,14 @@ function feature_r_3_2_2() {
 	FEAT_SEARCH_PATH=
 }
 
-function feature_r_link() {
+feature_r_link() {
 	__link_feature_library "libpng#1_6_17" "FORCE_DYNAMIC"
 	__link_feature_library "jpeg#9_0_0" "FORCE_DYNAMIC"
 	__link_feature_library "gmp#6_0_0a" "FORCE_STATIC"
 }
 
 
-function feature_r_darwin() {
+feature_r_darwin() {
 
 	# tools and libs for R for darwin http://r.research.att.com/tools/
 	# https://github.com/Homebrew/homebrew-science/blob/master/r.rb
@@ -107,7 +107,7 @@ function feature_r_darwin() {
 }
 
 
-function feature_r_install_source() {
+feature_r_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

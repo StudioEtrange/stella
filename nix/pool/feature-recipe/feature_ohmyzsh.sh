@@ -2,7 +2,7 @@ if [ ! "$_GOCROSSCOMPILE_INCLUDED_" == "1" ]; then
 _GOCROSSCOMPILE_INCLUDED_=1
 
 
-function feature_ohmyzsh() {
+feature_ohmyzsh() {
 	FEAT_NAME="ohmyzsh"
 	FEAT_LIST_SCHEMA="SNAPSHOT:source"
 	FEAT_DEFAULT_VERSION=SNAPSHOT
@@ -10,7 +10,7 @@ function feature_ohmyzsh() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_ohmyzsh_SNAPSHOT() {
+feature_ohmyzsh_SNAPSHOT() {
 	FEAT_VERSION=SNAPSHOT
 	
 	# need zsh
@@ -36,18 +36,18 @@ function feature_ohmyzsh_SNAPSHOT() {
 }
 
 # a function to run ohmyzsh
-function launch_ohmyzsh() {
+launch_ohmyzsh() {
 	export ZDOTDIR="$FEAT_INSTALL_ROOT/env"
 	ZDOTDIR="$FEAT_INSTALL_ROOT/env" zsh
 }
 
-function feature_ohmyzsh_env() {
+feature_ohmyzsh_env() {
 	export ZDOTDIR="$FEAT_INSTALL_ROOT/env"
 	echo "** Oh My zsh is active -- env file is in $FEAT_INSTALL_ROOT/env/.zshrc"
 	echo "** Just launch zsh from within stella"
 }
 
-function feature_ohmyzsh_install_source() {
+feature_ohmyzsh_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

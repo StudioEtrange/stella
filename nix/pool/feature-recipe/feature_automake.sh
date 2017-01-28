@@ -2,7 +2,7 @@ if [ ! "$_AUTOMAKE_INCLUDED_" == "1" ]; then
 _AUTOMAKE_INCLUDED_=1
 
 
-function feature_automake() {
+feature_automake() {
 	FEAT_NAME=automake
 	FEAT_LIST_SCHEMA="1_14:source"
 	FEAT_DEFAULT_VERSION=1_14
@@ -10,7 +10,7 @@ function feature_automake() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_automake_1_14() {
+feature_automake_1_14() {
 	FEAT_VERSION=1_14
 	
 	FEAT_SOURCE_DEPENDENCIES=
@@ -33,11 +33,11 @@ function feature_automake_1_14() {
 
 }
 
-function feature_automake_1_14_callback() {
+feature_automake_1_14_callback() {
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="--docdir=$INSTALL_DIR/share/doc/automake-1.14"
 }
 
-function feature_automake_install_source() {
+feature_automake_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	

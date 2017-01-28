@@ -3,12 +3,12 @@ _STELLA_COMMON_FEATURE_INCLUDED_=1
 
 # --------- API -------------------
 
-function __list_active_features() {
+__list_active_features() {
 	echo "$FEATURE_LIST_ENABLED"
 }
 
 
-function __list_feature_version() {
+__list_feature_version() {
 	local _SCHEMA=$1
 
 	__internal_feature_context $_SCHEMA
@@ -16,7 +16,7 @@ function __list_feature_version() {
 }
 
 
-function __feature_init() {
+__feature_init() {
 	local _SCHEMA=$1
 	local _OPT="$2"
 	local _opt_hidden_feature=OFF
@@ -73,7 +73,7 @@ function __feature_init() {
 
 
 # get information on feature (from catalog)
-function __feature_catalog_info() {
+__feature_catalog_info() {
 	local _SCHEMA=$1
 	__internal_feature_context $_SCHEMA
 }
@@ -82,7 +82,7 @@ function __feature_catalog_info() {
 
 
 # look for information about an installed feature
-function __feature_match_installed() {
+__feature_match_installed() {
 	local _SCHEMA="$1"
 
 	local _tested=
@@ -170,12 +170,12 @@ function __feature_match_installed() {
 }
 
 # save context before calling __feature_inspect, in case we use it inside a schema context
-function __push_schema_context() {
+__push_schema_context() {
 	__stack_push "$TEST_FEATURE"
 	__stack_push "$FEAT_SCHEMA_SELECTED"
 }
 # load context before calling __feature_inspect, in case we use it inside a schema context
-function __pop_schema_context() {
+__pop_schema_context() {
 	__stack_pop FEAT_SCHEMA_SELECTED
 	__internal_feature_context $FEAT_SCHEMA_SELECTED
 	__stack_pop TEST_FEATURE
@@ -185,7 +185,7 @@ function __pop_schema_context() {
 # test if a feature is installed
 # AND retrieve informations based on actually installed feature into var
 # PREFIX_<info>
-function __feature_info() {
+__feature_info() {
 	local SCHEMA="$1"
 	local PREFIX="$2"
 
@@ -215,7 +215,7 @@ function __feature_info() {
 # test if a feature is installed
 # AND retrieve informations based on actually installed feature
 # OR from feature recipe if not installed
-function __feature_inspect() {
+__feature_inspect() {
 	local _SCHEMA="$1"
 	TEST_FEATURE=0
 
@@ -266,7 +266,7 @@ function __feature_inspect() {
 
 
 # TODO : update FEATURE_LIST_ENABLED ?
-function __feature_remove() {
+__feature_remove() {
 	local _SCHEMA=$1
 	local _OPT="$2"
 
@@ -337,7 +337,7 @@ function __feature_remove() {
 }
 
 
-function __feature_install_list() {
+__feature_install_list() {
 	local _list=$1
 
 	for f in $_list; do
@@ -345,7 +345,7 @@ function __feature_install_list() {
 	done
 }
 
-function __feature_install() {
+__feature_install() {
 	local _SCHEMA=$1
 	local _OPT="$2"
 
@@ -637,7 +637,7 @@ function __feature_install() {
 # ----------- INTERNAL ----------------
 
 
-function __feature_init_installed() {
+__feature_init_installed() {
 	local _tested_feat_name=
 	local _tested_feat_ver=
 	# init internal features
@@ -692,13 +692,13 @@ function __feature_init_installed() {
 
 
 
-function __feature_reinit_installed() {
+__feature_reinit_installed() {
 	FEATURE_LIST_ENABLED=
 	__feature_init_installed
 }
 
 
-function __feature_callback() {
+__feature_callback() {
 	local p
 
 	if [ ! "$FEAT_BUNDLE" == "" ]; then
@@ -721,7 +721,7 @@ function __feature_callback() {
 }
 
 # init feature context (properties, variables, ...)
-function __internal_feature_context() {
+__internal_feature_context() {
 	local _SCHEMA="$1"
 
 	FEAT_ARCH=
@@ -838,7 +838,7 @@ function __internal_feature_context() {
 # select an official schema
 # pick a feature schema by filling some values with default one
 # and may return split schema properties
-function __select_official_schema() {
+__select_official_schema() {
 	local _SCHEMA="$1"
 	local _RESULT_SCHEMA="$2"
 
@@ -928,7 +928,7 @@ function __select_official_schema() {
 #				@arch could be x86 or x64
 #				:flavour could be binary or source
 # example: wget/ubuntu#1_2@x86:source wget/ubuntu#1_2@x86:source\macos
-function __translate_schema() {
+__translate_schema() {
 
 	local _tr_schema="$1"
 
@@ -996,7 +996,7 @@ function __translate_schema() {
 # --------------- DEPRECATED ---------------------------------------------
 
 
-function __file5() {
+__file5() {
 	URL=ftp://ftp.astron.com/pub/file/file-5.15.tar.gz
 	VER=5.15
 	FILE_NAME=file-5.15.tar.gz
@@ -1013,7 +1013,7 @@ function __file5() {
 
 
 
-function __binutils() {
+__binutils() {
 	#TODO configure flag
 	URL=http://ftp.gnu.org/gnu/binutils/binutils-2.23.2.tar.bz2
 	VER=2.23.2

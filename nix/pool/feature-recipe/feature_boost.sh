@@ -7,7 +7,7 @@ _BOOST_INCLUDED_=1
 # TODO Apply debian patch ? : https://packages.debian.org/sid/libboost1.60-dev
 
 
-function feature_boost() {
+feature_boost() {
 	FEAT_NAME=boost
 	FEAT_LIST_SCHEMA="1_61_0:source 1_59_0:source"
 	FEAT_DEFAULT_VERSION=1_61_0
@@ -17,7 +17,7 @@ function feature_boost() {
 
 
 
-function feature_boost_1_61_0() {
+feature_boost_1_61_0() {
 	FEAT_VERSION=1_61_0
 
 
@@ -42,7 +42,7 @@ function feature_boost_1_61_0() {
 
 }
 
-function feature_boost_1_59_0() {
+feature_boost_1_59_0() {
 	FEAT_VERSION=1_59_0
 
 
@@ -67,13 +67,13 @@ function feature_boost_1_59_0() {
 }
 
 
-function boost_set_env() {
+boost_set_env() {
 	BOOST_ROOT="$FEAT_INSTALL_ROOT"
 	export BOOST_ROOT="$FEAT_INSTALL_ROOT"
 }
 
 
-function feature_boost_dep() {
+feature_boost_dep() {
 
 	__link_feature_library "bzip2" "LIBS_NAME bz2 GET_FOLDER _bzip2 NO_SET_FLAGS"
 
@@ -95,7 +95,7 @@ function feature_boost_dep() {
 
 }
 
-function feature_boost_install_source() {
+feature_boost_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

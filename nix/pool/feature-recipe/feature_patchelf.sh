@@ -2,7 +2,7 @@ if [ ! "$_PATCHELF_INCLUDED_" == "1" ]; then
 _PATCHELF_INCLUDED_=1
 
 
-function feature_patchelf() {
+feature_patchelf() {
 	FEAT_NAME=patchelf
 
 	FEAT_LIST_SCHEMA="0_9:source 0_8:source"
@@ -14,7 +14,7 @@ function feature_patchelf() {
 }
 
 
-function feature_patchelf_0_9() {
+feature_patchelf_0_9() {
 	FEAT_VERSION=0_9
 
 
@@ -38,7 +38,7 @@ function feature_patchelf_0_9() {
 
 }
 
-function feature_patchelf_0_8() {
+feature_patchelf_0_8() {
 	FEAT_VERSION=0_8
 
 
@@ -63,7 +63,7 @@ function feature_patchelf_0_8() {
 }
 
 
-function feature_patchelf_install_source() {
+feature_patchelf_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

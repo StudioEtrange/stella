@@ -5,7 +5,7 @@ _xgboost_INCLUDED_=1
 
 
 
-function feature_xgboost() {
+feature_xgboost() {
 	FEAT_NAME=xgboost
 	FEAT_LIST_SCHEMA="0_60:source SNAPSHOT:source"
 	FEAT_DEFAULT_VERSION=0_60
@@ -15,7 +15,7 @@ function feature_xgboost() {
 
 
 
-function feature_xgboost_SNAPSHOT() {
+feature_xgboost_SNAPSHOT() {
 	FEAT_VERSION=SNAPSHOT
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -41,7 +41,7 @@ function feature_xgboost_SNAPSHOT() {
 }
 
 
-function feature_xgboost_0_60() {
+feature_xgboost_0_60() {
 	FEAT_VERSION=0_60
 
 
@@ -70,7 +70,7 @@ function feature_xgboost_0_60() {
 
 
 
-function feature_xgboost_install_source() {
+feature_xgboost_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

@@ -4,13 +4,13 @@ _STELLA_COMMON_NET_INCLUDED_=1
 
 # --------------- PROXY INIT ----------------
 
-function __init_proxy() {
+__init_proxy() {
 	__reset_proxy_values
 	__read_proxy_values
 	__set_system_proxy_values
 }
 
-function __read_proxy_values() {
+__read_proxy_values() {
 
 	if [ -f "$STELLA_ENV_FILE" ]; then
 		__get_key "$STELLA_ENV_FILE" "STELLA_PROXY" "ACTIVE" "PREFIX"
@@ -50,7 +50,7 @@ function __read_proxy_values() {
 }
 
 # reset stella proxy values
-function 	__reset_proxy_values() {
+	__reset_proxy_values() {
 	STELLA_PROXY_ACTIVE=
 	STELLA_PROXY_HOST=
 	STELLA_PROXY_USER=
@@ -61,7 +61,7 @@ function 	__reset_proxy_values() {
 	STELLA_NO_PROXY=
 }
 
-function __set_system_proxy_values() {
+__set_system_proxy_values() {
 
 	# override already existing system proxy env var only if stella proxy is active
 	if [ ! "$STELLA_PROXY_ACTIVE" == "" ]; then
@@ -98,7 +98,7 @@ function __set_system_proxy_values() {
 
 
 # reset system proxy env (for example when disabling previously activated stella proxy)
-function __reset_system_proxy_values() {
+__reset_system_proxy_values() {
 	http_proxy=
 	export http_proxy=
 	HTTP_PROXY=
@@ -116,7 +116,7 @@ function __reset_system_proxy_values() {
 
 
 # ---------------- SHIM FUNCTIONS -----------------------------
-function __proxy_override() {
+__proxy_override() {
 
 	# sudo do not preserve env var by default
 	type sudo &>/dev/null && \
@@ -276,7 +276,7 @@ $(command minikube "$@");
 
 # -------------------- FUNCTIONS-----------------
 
-function __proxy_tunnel() {
+__proxy_tunnel() {
 	local _target_proxy_name="$1"
 	local _bridge_uri="$2"
 
@@ -298,7 +298,7 @@ function __proxy_tunnel() {
 	__disable_proxy
 }
 
-function __register_proxy() {
+__register_proxy() {
 	local _proxy_name="$1"
 
 	__uri_parse "$2"
@@ -314,13 +314,13 @@ function __register_proxy() {
 	__add_key "$STELLA_ENV_FILE" "STELLA_PROXY_$_proxy_name" "PROXY_PASS" "$_pass"
 }
 
-function __enable_proxy() {
+__enable_proxy() {
 	local _name=$1
 	__add_key "$STELLA_ENV_FILE" "STELLA_PROXY" "ACTIVE" "$_name"
 	__init_proxy
 }
 
-function __disable_proxy() {
+__disable_proxy() {
 	__add_key "$STELLA_ENV_FILE" "STELLA_PROXY" "ACTIVE"
 
 	echo "STELLA Proxy Disabled"
@@ -330,7 +330,7 @@ function __disable_proxy() {
 
 
 # no_proxy is setted only if a stella proxy is active
-function __register_no_proxy() {
+__register_no_proxy() {
 	local _uri="$1"
 	__get_key "$STELLA_ENV_FILE" "STELLA_PROXY" "NO_PROXY" "PREFIX"
 
@@ -359,7 +359,7 @@ function __register_no_proxy() {
 
 # only temporary no proxy
 # will be reseted each time proxy values are read from env file
-function __no_proxy_for() {
+__no_proxy_for() {
 	local _host=$1
 
 	local _exist=

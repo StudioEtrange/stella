@@ -3,7 +3,7 @@ _icu4c_INCLUDED_=1
 
 
 
-function feature_icu4c() {
+feature_icu4c() {
 	FEAT_NAME=icu4c
 	FEAT_LIST_SCHEMA="55_1:source"
 	FEAT_DEFAULT_VERSION=55_1
@@ -11,7 +11,7 @@ function feature_icu4c() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_icu4c_55_1() {
+feature_icu4c_55_1() {
 	FEAT_VERSION=55_1
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -34,7 +34,7 @@ function feature_icu4c_55_1() {
 }
 
 
-function feature_icu4c_install_source() {
+feature_icu4c_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	

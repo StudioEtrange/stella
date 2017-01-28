@@ -11,7 +11,7 @@ _DOCKER_INCLUDED_=1
 
 # this recipe is based on https://docs.docker.com/installation/binaries/
 
-function feature_docker() {
+feature_docker() {
 	FEAT_NAME=docker
 	FEAT_LIST_SCHEMA="1_12_6:binary 1_8_1:binary 1_9_1:binary 1_10_3:binary 1_11_1:binary"
 	FEAT_DEFAULT_VERSION=1_12_6
@@ -21,7 +21,7 @@ function feature_docker() {
 
 
 
-function feature_docker_1_12_6() {
+feature_docker_1_12_6() {
 	FEAT_VERSION=1_12_6
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -53,7 +53,7 @@ function feature_docker_1_12_6() {
 }
 
 
-function feature_docker_1_11_1() {
+feature_docker_1_11_1() {
 	FEAT_VERSION=1_11_1
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -85,7 +85,7 @@ function feature_docker_1_11_1() {
 }
 
 
-function feature_docker_1_10_3() {
+feature_docker_1_10_3() {
 	FEAT_VERSION=1_10_3
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -116,7 +116,7 @@ function feature_docker_1_10_3() {
 
 }
 
-function feature_docker_1_9_1() {
+feature_docker_1_9_1() {
 	FEAT_VERSION=1_9_1
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -147,7 +147,7 @@ function feature_docker_1_9_1() {
 
 }
 
-function feature_docker_1_8_1() {
+feature_docker_1_8_1() {
 	FEAT_VERSION=1_8_1
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -178,7 +178,7 @@ function feature_docker_1_8_1() {
 
 }
 
-function feature_docker_install_binary() {
+feature_docker_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "STRIP DEST_ERASE FORCE_NAME $FEAT_BINARY_URL_FILENAME"
 	[ "$FEAT_BINARY_URL_PROTOCOL" == "HTTP" ] && mv "$FEAT_INSTALL_ROOT"/"$FEAT_BINARY_URL_FILENAME" "$FEAT_INSTALL_ROOT"/docker
 

@@ -2,7 +2,7 @@ if [ ! "$_goaccess_INCLUDED_" == "1" ]; then
 _goaccess_INCLUDED_=1
 
 
-function feature_goaccess() {
+feature_goaccess() {
 	FEAT_NAME=goaccess
 
 	FEAT_LIST_SCHEMA="1_0_1:source"
@@ -13,7 +13,7 @@ function feature_goaccess() {
 
 }
 
-function feature_goaccess_1_0_1() {
+feature_goaccess_1_0_1() {
 	FEAT_VERSION=1_0_1
 
 
@@ -43,7 +43,7 @@ function feature_goaccess_1_0_1() {
 }
 
 
-function feature_goaccess_patch_1_0_1() {
+feature_goaccess_patch_1_0_1() {
 	# _open_memstream undefined
 	# see https://github.com/allinurl/goaccess/issues/422
 	# open_memstream implementation for bsd http://piumarta.com/software/memstream/
@@ -57,12 +57,12 @@ function feature_goaccess_patch_1_0_1() {
 	sed -i'.bak' 's,src/json.h,src/json.h \\ \'$'\n''src/memstream.c \\ \'$'\n''src/memstream.h,' "$SRC_DIR"/Makefile.am
 }
 
-function feature_goaccess_link() {
+feature_goaccess_link() {
 	__link_feature_library "geoip#1_6_9"
 	__link_feature_library "ncurses#6_0"
 }
 
-function feature_goaccess_install_source() {
+feature_goaccess_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

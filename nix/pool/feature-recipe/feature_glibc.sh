@@ -3,7 +3,7 @@ _glibc_INCLUDED_=1
 
 
 
-function feature_glibc() {
+feature_glibc() {
 	FEAT_NAME=glibc
 	FEAT_LIST_SCHEMA="2_18:source"
 	FEAT_DEFAULT_VERSION=2_18
@@ -14,7 +14,7 @@ function feature_glibc() {
 
 
 # http://www.linuxfromscratch.org/lfs/view/7.4/chapter06/glibc.html
-function feature_glibc_2_18() {
+feature_glibc_2_18() {
 	FEAT_VERSION=2_18
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -37,12 +37,12 @@ function feature_glibc_2_18() {
 
 }
 
-function feature_glibc_2_18_patch() {
+feature_glibc_2_18_patch() {
 	cd $SRC_DIR
 	sed -i -e 's/static __m128i/inline &/' sysdeps/x86_64/multiarch/strstr.c
 }
 
-function feature_glibc_install_source() {
+feature_glibc_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

@@ -2,7 +2,7 @@ if [ ! "$_NGROK_INCLUDED_" == "1" ]; then
 _NGROK_INCLUDED_=1
 
 
-function feature_ngrok() {
+feature_ngrok() {
 	FEAT_NAME=ngrok
 	FEAT_LIST_SCHEMA="stable@x86:binary stable@x64:binary"
 	FEAT_DEFAULT_VERSION=stable
@@ -10,7 +10,7 @@ function feature_ngrok() {
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
-function feature_ngrok_stable() {
+feature_ngrok_stable() {
 	FEAT_VERSION=stable
 	
 	FEAT_SOURCE_DEPENDENCIES=
@@ -48,7 +48,7 @@ function feature_ngrok_stable() {
 
 
 # -----------------------------------------
-function feature_ngrok_install_binary() {
+feature_ngrok_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP FORCE_NAME $FEAT_BINARY_URL_FILENAME"
 	
 

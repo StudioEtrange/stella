@@ -2,7 +2,7 @@ if [ ! "$_LIBTOOL_INCLUDED_" == "1" ]; then
 _LIBTOOL_INCLUDED_=1
 
 
-function feature_libtool() {
+feature_libtool() {
 	FEAT_NAME=libtool
 	FEAT_LIST_SCHEMA="2_4_2:source"
 	FEAT_DEFAULT_VERSION=2_4_2
@@ -10,7 +10,7 @@ function feature_libtool() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_libtool_2_4_2() {
+feature_libtool_2_4_2() {
 	FEAT_VERSION=2_4_2
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -34,7 +34,7 @@ function feature_libtool_2_4_2() {
 }
 
 
-function feature_libtool_install_source() {
+feature_libtool_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

@@ -2,7 +2,7 @@ if [ ! "$_NCURSES_INCLUDED_" == "1" ]; then
 _NCURSES_INCLUDED_=1
 
 
-function feature_ncurses() {
+feature_ncurses() {
 	FEAT_NAME=ncurses
 	FEAT_LIST_SCHEMA="6_0:source 5_9:source"
 	FEAT_DEFAULT_VERSION=6_0
@@ -10,7 +10,7 @@ function feature_ncurses() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_ncurses_6_0() {
+feature_ncurses_6_0() {
 	FEAT_VERSION=6_0
 
 
@@ -35,7 +35,7 @@ function feature_ncurses_6_0() {
 }
 
 
-function feature_ncurses_5_9() {
+feature_ncurses_5_9() {
 	FEAT_VERSION=5_9
 
 
@@ -63,7 +63,7 @@ function feature_ncurses_5_9() {
 
 
 
-function feature_ncurses_install_source() {
+feature_ncurses_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

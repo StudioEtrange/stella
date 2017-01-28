@@ -3,7 +3,7 @@ _MAVEN_INCLUDED_=1
 
 
 
-function feature_maven() {
+feature_maven() {
 	FEAT_NAME=maven
 	FEAT_LIST_SCHEMA="3_3_9:binary 3_3_3:binary 3_3_1:binary 3_0_5:binary"
 	FEAT_DEFAULT_VERSION=3_3_9
@@ -11,14 +11,14 @@ function feature_maven() {
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
-function feature_maven_env() {
+feature_maven_env() {
 	M2_HOME=$FEAT_INSTALL_ROOT
 	export M2_HOME=$FEAT_INSTALL_ROOT
 }
 
 
 
-function feature_maven_3_3_9() {
+feature_maven_3_3_9() {
 	FEAT_VERSION=3_3_9
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -41,7 +41,7 @@ function feature_maven_3_3_9() {
 }
 
 
-function feature_maven_3_3_3() {
+feature_maven_3_3_3() {
 	FEAT_VERSION=3_3_3
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -64,7 +64,7 @@ function feature_maven_3_3_3() {
 }
 
 
-function feature_maven_3_3_1() {
+feature_maven_3_3_1() {
 	FEAT_VERSION=3_3_1
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -90,7 +90,7 @@ function feature_maven_3_3_1() {
 
 
 
-function feature_maven_3_0_5() {
+feature_maven_3_0_5() {
 	FEAT_VERSION=3_0_5
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -115,7 +115,7 @@ function feature_maven_3_0_5() {
 
 
 
-function feature_maven_install_binary() {
+feature_maven_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP"
 
 }

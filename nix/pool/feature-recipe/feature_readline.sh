@@ -4,7 +4,7 @@ _readline_INCLUDED_=1
 # TODO : depend on ncurses
 
 
-function feature_readline() {
+feature_readline() {
 	FEAT_NAME=readline
 	FEAT_LIST_SCHEMA="6_3_8:source"
 	FEAT_DEFAULT_VERSION=6_3_8
@@ -13,7 +13,7 @@ function feature_readline() {
 }
 
 
-function feature_readline_6_3_8() {
+feature_readline_6_3_8() {
 	FEAT_VERSION=6_3_8
 	FEAT_SOURCE_DEPENDENCIES="ncurses#6_0"
 	FEAT_BINARY_DEPENDENCIES=
@@ -34,11 +34,11 @@ function feature_readline_6_3_8() {
 	FEAT_SEARCH_PATH=
 }
 
-function feature_readline_link() {
+feature_readline_link() {
 	__link_feature_library "ncurses#6_0"
 }
 
-function feature_readline_6_3_patch() {
+feature_readline_6_3_patch() {
 	__get_resource "readline63 patch" "http://ftpmirror.gnu.org/readline/readline-6.3-patches/readline63-001" "HTTP" "$SRC_DIR"
 	__get_resource "readline63 patch" "http://ftpmirror.gnu.org/readline/readline-6.3-patches/readline63-002" "HTTP" "$SRC_DIR"
 	__get_resource "readline63 patch" "http://ftpmirror.gnu.org/readline/readline-6.3-patches/readline63-003" "HTTP" "$SRC_DIR"
@@ -59,7 +59,7 @@ function feature_readline_6_3_patch() {
 }
 
 
-function feature_readline_install_source() {
+feature_readline_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	

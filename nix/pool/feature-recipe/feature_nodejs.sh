@@ -3,7 +3,7 @@ _NODEJS_INCLUDED_=1
 
 
 
-function feature_nodejs() {
+feature_nodejs() {
 	FEAT_NAME=nodejs
 	FEAT_LIST_SCHEMA="4_4_5@x64:binary 4_4_5@x86:binary 0_12_14@x64:binary 0_12_14@x86:binary 0_10_45@x64:binary 0_10_45@x86:binary"
 	FEAT_DEFAULT_VERSION=4_4_5
@@ -12,7 +12,7 @@ function feature_nodejs() {
 }
 
 
-function feature_nodejs_4_4_5() {
+feature_nodejs_4_4_5() {
 	FEAT_VERSION=4_4_5
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -52,7 +52,7 @@ function feature_nodejs_4_4_5() {
 
 }
 
-function feature_nodejs_0_12_14() {
+feature_nodejs_0_12_14() {
 	FEAT_VERSION=0_12_14
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -92,7 +92,7 @@ function feature_nodejs_0_12_14() {
 
 }
 
-function feature_nodejs_0_10_45() {
+feature_nodejs_0_10_45() {
 	FEAT_VERSION=0_10_45
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -133,7 +133,7 @@ function feature_nodejs_0_10_45() {
 }
 
 
-function feature_nodejs_install_binary() {
+feature_nodejs_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP"
 
 }

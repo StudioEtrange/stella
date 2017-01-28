@@ -3,7 +3,7 @@ _dumb_INCLUDED_=1
 
 
 
-function feature_dumb() {
+feature_dumb() {
 	FEAT_NAME=dumb
 	FEAT_LIST_SCHEMA="0_9_3:source"
 	FEAT_DEFAULT_VERSION=0_9_3
@@ -14,7 +14,7 @@ function feature_dumb() {
 
 
 
-function feature_dumb_0_9_3() {
+feature_dumb_0_9_3() {
 	FEAT_VERSION=0_9_3
 	
 	FEAT_SOURCE_DEPENDENCIES="readline zlib#1_2_8"
@@ -38,13 +38,13 @@ function feature_dumb_0_9_3() {
 }
 
 
-function feature_dumb_conftools_0_9_3() {
+feature_dumb_conftools_0_9_3() {
 	__get_resource "libdumb conf tools" "http://downloads.sourceforge.net/project/dumb/dumb/0.9.3/dumb-0.9.3-autotools.tar.gz" "HTTP_ZIP" "$SRC_DIR" "STRIP"
 
 
 }
 
-function feature_dumb_install_source() {
+feature_dumb_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

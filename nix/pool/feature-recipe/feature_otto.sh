@@ -3,7 +3,7 @@ _otto_INCLUDED_=1
 
 
 
-function feature_otto() {
+feature_otto() {
 	FEAT_NAME=otto
 	FEAT_LIST_SCHEMA="0_2_0@x64:binary 0_2_0@x86:binary"
 	FEAT_DEFAULT_VERSION=0_2_0
@@ -12,7 +12,7 @@ function feature_otto() {
 }
 
 
-function feature_otto_0_2_0() {
+feature_otto_0_2_0() {
 	FEAT_VERSION=0_2_0
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -51,7 +51,7 @@ function feature_otto_0_2_0() {
 
 
 
-function feature_otto_install_binary() {
+feature_otto_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "STRIP"
 
 }

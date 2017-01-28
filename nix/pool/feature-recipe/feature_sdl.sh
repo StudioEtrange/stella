@@ -1,7 +1,7 @@
 if [ ! "$_SDL_INCLUDED_" == "1" ]; then 
 _SDL_INCLUDED_=1
 
-function feature_sdl() {
+feature_sdl() {
 	FEAT_NAME=sdl
 	FEAT_LIST_SCHEMA="2_0_3:source 1_2_15:source"
 	FEAT_DEFAULT_VERSION=2_0_3
@@ -12,7 +12,7 @@ function feature_sdl() {
 
 
 
-function feature_sdl_2_0_3() {
+feature_sdl_2_0_3() {
 	FEAT_VERSION=2_0_3
 	
 	FEAT_SOURCE_DEPENDENCIES=
@@ -35,7 +35,7 @@ function feature_sdl_2_0_3() {
 	
 }
 
-function feature_sdl_1_2_15() {
+feature_sdl_1_2_15() {
 	FEAT_VERSION=1_2_15
 	
 	FEAT_SOURCE_DEPENDENCIES=
@@ -58,7 +58,7 @@ function feature_sdl_1_2_15() {
 	
 }
 
-function feature_sdl_1_2_15_callback() {
+feature_sdl_1_2_15_callback() {
 
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ];then
 		# Related ticket: https://bugzilla.libsdl.org/show_bug.cgi?id=2085
@@ -79,7 +79,7 @@ function feature_sdl_1_2_15_callback() {
 }
 
 
-function feature_sdl_install_source() {
+feature_sdl_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

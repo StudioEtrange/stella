@@ -2,7 +2,7 @@ if [ ! "$_TEMPLATE-BUNDLE_INCLUDED_" == "1" ]; then
 _TEMPLATE-BUNDLE_INCLUDED_=1
 
 
-function feature_template-bundle() {
+feature_template-bundle() {
 	FEAT_NAME=template-bundle
 	FEAT_LIST_SCHEMA="1_0_0@x64 1_0_0@x86"
 	FEAT_DEFAULT_VERSION=1_0_0
@@ -17,7 +17,7 @@ function feature_template-bundle() {
 
 
 
-function feature_template-bundle_1_0_0() {
+feature_template-bundle_1_0_0() {
 	#if FEAT_ARCH is not not null, properties FOO_ARCH=BAR will be selected and setted as FOO=BAR
 	# if FOO_ARCH is empty, FOO will not be changed
 
@@ -47,7 +47,7 @@ function feature_template-bundle_1_0_0() {
 
 }
 
-function feature_template-bundle_setenv()  {
+feature_template-bundle_setenv()  {
 	TEMPLATE_BUNDLE_HOME=$FEAT_INSTALL_ROOT
 	export TEMPLATE_BUNDLE_HOME_HOME
 }

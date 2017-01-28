@@ -4,7 +4,7 @@ _bazel_INCLUDED_=1
 
 # https://github.com/Homebrew/homebrew-core/blob/master/Formula/bazel.rb
 
-function feature_bazel() {
+feature_bazel() {
 	FEAT_NAME=bazel
 	FEAT_LIST_SCHEMA="0_4_2:source 0_3_2:source 0_2_2b:source"
 	FEAT_DEFAULT_VERSION=0_4_2
@@ -13,7 +13,7 @@ function feature_bazel() {
 }
 
 
-function feature_bazel_0_4_2() {
+feature_bazel_0_4_2() {
 	FEAT_VERSION=0_4_2
 
 	# TODO : need jdk8
@@ -38,7 +38,7 @@ function feature_bazel_0_4_2() {
 }
 
 
-function feature_bazel_0_3_2() {
+feature_bazel_0_3_2() {
 	FEAT_VERSION=0_3_2
 
 	# TODO : need jdk8
@@ -63,7 +63,7 @@ function feature_bazel_0_3_2() {
 }
 
 
-function feature_bazel_0_2_2b() {
+feature_bazel_0_2_2b() {
 	FEAT_VERSION=0_2_2b
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -91,7 +91,7 @@ function feature_bazel_0_2_2b() {
 
 
 
-function feature_bazel_install_source() {
+feature_bazel_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

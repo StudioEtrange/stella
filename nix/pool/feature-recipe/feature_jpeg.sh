@@ -2,7 +2,7 @@ if [ ! "_JPEG_INCLUDED_" == "1" ]; then
 _JPEG_INCLUDED_=1
 
 
-function feature_jpeg() {
+feature_jpeg() {
 	FEAT_NAME=jpeg
 	FEAT_LIST_SCHEMA="9_0_0:source"
 	FEAT_DEFAULT_VERSION=9_0_0
@@ -10,7 +10,7 @@ function feature_jpeg() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_jpeg_9_0_0() {
+feature_jpeg_9_0_0() {
 	FEAT_VERSION=9_0_0
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -34,7 +34,7 @@ function feature_jpeg_9_0_0() {
 }
 
 
-function feature_jpeg_install_source() {
+feature_jpeg_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

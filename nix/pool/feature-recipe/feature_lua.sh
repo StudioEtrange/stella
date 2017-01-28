@@ -2,7 +2,7 @@ if [ ! "$_lua_INCLUDED_" == "1" ]; then
 _lua_INCLUDED_=1
 
 
-function feature_lua() {
+feature_lua() {
 	FEAT_NAME=lua
 	FEAT_LIST_SCHEMA="5_3_2:source"
 	FEAT_DEFAULT_VERSION=5_3_2
@@ -10,7 +10,7 @@ function feature_lua() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_lua_5_3_2() {
+feature_lua_5_3_2() {
 	FEAT_VERSION=5_3_2
 
 
@@ -36,7 +36,7 @@ function feature_lua_5_3_2() {
 
 
 
-function feature_lua_install_source() {
+feature_lua_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	

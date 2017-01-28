@@ -4,7 +4,7 @@ _GOCROSSCOMPILE_INCLUDED_=1
 
 # TODO review with https://github.com/StudioEtrange/ngrok-build 
 
-function feature_go-crosscompile-chain() {
+feature_go-crosscompile-chain() {
 	FEAT_NAME="go-crosscompile-chain"
 	FEAT_LIST_SCHEMA="1_4_3"
 	FEAT_DEFAULT_VERSION=1_4_3
@@ -13,7 +13,7 @@ function feature_go-crosscompile-chain() {
 	FEAT_BUNDLE=NESTED
 }
 
-function feature_go-crosscompile-chain_1_4_3() {
+feature_go-crosscompile-chain_1_4_3() {
 	FEAT_VERSION=1_4_3
 	
 	# need gcc
@@ -32,7 +32,7 @@ function feature_go-crosscompile-chain_1_4_3() {
 }
 
 
-function feature_go_crosschain_setenv() {
+feature_go_crosschain_setenv() {
 	GOPATH="$FEAT_INSTALL_ROOT/_WORKSPACE_"
 
 	echo " ** GOLANG cross-compile environment"
@@ -45,7 +45,7 @@ function feature_go_crosschain_setenv() {
 }
 
 
-function feature_go_prepare_crosschain() {
+feature_go_prepare_crosschain() {
 	PATH="$FEAT_SEARCH_PATH:$PATH"
 
 

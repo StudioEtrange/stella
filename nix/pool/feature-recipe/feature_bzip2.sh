@@ -3,7 +3,7 @@ _BZIP2_INCLUDED_=1
 
 # darwin -- OK -- 20151012
 
-function feature_bzip2() {
+feature_bzip2() {
 	FEAT_NAME=bzip2
 	FEAT_LIST_SCHEMA="1_0_6:source"
 	FEAT_DEFAULT_VERSION=1_0_6
@@ -11,7 +11,7 @@ function feature_bzip2() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_bzip2_1_0_6() {
+feature_bzip2_1_0_6() {
 	FEAT_VERSION=1_0_6
 
 
@@ -37,7 +37,7 @@ function feature_bzip2_1_0_6() {
 
 
 
-function feature_bzip2_install_source() {
+feature_bzip2_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	

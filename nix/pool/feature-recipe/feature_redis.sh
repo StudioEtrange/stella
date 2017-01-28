@@ -3,7 +3,7 @@ _redis_INCLUDED_=1
 
 
 
-function feature_redis() {
+feature_redis() {
 	FEAT_NAME=redis
 	FEAT_LIST_SCHEMA="3_0_7:source"
 	FEAT_DEFAULT_VERSION=3_0_7
@@ -11,7 +11,7 @@ function feature_redis() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_redis_3_0_7() {
+feature_redis_3_0_7() {
 	FEAT_VERSION=3_0_7
 
 
@@ -36,14 +36,14 @@ function feature_redis_3_0_7() {
 }
 
 
-function feature_redis_link() {
+feature_redis_link() {
 	__link_feature_library "openssl#1_0_2d" "LIBS_NAME ssl crypto GET_FLAGS _openssl NO_SET_FLAGS"
 	sed -i .bak "s,\(-std=c99 -Wall -O2 -D_REENTRANT\),\1 $_openssl_CPP_FLAGS," "$SRC_DIR/Makefile"
 	sed -i .bak "s,\(-lpthread -lm -lcrypto -lssl\),-lpthread -lm $_openssl_LINK_FLAGS," "$SRC_DIR/Makefile"
 }
 
 
-function feature_redis_install_source() {
+feature_redis_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

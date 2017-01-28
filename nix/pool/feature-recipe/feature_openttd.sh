@@ -4,7 +4,7 @@ _openttd_INCLUDED_=1
 
 # https://github.com/Homebrew/homebrew-games/blob/master/openttd.rb
 # patch ; https://bugs.openttd.org/task/6380
-function feature_openttd() {
+feature_openttd() {
 	FEAT_NAME=openttd
 	FEAT_LIST_SCHEMA="1_6_1:source"
 	FEAT_DEFAULT_VERSION=1_6_1
@@ -15,7 +15,7 @@ function feature_openttd() {
 
 
 
-function feature_openttd_1_6_1() {
+feature_openttd_1_6_1() {
 	FEAT_VERSION=1_6_1
 
 	FEAT_SOURCE_DEPENDENCIES="lzo#2_09 libpng#1_6_17 zlib#1_2_11 xzutils#5_2_1 freetype#2_6_1"
@@ -39,7 +39,7 @@ function feature_openttd_1_6_1() {
 
 }
 
-function feature_openttd_link() {
+feature_openttd_link() {
 	[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && __link_feature_library "sdl#1_2_15" "GET_FOLDER sdl USE_PKG_CONFIG"
 
 	__link_feature_library "xzutils#5_2_1" "NO_SET_FLAGS USE_PKG_CONFIG"
@@ -56,7 +56,7 @@ function feature_openttd_link() {
 
 }
 
-function feature_openttd_patch() {
+feature_openttd_patch() {
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		__get_resource "patch openttd macoxminversion" "https://trac.macports.org/export/117147/trunk/dports/games/openttd/files/patch-config.lib-remove-deployment-target.diff" "HTTP" "$SRC_DIR"
 		cd "$SRC_DIR"
@@ -83,14 +83,14 @@ function feature_openttd_patch() {
 
 
 
-function feature_openttd_resource() {
+feature_openttd_resource() {
 	# default resources
 	__get_resource "opengfx" "https://bundles.openttdcoop.org/opengfx/releases/0.5.4/opengfx-0.5.4.zip" "HTTP_ZIP" "$INSTALL_DIR/games/data/opengfx" "STRIP"
 	__get_resource "opensfx" "https://bundles.openttdcoop.org/opensfx/releases/0.2.3/opensfx-0.2.3.zip" "HTTP_ZIP" "$INSTALL_DIR/games/data/opensfx" "STRIP"
 	__get_resource "openmsx" "https://bundles.openttdcoop.org/openmsx/releases/0.3.1/openmsx-0.3.1.zip" "HTTP_ZIP" "$INSTALL_DIR/gm/openmsx" "STRIP"
 }
 
-function feature_openttd_install_source() {
+feature_openttd_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

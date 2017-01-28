@@ -2,7 +2,7 @@ if [ ! "$_mdnsrepeater_INCLUDED_" == "1" ]; then
 _mdnsrepeater_INCLUDED_=1
 
 
-function feature_mdns-repeater() {
+feature_mdns-repeater() {
 	FEAT_NAME=mdns-repeater
 	FEAT_LIST_SCHEMA="SNAPSHOT:source"
 	FEAT_DEFAULT_VERSION=SNAPSHOT
@@ -12,7 +12,7 @@ function feature_mdns-repeater() {
 
 
 
-function feature_mdns-repeater_SNAPSHOT() {
+feature_mdns-repeater_SNAPSHOT() {
 	FEAT_VERSION=SNAPSHOT
 
 	# Dependencies
@@ -44,7 +44,7 @@ function feature_mdns-repeater_SNAPSHOT() {
 }
 
 
-function feature_mdns-repeater_install_source() {
+feature_mdns-repeater_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

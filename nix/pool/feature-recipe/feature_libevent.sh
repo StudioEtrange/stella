@@ -1,7 +1,7 @@
 if [ ! "$_libevent_INCLUDED_" == "1" ]; then
 _libevent_INCLUDED_=1
 
-function feature_libevent() {
+feature_libevent() {
 	FEAT_NAME=libevent
 	FEAT_LIST_SCHEMA="2_0_22:source"
 	FEAT_DEFAULT_VERSION=2_0_22
@@ -9,7 +9,7 @@ function feature_libevent() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_libevent_2_0_22() {
+feature_libevent_2_0_22() {
 	FEAT_VERSION=2_0_22
 
 
@@ -34,12 +34,12 @@ function feature_libevent_2_0_22() {
 }
 
 
-function feature_libevent_link() {
+feature_libevent_link() {
 	__link_feature_library "openssl#1_0_2d"
 }
 
 
-function feature_libevent_install_source() {
+feature_libevent_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

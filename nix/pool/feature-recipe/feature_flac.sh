@@ -3,7 +3,7 @@ _flac_INCLUDED_=1
 
 # https://github.com/Homebrew/homebrew/blob/master/Library/Formula/flac.rb
 
-function feature_flac() {
+feature_flac() {
 	FEAT_NAME=flac
 	FEAT_LIST_SCHEMA="1_3_1:source"
 	FEAT_DEFAULT_VERSION=1_3_1
@@ -14,7 +14,7 @@ function feature_flac() {
 
 
 
-function feature_flac_1_3_1() {
+feature_flac_1_3_1() {
 	FEAT_VERSION=1_3_1
 	
 	FEAT_SOURCE_DEPENDENCIES="libogg#DEV20150926"
@@ -38,12 +38,12 @@ function feature_flac_1_3_1() {
 }
 
 
-function feature_flac_link() {
+feature_flac_link() {
 	__link_feature_library "libogg#DEV20150926"
 
 }
 
-function feature_flac_install_source() {
+feature_flac_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

@@ -3,7 +3,7 @@ _TENSORFLOW_INCLUDED_=1
 
 # https://www.tensorflow.org/get_started/os_setup#installing_from_sources
 
-function feature_tensorflow() {
+feature_tensorflow() {
 	FEAT_NAME=tensorflow
 
 	FEAT_LIST_SCHEMA="0_11_0:source"
@@ -16,7 +16,7 @@ function feature_tensorflow() {
 
 
 # need toolset : bazel version 0_3_2
-function feature_tensorflow_0_11_0() {
+feature_tensorflow_0_11_0() {
 	FEAT_VERSION=0_11_0
 
 	FEAT_SOURCE_DEPENDENCIES="swig#3_0_10"
@@ -40,7 +40,7 @@ function feature_tensorflow_0_11_0() {
 }
 
 
-function feature_tensorflow_install_source() {
+feature_tensorflow_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

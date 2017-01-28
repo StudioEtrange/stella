@@ -3,7 +3,7 @@ _ANT_INCLUDED_=1
 
 
 
-function feature_ant() {
+feature_ant() {
 	FEAT_NAME=ant
 	FEAT_LIST_SCHEMA="1_9_5:binary"
 	FEAT_DEFAULT_VERSION=1_9_5
@@ -11,14 +11,14 @@ function feature_ant() {
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
-function feature_ant_env() {
+feature_ant_env() {
 	ANT_HOME=$FEAT_INSTALL_ROOT
 	export ANT_HOME=$FEAT_INSTALL_ROOT
 }
 
 
 
-function feature_ant_1_9_5() {
+feature_ant_1_9_5() {
 	FEAT_VERSION=1_9_5
 	
 	FEAT_SOURCE_DEPENDENCIES=
@@ -43,7 +43,7 @@ function feature_ant_1_9_5() {
 
 
 
-function feature_ant_install_binary() {
+feature_ant_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "STRIP"
 
 }

@@ -3,7 +3,7 @@ _BOOSTBCP_INCLUDED_=1
 
 # for more information see feature boost
 
-function feature_boost-bcp() {
+feature_boost-bcp() {
 	FEAT_NAME=boost-bcp
 	FEAT_LIST_SCHEMA="1_58_0:source"
 	FEAT_DEFAULT_VERSION=1_58_0
@@ -11,7 +11,7 @@ function feature_boost-bcp() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_boost-bcp_1_58_0() {
+feature_boost-bcp_1_58_0() {
 	FEAT_VERSION=1_58_0
 
 
@@ -36,7 +36,7 @@ function feature_boost-bcp_1_58_0() {
 }
 
 
-function feature_boost-bcp_install_source() {
+feature_boost-bcp_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

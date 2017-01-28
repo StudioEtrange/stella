@@ -4,7 +4,7 @@ _CMATRIX_INCLUDED_=1
 # darwin -- OK -- 20151012
 
 
-function feature_cmatrix() {
+feature_cmatrix() {
 	FEAT_NAME=cmatrix
 	FEAT_LIST_SCHEMA="1_2a:source"
 	FEAT_DEFAULT_VERSION=1_2a
@@ -12,7 +12,7 @@ function feature_cmatrix() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_cmatrix_1_2a() {
+feature_cmatrix_1_2a() {
 	FEAT_VERSION=1_2a
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -36,7 +36,7 @@ function feature_cmatrix_1_2a() {
 
 
 
-function feature_cmatrix_install_source() {
+feature_cmatrix_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	

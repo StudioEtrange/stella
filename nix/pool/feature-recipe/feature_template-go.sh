@@ -2,7 +2,7 @@ if [ ! "$_TEMPLATEGO_INCLUDED_" == "1" ]; then
 _TEMPLATEGO_INCLUDED_=1
 
 
-function feature_template-go() {
+feature_template-go() {
 	FEAT_NAME="template-go"
 	FEAT_LIST_SCHEMA="snapshot:source"
 	FEAT_DEFAULT_VERSION="snapshot"
@@ -11,7 +11,7 @@ function feature_template-go() {
 }
 
 
-function feature_template-go_snapshot() {
+feature_template-go_snapshot() {
 	FEAT_VERSION="snapshot"
 	FEAT_SOURCE_DEPENDENCIES="go-build-chain#1_4_2"
 	FEAT_BINARY_DEPENDENCIES=
@@ -34,7 +34,7 @@ function feature_template-go_snapshot() {
 }
 
 
-function feature_template-go_install_source() {
+feature_template-go_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$FEAT_INSTALL_ROOT/src/getopt"
 	BUILD_DIR=

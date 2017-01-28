@@ -3,7 +3,7 @@ _gnuplot_INCLUDED_=1
 
 # TODO review on macos
 
-function feature_gnuplot() {
+feature_gnuplot() {
 	FEAT_NAME=gnuplot
 
 	FEAT_LIST_SCHEMA="5_0_3:source"
@@ -12,7 +12,7 @@ function feature_gnuplot() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_gnuplot_5_0_3() {
+feature_gnuplot_5_0_3() {
 	FEAT_VERSION=5_0_3
 
 
@@ -37,7 +37,7 @@ function feature_gnuplot_5_0_3() {
 }
 
 
-function feature_gnuplot_install_source() {
+feature_gnuplot_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

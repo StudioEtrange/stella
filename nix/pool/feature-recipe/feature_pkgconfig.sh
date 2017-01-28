@@ -4,7 +4,7 @@ _pkgconfig_INCLUDED_=1
 # http://www.linuxfromscratch.org/lfs/view/development/chapter06/pkg-config.html
 # https://github.com/Homebrew/homebrew/blob/master/Library/Formula/pkg-config.rb
 
-function feature_pkgconfig() {
+feature_pkgconfig() {
 	FEAT_NAME=pkgconfig
 	FEAT_LIST_SCHEMA="0_29:source"
 	FEAT_DEFAULT_VERSION=0_29
@@ -12,7 +12,7 @@ function feature_pkgconfig() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_pkgconfig_0_29() {
+feature_pkgconfig_0_29() {
 	FEAT_VERSION=0_29
 	
 	FEAT_SOURCE_DEPENDENCIES=
@@ -38,7 +38,7 @@ function feature_pkgconfig_0_29() {
 
 
 
-function feature_pkgconfig_install_source() {
+feature_pkgconfig_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	

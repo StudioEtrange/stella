@@ -5,7 +5,7 @@ _PYTHON_INCLUDED_=1
 # But not python from code source
 # (http://pip.readthedocs.org/en/latest/installing.html#pip-included-with-python)
 
-function feature_python() {
+feature_python() {
 
 	FEAT_NAME=python
 	FEAT_LIST_SCHEMA="2_7_9:source"
@@ -14,7 +14,7 @@ function feature_python() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_python_2_7_9() {
+feature_python_2_7_9() {
 	FEAT_VERSION=2_7_9
 
 	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 FORCE_ORIGIN_STELLA openssl#1_0_2d"
@@ -40,13 +40,13 @@ function feature_python_2_7_9() {
 
 
 
-function feature_python_link() {
+feature_python_link() {
 	__link_feature_library "zlib#1_2_8" "LIBS_NAME z FORCE_STATIC"
 	__link_feature_library "FORCE_ORIGIN_STELLA openssl#1_0_2d"
 }
 
 
-function feature_python_install_source() {
+feature_python_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

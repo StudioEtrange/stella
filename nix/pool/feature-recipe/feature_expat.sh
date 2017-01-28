@@ -2,7 +2,7 @@ if [ ! "_EXPAT_INCLUDED_" == "1" ]; then
 _EXPAT_INCLUDED_=1
 
 
-function feature_expat() {
+feature_expat() {
 	FEAT_NAME=expat
 	FEAT_LIST_SCHEMA="2_1_0:source"
 	FEAT_DEFAULT_VERSION=2_1_0
@@ -10,7 +10,7 @@ function feature_expat() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_expat_2_1_0() {
+feature_expat_2_1_0() {
 	FEAT_VERSION=2_1_0
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -34,7 +34,7 @@ function feature_expat_2_1_0() {
 }
 
 
-function feature_expat_install_source() {
+feature_expat_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	

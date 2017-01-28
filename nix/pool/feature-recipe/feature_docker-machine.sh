@@ -2,7 +2,7 @@ if [ ! "$_DOCKERMACHINE_INCLUDED_" == "1" ]; then
 _DOCKERMACHINE_INCLUDED_=1
 
 
-function feature_docker-machine() {
+feature_docker-machine() {
 	FEAT_NAME=docker-machine
 	FEAT_LIST_SCHEMA="0_8_2@x64:binary 0_2_0@x64:binary 0_2_0@x86:binary 0_4_0@x86:binary 0_4_0@x64:binary 0_5_6@x64:binary 0_6_0@x64:binary 0_7_0@x64:binary"
 	FEAT_DEFAULT_VERSION=0_8_2
@@ -12,7 +12,7 @@ function feature_docker-machine() {
 
 
 
-function feature_docker-machine_0_8_2() {
+feature_docker-machine_0_8_2() {
 	FEAT_VERSION=0_8_2
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -50,7 +50,7 @@ function feature_docker-machine_0_8_2() {
 }
 
 
-function feature_docker-machine_0_7_0() {
+feature_docker-machine_0_7_0() {
 	FEAT_VERSION=0_7_0
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -88,7 +88,7 @@ function feature_docker-machine_0_7_0() {
 }
 
 
-function feature_docker-machine_0_6_0() {
+feature_docker-machine_0_6_0() {
 	FEAT_VERSION=0_6_0
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -125,7 +125,7 @@ function feature_docker-machine_0_6_0() {
 
 }
 
-function feature_docker-machine_0_5_6() {
+feature_docker-machine_0_5_6() {
 	FEAT_VERSION=0_5_6
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -163,7 +163,7 @@ function feature_docker-machine_0_5_6() {
 
 }
 
-function feature_docker-machine_0_2_0() {
+feature_docker-machine_0_2_0() {
 	FEAT_VERSION=0_2_0
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -202,7 +202,7 @@ function feature_docker-machine_0_2_0() {
 }
 
 
-function feature_docker-machine_0_4_0() {
+feature_docker-machine_0_4_0() {
 	FEAT_VERSION=0_4_0
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -242,7 +242,7 @@ function feature_docker-machine_0_4_0() {
 
 
 
-function feature_docker-machine_install_binary() {
+feature_docker-machine_install_binary() {
 
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP FORCE_NAME $FEAT_BINARY_URL_FILENAME"
 

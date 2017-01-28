@@ -4,14 +4,14 @@ _gmp_INCLUDED_=1
 # darwin : https://github.com/Homebrew/homebrew/blob/master/Library/Formula/gmp.rb
 
 
-function feature_gmp() {
+feature_gmp() {
 	FEAT_NAME=gmp
 	FEAT_LIST_SCHEMA="6_0_0a:source"
 	FEAT_DEFAULT_VERSION=6_0_0a
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_gmp_6_0_0a() {
+feature_gmp_6_0_0a() {
 	FEAT_VERSION=6_0_0a
 
 	FEAT_SOURCE_URL=http://ftpmirror.gnu.org/gmp/gmp-6.0.0a.tar.bz2
@@ -23,7 +23,7 @@ function feature_gmp_6_0_0a() {
 
 
 
-function feature_gmp_install_source() {
+feature_gmp_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

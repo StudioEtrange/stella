@@ -4,7 +4,7 @@ _ZLIB_INCLUDED_=1
 # OK
 
 
-function feature_zlib() {
+feature_zlib() {
 	FEAT_NAME=zlib
 	FEAT_LIST_SCHEMA="1_2_8:source 1_2_11:source"
 	FEAT_DEFAULT_VERSION=1_2_8
@@ -13,7 +13,7 @@ function feature_zlib() {
 }
 
 
-function feature_zlib_1_2_11() {
+feature_zlib_1_2_11() {
 	FEAT_VERSION=1_2_11
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -36,7 +36,7 @@ function feature_zlib_1_2_11() {
 }
 
 
-function feature_zlib_1_2_8() {
+feature_zlib_1_2_8() {
 	FEAT_VERSION=1_2_8
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -60,7 +60,7 @@ function feature_zlib_1_2_8() {
 
 
 
-function feature_zlib_install_source() {
+feature_zlib_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

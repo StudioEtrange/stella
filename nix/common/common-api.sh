@@ -3,7 +3,7 @@ _STELLA_COMMON_API_INCLUDED_=1
 
 
 
-function __api_proxy() {
+__api_proxy() {
 	local FUNC_NAME=$1
 	local _result=
 	local f=
@@ -26,7 +26,7 @@ function __api_proxy() {
 	echo "** API ERROR : Function $FUNC_NAME does not exist"
 }
 
-function __api_list() {
+__api_list() {
 	echo "[ COMMON-API : $STELLA_API_COMMON_PUBLIC ] \
 	[ FEATURE-API : $STELLA_API_FEATURE_PUBLIC ] \
 	[ APP-API : $STELLA_API_APP_PUBLIC ] \
@@ -39,7 +39,7 @@ function __api_list() {
 }
 
 # connect api function to another stella application context
-function __api_connect() {
+__api_connect() {
 	local _approot=$1
 
 	# TODO saveSTELLA_APP_ROOT
@@ -50,7 +50,7 @@ function __api_connect() {
 }
 
 # reconnect api to current stella application
-function __api_disconnect() {
+__api_disconnect() {
 	STELLA_APP_ROOT=
   _STELLA_CONF_INCLUDED_=
 	# TODO saveSTELLA_APP_ROOT

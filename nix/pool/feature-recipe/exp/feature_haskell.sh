@@ -21,7 +21,7 @@ _haskell_INCLUDED_=1
 
 
 
-function feature_haskell() {
+feature_haskell() {
 	FEAT_NAME=haskell
 	FEAT_LIST_SCHEMA="7_10_3:binary"
 	FEAT_DEFAULT_VERSION=7_10_3
@@ -31,7 +31,7 @@ function feature_haskell() {
 
 
 
-function feature_haskell_7_10_3() {
+feature_haskell_7_10_3() {
 	FEAT_VERSION=7_10_3
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -63,7 +63,7 @@ function feature_haskell_7_10_3() {
 
 }
 
-function feature_haskell_install_binary() {
+feature_haskell_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP FORCE_NAME $FEAT_BINARY_URL_FILENAME"
 }
 

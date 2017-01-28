@@ -11,7 +11,7 @@ _angband_INCLUDED_=1
 # launch curses based : angband -mgcu
 # launch sdl based : angband -msdl -ssdl
 
-function feature_angband() {
+feature_angband() {
 	FEAT_NAME=angband
 
 	FEAT_LIST_SCHEMA="4_0_4:source"
@@ -22,7 +22,7 @@ function feature_angband() {
 
 }
 
-function feature_angband_4_0_4() {
+feature_angband_4_0_4() {
 	FEAT_VERSION=4_0_4
 
 
@@ -46,7 +46,7 @@ function feature_angband_4_0_4() {
 
 }
 
-function feature_angband_link() {
+feature_angband_link() {
 	__link_feature_library "ncurses#5_9"
 
 	__link_feature_library "sdl#1_2_15" "GET_FOLDER _sdl FORCE_INCLUDE_FOLDER include/SDL NO_SET_FLAGS LIBS_NAME SDL"
@@ -58,7 +58,7 @@ function feature_angband_link() {
 }
 
 
-function feature_angband_install_source() {
+feature_angband_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

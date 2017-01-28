@@ -2,7 +2,7 @@ if [ ! "$_nmap_INCLUDED_" == "1" ]; then
 _nmap_INCLUDED_=1
 
 
-function feature_nmap() {
+feature_nmap() {
 	FEAT_NAME=nmap
 	FEAT_LIST_SCHEMA="6_49_BETA_4:source"
 	FEAT_DEFAULT_VERSION=6_49_BETA_4
@@ -10,7 +10,7 @@ function feature_nmap() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_nmap_6_49_BETA_4() {
+feature_nmap_6_49_BETA_4() {
 	FEAT_VERSION=6_49_BETA_4
 	FEAT_SOURCE_DEPENDENCIES="openssl#1_0_2d"
 	FEAT_BINARY_DEPENDENCIES=
@@ -33,12 +33,12 @@ function feature_nmap_6_49_BETA_4() {
 }
 
 
-function feature_nmap_link() {
+feature_nmap_link() {
 	__link_feature_library "openssl#1_0_2d"
 }
 
 
-function feature_nmap_install_source() {
+feature_nmap_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	

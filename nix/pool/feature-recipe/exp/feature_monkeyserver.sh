@@ -4,7 +4,7 @@ _monkeyserver_INCLUDED_=1
 # NOT FINISHED
 # DO NOT WORK ON OSX
 # https://plus.google.com/u/0/110391426075643497490/posts/UbxNrngiwE9
-function feature_monkeyserver() {
+feature_monkeyserver() {
 	FEAT_NAME=monkeyserver
 
 	FEAT_LIST_SCHEMA="1_6_9:source"
@@ -13,7 +13,7 @@ function feature_monkeyserver() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_monkeyserver_1_6_9() {
+feature_monkeyserver_1_6_9() {
 	FEAT_VERSION=1_6_9
 
 	FEAT_SOURCE_DEPENDENCIES="cmake:binary"
@@ -36,7 +36,7 @@ function feature_monkeyserver_1_6_9() {
 
 }
 
-function feature_monkeyserver_install_source() {
+feature_monkeyserver_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

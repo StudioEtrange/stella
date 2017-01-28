@@ -2,7 +2,7 @@ if [ ! "$_AUTOCONF_INCLUDED_" == "1" ]; then
 _AUTOCONF_INCLUDED_=1
 
 
-function feature_autoconf() {
+feature_autoconf() {
 	FEAT_NAME=autoconf
 	FEAT_LIST_SCHEMA="2_69:source"
 	FEAT_DEFAULT_VERSION=2_69
@@ -10,7 +10,7 @@ function feature_autoconf() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_autoconf_2_69() {
+feature_autoconf_2_69() {
 	FEAT_VERSION=2_69
 	# TODO NEED : perl 5.6 and M4
 	FEAT_SOURCE_DEPENDENCIES=
@@ -37,7 +37,7 @@ function feature_autoconf_2_69() {
 
 
 
-function feature_autoconf_install_source() {
+feature_autoconf_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	

@@ -17,7 +17,7 @@ _STELLA_PLATFORM_INCLUDED_=1
 #			windows <---> win
 #			linux <---> linux
 
-function __get_os_from_distro() {
+__get_os_from_distro() {
 	local _distro=$1
 
 	case $_distro in
@@ -58,7 +58,7 @@ function __get_os_from_distro() {
 
 
 
-function __get_platform_from_os() {
+__get_platform_from_os() {
 	local _os=$1
 
 	case $_os in
@@ -77,7 +77,7 @@ function __get_platform_from_os() {
 	esac
 }
 
-function __get_platform_suffix() {
+__get_platform_suffix() {
 	local _platform=$1
 
 	case $_platform in
@@ -97,7 +97,7 @@ function __get_platform_suffix() {
 }
 
 
-function __get_os_env_from_kernel() {
+__get_os_env_from_kernel() {
 	local _kernel=$1
 
 	case $kernel in
@@ -116,7 +116,7 @@ function __get_os_env_from_kernel() {
 	esac
 }
 
-function __set_current_platform_info() {
+__set_current_platform_info() {
 
 	# call screenFetch
 	# https://github.com/KittyKatt/screenFetch
@@ -182,18 +182,18 @@ function __set_current_platform_info() {
 		STELLA_HOST_IP=$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*')
 	fi
 
-	__override_platform_command
+	__override_platform_command 
 
 }
 
 
-function __get_macos_version() {
+__get_macos_version() {
 	#echo $(sw_vers -productVersion)
 	echo $(sw_vers -productVersion | awk -F '.' '{print $1 "." $2}')
 }
 
 
-function __override_platform_command() {
+__override_platform_command() {
 	#http://unix.stackexchange.com/questions/30091/fix-or-alternative-for-mktemp-in-os-x
 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
 		function mktmp() {
@@ -226,7 +226,7 @@ function __override_platform_command() {
 
 
 # REQUIREMENTS STELLA -------------
-function __ask_install_requirements() {
+__ask_install_requirements() {
 	echo "Do you wish to auto-install requirements for stella (may ask for sudo password)?"
 	select yn in "Yes" "No"; do
 	    case $yn in
@@ -240,7 +240,7 @@ function __ask_install_requirements() {
 
 
 # TODO
-function __stella_requirement() {
+__stella_requirement() {
 	case $STELLA_CURRENT_OS in
 		*);;
 	esac
@@ -254,7 +254,7 @@ function __stella_requirement() {
 # Test if binary is present, if not :
 #		if binary is OPTIONAL, just print warn and guidelines to install it as a STELLA_FEATURE or as a package SYSTEM
 #		if binary is not OPTIONAL, it will install it as a STELLA_FEATURE or provide guideline to install it as a package SYSTEM
-function __require() {
+__require() {
 	local _artefact="$1" # binary to test
 	local _id="$2" # feature name (for stella) or sys name (for package manager)
 	local _OPT="$3"
@@ -340,27 +340,27 @@ function __require() {
 # http://stackoverflow.com/questions/5188267/checking-the-gcc-version-in-a-makefile
 # return X.Y.Z as version of current gcc
 # ex : 4.4.7
-function __gcc_version() {
+__gcc_version() {
 	gcc -dumpversion
 }
 
 # return an int representation of current gcc version
 # ex : 40407
-function __gcc_version_int() {
+__gcc_version_int() {
 	gcc -dumpversion | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$/&00/'
 }
 
 # check if current gcc version hit the minimal version required
 # first param : X_Y_Z (or X_Y)
 # return 1 if required minimal version is fullfilled
-function __gcc_check_min_version() {
+__gcc_check_min_version() {
 	local _required_ver=$1
 	expr $(__gcc_version_int) \<= $(echo $_required_ver | sed -e 's/_\([0-9][0-9]\)/\1/g' -e 's/_\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$/&00/')
 }
 
 # detect if current gcc binary is in fact clang (mainly for MacOS)
 # return 1 if gcc is clang
-function __gcc_is_clang() {
+__gcc_is_clang() {
 	if [ "$(echo | gcc -dM -E - | grep __clang__)" == "" ]; then
 		echo "0"
 	else
@@ -372,26 +372,26 @@ function __gcc_is_clang() {
 
 
 # retrieve current pyconfig.h
-function __python_get_pyconfig() {
+__python_get_pyconfig() {
 	# /Library/Frameworks/Python.framework/Versions/2.7/include/python2.7/pyconfig.h
 	python -c 'import sysconfig;print(sysconfig.get_config_h_filename());'
 }
 
 # get python lib folder
-function __python_get_lib_path() {
+__python_get_lib_path() {
 	# /Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7
 	python -c 'import sysconfig;print(sysconfig.get_path("stdlib"));'
 }
 
 
 # get python version on 1 digits (2, 3, ...)
-function __python_major_version() {
+__python_major_version() {
 	# 2.7
 	python -c 'import sys;print(str(sys.version_info.major));'
 }
 
 # get python version on 2 digits (2.7, 3.4, ...)
-function __python_short_version() {
+__python_short_version() {
 	# 2.7
 	python -c 'import sys;print(str(sys.version_info.major) + "." + str(sys.version_info.minor));'
 }
@@ -401,26 +401,26 @@ function __python_short_version() {
 # _python_version="$($STELLA_API python_short_version)"
 # _pyconf=python"$_python_version"-config
 # _python_path="$($pyconf--prefix)"
-function __python_get_libs() {
+__python_get_libs() {
 	# -lpython2.7 -ldl -framework CoreFoundation
 	python-config --libs
 }
 
-function __python_get_ldflags() {
+__python_get_ldflags() {
 	#-L/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/config -lpython2.7 -ldl -framework CoreFoundation
 	python-config --ldflags
 }
 
-function __python_get_clags() {
+__python_get_clags() {
 	#-I/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7 -I/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7 -fno-strict-aliasing -fno-common -dynamic -arch i386 -arch x86_64 -g -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes
 	python-config --cflags
 }
 
-function __python_get_prefix() {
+__python_get_prefix() {
 	# /Library/Frameworks/Python.framework/Versions/2.7
 	python-config --prefix
 }
-function __python_get_includes() {
+__python_get_includes() {
 	#-I/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7 -I/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7
 	python-config --includes
 }
@@ -428,7 +428,7 @@ function __python_get_includes() {
 # PACKAGE SYSTEM ----------------------------
 
 
-function __get_current_package_manager() {
+__get_current_package_manager() {
 	local _package_manager=
 
 	local p=
@@ -453,15 +453,15 @@ function __get_current_package_manager() {
 	echo "$_package_manager"
 }
 
-function __sys_install() {
+__sys_install() {
 	__sys_install_$1
 }
 
-function __sys_remove() {
+__sys_remove() {
 	__sys_remove_$1
 }
 
-function __sys_package_manager() {
+__sys_package_manager() {
 	# INSTALL or REMOVE
 	local _action="$1"
 	local _id="$2"
@@ -533,7 +533,7 @@ function __sys_package_manager() {
 }
 
 # --------- SYSTEM RECIPES--------
-function __sys_install_docker() {
+__sys_install_docker() {
 	echo " ** Install Docker on your system"
 	if [ "$STELLA_CURRENT_OS" == "macos" ]; then
 		echo "ERROR : Docker is not directly available on macos"
@@ -547,7 +547,7 @@ function __sys_install_docker() {
 
 }
 
-function __sys_install_brew() {
+__sys_install_brew() {
 	echo " ** Install Homebrew on your system"
 
 	__download "https://raw.githubusercontent.com/Homebrew/install/master/install" "brew-install.rb" "$STELLA_APP_TEMP_DIR"
@@ -570,7 +570,7 @@ function __sys_install_brew() {
 		echo " ** Error while installing Homebrew"
 	fi
 }
-function __sys_remove_brew() {
+__sys_remove_brew() {
 	echo " ** Remove Homebrew from your system"
 
 	rm -rf /usr/local/Cellar /usr/local/.git 2>/dev/null
@@ -583,7 +583,7 @@ function __sys_remove_brew() {
 }
 
 
-function __sys_install_build-chain-standard() {
+__sys_install_build-chain-standard() {
 	local _package_manager=
 
 	if [ "$STELLA_CURRENT_OS" == "macos" ]; then
@@ -615,7 +615,7 @@ function __sys_install_build-chain-standard() {
 		__sys_package_manager "INSTALL" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib | yum gcc gcc-c++ make kernel-devel | apk gcc g++ make"
 	fi
 }
-function __sys_remove_build-chain-standard() {
+__sys_remove_build-chain-standard() {
 	if [ "$STELLA_CURRENT_OS" == "macos" ]; then
 		echo " ** Remove Xcode and Command Line Development Tools by hand"
 	else
@@ -626,53 +626,53 @@ function __sys_remove_build-chain-standard() {
 
 
 
-function __sys_install_x11() {
+__sys_install_x11() {
 	brew install caskroom/cask/brew-cask
 	brew cask install xquartz
 }
-function __sys_remove_x11() {
+__sys_remove_x11() {
 	brew cask uninstall xquartz
 }
 
-function __sys_install_sevenzip() {
+__sys_install_sevenzip() {
 	__sys_package_manager "INSTALL" "7z" "apt-get p7zip-full | brew p7zip | yum p7zip | apk p7zip"
 }
-function __sys_remove_sevenzip() {
+__sys_remove_sevenzip() {
 	__sys_package_manager "REMOVE" "7z" "apt-get p7zip-full | brew p7zip | yum p7zip | apk p7zip"
 }
 
-function __sys_install_curl() {
+__sys_install_curl() {
 	__sys_package_manager "INSTALL" "curl" "apt-get curl | brew curl | yum curl | apk curl"
 }
-function __sys_remove_curl() {
+__sys_remove_curl() {
 	__sys_package_manager "REMOVE" "curl" "apt-get curl | brew curl | yum curl | apk curl"
 }
 
-function __sys_install_wget() {
+__sys_install_wget() {
 	__sys_package_manager "INSTALL" "wget" "apt-get wget | brew wget | yum wget | apk get"
 }
-function __sys_remove_wget() {
+__sys_remove_wget() {
 	__sys_package_manager "REMOVE" "wget" "apt-get wget | brew wget | yum wget | apk get"
 }
 
-function __sys_install_unzip() {
+__sys_install_unzip() {
 	__sys_package_manager "INSTALL" "unzip" "apt-get unzip | brew unzip | yum unzip"
 }
-function __sys_remove_unzip() {
+__sys_remove_unzip() {
 	__sys_package_manager "REMOVE" "unzip" "apt-get unzip | brew unzip | yum unzip"
 }
 
-function __sys_install_cmake() {
+__sys_install_cmake() {
 	__sys_package_manager "INSTALL" "cmake" "apt-get cmake | brew cmake | yum cmake | apk cmake"
 }
-function __sys_remove_cmake() {
+__sys_remove_cmake() {
 	__sys_package_manager "REMOVE" "cmake" "apt-get cmake | brew cmake | yum cmake | apk cmake"
 }
 
-function __sys_install_git() {
+__sys_install_git() {
 	__sys_package_manager "INSTALL" "git" "apt-get git | brew git | yum git | apk git"
 }
-function __sys_remove_git() {
+__sys_remove_git() {
 	__sys_package_manager "REMOVE" "git" "apt-get git | brew git | yum git | apk git"
 }
 

@@ -3,7 +3,7 @@ _libsvm_INCLUDED_=1
 
 # https://www.csie.ntu.edu.tw/~cjlin/
 
-function feature_libsvm() {
+feature_libsvm() {
 	FEAT_NAME=libsvm
 
 	FEAT_LIST_SCHEMA="3_2_1:source"
@@ -14,7 +14,7 @@ function feature_libsvm() {
 
 }
 
-function feature_libsvm_3_2_1() {
+feature_libsvm_3_2_1() {
 	FEAT_VERSION=3_2_1
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -38,7 +38,7 @@ function feature_libsvm_3_2_1() {
 }
 
 
-function feature_libsvm_install_source() {
+feature_libsvm_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

@@ -4,7 +4,7 @@ _paxutils_INCLUDED_=1
 # https://gitweb.gentoo.org/proj/pax-utils.git
 # https://github.com/gentoo/pax-utils/
 
-function feature_pax-utils() {
+feature_pax-utils() {
 	FEAT_NAME=pax-utils
 	FEAT_LIST_SCHEMA="1_1_6:source"
 	FEAT_DEFAULT_VERSION=1_1_6
@@ -12,7 +12,7 @@ function feature_pax-utils() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_pax-utils_1_1_6() {
+feature_pax-utils_1_1_6() {
 	FEAT_VERSION=1_1_6
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -36,7 +36,7 @@ function feature_pax-utils_1_1_6() {
 }
 
 
-function feature_pax-utils_install_source() {
+feature_pax-utils_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

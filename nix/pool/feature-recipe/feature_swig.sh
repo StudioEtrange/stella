@@ -2,7 +2,7 @@ if [ ! "$_swig_INCLUDED_" == "1" ]; then
 _swig_INCLUDED_=1
 
 
-function feature_swig() {
+feature_swig() {
 	FEAT_NAME=swig
 	FEAT_LIST_SCHEMA="3_0_10:source"
 	FEAT_DEFAULT_VERSION=3_0_10
@@ -10,7 +10,7 @@ function feature_swig() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_swig_3_0_10() {
+feature_swig_3_0_10() {
 	FEAT_VERSION=3_0_10
 
 	FEAT_SOURCE_DEPENDENCIES="pcre#8_36"
@@ -35,12 +35,12 @@ function feature_swig_3_0_10() {
 
 
 
-function feature_swig_link() {
+feature_swig_link() {
 	__link_feature_library "pcre#8_36" "GET_FOLDER _pcre NO_SET_FLAGS"
 }
 
 
-function feature_swig_install_source() {
+feature_swig_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

@@ -3,7 +3,7 @@ _kafka_INCLUDED_=1
 
 
 
-function feature_kafka() {
+feature_kafka() {
 	FEAT_NAME=kafka
 	FEAT_LIST_SCHEMA="0_9_0_1:binary"
 	FEAT_DEFAULT_VERSION=0_9_0_1
@@ -12,7 +12,7 @@ function feature_kafka() {
 }
 
 
-function feature_kafka_0_9_0_1() {
+feature_kafka_0_9_0_1() {
 	FEAT_VERSION=0_9_0_1
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -35,7 +35,7 @@ function feature_kafka_0_9_0_1() {
 
 }
 
-function feature_kafka_install_binary() {
+feature_kafka_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "STRIP"
 
 }

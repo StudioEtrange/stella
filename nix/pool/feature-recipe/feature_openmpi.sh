@@ -7,7 +7,7 @@ _openmpi_INCLUDED_=1
 
 # TODO link to stella libz
 
-function feature_openmpi() {
+feature_openmpi() {
 	FEAT_NAME=openmpi
 	FEAT_LIST_SCHEMA="1_10_3:source"
 	FEAT_DEFAULT_VERSION=1_10_3
@@ -15,7 +15,7 @@ function feature_openmpi() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_openmpi_1_10_3() {
+feature_openmpi_1_10_3() {
 	FEAT_VERSION=1_10_3
 
 
@@ -40,13 +40,13 @@ function feature_openmpi_1_10_3() {
 }
 
 
-function feature_openmpi_link() {
+feature_openmpi_link() {
 	__link_feature_library "zlib#1_2_8"
   __link_feature_library "libevent#2_0_22" "GET_FOLDER _libevent NO_SET_FLAGS"
 	__link_feature_library "oracle-jdk#8u91" "GET_FOLDER _jdk NO_SET_FLAGS"
 }
 
-function feature_openmpi_install_source() {
+feature_openmpi_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

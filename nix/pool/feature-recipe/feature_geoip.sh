@@ -4,7 +4,7 @@ _geoip_INCLUDED_=1
 # database file : http://dev.maxmind.com/geoip/legacy/geolite/
 # auto update database file : http://dev.maxmind.com/geoip/geoipupdate/
 
-function feature_geoip() {
+feature_geoip() {
 	FEAT_NAME=geoip
 
 	FEAT_LIST_SCHEMA="1_6_9:source"
@@ -15,7 +15,7 @@ function feature_geoip() {
 
 }
 
-function feature_geoip_1_6_9() {
+feature_geoip_1_6_9() {
 	FEAT_VERSION=1_6_9
 
 
@@ -40,7 +40,7 @@ function feature_geoip_1_6_9() {
 }
 
 
-function feature_geoip_install_source() {
+feature_geoip_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

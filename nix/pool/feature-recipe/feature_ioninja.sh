@@ -3,7 +3,7 @@ _ioninja_INCLUDED_=1
 
 
 
-function feature_ioninja() {
+feature_ioninja() {
 	FEAT_NAME=ioninja
 	FEAT_LIST_SCHEMA="3_6_5:binary"
 	FEAT_DEFAULT_VERSION=3_6_5
@@ -13,7 +13,7 @@ function feature_ioninja() {
 
 
 
-function feature_ioninja_3_6_5() {
+feature_ioninja_3_6_5() {
 	FEAT_VERSION=3_6_5
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -44,7 +44,7 @@ function feature_ioninja_3_6_5() {
 
 }
 
-function feature_ioninja_install_binary() {
+feature_ioninja_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE"
 }
 

@@ -1,7 +1,7 @@
 if [ ! "$_EXPORTMODE_INCLUDED_" == "1" ]; then
 _EXPORTMODE_INCLUDED_=1
 
-function feature_mode-export() {
+feature_mode-export() {
 	FEAT_NAME="mode-export"
 	FEAT_LIST_SCHEMA="1"
 	FEAT_DEFAULT_VERSION=1
@@ -10,7 +10,7 @@ function feature_mode-export() {
 	FEAT_BUNDLE=MERGE_LIST
 }
 
-function feature_mode-export_1() {
+feature_mode-export_1() {
 	FEAT_VERSION=1
 
 	FEAT_SOURCE_DEPENDENCIES=

@@ -2,7 +2,7 @@
 if [ ! "$_kubectl_INCLUDED_" == "1" ]; then
 _kubectl_INCLUDED_=1
 
-function feature_kubectl() {
+feature_kubectl() {
 	FEAT_NAME=kubectl
 	FEAT_LIST_SCHEMA="0_14_0:binary"
 	FEAT_DEFAULT_VERSION=0_14_0
@@ -10,7 +10,7 @@ function feature_kubectl() {
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
-function feature_kubectl_0_14_0() {
+feature_kubectl_0_14_0() {
 	FEAT_VERSION=0_14_0
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -43,7 +43,7 @@ function feature_kubectl_0_14_0() {
 
 
 
-function feature_kubectl_install_binary() {
+feature_kubectl_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "STRIP"
 }
 

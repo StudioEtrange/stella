@@ -4,7 +4,7 @@ _BOOSTBUILD_INCLUDED_=1
 # http://www.boost.org/build/
 # tool to build c++ project
 
-function feature_boost-build() {
+feature_boost-build() {
 	FEAT_NAME=boost-build
 	FEAT_LIST_SCHEMA="2014_10:source"
 	FEAT_DEFAULT_VERSION=2014_10
@@ -12,7 +12,7 @@ function feature_boost-build() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_boost-build_2014_10() {
+feature_boost-build_2014_10() {
 	FEAT_VERSION=2014_10
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -37,7 +37,7 @@ function feature_boost-build_2014_10() {
 
 
 
-function feature_boost-build_install_source() {
+feature_boost-build_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

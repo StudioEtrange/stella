@@ -2,7 +2,7 @@ if [ ! "$_protobufpythoncpp_INCLUDED_" == "1" ]; then
 _protobufpythoncpp_INCLUDED_=1
 
 
-function feature_protobuf-pythoncpp() {
+feature_protobuf-pythoncpp() {
 	FEAT_NAME=protobuf-pythoncpp
 
 	FEAT_LIST_SCHEMA="3_1_0:source 3_0_0:source"
@@ -13,7 +13,7 @@ function feature_protobuf-pythoncpp() {
 
 }
 
-function feature_protobuf-pythoncpp_3_1_0() {
+feature_protobuf-pythoncpp_3_1_0() {
 	FEAT_VERSION=3_1_0
 
 
@@ -38,7 +38,7 @@ function feature_protobuf-pythoncpp_3_1_0() {
 }
 
 
-function feature_protobuf-pythoncpp_3_0_0() {
+feature_protobuf-pythoncpp_3_0_0() {
 	FEAT_VERSION=3_0_0
 
 
@@ -63,16 +63,16 @@ function feature_protobuf-pythoncpp_3_0_0() {
 }
 
 # need for old version which have a broken gmock link
-function feature_protobuf-pythoncpp_dep_gmock1_7_0() {
+feature_protobuf-pythoncpp_dep_gmock1_7_0() {
 	__get_resource "gmock" "https://github.com/google/googletest/archive/release-1.7.0.tar.gz" "HTTP_ZIP" "$SRC_DIR/gmock" "DEST_ERASE STRIP FORCE_NAME gmock-release-1.7.0.tar.gz"
 }
 
-function feature_protobuf-pythoncpp_link() {
+feature_protobuf-pythoncpp_link() {
 	__link_feature_library "protobuf#$FEAT_VERSION" "GET_FOLDER _protobuf"
 	ln -s $_protobuf_ROOT/lib $SRC_DIR/src/.libs
 }
 
-function feature_protobuf-pythoncpp_install_source() {
+feature_protobuf-pythoncpp_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

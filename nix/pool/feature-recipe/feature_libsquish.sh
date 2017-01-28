@@ -1,7 +1,7 @@
 if [ ! "$_LIBSQUISH_INCLUDED_" == "1" ]; then
 _LIBSQUISH_INCLUDED_=1
 
-function feature_libsquish() {
+feature_libsquish() {
 	FEAT_NAME=libsquish
 	FEAT_LIST_SCHEMA="1_13:source"
 	FEAT_DEFAULT_VERSION=1_13
@@ -9,7 +9,7 @@ function feature_libsquish() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_libsquish_1_13() {
+feature_libsquish_1_13() {
 	FEAT_VERSION=1_13
 
 
@@ -35,7 +35,7 @@ function feature_libsquish_1_13() {
 
 
 
-function feature_libsquish_install_source() {
+feature_libsquish_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	

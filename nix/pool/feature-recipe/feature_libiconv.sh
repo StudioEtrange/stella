@@ -2,7 +2,7 @@ if [ ! "$_libiconv_INCLUDED_" == "1" ]; then
 _libiconv_INCLUDED_=1
 
 
-function feature_libiconv() {
+feature_libiconv() {
 	FEAT_NAME=libiconv
 	FEAT_LIST_SCHEMA="1_14:source"
 	FEAT_DEFAULT_VERSION=1_14
@@ -10,7 +10,7 @@ function feature_libiconv() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_libiconv_1_14() {
+feature_libiconv_1_14() {
 	FEAT_VERSION=1_14
 
 
@@ -36,7 +36,7 @@ function feature_libiconv_1_14() {
 
 
 
-function feature_libiconv_install_source() {
+feature_libiconv_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

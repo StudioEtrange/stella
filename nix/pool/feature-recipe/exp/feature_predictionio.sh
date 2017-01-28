@@ -23,7 +23,7 @@ _predictionio_INCLUDED_=1
 #   </property>
 # </configuration>
 
-function feature_predictionio() {
+feature_predictionio() {
 	FEAT_NAME=predictionio
 	FEAT_LIST_SCHEMA="0_9_6:binary"
 	FEAT_DEFAULT_VERSION=0_9_6
@@ -32,7 +32,7 @@ function feature_predictionio() {
 }
 
 
-function feature_predictionio_0_9_6() {
+feature_predictionio_0_9_6() {
 	FEAT_VERSION=0_9_6
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES="oracle-jdk#8u91 hbase#1_1_5 elasticsearch#1_7_3 spark#1_6_1_HADOOP_2_6"
@@ -56,7 +56,7 @@ function feature_predictionio_0_9_6() {
 }
 
 
-function feature_predictionio_install_binary() {
+feature_predictionio_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "STRIP"
 
 }

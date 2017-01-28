@@ -9,7 +9,7 @@ _OPENSSL_INCLUDED_=1
 # NOTE : On darwin openssl lib in lib/engines folder does not have LC_ID_DYLIB
 
 
-function feature_openssl() {
+feature_openssl() {
 	FEAT_NAME=openssl
 	FEAT_LIST_SCHEMA="1_0_2k:source 1_0_2d:source"
 	FEAT_DEFAULT_VERSION=1_0_2k
@@ -20,7 +20,7 @@ function feature_openssl() {
 
 
 
-function feature_openssl_1_0_2k() {
+feature_openssl_1_0_2k() {
 	FEAT_VERSION=1_0_2k
 
 	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8"
@@ -44,7 +44,7 @@ function feature_openssl_1_0_2k() {
 }
 
 
-function feature_openssl_1_0_2d() {
+feature_openssl_1_0_2d() {
 	FEAT_VERSION=1_0_2d
 
 	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8"
@@ -67,14 +67,14 @@ function feature_openssl_1_0_2d() {
 
 }
 
-function feature_openssl_link() {
+feature_openssl_link() {
 	# zlib dependencies
 	__link_feature_library "zlib#1_2_8" "LIBS_NAME z GET_FLAGS _zlib FORCE_DYNAMIC NO_SET_FLAGS"
 }
 
 
 
-function feature_openssl_install_source() {
+feature_openssl_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

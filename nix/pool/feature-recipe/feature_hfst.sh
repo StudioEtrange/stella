@@ -3,7 +3,7 @@ _hfst_INCLUDED_=1
 
 #http://wiki.apertium.org/wiki/Hfst#Building_and_installing_HFST
 #https://hfst.github.io/
-function feature_hfst() {
+feature_hfst() {
 	FEAT_NAME=hfst
 	FEAT_LIST_SCHEMA="3_9_2:source"
 	FEAT_DEFAULT_VERSION=3_9_2
@@ -11,7 +11,7 @@ function feature_hfst() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_hfst_3_9_2() {
+feature_hfst_3_9_2() {
 	FEAT_VERSION=3_9_2
 
 	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8"
@@ -34,13 +34,13 @@ function feature_hfst_3_9_2() {
 }
 
 
-function feature_hfst_link() {
+feature_hfst_link() {
 	#__link_feature_library "icu4c#55_1"
 	__link_feature_library "zlib#1_2_8"
 }
 
 
-function feature_hfst_install_source() {
+feature_hfst_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

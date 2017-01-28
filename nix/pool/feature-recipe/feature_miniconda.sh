@@ -13,7 +13,7 @@ _miniconda_INCLUDED_=1
 # to desactivate new python env :
 # deactivate test_env
 
-function feature_miniconda() {
+feature_miniconda() {
 	FEAT_NAME=miniconda
 	FEAT_LIST_SCHEMA="4_2_12_PYTHON3@x64:binary 4_2_12_PYTHON3@x86:binary 4_2_12_PYTHON2@x64:binary 4_2_12_PYTHON2@x86:binary 4_1_11_PYTHON2@x64:binary 4_1_11_PYTHON2@x86:binary 4_1_11_PYTHON3@x64:binary 4_1_11_PYTHON3@x86:binary"
 	FEAT_DEFAULT_VERSION=4_2_12_PYTHON2
@@ -22,7 +22,7 @@ function feature_miniconda() {
 }
 
 
-function feature_miniconda_4_2_12_PYTHON3() {
+feature_miniconda_4_2_12_PYTHON3() {
 	FEAT_VERSION=4_2_12_PYTHON3
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -63,7 +63,7 @@ function feature_miniconda_4_2_12_PYTHON3() {
 }
 
 
-function feature_miniconda_4_2_12_PYTHON2() {
+feature_miniconda_4_2_12_PYTHON2() {
 	FEAT_VERSION=4_2_12_PYTHON2
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -103,7 +103,7 @@ function feature_miniconda_4_2_12_PYTHON2() {
 
 }
 
-function feature_miniconda_4_1_11_PYTHON3() {
+feature_miniconda_4_1_11_PYTHON3() {
 	FEAT_VERSION=4_1_11_PYTHON3
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -144,7 +144,7 @@ function feature_miniconda_4_1_11_PYTHON3() {
 }
 
 
-function feature_miniconda_4_1_11_PYTHON2() {
+feature_miniconda_4_1_11_PYTHON2() {
 	FEAT_VERSION=4_1_11_PYTHON2
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -184,7 +184,7 @@ function feature_miniconda_4_1_11_PYTHON2() {
 
 }
 
-function feature_miniconda_install_binary() {
+feature_miniconda_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP"
 	cd "$FEAT_INSTALL_ROOT"
 	bash "$FEAT_BINARY_URL_FILENAME" -p $FEAT_INSTALL_ROOT -b -f

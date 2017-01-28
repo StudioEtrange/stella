@@ -8,7 +8,7 @@ _gcc_INCLUDED_=1
 # TODO do not work on DARWIN / but work on linux
 
 
-function feature_gcc() {
+feature_gcc() {
 	FEAT_NAME=gcc
 	FEAT_LIST_SCHEMA="4_8_2:source"
 	FEAT_DEFAULT_VERSION=4_8_2
@@ -16,7 +16,7 @@ function feature_gcc() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_gcc_4_8_2() {
+feature_gcc_4_8_2() {
 	FEAT_VERSION=4_8_2
 
 
@@ -45,7 +45,7 @@ function feature_gcc_4_8_2() {
 }
 #http://llvm.org/releases/3.9.0/test-suite-3.9.0.src.tar.xz \
 
-function feature_gcc_add_resource() {
+feature_gcc_add_resource() {
 	local _target_folder=
 	for t in $FEAT_ADD_RESOURCES; do
 		if [ "$_target_folder" == "" ]; then
@@ -57,7 +57,7 @@ function feature_gcc_add_resource() {
 	done
 }
 
-function feature_gcc_install_source() {
+feature_gcc_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

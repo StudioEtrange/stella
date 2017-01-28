@@ -2,7 +2,7 @@ if [ ! "$_FIGLET_INCLUDED_" == "1" ]; then
 _FIGLET_INCLUDED_=1
 
 
-function feature_figlet() {
+feature_figlet() {
 	FEAT_NAME=figlet
 	FEAT_LIST_SCHEMA="2_2_5:source"
 	FEAT_DEFAULT_VERSION=2_2_5
@@ -10,7 +10,7 @@ function feature_figlet() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_figlet_2_2_5() {
+feature_figlet_2_2_5() {
 	FEAT_VERSION=2_2_5
 	
 	FEAT_SOURCE_DEPENDENCIES=
@@ -34,7 +34,7 @@ function feature_figlet_2_2_5() {
 }
 
 
-function feature_figlet_install_source() {
+feature_figlet_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	

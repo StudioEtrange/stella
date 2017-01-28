@@ -3,7 +3,7 @@ _liblinear_INCLUDED_=1
 
 # https://www.csie.ntu.edu.tw/~cjlin/
 
-function feature_liblinear() {
+feature_liblinear() {
 	FEAT_NAME=liblinear
 
 	FEAT_LIST_SCHEMA="2_1_0:source"
@@ -14,7 +14,7 @@ function feature_liblinear() {
 
 }
 
-function feature_liblinear_2_1_0() {
+feature_liblinear_2_1_0() {
 	FEAT_VERSION=2_1_0
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -38,7 +38,7 @@ function feature_liblinear_2_1_0() {
 }
 
 
-function feature_liblinear_install_source() {
+feature_liblinear_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

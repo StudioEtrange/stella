@@ -3,7 +3,7 @@ _FOMA_INCLUDED_=1
 
 
 
-function feature_foma() {
+feature_foma() {
 	FEAT_NAME=foma
 	FEAT_LIST_SCHEMA="0_9_18:binary"
 	FEAT_DEFAULT_VERSION=0_9_18
@@ -11,7 +11,7 @@ function feature_foma() {
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
-function feature_foma_0_9_18() {
+feature_foma_0_9_18() {
 	FEAT_VERSION=0_9_18
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -42,7 +42,7 @@ function feature_foma_0_9_18() {
 
 }
 
-function feature_foma_install_binary() {
+feature_foma_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP"
 
 }

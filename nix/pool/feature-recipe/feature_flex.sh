@@ -5,7 +5,7 @@ _flex_INCLUDED_=1
 # https://github.com/NixOS/nixpkgs/tree/master/pkgs/development/tools/parsing/flex
 
 
-function feature_flex() {
+feature_flex() {
 	FEAT_NAME=flex
 
 	FEAT_LIST_SCHEMA="2_6_0:source"
@@ -14,7 +14,7 @@ function feature_flex() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_flex_2_6_0() {
+feature_flex_2_6_0() {
 	FEAT_VERSION=2_6_0
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -37,7 +37,7 @@ function feature_flex_2_6_0() {
 
 }
 
-function feature_flex_install_source() {
+feature_flex_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

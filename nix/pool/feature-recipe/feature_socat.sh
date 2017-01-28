@@ -3,7 +3,7 @@ _SOCAT_INCLUDED_=1
 
 # OK
 
-function feature_socat() {
+feature_socat() {
 	FEAT_NAME=socat
 	FEAT_LIST_SCHEMA="1_7_3_0:source"
 	FEAT_DEFAULT_VERSION=1_7_3_0
@@ -11,7 +11,7 @@ function feature_socat() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_socat_1_7_3_0() {
+feature_socat_1_7_3_0() {
 	FEAT_VERSION=1_7_3_0
 
 	FEAT_SOURCE_DEPENDENCIES="openssl#1_0_2d"
@@ -34,11 +34,11 @@ function feature_socat_1_7_3_0() {
 
 }
 
-function feature_socat_link() {
+feature_socat_link() {
 	__link_feature_library "openssl#1_0_2d"
 }
 
-function feature_socat_install_source() {
+feature_socat_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	

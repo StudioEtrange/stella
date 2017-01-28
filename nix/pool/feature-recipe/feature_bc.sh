@@ -3,7 +3,7 @@ _bc_INCLUDED_=1
 
 
 # http://www.gnu.org/software/bc/bc.html
-function feature_bc() {
+feature_bc() {
 	FEAT_NAME=bc
 
 	FEAT_LIST_SCHEMA="1_06_95:source"
@@ -14,7 +14,7 @@ function feature_bc() {
 
 }
 
-function feature_bc_1_06_95() {
+feature_bc_1_06_95() {
 	FEAT_VERSION=1_06_95
 
 
@@ -40,7 +40,7 @@ function feature_bc_1_06_95() {
 
 
 
-function feature_bc_install_source() {
+feature_bc_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

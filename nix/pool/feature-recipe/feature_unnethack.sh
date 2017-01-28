@@ -4,7 +4,7 @@ _UNNETHACK_INCLUDED_=1
 # OK
 
 
-function feature_unnethack() {
+feature_unnethack() {
 	FEAT_NAME=unnethack
 	FEAT_LIST_SCHEMA="5_1_0:source"
 	FEAT_DEFAULT_VERSION=5_1_0
@@ -13,7 +13,7 @@ function feature_unnethack() {
 }
 
 
-function feature_unnethack_5_1_0() {
+feature_unnethack_5_1_0() {
 	FEAT_VERSION=unnethack_5_1_0
 	
 	# depend on ncurses
@@ -40,7 +40,7 @@ function feature_unnethack_5_1_0() {
 
 
 
-function feature_unnethack_install_source() {
+feature_unnethack_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	

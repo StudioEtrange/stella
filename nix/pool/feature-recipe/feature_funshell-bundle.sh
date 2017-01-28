@@ -3,7 +3,7 @@ _FUNSHELL_INCLUDED_=1
 
 # TODO create recipes for each tool
 # http://www.binarytides.com/linux-fun-commands/
-function feature_funshell-bundle() {
+feature_funshell-bundle() {
 	FEAT_NAME="funshell-bundle"
 	FEAT_LIST_SCHEMA="1_0"
 	FEAT_DEFAULT_VERSION=1_0
@@ -12,7 +12,7 @@ function feature_funshell-bundle() {
 	FEAT_BUNDLE=LIST
 }
 
-function feature_funshell-bundle_1_0() {
+feature_funshell-bundle_1_0() {
 	FEAT_VERSION=1_0
 	
 	FEAT_SOURCE_DEPENDENCIES=
@@ -28,7 +28,7 @@ function feature_funshell-bundle_1_0() {
 }
 
 
-function feature_funshell-bundle_print() {
+feature_funshell-bundle_print() {
 	
 	figlet " ** Fun     Shell **"
 	echo " -- a collection of amazing shell tools."

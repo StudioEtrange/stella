@@ -3,7 +3,7 @@ _ELASTICSEARCH_INCLUDED_=1
 
 
 
-function feature_elasticsearch() {
+feature_elasticsearch() {
 	FEAT_NAME=elasticsearch
 	FEAT_LIST_SCHEMA="2_3_5:binary 1_4_4:binary 1_5_0:binary 1_5_2:binary 1_6_0:binary 1_6_2:binary 1_7_3:binary 2_0_0:binary 2_0_2:binary 2_1_1:binary"
 	FEAT_DEFAULT_VERSION=2_1_1
@@ -12,13 +12,13 @@ function feature_elasticsearch() {
 }
 
 
-function feature_elasticsearch_env() {
+feature_elasticsearch_env() {
 	ES_HOME=$FEAT_INSTALL_ROOT
 	export ES_HOME=$FEAT_INSTALL_ROOT
 }
 
 
-function feature_elasticsearch_2_3_5() {
+feature_elasticsearch_2_3_5() {
 	FEAT_VERSION=2_3_5
 	# TODO NEED JDK
 	FEAT_SOURCE_DEPENDENCIES=
@@ -41,7 +41,7 @@ function feature_elasticsearch_2_3_5() {
 
 }
 
-function feature_elasticsearch_2_1_1() {
+feature_elasticsearch_2_1_1() {
 	FEAT_VERSION=2_1_1
 	# TODO NEED JDK
 	FEAT_SOURCE_DEPENDENCIES=
@@ -64,7 +64,7 @@ function feature_elasticsearch_2_1_1() {
 
 }
 
-function feature_elasticsearch_2_0_2() {
+feature_elasticsearch_2_0_2() {
 	FEAT_VERSION=2_0_2
 	# TODO NEED JDK
 	FEAT_SOURCE_DEPENDENCIES=
@@ -88,7 +88,7 @@ function feature_elasticsearch_2_0_2() {
 }
 
 
-function feature_elasticsearch_2_0_0() {
+feature_elasticsearch_2_0_0() {
 	FEAT_VERSION=2_0_0
 	# TODO NEED JDK
 	FEAT_SOURCE_DEPENDENCIES=
@@ -112,7 +112,7 @@ function feature_elasticsearch_2_0_0() {
 }
 
 
-function feature_elasticsearch_1_7_3() {
+feature_elasticsearch_1_7_3() {
 	FEAT_VERSION=1_7_3
 	# TODO NEED JDK
 	FEAT_SOURCE_DEPENDENCIES=
@@ -135,7 +135,7 @@ function feature_elasticsearch_1_7_3() {
 
 }
 
-function feature_elasticsearch_1_6_2() {
+feature_elasticsearch_1_6_2() {
 	FEAT_VERSION=1_6_2
 	# TODO NEED JDK
 	FEAT_SOURCE_DEPENDENCIES=
@@ -158,7 +158,7 @@ function feature_elasticsearch_1_6_2() {
 
 }
 
-function feature_elasticsearch_1_4_4() {
+feature_elasticsearch_1_4_4() {
 	FEAT_VERSION=1_4_4
 	# TODO NEED JDK 7 >= 7.60
 	FEAT_SOURCE_DEPENDENCIES=
@@ -182,7 +182,7 @@ function feature_elasticsearch_1_4_4() {
 }
 
 
-function feature_elasticsearch_1_5_0() {
+feature_elasticsearch_1_5_0() {
 	FEAT_VERSION=1_5_0
 	# TODO NEED JDK 7 >= 7.60
 	FEAT_SOURCE_DEPENDENCIES=
@@ -206,7 +206,7 @@ function feature_elasticsearch_1_5_0() {
 }
 
 
-function feature_elasticsearch_1_5_2() {
+feature_elasticsearch_1_5_2() {
 	FEAT_VERSION=1_5_2
 	# TODO NEED JDK 7 >= 7.60
 	FEAT_SOURCE_DEPENDENCIES=
@@ -231,7 +231,7 @@ function feature_elasticsearch_1_5_2() {
 
 
 
-function feature_elasticsearch_1_6_0() {
+feature_elasticsearch_1_6_0() {
 	FEAT_VERSION=1_6_0
 	# NEED JDK 7 >= 7.60
 	FEAT_SOURCE_DEPENDENCIES=
@@ -254,7 +254,7 @@ function feature_elasticsearch_1_6_0() {
 
 }
 
-function feature_elasticsearch_install_binary() {
+feature_elasticsearch_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "STRIP"
 
 

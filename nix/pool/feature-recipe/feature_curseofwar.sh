@@ -1,7 +1,7 @@
 if [ ! "$_CURSEOFWAR_INCLUDED_" == "1" ]; then
 _CURSEOFWAR_INCLUDED_=1
 
-function feature_curseofwar() {
+feature_curseofwar() {
 	FEAT_NAME=curseofwar
 	FEAT_LIST_SCHEMA="1_2_0:source"
 	FEAT_DEFAULT_VERSION=1_2_0
@@ -12,7 +12,7 @@ function feature_curseofwar() {
 
 
 
-function feature_curseofwar_1_2_0() {
+feature_curseofwar_1_2_0() {
 	FEAT_VERSION=1_2_0
 
 	FEAT_SOURCE_DEPENDENCIES="sdl#1_2_15 ncurses#6_0"
@@ -35,7 +35,7 @@ function feature_curseofwar_1_2_0() {
 
 }
 
-function feature_curseofwar_link() {
+feature_curseofwar_link() {
 	__link_feature_library "sdl#1_2_15"
 	__link_feature_library "ncurses#6_0"
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="$AUTO_INSTALL_CONF_FLAG_POSTFIX -DCURSES_NEED_NCURSES=TRUE"
@@ -46,7 +46,7 @@ function feature_curseofwar_link() {
 
 
 
-function feature_curseofwar_install_source() {
+feature_curseofwar_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

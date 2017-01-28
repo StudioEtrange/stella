@@ -7,7 +7,7 @@ _hadoop_INCLUDED_=1
 # Include Hadoop Common, YARN service, HDFS service and MapReduce framework
 
 
-function feature_hadoop() {
+feature_hadoop() {
 	FEAT_NAME=hadoop
 	FEAT_LIST_SCHEMA="2_7_2:binary 2_6_4:binary"
 	FEAT_DEFAULT_VERSION=2_7_2
@@ -16,7 +16,7 @@ function feature_hadoop() {
 }
 
 
-function feature_hadoop_2_7_2() {
+feature_hadoop_2_7_2() {
 	FEAT_VERSION=2_7_2
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -39,7 +39,7 @@ function feature_hadoop_2_7_2() {
 
 }
 
-function feature_hadoop_2_6_4() {
+feature_hadoop_2_6_4() {
 	FEAT_VERSION=2_6_4
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -63,7 +63,7 @@ function feature_hadoop_2_6_4() {
 }
 
 
-function feature_hadoop_install_binary() {
+feature_hadoop_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "STRIP"
 }
 

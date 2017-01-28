@@ -4,7 +4,7 @@ _GOBUILD_INCLUDED_=1
 
 
 
-function feature_go-build-chain() {
+feature_go-build-chain() {
 	FEAT_NAME="go-build-chain"
 	FEAT_LIST_SCHEMA="1_4_3 1_5_3"
 	FEAT_DEFAULT_VERSION=1_5_3
@@ -13,7 +13,7 @@ function feature_go-build-chain() {
 	FEAT_BUNDLE=NESTED
 }
 
-function feature_go-build-chain_1_5_3() {
+feature_go-build-chain_1_5_3() {
 	FEAT_VERSION=1_5_3
 	
 	# need gcc
@@ -32,7 +32,7 @@ function feature_go-build-chain_1_5_3() {
 }
 
 
-function feature_go-build-chain_1_4_3() {
+feature_go-build-chain_1_4_3() {
 	FEAT_VERSION=1_4_3
 	
 	# need gcc
@@ -50,7 +50,7 @@ function feature_go-build-chain_1_4_3() {
 	BUILDCHAIN_GO_VERSION="1.4.3"
 }
 
-function feature_go_buildchain_setenv() {
+feature_go_buildchain_setenv() {
 	GOPATH="$FEAT_INSTALL_ROOT/_WORKSPACE_"
 	GOROOT="$FEAT_INSTALL_ROOT/go"
 
@@ -61,7 +61,7 @@ function feature_go_buildchain_setenv() {
 	echo "      godep restore"
 }
 
-function feature_go_prepare_buildchain() {
+feature_go_prepare_buildchain() {
 	PATH="$FEAT_SEARCH_PATH:$PATH"
 
 

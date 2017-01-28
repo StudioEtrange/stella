@@ -3,7 +3,7 @@ _luajit_INCLUDED_=1
 
 # NOTE : Do not need lua
 
-function feature_luajit() {
+feature_luajit() {
 	FEAT_NAME=luajit
 	FEAT_LIST_SCHEMA="2_0_4:source"
 	FEAT_DEFAULT_VERSION=2_0_4
@@ -11,7 +11,7 @@ function feature_luajit() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_luajit_2_0_4() {
+feature_luajit_2_0_4() {
 	FEAT_VERSION=2_0_4
 
 
@@ -37,7 +37,7 @@ function feature_luajit_2_0_4() {
 
 
 
-function feature_luajit_install_source() {
+feature_luajit_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	

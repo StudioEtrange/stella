@@ -5,7 +5,7 @@ _svn_INCLUDED_=1
 # depend on zlib, apr, apr-util, expat, sqllite3, libsasl2
 
 
-function feature_svn() {
+feature_svn() {
 	FEAT_NAME=svn
 	FEAT_LIST_SCHEMA="1_8_14:source"
 	FEAT_DEFAULT_VERSION=1_8_14
@@ -13,7 +13,7 @@ function feature_svn() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_svn_1_8_14() {
+feature_svn_1_8_14() {
 	FEAT_VERSION=1_8_14
 	
 	FEAT_SOURCE_DEPENDENCIES=
@@ -36,7 +36,7 @@ function feature_svn_1_8_14() {
 
 }
 
-function feature_svn_install_source() {
+feature_svn_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

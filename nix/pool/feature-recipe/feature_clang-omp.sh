@@ -13,7 +13,7 @@ _clangomp_INCLUDED_=1
 
 
 # Need python to build
-function feature_clang-omp() {
+feature_clang-omp() {
 	FEAT_NAME=clang-omp
 	FEAT_LIST_SCHEMA="3_9_0:source"
 	FEAT_DEFAULT_VERSION=3_9_0
@@ -21,7 +21,7 @@ function feature_clang-omp() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_clang-omp_3_9_0() {
+feature_clang-omp_3_9_0() {
 	FEAT_VERSION=3_9_0
 
 
@@ -52,7 +52,7 @@ function feature_clang-omp_3_9_0() {
 }
 #http://llvm.org/releases/3.9.0/test-suite-3.9.0.src.tar.xz \
 
-function feature_clang-omp_add_resource() {
+feature_clang-omp_add_resource() {
 	__get_resource "$FEAT_NAME" "$FEAT_ADD_RESOURCES_CLANG" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR/llvm/tools/clang" "DEST_ERASE STRIP"
 	__get_resource "$FEAT_NAME" "$FEAT_ADD_RESOURCES_CLANG_TOOLS" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR/llvm/tools/clang/tools/extra" "DEST_ERASE STRIP"
 
@@ -70,7 +70,7 @@ function feature_clang-omp_add_resource() {
 
 }
 
-function feature_clang-omp_install_source() {
+feature_clang-omp_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

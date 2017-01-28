@@ -16,9 +16,9 @@ fi
 
 
 # Install stella in standalone ------------------
-function standalone() {
-	
-	[ "$PROVIDED_PATH" == "" ] && PROVIDED_PATH=$STELLA_CURRENT_RUNNING_DIR/stella	
+standalone() {
+
+	[ "$PROVIDED_PATH" == "" ] && PROVIDED_PATH=$STELLA_CURRENT_RUNNING_DIR/stella
 
 	_STELLA_INSTALL_PATH=$(___rel_to_abs_path "$PROVIDED_PATH" "$STELLA_CURRENT_RUNNING_DIR")
 
@@ -32,7 +32,7 @@ function standalone() {
 
 
 # Bootstrap a stella project ------------------
-function bootstrap() {
+bootstrap() {
 
 	IS_STELLA_LINK_FILE="FALSE"
 	IS_STELLA_LINKED="FALSE"
@@ -57,7 +57,7 @@ function bootstrap() {
 	if [ "$IS_STELLA_LINKED" == "TRUE" ]; then
 		echo "** This app/project is linked to a STELLA installation located in $STELLA_ROOT"
 		source "$STELLA_ROOT/conf.sh"
-		
+
 	else
 
 		if [ "$IS_STELLA_LINK_FILE" == "TRUE" ]; then
@@ -72,7 +72,7 @@ function bootstrap() {
 			__get_stella  "$_STELLA_INSTALL_PATH" "$STELLA_DEP_FLAVOUR" "$STELLA_DEP_VERSION" "$_STELLA_INSTALL_PATH"
 			IS_STELLA_JUST_INSTALLED="TRUE"
 		fi
-		
+
 		source "$_STELLA_INSTALL_PATH/conf.sh"
 
 	fi
@@ -89,7 +89,7 @@ function bootstrap() {
 
 # VARIOUS FUNCTION ------------------
 
-function ___rel_to_abs_path() {
+___rel_to_abs_path() {
 	local _rel_path=$1
 	local _abs_root_path=$2
 
@@ -119,7 +119,7 @@ function ___rel_to_abs_path() {
 	esac
 }
 
-function __get_stella() {
+__get_stella() {
 	local _path=$1
 	# STABLE or DEV
 	local _flavour=$2
@@ -148,11 +148,11 @@ function __get_stella() {
 	fi
 
 	if [ "$_flavour" == "STABLE" ]; then
-		mkdir -p "$_path" 
+		mkdir -p "$_path"
 		[ "$_ver" == "LATEST" ] && _ver=latest
 
 		curl -L -o "$_path"/$stella-all-"$_ver".gz.sh $__STELLA_URL/dist/$_ver/stella-all-"$_ver".tar.gz.run
-		if [ -f "$_path"/$stella-all-"$_ver".gz.run ]; then		
+		if [ -f "$_path"/$stella-all-"$_ver".gz.run ]; then
 			chmod +x "$_path"/$stella-all-"$_ver".gz.run
 			./"$_path"/$stella-all-"$_ver".gz.run
 			rm -f "$_path"/$stella-all-"$_ver".gz.run
@@ -177,5 +177,3 @@ case $ACTION in
 		standalone
 		;;
 esac
-
-

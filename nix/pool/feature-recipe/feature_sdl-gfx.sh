@@ -8,7 +8,7 @@ _sdlgfx_INCLUDED_=1
 # sdl 2.x ==> sdl-gfx 1_0_1
 # sdl 1.2.x ==> sdl-gfx 2_0_25
 
-function feature_sdl-gfx() {
+feature_sdl-gfx() {
 	FEAT_NAME=sdl-gfx
 	FEAT_LIST_SCHEMA="1_0_1:source 2_0_25:source"
 	FEAT_DEFAULT_VERSION=1_0_1
@@ -19,7 +19,7 @@ function feature_sdl-gfx() {
 
 
 
-function feature_sdl-gfx_1_0_1() {
+feature_sdl-gfx_1_0_1() {
 	FEAT_VERSION=1_0_1
 	
 	FEAT_SOURCE_DEPENDENCIES="sdl#2_0_3"
@@ -42,7 +42,7 @@ function feature_sdl-gfx_1_0_1() {
 	
 }
 
-function feature_sdl-gfx_2_0_25() {
+feature_sdl-gfx_2_0_25() {
 	FEAT_VERSION=2_0_25
 	
 	FEAT_SOURCE_DEPENDENCIES="sdl#1_2_15"
@@ -67,20 +67,20 @@ function feature_sdl-gfx_2_0_25() {
 
 
 
-function feature_sdl-gfx_link_sdl1() {
+feature_sdl-gfx_link_sdl1() {
 	__link_feature_library "sdl#1_2_15" "GET_FOLDER _sdl1 FORCE_INCLUDE_FOLDER include/SDL NO_SET_FLAGS"
 
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="$AUTO_INSTALL_CONF_FLAG_POSTFIX --with-sdl-prefix=$_sdl1_ROOT"
 }
 
-function feature_sdl-gfx_link_sdl2() {
+feature_sdl-gfx_link_sdl2() {
 	__link_feature_library "sdl#2_0_3" "GET_FOLDER _sdl2 FORCE_INCLUDE_FOLDER include/SDL NO_SET_FLAGS"
 
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="$AUTO_INSTALL_CONF_FLAG_POSTFIX --with-sdl-prefix=$_sdl2_ROOT"
 }
 
 
-function feature_sdl-gfx_install_source() {
+feature_sdl-gfx_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

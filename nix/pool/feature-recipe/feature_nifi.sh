@@ -4,7 +4,7 @@ _nifi_INCLUDED_=1
 
 
 
-function feature_nifi() {
+feature_nifi() {
 
 	FEAT_NAME=nifi
 	FEAT_LIST_SCHEMA="0_3_0:binary"
@@ -13,7 +13,7 @@ function feature_nifi() {
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
-function feature_nifi_0_3_0() {
+feature_nifi_0_3_0() {
 	FEAT_VERSION=0_3_0
 	
 	FEAT_SOURCE_DEPENDENCIES=
@@ -39,7 +39,7 @@ function feature_nifi_0_3_0() {
 
 
 # -----------------------------------------
-function feature_nifi_install_binary() {
+feature_nifi_install_binary() {
 	
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "STRIP"
 

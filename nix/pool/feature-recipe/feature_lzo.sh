@@ -4,7 +4,7 @@ _LZO_INCLUDED_=1
 
 
 
-function feature_lzo() {
+feature_lzo() {
 	FEAT_NAME=lzo
 	FEAT_LIST_SCHEMA="2_09:source"
 	FEAT_DEFAULT_VERSION=2_09
@@ -12,7 +12,7 @@ function feature_lzo() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_lzo_2_09() {
+feature_lzo_2_09() {
 	FEAT_VERSION=2_09
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -36,7 +36,7 @@ function feature_lzo_2_09() {
 
 
 
-function feature_lzo_install_source() {
+feature_lzo_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	

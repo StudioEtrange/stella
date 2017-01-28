@@ -6,7 +6,7 @@ _lddtreesh_INCLUDED_=1
 
 # https://gitweb.gentoo.org/proj/lddtree.git
 
-function feature_lddtree() {
+feature_lddtree() {
 	FEAT_NAME=lddtree
 	FEAT_LIST_SCHEMA="SNAPSHOT:source SNAPSHOT-SE:source"
 	FEAT_DEFAULT_VERSION=SNAPSHOT-SE
@@ -15,7 +15,7 @@ function feature_lddtree() {
 }
 
 
-function feature_lddtree_SNAPSHOT-SE() {
+feature_lddtree_SNAPSHOT-SE() {
 	FEAT_VERSION=SNAPSHOT-SE
 
 	FEAT_SOURCE_DEPENDENCIES=pax-utils
@@ -38,7 +38,7 @@ function feature_lddtree_SNAPSHOT-SE() {
 
 }
 
-function feature_lddtree_SNAPSHOT() {
+feature_lddtree_SNAPSHOT() {
 	FEAT_VERSION=SNAPSHOT
 
 	FEAT_SOURCE_DEPENDENCIES=pax-utils
@@ -61,7 +61,7 @@ function feature_lddtree_SNAPSHOT() {
 
 }
 
-function feature_lddtree_install_source() {
+feature_lddtree_install_source() {
 
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE"

@@ -2,7 +2,7 @@ if [ ! "$_rtlsdr_INCLUDED_" == "1" ]; then
 _rtlsdr_INCLUDED_=1
 
 
-function feature_rtl-sdr() {
+feature_rtl-sdr() {
 	FEAT_NAME=rtl-sdr
 	FEAT_LIST_SCHEMA="SNAPSHOT:source 0_5_3:source"
 	FEAT_DEFAULT_VERSION=SNAPSHOT
@@ -13,7 +13,7 @@ function feature_rtl-sdr() {
 
 
 
-function feature_rtl-sdr_SNAPSHOT() {
+feature_rtl-sdr_SNAPSHOT() {
 	FEAT_VERSION=SNAPSHOT
 
 
@@ -39,7 +39,7 @@ function feature_rtl-sdr_SNAPSHOT() {
 }
 
 
-function feature_rtl-sdr_0_5_3() {
+feature_rtl-sdr_0_5_3() {
 	FEAT_VERSION=0_5_3
 
 
@@ -64,13 +64,13 @@ function feature_rtl-sdr_0_5_3() {
 }
 
 
-function feature_rtl-sdr_link() {
+feature_rtl-sdr_link() {
 	__link_feature_library "libusb" "FORCE_DYNAMIC USE_PKG_CONFIG"
 
 }
 
 
-function feature_rtl-sdr_install_source() {
+feature_rtl-sdr_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

@@ -3,7 +3,7 @@ _hbase_INCLUDED_=1
 
 # doc : https://hbase.apache.org/book.html
 
-function feature_hbase() {
+feature_hbase() {
 	FEAT_NAME=hbase
 	FEAT_LIST_SCHEMA="1_2_1:binary 1_1_5:binary"
 	FEAT_DEFAULT_VERSION=1_1_5
@@ -12,7 +12,7 @@ function feature_hbase() {
 }
 
 
-function feature_hbase_1_2_1() {
+feature_hbase_1_2_1() {
 	FEAT_VERSION=1_2_1
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES="oracle-jdk"
@@ -35,7 +35,7 @@ function feature_hbase_1_2_1() {
 
 }
 
-function feature_hbase_1_1_5() {
+feature_hbase_1_1_5() {
 	FEAT_VERSION=1_1_5
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES="oracle-jdk#8u91"
@@ -59,7 +59,7 @@ function feature_hbase_1_1_5() {
 }
 
 
-function feature_hbase_install_binary() {
+feature_hbase_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "STRIP"
 
 }

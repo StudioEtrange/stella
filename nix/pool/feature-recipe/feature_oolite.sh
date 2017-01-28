@@ -5,7 +5,7 @@ _oolite_INCLUDED_=1
 # https://github.com/OoliteProject/oolite
 
 # need gnustep-make https://github.com/Homebrew/homebrew/blob/master/Library/Formula/gnustep-make.rb
-function feature_oolite() {
+feature_oolite() {
 	FEAT_NAME=oolite
 
 	FEAT_LIST_SCHEMA="1_82:source"
@@ -16,7 +16,7 @@ function feature_oolite() {
 
 }
 
-function feature_oolite_1_82() {
+feature_oolite_1_82() {
 	FEAT_VERSION=1_82
 
 
@@ -41,7 +41,7 @@ function feature_oolite_1_82() {
 }
 
 
-function feature_oolite_install_source() {
+feature_oolite_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	

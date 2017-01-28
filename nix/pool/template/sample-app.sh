@@ -4,7 +4,7 @@ _CURRENT_RUNNING_DIR="$( cd "$( dirname "." )" && pwd )"
 source $_CURRENT_FILE_DIR/stella-link.sh include
 
 
-function usage() {
+usage() {
 	echo "USAGE :"
 	echo "----------------"
 	echo "o-- foo management :"
@@ -43,7 +43,7 @@ if [ "$DOMAIN" == "env" ]; then
 		$STELLA_API get_features
 
 	fi
-	
+
 	if [ "$ID" == "uninstall" ]; then
 		$STELLA_API del_folder "$STELLA_APP_WORK_ROOT"
 	fi

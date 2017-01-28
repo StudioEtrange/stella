@@ -2,7 +2,7 @@ if [ ! "$_GO_INCLUDED_" == "1" ]; then
 _GO_INCLUDED_=1
 
 
-function feature_go() {
+feature_go() {
 
 	FEAT_NAME=go
 	FEAT_LIST_SCHEMA="1_6_3:binary 1_6_3:source 1_4_2:source 1_4_2:binary 1_4_3:source 1_4_3:binary 1_5_3:source 1_5_3:binary"
@@ -11,13 +11,13 @@ function feature_go() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function go_set_env() {
+go_set_env() {
 	GOROOT="$FEAT_INSTALL_ROOT"
 	export GOROOT="$FEAT_INSTALL_ROOT"
 }
 
 
-function feature_go_1_6_3() {
+feature_go_1_6_3() {
 	FEAT_VERSION=1_6_3
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -48,7 +48,7 @@ function feature_go_1_6_3() {
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 }
 
-function feature_go_1_5_3() {
+feature_go_1_5_3() {
 	FEAT_VERSION=1_5_3
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -79,7 +79,7 @@ function feature_go_1_5_3() {
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 }
 
-function feature_go_1_4_3() {
+feature_go_1_4_3() {
 	FEAT_VERSION=1_4_3
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -109,7 +109,7 @@ function feature_go_1_4_3() {
 }
 
 
-function feature_go_1_4_2() {
+feature_go_1_4_2() {
 	FEAT_VERSION=1_4_2
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -138,7 +138,7 @@ function feature_go_1_4_2() {
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 }
 
-function feature_go_install_source() {
+feature_go_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$INSTALL_DIR" "DEST_ERASE STRIP"
@@ -156,7 +156,7 @@ function feature_go_install_source() {
 
 }
 
-function feature_go_install_binary() {
+feature_go_install_binary() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$INSTALL_DIR" "STRIP"

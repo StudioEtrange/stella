@@ -2,7 +2,7 @@ if [ ! "$_texinfo_INCLUDED_" == "1" ]; then
 _texinfo_INCLUDED_=1
 
 
-function feature_texinfo() {
+feature_texinfo() {
 	FEAT_NAME=texinfo
 
 	FEAT_LIST_SCHEMA="5_1:source"
@@ -13,7 +13,7 @@ function feature_texinfo() {
 
 }
 
-function feature_texinfo_5_1() {
+feature_texinfo_5_1() {
 	FEAT_VERSION=5_1
 
 
@@ -38,7 +38,7 @@ function feature_texinfo_5_1() {
 }
 
 
-function feature_texinfo_install_source() {
+feature_texinfo_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

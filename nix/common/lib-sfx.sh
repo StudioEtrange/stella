@@ -14,7 +14,7 @@ _STELLA_COMMON_MAKE_SFX_INCLUDED_=1
 # NOTE : SFX for platform windows or linux
 # NOTE : output is a binary file to run
 # option 7Z will consider _target as a 7Z compressed file and will not try to compress _target (which is already compressed)
-function __make_sevenzip_sfx_bin() {
+__make_sevenzip_sfx_bin() {
 	local _target=$1
 	local _output_sfx=$2
 	local _platform=$3
@@ -69,7 +69,7 @@ function __make_sevenzip_sfx_bin() {
 # NOTE : SFX for linux
 # NOTE : output is a shell file to run
 # option TARGZ will consider _target as a tar.gz file and will not try to compress _target (which is already compressed)
-function __make_targz_sfx_shell() {
+__make_targz_sfx_shell() {
 	local _target=$1
 	local _output_sfx=$2
 	local _opt="$3"

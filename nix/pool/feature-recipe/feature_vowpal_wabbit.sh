@@ -1,7 +1,7 @@
 if [ ! "$_vowpal_wabbit_INCLUDED_" == "1" ]; then
 _vowpal_wabbit_INCLUDED_=1
 
-function feature_vowpal_wabbit() {
+feature_vowpal_wabbit() {
 	FEAT_NAME=vowpal_wabbit
 
 	FEAT_LIST_SCHEMA="8_2_0:source"
@@ -12,7 +12,7 @@ function feature_vowpal_wabbit() {
 
 }
 
-function feature_vowpal_wabbit_8_2_0() {
+feature_vowpal_wabbit_8_2_0() {
 	FEAT_VERSION=8_2_0
 
 	#  boost +no_single +no_static +openmpi +python27
@@ -37,13 +37,13 @@ function feature_vowpal_wabbit_8_2_0() {
 }
 
 
-function feature_vowpal_wabbit_link() {
+feature_vowpal_wabbit_link() {
 	__link_feature_library "openmpi#1_10_3"
 	__link_feature_library "zlib#1_2_8" "GET_FOLDER _zlib NO_SET_FLAGS LIBS_NAME z"
 	__link_feature_library "boost#1_61_0" "NO_SET_FLAGS"
 }
 
-function feature_vowpal_wabbit_install_source() {
+feature_vowpal_wabbit_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

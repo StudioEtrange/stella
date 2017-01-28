@@ -8,7 +8,7 @@ _sdlttf_INCLUDED_=1
 # sdl 2.x ==> sdl-ttf 2_0_12
 # sdl 1.2.x ==> sdl-ttf 2_0_11
 
-function feature_sdl-ttf() {
+feature_sdl-ttf() {
 	FEAT_NAME=sdl-ttf
 	FEAT_LIST_SCHEMA="2_0_12:source 2_0_11:source"
 	FEAT_DEFAULT_VERSION=2_0_12
@@ -19,7 +19,7 @@ function feature_sdl-ttf() {
 
 
 
-function feature_sdl-ttf_2_0_12() {
+feature_sdl-ttf_2_0_12() {
 	FEAT_VERSION=2_0_12
 	
 	FEAT_SOURCE_DEPENDENCIES="sdl#2_0_3 freetype#2_6_1"
@@ -42,7 +42,7 @@ function feature_sdl-ttf_2_0_12() {
 	
 }
 
-function feature_sdl-ttf_2_0_11() {
+feature_sdl-ttf_2_0_11() {
 	FEAT_VERSION=2_0_11
 	
 	FEAT_SOURCE_DEPENDENCIES="sdl#1_2_15 freetype#2_6_1"
@@ -65,7 +65,7 @@ function feature_sdl-ttf_2_0_11() {
 	
 }
 
-function feature_sdl-ttf_link_sdl1() {
+feature_sdl-ttf_link_sdl1() {
 	__link_feature_library "sdl#1_2_15" "GET_FOLDER _sdl1 FORCE_INCLUDE_FOLDER include/SDL NO_SET_FLAGS"
 	__link_feature_library "freetype#2_6_1" "GET_FOLDER _freetype NO_SET_FLAGS"
 
@@ -73,7 +73,7 @@ function feature_sdl-ttf_link_sdl1() {
 }
 
 
-function feature_sdl-ttf_link_sdl2() {
+feature_sdl-ttf_link_sdl2() {
 	__link_feature_library "sdl#2_0_3" "GET_FOLDER _sdl2 FORCE_INCLUDE_FOLDER include/SDL NO_SET_FLAGS"
 	__link_feature_library "freetype#2_6_1" "GET_FOLDER _freetype NO_SET_FLAGS"
 
@@ -81,7 +81,7 @@ function feature_sdl-ttf_link_sdl2() {
 }
 
 
-function feature_sdl-ttf_install_source() {
+feature_sdl-ttf_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

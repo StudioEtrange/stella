@@ -1,7 +1,7 @@
 if [ ! "$_AUTOTOOLSBUNDLE_INCLUDED_" == "1" ]; then 
 _AUTOTOOLSBUNDLE_INCLUDED_=1
 
-function feature_autotools-bundle() {
+feature_autotools-bundle() {
 	FEAT_NAME=autotools-bundle
 	FEAT_LIST_SCHEMA="1"
 	FEAT_DEFAULT_VERSION=1
@@ -10,7 +10,7 @@ function feature_autotools-bundle() {
 	FEAT_BUNDLE=MERGE
 }
 
-function feature_autotools-bundle_1() {
+feature_autotools-bundle_1() {
 	FEAT_VERSION=1
 	
 	FEAT_SOURCE_DEPENDENCIES=

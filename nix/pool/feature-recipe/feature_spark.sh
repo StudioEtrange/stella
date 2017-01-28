@@ -3,7 +3,7 @@ _SPARK_INCLUDED_=1
 
 
 
-function feature_spark() {
+feature_spark() {
 	FEAT_NAME=spark
 	FEAT_LIST_SCHEMA="1_6_1:binary 1_6_1_HADOOP_2_6:binary 1_6_0:binary 1_6_0_HADOOP_2_4:binary 1_3_0_HADOOP_2_4:binary 1_3_1_HADOOP_2_4:binary 1_4_0_HADOOP_2_4:binary 1_4_1_HADOOP_2_4:binary 1_5_1_HADOOP_2_4:binary 1_5_2_HADOOP_2_4:binary 1_5_2_HADOOP_2_6:binary"
 	FEAT_DEFAULT_VERSION=1_6_1_HADOOP_2_6
@@ -11,12 +11,12 @@ function feature_spark() {
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
-function feature_spark_env() {
+feature_spark_env() {
 	export SPARK_HOME=$FEAT_INSTALL_ROOT
 }
 
 
-function feature_spark_1_6_1_HADOOP_2_6() {
+feature_spark_1_6_1_HADOOP_2_6() {
 	FEAT_VERSION=1_6_1_HADOOP_2_4
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -40,7 +40,7 @@ function feature_spark_1_6_1_HADOOP_2_6() {
 }
 
 
-function feature_spark_1_6_1() {
+feature_spark_1_6_1() {
 	FEAT_VERSION=1_6_1
 
 	FEAT_BINARY_URL=http://archive.apache.org/dist/spark/spark-1.6.1/spark-1.6.1-bin-without-hadoop.tgz
@@ -52,7 +52,7 @@ function feature_spark_1_6_1() {
 
 }
 
-function feature_spark_1_6_0() {
+feature_spark_1_6_0() {
 	FEAT_VERSION=1_6_0
 
 	FEAT_BINARY_URL=http://archive.apache.org/dist/spark/spark-1.6.0/spark-1.6.0-bin-without-hadoop.tgz
@@ -63,7 +63,7 @@ function feature_spark_1_6_0() {
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin:"$FEAT_INSTALL_ROOT"/sbin
 }
 
-function feature_spark_1_6_0_HADOOP_2_4() {
+feature_spark_1_6_0_HADOOP_2_4() {
 	FEAT_VERSION=1_6_0_HADOOP_2_4
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -86,7 +86,7 @@ function feature_spark_1_6_0_HADOOP_2_4() {
 
 }
 
-function feature_spark_1_5_2_HADOOP_2_6() {
+feature_spark_1_5_2_HADOOP_2_6() {
 	FEAT_VERSION=1_5_2_HADOOP_2_6
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -109,7 +109,7 @@ function feature_spark_1_5_2_HADOOP_2_6() {
 
 }
 
-function feature_spark_1_5_2_HADOOP_2_4() {
+feature_spark_1_5_2_HADOOP_2_4() {
 	FEAT_VERSION=1_5_2_HADOOP_2_4
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -133,7 +133,7 @@ function feature_spark_1_5_2_HADOOP_2_4() {
 }
 
 
-function feature_spark_1_5_1_HADOOP_2_4() {
+feature_spark_1_5_1_HADOOP_2_4() {
 	FEAT_VERSION=1_5_1_HADOOP_2_4
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -157,7 +157,7 @@ function feature_spark_1_5_1_HADOOP_2_4() {
 }
 
 
-function feature_spark_1_4_1_HADOOP_2_4() {
+feature_spark_1_4_1_HADOOP_2_4() {
 	FEAT_VERSION=1_4_1_HADOOP_2_4
 	# embed his own scala version
 	FEAT_SOURCE_DEPENDENCIES=
@@ -182,7 +182,7 @@ function feature_spark_1_4_1_HADOOP_2_4() {
 }
 
 
-function feature_spark_1_4_0_HADOOP_2_4() {
+feature_spark_1_4_0_HADOOP_2_4() {
 	FEAT_VERSION=1_4_0_HADOOP_2_4
 	# embed his own scala version
 	FEAT_SOURCE_DEPENDENCIES=
@@ -208,7 +208,7 @@ function feature_spark_1_4_0_HADOOP_2_4() {
 
 
 
-function feature_spark_1_3_0_HADOOP_2_4() {
+feature_spark_1_3_0_HADOOP_2_4() {
 	FEAT_VERSION=1_3_0_HADOOP_2_4
 	# embed his own scala version
 	FEAT_SOURCE_DEPENDENCIES=
@@ -232,7 +232,7 @@ function feature_spark_1_3_0_HADOOP_2_4() {
 
 }
 
-function feature_spark_1_3_1_HADOOP_2_4() {
+feature_spark_1_3_1_HADOOP_2_4() {
 	FEAT_VERSION=1_3_1_HADOOP_2_4
 	# embed his own scala version
 	FEAT_SOURCE_DEPENDENCIES=
@@ -258,7 +258,7 @@ function feature_spark_1_3_1_HADOOP_2_4() {
 
 
 
-function feature_spark_install_binary() {
+feature_spark_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "STRIP"
 
 }

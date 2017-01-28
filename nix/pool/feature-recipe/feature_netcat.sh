@@ -3,7 +3,7 @@ _NETCAT_INCLUDED_=1
 
 
 
-function feature_netcat() {
+feature_netcat() {
 	FEAT_NAME=netcat
 	FEAT_LIST_SCHEMA="0_7_1:source"
 	FEAT_DEFAULT_VERSION=0_7_1
@@ -11,7 +11,7 @@ function feature_netcat() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_netcat_0_7_1() {
+feature_netcat_0_7_1() {
 	FEAT_VERSION=0_7_1
 
 	FEAT_SOURCE_DEPENDENCIES=
@@ -35,7 +35,7 @@ function feature_netcat_0_7_1() {
 
 
 
-function feature_netcat_install_source() {
+feature_netcat_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	

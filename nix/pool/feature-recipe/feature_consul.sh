@@ -3,7 +3,7 @@ _consul_INCLUDED_=1
 
 
 
-function feature_consul() {
+feature_consul() {
 	FEAT_NAME=consul
 	FEAT_LIST_SCHEMA="0_6_3@x64:binary 0_6_3@x86:binary"
 	FEAT_DEFAULT_VERSION=0_6_3
@@ -12,7 +12,7 @@ function feature_consul() {
 }
 
 
-function feature_consul_0_6_3() {
+feature_consul_0_6_3() {
 	FEAT_VERSION=0_6_3
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -51,7 +51,7 @@ function feature_consul_0_6_3() {
 
 
 
-function feature_consul_install_binary() {
+feature_consul_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "STRIP"
 
 }

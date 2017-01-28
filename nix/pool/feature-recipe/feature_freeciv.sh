@@ -9,7 +9,7 @@ _freeciv_INCLUDED_=1
 # need ncurses ?
 # linked against zlib and bz2 and iconv
 # SDL client has less functionnality than gtk client ===> abandon sdl client which do not build
-function feature_freeciv() {
+feature_freeciv() {
 	FEAT_NAME=freeciv
 	FEAT_LIST_SCHEMA="2_5_1:source"
 	FEAT_DEFAULT_VERSION=2_5_1
@@ -17,7 +17,7 @@ function feature_freeciv() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_freeciv_2_5_1() {
+feature_freeciv_2_5_1() {
 	FEAT_VERSION=2_5_1
 
 	FEAT_SOURCE_DEPENDENCIES="sdl#1_2_15 gettext#0_19_4 curl#7_36_0 sdl-mixer#1_2_12 sdl-image#1_2_12 sdl-gfx#2_0_25 sdl-ttf#2_0_11"
@@ -40,7 +40,7 @@ function feature_freeciv_2_5_1() {
 
 }
 
-function feature_freeciv_link() {
+feature_freeciv_link() {
 
 	__link_feature_library "gettext#0_19_4"
 
@@ -62,7 +62,7 @@ function feature_freeciv_link() {
 
 
 
-function feature_freeciv_install_source() {
+feature_freeciv_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

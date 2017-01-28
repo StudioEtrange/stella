@@ -2,7 +2,7 @@ if [ ! "$_DASH_INCLUDED_" == "1" ]; then
 _DASH_INCLUDED_=1
 
 
-function feature_dash() {
+feature_dash() {
 	FEAT_NAME=dash
 
 	FEAT_LIST_SCHEMA="0_5_8:source"
@@ -13,7 +13,7 @@ function feature_dash() {
 
 }
 
-function feature_dash_0_5_8() {
+feature_dash_0_5_8() {
 	FEAT_VERSION=0_5_8
 
 
@@ -38,7 +38,7 @@ function feature_dash_0_5_8() {
 }
 
 
-function feature_dash_install_source() {
+feature_dash_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

@@ -103,7 +103,7 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 #					* libclang is the FRONT-END part (preprocessor/parser) of the Clang compiler
 #						libclang is the FRONT-END part of the Clang compiler using LLVM BACK-END
 
-function __start_build_session() {
+__start_build_session() {
 	__reset_build_env
 	local OPT="$1"
 	for o in $OPT; do
@@ -114,7 +114,7 @@ function __start_build_session() {
 	__set_toolset "$STELLA_BUILD_DEFAULT_TOOLSET"
 }
 
-function __toolset_install() {
+__toolset_install() {
 	local _save_STELLA_APP_FEATURE_ROOT=$STELLA_APP_FEATURE_ROOT
 	local _save_FORCE=$FORCE
 	FORCE=
@@ -124,14 +124,14 @@ function __toolset_install() {
 	FORCE=$_save_FORCE
 }
 
-function __toolset_info() {
+__toolset_info() {
 	local _save_STELLA_APP_FEATURE_ROOT=$STELLA_APP_FEATURE_ROOT
 	STELLA_APP_FEATURE_ROOT=$STELLA_INTERNAL_TOOLSET_ROOT
 	__feature_info "$1" "TOOLSET"
 	STELLA_APP_FEATURE_ROOT=$_save_STELLA_APP_FEATURE_ROOT
 }
 
-function __toolset_init() {
+__toolset_init() {
 	local _SCHEMA=$1
 	local _save_STELLA_APP_FEATURE_ROOT=$STELLA_APP_FEATURE_ROOT
 	STELLA_APP_FEATURE_ROOT=$STELLA_INTERNAL_TOOLSET_ROOT
@@ -173,12 +173,12 @@ function __toolset_init() {
 }
 
 # TOOLSET ------------------------------------------------------------------------------------------------------------------------------
-function __add_toolset() {
+__add_toolset() {
 	local _SCHEMA=$1
 	STELLA_BUILD_EXTRA_TOOLSET="$STELLA_BUILD_EXTRA_TOOLSET $_SCHEMA"
 }
 
-function __set_toolset() {
+__set_toolset() {
 	local MODE="$1"
 	local OPT="$2"
 
@@ -286,7 +286,7 @@ function __set_toolset() {
 }
 
 
-function __enable_current_toolset() {
+__enable_current_toolset() {
 	echo "** Require build toolset : $STELLA_BUILD_TOOLSET [ config_tool:$STELLA_BUILD_CONFIG_TOOL build_tool:$STELLA_BUILD_BUILD_TOOL compil_frontend:$STELLA_BUILD_COMPIL_FRONTEND]"
 
 	case $STELLA_BUILD_CONFIG_TOOL in
@@ -376,13 +376,13 @@ function __enable_current_toolset() {
 }
 
 
-function __disable_current_toolset() {
+__disable_current_toolset() {
 	echo "** Disable current toolset path"
 	PATH="$_save_path_CURRENT_TOOLSET"
 }
 
 # BUILD ------------------------------------------------------------------------------------------------------------------------------
-function __start_manual_build() {
+__start_manual_build() {
 	local NAME
 	local SOURCE_DIR
 	local INSTALL_DIR
@@ -401,14 +401,14 @@ function __start_manual_build() {
 }
 
 
-function __end_manual_build() {
+__end_manual_build() {
 
 	__disable_current_toolset
 	echo " ** Done"
 }
 
 
-function __auto_build() {
+__auto_build() {
 
 	local NAME
 	local SOURCE_DIR
@@ -508,7 +508,7 @@ function __auto_build() {
 }
 
 
-function __launch_configure() {
+__launch_configure() {
 	local AUTO_SOURCE_DIR
 	local AUTO_BUILD_DIR
 	local AUTO_INSTALL_DIR
@@ -606,7 +606,7 @@ function __launch_configure() {
 }
 
 
-function __launch_build() {
+__launch_build() {
 	local AUTO_SOURCE_DIR
 	local AUTO_INSTALL_DIR
 	local AUTO_BUILD_DIR
@@ -770,7 +770,7 @@ function __launch_build() {
 
 
 
-function __dep_choose_origin() {
+__dep_choose_origin() {
 	local _SCHEMA="$1"
 	__translate_schema "$_SCHEMA" "_CHOOSE_ORIGIN_FEATURE_NAME"
 
@@ -782,7 +782,7 @@ function __dep_choose_origin() {
 	echo $_origin
 }
 
-function __link_feature_library() {
+__link_feature_library() {
 	local SCHEMA="$1"
 	local OPT="$2"
 	# FORCE_STATIC -- force link to static version of lib (by isolating it)
@@ -928,7 +928,7 @@ function __link_feature_library() {
 			;;
 	esac
 
-	# TODO do not base lib isolation on file extension but on result of function __is_*__bin from lib-parse-bin
+	# TODO do not base lib isolation on file extension but on result of __is_*__bin from lib-parse-bin
 	if [ "$_flag_lib_isolation" == "TRUE" ]; then
 		echo "*** Isolate dependencies into $LIB_TARGET_FOLDER"
 		__del_folder "$LIB_TARGET_FOLDER"
@@ -1024,7 +1024,7 @@ function __link_feature_library() {
 	echo "** Linked to $SCHEMA"
 }
 
-function __set_link_flags() {
+__set_link_flags() {
 	local _lib_path="$1"
 	local _include_path="$2"
 	local _libs_name="$3"
@@ -1043,7 +1043,7 @@ function __set_link_flags() {
 
 }
 
-function __link_flags() {
+__link_flags() {
 	local _frontend="$1"
 	local _var_flags="$2"
 	local _lib_path="$3"
@@ -1055,7 +1055,7 @@ function __link_flags() {
 	fi
 }
 
-function __link_flags_gcc-clang() {
+__link_flags_gcc-clang() {
 	local _var_flags="$1"
 	local _lib_path="$2"
 	local _include_path="$3"
@@ -1077,7 +1077,7 @@ function __link_flags_gcc-clang() {
 }
 
 # NOTE : NOT USED
-function __link_rpath_flags() {
+__link_rpath_flags() {
 	local _frontend="$1"
 	local _var_flags="$2"
 	local _linked_target_path="$3"
@@ -1088,7 +1088,7 @@ function __link_rpath_flags() {
 }
 
 # NOTE : NOT USED
-function __link_rpath_flags_gcc-clang() {
+__link_rpath_flags_gcc-clang() {
 	local _var_flags="$1"
 	local _linked_target_path="$2"
 	local _linked_lib_path="$3"
@@ -1121,7 +1121,7 @@ function __link_rpath_flags_gcc-clang() {
 
 # ENV and FLAGS management---------------------------------------------------------------------------------------------------------------------------------------
 
-function __reset_build_env() {
+__reset_build_env() {
 	# BUILD FLAGS
 	STELLA_C_CXX_FLAGS=
 	STELLA_CPP_FLAGS=
@@ -1191,7 +1191,7 @@ function __reset_build_env() {
 
 
 
-function __prepare_build() {
+__prepare_build() {
 	local INSTALL_DIR="$1"
 	local SOURCE_DIR="$2"
 	local BUILD_DIR="$3"
@@ -1296,7 +1296,7 @@ function __prepare_build() {
 }
 
 # set flags and env for CMAKE
-function __set_env_vars_for_cmake() {
+__set_env_vars_for_cmake() {
 
 	# RPATH Management
 	local _rpath=
@@ -1377,7 +1377,7 @@ function __set_env_vars_for_cmake() {
 
 
 # set flags and env for standard build tools (GNU MAKE,...)
-function __set_env_vars_for_gcc-clang() {
+__set_env_vars_for_gcc-clang() {
 
 	# RPATH Management
 	for r in $STELLA_BUILD_RPATH; do
@@ -1422,7 +1422,7 @@ function __set_env_vars_for_gcc-clang() {
 
 
 
-function __set_build_mode_default() {
+__set_build_mode_default() {
 	case $1 in
 		RPATH|DEP_FROM_SYSTEM)
 			eval STELLA_BUILD_"$1"_DEFAULT=\"$2\" \"$3\"
@@ -1435,7 +1435,7 @@ function __set_build_mode_default() {
 }
 
 # TOOLSET agnostic
-function __set_build_mode() {
+__set_build_mode() {
 
 	# LINK_FLAGS_DEFAULT -----------------------------------------------------------------
 	# activate default link flags
@@ -1509,7 +1509,7 @@ function __set_build_mode() {
 }
 
 # settings compiler flags -- depend on toolset (configure tool, build tool, compiler frontend)
-function __set_build_env() {
+__set_build_env() {
 
 	# LINK_FLAGS_DEFAULT -----------------------------------------------------------------
 	# Activate some default link flags
@@ -1745,7 +1745,7 @@ function __set_build_env() {
 
 # INSPECT CHECK and FIX BUILT FILES ------------------------------------------------------------------------------------------------------------------------------
 # inspect and fix files built by stella
-function __inspect_and_fix_build() {
+__inspect_and_fix_build() {
 	local path="$1"
 	local OPT="$2"
 	local _result=0
@@ -1779,7 +1779,7 @@ function __inspect_and_fix_build() {
 	return $_result
 }
 
-function __fix_built_files() {
+__fix_built_files() {
 	local path="$1"
 	local OPT="$2"
 	if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
@@ -1792,7 +1792,7 @@ function __fix_built_files() {
 	fi
 }
 
-function __check_built_files() {
+__check_built_files() {
 	local path="$1"
 	local OPT="$2"
 	local _result=0

@@ -2,7 +2,7 @@ if [ ! "$_DOCKERSWARM_INCLUDED_" == "1" ]; then
 _DOCKERSWARM_INCLUDED_=1
 
 
-function feature_docker-swarm() {
+feature_docker-swarm() {
 	FEAT_NAME="docker-swarm"
 	FEAT_LIST_SCHEMA="1_2_5:source"
 	FEAT_DEFAULT_VERSION="1_2_5"
@@ -12,7 +12,7 @@ function feature_docker-swarm() {
 
 
 
-function feature_docker-swarm_1_2_5() {
+feature_docker-swarm_1_2_5() {
 	FEAT_VERSION="1_2_5"
 	FEAT_SOURCE_DEPENDENCIES="go-build-chain#1_5_3"
 	FEAT_BINARY_DEPENDENCIES=
@@ -35,7 +35,7 @@ function feature_docker-swarm_1_2_5() {
 }
 
 
-function feature_docker-swarm_install_source() {
+feature_docker-swarm_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$FEAT_INSTALL_ROOT/src/swarm"
 	BUILD_DIR=

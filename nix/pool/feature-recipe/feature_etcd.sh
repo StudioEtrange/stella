@@ -3,7 +3,7 @@ _etcd_INCLUDED_=1
 
 
 
-function feature_etcd() {
+feature_etcd() {
 	FEAT_NAME=etcd
 	FEAT_LIST_SCHEMA="2_3_7@x64:binary"
 	FEAT_DEFAULT_VERSION=2_3_7
@@ -12,7 +12,7 @@ function feature_etcd() {
 }
 
 
-function feature_etcd_2_3_7() {
+feature_etcd_2_3_7() {
 	FEAT_VERSION=2_3_7
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -51,7 +51,7 @@ function feature_etcd_2_3_7() {
 
 
 
-function feature_etcd_install_binary() {
+feature_etcd_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "STRIP"
 
 }

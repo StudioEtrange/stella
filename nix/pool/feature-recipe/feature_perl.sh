@@ -2,7 +2,7 @@ if [ ! "$_PERL_INCLUDED_" == "1" ]; then
 _PERL_INCLUDED_=1
 
 
-function feature_perl() {
+feature_perl() {
 
 	FEAT_NAME=perl
 	FEAT_LIST_SCHEMA="5_18_2:source"
@@ -11,7 +11,7 @@ function feature_perl() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_perl_5_18_2() {
+feature_perl_5_18_2() {
 
 	FEAT_VERSION=5_18_2
 
@@ -35,7 +35,7 @@ function feature_perl_5_18_2() {
 
 }
 
-function feature_perl_install_source() {
+feature_perl_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

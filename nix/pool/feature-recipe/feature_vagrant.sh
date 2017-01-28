@@ -4,7 +4,7 @@ _vagrant_INCLUDED_=1
 # for linux, the downloaded .deb file contains compiled libraries but these libraries may not work on some linux distro
 # https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/tools/vagrant/default.nix
 
-function feature_vagrant() {
+feature_vagrant() {
 	FEAT_NAME=vagrant
 	FEAT_LIST_SCHEMA="1_8_4@x64:binary 1_8_4@x86:binary"
 	FEAT_DEFAULT_VERSION=1_8_4
@@ -13,7 +13,7 @@ function feature_vagrant() {
 }
 
 
-function feature_vagrant_1_8_4() {
+feature_vagrant_1_8_4() {
 	FEAT_VERSION=1_8_4
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -52,7 +52,7 @@ function feature_vagrant_1_8_4() {
 
 
 
-function feature_vagrant_install_binary() {
+feature_vagrant_install_binary() {
 
 	rm -Rf "$STELLA_APP_TEMP_DIR"
 	mkdir -p "$STELLA_APP_TEMP_DIR"

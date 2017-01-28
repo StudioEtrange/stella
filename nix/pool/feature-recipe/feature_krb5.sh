@@ -2,7 +2,7 @@ if [ ! "$_krb5_INCLUDED_" == "1" ]; then
 _krb5_INCLUDED_=1
 
 
-function feature_krb5() {
+feature_krb5() {
 	FEAT_NAME=krb5
 
 	FEAT_LIST_SCHEMA="1_15:source"
@@ -14,7 +14,7 @@ function feature_krb5() {
 }
 
 
-function feature_krb5_1_15() {
+feature_krb5_1_15() {
 	FEAT_VERSION=1_15
 
 
@@ -39,11 +39,11 @@ function feature_krb5_1_15() {
 }
 
 
-function feature_krb5_link() {
+feature_krb5_link() {
 	__link_feature_library "openssl#1_0_2d"
 }
 
-function feature_krb5_install_source() {
+feature_krb5_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

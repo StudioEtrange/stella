@@ -2,7 +2,7 @@ if [ ! "$_libidn_INCLUDED_" == "1" ]; then
 _libidn_INCLUDED_=1
 
 
-function feature_libidn() {
+feature_libidn() {
 	FEAT_NAME=libidn
 	FEAT_LIST_SCHEMA="1_30:source"
 	FEAT_DEFAULT_VERSION=1_30
@@ -10,7 +10,7 @@ function feature_libidn() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_libidn_1_30() {
+feature_libidn_1_30() {
 	FEAT_VERSION=1_30
 
 
@@ -36,7 +36,7 @@ function feature_libidn_1_30() {
 
 
 
-function feature_libidn_install_source() {
+feature_libidn_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

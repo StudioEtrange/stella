@@ -4,7 +4,7 @@ _UCL_INCLUDED_=1
 # OK
 
 
-function feature_ucl() {
+feature_ucl() {
 	FEAT_NAME=ucl
 	FEAT_LIST_SCHEMA="1_03:source"
 	FEAT_DEFAULT_VERSION=1_03
@@ -12,7 +12,7 @@ function feature_ucl() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_ucl_1_03() {
+feature_ucl_1_03() {
 	FEAT_VERSION=1_03
 	
 	FEAT_SOURCE_DEPENDENCIES=
@@ -35,7 +35,7 @@ function feature_ucl_1_03() {
 
 }
 
-function feature_ucl_install_source() {
+feature_ucl_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

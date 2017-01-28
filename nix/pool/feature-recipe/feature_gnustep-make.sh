@@ -1,7 +1,7 @@
 if [ ! "$_gnustepmake_INCLUDED_" == "1" ]; then 
 _gnustepmake_INCLUDED_=1
 
-function feature_gnustep-make() {
+feature_gnustep-make() {
 	FEAT_NAME=gnustep-make
 
 	FEAT_LIST_SCHEMA="2_6_7:source"
@@ -12,7 +12,7 @@ function feature_gnustep-make() {
 
 }
 
-function feature_gnustep-make_2_6_7() {
+feature_gnustep-make_2_6_7() {
 	FEAT_VERSION=2_6_7
 
 
@@ -37,11 +37,11 @@ function feature_gnustep-make_2_6_7() {
 }
 
 
-function feature_gnustep-make_setenv() {
+feature_gnustep-make_setenv() {
 	source $FEAT_INSTALL_ROOT/Library/GNUstep/Makefiles/GNUstep.sh
 }
 
-function feature_gnustep-make_install_source() {
+feature_gnustep-make_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	

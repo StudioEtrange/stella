@@ -29,19 +29,19 @@ _STELLA_BOOT_INCLUDED_=1
 #     script to execute do not move
 
 # MAIN FUNCTION -----------------------------------------
-function __boot_shell() {
+__boot_shell() {
   local _uri="$1"
   __boot_stella "SHELL" "$_uri"
 }
 
-function __boot_cmd() {
+__boot_cmd() {
   local _uri="$1"
   local _cmd="$2"
   __boot_stella "CMD" "$_uri" "$_cmd"
 
 }
 
-function __boot_script() {
+__boot_script() {
   local _uri="$1"
   local _script="$2"
   __boot_stella "SCRIPT" "$_uri" "$_script"
@@ -56,7 +56,7 @@ function __boot_script() {
 # INTERNAL -----------------------------------------
 
 # MODE = SHELL | CMD | SCRIPT
-function __boot_stella() {
+__boot_stella() {
   local _mode="$1"
   local _uri="$2"
   local _arg="$3"
@@ -178,7 +178,7 @@ function __boot_stella() {
 }
 
 
-function __bootstrap_stella_env() {
+__bootstrap_stella_env() {
 	export PS1="[stella] \u@\h|\W>"
 
 	local _t=$(mktmp)

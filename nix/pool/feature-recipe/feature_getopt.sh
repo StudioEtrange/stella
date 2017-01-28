@@ -4,7 +4,7 @@ _GETOPT_INCLUDED_=1
 #https://github.com/Homebrew/homebrew/blob/master/Library/Formula/gnu-getopt.rb
 # TODO : patch makefile with macport recipe ?
 
-function feature_getopt() {
+feature_getopt() {
 
 	FEAT_NAME=getopt
 	FEAT_LIST_SCHEMA="1_1_6:source"
@@ -13,7 +13,7 @@ function feature_getopt() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_getopt_1_1_6() {
+feature_getopt_1_1_6() {
 	FEAT_VERSION=1_1_6
 	# depend on gettext ?
 	FEAT_SOURCE_DEPENDENCIES="gettext#0_19_4:source"
@@ -38,7 +38,7 @@ function feature_getopt_1_1_6() {
 
 
 
-function feature_getopt_1_1_6_patch() {
+feature_getopt_1_1_6_patch() {
 	# https://github.com/Homebrew/homebrew/blob/master/Library/Formula/gnu-getopt.rb
 
 	__link_feature_library "gettext" "LIBS_NAME intl GET_FLAGS _gettext NO_SET_FLAGS"
@@ -55,7 +55,7 @@ function feature_getopt_1_1_6_patch() {
 
 }
 
-function feature_getopt_install_source() {
+feature_getopt_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 

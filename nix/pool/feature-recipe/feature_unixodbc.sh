@@ -3,14 +3,14 @@ _unixodbc_INCLUDED_=1
 
 # https://github.com/Homebrew/homebrew-core/blob/master/Formula/unixodbc.rb
 
-function feature_unixodbc() {
+feature_unixodbc() {
 	FEAT_NAME=unixodbc
 	FEAT_LIST_SCHEMA="2_3_4:source"
 	FEAT_DEFAULT_VERSION=2_3_4
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-function feature_unixodbc_2_3_4() {
+feature_unixodbc_2_3_4() {
 	FEAT_VERSION=2_3_4
 
 	FEAT_SOURCE_URL=https://downloads.sourceforge.net/project/unixodbc/unixODBC/2.3.4/unixODBC-2.3.4.tar.gz
@@ -23,7 +23,7 @@ function feature_unixodbc_2_3_4() {
 
 
 
-function feature_unixodbc_install_source() {
+feature_unixodbc_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
