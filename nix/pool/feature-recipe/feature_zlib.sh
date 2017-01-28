@@ -80,7 +80,7 @@ feature_zlib_install_source() {
 	__feature_callback
 
 	# out of tree build do not work
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD SOURCE_KEEP"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD"
 
 }
 
