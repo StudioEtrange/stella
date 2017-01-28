@@ -73,7 +73,7 @@ feature_ncurses_install_source() {
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
-
+	# TODO : on macos, might be not enough as linked lib should be @rpath/libxxxx
 	__set_build_mode "RPATH" "ADD_FIRST" "$FEAT_INSTALL_ROOT/lib"
 	
 	# with wide encoding
