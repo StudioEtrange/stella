@@ -40,8 +40,8 @@ goto :eof
 
 	call %STELLA_COMMON%\common.bat :get_resource "!FEAT_NAME!" "!FEAT_SOURCE_URL!" "!FEAT_SOURCE_URL_PROTOCOL!" "!SRC_DIR!" "DEST_ERASE"
 
-	call %STELLA_COMMON%\common-build.bat :set_toolset "CUSTOM" "CONFIG_TOOL NONE BUILD_TOOL mingw-make COMPIL_FRONTEND gcc"
-	
+	call %STELLA_COMMON%\common-build.bat :set_toolset "CUSTOM" "CONFIG_TOOL NONE BUILD_TOOL mingw-make COMPIL_FRONTEND mingw-gcc"
+
 	set AUTO_INSTALL_CONF_FLAG_POSTFIX=
 	set AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 

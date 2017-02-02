@@ -5,13 +5,13 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 # BUILD WORKFLOW
 
 # SET SOME DEFAULT BUILD MODE
-#		__set_build_mode_default "RELOCATE" "ON"
+#	__set_build_mode_default "RELOCATE" "ON"
 #  	__set_build_mode_default "DARWIN_STDLIB" "LIBCPP"
 
 # START BUILD SESSION
 #	__start_build_session
-#														__reset_build_env : reset every __set_build_mode values to default or empty
-#														__set_toolset STELLA_BUILD_DEFAULT_TOOLSET
+#			__reset_build_env : reset every __set_build_mode values to default or empty
+#			__set_toolset STELLA_BUILD_DEFAULT_TOOLSET
 
 
 
@@ -24,7 +24,7 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 #		ADD EXTRA TOOLS
 #		__add_toolset("bazel")
 
-# 	SET CUSTOM BUILD MODE
+# 		SET CUSTOM BUILD MODE
 #		__set_build_mode ARCH x86
 
 #		SET CUSTOM FLAGS
@@ -114,6 +114,7 @@ __start_build_session() {
 	__set_toolset "$STELLA_BUILD_DEFAULT_TOOLSET"
 }
 
+# TOOLSET ------------------------------------------------------------------------------------------------------------------------------
 __toolset_install() {
 	local _save_STELLA_APP_FEATURE_ROOT=$STELLA_APP_FEATURE_ROOT
 	local _save_FORCE=$FORCE
@@ -163,7 +164,7 @@ __toolset_init() {
 			STELLA_BUILD_TOOLSET_PATH="$FEAT_SEARCH_PATH:$STELLA_BUILD_TOOLSET_PATH"
 		fi
 		local c
-		# TODO : warn : env vars should be uninitialized because use of a toolset is temporary
+		# TODO : warn : env vars should be uninitialized later because use of a toolset is temporary
 		for c in $FEAT_ENV_CALLBACK; do
 			$c
 		done
@@ -172,7 +173,6 @@ __toolset_init() {
 	__pop_schema_context
 }
 
-# TOOLSET ------------------------------------------------------------------------------------------------------------------------------
 __add_toolset() {
 	local _SCHEMA=$1
 	STELLA_BUILD_EXTRA_TOOLSET="$STELLA_BUILD_EXTRA_TOOLSET $_SCHEMA"
@@ -287,7 +287,7 @@ __set_toolset() {
 
 
 __enable_current_toolset() {
-	echo "** Require build toolset : $STELLA_BUILD_TOOLSET [ config_tool:$STELLA_BUILD_CONFIG_TOOL build_tool:$STELLA_BUILD_BUILD_TOOL compil_frontend:$STELLA_BUILD_COMPIL_FRONTEND]"
+	echo "** Require build toolset : $STELLA_BUILD_TOOLSET [ config_tool:$STELLA_BUILD_CONFIG_TOOL build_tool:$STELLA_BUILD_BUILD_TOOL compil_frontend:$STELLA_BUILD_COMPIL_FRONTEND ]"
 
 	case $STELLA_BUILD_CONFIG_TOOL in
 		configure)
@@ -359,7 +359,7 @@ __enable_current_toolset() {
 		;;
 	esac
 
-	echo "** Require build toolset : $STELLA_BUILD_TOOLSET [ config_tool:$STELLA_BUILD_CONFIG_TOOL build_tool:$STELLA_BUILD_BUILD_TOOL compil_frontend:$STELLA_BUILD_COMPIL_FRONTEND]"
+	echo "** Require build toolset : $STELLA_BUILD_TOOLSET [ config_tool:$STELLA_BUILD_CONFIG_TOOL build_tool:$STELLA_BUILD_BUILD_TOOL compil_frontend:$STELLA_BUILD_COMPIL_FRONTEND ]"
 	echo
 
 	echo "** Require extra toolset : $STELLA_BUILD_EXTRA_TOOLSET"
@@ -369,10 +369,40 @@ __enable_current_toolset() {
 	done
 	echo
 
-
-	echo "** Enable current toolset path"
+	echo "** All toolset are installed"
+	echo "** Set toolsets search path"
 	_save_path_CURRENT_TOOLSET="$PATH"
 	PATH="$STELLA_BUILD_TOOLSET_PATH:$PATH"
+
+
+	echo "** Init specific toolset env var"
+	case $STELLA_BUILD_COMPIL_FRONTEND in
+		default)
+		;;
+		clang-omp*)
+			__toolset_info "$STELLA_BUILD_COMPIL_FRONTEND"
+			if [ "$TOOLSET_TEST_FEATURE" == "1" ]; then
+				export CC=$TOOLSET_FEAT_INSTALL_ROOT/bin/clang
+				export CXX=$TOOLSET_FEAT_INSTALL_ROOT/bin/clang++
+				# activate clang openmp libs search folder at link time
+				export LIBRARY_PATH="$LIBRARY_PATH:$TOOLSET_FEAT_INSTALL_ROOT/lib"
+				# add a search path for clang openmp libs at runtime
+				__set_build_mode "RPATH" "ADD_FIRST" "$TOOLSET_FEAT_INSTALL_ROOT/lib"
+			fi
+		;;
+		gcc*)
+			__toolset_info "$STELLA_BUILD_COMPIL_FRONTEND"
+			if [ "$TOOLSET_TEST_FEATURE" == "1" ]; then
+				export CC=$TOOLSET_FEAT_INSTALL_ROOT/bin/gcc
+				export CXX=$TOOLSET_FEAT_INSTALL_ROOT/bin/g++
+				# activate gcc libs search folder at link time
+				export LIBRARY_PATH="$LIBRARY_PATH:$TOOLSET_FEAT_INSTALL_ROOT/lib"
+				# add a search path for gcc libs at runtime
+				__set_build_mode "RPATH" "ADD_FIRST" "$TOOLSET_FEAT_INSTALL_ROOT/lib"
+			fi
+		;;
+	esac
+
 }
 
 
@@ -652,7 +682,7 @@ __launch_build() {
 		fi
 	else
 		if [ "$_opt_install" == "ON" ]; then
-			# we add install in first place if not alread present
+			# we add install in first place if not already present
 			_post_build_step="install $_post_build_step"
 		fi
 	fi
@@ -968,7 +998,7 @@ __link_feature_library() {
 		fi
 	fi
 
-	# RETURN RESULTS
+	# RESULTS
 
 	# root folder
 	_ROOT="$REQUIRED_LIB_ROOT"
@@ -1006,8 +1036,6 @@ __link_feature_library() {
 		# fi
 	fi
 
-
-	# RESULT
 	# set <var> flags ----
 	if [ ! "$_var_flags" == "" ]; then
 		__link_flags "$STELLA_BUILD_COMPIL_FRONTEND_BIN" "$_var_flags" "$_LIB" "$_INCLUDE" "$_libs_name"
@@ -1134,6 +1162,7 @@ __reset_build_env() {
 	STELLA_CMAKE_RPATH=
 	STELLA_CMAKE_RPATH_DARWIN=
 
+
 	# LINKED LIBRARIES
 	LINKED_LIBS_LIST=
 	LINKED_LIBS_C_CXX_FLAGS=
@@ -1142,6 +1171,7 @@ __reset_build_env() {
 	#LINKED_LIBS_PATH=
 	LINKED_LIBS_CMAKE_LIBRARY_PATH=
 	LINKED_LIBS_CMAKE_INCLUDE_PATH=
+	STELLA_BUILD_PKG_CONFIG_PATH=
 
 	# BUILD MODE
 	STELLA_BUILD_RELOCATE="$STELLA_BUILD_RELOCATE_DEFAULT"
@@ -1157,7 +1187,7 @@ __reset_build_env() {
 	STELLA_BUILD_MACOSX_DEPLOYMENT_TARGET="$STELLA_BUILD_MACOSX_DEPLOYMENT_TARGET_DEFAULT"
 	STELLA_BUILD_MIX_CPP_C_FLAGS="$STELLA_BUILD_MIX_CPP_C_FLAGS_DEFAULT"
 	STELLA_BUILD_LINK_FLAGS_DEFAULT="$STELLA_BUILD_LINK_FLAGS_DEFAULT_DEFAULT"
-	STELLA_BUILD_PKG_CONFIG_PATH=
+
 
 	# EXTERNAL VARIABLE
 	# reset variable from outside stella
@@ -1197,33 +1227,7 @@ __prepare_build() {
 	local BUILD_DIR="$3"
 
 
-	# select specific compiler frontend
-	case $STELLA_BUILD_COMPIL_FRONTEND in
-		default)
-		;;
-		clang-omp*)
-			__toolset_info "$STELLA_BUILD_COMPIL_FRONTEND"
-			if [ "$TOOLSET_TEST_FEATURE" == "1" ]; then
-				export CC=$TOOLSET_FEAT_INSTALL_ROOT/bin/clang
-				export CXX=$TOOLSET_FEAT_INSTALL_ROOT/bin/clang++
-				# activate clang openmp libs search folder at link time
-				export LIBRARY_PATH="$LIBRARY_PATH:$TOOLSET_FEAT_INSTALL_ROOT/lib"
-				# add a search path for clang openmp libs at runtime
-				__set_build_mode "RPATH" "ADD_FIRST" "$TOOLSET_FEAT_INSTALL_ROOT/lib"
-			fi
-		;;
-		gcc*)
-			__toolset_info "$STELLA_BUILD_COMPIL_FRONTEND"
-			if [ "$TOOLSET_TEST_FEATURE" == "1" ]; then
-				export CC=$TOOLSET_FEAT_INSTALL_ROOT/bin/gcc
-				export CXX=$TOOLSET_FEAT_INSTALL_ROOT/bin/g++
-				# activate gcc libs search folder at link time
-				export LIBRARY_PATH="$LIBRARY_PATH:$TOOLSET_FEAT_INSTALL_ROOT/lib"
-				# add a search path for gcc libs at runtime
-				__set_build_mode "RPATH" "ADD_FIRST" "$TOOLSET_FEAT_INSTALL_ROOT/lib"
-			fi
-		;;
-	esac
+
 
 
 	# pkg-config
@@ -1247,7 +1251,8 @@ __prepare_build() {
 
 
 
-	# set flags -------------
+	# set compiler env flags -------------
+	# cmake take care of compiler flags
 	case $STELLA_BUILD_CONFIG_TOOL_BIN in
 		cmake)
 			__set_env_vars_for_cmake

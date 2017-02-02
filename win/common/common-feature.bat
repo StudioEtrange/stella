@@ -151,6 +151,45 @@ goto :eof
 goto :eof
 
 :: test if a feature is installed
+:: AND retrieve informations based on actually installed feature into var
+:: PREFIX_<info>
+:feature_info
+	set "_info_schema=%~1"
+	set "_info_prefix=%~2"
+
+	if not "!_info_prefix!"=="" (
+		set "_t=!_info_prefix!_TEST_FEATURE"
+		set "!_t!=0"
+		set "_t=!_info_prefix!_FEAT_INSTALL_ROOT"
+		set "!_t!="
+		set "_t=!_info_prefix!_FEAT_NAME"
+		set "!_t!="
+		set "_t=!_info_prefix!_FEAT_ARCH"
+		set "!_t!="
+		set "_t=!_info_prefix!_FEAT_SEARCH_PATH"
+		set "!_t!="
+	)
+
+	call :push_schema_context
+	call :feature_inspect !_info_schema!
+	if "!TEST_FEATURE!"=="1" (
+		if not "!_info_prefix!"=="" (
+			set "_t=!_info_prefix!_TEST_FEATURE"
+			set "!_t!=!TEST_FEATURE!"
+			set "_t=!_info_prefix!_FEAT_INSTALL_ROOT"
+			set "!_t!=!FEAT_INSTALL_ROOT!"			
+			set "_t=!_info_prefix!_FEAT_NAME"
+			set "!_t!=!FEAT_NAME!"
+			set "_t=!_info_prefix!_FEAT_ARCH"
+			set "!_t!=!FEAT_ARCH!"
+			set "_t=!_info_prefix!_FEAT_SEARCH_PATH"
+			set "!_t!=!FEAT_SEARCH_PATH!"
+		)
+	)
+	call :pop_schema_context
+goto :eof
+
+:: test if a feature is installed
 :: AND retrieve informations based on actually installed feature (looking inside STELLA_APP_FEATURE_ROOT) OR from feature recipe if not installed
 :: do not use default values from feature recipe to search installed feature
 :feature_inspect

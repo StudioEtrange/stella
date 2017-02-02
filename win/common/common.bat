@@ -1072,6 +1072,8 @@ goto :eof
 goto :eof
 
 :: check if a "findstr windows regexp" can be found in a string
+:: regexp example : http://stackoverflow.com/questions/2613826/regular-expressions-in-findstr
+::					or see findstr /?
 :: by setting 
 ::		_match_exp with TRUE or FALSE
 :: first argument is the regexp
@@ -1084,7 +1086,7 @@ goto :eof
 	set _string=%~2
 
 	set "_match_exp=FALSE"
-	for /f %%m in ('echo  %_string%^| findstr /N "%_win_regexp%" ^| find /c ":"') do (
+	for /f %%m in ('echo  %_string%^| findstr /R /N "%_win_regexp%" ^| find /c ":"') do (
 		if not "%%m"=="0" set "_match_exp=TRUE"
 	)
 goto :eof
