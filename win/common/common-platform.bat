@@ -190,8 +190,6 @@ goto :eof
 	call %STELLA_COMMON%\common-feature.bat :feature_install unzip#5_51_1 "HIDDEN INTERNAL"
 	call %STELLA_COMMON%\common-feature.bat :feature_install wget#1_17_1_INTERNAL@x86:binary "HIDDEN INTERNAL"
 	call %STELLA_COMMON%\common-feature.bat :feature_install sevenzip#9_38 "HIDDEN INTERNAL"
-	REM TODO in fact, maybe we really need cmake as requirement (in common build module) ? - to verify
-	REM call %STELLA_COMMON%\common-feature.bat :feature_install cmake#3_3_2@x86:binary "HIDDEN INTERNAL"
 	call %STELLA_COMMON%\common-feature.bat :feature_install patch#2_5_9_INTERNAL:binary "HIDDEN INTERNAL"
 goto :eof
 
@@ -338,6 +336,10 @@ goto :eof
 
 
 :: --------- SYSTEM RECIPES-------
+:sys_install_vs
+	call :sys_install_vs2015community
+goto :eof
+
 :sys_install_chocolatey
 	echo  ** Install Chocolatey on your system
 	call %STELLA_COMMON%\common.bat :download "https://chocolatey.org/install.ps1" "chocolatey.ps1" "!STELLA_APP_TEMP_DIR!"

@@ -70,6 +70,8 @@ set STELLA_INTERNAL_FEATURE_ROOT=%STELLA_INTERNAL_WORK_ROOT%\feature_%STELLA_CUR
 set STELLA_INTERNAL_CACHE_DIR=%STELLA_ROOT%\cache
 set STELLA_INTERNAL_TEMP_DIR=%STELLA_INTERNAL_WORK_ROOT%\temp
 
+set STELLA_INTERNAL_TOOLSET_ROOT=%STELLA_INTERNAL_WORK_ROOT%\toolset_%STELLA_CURRENT_PLATFORM_SUFFIX%\%STELLA_CURRENT_OS%
+
 :: current config env
 :: app env config has priority over stella config env
 set "STELLA_ENV_FILE="
@@ -94,7 +96,7 @@ set "NPM=npm"
 
 
 :: FEATURE LIST ---------------------------------------------
-set "__STELLA_FEATURE_LIST=msys2 miniconda fasttext wsusoffline rust tcpview libsquish bzip2 diffutils jpeg curl libogg mode-export freetype libpng zlib git docker-swarm socat nginx mingw-w64 go-build-chain go-crosscompile-chain go docker-bundle docker docker-machine oracle-jdk maven spark nikpeviewer dependencywalker conemu goconfig-cli ninja jom cmake packer perl ruby rubydevkit nasm python vagrant openssh wget unzip sevenzip patch gnumake"
+set "__STELLA_FEATURE_LIST=msys2 miniconda fasttext wsusoffline rust tcpview libsquish bzip2 diffutils jpeg curl libogg mode-export freetype libpng zlib git docker-swarm socat nginx mingw-w64 go-build-chain go-crosscompile-chain go docker-bundle docker docker-machine oracle-jdk maven spark nikpeviewer dependencywalker conemu goconfig-cli ninja jom cmake packer perl ruby rubydevkit nasm python vagrant openssh wget unzip sevenzip patch make"
 
 :: SYS PACKAGE --------------------------------------------
 :: list of available installable system package
@@ -121,22 +123,9 @@ call %STELLA_COMMON%\common-build.bat :set_build_mode_default "RELOCATE" "OFF"
 :: By default we do not provide any build arch information
 :: call %STELLA_COMMON%\common-build.bat :set_build_mode_default "ARCH" ""
 
-:: supported build toolset
-REM CONFIG TOOL | BUILD TOOL 		| COMPIL FRONTEND
-REM    cmake	|	ninja	 		|   gcc 	===> depend on env CC or CMAKE_C_COMPILER (path or exe name)
-REM    cmake	|	ninja	 		|   cl 		===>
-REM    cmake	|	nmake	 		|   cl
-REM    cmake	|	jom		 		|   ?
-REM    cmake	|	mingw-make		|   gcc
-REM 	NULL	|	nmake	 		|   cl
-REM 	NULL	|	mingw-make		|   gcc
 
 REM TOOLSET
-REM STANDARD : 	cmake	|	mingw-make		|   gcc 		|   cl OR gcc ?
-REM MS  : 		cmake	|	nmake	 		|   cl
-set "STELLA_BUILD_DEFAULT_CONFIG_TOOL=cmake"
-set "STELLA_BUILD_DEFAULT_BUILD_TOOL=mingw-make"
-set "STELLA_BUILD_DEFAULT_COMPIL_FRONTEND=gcc"
+set "STELLA_BUILD_DEFAULT_TOOLSET=MS"
 
 :: build engine reset
 call %STELLA_COMMON%\common-build.bat :reset_build_env

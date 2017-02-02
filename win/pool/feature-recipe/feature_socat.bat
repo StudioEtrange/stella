@@ -73,7 +73,7 @@ goto :eof
 	msys2_shell.cmd -mintty -msys2 --full-path -where $STELLA_APP_ROOT
 	msys2_shell.cmd -here -c "more stella.sh"
 	REM http://linuxcommand.org/man_pages/bash1.html
-	REM call %STELLA_COMMON%\common-build.bat :set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL mingw-make COMPIL_FRONTEND gcc"
+	REM call %STELLA_COMMON%\common-build.bat :set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL mingw-make COMPIL_FRONTEND mingw-gcc"
 	try : "$STELLA_ROOT/stella.sh boot cmd local -- __auto_build"
 	REM set AUTO_INSTALL_CONF_FLAG_POSTFIX=
 	REM set AUTO_INSTALL_BUILD_FLAG_POSTFIX=
