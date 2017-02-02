@@ -66,13 +66,13 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 # COMPIL_FRONTEND : default (default means gcc or other aliased compiler already present on system), clang-omp, gcc
 #										in reality COMPIL_FRONTEND should be called COMPIL_DRIVER
 #
-# Available preconfigured toolset on Nix system :
+# Available preconfigured build toolset on Nix system :
 # TOOLSET 		| CONFIG TOOL 				| BUILD TOOL 		| COMPIL FRONTEND
 # STANDARD		|	configure						|		make				|			default
 # AUTOTOOLS		|	autotools-bundle#1	|		make				|			default
 #	NINJA				| cmake								|		ninja				| 		default
 #	CMAKE				|	cmake								|		make				|			default
-
+# NONE ===> disable build toolset and all tools
 
 # NOTE :
 # GCC ------------------------------------------------------
@@ -203,6 +203,13 @@ __set_toolset() {
 				[ "$_flag_frontend" == "ON" ] && COMPIL_FRONTEND=$o && _flag_frontend=OFF
 				[ "$o" == "COMPIL_FRONTEND" ] && _flag_frontend=ON
 			done
+			;;
+
+		NONE)
+			STELLA_BUILD_TOOLSET=NONE
+			CONFIG_TOOL=
+			BUILD_TOOL=
+			COMPIL_FRONTEND=
 			;;
 
 		AUTOTOOLS)

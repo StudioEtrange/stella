@@ -1,4 +1,4 @@
-if [ ! "$_pkgconfig_INCLUDED_" == "1" ]; then 
+if [ ! "$_pkgconfig_INCLUDED_" == "1" ]; then
 _pkgconfig_INCLUDED_=1
 
 # http://www.linuxfromscratch.org/lfs/view/development/chapter06/pkg-config.html
@@ -14,7 +14,7 @@ feature_pkgconfig() {
 
 feature_pkgconfig_0_29() {
 	FEAT_VERSION=0_29
-	
+
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -26,27 +26,31 @@ feature_pkgconfig_0_29() {
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
 
-	FEAT_SOURCE_CALLBACK=	
+	FEAT_SOURCE_CALLBACK=
 	FEAT_BINARY_CALLBACK=
-	FEAT_ENV_CALLBACK=
+	FEAT_ENV_CALLBACK=feature_pkgconfig_env
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/pkg-config
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-	
+
 }
 
-
-
+# add aclocal macro
+#http://askubuntu.com/questions/567813/automake-does-not-find-pkg-config-macros
+feature_pkgconfig_env(){
+	export AL_OPTS="-I $FEAT_INSTALL_ROOT/share/aclocal"
+	export ACLOCAL="aclocal -I $FEAT_INSTALL_ROOT/share/aclocal"
+}
 
 feature_pkgconfig_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 
 	__set_toolset "STANDARD"
-	
+
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="--with-internal-glib --disable-host-tool --disable-debug"
@@ -56,10 +60,10 @@ feature_pkgconfig_install_source() {
 	# to build blib on darwin
 	[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && STELLA_LINK_FLAGS="-framework Carbon $STELLA_LINK_FLAGS"
 
-	
+
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD"
-	
-	
+
+
 
 }
 

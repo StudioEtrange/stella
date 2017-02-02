@@ -36,14 +36,14 @@ goto :eof
 ::		__link_feature_library
 
 ::		AUTOMATIC BUILD AND INSTALL
-::		__auto_build
+::		__auto_build OR __start_manual_build/__end_manual_build
 
 
 ::				INSTALL/INIT REQUIRED TOOLSET
-::				__enable_current_toolset
+::				__enable_current_toolset 	(included in __start_manual_build)
 
 ::				SET BUILD ENV AND FLAGS
-::				__prepare_build
+::				__prepare_build (included in __start_manual_build)
 ::
 ::
 ::						call set_env_vars_for_gcc
@@ -60,7 +60,7 @@ goto :eof
 ::						call __check_built_files
 
 ::				DISABLE REQUIRED TOOLSET
-::				__disable_current_toolset
+::				__disable_current_toolset (included in __end_manual_build)
 
 :: TOOLSET & BUILD TOOLS ----------------
 :: Available tools :
@@ -70,11 +70,12 @@ goto :eof
 ::						in reality COMPIL_FRONTEND should be called COMPIL_DRIVER
 ::
 ::
-:: Available preconfigured toolset on windows system :
+:: Available preconfigured build toolset on windows system :
 :: 	TOOLSET 		| CONFIG TOOL 				| BUILD TOOL 							| COMPIL FRONTEND
 ::	MS				|	cmake					|		nmake							|			cl
 :: 	MSYS2			| 	configure				|		make							|			gcc
 ::	MINGW-W64		| 	NULL					|		mingw-make						|		( cl OR gcc ?) (default?)
+:: NONE ===> disable build toolset and all tools
 
 :: TODO : MSYS2 TOOLSET
 ::		make AND gcc are installed from pacman : bundle : mingw64/mingw-w64-x86_64-toolchain or mingw32/mingw-w64-i686-toolchain
@@ -114,7 +115,7 @@ goto :eof
 
 :toolset_init
 	set "_schema_toolset=%~1"
-	
+
 	set "_toolset_init_save_app_feature_root=!STELLA_APP_FEATURE_ROOT!"
 	set "STELLA_APP_FEATURE_ROOT=!STELLA_INTERNAL_TOOLSET_ROOT!"
 	call %STELLA_COMMON%\common-feature.bat :push_schema_context
@@ -200,6 +201,13 @@ goto :eof
 		)
 	)
 
+	if "!_toolset!"=="NONE" (
+		set "STELLA_BUILD_TOOLSET=NONE"
+		set "CONFIG_TOOL="
+		set "BUILD_TOOL="
+		set "COMPIL_FRONTEND="
+	)
+
 	if "!_toolset!"=="MINGW-W64" (
 		set "STELLA_BUILD_TOOLSET=MINGW-W64"
 		set "CONFIG_TOOL="
@@ -215,7 +223,7 @@ goto :eof
 		set "COMPIL_FRONTEND=cl"
 	)
 
-	
+
 	REM TODO autoselect ninja instead of make if using cmake
 	REM if "!CONFIG_TOOL!"=="cmake" (
 	REM if not "!_flag_build!"=="FORCE" (
@@ -292,42 +300,48 @@ goto :eof
 	)
 
 	REM STELLA_BUILD_CONFIG_TOOL
-	set "_t="
-	call %STELLA_COMMON%\common-feature.bat :translate_schema "!STELLA_BUILD_CONFIG_TOOL!" "_t"
-	if "!_t!"=="cmake" (
-		call :toolset_install "!STELLA_BUILD_CONFIG_TOOL!"
-		call :toolset_init "!STELLA_BUILD_CONFIG_TOOL!"
+	if not "!STELLA_BUILD_CONFIG_TOOL!"=="" (
+		set "_t="
+		call %STELLA_COMMON%\common-feature.bat :translate_schema "!STELLA_BUILD_CONFIG_TOOL!" "_t"
+		if "!_t!"=="cmake" (
+			call :toolset_install "!STELLA_BUILD_CONFIG_TOOL!"
+			call :toolset_init "!STELLA_BUILD_CONFIG_TOOL!"
+		)
 	)
 
 	REM STELLA_BUILD_BUILD_TOOL
-	if "!STELLA_BUILD_BUILD_TOOL_BIN!"=="nmake" (
-		set "_active_vs=1"
-	) else (
-		set "_t="
-		call %STELLA_COMMON%\common-feature.bat :translate_schema "!STELLA_BUILD_BUILD_TOOL!" "_t"
-		if "!_t!"=="mingw-make" (
-			call :toolset_install "mingw-w64"
-			call :toolset_init "mingw-w64"
+	if not "!STELLA_BUILD_BUILD_TOOL!"=="" (
+		if "!STELLA_BUILD_BUILD_TOOL_BIN!"=="nmake" (
+			set "_active_vs=1"
 		) else (
-			REM ninja, jom, make
-			call :toolset_install "!STELLA_BUILD_BUILD_TOOL!"
-			call :toolset_init "!STELLA_BUILD_BUILD_TOOL!"
+			set "_t="
+			call %STELLA_COMMON%\common-feature.bat :translate_schema "!STELLA_BUILD_BUILD_TOOL!" "_t"
+			if "!_t!"=="mingw-make" (
+				call :toolset_install "mingw-w64"
+				call :toolset_init "mingw-w64"
+			) else (
+				REM ninja, jom, make
+				call :toolset_install "!STELLA_BUILD_BUILD_TOOL!"
+				call :toolset_init "!STELLA_BUILD_BUILD_TOOL!"
+			)
 		)
 	)
 
 	REM STELLA_BUILD_COMPIL_FRONTEND
-	if "!STELLA_BUILD_COMPIL_FRONTEND_BIN!"=="cl" (
-		set "_active_vs=1"
-	) else (
-		set "_t="
-		call %STELLA_COMMON%\common-feature.bat :translate_schema "!STELLA_BUILD_COMPIL_FRONTEND!" "_t"
-		if "!_t!"=="mingw-gcc" (
-			call :toolset_install "mingw-w64"
-			call :toolset_init "mingw-w64"
+	if not "!STELLA_BUILD_COMPIL_FRONTEND!"=="" (
+		if "!STELLA_BUILD_COMPIL_FRONTEND_BIN!"=="cl" (
+			set "_active_vs=1"
 		) else (
-			REM gcc
-			call :toolset_install "!STELLA_BUILD_COMPIL_FRONTEND!"
-			call :toolset_init "!STELLA_BUILD_COMPIL_FRONTEND!"
+			set "_t="
+			call %STELLA_COMMON%\common-feature.bat :translate_schema "!STELLA_BUILD_COMPIL_FRONTEND!" "_t"
+			if "!_t!"=="mingw-gcc" (
+				call :toolset_install "mingw-w64"
+				call :toolset_init "mingw-w64"
+			) else (
+				REM gcc
+				call :toolset_install "!STELLA_BUILD_COMPIL_FRONTEND!"
+				call :toolset_init "!STELLA_BUILD_COMPIL_FRONTEND!"
+			)
 		)
 	)
 
@@ -397,6 +411,22 @@ goto :eof
 goto :eof
 
 :: BUILD ------------------------------------------------------------------------------------------------------------------------------
+:start_manual_build
+	set "NAME=%~1"
+	set "SOURCE_DIR=%~2"
+	set "INSTALL_DIR=%~3"
+
+	echo ** Manual-building $NAME"
+
+	call :enable_current_toolset
+	call :prepare_build "!INSTALL_DIR!" "!SOURCE_DIR!"
+goto :eof
+
+:end_manual_build
+	call :disable_current_toolset
+	echo ** Done
+goto :eof
+
 :auto_build
 	set "NAME=%~1"
 	set "SOURCE_DIR=%~2"
@@ -460,7 +490,7 @@ goto :eof
 		echo ** Out of tree build is not active
 	)
 
-	
+
 
 	:: set build env
 	call :prepare_build "!INSTALL_DIR!" "!SOURCE_DIR!" "!BUILD_DIR!"
@@ -605,7 +635,7 @@ goto :eof
 		)
 		if "%%O"=="POST_BUILD_STEP" (
 			set "_flag_post_build_step=ON"
-		)		
+		)
 	)
 
 	:: FLAGs
@@ -1261,7 +1291,7 @@ goto :eof
 	set "_source_dir=%~2"
 	set "_build_dir=%~3"
 
-	
+
 	:: set env
 	call :set_build_env "ARCH" "!STELLA_BUILD_ARCH!"
 	call :set_build_env "CPU_INSTRUCTION_SCOPE" "!STELLA_BUILD_CPU_INSTRUCTION_SCOPE!"
@@ -1374,7 +1404,7 @@ goto :eof
 
 :: set flags and env for standard build tools (GNU MAKE,...)
 :set_env_vars_for_gcc
-	
+
 	:: ADD linked libraries flags
 	call %STELLA_COMMON%\common.bat :trim "LINKED_LIBS_C_CXX_FLAGS" "!LINKED_LIBS_C_CXX_FLAGS!"
 	call %STELLA_COMMON%\common.bat :trim "LINKED_LIBS_CPP_FLAGS" "!LINKED_LIBS_CPP_FLAGS!"
@@ -1828,7 +1858,7 @@ goto :eof
 			echo ** Detected Visual Studio 2013 in !VS120COMNTOOLS!
 		) else (
 			echo ** WARN VS120COMNTOOLS is setted with !VS120COMNTOOLS! but folder do not exist
-		)	
+		)
 	)
 	REM Visual Studio 2014 OR VS13/VC13 does not exist
 	REM Visual Studio 2015
@@ -1891,7 +1921,7 @@ goto :eof
 
 		REM Reinit PATH Values
 		call %STELLA_COMMON%\common-feature.bat :feature_reinit_installed
-	
+
 
 	) else (
 		echo WARN Visual Studio is not found
@@ -1899,5 +1929,5 @@ goto :eof
 	)
 
 
-	
+
 goto :eof
