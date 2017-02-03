@@ -56,7 +56,8 @@ goto :eof
 :feature_freetype_link
 	call %STELLA_COMMON%\common-build.bat :link_feature_library "zlib#1_2_8" "FORCE_DYNAMIC"
 	call %STELLA_COMMON%\common-build.bat :link_feature_library "libpng#1_6_18" "FORCE_DYNAMIC"
-	call %STELLA_COMMON%\common-build.bat :link_feature_library "bzip2#1_0_6" "FORCE_STATIC FORCE_RENAME libbz2-static.lib libbz2.lib"
+	REM call %STELLA_COMMON%\common-build.bat :link_feature_library "bzip2#1_0_6" "FORCE_STATIC FORCE_RENAME libbz2-static.lib libbz2.lib"
+	call %STELLA_COMMON%\common-build.bat :link_feature_library "bzip2#1_0_6"
 goto :eof
 
 :feature_freetype_install_source

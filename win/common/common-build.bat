@@ -879,7 +879,6 @@ goto :eof
 		set "_opt_flavour=FORCE_STATIC"
 	)
 
-	REM FORCE_RENAME : rename files when isolating files -- only apply when FORCE_STATIC or FORCE_DYNAMIC is ON
 	for %%O in (%OPT%) do (
 		if "%%O"=="FORCE_STATIC" (
 			set _opt_flavour=%%O
@@ -1717,6 +1716,7 @@ goto :eof
 :: by setting
 ::		UNKNOW, STATIC, IMPORT
 :: first argument is the file to test
+:: TODO when using this function, lib.exe or objdump.exe might not be on PATH yet (toolsets might be enabled later)
 :is_import_or_static_lib
 	set "_result_var=%~1"
 	set "!_result_var!=UNKNOW"
