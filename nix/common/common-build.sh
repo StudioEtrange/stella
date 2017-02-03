@@ -126,17 +126,20 @@ __toolset_install() {
 }
 
 __toolset_info() {
+	__push_schema_context
 	local _save_STELLA_APP_FEATURE_ROOT=$STELLA_APP_FEATURE_ROOT
 	STELLA_APP_FEATURE_ROOT=$STELLA_INTERNAL_TOOLSET_ROOT
 	__feature_info "$1" "TOOLSET"
 	STELLA_APP_FEATURE_ROOT=$_save_STELLA_APP_FEATURE_ROOT
+	__pop_schema_context
 }
 
 __toolset_init() {
 	local _SCHEMA=$1
+	__push_schema_context
 	local _save_STELLA_APP_FEATURE_ROOT=$STELLA_APP_FEATURE_ROOT
 	STELLA_APP_FEATURE_ROOT=$STELLA_INTERNAL_TOOLSET_ROOT
-	__push_schema_context
+
 
 	__internal_feature_context "$_SCHEMA"
 	__feature_inspect "$FEAT_SCHEMA_SELECTED"
