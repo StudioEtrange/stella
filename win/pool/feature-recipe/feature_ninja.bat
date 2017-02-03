@@ -66,16 +66,23 @@ goto :eof
 goto :eof
 
 :feature_ninja_install_source
+	set "INSTALL_DIR=!FEAT_INSTALL_ROOT!"
+	set "SRC_DIR=!FEAT_INSTALL_ROOT!"
+
 	call %STELLA_COMMON%\common.bat :get_resource "!FEAT_NAME!" "!FEAT_SOURCE_URL!" "!FEAT_SOURCE_URL_PROTOCOL!" "!FEAT_INSTALL_ROOT!" "DEST_ERASE STRIP FORCE_NAME !FEAT_SOURCE_URL_FILENAME!"
 
-	call %STELLA_COMMON%\common-build.bat :set_toolset "NONE"
+	call %STELLA_COMMON%\common-build.bat :set_toolset "MS"
 	call %STELLA_COMMON%\common-build.bat :add_toolset "miniconda#4_2_12_PYTHON2"
 
 	call %STELLA_COMMON%\common-build.bat :start_manual_build "!FEAT_NAME!" "!SRC_DIR!" "!INSTALL_DIR!"
 
 	cd /D "!FEAT_INSTALL_ROOT!"
-	python bootstrap.py
-
+	
+	if "!FEAT_VERSION!"=="1_6_0" (
+		python bootstrap.py
+	) else (
+		python configure.py --bootstrap
+	)
 	call %STELLA_COMMON%\common-build.bat :end_manual_build
 
 goto :eof

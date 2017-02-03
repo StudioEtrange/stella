@@ -186,7 +186,9 @@ goto :eof
 			set "!_t!=!FEAT_SEARCH_PATH!"
 		)
 	)
+
 	call :pop_schema_context
+
 goto :eof
 
 :: test if a feature is installed

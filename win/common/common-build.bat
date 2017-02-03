@@ -94,35 +94,43 @@ goto :eof
 
 :: TOOLSET ------------------------------------------------------------------------------------------------------------------------------
 :toolset_install
+	call %STELLA_COMMON%\common-feature.bat :push_schema_context
 	set "_toolset_install_save_app_feature_root=!STELLA_APP_FEATURE_ROOT!"
 	set "_toolset_install_save_force=!FORCE!"
 	set "FORCE="
-	set "STELLA_APP_FEATURE_ROOT=!STELLA_INTERNAL_TOOLSET_ROOT!"
 
+	set "STELLA_APP_FEATURE_ROOT=!STELLA_INTERNAL_TOOLSET_ROOT!"
 	call %STELLA_COMMON%\common-feature.bat :feature_install %~1 "HIDDEN"
 
 	set "STELLA_APP_FEATURE_ROOT=!_toolset_install_save_app_feature_root!"
 	set "FORCE=!_toolset_install_save_force!"
+	call %STELLA_COMMON%\common-feature.bat :pop_schema_context
 goto :eof
 
 :toolset_info
+	call %STELLA_COMMON%\common-feature.bat :push_schema_context
 	set "_toolset_info_save_app_feature_root=!STELLA_APP_FEATURE_ROOT!"
 	set "STELLA_APP_FEATURE_ROOT=!STELLA_INTERNAL_TOOLSET_ROOT!"
+
 	call %STELLA_COMMON%\common-feature.bat :feature_info %~1 "TOOLSET"
+
 	set "STELLA_APP_FEATURE_ROOT=!_toolset_info_save_app_feature_root!"
+	call %STELLA_COMMON%\common-feature.bat :pop_schema_context
 goto :eof
 
 
 :toolset_init
 	set "_schema_toolset=%~1"
 
+	call %STELLA_COMMON%\common-feature.bat :push_schema_context
 	set "_toolset_init_save_app_feature_root=!STELLA_APP_FEATURE_ROOT!"
 	set "STELLA_APP_FEATURE_ROOT=!STELLA_INTERNAL_TOOLSET_ROOT!"
-	call %STELLA_COMMON%\common-feature.bat :push_schema_context
+
 
 	call %STELLA_COMMON%\common-feature.bat :internal_feature_context "!_schema_toolset!"
 
 	call %STELLA_COMMON%\common-feature.bat :feature_inspect !FEAT_SCHEMA_SELECTED!
+
 	if "!TEST_FEATURE!"=="1" (
 
 		if not "!FEAT_BUNDLE!"=="" (
@@ -149,9 +157,10 @@ goto :eof
 			call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :%%p
 		)
 
-		set "STELLA_APP_FEATURE_ROOT=!_toolset_init_save_app_feature_root!"
-		call %STELLA_COMMON%\common-feature.bat :pop_schema_context
 	)
+
+	set "STELLA_APP_FEATURE_ROOT=!_toolset_init_save_app_feature_root!"
+	call %STELLA_COMMON%\common-feature.bat :pop_schema_context
 goto :eof
 
 :add_toolset
@@ -289,9 +298,10 @@ goto :eof
 goto :eof
 
 :enable_current_toolset
+
 	echo ** Require build toolset : !STELLA_BUILD_TOOLSET! [ config_tool:!STELLA_BUILD_CONFIG_TOOL! build_tool:!STELLA_BUILD_BUILD_TOOL! compil_frontend:!STELLA_BUILD_COMPIL_FRONTEND! ]
 	set "_active_vs="
-	if "!STELLA_BUILD_TOOLSET!" == "MS" (
+	if "!STELLA_BUILD_TOOLSET!"=="MS" (
 		set "_active_vs=1"
 	)
 	if "!STELLA_BUILD_TOOLSET!" == "MINGW-W64" (
@@ -349,20 +359,21 @@ goto :eof
 
 	echo ** Require extra toolset : !STELLA_BUILD_EXTRA_TOOLSET!
 	for %%s in (!STELLA_BUILD_EXTRA_TOOLSET!) do (
-		call :toolset_install "$s"
-		call :toolset_init "$s"
+		call :toolset_install "%%s"
+		call :toolset_init "%%s"
 	)
 
-
 	echo ** All toolset are installed
+
 	echo ** Set toolsets search path
 	set "_save_path_CURRENT_TOOLSET=!PATH!"
-	set "PATH=!STELLA_BUILD_TOOLSET_PATH!;!PATH!"
 
+	REM set visual studio path and env vars
 	if "!_active_vs!"=="1" (
 		call :vs_env_vars !STELLA_BUILD_ARCH!
 	)
 
+	set "PATH=!STELLA_BUILD_TOOLSET_PATH!;!PATH!"
 
 
 	echo ** Init specific toolset env var
@@ -373,6 +384,9 @@ goto :eof
 		set "CC=!TOOLSET_FEAT_INSTALL_ROOT!\bin\gcc"
 		set "CXX=!TOOLSET_FEAT_INSTALL_ROOT!\bin\gcc"
 		set "CPP=!TOOLSET_FEAT_INSTALL_ROOT!\bin\gcc"
+		REM set "AR=!TOOLSET_FEAT_INSTALL_ROOT!\bin\ar"
+		REM set "AS=!TOOLSET_FEAT_INSTALL_ROOT!\bin\as"
+		REM set "LIBRARY_PATH=!LIBRARY_PATH!;!TOOLSET_FEAT_INSTALL_ROOT!\lib\gcc\x86_64-w64-mingw32\4.9.2"
 		REM set CMAKE_C_COMPILER=mingw32-gcc
 		REM set CMAKE_CXX_COMPILER=mingw32-gcc
 		REM activate gcc libs search folder at link time
@@ -383,6 +397,7 @@ goto :eof
 		set "CC=!TOOLSET_FEAT_INSTALL_ROOT!\bin\gcc"
 		set "CXX=!TOOLSET_FEAT_INSTALL_ROOT!\bin\gcc"
 		set "CPP=!TOOLSET_FEAT_INSTALL_ROOT!\bin\gcc"
+		set "LIBRARY_PATH=!LIBRARY_PATH!;!TOOLSET_FEAT_INSTALL_ROOT!\lib"
 		REM set CMAKE_C_COMPILER=gcc
 		REM set CMAKE_CXX_COMPILER=gcc
 		REM activate gcc libs search folder at link time
@@ -400,9 +415,6 @@ goto :eof
 		REM set CMAKE_CXX_COMPILER=cl
 	)
 
-
-
-
 goto :eof
 
 :disable_current_toolset
@@ -416,9 +428,10 @@ goto :eof
 	set "SOURCE_DIR=%~2"
 	set "INSTALL_DIR=%~3"
 
-	echo ** Manual-building $NAME"
+	echo ** Manual-building !NAME!
 
 	call :enable_current_toolset
+
 	call :prepare_build "!INSTALL_DIR!" "!SOURCE_DIR!"
 goto :eof
 
@@ -588,8 +601,6 @@ goto :eof
 		-DCMAKE_LIBRARY_PATH="!CMAKE_LIBRARY_PATH!" -DCMAKE_INCLUDE_PATH="!CMAKE_INCLUDE_PATH!" ^
 		-DCMAKE_SYSTEM_INCLUDE_PATH:PATH="!CMAKE_INCLUDE_PATH!" -DCMAKE_SYSTEM_LIBRARY_PATH:PATH="!CMAKE_LIBRARY_PATH!" ^
 		-G "!CMAKE_GENERATOR!"
-
-
 
 	)
 
@@ -1341,9 +1352,9 @@ goto :eof
 	echo ====^> Relocatable : !STELLA_BUILD_RELOCATE!
 	echo ====^> Linked lib from stella features : !LINKED_LIBS_LIST!
 	echo ** FOLDERS
-	echo ====^> Install directory : !INSTALL_DIR!
-	echo ====^> Source directory : !SOURCE_DIR!
-	echo ====^> Build directory : !BUILD_DIR!
+	echo ====^> Install directory : !_install_dir!
+	echo ====^> Source directory : !_source_dir!
+	echo ====^> Build directory : !_build_dir!
 	echo ** SOME FLAGS
 	echo ====^> STELLA_C_CXX_FLAGS : !STELLA_C_CXX_FLAGS!
 	echo ====^> STELLA_CPP_FLAGS : !STELLA_CPP_FLAGS!
@@ -1796,6 +1807,7 @@ goto :eof
 	set vstudio=
 	set vcpath=
 
+
 	echo ** Active Visual Studio
 
 	REM Visual Studio 2005
@@ -1875,6 +1887,8 @@ goto :eof
 
 
 	if not "!vstudio!"=="" (
+		
+		set "_save_path_vs_env_vars=!PATH!"
 
 		REM set VC env vars
 		if "!vstudio!"=="vs10" (
@@ -1914,13 +1928,18 @@ goto :eof
 			)
 		)
 
+		REM NOTE on PATH variable :
 		REM ORIGINALPATH is a variable setted with some version of VS or WINSDK command line.
-		REM ORIGINALPATH is setted with the value of %PATH% variable of the system
+		REM ORIGINALPATH is setted using the value of %PATH% variable defined in the system (not the real current value of PATH)
 		REM so ORIGINALPATH miss our previously setted PATH setting. It is like a "reset" of PATH
 		REM so we have to set again our own PATH after this
 
+
 		REM Reinit PATH Values
-		call %STELLA_COMMON%\common-feature.bat :feature_reinit_installed
+		set "PATH=!_save_path_vs_env_vars!;!PATH!"
+
+		REM DO NOT USE THIS cause problem with toolset because of STELLA_APP_ROOT redefined
+		REM call %STELLA_COMMON%\common-feature.bat :feature_reinit_installed
 
 
 	) else (
