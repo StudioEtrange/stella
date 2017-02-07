@@ -15,38 +15,138 @@ set FORCE=%-f%
 
 REM --------------- APP ----------------------------
 if "%DOMAIN%"=="app" (
-	set "_app_options="
-	if not "%-approot%"=="" set "_app_options=!_app_options! -approot=%-approot%"
-	if not "%-workroot%"=="" set "_app_options=!_app_options! -workroot=%-workroot%"
-	if not "%-cachedir%"=="" set "_app_options=!_app_options! -cachedir=%-cachedir%"
-	if not "%-stellaroot%"=="" set "_app_options=!_app_options! -stellaroot=%-stellaroot%"
+	call %STELLA_COMMON%\common.bat :init_stella_env
+	
+	if "%ACTION%"=="init" (	
+		if "%-approot%"=="" (
+			set "-approot=%STELLA_CURRENT_RUNNING_DIR%\%id%"
+		)
+		if "%-workroot%"=="" (
+			set "-workroot=!-approot!\workspace"
+		)
+		if "%-cachedir%"=="" (
+			set "-cachedir=!-approot!\cache"
+		)
 
-	if "%-samples%"=="1" set "_app_options=!_app_options! -samples"
-	if "%-f%"=="1" set "_app_options=!_app_options! -f"
+		call %STELLA_COMMON%\common-app :init_app "%id%" "!-approot!" "!-workroot!" "!-cachedir!"
+		if "%-samples%"=="1" (
+			call %STELLA_COMMON%\common-app :create_app_samples "!-approot!"
+			goto :end
+		)
+	)
 
-	call %STELLA_BIN%\app.bat %ACTION% %id% !_app_options!
-	@echo off
-	goto :end
+	if "%ACTION%"=="link" (
+		call %STELLA_COMMON%\common-app.bat :link_app "%id%" "STELLA_ROOT !-stellaroot!"
+		goto :end
+	)
 
+	if not "%ACTION%"=="init" if not "%ACTION%"=="link" (
+		if not exist "%_STELLA_APP_PROPERTIES_FILE%" (
+			echo ** ERROR properties file does not exist
+			goto :end
+		)
+	)
+
+	if "%ACTION%"=="get-feature" (
+		if "%id%"=="all" (
+			call %STELLA_COMMON%\common-app.bat :get_features
+		) else (
+			call %STELLA_COMMON%\common-app.bat :get_feature "%id%"
+		)
+		goto :end
+	)
+	if "%ACTION%"=="get-data" (
+		call %STELLA_COMMON%\common-app.bat :get_data "%id%"
+		goto :end
+	)
+	if "%ACTION%"=="get-data-pack" (
+		call %STELLA_COMMON%\common-app.bat :get_data_pack "%id%"
+		goto :end
+	)
+	if "%ACTION%"=="get-assets" (
+		call %STELLA_COMMON%\common-app.bat :get_assets "%id%"
+		goto :end
+	)
+	if "%ACTION%"=="get-assets-pack" (
+		call %STELLA_COMMON%\common-app.bat :get_assets_pack "%id%"
+		goto :end
+	)
+	if "%ACTION%"=="delete-data" (
+		call %STELLA_COMMON%\common-app.bat :delete_data "%id%"
+		goto :end
+	)
+	if "%ACTION%"=="delete-assets" (
+		call %STELLA_COMMON%\common-app.bat :delete_assets "%id%"
+		goto :end
+	)
+	if "%ACTION%"=="delete-data-pack" (
+		call %STELLA_COMMON%\common-app.bat :delete_data_pack "%id%"
+		goto :end
+	)
+	if "%ACTION%"=="delete-assets-pack" (
+		call %STELLA_COMMON%\common-app.bat :delete_assets_pack "%id%"
+		goto :end
+	)
+	if "%ACTION%"=="update-data" (
+		call %STELLA_COMMON%\common-app.bat :update_data "%id%"
+		goto :end
+	)
+	if "%ACTION%"=="update-assets" (
+		call %STELLA_COMMON%\common-app.bat :update_assets "%id%"
+		goto :end
+	)
+	if "%ACTION%"=="revert-data" (
+		call %STELLA_COMMON%\common-app.bat :revert_data "%id%"
+		goto :end
+	)
+	if "%ACTION%"=="revert-assets" (
+		call %STELLA_COMMON%\common-app.bat :revert_assets "%id%"
+		goto :end
+	)
 )
 if "%DOMAIN%"=="app" goto :end
 
 
 REM --------------- FEATURE ----------------------------
 if "%DOMAIN%"=="feature" (
-	set "_feature_options="
+	call %STELLA_COMMON%\common.bat :init_stella_env
 
-	if "%-f%"=="1" set "_feature_options=!_feature_options! -f"
-	if not "%-buildarch%"=="" set "_feature_options=!_feature_options! -buildarch !-buildarch!"
-	if "%-depforce%"=="1" set "_feature_options=!_feature_options! -depforce"
-	if "%-depignore%"=="1" set "_feature_options=!_feature_options! -depignore"
+	if "%ACTION%"=="install" (
+		set "_feature_options="
+		if not "%-buildarch%"=="" (
+			call %STELLA_COMMON%\common-build.bat :set_build_mode_default "ARCH" "%-buildarch%"
+		)
+		if "%-depforce%"=="1" set "_feature_options=!_feature_options! DEP_FORCE"
+		if "%-depignore%"=="1" set "_feature_options=!_feature_options! DEP_IGNORE"
+		
+		if not "%-export%"=="" set "_feature_options=!_feature_options! EXPORT !-export!"
+		if not "%-portable%"=="" set "_feature_options=!_feature_options! PORTABLE !-portable!"
 
-	if not "%-export%"=="" set "_feature_options=!_feature_options! -export=!-export!"
-	if not "%-portable%"=="" set "_feature_options=!_feature_options! -portable=!-portable!"
 
-	call %STELLA_BIN%\feature.bat %ACTION% %id% !_feature_options!
-	@echo off
-	goto :end
+		call %STELLA_COMMON%\common-feature.bat :feature_install %id% "!_feature_options!"
+		goto :end
+	)
+
+	if "%ACTION%"=="remove" (
+		call %STELLA_COMMON%\common-feature.bat :feature_remove %id%
+		goto :end
+	)
+
+
+	if "%ACTION%"=="list" (
+		if "%id%"=="all" (
+			echo all %__STELLA_FEATURE_LIST%
+		) else (
+			if "%id%"=="active" (
+				call %STELLA_COMMON%\common-feature.bat :list_active_features _TMP
+				if not "!_TMP!"=="" echo !_TMP!
+			) else (
+				call %STELLA_COMMON%\common-feature.bat :list_feature_version %id% _TMP
+				if not "!_TMP!"=="" echo !_TMP!
+			)
+		)
+		goto :end
+	)
 
 )
 if "%DOMAIN%"=="feature" goto :end
