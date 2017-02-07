@@ -1716,7 +1716,8 @@ goto :eof
 :: by setting
 ::		UNKNOW, STATIC, IMPORT
 :: first argument is the file to test
-:: TODO when using this function, lib.exe or objdump.exe might not be on PATH yet (toolsets might be enabled later)
+:: TODO FIXME when using this function, lib.exe or objdump.exe might not be on PATH yet (toolsets might be enabled later)
+:: https://github.com/soluwalana/pefile-go
 :is_import_or_static_lib
 	set "_result_var=%~1"
 	set "!_result_var!=UNKNOW"
@@ -1887,7 +1888,7 @@ goto :eof
 
 
 	if not "!vstudio!"=="" (
-		
+
 		set "_save_path_vs_env_vars=!PATH!"
 
 		REM set VC env vars

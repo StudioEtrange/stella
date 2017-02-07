@@ -133,3 +133,5 @@ http://stackoverflow.com/questions/733824/how-to-run-a-shell-script-on-a-unix-co
 [ ] shadow features : rename temporary some folder to deactivate features ? (for example, different build tools, to select the right one) or use symlink in case of build tools
 
 [ ] win : remove bin/ folder
+
+[ ] lib binary https://github.com/soluwalana/pefile-go
