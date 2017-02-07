@@ -16,8 +16,8 @@ goto :eof
 	set FEAT_SOURCE_DEPENDENCIES=
 	set FEAT_BINARY_DEPENDENCIES=
 
-	set "FEAT_SOURCE_URL=http://zlib.net/zlib128.zip"
-	set "FEAT_SOURCE_URL_FILENAME=zlib128.zip"
+	set "FEAT_SOURCE_URL=https://github.com/madler/zlib/archive/v1.2.8.zip"
+	set "FEAT_SOURCE_URL_FILENAME==zlib-v1.2.8.zip"
 	set "FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP"
 	
 	set FEAT_BINARY_URL=
@@ -38,7 +38,6 @@ goto :eof
 	set "INSTALL_DIR=!FEAT_INSTALL_ROOT!"
 	set "SRC_DIR=!STELLA_APP_FEATURE_ROOT!\!FEAT_NAME!-!FEAT_VERSION!-src"
 	
-
 	call %STELLA_COMMON%\common-build.bat :set_toolset "MS"
 
 	call %STELLA_COMMON%\common.bat :get_resource "!FEAT_NAME!" "!FEAT_SOURCE_URL!" "!FEAT_SOURCE_URL_PROTOCOL!" "!SRC_DIR!" "STRIP"	
