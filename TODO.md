@@ -43,7 +43,8 @@ use
   apm install linter
   apm install linter-checkbashisms
 ```
-
+[ ] nix : color & style 
+https://odb.github.io/shml/
 [ ] nix : explore https://github.com/alebcay/awesome-shell
 [ ] Update README
   [ ] history : FIRST PUSH OF stella pre version : https://bitbucket.org/StudioEtrange/ryzomcore-script/src/1308706a1dc3f1dde7d65b048e9b16f2a2f2f518

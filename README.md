@@ -1,3 +1,5 @@
+* WARNING : not stable *
+
 # Stella
 
 Stella is a collection of tools, libraries and a framework for command line application, environment management or sandboxing.
