@@ -1080,8 +1080,6 @@ __compress() {
 }
 
 __uncompress() {
-	# TODO : progress bar
-	# http://stackoverflow.com/questions/238073/how-to-add-a-progress-bar-to-a-shell-script
 	local FILE_PATH
 	local UNZIP_DIR
 	local OPT

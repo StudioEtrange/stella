@@ -44,6 +44,7 @@ use
   apm install linter-checkbashisms
 ```
 
+[ ] nix : explore https://github.com/alebcay/awesome-shell
 [ ] Update README
   [ ] history : FIRST PUSH OF stella pre version : https://bitbucket.org/StudioEtrange/ryzomcore-script/src/1308706a1dc3f1dde7d65b048e9b16f2a2f2f518
 
@@ -104,7 +105,7 @@ http://stackoverflow.com/questions/733824/how-to-run-a-shell-script-on-a-unix-co
     nix : use augeas https://github.com/hercules-team/augeas ? -- see ryba ? (nodejs) -- use simple sed ?
     win : ?
 
-[ ] turn stella/bin folder into module ?
+[ ] turn stella/nix/common/* folder into module ?
     module/core
     module/feature
     module/app
@@ -116,9 +117,9 @@ http://stackoverflow.com/questions/733824/how-to-run-a-shell-script-on-a-unix-co
 
 [ ] speed up grep http://applocator.blogspot.fr/2013/10/speed-up-bash-scripts-that-use-grep.html
 
-[ ] nix : explore https://github.com/alebcay/awesome-shell
 
-[ ] macos : download homebrew binary  https://homebrew.bintray.com/bottles/libzip-1.0.1.el_capitan.bottle.tar.gz
+
+[ ] macos : download homebrew binary (but special build and should depend on brew installed library ?) https://homebrew.bintray.com/bottles/libzip-1.0.1.el_capitan.bottle.tar.gz
 
 [ ] portable feature installation : embedded all dependencies,including system ?
 
@@ -134,4 +135,17 @@ http://stackoverflow.com/questions/733824/how-to-run-a-shell-script-on-a-unix-co
 
 [X] win : remove bin/ folder
 
-[ ] lib binary https://github.com/soluwalana/pefile-go
+[ ] nix : when using __link_feature_library with option FORCE_STATIC, there should be no rpath setted path, because lib is statically linked - no need of an internal registerd search path (=rpath)
+
+[ ] lib parse binary https://github.com/soluwalana/pefile-go
+
+[ ] progress bar :
+http://stackoverflow.com/questions/238073/how-to-add-a-progress-bar-to-a-shell-script
+https://github.com/dspinellis/pmonitor
+http://stackoverflow.com/a/238140/5027535
+https://gist.github.com/unhammer/b0ab6a6aa8e1eeaf236b
+https://github.com/edouard-lopez/progress-bar.sh
+http://stackoverflow.com/a/16348366/5027535
+spinner :
+http://stackoverflow.com/a/3330834/5027535
+https://github.com/marascio/bash-tips-and-tricks/tree/master/showing-progress-with-a-bash-spinner
