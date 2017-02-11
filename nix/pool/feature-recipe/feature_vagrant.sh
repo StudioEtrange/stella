@@ -142,6 +142,7 @@ feature_vagrant_install_binary() {
 			sed -i".bak" "s,/opt/vagrant,$FEAT_INSTALL_ROOT," "$FEAT_INSTALL_ROOT"/vagrant
 
 			#__tweak_binary_file "$FEAT_INSTALL_ROOT"/bin "FIX_LINKED_LIB $FEAT_INSTALL_ROOT/embedded/lib"
+
 			__tweak_binary_file "$FEAT_INSTALL_ROOT"/embedded/bin "FIX_LINKED_LIB $FEAT_INSTALL_ROOT/embedded/lib"
 			__tweak_binary_file "$FEAT_INSTALL_ROOT"/embedded/lib "FIX_LINKED_LIB $FEAT_INSTALL_ROOT/embedded/lib"
 			__check_binary_file "$FEAT_INSTALL_ROOT"/bin
