@@ -70,7 +70,7 @@ feature_libxml2_install_source() {
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
-	AUTO_INSTALL_CONF_FLAG_POSTFIX="--with-threads --with-tree --with-history --without-python"
+	AUTO_INSTALL_CONF_FLAG_POSTFIX="--with-sax1 --with-writer --with-schemas --with-threads --with-tree --with-history --without-python"
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 

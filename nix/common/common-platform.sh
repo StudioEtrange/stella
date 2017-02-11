@@ -182,7 +182,7 @@ __set_current_platform_info() {
 		STELLA_HOST_IP=$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*')
 	fi
 
-	__override_platform_command 
+	__override_platform_command
 
 }
 
@@ -264,18 +264,15 @@ __require() {
 	# OPTIONAL
 	# SYSTEM
 	# STELLA_FEATURE
-	# STELLA_TOOLSET # DEPRECATED
 	local _opt_optional=OFF
 	local _opt_system=ON
 	local _opt_stella_feature=OFF
-	local _opt_stella_toolset=OFF
 
 
 	for o in $_OPT; do
 		[ "$o" == "OPTIONAL" ] && _opt_optional=ON
 		[ "$o" == "SYSTEM" ] && _opt_system=ON && _opt_stella_feature=OFF && _opt_stella_toolset=OFF
 		[ "$o" == "STELLA_FEATURE" ] && _opt_system=OFF && _opt_stella_feature=ON && _opt_stella_toolset=OFF
-		#[ "$o" == "STELLA_TOOLSET" ] && _opt_system=OFF && _opt_stella_feature=OFF && _opt_stella_toolset=ON
 	done
 
 	echo "** REQUIRE $_id ($_artefact)"
@@ -316,17 +313,11 @@ __require() {
 					(__feature_install "$_id" "INTERNAL HIDDEN")
 					__feature_init "$_id" "HIDDEN"
 				else
-					if [ "$_opt_stella_toolset" == "ON" ]; then
-						echo "** REQUIRE TOOLSET $_id : installing it from stella"
-						__toolset_install "$_id"
-						__toolset_init "$_id"
-					else
-						echo "** ERROR -- Please install $_artefact"
-						echo "-- For a system install : try stella.sh sys install $_id OR your regular OS package manager"
-						echo "-- For an install from Stella : try stella.sh feature install $_id"
-						_result=1
-						exit 1
-					fi
+					echo "** ERROR -- Please install $_artefact"
+					echo "-- For a system install : try stella.sh sys install $_id OR your regular OS package manager"
+					echo "-- For an install from Stella : try stella.sh feature install $_id"
+					_result=1
+					exit 1
 				fi
 			fi
 		fi

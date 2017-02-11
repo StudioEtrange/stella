@@ -60,7 +60,7 @@ source $STELLA_COMMON/common-boot.sh
 __set_current_platform_info
 
 # GATHER CURRENT APP INFO ---------------------------------------------
-STELLA_APP_PROPERTIES_FILENAME="stella.properties"
+[ "$STELLA_APP_PROPERTIES_FILENAME" == "" ] && STELLA_APP_PROPERTIES_FILENAME="stella.properties"
 STELLA_APP_NAME=
 
 [ "$STELLA_APP_ROOT" == "" ] && STELLA_APP_ROOT="$STELLA_CURRENT_RUNNING_DIR"

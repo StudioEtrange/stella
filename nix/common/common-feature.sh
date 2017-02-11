@@ -461,7 +461,7 @@ __feature_install() {
 			__feature_inspect "$FEAT_SCHEMA_SELECTED"
 		fi
 
-
+	
 		if [ "$TEST_FEATURE" == "0" ]; then
 
 			if [ "$_export_mode" == "OFF" ]; then

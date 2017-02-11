@@ -9,7 +9,7 @@ _DOCKER_INCLUDED_=1
 # depending of the supporting state of your current OS,
 # this recipe will install a docker binary which will be a server AND a client, or just a client, depending of your OS
 
-# this recipe is based on https://docs.docker.com/installation/binaries/
+# this recipe is based on https://docs.docker.com/engine/installation/binaries/
 
 feature_docker() {
 	FEAT_NAME=docker

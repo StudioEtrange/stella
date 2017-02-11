@@ -1,4 +1,4 @@
-* WARNING : not stable *
+**WARNING : not stable**
 
 # Stella
 
