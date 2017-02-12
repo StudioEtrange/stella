@@ -42,8 +42,9 @@ feature_distcc_install_source() {
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
 
-	__set_toolset "AUTOTOOLS"
+	__set_toolset "STANDARD"
 	__add_toolset "miniconda#4_2_12_PYTHON2"
+	__add_toolset "autotools-bundle#1"
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP FORCE_NAME $FEAT_SOURCE_URL_FILENAME"
 

@@ -1,6 +1,8 @@
 if [ ! "$_zeromq_INCLUDED_" == "1" ]; then
 _zeromq_INCLUDED_=1
 
+# 2017-02-11 KO Ubuntu 14.04
+
 # https://github.com/Homebrew/homebrew-core/blob/master/Formula/zeromq.rb
 
 feature_zeromq() {
@@ -41,8 +43,9 @@ feature_zeromq_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
-	__set_toolset "AUTOTOOLS"
-
+	__set_toolset "STANDARD"
+	__add_toolset "autotools-bundle#1"
+	
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
