@@ -4,11 +4,11 @@
 
 # Stella
 
-Stella is a collection of tools, libraries and a framework for command line application, environment management or sandboxing.
+Stella is a collection of tools for command line application, environment management or sandboxing.
 
 Main idea is to provide a simple way to create an isolated environment for you application. Every dependencies reside inside a single folder. Nothing is installed on the system. And you do not need sudo/root permissions.
 
-Just declare your dependencies, from stella recipes, and stella will download, build and/or install them. Stella set also your environment right for each dependencies.
+Just declare your dependencies, from stella recipes, and stella will download, build and/or install them. Stella set also your environment right for each dependencies. Stella act as a package manager.
 
 All you need is internet and git.
 
@@ -64,6 +64,51 @@ git clone https://github.com/StudioEtrange/stella
 stella.bat stella install dep
 ```
 
+## Example
+
+### Installation of a feature
+
+A package is named a 'feature' in stella
+This will download, build and install zlib v1.2.8.
+
+
+```
+./stella.sh feature install zlib#1_2_8
+```
+
+### Create a sample app
+
+This will create a folder my_app, and generate some samples inside
+
+```
+./stella.sh app init my_app --approot=../my_app --samples
+```
+
+### Add a feature to an app
+
+This will install lib jpeg and jq inside your folder app
+
+```
+cd my_app
+./stella-link.sh feature install jq
+```
+
+To use this feature you can use it from your app' shell script (see sample-app.sh) :
+
+```
+#!/bin/bash
+_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+. $_CURRENT_FILE_DIR/stella-link.sh include
+jq
+```
+
+or launch a shell with all your environment variables setted :
+
+```
+cd my_app
+./stella-link.sh boot shell local
+jq
+```
 
 ## Tested Platforms
 
