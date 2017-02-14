@@ -89,20 +89,6 @@ SSHFS ? cache delivering only via HTTP ?
 
 [ ] win : harmonization of internal recipe (patch, unzip, wget, ...)
 
-[ ] nix : code quality shellcheck, lint, bats
-tools :
-http://man.he.net/man1/checkbashisms ===> test portability
-https://github.com/duggan/shlint ===> test portability
-https://github.com/SublimeLinter/SublimeLinter-shellcheck
-http://carlosbecker.com/posts/lint-shell-scripts
-bash to posix :
-https://wiki.ubuntu.com/DashAsBinSh
-http://mywiki.wooledge.org/Bashism
-http://wiki.bash-hackers.org/scripting/obsolete
-shebang :
-http://stackoverflow.com/questions/733824/how-to-run-a-shell-script-on-a-unix-console-or-mac-terminal
-best practice for bash only :
-https://github.com/progrium/bashstyle
 
 [ ] configuration step for each feature recipe
     nix : use augeas https://github.com/hercules-team/augeas ? -- see ryba ? (nodejs) -- use simple sed ?

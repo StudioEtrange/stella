@@ -1,4 +1,4 @@
-if [ ! "$_STELLA_CONF_INCLUDED_" == "1" ]; then
+if [ ! "$_STELLA_CONF_INCLUDED_" = "1" ]; then
 _STELLA_CONF_INCLUDED_=1
 
 # disable PATH lookup command cache
@@ -9,7 +9,7 @@ set -h
 #set -xv
 
 _STELLA_CONF_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-if [ "$STELLA_CURRENT_RUNNING_DIR" == "" ]; then
+if [ "$STELLA_CURRENT_RUNNING_DIR" = "" ]; then
 	#STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
 	STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "." )" && pwd )"
 fi
@@ -60,23 +60,23 @@ source $STELLA_COMMON/common-boot.sh
 __set_current_platform_info
 
 # GATHER CURRENT APP INFO ---------------------------------------------
-[ "$STELLA_APP_PROPERTIES_FILENAME" == "" ] && STELLA_APP_PROPERTIES_FILENAME="stella.properties"
+[ "$STELLA_APP_PROPERTIES_FILENAME" = "" ] && STELLA_APP_PROPERTIES_FILENAME="stella.properties"
 STELLA_APP_NAME=
 
-[ "$STELLA_APP_ROOT" == "" ] && STELLA_APP_ROOT="$STELLA_CURRENT_RUNNING_DIR"
+[ "$STELLA_APP_ROOT" = "" ] && STELLA_APP_ROOT="$STELLA_CURRENT_RUNNING_DIR"
 
 _STELLA_APP_PROPERTIES_FILE="$(__select_app $STELLA_APP_ROOT)"
 __get_all_properties $_STELLA_APP_PROPERTIES_FILE
 
-[ "$STELLA_APP_NAME" == "" ] && STELLA_APP_NAME=stella
+[ "$STELLA_APP_NAME" = "" ] && STELLA_APP_NAME=stella
 
 # APP PATH ---------------------------------------------
 STELLA_APP_ROOT=$(__rel_to_abs_path "$STELLA_APP_ROOT" "$STELLA_CURRENT_RUNNING_DIR")
 
-[ "$STELLA_APP_WORK_ROOT" == "" ] && STELLA_APP_WORK_ROOT="$STELLA_APP_ROOT/workspace"
+[ "$STELLA_APP_WORK_ROOT" = "" ] && STELLA_APP_WORK_ROOT="$STELLA_APP_ROOT/workspace"
 STELLA_APP_WORK_ROOT=$(__rel_to_abs_path "$STELLA_APP_WORK_ROOT" "$STELLA_APP_ROOT")
 
-[ "$STELLA_APP_CACHE_DIR" == "" ] && STELLA_APP_CACHE_DIR="$STELLA_APP_ROOT/cache"
+[ "$STELLA_APP_CACHE_DIR" = "" ] && STELLA_APP_CACHE_DIR="$STELLA_APP_ROOT/cache"
 STELLA_APP_CACHE_DIR=$(__rel_to_abs_path "$STELLA_APP_CACHE_DIR" "$STELLA_APP_ROOT")
 
 STELLA_APP_TEMP_DIR="$STELLA_APP_WORK_ROOT/temp"
@@ -128,8 +128,8 @@ __STELLA_FEATURE_LIST="$__STELLA_FEATURE_LIST_STABLE $__STELLA_FEATURE_LIST_EXP"
 
 # SYS PACKAGE --------------------------------------------
 # list of available installable system package
-[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && STELLA_SYS_PACKAGE_LIST="git brew x11 build-chain-standard sevenzip wget curl unzip cmake"
-[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && STELLA_SYS_PACKAGE_LIST="git build-chain-standard sevenzip wget curl unzip cmake"
+[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && STELLA_SYS_PACKAGE_LIST="git brew x11 build-chain-standard sevenzip wget curl unzip cmake"
+[ "$STELLA_CURRENT_PLATFORM" = "linux" ] && STELLA_SYS_PACKAGE_LIST="git build-chain-standard sevenzip wget curl unzip cmake"
 
 
 
@@ -140,8 +140,8 @@ __STELLA_FEATURE_LIST="$__STELLA_FEATURE_LIST_STABLE $__STELLA_FEATURE_LIST_EXP"
 __set_build_mode_default "LINK_MODE" "DEFAULT"
 # these features will be picked from the system
 # have an effect only for feature declared in FEAT_SOURCE_DEPENDENCIES, FEAT_BINARY_DEPENDENCIES or passed to __link_feature_libray
-[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && STELLA_BUILD_DEP_FROM_SYSTEM_DEFAULT="python"
-[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && STELLA_BUILD_DEP_FROM_SYSTEM_DEFAULT="openssl python"
+[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && STELLA_BUILD_DEP_FROM_SYSTEM_DEFAULT="python"
+[ "$STELLA_CURRENT_PLATFORM" = "linux" ] && STELLA_BUILD_DEP_FROM_SYSTEM_DEFAULT="openssl python"
 # parallelize build (except specificied unparallelized one)
 # ON | OFF
 __set_build_mode_default "PARALLELIZE" "ON"
@@ -161,7 +161,7 @@ __set_build_mode_default "MIX_CPP_C_FLAGS" "OFF"
 # activate some usefull default linker flags
 __set_build_mode_default "LINK_FLAGS_DEFAULT" "ON"
 
-[ "$STELLA_CURRENT_OS" == "macos" ] && __set_build_mode_default MACOSX_DEPLOYMENT_TARGET "$(__get_macos_version)"
+[ "$STELLA_CURRENT_OS" = "macos" ] && __set_build_mode_default MACOSX_DEPLOYMENT_TARGET "$(__get_macos_version)"
 
 STELLA_BUILD_DEFAULT_TOOLSET=STANDARD
 
