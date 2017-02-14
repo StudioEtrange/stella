@@ -151,6 +151,7 @@ spinner :
 http://stackoverflow.com/a/3330834/5027535
 https://github.com/marascio/bash-tips-and-tricks/tree/master/showing-progress-with-a-bash-spinner
 
+[ ] git do not support always all options see __git_project_version
 
 [ ] note on bootstrap applications
 Bootstrap a brand new application and use stella as a library or tools collection inside your project
@@ -163,10 +164,12 @@ WIN:
 	powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/StudioEtrange/stella/master/win/pool/stella-bridge.bat', 'stella-bridge.bat')" && stella-bridge.bat bootstrap & del /q stella-bridge.bat
 
 [ ] note on bootstrap a standalone stable stella
-
-### Without git
 NIX
 curl -sSL https://raw.githubusercontent.com/StudioEtrange/stella/master/nix/pool/stella-bridge.sh | bash -s -- standalone stella
 
 WIN
 powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/StudioEtrange/stella/master/win/pool/stella-bridge.bat', 'stella-bridge.bat')" && stella-bridge.bat standalone & del /q stella-bridge.bat
+
+[ ] openal
+http://repo.or.cz/openal-soft.git
+https://github.com/kcat/openal-soft

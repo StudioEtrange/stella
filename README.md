@@ -64,11 +64,11 @@ git clone https://github.com/StudioEtrange/stella
 stella.bat stella install dep
 ```
 
-## Example
+## Examples
 
 ### Installation of a feature
 
-A package is named a 'feature' in stella
+A package is named a 'feature' in stella.
 This will download, build and install zlib v1.2.8.
 
 
@@ -123,7 +123,7 @@ Mainly tested platforms are :
 
 ## License
 
-Copyright 2013-2016 Sylvain Boucault @ StudioEtrange
+Copyright 2013-2017 Sylvain Boucault @ StudioEtrange
 
 	Licensed under the Apache License, Version 2.0 (the "License"); you may not
 	use this file except in compliance with the License. You may obtain a copy of

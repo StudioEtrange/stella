@@ -1,4 +1,4 @@
-if [ ! "$_PERL_INCLUDED_" == "1" ]; then 
+if [ ! "$_PERL_INCLUDED_" == "1" ]; then
 _PERL_INCLUDED_=1
 
 
@@ -43,7 +43,7 @@ feature_perl_install_source() {
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
-	__prepare_build "$INSTALL_DIR"
+	__start_manual_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
 
 	cd "$SRC_DIR"
 
@@ -56,6 +56,8 @@ feature_perl_install_source() {
 	# test are too long
 	# make test
 	make install && __del_folder $SRC_DIR
+
+	__end_manual_build
 }
 
 

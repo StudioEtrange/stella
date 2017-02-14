@@ -3,7 +3,6 @@ _fontconfig_INCLUDED_=1
 
 # http://www.linuxfromscratch.org/blfs/view/cvs/general/fontconfig.html
 # https://github.com/Homebrew/homebrew-core/blob/master/Formula/fontconfig.rb
-# TODO NOT FINISHED
 
 feature_fontconfig() {
 	FEAT_NAME=fontconfig
@@ -39,9 +38,7 @@ feature_fontconfig_link() {
 	__link_feature_library "libiconv#1_14" "NO_SET_FLAGS GET_FOLDER _iconv"
 	__link_feature_library "expat" "NO_SET_FLAGS GET_FOLDER _expat"
 
-	__link_feature_library "freetype" "NO_SET_FLAGS GET_FLAGS _freetype GET_FOLDER _freetype_bis"
-	AUTO_INSTALL_CONF_FLAG_PREFIX="$AUTO_INSTALL_CONF_FLAG_PREFIX FREETYPE_CFLAGS=\"$_freetype_C_CXX_FLAGS $_freetype_CPP_FLAGS -I$_freetype_bis_INCLUDE/freetype2\" \
-																FREETYPE_LIBS=\"$_freetype_LINK_FLAGS\""
+	__link_feature_library "freetype" "USE_PKG_CONFIG"
 
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="$AUTO_INSTALL_CONF_FLAG_POSTFIX --enable-iconv --with-libiconv=$_iconv_ROOT --with-expat=$_expat_ROOT"
 }
@@ -63,7 +60,7 @@ feature_fontconfig_install_source() {
 
 	__feature_callback
 
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
 
 
 }
