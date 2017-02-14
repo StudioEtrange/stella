@@ -1,4 +1,4 @@
-if [ ! "$_GETTEXT_INCLUDED_" == "1" ]; then
+if [ ! "$_GETTEXT_INCLUDED_" = "1" ]; then
 _GETTEXT_INCLUDED_=1
 
 # https://github.com/Homebrew/homebrew/blob/master/Library/Formula/gettext.rb

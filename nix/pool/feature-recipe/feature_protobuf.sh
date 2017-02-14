@@ -1,4 +1,4 @@
-if [ ! "$_protobuf_INCLUDED_" == "1" ]; then
+if [ ! "$_protobuf_INCLUDED_" = "1" ]; then
 _protobuf_INCLUDED_=1
 
 

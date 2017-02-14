@@ -1,4 +1,4 @@
-if [ ! "$_gnuplot_INCLUDED_" == "1" ]; then
+if [ ! "$_gnuplot_INCLUDED_" = "1" ]; then
 _gnuplot_INCLUDED_=1
 
 # TODO review on macos

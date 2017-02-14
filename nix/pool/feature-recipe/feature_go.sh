@@ -1,4 +1,4 @@
-if [ ! "$_GO_INCLUDED_" == "1" ]; then
+if [ ! "$_GO_INCLUDED_" = "1" ]; then
 _GO_INCLUDED_=1
 
 
@@ -28,13 +28,13 @@ feature_go_1_6_3() {
 	FEAT_SOURCE_URL_FILENAME=go1.6.3.src.tar.gz
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://storage.googleapis.com/golang/go1.6.3.darwin-amd64.tar.gz
 		FEAT_BINARY_URL_FILENAME=go1.6.3.darwin-amd64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=https://storage.googleapis.com/golang/go1.6.3.linux-amd64.tar.gz
 		FEAT_BINARY_URL_FILENAME=go1.6.3.linux-amd64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
@@ -59,13 +59,13 @@ feature_go_1_5_3() {
 	FEAT_SOURCE_URL_FILENAME=go1.5.3.src.tar.gz
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://storage.googleapis.com/golang/go1.5.3.darwin-amd64.tar.gz
 		FEAT_BINARY_URL_FILENAME=go1.5.3.darwin-amd64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=https://storage.googleapis.com/golang/go1.5.3.linux-amd64.tar.gz
 		FEAT_BINARY_URL_FILENAME=go1.5.3.linux-amd64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
@@ -89,12 +89,12 @@ feature_go_1_4_3() {
 	FEAT_SOURCE_URL_FILENAME=go1.4.3.src.tar.gz
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://storage.googleapis.com/golang/go1.4.3.darwin-amd64.tar.gz
 		FEAT_BINARY_URL_FILENAME=go1.4.3.darwin-amd64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 	fi
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=https://storage.googleapis.com/golang/go1.4.3.linux-amd64.tar.gz
 		FEAT_BINARY_URL_FILENAME=go1.4.3.linux-amd64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
@@ -119,12 +119,12 @@ feature_go_1_4_2() {
 	FEAT_SOURCE_URL_FILENAME=go1.4.2.src.tar.gz
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://storage.googleapis.com/golang/go1.4.2.darwin-amd64-osx10.8.tar.gz
 		FEAT_BINARY_URL_FILENAME=go1.4.2.darwin-amd64-osx10.8.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 	fi
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=https://storage.googleapis.com/golang/go1.4.2.linux-amd64.tar.gz
 		FEAT_BINARY_URL_FILENAME=go1.4.2.linux-amd64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP

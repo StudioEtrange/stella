@@ -1,4 +1,4 @@
-if [ ! "$_TEMPLATE-BUNDLE_INCLUDED_" == "1" ]; then 
+if [ ! "$_TEMPLATE-BUNDLE_INCLUDED_" = "1" ]; then 
 _TEMPLATE-BUNDLE_INCLUDED_=1
 
 

@@ -1,4 +1,4 @@
-if [ ! "$_httrack_INCLUDED_" == "1" ]; then
+if [ ! "$_httrack_INCLUDED_" = "1" ]; then
 _httrack_INCLUDED_=1
 
 

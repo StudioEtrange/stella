@@ -1,4 +1,4 @@
-if [ ! "$_DOCKER_INCLUDED_" == "1" ]; then
+if [ ! "$_DOCKER_INCLUDED_" = "1" ]; then
 _DOCKER_INCLUDED_=1
 
 
@@ -31,12 +31,12 @@ feature_docker_1_12_6() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://get.docker.com/builds/Darwin/x86_64/docker-1.12.6.tgz
 		FEAT_BINARY_URL_FILENAME=docker-client-1.12.6-darwin.tgz
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=https://get.docker.com/builds/Linux/x86_64/docker-1.12.6.tgz
 		FEAT_BINARY_URL_FILENAME=docker-1.12.6-linux.tgz
 	fi
@@ -63,12 +63,12 @@ feature_docker_1_11_1() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://get.docker.com/builds/Darwin/x86_64/docker-1.11.1.tgz
 		FEAT_BINARY_URL_FILENAME=docker-client-1.11.1-darwin.tgz
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=https://get.docker.com/builds/Linux/x86_64/docker-1.11.1.tgz
 		FEAT_BINARY_URL_FILENAME=docker-1.11.1-linux.tgz
 	fi
@@ -95,12 +95,12 @@ feature_docker_1_10_3() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://get.docker.com/builds/Darwin/x86_64/docker-1.10.3
 		FEAT_BINARY_URL_FILENAME=docker-client-1.10.3-darwin
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=https://get.docker.com/builds/Linux/x86_64/docker-1.10.3
 		FEAT_BINARY_URL_FILENAME=docker-1.10.3-linux
 	fi
@@ -126,12 +126,12 @@ feature_docker_1_9_1() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://get.docker.com/builds/Darwin/x86_64/docker-1.9.1
 		FEAT_BINARY_URL_FILENAME=docker-client-1.9.1-darwin
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=https://get.docker.com/builds/Linux/x86_64/docker-1.9.1
 		FEAT_BINARY_URL_FILENAME=docker-1.9.1-linux
 	fi
@@ -157,12 +157,12 @@ feature_docker_1_8_1() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://get.docker.com/builds/Darwin/x86_64/docker-1.8.1
 		FEAT_BINARY_URL_FILENAME=docker-client-1.8.1-darwin
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=https://get.docker.com/builds/Linux/x86_64/docker-1.8.1
 		FEAT_BINARY_URL_FILENAME=docker-1.8.1-linux
 	fi
@@ -180,10 +180,10 @@ feature_docker_1_8_1() {
 
 feature_docker_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "STRIP DEST_ERASE FORCE_NAME $FEAT_BINARY_URL_FILENAME"
-	[ "$FEAT_BINARY_URL_PROTOCOL" == "HTTP" ] && mv "$FEAT_INSTALL_ROOT"/"$FEAT_BINARY_URL_FILENAME" "$FEAT_INSTALL_ROOT"/docker
+	[ "$FEAT_BINARY_URL_PROTOCOL" = "HTTP" ] && mv "$FEAT_INSTALL_ROOT"/"$FEAT_BINARY_URL_FILENAME" "$FEAT_INSTALL_ROOT"/docker
 
 	chmod +x "$FEAT_INSTALL_ROOT"/docker
-	[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && echo " ** On darwin, docker is in client mode only"
+	[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && echo " ** On darwin, docker is in client mode only"
 
 	echo " ** Consider create a docker group, and add your user to this group"
 }

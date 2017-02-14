@@ -1,4 +1,4 @@
-if [ ! "$_httping_INCLUDED_" == "1" ]; then
+if [ ! "$_httping_INCLUDED_" = "1" ]; then
 _httping_INCLUDED_=1
 
 

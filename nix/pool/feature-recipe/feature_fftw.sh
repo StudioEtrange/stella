@@ -1,4 +1,4 @@
-if [ ! "$_fftw_INCLUDED_" == "1" ]; then
+if [ ! "$_fftw_INCLUDED_" = "1" ]; then
 _fftw_INCLUDED_=1
 
 

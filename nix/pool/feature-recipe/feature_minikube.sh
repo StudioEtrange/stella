@@ -1,4 +1,4 @@
-if [ ! "$_minikube_INCLUDED_" == "1" ]; then
+if [ ! "$_minikube_INCLUDED_" = "1" ]; then
 _minikube_INCLUDED_=1
 
 # kubernetes single-node cluster, inside a single VM on localhost
@@ -36,13 +36,13 @@ feature_minikube_0_11_0() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=https://github.com/kubernetes/minikube/releases/download/v0.11.0/minikube-linux-amd64
 		FEAT_BINARY_URL_FILENAME=minikube-0_11_0-linux-amd64
 		FEAT_BINARY_URL_PROTOCOL=HTTP
 
 	fi
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://github.com/kubernetes/minikube/releases/download/v0.11.0/minikube-darwin-amd64
 		FEAT_BINARY_URL_FILENAME=minikube-0_11_0-darwin-amd64
 		FEAT_BINARY_URL_PROTOCOL=HTTP

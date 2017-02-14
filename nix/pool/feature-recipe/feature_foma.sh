@@ -1,4 +1,4 @@
-if [ ! "$_FOMA_INCLUDED_" == "1" ]; then 
+if [ ! "$_FOMA_INCLUDED_" = "1" ]; then 
 _FOMA_INCLUDED_=1
 
 
@@ -21,12 +21,12 @@ feature_foma_0_9_18() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://bitbucket.org/mhulden/foma/downloads/foma-0.9.18_OSX.tar.gz
 		FEAT_BINARY_URL_FILENAME=foma-0.9.18_OSX.tar.gz
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=https://bitbucket.org/mhulden/foma/downloads/foma-0.9.18_linux64.tar.gz
 		FEAT_BINARY_URL_FILENAME=foma-0.9.18_linux64.tar.gz
 	fi

@@ -1,4 +1,4 @@
-if [ ! "$_LIBTOOL_INCLUDED_" == "1" ]; then
+if [ ! "$_LIBTOOL_INCLUDED_" = "1" ]; then
 _LIBTOOL_INCLUDED_=1
 
 

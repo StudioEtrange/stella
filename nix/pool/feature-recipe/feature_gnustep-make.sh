@@ -1,4 +1,4 @@
-if [ ! "$_gnustepmake_INCLUDED_" == "1" ]; then 
+if [ ! "$_gnustepmake_INCLUDED_" = "1" ]; then 
 _gnustepmake_INCLUDED_=1
 
 feature_gnustep-make() {

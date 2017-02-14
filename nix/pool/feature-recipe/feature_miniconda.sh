@@ -1,4 +1,4 @@
-if [ ! "$_miniconda_INCLUDED_" == "1" ]; then
+if [ ! "$_miniconda_INCLUDED_" = "1" ]; then
 _miniconda_INCLUDED_=1
 
 # NOTE :
@@ -32,7 +32,7 @@ feature_miniconda_4_2_12_PYTHON3() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL_x86=
 		FEAT_BINARY_URL_FILENAME_x86=
 		FEAT_BINARY_URL_PROTOCOL_x86=
@@ -42,7 +42,7 @@ feature_miniconda_4_2_12_PYTHON3() {
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL_x86=https://repo.continuum.io/miniconda/Miniconda3-4.2.12-Linux-x86.sh
 		FEAT_BINARY_URL_FILENAME_x86=Miniconda3-4.2.12-Linux-x86.sh
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP
@@ -73,7 +73,7 @@ feature_miniconda_4_2_12_PYTHON2() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL_x86=
 		FEAT_BINARY_URL_FILENAME_x86=
 		FEAT_BINARY_URL_PROTOCOL_x86=
@@ -83,7 +83,7 @@ feature_miniconda_4_2_12_PYTHON2() {
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL_x86=https://repo.continuum.io/miniconda/Miniconda2-4.2.12-Linux-x86.sh
 		FEAT_BINARY_URL_FILENAME_x86=Miniconda2-4.2.12-Linux-x86.sh
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP
@@ -113,7 +113,7 @@ feature_miniconda_4_1_11_PYTHON3() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL_x86=
 		FEAT_BINARY_URL_FILENAME_x86=
 		FEAT_BINARY_URL_PROTOCOL_x86=
@@ -123,7 +123,7 @@ feature_miniconda_4_1_11_PYTHON3() {
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL_x86=https://repo.continuum.io/miniconda/Miniconda3-4.1.11-Linux-x86.sh
 		FEAT_BINARY_URL_FILENAME_x86=Miniconda3-4.1.11-Linux-x86.sh
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP
@@ -154,7 +154,7 @@ feature_miniconda_4_1_11_PYTHON2() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL_x86=
 		FEAT_BINARY_URL_FILENAME_x86=
 		FEAT_BINARY_URL_PROTOCOL_x86=
@@ -164,7 +164,7 @@ feature_miniconda_4_1_11_PYTHON2() {
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL_x86=https://repo.continuum.io/miniconda/Miniconda2-4.1.11-Linux-x86.sh
 		FEAT_BINARY_URL_FILENAME_x86=Miniconda2-4.1.11-Linux-x86.sh
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP

@@ -1,4 +1,4 @@
-if [ ! "$_BZIP2_INCLUDED_" == "1" ]; then 
+if [ ! "$_BZIP2_INCLUDED_" = "1" ]; then 
 _BZIP2_INCLUDED_=1
 
 # darwin -- OK -- 20151012

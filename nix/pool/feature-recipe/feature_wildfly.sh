@@ -1,4 +1,4 @@
-if [ ! "$_wildfly_INCLUDED_" == "1" ]; then 
+if [ ! "$_wildfly_INCLUDED_" = "1" ]; then 
 _wildfly_INCLUDED_=1
 
 # wildfly is the new name for JBOSS Application Server

@@ -1,4 +1,4 @@
-if [ ! "$_hbase_INCLUDED_" == "1" ]; then
+if [ ! "$_hbase_INCLUDED_" = "1" ]; then
 _hbase_INCLUDED_=1
 
 # doc : https://hbase.apache.org/book.html

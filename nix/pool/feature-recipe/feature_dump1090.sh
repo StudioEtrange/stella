@@ -1,4 +1,4 @@
-if [ ! "$_dump1090_INCLUDED_" == "1" ]; then
+if [ ! "$_dump1090_INCLUDED_" = "1" ]; then
 _dump1090_INCLUDED_=1
 
 feature_dump1090() {

@@ -1,4 +1,4 @@
-if [ ! "$_rtlsdr_INCLUDED_" == "1" ]; then
+if [ ! "$_rtlsdr_INCLUDED_" = "1" ]; then
 _rtlsdr_INCLUDED_=1
 
 

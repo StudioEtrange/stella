@@ -1,4 +1,4 @@
-if [ ! "$_clangomp_INCLUDED_" == "1" ]; then
+if [ ! "$_clangomp_INCLUDED_" = "1" ]; then
 _clangomp_INCLUDED_=1
 
 # Clang OpenMP
@@ -59,7 +59,7 @@ feature_clang-omp_add_resource() {
 	local _f=0
 	local _url
 	for t in $FEAT_ADD_RESOURCES_PROJECTS; do
-		if [ "$_f" == "0" ]; then
+		if [ "$_f" = "0" ]; then
 			_url=$t
 			_f=1
 		else
@@ -83,7 +83,7 @@ feature_clang-omp_install_source() {
   __feature_callback
 
 	# TODO ?
-	#[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && __set_build_mode "MACOSX_DEPLOYMENT_TARGET" "10.8"
+	#[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && __set_build_mode "MACOSX_DEPLOYMENT_TARGET" "10.8"
 
   AUTO_INSTALL_CONF_FLAG_PREFIX=
   AUTO_INSTALL_CONF_FLAG_POSTFIX="-DLIBOMP_ARCH=x86_64 -DLLVM_ENABLE_LIBCXX=ON"
@@ -108,8 +108,8 @@ EOL
 	LIBRARY_PATH=$INSTALL_DIR/lib:$LIBRARY_PATH \
 	$INSTALL_DIR/bin/clang -fopenmp hello.c -o hello
 
-	[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && DYLD_LIBRARY_PATH=$INSTALL_DIR/lib ./hello
-	[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && LD_LIBRARY_PATH=$INSTALL_DIR/lib ./hello
+	[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && DYLD_LIBRARY_PATH=$INSTALL_DIR/lib ./hello
+	[ "$STELLA_CURRENT_PLATFORM" = "linux" ] && LD_LIBRARY_PATH=$INSTALL_DIR/lib ./hello
 
 
 	ln -s "$INSTALL_DIR"/bin/clang "$INSTALL_DIR"/bin/clang-omp

@@ -1,4 +1,4 @@
-if [ ! "$_FIGLET_INCLUDED_" == "1" ]; then 
+if [ ! "$_FIGLET_INCLUDED_" = "1" ]; then 
 _FIGLET_INCLUDED_=1
 
 

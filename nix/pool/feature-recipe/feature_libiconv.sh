@@ -1,4 +1,4 @@
-if [ ! "$_libiconv_INCLUDED_" == "1" ]; then 
+if [ ! "$_libiconv_INCLUDED_" = "1" ]; then 
 _libiconv_INCLUDED_=1
 
 

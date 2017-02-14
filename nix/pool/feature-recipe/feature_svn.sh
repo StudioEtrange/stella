@@ -1,4 +1,4 @@
-if [ ! "$_svn_INCLUDED_" == "1" ]; then 
+if [ ! "$_svn_INCLUDED_" = "1" ]; then 
 _svn_INCLUDED_=1
 
 # TODO : 

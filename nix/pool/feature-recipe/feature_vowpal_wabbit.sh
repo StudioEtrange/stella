@@ -1,4 +1,4 @@
-if [ ! "$_vowpal_wabbit_INCLUDED_" == "1" ]; then
+if [ ! "$_vowpal_wabbit_INCLUDED_" = "1" ]; then
 _vowpal_wabbit_INCLUDED_=1
 
 feature_vowpal_wabbit() {

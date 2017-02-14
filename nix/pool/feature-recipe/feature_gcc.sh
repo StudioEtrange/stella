@@ -1,4 +1,4 @@
-if [ ! "$_gcc_INCLUDED_" == "1" ]; then
+if [ ! "$_gcc_INCLUDED_" = "1" ]; then
 _gcc_INCLUDED_=1
 
 # http://llvm.org/docs/GettingStarted.html#requirements
@@ -48,7 +48,7 @@ feature_gcc_4_8_2() {
 feature_gcc_add_resource() {
 	local _target_folder=
 	for t in $FEAT_ADD_RESOURCES; do
-		if [ "$_target_folder" == "" ]; then
+		if [ "$_target_folder" = "" ]; then
 			_target_folder=$SRC_DIR/$t
 			continue
 		fi

@@ -1,4 +1,4 @@
-if [ ! "$_NINJA_INCLUDED_" == "1" ]; then
+if [ ! "$_NINJA_INCLUDED_" = "1" ]; then
 _NINJA_INCLUDED_=1
 
 
@@ -23,13 +23,13 @@ feature_ninja_1_7_2() {
 	FEAT_SOURCE_URL_FILENAME=ninja-v1.7.2.tar.gz
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://github.com/ninja-build/ninja/releases/download/v1.7.2/ninja-mac.zip
 		FEAT_BINARY_URL_FILENAME=ninja-mac-v1.7.2.zip
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=https://github.com/ninja-build/ninja/releases/download/v1.7.2/ninja-linux.zip
 		FEAT_BINARY_URL_FILENAME=ninja-linux-v1.7.2.zip
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
@@ -55,13 +55,13 @@ feature_ninja_1_7_1() {
 	FEAT_SOURCE_URL_FILENAME=ninja-v1.7.1.tar.gz
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://github.com/ninja-build/ninja/releases/download/v1.7.1/ninja-mac.zip
 		FEAT_BINARY_URL_FILENAME=ninja-mac-v1.7.1.zip
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=https://github.com/ninja-build/ninja/releases/download/v1.7.1/ninja-linux.zip
 		FEAT_BINARY_URL_FILENAME=ninja-linux-v1.7.1.zip
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
@@ -87,13 +87,13 @@ feature_ninja_1_6_0() {
 	FEAT_SOURCE_URL_FILENAME=ninja-v1.6.0.tar.gz
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://github.com/martine/ninja/releases/download/v1.6.0/ninja-mac.zip
 		FEAT_BINARY_URL_FILENAME=ninja-mac-v1.6.0.zip
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=https://github.com/martine/ninja/releases/download/v1.6.0/ninja-linux.zip
 		FEAT_BINARY_URL_FILENAME=ninja-linux-v1.6.0.zip
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP

@@ -1,4 +1,4 @@
-if [ ! "$_openmpi_INCLUDED_" == "1" ]; then
+if [ ! "$_openmpi_INCLUDED_" = "1" ]; then
 _openmpi_INCLUDED_=1
 
 # https://www.open-mpi.org/
@@ -71,7 +71,7 @@ feature_openmpi_install_source() {
 
 	# flag -Wl,-no-undefined not supported
 	# https://github.com/open-mpi/ompi/issues/648
-	[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && __set_build_mode LINK_FLAGS_DEFAULT OFF
+	[ "$STELLA_CURRENT_PLATFORM" = "linux" ] && __set_build_mode LINK_FLAGS_DEFAULT OFF
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "INCLUDE_FILTER bin/|lib/"
 

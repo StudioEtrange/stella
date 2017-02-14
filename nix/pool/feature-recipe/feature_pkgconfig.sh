@@ -1,4 +1,4 @@
-if [ ! "$_pkgconfig_INCLUDED_" == "1" ]; then
+if [ ! "$_pkgconfig_INCLUDED_" = "1" ]; then
 _pkgconfig_INCLUDED_=1
 
 # http://www.linuxfromscratch.org/lfs/view/development/chapter06/pkg-config.html
@@ -58,7 +58,7 @@ feature_pkgconfig_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
 	# to build blib on darwin
-	[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && STELLA_LINK_FLAGS="-framework Carbon $STELLA_LINK_FLAGS"
+	[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && STELLA_LINK_FLAGS="-framework Carbon $STELLA_LINK_FLAGS"
 
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD"

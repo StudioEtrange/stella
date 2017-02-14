@@ -1,4 +1,4 @@
-if [ ! "$_FUNSHELL_INCLUDED_" == "1" ]; then 
+if [ ! "$_FUNSHELL_INCLUDED_" = "1" ]; then 
 _FUNSHELL_INCLUDED_=1
 
 # TODO create recipes for each tool

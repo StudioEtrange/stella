@@ -1,12 +1,12 @@
-if [ ! "$_sdlttf_INCLUDED_" == "1" ]; then 
+if [ ! "$_sdlttf_INCLUDED_" = "1" ]; then 
 _sdlttf_INCLUDED_=1
 
 #https://www.libsdl.org/projects/SDL_ttf/
 
 # NOTE this use sdl-config and freetype-config binaries to set correct flag
 
-# sdl 2.x ==> sdl-ttf 2_0_12
-# sdl 1.2.x ==> sdl-ttf 2_0_11
+# sdl 2.x => sdl-ttf 2_0_12
+# sdl 1.2.x => sdl-ttf 2_0_11
 
 feature_sdl-ttf() {
 	FEAT_NAME=sdl-ttf

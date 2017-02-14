@@ -1,4 +1,4 @@
-if [ ! "$_shml_INCLUDED_" == "1" ]; then
+if [ ! "$_shml_INCLUDED_" = "1" ]; then
 _shml_INCLUDED_=1
 
 

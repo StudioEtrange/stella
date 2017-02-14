@@ -1,4 +1,4 @@
-if [ ! "$_predictionio_INCLUDED_" == "1" ]; then
+if [ ! "$_predictionio_INCLUDED_" = "1" ]; then
 _predictionio_INCLUDED_=1
 
 # TODO not finished

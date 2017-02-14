@@ -1,4 +1,4 @@
-if [ ! "$_sox_INCLUDED_" == "1" ]; then
+if [ ! "$_sox_INCLUDED_" = "1" ]; then
 _sox_INCLUDED_=1
 
 # TODO : add support for more format

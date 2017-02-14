@@ -1,4 +1,4 @@
-if [ ! "$_SEVENZIP_INCLUDED_" == "1" ]; then 
+if [ ! "$_SEVENZIP_INCLUDED_" = "1" ]; then 
 _SEVENZIP_INCLUDED_=1
 
 

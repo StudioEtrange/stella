@@ -1,4 +1,4 @@
-if [ ! "$_TENSORFLOW_INCLUDED_" == "1" ]; then
+if [ ! "$_TENSORFLOW_INCLUDED_" = "1" ]; then
 _TENSORFLOW_INCLUDED_=1
 
 # https://www.tensorflow.org/get_started/os_setup#installing_from_sources
@@ -67,7 +67,7 @@ feature_tensorflow_install_source() {
 		conda create -y -n $FEAT_PYENV python=$_p
 
 		source activate $FEAT_PYENV
-		pip install -U protobuf==3.0.0
+		pip install -U protobuf=3.0.0
 		pip install asciitree
 		pip install numpy
 

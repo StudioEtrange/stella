@@ -1,4 +1,4 @@
-if [ ! "$_mdnsrepeater_INCLUDED_" == "1" ]; then
+if [ ! "$_mdnsrepeater_INCLUDED_" = "1" ]; then
 _mdnsrepeater_INCLUDED_=1
 
 

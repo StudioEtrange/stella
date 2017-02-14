@@ -1,4 +1,4 @@
-if [ ! "$_hfst_INCLUDED_" == "1" ]; then
+if [ ! "$_hfst_INCLUDED_" = "1" ]; then
 _hfst_INCLUDED_=1
 
 #http://wiki.apertium.org/wiki/Hfst#Building_and_installing_HFST

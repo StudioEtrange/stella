@@ -1,4 +1,4 @@
-if [ ! "$_SOCAT_INCLUDED_" == "1" ]; then
+if [ ! "$_SOCAT_INCLUDED_" = "1" ]; then
 _SOCAT_INCLUDED_=1
 
 # OK

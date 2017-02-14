@@ -1,4 +1,4 @@
-if [ ! "$_libsvm_INCLUDED_" == "1" ]; then
+if [ ! "$_libsvm_INCLUDED_" = "1" ]; then
 _libsvm_INCLUDED_=1
 
 # https://www.csie.ntu.edu.tw/~cjlin/

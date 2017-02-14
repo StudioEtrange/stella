@@ -1,4 +1,4 @@
-if [ ! "$_CMATRIX_INCLUDED_" == "1" ]; then 
+if [ ! "$_CMATRIX_INCLUDED_" = "1" ]; then 
 _CMATRIX_INCLUDED_=1
 
 # darwin -- OK -- 20151012

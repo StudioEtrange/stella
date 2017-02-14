@@ -1,4 +1,4 @@
-if [ ! "$_NGINX_INCLUDED_" == "1" ]; then 
+if [ ! "$_NGINX_INCLUDED_" = "1" ]; then 
 _NGINX_INCLUDED_=1
 
 

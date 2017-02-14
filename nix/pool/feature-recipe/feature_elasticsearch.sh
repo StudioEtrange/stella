@@ -1,4 +1,4 @@
-if [ ! "$_ELASTICSEARCH_INCLUDED_" == "1" ]; then
+if [ ! "$_ELASTICSEARCH_INCLUDED_" = "1" ]; then
 _ELASTICSEARCH_INCLUDED_=1
 
 

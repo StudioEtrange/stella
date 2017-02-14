@@ -1,4 +1,4 @@
-if [ ! "$_vorbis_INCLUDED_" == "1" ]; then 
+if [ ! "$_vorbis_INCLUDED_" = "1" ]; then 
 _vorbis_INCLUDED_=1
 
 

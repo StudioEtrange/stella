@@ -1,4 +1,4 @@
-if [ ! "_paxutils_INCLUDED_" == "1" ]; then
+if [ ! "_paxutils_INCLUDED_" = "1" ]; then
 _paxutils_INCLUDED_=1
 
 # https://gitweb.gentoo.org/proj/pax-utils.git

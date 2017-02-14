@@ -1,4 +1,4 @@
-if [ ! "$_FREETYPE_INCLUDED_" == "1" ]; then 
+if [ ! "$_FREETYPE_INCLUDED_" = "1" ]; then 
 _FREETYPE_INCLUDED_=1
 
 # TODO

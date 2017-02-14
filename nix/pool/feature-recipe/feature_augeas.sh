@@ -1,4 +1,4 @@
-if [ ! "$_augeas_INCLUDED_" == "1" ]; then
+if [ ! "$_augeas_INCLUDED_" = "1" ]; then
 _augeas_INCLUDED_=1
 
 # https://github.com/hercules-team/augeas/wiki/Loading-specific-files

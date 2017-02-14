@@ -1,4 +1,4 @@
-if [ ! "$_monkeyserver_INCLUDED_" == "1" ]; then
+if [ ! "$_monkeyserver_INCLUDED_" = "1" ]; then
 _monkeyserver_INCLUDED_=1
 
 # NOT FINISHED

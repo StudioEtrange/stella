@@ -1,4 +1,4 @@
-if [ ! "$_redis_INCLUDED_" == "1" ]; then 
+if [ ! "$_redis_INCLUDED_" = "1" ]; then 
 _redis_INCLUDED_=1
 
 

@@ -1,4 +1,4 @@
-if [ ! "$_tig_INCLUDED_" == "1" ]; then
+if [ ! "$_tig_INCLUDED_" = "1" ]; then
 _tig_INCLUDED_=1
 
 

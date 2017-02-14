@@ -1,4 +1,4 @@
-if [ ! "$_flex_INCLUDED_" == "1" ]; then
+if [ ! "$_flex_INCLUDED_" = "1" ]; then
 _flex_INCLUDED_=1
 
 # https://github.com/Homebrew/homebrew-core/blob/master/Formula/flex.rb

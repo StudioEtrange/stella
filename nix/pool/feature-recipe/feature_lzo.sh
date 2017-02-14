@@ -1,4 +1,4 @@
-if [ ! "$_LZO_INCLUDED_" == "1" ]; then 
+if [ ! "$_LZO_INCLUDED_" = "1" ]; then 
 _LZO_INCLUDED_=1
 
 

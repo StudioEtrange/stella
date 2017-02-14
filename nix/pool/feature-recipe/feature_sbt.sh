@@ -1,4 +1,4 @@
-if [ ! "$_SBT_INCLUDED_" == "1" ]; then 
+if [ ! "$_SBT_INCLUDED_" = "1" ]; then 
 _SBT_INCLUDED_=1
 
 

@@ -1,4 +1,4 @@
-if [ ! "$_GOBUILD_INCLUDED_" == "1" ]; then 
+if [ ! "$_GOBUILD_INCLUDED_" = "1" ]; then 
 _GOBUILD_INCLUDED_=1
 
 

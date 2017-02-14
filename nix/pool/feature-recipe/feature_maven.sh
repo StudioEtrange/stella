@@ -1,4 +1,4 @@
-if [ ! "$_MAVEN_INCLUDED_" == "1" ]; then
+if [ ! "$_MAVEN_INCLUDED_" = "1" ]; then
 _MAVEN_INCLUDED_=1
 
 

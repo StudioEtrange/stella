@@ -1,4 +1,4 @@
-if [ ! "$_GETOPT_INCLUDED_" == "1" ]; then 
+if [ ! "$_GETOPT_INCLUDED_" = "1" ]; then 
 _GETOPT_INCLUDED_=1
 
 #https://github.com/Homebrew/homebrew/blob/master/Library/Formula/gnu-getopt.rb

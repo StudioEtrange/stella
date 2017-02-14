@@ -1,4 +1,4 @@
-if [ ! "$_SMARTMONTOOLS_INCLUDED_" == "1" ]; then
+if [ ! "$_SMARTMONTOOLS_INCLUDED_" = "1" ]; then
 _SMARTMONTOOLS_INCLUDED_=1
 
 

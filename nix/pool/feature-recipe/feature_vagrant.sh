@@ -1,4 +1,4 @@
-if [ ! "$_vagrant_INCLUDED_" == "1" ]; then
+if [ ! "$_vagrant_INCLUDED_" = "1" ]; then
 _vagrant_INCLUDED_=1
 
 # for linux, the downloaded .deb file contains compiled libraries but these libraries may not work on some linux distro
@@ -6,12 +6,12 @@ _vagrant_INCLUDED_=1
 
 feature_vagrant() {
 	FEAT_NAME=vagrant
-	if [ "$STELLA_CURRENT_OS" == "ubuntu" ]; then
+	if [ "$STELLA_CURRENT_OS" = "ubuntu" ]; then
 		FEAT_LIST_SCHEMA="1_9_1@x64:binary 1_9_1@x86:binary 1_8_4@x64:binary 1_8_4@x86:binary"
 		FEAT_DEFAULT_VERSION=1_9_1
 		FEAT_DEFAULT_ARCH=x64
 	fi
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_LIST_SCHEMA="1_9_1@x64:binary 1_9_1@x86:binary 1_8_4@x64:binary 1_8_4@x86:binary"
 		FEAT_DEFAULT_VERSION=1_9_1
 		FEAT_DEFAULT_ARCH=x64
@@ -30,8 +30,8 @@ feature_vagrant_1_9_1() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-		if [ "$STELLA_CURRENT_OS" == "ubuntu" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		if [ "$STELLA_CURRENT_OS" = "ubuntu" ]; then
 			FEAT_BINARY_URL_x86=https://releases.hashicorp.com/vagrant/1.9.1/vagrant_1.9.1_i686.deb
 			FEAT_BINARY_URL_FILENAME_x86=vagrant_1.9.1_i686.deb
 			FEAT_BINARY_URL_PROTOCOL_x86=HTTP
@@ -41,7 +41,7 @@ feature_vagrant_1_9_1() {
 		fi
 
 	fi
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL_x86=https://releases.hashicorp.com/vagrant/1.9.1/vagrant_1.9.1.dmg
 		FEAT_BINARY_URL_FILENAME_x86=vagrant_1.9.1.dmg
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP
@@ -69,8 +69,8 @@ feature_vagrant_1_8_4() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-		if [ "$STELLA_CURRENT_OS" == "ubuntu" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		if [ "$STELLA_CURRENT_OS" = "ubuntu" ]; then
 			FEAT_BINARY_URL_x86=https://releases.hashicorp.com/vagrant/1.8.4/vagrant_1.8.4_i686.deb
 			FEAT_BINARY_URL_FILENAME_x86=vagrant_1.8.4_i686.deb
 			FEAT_BINARY_URL_PROTOCOL_x86=HTTP
@@ -80,7 +80,7 @@ feature_vagrant_1_8_4() {
 		fi
 
 	fi
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL_x86=https://releases.hashicorp.com/vagrant/1.8.4/vagrant_1.8.4.dmg
 		FEAT_BINARY_URL_FILENAME_x86=vagrant_1.8.4.dmg
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP
@@ -108,7 +108,7 @@ feature_vagrant_install_binary() {
 
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$STELLA_APP_TEMP_DIR"
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		DMG_VOLUME_NAME="Vagrant"
 		PKG_NAME="Vagrant.pkg"
 
@@ -132,8 +132,8 @@ feature_vagrant_install_binary() {
 
 
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-		if [ "$STELLA_CURRENT_OS" == "ubuntu" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		if [ "$STELLA_CURRENT_OS" = "ubuntu" ]; then
 			__uncompress "$FEAT_BINARY_URL_FILENAME" "$STELLA_APP_TEMP_DIR"
 
 			__copy_folder_content_into "$STELLA_APP_TEMP_DIR/opt/vagrant" "$FEAT_INSTALL_ROOT"

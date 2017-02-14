@@ -1,4 +1,4 @@
-if [ ! "$_EXPORTMODE_INCLUDED_" == "1" ]; then
+if [ ! "$_EXPORTMODE_INCLUDED_" = "1" ]; then
 _EXPORTMODE_INCLUDED_=1
 
 feature_mode-export() {

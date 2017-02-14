@@ -1,4 +1,4 @@
-if [ ! "$_fontconfig_INCLUDED_" == "1" ]; then
+if [ ! "$_fontconfig_INCLUDED_" = "1" ]; then
 _fontconfig_INCLUDED_=1
 
 # http://www.linuxfromscratch.org/blfs/view/cvs/general/fontconfig.html

@@ -1,4 +1,4 @@
-if [ ! "$_krb5_INCLUDED_" == "1" ]; then
+if [ ! "$_krb5_INCLUDED_" = "1" ]; then
 _krb5_INCLUDED_=1
 
 

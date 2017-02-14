@@ -1,4 +1,4 @@
-if [ ! "$_swig_INCLUDED_" == "1" ]; then
+if [ ! "$_swig_INCLUDED_" = "1" ]; then
 _swig_INCLUDED_=1
 
 

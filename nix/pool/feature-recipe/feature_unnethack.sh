@@ -1,4 +1,4 @@
-if [ ! "$_UNNETHACK_INCLUDED_" == "1" ]; then 
+if [ ! "$_UNNETHACK_INCLUDED_" = "1" ]; then 
 _UNNETHACK_INCLUDED_=1
 
 # OK

@@ -1,4 +1,4 @@
-if [ ! "$_bc_INCLUDED_" == "1" ]; then
+if [ ! "$_bc_INCLUDED_" = "1" ]; then
 _bc_INCLUDED_=1
 
 

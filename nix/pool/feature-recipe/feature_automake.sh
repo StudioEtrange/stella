@@ -1,4 +1,4 @@
-if [ ! "$_AUTOMAKE_INCLUDED_" == "1" ]; then 
+if [ ! "$_AUTOMAKE_INCLUDED_" = "1" ]; then 
 _AUTOMAKE_INCLUDED_=1
 
 

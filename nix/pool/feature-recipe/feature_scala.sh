@@ -1,4 +1,4 @@
-if [ ! "$_SCALA_INCLUDED_" == "1" ]; then
+if [ ! "$_SCALA_INCLUDED_" = "1" ]; then
 _SCALA_INCLUDED_=1
 
 

@@ -1,4 +1,4 @@
-if [ ! "$_readline_INCLUDED_" == "1" ]; then 
+if [ ! "$_readline_INCLUDED_" = "1" ]; then 
 _readline_INCLUDED_=1
 
 # TODO : depend on ncurses

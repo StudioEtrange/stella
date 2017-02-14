@@ -1,4 +1,4 @@
-if [ ! "$_libusb_INCLUDED_" == "1" ]; then
+if [ ! "$_libusb_INCLUDED_" = "1" ]; then
 _libusb_INCLUDED_=1
 
 

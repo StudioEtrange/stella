@@ -1,4 +1,4 @@
-if [ ! "$_CURSEOFWAR_INCLUDED_" == "1" ]; then
+if [ ! "$_CURSEOFWAR_INCLUDED_" = "1" ]; then
 _CURSEOFWAR_INCLUDED_=1
 
 feature_curseofwar() {

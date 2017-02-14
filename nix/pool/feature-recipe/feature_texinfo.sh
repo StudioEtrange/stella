@@ -1,4 +1,4 @@
-if [ ! "$_texinfo_INCLUDED_" == "1" ]; then
+if [ ! "$_texinfo_INCLUDED_" = "1" ]; then
 _texinfo_INCLUDED_=1
 
 

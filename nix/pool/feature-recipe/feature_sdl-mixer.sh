@@ -1,12 +1,12 @@
-if [ ! "$_sdlmixer_INCLUDED_" == "1" ]; then 
+if [ ! "$_sdlmixer_INCLUDED_" = "1" ]; then 
 _sdlmixer_INCLUDED_=1
 
 #http://www.libsdl.org/projects/SDL_mixer/
 
 # NOTE this use sdl-config binaries to set correct flag
 
-# sdl 2.x ==> sdl-mixer 2_0_0
-# sdl 1.2.x ==> sdl-mixer 1_2_12
+# sdl 2.x => sdl-mixer 2_0_0
+# sdl 1.2.x => sdl-mixer 1_2_12
 
 feature_sdl-mixer() {
 	FEAT_NAME=sdl-mixer

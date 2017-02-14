@@ -1,4 +1,4 @@
-if [ ! "$_liblinear_INCLUDED_" == "1" ]; then
+if [ ! "$_liblinear_INCLUDED_" = "1" ]; then
 _liblinear_INCLUDED_=1
 
 # https://www.csie.ntu.edu.tw/~cjlin/

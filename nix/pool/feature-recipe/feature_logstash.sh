@@ -1,4 +1,4 @@
-if [ ! "$_logstash_INCLUDED_" == "1" ]; then
+if [ ! "$_logstash_INCLUDED_" = "1" ]; then
 _logstash_INCLUDED_=1
 
 

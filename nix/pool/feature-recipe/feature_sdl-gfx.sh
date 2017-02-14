@@ -1,12 +1,12 @@
-if [ ! "$_sdlgfx_INCLUDED_" == "1" ]; then 
+if [ ! "$_sdlgfx_INCLUDED_" = "1" ]; then 
 _sdlgfx_INCLUDED_=1
 
 #http://cms.ferzkopp.net/index.php/software/13-sdl-gfx
 
 # NOTE this use sdl-config binaries to set correct flag
 
-# sdl 2.x ==> sdl-gfx 1_0_1
-# sdl 1.2.x ==> sdl-gfx 2_0_25
+# sdl 2.x => sdl-gfx 1_0_1
+# sdl 1.2.x => sdl-gfx 2_0_25
 
 feature_sdl-gfx() {
 	FEAT_NAME=sdl-gfx

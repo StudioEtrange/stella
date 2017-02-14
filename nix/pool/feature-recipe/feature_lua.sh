@@ -1,4 +1,4 @@
-if [ ! "$_lua_INCLUDED_" == "1" ]; then 
+if [ ! "$_lua_INCLUDED_" = "1" ]; then 
 _lua_INCLUDED_=1
 
 
@@ -48,8 +48,8 @@ feature_lua_install_source() {
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
 	AUTO_INSTALL_CONF_FLAG_POSTFIX=
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
-	[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && AUTO_INSTALL_BUILD_FLAG_POSTFIX="macosx test install INSTALL_TOP=$INSTALL_DIR"
-	[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && AUTO_INSTALL_BUILD_FLAG_POSTFIX="linux test install INSTALL_TOP=$INSTALL_DIR"
+	[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && AUTO_INSTALL_BUILD_FLAG_POSTFIX="macosx test install INSTALL_TOP=$INSTALL_DIR"
+	[ "$STELLA_CURRENT_PLATFORM" = "linux" ] && AUTO_INSTALL_BUILD_FLAG_POSTFIX="linux test install INSTALL_TOP=$INSTALL_DIR"
 
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_CONFIG NO_INSTALL"

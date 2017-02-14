@@ -1,4 +1,4 @@
-if [ ! "$_openttd_INCLUDED_" == "1" ]; then
+if [ ! "$_openttd_INCLUDED_" = "1" ]; then
 _openttd_INCLUDED_=1
 
 
@@ -19,7 +19,7 @@ feature_openttd_1_6_1() {
 	FEAT_VERSION=1_6_1
 
 	FEAT_SOURCE_DEPENDENCIES="lzo#2_09 libpng#1_6_17 zlib#1_2_11 xzutils#5_2_1 freetype#2_6_1"
-	[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && FEAT_SOURCE_DEPENDENCIES="sdl#1_2_15 $FEAT_SOURCE_DEPENDENCIES"
+	[ "$STELLA_CURRENT_PLATFORM" = "linux" ] && FEAT_SOURCE_DEPENDENCIES="sdl#1_2_15 $FEAT_SOURCE_DEPENDENCIES"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://binaries.openttd.org/releases/1.6.1/openttd-1.6.1-source.tar.xz
@@ -40,7 +40,7 @@ feature_openttd_1_6_1() {
 }
 
 feature_openttd_link() {
-	[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && __link_feature_library "sdl#1_2_15" "GET_FOLDER sdl USE_PKG_CONFIG"
+	[ "$STELLA_CURRENT_PLATFORM" = "linux" ] && __link_feature_library "sdl#1_2_15" "GET_FOLDER sdl USE_PKG_CONFIG"
 
 	__link_feature_library "xzutils#5_2_1" "NO_SET_FLAGS USE_PKG_CONFIG"
 	__link_feature_library "lzo#2_09" "GET_FOLDER lzo"
@@ -48,8 +48,8 @@ feature_openttd_link() {
 	__link_feature_library "libpng#1_6_17" "NO_SET_FLAGS USE_PKG_CONFIG"
 	__link_feature_library "freetype#2_6_1" "NO_SET_FLAGS USE_PKG_CONFIG"
 
-	#[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && export PKG_CONFIG_PATH="$xzutils_LIB/pkgconfig:$sdl_LIB/pkgconfig:$freetype_LIB/pkgconfig:$png_LIB/pkgconfig:$PKG_CONFIG_PATH"
-	#[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && export PKG_CONFIG_PATH="$xzutils_LIB/pkgconfig:$freetype_LIB/pkgconfig:$png_LIB/pkgconfig:$PKG_CONFIG_PATH"
+	#[ "$STELLA_CURRENT_PLATFORM" = "linux" ] && export PKG_CONFIG_PATH="$xzutils_LIB/pkgconfig:$sdl_LIB/pkgconfig:$freetype_LIB/pkgconfig:$png_LIB/pkgconfig:$PKG_CONFIG_PATH"
+	#[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && export PKG_CONFIG_PATH="$xzutils_LIB/pkgconfig:$freetype_LIB/pkgconfig:$png_LIB/pkgconfig:$PKG_CONFIG_PATH"
 
 
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="$AUTO_INSTALL_CONF_FLAG_POSTFIX --with-liblzo2=$lzo_LIB --with-png --with-freetype"
@@ -57,7 +57,7 @@ feature_openttd_link() {
 }
 
 feature_openttd_patch() {
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		__get_resource "patch openttd macoxminversion" "https://trac.macports.org/export/117147/trunk/dports/games/openttd/files/patch-config.lib-remove-deployment-target.diff" "HTTP" "$SRC_DIR"
 		cd "$SRC_DIR"
 		patch -Np0 < patch-config.lib-remove-deployment-target.diff
@@ -106,7 +106,7 @@ feature_openttd_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		__set_build_mode "DARWIN_STDLIB" "LIBSTDCPP"
 		#__set_build_mode "MACOSX_DEPLOYMENT_TARGET" "10.11"
 

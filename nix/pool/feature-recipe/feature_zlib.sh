@@ -1,4 +1,4 @@
-if [ ! "$_ZLIB_INCLUDED_" == "1" ]; then
+if [ ! "$_ZLIB_INCLUDED_" = "1" ]; then
 _ZLIB_INCLUDED_=1
 
 # OK

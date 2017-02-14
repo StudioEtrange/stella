@@ -1,4 +1,4 @@
-if [ ! "$_NODEJS_INCLUDED_" == "1" ]; then
+if [ ! "$_NODEJS_INCLUDED_" = "1" ]; then
 _NODEJS_INCLUDED_=1
 
 
@@ -22,7 +22,7 @@ feature_nodejs_4_4_5() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL_x86=
 		FEAT_BINARY_URL_FILENAME_x86=
 		FEAT_BINARY_URL_PROTOCOL_x86=
@@ -32,7 +32,7 @@ feature_nodejs_4_4_5() {
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL_x86=https://nodejs.org/dist/v4.4.5/node-v4.4.5-linux-x86.tar.gz
 		FEAT_BINARY_URL_FILENAME_x86=node-v4.4.5-linux-x86.tar.gz
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP_ZIP
@@ -62,7 +62,7 @@ feature_nodejs_0_12_14() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL_x86=https://nodejs.org/dist/v0.12.14/node-v0.12.14-darwin-x86.tar.gz
 		FEAT_BINARY_URL_FILENAME_x86=node-v0.12.14-darwin-x86.tar.gz
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP_ZIP
@@ -72,7 +72,7 @@ feature_nodejs_0_12_14() {
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL_x86=https://nodejs.org/dist/v0.12.14/node-v0.12.14-linux-x86.tar.gz
 		FEAT_BINARY_URL_FILENAME_x86=node-v0.12.14-linux-x86.tar.gz
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP_ZIP
@@ -102,7 +102,7 @@ feature_nodejs_0_10_45() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL_x86=https://nodejs.org/dist/v0.10.45/node-v0.10.45-darwin-x86.tar.gz
 		FEAT_BINARY_URL_FILENAME_x86=node-v0.10.45-darwin-x86.tar.gz
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP_ZIP
@@ -112,7 +112,7 @@ feature_nodejs_0_10_45() {
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL_x86=https://nodejs.org/dist/v0.10.45/node-v0.10.45-linux-x86.tar.gz
 		FEAT_BINARY_URL_FILENAME_x86=node-v0.10.45-linux-x86.tar.gz
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP_ZIP

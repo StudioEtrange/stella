@@ -1,4 +1,4 @@
-if [ ! "$_PERL_INCLUDED_" == "1" ]; then
+if [ ! "$_PERL_INCLUDED_" = "1" ]; then
 _PERL_INCLUDED_=1
 
 

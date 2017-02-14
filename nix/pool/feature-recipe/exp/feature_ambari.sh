@@ -1,4 +1,4 @@
-if [ ! "$_AMBARI_INCLUDED_" == "1" ]; then
+if [ ! "$_AMBARI_INCLUDED_" = "1" ]; then
 _AMBARI_INCLUDED_=1
 
 #TODO not finished

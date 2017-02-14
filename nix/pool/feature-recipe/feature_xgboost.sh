@@ -1,4 +1,4 @@
-if [ ! "$_xgboost_INCLUDED_" == "1" ]; then
+if [ ! "$_xgboost_INCLUDED_" = "1" ]; then
 _xgboost_INCLUDED_=1
 
 # https://github.com/dmlc/xgboost
@@ -97,10 +97,10 @@ feature_xgboost_install_source() {
 	__del_folder "$SRC_DIR"
 
 	local _ext="so"
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		_ext="dylib"
 	fi
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		_ext="so"
 	fi
 

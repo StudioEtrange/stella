@@ -1,4 +1,4 @@
-if [ ! "$_UPX_INCLUDED_" == "1" ]; then 
+if [ ! "$_UPX_INCLUDED_" = "1" ]; then 
 _UPX_INCLUDED_=1
 
 # OK

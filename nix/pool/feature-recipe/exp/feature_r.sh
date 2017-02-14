@@ -1,4 +1,4 @@
-if [ ! "$_R_INCLUDED_" == "1" ]; then
+if [ ! "$_R_INCLUDED_" = "1" ]; then
 _R_INCLUDED_=1
 
 
@@ -35,8 +35,8 @@ feature_r_3_2_2() {
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
 
-	[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && FEAT_SOURCE_CALLBACK="feature_r_link feature_r_darwin"
-	[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && FEAT_SOURCE_CALLBACK="feature_r_link"
+	[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && FEAT_SOURCE_CALLBACK="feature_r_link feature_r_darwin"
+	[ "$STELLA_CURRENT_PLATFORM" = "linux" ] && FEAT_SOURCE_CALLBACK="feature_r_link"
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 

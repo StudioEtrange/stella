@@ -1,4 +1,4 @@
-if [ ! "$_icu4c_INCLUDED_" == "1" ]; then
+if [ ! "$_icu4c_INCLUDED_" = "1" ]; then
 _icu4c_INCLUDED_=1
 
 

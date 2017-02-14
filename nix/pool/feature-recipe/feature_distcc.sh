@@ -1,4 +1,4 @@
-if [ ! "$_distcc_INCLUDED_" == "1" ]; then
+if [ ! "$_distcc_INCLUDED_" = "1" ]; then
 _distcc_INCLUDED_=1
 
 

@@ -1,4 +1,4 @@
-if [ ! "$_nifi_INCLUDED_" == "1" ]; then 
+if [ ! "$_nifi_INCLUDED_" = "1" ]; then 
 _nifi_INCLUDED_=1
 
 

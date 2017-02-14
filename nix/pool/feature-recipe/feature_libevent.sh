@@ -1,4 +1,4 @@
-if [ ! "$_libevent_INCLUDED_" == "1" ]; then
+if [ ! "$_libevent_INCLUDED_" = "1" ]; then
 _libevent_INCLUDED_=1
 
 feature_libevent() {

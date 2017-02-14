@@ -1,4 +1,4 @@
-if [ ! "$_DASH_INCLUDED_" == "1" ]; then
+if [ ! "$_DASH_INCLUDED_" = "1" ]; then
 _DASH_INCLUDED_=1
 
 

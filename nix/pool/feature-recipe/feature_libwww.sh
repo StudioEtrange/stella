@@ -1,4 +1,4 @@
-if [ ! "$_libwww_INCLUDED_" == "1" ]; then
+if [ ! "$_libwww_INCLUDED_" = "1" ]; then
 _libwww_INCLUDED_=1
 
 # TODO need perl as toolset while building source

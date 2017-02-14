@@ -1,4 +1,4 @@
-if [ ! "_EXPAT_INCLUDED_" == "1" ]; then 
+if [ ! "_EXPAT_INCLUDED_" = "1" ]; then 
 _EXPAT_INCLUDED_=1
 
 

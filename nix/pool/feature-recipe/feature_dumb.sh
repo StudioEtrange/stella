@@ -1,4 +1,4 @@
-if [ ! "$_dumb_INCLUDED_" == "1" ]; then 
+if [ ! "$_dumb_INCLUDED_" = "1" ]; then 
 _dumb_INCLUDED_=1
 
 

@@ -1,4 +1,4 @@
-if [ ! "$_angband_INCLUDED_" == "1" ]; then
+if [ ! "$_angband_INCLUDED_" = "1" ]; then
 _angband_INCLUDED_=1
 
 

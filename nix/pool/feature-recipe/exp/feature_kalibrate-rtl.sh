@@ -1,4 +1,4 @@
-if [ ! "$_kalibratertl_INCLUDED_" == "1" ]; then
+if [ ! "$_kalibratertl_INCLUDED_" = "1" ]; then
 _kalibratertl_INCLUDED_=1
 
 # TODO DO NOT WORK

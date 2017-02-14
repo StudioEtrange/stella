@@ -1,4 +1,4 @@
-if [ ! "$_etcd_INCLUDED_" == "1" ]; then
+if [ ! "$_etcd_INCLUDED_" = "1" ]; then
 _etcd_INCLUDED_=1
 
 
@@ -21,7 +21,7 @@ feature_etcd_2_3_7() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL_x86=
 		FEAT_BINARY_URL_FILENAME_x86=
 		FEAT_BINARY_URL_PROTOCOL_x86=
@@ -30,7 +30,7 @@ feature_etcd_2_3_7() {
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP
 
 	fi
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL_x86=
 		FEAT_BINARY_URL_FILENAME_x86=
 		FEAT_BINARY_URL_PROTOCOL_x86=

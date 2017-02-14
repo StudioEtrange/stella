@@ -1,4 +1,4 @@
-if [ ! "$_unixodbc_INCLUDED_" == "1" ]; then
+if [ ! "$_unixodbc_INCLUDED_" = "1" ]; then
 _unixodbc_INCLUDED_=1
 
 # https://github.com/Homebrew/homebrew-core/blob/master/Formula/unixodbc.rb

@@ -1,4 +1,4 @@
-if [ ! "$_physfs_INCLUDED_" == "1" ]; then 
+if [ ! "$_physfs_INCLUDED_" = "1" ]; then 
 _physfs_INCLUDED_=1
 
 

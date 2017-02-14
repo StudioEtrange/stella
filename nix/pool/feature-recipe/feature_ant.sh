@@ -1,4 +1,4 @@
-if [ ! "$_ANT_INCLUDED_" == "1" ]; then 
+if [ ! "$_ANT_INCLUDED_" = "1" ]; then 
 _ANT_INCLUDED_=1
 
 

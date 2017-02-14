@@ -1,4 +1,4 @@
-if [ ! "$_ORACLEJDK_INCLUDED_" == "1" ]; then
+if [ ! "$_ORACLEJDK_INCLUDED_" = "1" ]; then
 _ORACLEJDK_INCLUDED_=1
 
 
@@ -33,7 +33,7 @@ feature_oracle-jdk_8u91() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL_x86="http://download.oracle.com/otn-pub/java/jdk/8u91-b14/jdk-8u91-linux-i586.tar.gz"
 		FEAT_BINARY_URL_FILENAME_x86=jdk-8u91-linux-i586.tar.gz
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP_ZIP
@@ -43,7 +43,7 @@ feature_oracle-jdk_8u91() {
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL_x86=
 		FEAT_BINARY_URL_FILENAME_86=
 		FEAT_BINARY_URL_PROTOCOL_x86=
@@ -76,7 +76,7 @@ feature_oracle-jdk_8u45() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL_x86="http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-i586.tar.gz"
 		FEAT_BINARY_URL_FILENAME_x86=jdk-8u45-linux-i586.tar.gz
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP_ZIP
@@ -86,7 +86,7 @@ feature_oracle-jdk_8u45() {
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL_x86=
 		FEAT_BINARY_URL_FILENAME_86=
 		FEAT_BINARY_URL_PROTOCOL_x86=
@@ -120,7 +120,7 @@ feature_oracle-jdk_7u80() {
 	FEAT_SOURCE_URL_PROTOCOL=
 
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL_x86="http://download.oracle.com/otn-pub/java/jdk/7u80-b15/jdk-7u80-linux-i586.tar.gz"
 		FEAT_BINARY_URL_FILENAME_x86=jdk-7u80-linux-i586.tar.gz
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP_ZIP
@@ -130,7 +130,7 @@ feature_oracle-jdk_7u80() {
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL_x86=
 		FEAT_BINARY_URL_FILENAME_86=
 		FEAT_BINARY_URL_PROTOCOL_x86=
@@ -156,11 +156,11 @@ feature_oracle-jdk_7u80() {
 # fix problems with jni_md.h
 # http://stackoverflow.com/a/24996278
 feature_oracle-jdk_fix_jni_header() {
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		ln -s $FEAT_INSTALL_ROOT/include/darwin/jni_md.h $FEAT_INSTALL_ROOT/include/jni_md.h
 		ln -s $FEAT_INSTALL_ROOT/include/darwin/jawt_md.h $FEAT_INSTALL_ROOT/include/jawt_md.h
 	fi
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		ln -s $FEAT_INSTALL_ROOT/include/linux/jni_md.h $FEAT_INSTALL_ROOT/include/jni_md.h
 		ln -s $FEAT_INSTALL_ROOT/include/linux/jawt_md.h $FEAT_INSTALL_ROOT/include/jawt_md.h
 	fi
@@ -170,7 +170,7 @@ feature_oracle-jdk_fix_jni_header() {
 feature_oracle-jdk_install_binary() {
 
 	mkdir -p "$STELLA_APP_CACHE_DIR"
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		if [ ! -f "$STELLA_APP_CACHE_DIR/$FEAT_BINARY_URL_FILENAME" ]; then
 			wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "$FEAT_BINARY_URL" -O "$STELLA_APP_CACHE_DIR/$FEAT_BINARY_URL_FILENAME"
 		fi
@@ -180,7 +180,7 @@ feature_oracle-jdk_install_binary() {
 
 
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		mkdir -p $STELLA_APP_TEMP_DIR
 
 		# download

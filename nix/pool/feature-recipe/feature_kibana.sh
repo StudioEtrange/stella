@@ -1,4 +1,4 @@
-if [ ! "$_KIBANA_INCLUDED_" == "1" ]; then
+if [ ! "$_KIBANA_INCLUDED_" = "1" ]; then
 _KIBANA_INCLUDED_=1
 
 
@@ -27,13 +27,13 @@ feature_kibana_5_2_0() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://artifacts.elastic.co/downloads/kibana/kibana-5.2.0-darwin-x86_64.tar.gz
 		FEAT_BINARY_URL_FILENAME=kibana-5.2.0-darwin-x86_64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=https://artifacts.elastic.co/downloads/kibana/kibana-5.2.0-linux-x86_64.tar.gz
 		FEAT_BINARY_URL_FILENAME=kibana-5.2.0-linux-x86_64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
@@ -59,13 +59,13 @@ feature_kibana_4_5_4() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://download.elastic.co/kibana/kibana/kibana-4.5.4-darwin-x64.tar.gz
 		FEAT_BINARY_URL_FILENAME=kibana-4.5.4-darwin-x64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=https://download.elastic.co/kibana/kibana/kibana-4.5.4-linux-x64.tar.gz
 		FEAT_BINARY_URL_FILENAME=kibana-4.5.4-linux-x64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
@@ -91,13 +91,13 @@ feature_kibana_4_3_3() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://download.elastic.co/kibana/kibana/kibana-4.3.3-darwin-x64.tar.gz
 		FEAT_BINARY_URL_FILENAME=kibana-4.3.3-darwin-x64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=https://download.elastic.co/kibana/kibana/kibana-4.3.3-linux-x64.tar.gz
 		FEAT_BINARY_URL_FILENAME=kibana-4.3.3-linux-x64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
@@ -123,13 +123,13 @@ feature_kibana_4_3_1() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://download.elastic.co/kibana/kibana/kibana-4.3.1-darwin-x64.tar.gz
 		FEAT_BINARY_URL_FILENAME=kibana-4.3.1-darwin-x64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=https://download.elastic.co/kibana/kibana/kibana-4.3.1-linux-x64.tar.gz
 		FEAT_BINARY_URL_FILENAME=kibana-4.3.1-linux-x64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
@@ -156,13 +156,13 @@ feature_kibana_4_2_2() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://download.elastic.co/kibana/kibana/kibana-4.2.2-darwin-x64.tar.gz
 		FEAT_BINARY_URL_FILENAME=kibana-4.2.2-darwin-x64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=https://download.elastic.co/kibana/kibana/kibana-4.2.2-linux-x64.tar.gz
 		FEAT_BINARY_URL_FILENAME=kibana-4.2.2-linux-x64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
@@ -188,13 +188,13 @@ feature_kibana_4_2_0() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://download.elastic.co/kibana/kibana/kibana-4.2.0-darwin-x64.tar.gz
 		FEAT_BINARY_URL_FILENAME=kibana-4.2.0-darwin-x64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=https://download.elastic.co/kibana/kibana/kibana-4.2.0-linux-x64.tar.gz
 		FEAT_BINARY_URL_FILENAME=kibana-4.2.0-linux-x64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
@@ -220,13 +220,13 @@ feature_kibana_4_1_2() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://download.elastic.co/kibana/kibana/kibana-4.1.2-darwin-x64.zip
 		FEAT_BINARY_URL_FILENAME=kibana-4.1.2-darwin-x64.zip
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=https://download.elastic.co/kibana/kibana/kibana-4.1.2-linux-x64.tar.gz
 		FEAT_BINARY_URL_FILENAME=kibana-4.1.2-linux-x64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
@@ -275,13 +275,13 @@ feature_kibana_4_0_0() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://download.elastic.co/kibana/kibana/kibana-4.0.0-darwin-x64.tar.gz
 		FEAT_BINARY_URL_FILENAME=kibana-4.0.0-darwin-x64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=https://download.elastic.co/kibana/kibana/kibana-4.0.0-linux-x64.tar.gz
 		FEAT_BINARY_URL_FILENAME=kibana-4.0.0-linux-x64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
@@ -306,13 +306,13 @@ feature_kibana_4_0_1() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://download.elastic.co/kibana/kibana/kibana-4.0.1-darwin-x64.tar.gz
 		FEAT_BINARY_URL_FILENAME=kibana-4.0.1-darwin-x64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=https://download.elastic.co/kibana/kibana/kibana-4.0.1-linux-x64.tar.gz
 		FEAT_BINARY_URL_FILENAME=kibana-4.0.1-linux-x64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
@@ -339,13 +339,13 @@ feature_kibana_4_0_3() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://download.elastic.co/kibana/kibana/kibana-4.0.3-darwin-x64.tar.gz
 		FEAT_BINARY_URL_FILENAME=kibana-4.0.3-darwin-x64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=https://download.elastic.co/kibana/kibana/kibana-4.0.3-linux-x64.tar.gz
 		FEAT_BINARY_URL_FILENAME=kibana-4.0.3-linux-x64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
@@ -373,13 +373,13 @@ feature_kibana_4_1_0() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://download.elastic.co/kibana/kibana/kibana-4.1.0-darwin-x64.tar.gz
 		FEAT_BINARY_URL_FILENAME=kibana-4.1.0-darwin-x64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=https://download.elastic.co/kibana/kibana/kibana-4.1.0-linux-x64.tar.gz
 		FEAT_BINARY_URL_FILENAME=kibana-4.1.0-linux-x64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP

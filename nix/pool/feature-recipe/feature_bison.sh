@@ -1,4 +1,4 @@
-if [ ! "$_bison_INCLUDED_" == "1" ]; then
+if [ ! "$_bison_INCLUDED_" = "1" ]; then
 _bison_INCLUDED_=1
 
 

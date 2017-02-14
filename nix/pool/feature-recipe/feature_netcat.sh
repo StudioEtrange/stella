@@ -1,4 +1,4 @@
-if [ ! "$_NETCAT_INCLUDED_" == "1" ]; then 
+if [ ! "$_NETCAT_INCLUDED_" = "1" ]; then 
 _NETCAT_INCLUDED_=1
 
 

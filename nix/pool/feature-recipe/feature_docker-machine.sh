@@ -1,4 +1,4 @@
-if [ ! "$_DOCKERMACHINE_INCLUDED_" == "1" ]; then
+if [ ! "$_DOCKERMACHINE_INCLUDED_" = "1" ]; then
 _DOCKERMACHINE_INCLUDED_=1
 
 
@@ -22,7 +22,7 @@ feature_docker-machine_0_8_2() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL_x86=
 		FEAT_BINARY_URL_FILENAME_x86=
 		FEAT_BINARY_URL_PROTOCOL_x86=
@@ -31,7 +31,7 @@ feature_docker-machine_0_8_2() {
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL_x86=
 		FEAT_BINARY_URL_FILENAME_x86=
 		FEAT_BINARY_URL_PROTOCOL_x86=
@@ -60,7 +60,7 @@ feature_docker-machine_0_7_0() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL_x86=
 		FEAT_BINARY_URL_FILENAME_x86=
 		FEAT_BINARY_URL_PROTOCOL_x86=
@@ -69,7 +69,7 @@ feature_docker-machine_0_7_0() {
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL_x86=
 		FEAT_BINARY_URL_FILENAME_x86=
 		FEAT_BINARY_URL_PROTOCOL_x86=
@@ -98,7 +98,7 @@ feature_docker-machine_0_6_0() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL_x86=
 		FEAT_BINARY_URL_FILENAME_x86=
 		FEAT_BINARY_URL_PROTOCOL_x86=
@@ -107,7 +107,7 @@ feature_docker-machine_0_6_0() {
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL_x86=
 		FEAT_BINARY_URL_FILENAME_x86=
 		FEAT_BINARY_URL_PROTOCOL_x86=
@@ -136,7 +136,7 @@ feature_docker-machine_0_5_6() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL_x86=
 		FEAT_BINARY_URL_FILENAME_x86=
 		FEAT_BINARY_URL_PROTOCOL_x86=
@@ -145,7 +145,7 @@ feature_docker-machine_0_5_6() {
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL_x86=
 		FEAT_BINARY_URL_FILENAME_x86=
 		FEAT_BINARY_URL_PROTOCOL_x86=
@@ -174,7 +174,7 @@ feature_docker-machine_0_2_0() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL_x86=https://github.com/docker/machine/releases/download/v0.2.0/docker-machine_darwin-386
 		FEAT_BINARY_URL_FILENAME_x86=docker-machine_darwin-386-0_2_0
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP
@@ -183,7 +183,7 @@ feature_docker-machine_0_2_0() {
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL_x86=https://github.com/docker/machine/releases/download/v0.2.0/docker-machine_linux-386
 		FEAT_BINARY_URL_FILENAME_x86=docker-machine_linux-386-0_2_0
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP
@@ -213,7 +213,7 @@ feature_docker-machine_0_4_0() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL_x86=https://github.com/docker/machine/releases/download/v0.4.0/docker-machine_darwin-386
 		FEAT_BINARY_URL_FILENAME_x86=docker-machine_darwin-386-0_4_0
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP
@@ -222,7 +222,7 @@ feature_docker-machine_0_4_0() {
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL_x86=https://github.com/docker/machine/releases/download/v0.4.0/docker-machine_linux-386
 		FEAT_BINARY_URL_FILENAME_x86=docker-machine_linux-386-0_4_0
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP

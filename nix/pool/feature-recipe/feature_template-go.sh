@@ -1,4 +1,4 @@
-if [ ! "$_TEMPLATEGO_INCLUDED_" == "1" ]; then 
+if [ ! "$_TEMPLATEGO_INCLUDED_" = "1" ]; then 
 _TEMPLATEGO_INCLUDED_=1
 
 

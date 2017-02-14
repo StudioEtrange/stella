@@ -1,4 +1,4 @@
-if [ ! "$_haskell_INCLUDED_" == "1" ]; then 
+if [ ! "$_haskell_INCLUDED_" = "1" ]; then 
 _haskell_INCLUDED_=1
 
 # TODO NOT FINISHED
@@ -41,12 +41,12 @@ feature_haskell_7_10_3() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://github.com/ghcformacosx/ghc-dot-app/releases/download/v7.10.3-r1/ghc-7.10.3-r1.zip
 		FEAT_BINARY_URL_FILENAME=ghcformacosx-ghc-7.10.3-r1.zip
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		# need libreadline, libgmp
 		FEAT_BINARY_URL=https://haskell.org/platform/download/7.10.3/haskell-platform-7.10.3-unknown-posix-x86_64.tar.gz
 		FEAT_BINARY_URL_FILENAME=haskell-platform-7.10.3-unknown-posix-x86_64.tar.gz

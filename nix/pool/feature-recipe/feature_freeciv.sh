@@ -1,4 +1,4 @@
-if [ ! "$_freeciv_INCLUDED_" == "1" ]; then
+if [ ! "$_freeciv_INCLUDED_" = "1" ]; then
 _freeciv_INCLUDED_=1
 
 # TODO
@@ -8,7 +8,7 @@ _freeciv_INCLUDED_=1
 # for freeciv module installer, use gtk or qt
 # need ncurses ?
 # linked against zlib and bz2 and iconv
-# SDL client has less functionnality than gtk client ===> abandon sdl client which do not build
+# SDL client has less functionnality than gtk client ==> abandon sdl client which do not build
 feature_freeciv() {
 	FEAT_NAME=freeciv
 	FEAT_LIST_SCHEMA="2_5_1:source"
@@ -88,7 +88,7 @@ feature_freeciv_install_source() {
 
 
 }
-# == General build options ==
+# = General build options =
 #   Shared libraries:      no
 #   Debugging support:     no
 #   Profiling support:     no
@@ -97,7 +97,7 @@ feature_freeciv_install_source() {
 #     ppm:                   built-in
 #     MagickWand:            no
 
-#   == Client ==
+#   = Client =
 #   Build freeciv client:  yes
 
 #   Maintained client frontends:
@@ -110,7 +110,7 @@ feature_freeciv_install_source() {
 #   Not maintained client frontends:
 #     Xaw:     no
 
-#   == Server ==
+#   = Server =
 #   Build freeciv server:  yes
 #     AI modules support:    no
 #     Database support:      no
@@ -118,7 +118,7 @@ feature_freeciv_install_source() {
 #       postgres:              no
 #       sqlite3:               no
 
-#   == Tools ==
+#   = Tools =
 #   Modpack installers:   none
 #   Manual generator:      yes
 

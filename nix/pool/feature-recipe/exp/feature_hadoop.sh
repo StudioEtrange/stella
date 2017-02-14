@@ -1,4 +1,4 @@
-if [ ! "$_hadoop_INCLUDED_" == "1" ]; then
+if [ ! "$_hadoop_INCLUDED_" = "1" ]; then
 _hadoop_INCLUDED_=1
 
 # NOTE : for hadoop common native libraries

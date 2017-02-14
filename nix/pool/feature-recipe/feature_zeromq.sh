@@ -1,4 +1,4 @@
-if [ ! "$_zeromq_INCLUDED_" == "1" ]; then
+if [ ! "$_zeromq_INCLUDED_" = "1" ]; then
 _zeromq_INCLUDED_=1
 
 # 2017-02-11 KO Ubuntu 14.04

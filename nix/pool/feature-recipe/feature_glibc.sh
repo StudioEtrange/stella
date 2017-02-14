@@ -1,4 +1,4 @@
-if [ ! "$_glibc_INCLUDED_" == "1" ]; then
+if [ ! "$_glibc_INCLUDED_" = "1" ]; then
 _glibc_INCLUDED_=1
 
 

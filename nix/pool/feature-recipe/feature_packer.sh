@@ -1,4 +1,4 @@
-if [ ! "$_PACKER_INCLUDED_" == "1" ]; then
+if [ ! "$_PACKER_INCLUDED_" = "1" ]; then
 _PACKER_INCLUDED_=1
 
 
@@ -23,7 +23,7 @@ feature_packer_0_6_0() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_CALLBACK=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL_x64=https://dl.bintray.com/mitchellh/packer/0.6.0_darwin_amd64.zip
 		FEAT_BINARY_URL_FILENAME_x64=packer_0.6.0_darwin_amd64.zip
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP
@@ -31,7 +31,7 @@ feature_packer_0_6_0() {
 		FEAT_BINARY_URL_FILENAME_x86="packer_0.6.0_darwin_386.zip"
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP_ZIP
 	fi
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL_x64=https://dl.bintray.com/mitchellh/packer/0.6.0_linux_amd64.zip
 		FEAT_BINARY_URL_FILENAME_x64=packer_0.6.0_linux_amd64.zip
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP
@@ -60,7 +60,7 @@ feature_packer_0_7_5() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_CALLBACK=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL_x64=https://dl.bintray.com/mitchellh/packer/packer_0.7.5_darwin_amd64.zip
 		FEAT_BINARY_URL_FILENAME_x64=packer_0.7.5_darwin_amd64.zip
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP
@@ -68,7 +68,7 @@ feature_packer_0_7_5() {
 		FEAT_BINARY_URL_FILENAME_x86=packer_0.7.5_darwin_386.zip
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP_ZIP
 	fi
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL_x64=https://dl.bintray.com/mitchellh/packer/packer_0.7.5_linux_amd64.zip
 		FEAT_BINARY_URL_FILENAME_x64=packer_0.7.5_linux_amd64.zip
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP

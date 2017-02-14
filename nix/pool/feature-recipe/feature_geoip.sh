@@ -1,4 +1,4 @@
-if [ ! "$_geoip_INCLUDED_" == "1" ]; then
+if [ ! "$_geoip_INCLUDED_" = "1" ]; then
 _geoip_INCLUDED_=1
 
 # database file : http://dev.maxmind.com/geoip/legacy/geolite/

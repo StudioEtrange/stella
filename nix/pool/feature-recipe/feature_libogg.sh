@@ -1,4 +1,4 @@
-if [ ! "$_libogg_INCLUDED_" == "1" ]; then 
+if [ ! "$_libogg_INCLUDED_" = "1" ]; then 
 _libogg_INCLUDED_=1
 
 # darwin -- OK -- 20151012

@@ -1,4 +1,4 @@
-if [ ! "_lddtreesh_INCLUDED_" == "1" ]; then
+if [ ! "_lddtreesh_INCLUDED_" = "1" ]; then
 _lddtreesh_INCLUDED_=1
 
 

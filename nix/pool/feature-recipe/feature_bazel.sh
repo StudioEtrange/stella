@@ -1,4 +1,4 @@
-if [ ! "$_bazel_INCLUDED_" == "1" ]; then
+if [ ! "$_bazel_INCLUDED_" = "1" ]; then
 _bazel_INCLUDED_=1
 
 

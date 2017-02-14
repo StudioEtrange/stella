@@ -1,4 +1,4 @@
-if [ ! "$_SPARK_INCLUDED_" == "1" ]; then
+if [ ! "$_SPARK_INCLUDED_" = "1" ]; then
 _SPARK_INCLUDED_=1
 
 

@@ -1,4 +1,4 @@
-if [ ! "$_PCRE_INCLUDED_" == "1" ]; then 
+if [ ! "$_PCRE_INCLUDED_" = "1" ]; then 
 _PCRE_INCLUDED_=1
 
 

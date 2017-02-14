@@ -1,4 +1,4 @@
-if [ ! "$_PATCHELF_INCLUDED_" == "1" ]; then
+if [ ! "$_PATCHELF_INCLUDED_" = "1" ]; then
 _PATCHELF_INCLUDED_=1
 
 

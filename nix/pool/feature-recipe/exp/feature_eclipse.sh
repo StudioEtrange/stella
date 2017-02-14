@@ -1,4 +1,4 @@
-if [ ! "$_eclipse_INCLUDED_" == "1" ]; then
+if [ ! "$_eclipse_INCLUDED_" = "1" ]; then
 _eclipse_INCLUDED_=1
 
 # TODO not finished
@@ -47,8 +47,8 @@ feature_eclipse_4_6() {
 }
 
 feature_eclipse_env() {
-	[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && ECLIPSE_BINARY="$FEAT_INSTALL_ROOT/eclipse"
-	[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && ECLIPSE_BINARY="$FEAT_INSTALL_ROOT/Eclipse.app/Contents/MacOS/eclipse"
+	[ "$STELLA_CURRENT_PLATFORM" = "linux" ] && ECLIPSE_BINARY="$FEAT_INSTALL_ROOT/eclipse"
+	[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && ECLIPSE_BINARY="$FEAT_INSTALL_ROOT/Eclipse.app/Contents/MacOS/eclipse"
 }
 
 feature_eclipse_install_binary() {

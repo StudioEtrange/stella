@@ -1,4 +1,4 @@
-if [ ! "$_libxml2_INCLUDED_" == "1" ]; then
+if [ ! "$_libxml2_INCLUDED_" = "1" ]; then
 _libxml2_INCLUDED_=1
 
 

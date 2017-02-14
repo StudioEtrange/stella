@@ -1,4 +1,4 @@
-if [ ! "$_nmap_INCLUDED_" == "1" ]; then 
+if [ ! "$_nmap_INCLUDED_" = "1" ]; then 
 _nmap_INCLUDED_=1
 
 

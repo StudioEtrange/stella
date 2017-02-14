@@ -1,5 +1,5 @@
 # https://github.com/openshift/origin/releases
-if [ ! "$_cobbler_INCLUDED_" == "1" ]; then
+if [ ! "$_cobbler_INCLUDED_" = "1" ]; then
 _cobbler_INCLUDED_=1
 
 feature_cobbler() {

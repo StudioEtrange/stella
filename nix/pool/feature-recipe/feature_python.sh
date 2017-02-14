@@ -1,4 +1,4 @@
-if [ ! "$_PYTHON_INCLUDED_" == "1" ]; then
+if [ ! "$_PYTHON_INCLUDED_" = "1" ]; then
 _PYTHON_INCLUDED_=1
 
 # Python 2.7.9 and later (on the python2 series), and Python 3.4 and later include PIP by default

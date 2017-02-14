@@ -1,4 +1,4 @@
-if [ ! "$_BOOSTBUILD_INCLUDED_" == "1" ]; then
+if [ ! "$_BOOSTBUILD_INCLUDED_" = "1" ]; then
 _BOOSTBUILD_INCLUDED_=1
 
 # http://www.boost.org/build/

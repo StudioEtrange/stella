@@ -1,4 +1,4 @@
-if [ ! "$_oolite_INCLUDED_" == "1" ]; then 
+if [ ! "$_oolite_INCLUDED_" = "1" ]; then 
 _oolite_INCLUDED_=1
 
 # TODO : to finish

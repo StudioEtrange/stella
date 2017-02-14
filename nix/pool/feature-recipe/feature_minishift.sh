@@ -1,4 +1,4 @@
-if [ ! "$_minishift_INCLUDED_" == "1" ]; then
+if [ ! "$_minishift_INCLUDED_" = "1" ]; then
 _minishift_INCLUDED_=1
 
 # openshift origin single-node cluster, inside a single VM on localhost
@@ -43,13 +43,13 @@ feature_minishift_0_9_0() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=https://github.com/jimmidyson/minishift/releases/download/v0.9.0/minishift-linux-amd64
 		FEAT_BINARY_URL_FILENAME=minishift-0_9_0-linux-amd64
 		FEAT_BINARY_URL_PROTOCOL=HTTP
 
 	fi
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://github.com/jimmidyson/minishift/releases/download/v0.9.0/minishift-darwin-amd64
 		FEAT_BINARY_URL_FILENAME=minishift-0_9_0-darwin-amd64
 		FEAT_BINARY_URL_PROTOCOL=HTTP

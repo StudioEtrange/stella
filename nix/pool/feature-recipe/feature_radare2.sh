@@ -1,4 +1,4 @@
-if [ ! "$_radare2_INCLUDED_" == "1" ]; then
+if [ ! "$_radare2_INCLUDED_" = "1" ]; then
 _radare2_INCLUDED_=1
 
 # https://github.com/radare/radare2

@@ -1,12 +1,12 @@
-if [ ! "$_sdlimage_INCLUDED_" == "1" ]; then 
+if [ ! "$_sdlimage_INCLUDED_" = "1" ]; then 
 _sdlimage_INCLUDED_=1
 
 #https://www.libsdl.org/projects/SDL_image/
 
 # NOTE this use sdl-config binaries to set correct flag
 
-# sdl 2.x ==> sdl-image 2_0_0
-# sdl 1.2.x ==> sdl-image 1_2_12
+# sdl 2.x => sdl-image 2_0_0
+# sdl 1.2.x => sdl-image 1_2_12
 
 feature_sdl-image() {
 	FEAT_NAME=sdl-image

@@ -1,4 +1,4 @@
-if [ ! "_JPEG_INCLUDED_" == "1" ]; then
+if [ ! "_JPEG_INCLUDED_" = "1" ]; then
 _JPEG_INCLUDED_=1
 
 

@@ -1,4 +1,4 @@
-if [ ! "$_AUTOCONF_INCLUDED_" == "1" ]; then 
+if [ ! "$_AUTOCONF_INCLUDED_" = "1" ]; then 
 _AUTOCONF_INCLUDED_=1
 
 

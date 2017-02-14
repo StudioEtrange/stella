@@ -1,4 +1,4 @@
-if [ ! "$_OPENSSL_INCLUDED_" == "1" ]; then
+if [ ! "$_OPENSSL_INCLUDED_" = "1" ]; then
 _OPENSSL_INCLUDED_=1
 
 # TODO
@@ -86,23 +86,23 @@ feature_openssl_install_source() {
 
 
 	ARCH=$STELLA_BUILD_ARCH
-	[ "$ARCH" == "" ] && ARCH="x64"
+	[ "$ARCH" = "" ] && ARCH="x64"
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		OPENSSL_OPT="shared no-idea no-mdc2 no-rc5 enable-ssl2 enable-tlsext enable-cms"
 
-		[ "$ARCH" == "x86" ] && OPENSSL_PLATFORM="darwin-i386-cc"
-		if [ "$ARCH" == "x64" ]; then
+		[ "$ARCH" = "x86" ] && OPENSSL_PLATFORM="darwin-i386-cc"
+		if [ "$ARCH" = "x64" ]; then
 			OPENSSL_PLATFORM="darwin64-x86_64-cc"
 			OPENSSL_OPT="$OPENSSL_OPT enable-ec_nistp_64_gcc_128"
 		fi
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		OPENSSL_OPT="shared no-idea no-mdc2 no-rc5 enable-ssl2 enable-tlsext enable-cms"
 
-		[ "$ARCH" == "x86" ] && OPENSSL_PLATFORM=linux-generic32
-		[ "$ARCH" == "x64" ] && OPENSSL_PLATFORM=linux-x86_64
+		[ "$ARCH" = "x86" ] && OPENSSL_PLATFORM=linux-generic32
+		[ "$ARCH" = "x64" ] && OPENSSL_PLATFORM=linux-x86_64
 	fi
 
 	__feature_callback
@@ -128,7 +128,7 @@ feature_openssl_install_source() {
 
 	make MANDIR=$INSTALL_DIR/share/man/openssl MANSUFFIX=ssl install
 	# TODO : 'make test' do not work if we build for a different architecture than the host
-	#[ "$ARCH" == "x64" ] && make test
+	#[ "$ARCH" = "x64" ] && make test
 
 	__end_manual_build
 

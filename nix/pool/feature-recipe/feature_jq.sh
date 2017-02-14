@@ -1,4 +1,4 @@
-if [ ! "$_JQ_INCLUDED_" == "1" ]; then 
+if [ ! "$_JQ_INCLUDED_" = "1" ]; then 
 _JQ_INCLUDED_=1
 
 feature_jq() {
@@ -20,7 +20,7 @@ feature_jq_1_5() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL_x86=https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux32
 		FEAT_BINARY_URL_FILENAME_x86=jq-1.5-linux-32
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP
@@ -29,7 +29,7 @@ feature_jq_1_5() {
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
 		
 	fi
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL_x86=
 		FEAT_BINARY_URL_FILENAME_x86=
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP
@@ -58,7 +58,7 @@ feature_jq_1_4() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL_x86=https://github.com/stedolan/jq/releases/download/jq-1.4/jq-linux-x86
 		FEAT_BINARY_URL_FILENAME_x86=jq-1.4-linux-32
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP
@@ -67,7 +67,7 @@ feature_jq_1_4() {
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
 		
 	fi
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL_x86=https://github.com/stedolan/jq/releases/download/jq-1.4/jq-osx-x86
 		FEAT_BINARY_URL_FILENAME_x86=jq-1.4-osx-32
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP

@@ -1,4 +1,4 @@
-if [ ! "$_cpptest_INCLUDED_" == "1" ]; then 
+if [ ! "$_cpptest_INCLUDED_" = "1" ]; then 
 _cpptest_INCLUDED_=1
 
 

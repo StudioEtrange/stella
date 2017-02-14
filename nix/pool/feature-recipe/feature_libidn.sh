@@ -1,4 +1,4 @@
-if [ ! "$_libidn_INCLUDED_" == "1" ]; then 
+if [ ! "$_libidn_INCLUDED_" = "1" ]; then 
 _libidn_INCLUDED_=1
 
 

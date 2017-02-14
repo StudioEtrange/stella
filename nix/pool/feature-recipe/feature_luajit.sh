@@ -1,4 +1,4 @@
-if [ ! "$_luajit_INCLUDED_" == "1" ]; then 
+if [ ! "$_luajit_INCLUDED_" = "1" ]; then 
 _luajit_INCLUDED_=1
 
 # NOTE : Do not need lua

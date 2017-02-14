@@ -1,4 +1,4 @@
-if [ ! "$_HTOP_INCLUDED_" == "1" ]; then
+if [ ! "$_HTOP_INCLUDED_" = "1" ]; then
 _HTOP_INCLUDED_=1
 
 

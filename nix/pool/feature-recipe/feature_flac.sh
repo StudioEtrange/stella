@@ -1,4 +1,4 @@
-if [ ! "$_flac_INCLUDED_" == "1" ]; then 
+if [ ! "$_flac_INCLUDED_" = "1" ]; then 
 _flac_INCLUDED_=1
 
 # https://github.com/Homebrew/homebrew/blob/master/Library/Formula/flac.rb
@@ -61,7 +61,7 @@ feature_flac_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
-     [ "$STELLA_BUILD_ARCH" == "x86" ] && AUTO_INSTALL_CONF_FLAG_POSTFIX="$AUTO_INSTALL_CONF_FLAG_POSTFIX --disable-asm-optimizations"
+     [ "$STELLA_BUILD_ARCH" = "x86" ] && AUTO_INSTALL_CONF_FLAG_POSTFIX="$AUTO_INSTALL_CONF_FLAG_POSTFIX --disable-asm-optimizations"
 
 	__feature_callback
 

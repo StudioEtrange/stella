@@ -1,4 +1,4 @@
-if [ ! "$_ioninja_INCLUDED_" == "1" ]; then
+if [ ! "$_ioninja_INCLUDED_" = "1" ]; then
 _ioninja_INCLUDED_=1
 
 
@@ -23,12 +23,12 @@ feature_ioninja_3_6_5() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=http://tibbo.com/downloads/archive/ioninja/ioninja-3.6.5/ioninja-mac-3.6.5.tar.xz
 		FEAT_BINARY_URL_FILENAME=ioninja-mac-3.6.5.tar.xz
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=http://tibbo.com/downloads/archive/ioninja/ioninja-3.6.5/ioninja-linux-3.6.5-amd64.tar.xz
 		FEAT_BINARY_URL_FILENAME=ioninja-linux-3.6.5-amd64.tar.xz
 	fi

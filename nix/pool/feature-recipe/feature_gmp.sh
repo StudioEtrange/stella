@@ -1,4 +1,4 @@
-if [ ! "$_gmp_INCLUDED_" == "1" ]; then
+if [ ! "$_gmp_INCLUDED_" = "1" ]; then
 _gmp_INCLUDED_=1
 
 # darwin : https://github.com/Homebrew/homebrew/blob/master/Library/Formula/gmp.rb
@@ -34,8 +34,8 @@ feature_gmp_install_source() {
 	# https://gmplib.org/manual/Build-Options.html
 	# C++ Support
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="--enable-cxx"
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-		[ "$STELLA_BUILD_ARCH" == "x64" ] && AUTO_INSTALL_CONF_FLAG_POSTFIX="$AUTO_INSTALL_CONF_FLAG_POSTFIX --disable-assembly"
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		[ "$STELLA_BUILD_ARCH" = "x64" ] && AUTO_INSTALL_CONF_FLAG_POSTFIX="$AUTO_INSTALL_CONF_FLAG_POSTFIX --disable-assembly"
 	fi
 
 	__feature_callback

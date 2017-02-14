@@ -1,4 +1,4 @@
-if [ ! "$_consul_INCLUDED_" == "1" ]; then 
+if [ ! "$_consul_INCLUDED_" = "1" ]; then 
 _consul_INCLUDED_=1
 
 
@@ -21,7 +21,7 @@ feature_consul_0_6_3() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL_x86=https://releases.hashicorp.com/consul/0.6.3/consul_0.6.3_linux_386.zip
 		FEAT_BINARY_URL_FILENAME_x86=consul_0.6.3_linux_386.zip
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP_ZIP
@@ -30,7 +30,7 @@ feature_consul_0_6_3() {
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP
 		
 	fi
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL_x86=https://releases.hashicorp.com/consul/0.6.3/consul_0.6.3_darwin_386.zip
 		FEAT_BINARY_URL_FILENAME_x86=consul_0.6.3_darwin_386.zip
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP_ZIP

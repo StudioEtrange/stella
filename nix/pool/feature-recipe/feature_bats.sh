@@ -1,4 +1,4 @@
-if [ ! "$_bats_INCLUDED_" == "1" ]; then
+if [ ! "$_bats_INCLUDED_" = "1" ]; then
 _bats_INCLUDED_=1
 
 

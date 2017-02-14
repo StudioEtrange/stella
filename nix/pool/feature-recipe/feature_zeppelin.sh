@@ -1,4 +1,4 @@
-if [ ! "$_zeppelin_INCLUDED_" == "1" ]; then
+if [ ! "$_zeppelin_INCLUDED_" = "1" ]; then
 _zeppelin_INCLUDED_=1
 
 

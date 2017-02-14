@@ -1,4 +1,4 @@
-if [ ! "$_ntopng_INCLUDED_" == "1" ]; then
+if [ ! "$_ntopng_INCLUDED_" = "1" ]; then
 _ntopng_INCLUDED_=1
 
 # https://github.com/Homebrew/homebrew-core/blob/master/Formula/ntopng.rb

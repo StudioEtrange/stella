@@ -1,4 +1,4 @@
-if [ ! "$_M4_INCLUDED_" == "1" ]; then 
+if [ ! "$_M4_INCLUDED_" = "1" ]; then 
 _M4_INCLUDED_=1
 
 

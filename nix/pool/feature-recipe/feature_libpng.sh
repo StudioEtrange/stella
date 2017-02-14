@@ -1,4 +1,4 @@
-if [ ! "$_LIBPNG_INCLUDED_" == "1" ]; then
+if [ ! "$_LIBPNG_INCLUDED_" = "1" ]; then
 _LIBPNG_INCLUDED_=1
 
 # darwin -- OK -- 20151012

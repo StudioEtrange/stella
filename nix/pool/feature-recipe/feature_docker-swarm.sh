@@ -1,4 +1,4 @@
-if [ ! "$_DOCKERSWARM_INCLUDED_" == "1" ]; then
+if [ ! "$_DOCKERSWARM_INCLUDED_" = "1" ]; then
 _DOCKERSWARM_INCLUDED_=1
 
 

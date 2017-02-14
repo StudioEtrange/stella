@@ -1,4 +1,4 @@
-if [ ! "$_AUTOTOOLSBUNDLE_INCLUDED_" == "1" ]; then 
+if [ ! "$_AUTOTOOLSBUNDLE_INCLUDED_" = "1" ]; then 
 _AUTOTOOLSBUNDLE_INCLUDED_=1
 
 feature_autotools-bundle() {

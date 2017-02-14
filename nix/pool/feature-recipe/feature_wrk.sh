@@ -1,4 +1,4 @@
-if [ ! "$_wrk_INCLUDED_" == "1" ]; then 
+if [ ! "$_wrk_INCLUDED_" = "1" ]; then 
 _wrk_INCLUDED_=1
 
 

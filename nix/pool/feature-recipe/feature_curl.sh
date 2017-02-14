@@ -1,4 +1,4 @@
-if [ ! "$_curl_INCLUDED_" == "1" ]; then 
+if [ ! "$_curl_INCLUDED_" = "1" ]; then 
 _curl_INCLUDED_=1
 
 

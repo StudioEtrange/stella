@@ -1,4 +1,4 @@
-if [ ! "$_glew_INCLUDED_" == "1" ]; then 
+if [ ! "$_glew_INCLUDED_" = "1" ]; then 
 _glew_INCLUDED_=1
 
 feature_glew() {

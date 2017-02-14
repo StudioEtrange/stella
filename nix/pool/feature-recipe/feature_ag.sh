@@ -1,4 +1,4 @@
-if [ ! "$_ag_INCLUDED_" == "1" ]; then
+if [ ! "$_ag_INCLUDED_" = "1" ]; then
 _ag_INCLUDED_=1
 
 # darwin -- OK -- 20151012

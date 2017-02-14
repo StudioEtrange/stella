@@ -1,4 +1,4 @@
-if [ ! "$_BOOST_INCLUDED_" == "1" ]; then
+if [ ! "$_BOOST_INCLUDED_" = "1" ]; then
 _BOOST_INCLUDED_=1
 
 # code source : https://github.com/boostorg/boost
@@ -157,13 +157,13 @@ feature_boost_install_source() {
 
 
 	local _arch
-	if [ ! "$STELLA_BUILD_ARCH" == "" ]; then
+	if [ ! "$STELLA_BUILD_ARCH" = "" ]; then
 		_arch="address-model=$STELLA_BUILD_ARCH"
 	fi
 
 	# PROBLEM 2
 	local _toolset
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		_toolset="--with-toolset=clang"
 		__set_build_mode "RPATH" "ADD_FIRST" "@loader_path"
 		# TODO : for linux, use $ORIGIN ?
@@ -182,10 +182,10 @@ feature_boost_install_source() {
 	local without_lib_base
 	# The context library is implemented as x86_64 ASM, so it
   # won't build on PPC or 32-bit builds
-  if [ ! "$STELLA_CPU_ARCH" == "64" ]; then
+  if [ ! "$STELLA_CPU_ARCH" = "64" ]; then
   	without_lib_base="$without_lib_base,context,coroutine"
   fi
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 	# Boost.Log cannot be built using Apple GCC at the moment. Disabled (see brew formula)
 		without_lib_base="$without_lib_base,log"
 	fi
@@ -195,9 +195,9 @@ feature_boost_install_source() {
 	local _cflags="$(__trim "$STELLA_C_CXX_FLAGS $STELLA_CPP_FLAGS")"
 	local _cxxflags="$(__trim "$STELLA_C_CXX_FLAGS $STELLA_CPP_FLAGS")"
 	local _linkflags="$(__trim "$STELLA_LINK_FLAGS")"
-	[ ! "$_cflags" == "" ] && _cflags="cflags=$_cflags"
-	[ ! "$_cxxflags" == "" ] && _cxxflags="cxxflags=$_cxxflags"
-	[ ! "$_linkflags" == "" ] && _linkflags="linkflags=$_linkflags"
+	[ ! "$_cflags" = "" ] && _cflags="cflags=$_cflags"
+	[ ! "$_cxxflags" = "" ] && _cxxflags="cxxflags=$_cxxflags"
+	[ ! "$_linkflags" = "" ] && _linkflags="linkflags=$_linkflags"
 
 
 	# PROBLEM 1
@@ -266,7 +266,7 @@ feature_boost_install_source() {
 	__del_folder "$SRC_DIR"
 
 	# we fix rpath and install name values as absolute path, to be clean
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		__tweak_binary_file "$FEAT_INSTALL_ROOT/lib" "NON_RELOCATE"
 	fi
 

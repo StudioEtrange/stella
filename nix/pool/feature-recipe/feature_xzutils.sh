@@ -1,4 +1,4 @@
-if [ ! "$_xzutils_INCLUDED_" == "1" ]; then 
+if [ ! "$_xzutils_INCLUDED_" = "1" ]; then 
 _xzutils_INCLUDED_=1
 
 

@@ -1,4 +1,4 @@
-if [ ! "$_ALLEGRO_INCLUDED_" == "1" ]; then
+if [ ! "$_ALLEGRO_INCLUDED_" = "1" ]; then
 _ALLEGRO_INCLUDED_=1
 
 
@@ -102,7 +102,7 @@ feature_allegro_install_source() {
 	__copy_folder_content_into "$SRC_DIR-build/examples/" "$INSTALL_DIR/examples/"
 
 	# examples are mislinked
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		__tweak_linked_lib "$INSTALL_DIR/examples" "INCLUDE_FILTER $SRC_DIR-build REL_LINK_FORCE ../lib"
 		__tweak_linked_lib "$INSTALL_DIR/demos" "INCLUDE_FILTER $SRC_DIR-build REL_LINK_FORCE ../../../../../lib"
 	fi
