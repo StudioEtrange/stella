@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Usage :
 # stella-bridge.sh standalone [install path] --- Path where to install STELLA the system. If not provided use ./stella by default
 # stella-bridge.sh bootstrap [install path] --- boostrap a project based on stella. Provide an absolute or relative to app path where to install STELLA the system. If not provided, use setted value in link file (.-stella-link.sh) or in ./tella by default
@@ -10,7 +10,7 @@ __STELLA_URL="http://stella.sh"
 
 
 #_STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-if [ "$STELLA_CURRENT_RUNNING_DIR" == "" ]; then
+if [ "$STELLA_CURRENT_RUNNING_DIR" = "" ]; then
      STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "." )" && pwd )"
 fi
 
@@ -18,7 +18,7 @@ fi
 # Install stella in standalone ------------------
 standalone() {
 
-	[ "$PROVIDED_PATH" == "" ] && PROVIDED_PATH=$STELLA_CURRENT_RUNNING_DIR/stella
+	[ "$PROVIDED_PATH" = "" ] && PROVIDED_PATH=$STELLA_CURRENT_RUNNING_DIR/stella
 
 	_STELLA_INSTALL_PATH=$(___rel_to_abs_path "$PROVIDED_PATH" "$STELLA_CURRENT_RUNNING_DIR")
 
@@ -40,27 +40,27 @@ bootstrap() {
 
 	IS_STELLA_JUST_INSTALLED="FALSE"
 
-	[ "$PROVIDED_PATH" == "" ] && PROVIDED_PATH=$STELLA_CURRENT_RUNNING_DIR/stella
+	[ "$PROVIDED_PATH" = "" ] && PROVIDED_PATH=$STELLA_CURRENT_RUNNING_DIR/stella
 
 
 	# Check if APP/PROJECT in current dir is linked to STELLA
 	if [ -f "$STELLA_CURRENT_RUNNING_DIR/stella-link.sh" ]; then
 		IS_STELLA_LINK_FILE="TRUE"
 		source "$STELLA_CURRENT_RUNNING_DIR/stella-link.sh" nothing
-		if [ ! "$STELLA_ROOT" == "" ]; then
+		if [ ! "$STELLA_ROOT" = "" ]; then
 			if [ -f "$STELLA_ROOT/stella.sh" ]; then
 				IS_STELLA_LINKED="TRUE"
 			fi
 		fi
 	fi
 
-	if [ "$IS_STELLA_LINKED" == "TRUE" ]; then
+	if [ "$IS_STELLA_LINKED" = "TRUE" ]; then
 		echo "** This app/project is linked to a STELLA installation located in $STELLA_ROOT"
 		source "$STELLA_ROOT/conf.sh"
 
 	else
 
-		if [ "$IS_STELLA_LINK_FILE" == "TRUE" ]; then
+		if [ "$IS_STELLA_LINK_FILE" = "TRUE" ]; then
 			# install STELLA into STELLA_ROOT defined in link file
 			_STELLA_INSTALL_PATH=$(___rel_to_abs_path "$STELLA_ROOT" "$STELLA_CURRENT_RUNNING_DIR")
 		else
@@ -77,11 +77,11 @@ bootstrap() {
 
 	fi
 
-	if [ "$IS_STELLA_JUST_INSTALLED" == "TRUE" ]; then
+	if [ "$IS_STELLA_JUST_INSTALLED" = "TRUE" ]; then
 		__stella_requirement
 	fi
 
-	if [ "$IS_STELLA_LINK_FILE" == "FALSE" ]; then
+	if [ "$IS_STELLA_LINK_FILE" = "FALSE" ]; then
 		__ask_init_app
 	fi
 
@@ -100,7 +100,7 @@ ___rel_to_abs_path() {
 			echo "$_rel_path"
 			;;
 		*)
-			if [ "$_abs_root_path" == "" ]; then
+			if [ "$_abs_root_path" = "" ]; then
 				# relative to current path
 				if [ -f "$_rel_path" ]; then
 					echo "$(cd "$_rel_path" && pwd )"
@@ -128,10 +128,10 @@ __get_stella() {
 
 
 
-	[ "$_flavour" == "" ] && _ver=STABLE
-	[ "$_ver" == "" ] && _ver=LATEST
+	[ "$_flavour" = "" ] && _ver=STABLE
+	[ "$_ver" = "" ] && _ver=LATEST
 
-	if [ "$_flavour" == "DEV" ]; then
+	if [ "$_flavour" = "DEV" ]; then
 		if [[ ! -n `which git 2> /dev/null` ]]; then
 			echo "*** git not present on this system. Trying to get the last stable version"
 			_flavour=STABLE
@@ -139,17 +139,17 @@ __get_stella() {
 		fi
 	fi
 
-	if [ "$_flavour" == "DEV" ]; then
+	if [ "$_flavour" = "DEV" ]; then
 		git clone https://github.com/StudioEtrange/stella "$_path"
-		if [ ! "$_ver" == "LATEST" ]; then
+		if [ ! "$_ver" = "LATEST" ]; then
 			cd "$_path"
 			git checkout $_ver
 		fi
 	fi
 
-	if [ "$_flavour" == "STABLE" ]; then
+	if [ "$_flavour" = "STABLE" ]; then
 		mkdir -p "$_path"
-		[ "$_ver" == "LATEST" ] && _ver=latest
+		[ "$_ver" = "LATEST" ] && _ver=latest
 
 		curl -L -o "$_path"/$stella-all-"$_ver".gz.sh $__STELLA_URL/dist/$_ver/stella-all-"$_ver".tar.gz.run
 		if [ -f "$_path"/$stella-all-"$_ver".gz.run ]; then

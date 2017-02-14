@@ -28,23 +28,23 @@ $STELLA_API argparse "$0" "$OPTIONS" "$PARAMETERS" "foo" "$(usage)" "APPARG" "$@
 
 
 # --------------- FOO ----------------------------
-if [ "$DOMAIN" == "foo" ]; then
+if [ "$DOMAIN" = "foo" ]; then
 
-	if [ "$ID" == "run" ]; then
+	if [ "$ID" = "run" ]; then
 		echo $OPT
 	fi
 fi
 
 
 # ------------- ENV ----------------------------
-if [ "$DOMAIN" == "env" ]; then
-	if [ "$ID" == "install" ]; then
+if [ "$DOMAIN" = "env" ]; then
+	if [ "$ID" = "install" ]; then
 		echo "** Install requirements"
 		$STELLA_API get_features
 
 	fi
 
-	if [ "$ID" == "uninstall" ]; then
+	if [ "$ID" = "uninstall" ]; then
 		$STELLA_API del_folder "$STELLA_APP_WORK_ROOT"
 	fi
 
