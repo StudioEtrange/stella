@@ -42,7 +42,7 @@ function stella_items_release() {
 	# we only pick artefact from current version
 	_wanted_version=CURRENT
 
-	if [ "$_wanted_version" == "CURRENT" ]; then
+	if [ "$_wanted_version" = "CURRENT" ]; then
 		_stella_root_="$STELLA_ROOT"
 	else
 		rm -Rf "$STELLA_APP_WORK_ROOT/stella"
@@ -71,10 +71,10 @@ function stella_stable_release() {
 
 	local _opt_auto_extract=OFF # make a self uncompress archive
 	for o in $_opt; do
-		[ "$o" == "AUTO_EXTRACT" ] && _opt_auto_extract=ON
+		[ "$o" = "AUTO_EXTRACT" ] && _opt_auto_extract=ON
 	done
 
-	if [ "$_wanted_version" == "CURRENT" ]; then
+	if [ "$_wanted_version" = "CURRENT" ]; then
 		_stella_root_="$STELLA_ROOT"
 	else
 		rm -Rf "$STELLA_APP_WORK_ROOT/stella"
@@ -118,7 +118,7 @@ function pack_stella() {
 
 	local _opt_auto_extract=OFF # make a self uncompress archive
 	for o in $_opt; do
-		[ "$o" == "AUTO_EXTRACT" ] && _opt_auto_extract=ON
+		[ "$o" = "AUTO_EXTRACT" ] && _opt_auto_extract=ON
 	done
 
 	#$STELLA_API sys_require "sevenzip"
@@ -146,7 +146,7 @@ function pack_stella() {
 	esac
 
 
-	if [ "$_opt_auto_extract" == "ON" ]; then
+	if [ "$_opt_auto_extract" = "ON" ]; then
 		$STELLA_API make_targz_sfx_shell "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".tar.gz.run "TARGZ"
 	fi
 
@@ -171,7 +171,7 @@ function pack_stella() {
 		;;
 	esac
 
-	if [ "$_opt_auto_extract" == "ON" ]; then
+	if [ "$_opt_auto_extract" = "ON" ]; then
 		# TODO replace with __make_sevenzip_sfx_bin
 		#$STELLA_API make_targz_sfx_shell "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".7z "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".zip.exe win "7Z"
 	fi
@@ -267,14 +267,14 @@ case $ACTION in
 		stella_stable_release nix "$VER" "AUTO_EXTRACT"
 		stella_stable_release win "$VER" "AUTO_EXTRACT"
 		stella_stable_release all "$VER" "AUTO_EXTRACT"
-		[ "$UPLOAD" == "1" ] && upload_ftp "$STELLA_APP_WORK_ROOT/output/dist" "dist/$version"
+		[ "$UPLOAD" = "1" ] && upload_ftp "$STELLA_APP_WORK_ROOT/output/dist" "dist/$version"
 		;;
 	stella-items)
 		rm -Rf $STELLA_APP_WORK_ROOT/output/pool
 		mkdir -p $STELLA_APP_WORK_ROOT/output/pool
 		#stella_items_release "$VER"
 		stella_items_release
-		if [ "$UPLOAD" == "1" ]; then
+		if [ "$UPLOAD" = "1" ]; then
 			# TODO : erase pool folder first
 			upload_ftp "$STELLA_APP_WORK_ROOT/output/pool" "pool"
 		fi

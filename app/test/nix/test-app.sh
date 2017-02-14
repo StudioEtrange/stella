@@ -23,11 +23,11 @@ function test__app_init_1() {
 
 	result=ERROR
 	[ -f "$_test_app_root/stella-link.sh" ] && result=OK || result=ERROR
-	[ ! "$result" == "ERROR" ] && [ -f "$_test_app_root/stella.properties" ] && result=OK || result=ERROR
-	[ ! "$result" == "ERROR" ] && r="$(cat $_test_app_root/stella.properties | grep APP_WORK_ROOT)" && echo $r && [ "$r" == "APP_WORK_ROOT=." ] && result=OK || result=ERROR
-	[ ! "$result" == "ERROR" ] && r="$(cat $_test_app_root/stella.properties | grep APP_CACHE_DIR)" && echo $r && [ "$r" == "APP_CACHE_DIR=cachedir" ] && result=OK || result=ERROR
+	[ ! "$result" = "ERROR" ] && [ -f "$_test_app_root/stella.properties" ] && result=OK || result=ERROR
+	[ ! "$result" = "ERROR" ] && r="$(cat $_test_app_root/stella.properties | grep APP_WORK_ROOT)" && echo $r && [ "$r" = "APP_WORK_ROOT=." ] && result=OK || result=ERROR
+	[ ! "$result" = "ERROR" ] && r="$(cat $_test_app_root/stella.properties | grep APP_CACHE_DIR)" && echo $r && [ "$r" = "APP_CACHE_DIR=cachedir" ] && result=OK || result=ERROR
 
-	[ ! "$result" == "ERROR" ] && r="$(cat $_test_app_root/stella-link.sh | grep STELLA_ROOT=)" && echo $r && [ "$r" == "STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/../../../../lib-stella" ] && result=OK || result=ERROR
+	[ ! "$result" = "ERROR" ] && r="$(cat $_test_app_root/stella-link.sh | grep STELLA_ROOT=)" && echo $r && [ "$r" = "STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/../../../../lib-stella" ] && result=OK || result=ERROR
 
 
 	log "test__app_init_1" "$result" "test init app function"
@@ -47,11 +47,11 @@ function test__app_init_2() {
 
 	result=ERROR
 	[ -f "$_test_app_root/stella-link.sh" ] && result=OK || result=ERROR
-	[ ! "$result" == "ERROR" ] && [ -f "$_test_app_root/stella.properties" ] && result=OK || result=ERROR
-	[ ! "$result" == "ERROR" ] && r="$(cat $_test_app_root/stella.properties | grep APP_WORK_ROOT)" && echo $r && [ "$r" == "APP_WORK_ROOT=../test2work" ] && result=OK || result=ERROR
-	[ ! "$result" == "ERROR" ] && r="$(cat $_test_app_root/stella.properties | grep APP_CACHE_DIR)" && echo $r && [ "$r" == "APP_CACHE_DIR=../test2work/cache" ] && result=OK || result=ERROR
+	[ ! "$result" = "ERROR" ] && [ -f "$_test_app_root/stella.properties" ] && result=OK || result=ERROR
+	[ ! "$result" = "ERROR" ] && r="$(cat $_test_app_root/stella.properties | grep APP_WORK_ROOT)" && echo $r && [ "$r" = "APP_WORK_ROOT=../test2work" ] && result=OK || result=ERROR
+	[ ! "$result" = "ERROR" ] && r="$(cat $_test_app_root/stella.properties | grep APP_CACHE_DIR)" && echo $r && [ "$r" = "APP_CACHE_DIR=../test2work/cache" ] && result=OK || result=ERROR
 
-	[ ! "$result" == "ERROR" ] && r="$(cat $_test_app_root/stella-link.sh | grep STELLA_ROOT=)" && echo $r && [ "$r" == "STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/../../../../lib-stella" ] && result=OK || result=ERROR
+	[ ! "$result" = "ERROR" ] && r="$(cat $_test_app_root/stella-link.sh | grep STELLA_ROOT=)" && echo $r && [ "$r" = "STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/../../../../lib-stella" ] && result=OK || result=ERROR
 
 
 	log "test__app_init_2" "$result" "test init app function"
@@ -69,11 +69,11 @@ function test_bin_app_init_1() {
 
 	result=ERROR
 	[ -f "$_test_app_root/stella-link.sh" ] && result=OK || result=ERROR
-	[ ! "$result" == "ERROR" ] && [ -f "$_test_app_root/stella.properties" ] && result=OK || result=ERROR
-	[ ! "$result" == "ERROR" ] && r="$(cat $_test_app_root/stella.properties | grep APP_WORK_ROOT)" && echo $r && [ "$r" == "APP_WORK_ROOT=../test2work" ] && result=OK || result=ERROR
-	[ ! "$result" == "ERROR" ] && r="$(cat $_test_app_root/stella.properties | grep APP_CACHE_DIR)" && echo $r && [ "$r" == "APP_CACHE_DIR=../cache" ] && result=OK || result=ERROR
+	[ ! "$result" = "ERROR" ] && [ -f "$_test_app_root/stella.properties" ] && result=OK || result=ERROR
+	[ ! "$result" = "ERROR" ] && r="$(cat $_test_app_root/stella.properties | grep APP_WORK_ROOT)" && echo $r && [ "$r" = "APP_WORK_ROOT=../test2work" ] && result=OK || result=ERROR
+	[ ! "$result" = "ERROR" ] && r="$(cat $_test_app_root/stella.properties | grep APP_CACHE_DIR)" && echo $r && [ "$r" = "APP_CACHE_DIR=../cache" ] && result=OK || result=ERROR
 
-	[ ! "$result" == "ERROR" ] && r="$(cat $_test_app_root/stella-link.sh | grep STELLA_ROOT=)" && echo $r && [ "$r" == "STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/../../../../lib-stella" ] && result=OK || result=ERROR
+	[ ! "$result" = "ERROR" ] && r="$(cat $_test_app_root/stella-link.sh | grep STELLA_ROOT=)" && echo $r && [ "$r" = "STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/../../../../lib-stella" ] && result=OK || result=ERROR
 
 
 	log "test_bin_app_init_1" "$result" "test binary app : init"

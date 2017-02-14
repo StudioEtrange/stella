@@ -246,7 +246,7 @@ __set_toolset() {
 	# TODO autoselect ninja instead of make if using cmake
 	#if [ "$CONFIG_TOOL" = "cmake" ]; then
 	#	if [ ! "$_flag_build" = "FORCE" ]; then
-	#		if [[ -n `which ninja 2> /dev/null` ]]; then
+	#		if exists ninja
 	#			BUILD_TOOL=ninja
 	#		fi
 	#	fi

@@ -104,8 +104,6 @@ __sort_version() {
 	# example : build400 is more recent than build300 so in ASC : build300 build400 and in DESC : build400 build300
 	count=0
 	local sorted_arg=
-	local reverse
-	local opposite_reverse
 	local j
 	while [  "$count" -lt "$max_number_of_block" ]; do
 		count=$[$count +1]
@@ -291,9 +289,12 @@ __uri_parse() {
 __transfert_stella() {
 	local _uri="$1"
 	local _OPT="$2"
-	local _opt_ex_cache="EXCLUDE /$(__abs_to_rel_path $STELLA_INTERNAL_CACHE_DIR $STELLA_ROOT)/"
-	local _opt_ex_workspace="EXCLUDE /$(__abs_to_rel_path $STELLA_INTERNAL_WORK_ROOT $STELLA_ROOT)/"
-	local _opt_ex_env="EXCLUDE /.stella-env"
+	local _opt_ex_cache
+	_opt_ex_cache="EXCLUDE /$(__abs_to_rel_path $STELLA_INTERNAL_CACHE_DIR $STELLA_ROOT)/"
+	local _opt_ex_workspace
+	_opt_ex_workspace="EXCLUDE /$(__abs_to_rel_path $STELLA_INTERNAL_WORK_ROOT $STELLA_ROOT)/"
+	local _opt_ex_env
+	_opt_ex_env="EXCLUDE /.stella-env"
 	for o in $_OPT; do
 		[ "$o" = "CACHE" ] && _opt_ex_cache=
 		[ "$o" = "WORKSPACE" ] && _opt_ex_workspace=
@@ -481,7 +482,7 @@ __get_stella_version() {
 		;;
 
 		DEV)
-				echo $(__git_project_version "$_stella_root_" "LONG")
+				echo "$(__git_project_version "$_stella_root_" "LONG")"
 		;;
 
 		*)
@@ -684,7 +685,7 @@ __abs_to_rel_path() {
 					common_part="$(dirname $common_part)"
 
 					# and record that we went back
-					if [[ -z $result ]]; then
+					if [ -z "$result" ]; then
 						result=".."
 					else
 						result="../$result"
@@ -1071,8 +1072,8 @@ __compress() {
 			echo "TODO: *********** ZIP NOT IMPLEMENTED"
 			;;
 		TAR*)
-				[ -d "$_target" ] && tar -c -v -z -f "$_output_archive" -C "$_target/.." "$(basename $_target)"
-				[ -f "$_target" ] && tar -c -v -z -f "$_output_archive" -C "$(dirname $_target)" "$(basename $_target)"
+				[ -d "$_target" ] && tar -c -v $_tar_flag -f "$_output_archive" -C "$_target/.." "$(basename $_target)"
+				[ -f "$_target" ] && tar -c -v $_tar_flag -f "$_output_archive" -C "$(dirname $_target)" "$(basename $_target)"
 			;;
 	esac
 
