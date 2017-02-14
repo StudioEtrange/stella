@@ -1,4 +1,4 @@
-if [ ! "$_STELLA_COMMON_BUILD_INCLUDED_" == "1" ]; then
+if [ ! "$_STELLA_COMMON_BUILD_INCLUDED_" = "1" ]; then
 _STELLA_COMMON_BUILD_INCLUDED_=1
 
 
@@ -108,7 +108,7 @@ __start_build_session() {
 	local OPT="$1"
 	for o in $OPT; do
 		# TODO : this OPT is never used when calling __start_build_session - useless, to supress ?
-		[ "$o" == "RELOCATE" ] && __set_build_mode "RELOCATE" "ON"
+		[ "$o" = "RELOCATE" ] && __set_build_mode "RELOCATE" "ON"
 	done
 
 	__set_toolset "$STELLA_BUILD_DEFAULT_TOOLSET"
@@ -144,15 +144,15 @@ __toolset_init() {
 	__internal_feature_context "$_SCHEMA"
 	__feature_inspect "$FEAT_SCHEMA_SELECTED"
 
-	if [ "$TEST_FEATURE" == "1" ]; then
-		if [ ! "$FEAT_BUNDLE" == "" ]; then
+	if [ "$TEST_FEATURE" = "1" ]; then
+		if [ ! "$FEAT_BUNDLE" = "" ]; then
 			local p
 			__push_schema_context
 
 			FEAT_BUNDLE_MODE=$FEAT_BUNDLE
 			for p in $FEAT_BUNDLE_ITEM; do
 				__internal_feature_context $p
-				if [ ! "$FEAT_SEARCH_PATH" == "" ]; then
+				if [ ! "$FEAT_SEARCH_PATH" = "" ]; then
 					STELLA_BUILD_TOOLSET_PATH="$FEAT_SEARCH_PATH:$STELLA_BUILD_TOOLSET_PATH"
 				fi
 				for c in $FEAT_ENV_CALLBACK; do
@@ -163,7 +163,7 @@ __toolset_init() {
 			__pop_schema_context
 		fi
 
-		if [ ! "$FEAT_SEARCH_PATH" == "" ]; then
+		if [ ! "$FEAT_SEARCH_PATH" = "" ]; then
 			STELLA_BUILD_TOOLSET_PATH="$FEAT_SEARCH_PATH:$STELLA_BUILD_TOOLSET_PATH"
 		fi
 		local c
@@ -199,12 +199,12 @@ __set_toolset() {
 			local _flag_frontend=
 			local _flag_build=
 			for o in $OPT; do
-				[ "$_flag_configure" == "ON" ] && CONFIG_TOOL=$o && _flag_configure=OFF
-				[ "$o" == "CONFIG_TOOL" ] && _flag_configure=ON
-				[ "$_flag_build" == "ON" ] && BUILD_TOOL=$o && _flag_build=OFF
-				[ "$o" == "BUILD_TOOL" ] && _flag_build=ON
-				[ "$_flag_frontend" == "ON" ] && COMPIL_FRONTEND=$o && _flag_frontend=OFF
-				[ "$o" == "COMPIL_FRONTEND" ] && _flag_frontend=ON
+				[ "$_flag_configure" = "ON" ] && CONFIG_TOOL=$o && _flag_configure=OFF
+				[ "$o" = "CONFIG_TOOL" ] && _flag_configure=ON
+				[ "$_flag_build" = "ON" ] && BUILD_TOOL=$o && _flag_build=OFF
+				[ "$o" = "BUILD_TOOL" ] && _flag_build=ON
+				[ "$_flag_frontend" = "ON" ] && COMPIL_FRONTEND=$o && _flag_frontend=OFF
+				[ "$o" = "COMPIL_FRONTEND" ] && _flag_frontend=ON
 			done
 			;;
 
@@ -244,8 +244,8 @@ __set_toolset() {
 	esac
 
 	# TODO autoselect ninja instead of make if using cmake
-	#if [ "$CONFIG_TOOL" == "cmake" ]; then
-	#	if [ ! "$_flag_build" == "FORCE" ]; then
+	#if [ "$CONFIG_TOOL" = "cmake" ]; then
+	#	if [ ! "$_flag_build" = "FORCE" ]; then
 	#		if [[ -n `which ninja 2> /dev/null` ]]; then
 	#			BUILD_TOOL=ninja
 	#		fi
@@ -306,7 +306,7 @@ __enable_current_toolset() {
 		;;
 		cmake)
 			# if no version specified, prefer cmake already present on system
-			if [ "$(which cmake 2>/dev/null)" == "" ]; then
+			if [ "$(which cmake 2>/dev/null)" = "" ]; then
 				__toolset_install "$STELLA_BUILD_CONFIG_TOOL"
 				__toolset_init "$STELLA_BUILD_CONFIG_TOOL"
 			fi
@@ -352,19 +352,19 @@ __enable_current_toolset() {
 
 			if $(type gcc &>/dev/null); then
 				_install_gcc=0
-				if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-					if [ "$(__gcc_is_clang)" == "1" ]; then
+				if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+					if [ "$(__gcc_is_clang)" = "1" ]; then
 						_install_gcc=1
 					fi
 				fi
-				if [ ! "$_REQUIRED_TOOLSET_VER" == "" ]; then
-					if [ "$(__gcc_check_min_version "$_REQUIRED_TOOLSET_VER")" == "0" ]; then
+				if [ ! "$_REQUIRED_TOOLSET_VER" = "" ]; then
+					if [ "$(__gcc_check_min_version "$_REQUIRED_TOOLSET_VER")" = "0" ]; then
 						_install_gcc=1
 					fi
 				fi
 			fi
 
-			if [ "$_install_gcc" == "1" ]; then
+			if [ "$_install_gcc" = "1" ]; then
 				__toolset_install "$STELLA_BUILD_COMPIL_FRONTEND"
 				__toolset_init "$STELLA_BUILD_COMPIL_FRONTEND"
 			fi
@@ -394,7 +394,7 @@ __enable_current_toolset() {
 		;;
 		clang-omp*)
 			__toolset_info "$STELLA_BUILD_COMPIL_FRONTEND"
-			if [ "$TOOLSET_TEST_FEATURE" == "1" ]; then
+			if [ "$TOOLSET_TEST_FEATURE" = "1" ]; then
 				export CC=$TOOLSET_FEAT_INSTALL_ROOT/bin/clang
 				export CXX=$TOOLSET_FEAT_INSTALL_ROOT/bin/clang++
 				# activate clang openmp libs search folder at link time
@@ -405,7 +405,7 @@ __enable_current_toolset() {
 		;;
 		gcc*)
 			__toolset_info "$STELLA_BUILD_COMPIL_FRONTEND"
-			if [ "$TOOLSET_TEST_FEATURE" == "1" ]; then
+			if [ "$TOOLSET_TEST_FEATURE" = "1" ]; then
 				export CC=$TOOLSET_FEAT_INSTALL_ROOT/bin/gcc
 				export CXX=$TOOLSET_FEAT_INSTALL_ROOT/bin/g++
 				# activate gcc libs search folder at link time
@@ -491,16 +491,16 @@ __auto_build() {
 	# disable fix & check build (default : ON)
 	local _opt_inspect_and_fix_build=ON
 	for o in $OPT; do
-		[ "$o" == "SOURCE_KEEP" ] && _opt_source_keep=ON
-		[ "$o" == "BUILD_KEEP" ] && _opt_build_keep=ON
-		[ "$o" == "NO_CONFIG" ] && _opt_configure=OFF
-		[ "$o" == "NO_BUILD" ] && _opt_build=OFF
-		[ "$o" == "NO_OUT_OF_TREE_BUILD" ] && _opt_out_of_tree_build=OFF
-		[ "$o" == "NO_INSPECT" ] && _opt_inspect_and_fix_build=OFF
+		[ "$o" = "SOURCE_KEEP" ] && _opt_source_keep=ON
+		[ "$o" = "BUILD_KEEP" ] && _opt_build_keep=ON
+		[ "$o" = "NO_CONFIG" ] && _opt_configure=OFF
+		[ "$o" = "NO_BUILD" ] && _opt_build=OFF
+		[ "$o" = "NO_OUT_OF_TREE_BUILD" ] && _opt_out_of_tree_build=OFF
+		[ "$o" = "NO_INSPECT" ] && _opt_inspect_and_fix_build=OFF
 	done
 
 	# can not build out of tree without configure first
-	[ "$_opt_configure" == "OFF" ] && _opt_out_of_tree_build=OFF
+	[ "$_opt_configure" = "OFF" ] && _opt_out_of_tree_build=OFF
 
 
 
@@ -512,14 +512,14 @@ __auto_build() {
 
 	# folder stuff
 	BUILD_DIR="$SOURCE_DIR"
-	[ "$_opt_out_of_tree_build" == "ON" ] && BUILD_DIR="$(dirname $SOURCE_DIR)/$(basename $SOURCE_DIR)-build"
+	[ "$_opt_out_of_tree_build" = "ON" ] && BUILD_DIR="$(dirname $SOURCE_DIR)/$(basename $SOURCE_DIR)-build"
 
 	mkdir -p "$INSTALL_DIR"
 
-	if [ "$_opt_out_of_tree_build" == "ON" ]; then
+	if [ "$_opt_out_of_tree_build" = "ON" ]; then
 		echo "** Out of tree build is active"
-		[ "$FORCE" == "1" ] && rm -Rf "$BUILD_DIR"
-		[ ! "$_opt_build_keep" == "ON" ] && rm -Rf "$BUILD_DIR"
+		[ "$FORCE" = "1" ] && rm -Rf "$BUILD_DIR"
+		[ ! "$_opt_build_keep" = "ON" ] && rm -Rf "$BUILD_DIR"
 	else
 		echo "** Out of tree build is not active"
 	fi
@@ -530,20 +530,20 @@ __auto_build() {
 	__prepare_build "$INSTALL_DIR" "$SOURCE_DIR" "$BUILD_DIR"
 
 	# launch process
-	[ "$_opt_configure" == "ON" ] && __launch_configure "$SOURCE_DIR" "$INSTALL_DIR" "$BUILD_DIR" "$OPT"
-	[ "$_opt_build" == "ON" ] && __launch_build "$SOURCE_DIR" "$INSTALL_DIR" "$BUILD_DIR" "$OPT"
+	[ "$_opt_configure" = "ON" ] && __launch_configure "$SOURCE_DIR" "$INSTALL_DIR" "$BUILD_DIR" "$OPT"
+	[ "$_opt_build" = "ON" ] && __launch_build "$SOURCE_DIR" "$INSTALL_DIR" "$BUILD_DIR" "$OPT"
 
 
 	cd "$INSTALL_DIR"
 
 	# clean workspace
-	[ ! "$_opt_source_keep" == "ON" ] && rm -Rf "$SOURCE_DIR"
+	[ ! "$_opt_source_keep" = "ON" ] && rm -Rf "$SOURCE_DIR"
 
-	if [ "$_opt_out_of_tree_build" == "ON" ]; then
-		[ ! "$_opt_build_keep" == "ON" ] && rm -Rf "$BUILD_DIR"
+	if [ "$_opt_out_of_tree_build" = "ON" ]; then
+		[ ! "$_opt_build_keep" = "ON" ] && rm -Rf "$BUILD_DIR"
 	fi
 
-	[ "$_opt_inspect_and_fix_build" == "ON" ] && __inspect_and_fix_build "$INSTALL_DIR" "$OPT"
+	[ "$_opt_inspect_and_fix_build" = "ON" ] && __inspect_and_fix_build "$INSTALL_DIR" "$OPT"
 
 	__disable_current_toolset
 	echo " ** Done"
@@ -569,15 +569,15 @@ __launch_configure() {
 	local _flag_opt_autotools=OFF
 	local _autotools=
 	for o in $OPT; do
-		[ "$o" == "DEBUG" ] && _debug=ON
-		[ "$_flag_opt_autotools" == "ON" ] && _autotools="$o" && _flag_opt_autotools=OFF
-		[ "$o" == "AUTOTOOLS" ] && _flag_opt_autotools=ON && _opt_autotools=ON
+		[ "$o" = "DEBUG" ] && _debug=ON
+		[ "$_flag_opt_autotools" = "ON" ] && _autotools="$o" && _flag_opt_autotools=OFF
+		[ "$o" = "AUTOTOOLS" ] && _flag_opt_autotools=ON && _opt_autotools=ON
 	done
 
 	mkdir -p "$AUTO_BUILD_DIR"
 	cd "$AUTO_BUILD_DIR"
 
-	if [ "$_opt_autotools" == "ON" ]; then
+	if [ "$_opt_autotools" = "ON" ]; then
 		case $_autotools in
 			bootstrap)
 				[ -f "$AUTO_SOURCE_DIR/bootstrap" ] && "$AUTO_SOURCE_DIR/bootstrap"
@@ -601,7 +601,7 @@ __launch_configure() {
 		configure)
 			chmod +x "$AUTO_SOURCE_DIR/configure"
 
-			if [ "$AUTO_INSTALL_CONF_FLAG_PREFIX" == "" ]; then
+			if [ "$AUTO_INSTALL_CONF_FLAG_PREFIX" = "" ]; then
 				"$AUTO_SOURCE_DIR/configure" --prefix="$AUTO_INSTALL_DIR" $AUTO_INSTALL_CONF_FLAG_POSTFIX
 			else
 				eval $(echo $AUTO_INSTALL_CONF_FLAG_PREFIX) "$AUTO_SOURCE_DIR/configure" --prefix="$AUTO_INSTALL_DIR" $AUTO_INSTALL_CONF_FLAG_POSTFIX
@@ -610,11 +610,11 @@ __launch_configure() {
 
 
 		cmake)
-			[ "$STELLA_BUILD_BUILD_TOOL_BIN" == "make" ] && CMAKE_GENERATOR="Unix Makefiles"
-			[ "$STELLA_BUILD_BUILD_TOOL_BIN" == "ninja" ] && CMAKE_GENERATOR="Ninja"
-			[ "$_debug" == "ON" ] && _debug="--debug-output" #--trace --debug-output
+			[ "$STELLA_BUILD_BUILD_TOOL_BIN" = "make" ] && CMAKE_GENERATOR="Unix Makefiles"
+			[ "$STELLA_BUILD_BUILD_TOOL_BIN" = "ninja" ] && CMAKE_GENERATOR="Ninja"
+			[ "$_debug" = "ON" ] && _debug="--debug-output" #--trace --debug-output
 
-			if [ "$AUTO_INSTALL_CONF_FLAG_PREFIX" == "" ]; then
+			if [ "$AUTO_INSTALL_CONF_FLAG_PREFIX" = "" ]; then
 				cmake "$_debug" "$AUTO_SOURCE_DIR" \
 				-DCMAKE_C_FLAGS:STRING="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS:STRING="$CMAKE_CXX_FLAGS" $STELLA_CMAKE_EXTRA_FLAGS \
 				$AUTO_INSTALL_CONF_FLAG_POSTFIX \
@@ -672,11 +672,11 @@ __launch_build() {
 	local _flag_opt_post_build_step=OFF
 	local _post_build_step=
 	for o in $OPT; do
-		[ "$o" == "DEBUG" ] && _debug=ON && _flag_opt_post_build_step=OFF
-		[ "$o" == "NO_CONFIG" ] && _opt_configure=OFF && _flag_opt_post_build_step=OFF
-		[ "$o" == "NO_INSTALL" ] && _opt_install=OFF && _flag_opt_post_build_step=OFF
-		[ "$_flag_opt_post_build_step" == "ON" ] && _post_build_step="$o $_post_build_step"
-		[ "$o" == "POST_BUILD_STEP" ] && _flag_opt_post_build_step=ON
+		[ "$o" = "DEBUG" ] && _debug=ON && _flag_opt_post_build_step=OFF
+		[ "$o" = "NO_CONFIG" ] && _opt_configure=OFF && _flag_opt_post_build_step=OFF
+		[ "$o" = "NO_INSTALL" ] && _opt_install=OFF && _flag_opt_post_build_step=OFF
+		[ "$_flag_opt_post_build_step" = "ON" ] && _post_build_step="$o $_post_build_step"
+		[ "$o" = "POST_BUILD_STEP" ] && _flag_opt_post_build_step=ON
 	done
 
 	# FLAGS (declared as global)
@@ -690,11 +690,11 @@ __launch_build() {
 
 	# POST_BUILD_STEP
 	if __string_contains "$_post_build_step" "install"; then
-		if [ "$_opt_install" == "OFF" ]; then
+		if [ "$_opt_install" = "OFF" ]; then
 			_post_build_step=$(echo "$_post_build_step" | sed 's/^install$//' | sed 's/^install //' | sed 's/ install$//' | sed 's/ install / /g' )
 		fi
 	else
-		if [ "$_opt_install" == "ON" ]; then
+		if [ "$_opt_install" = "ON" ]; then
 			# we add install in first place if not already present
 			_post_build_step="install $_post_build_step"
 		fi
@@ -704,10 +704,10 @@ __launch_build() {
 	case $STELLA_BUILD_BUILD_TOOL_BIN in
 
 		make)
-			[ "$_opt_parallelize" == "ON" ] && _FLAG_PARALLEL="-j$STELLA_NB_CPU"
-			[ "$_debug" == "ON" ] && _debug="--debug=b" #--debug=a
-			if [ "$AUTO_INSTALL_BUILD_FLAG_PREFIX" == "" ]; then
-				if [ "$_opt_configure" == "ON" ]; then
+			[ "$_opt_parallelize" = "ON" ] && _FLAG_PARALLEL="-j$STELLA_NB_CPU"
+			[ "$_debug" = "ON" ] && _debug="--debug=b" #--debug=a
+			if [ "$AUTO_INSTALL_BUILD_FLAG_PREFIX" = "" ]; then
+				if [ "$_opt_configure" = "ON" ]; then
 					# First step : build
 					make $_debug $_FLAG_PARALLEL \
 					$AUTO_INSTALL_BUILD_FLAG_POSTFIX
@@ -744,7 +744,7 @@ __launch_build() {
 					done
 				fi
 			else
-				if [ "$_opt_configure" == "ON" ]; then
+				if [ "$_opt_configure" = "ON" ]; then
 					# First step : build
 					eval $(echo $AUTO_INSTALL_BUILD_FLAG_PREFIX) make $_debug $_FLAG_PARALLEL \
 					$AUTO_INSTALL_BUILD_FLAG_POSTFIX
@@ -784,14 +784,14 @@ __launch_build() {
 		;;
 
 		ninja)
-			if [ ! "$_opt_parallelize" == "ON" ]; then
+			if [ ! "$_opt_parallelize" = "ON" ]; then
 				_FLAG_PARALLEL="-j1"
 			else
 				# ninja is auto parallelized
 				_FLAG_PARALLEL=
 			fi
-			[ "$_debug" == "ON" ] && _debug="-v"
-			if [ "$AUTO_INSTALL_BUILD_FLAG_PREFIX" == "" ]; then
+			[ "$_debug" = "ON" ] && _debug="-v"
+			if [ "$AUTO_INSTALL_BUILD_FLAG_PREFIX" = "" ]; then
 				# First step : build
 				ninja $_debug $_FLAG_PARALLEL $AUTO_INSTALL_BUILD_FLAG_POSTFIX
 				# Other build step
@@ -819,7 +819,7 @@ __dep_choose_origin() {
 
 	local _origin="STELLA"
 	for u in $STELLA_BUILD_DEP_FROM_SYSTEM; do
-		[ "$u" == "$_CHOOSE_ORIGIN_FEATURE_NAME" ] && _origin="SYSTEM"
+		[ "$u" = "$_CHOOSE_ORIGIN_FEATURE_NAME" ] && _origin="SYSTEM"
 	done
 
 	echo $_origin
@@ -875,26 +875,26 @@ __link_feature_library() {
 	esac
 
 	for o in $OPT; do
-		[ "$o" == "USE_PKG_CONFIG" ] && _opt_use_pkg_config=ON && _flag_libs_name=OFF
-		[ "$o" == "FORCE_STATIC" ] && _opt_flavour=$o && _flag_libs_name=OFF
-		[ "$o" == "FORCE_DYNAMIC" ] && _opt_flavour=$o && _flag_libs_name=OFF
+		[ "$o" = "USE_PKG_CONFIG" ] && _opt_use_pkg_config=ON && _flag_libs_name=OFF
+		[ "$o" = "FORCE_STATIC" ] && _opt_flavour=$o && _flag_libs_name=OFF
+		[ "$o" = "FORCE_DYNAMIC" ] && _opt_flavour=$o && _flag_libs_name=OFF
 
-		[ "$_flag_lib_folder" == "ON" ] && _lib_folder=$o && _flag_lib_folder=OFF
-		[ "$o" == "FORCE_LIB_FOLDER" ] && _flag_lib_folder=ON && _flag_libs_name=OFF
-		[ "$_flag_bin_folder" == "ON" ] && _bin_folder=$o && _flag_bin_folder=OFF
-		[ "$o" == "FORCE_BIN_FOLDER" ] && _flag_bin_folder=ON && _flag_libs_name=OFF
-		[ "$_flag_include_folder" == "ON" ] && _include_folder=$o && _flag_include_folder=OFF
-		[ "$o" == "FORCE_INCLUDE_FOLDER" ] && _flag_include_folder=ON && _flag_libs_name=OFF
+		[ "$_flag_lib_folder" = "ON" ] && _lib_folder=$o && _flag_lib_folder=OFF
+		[ "$o" = "FORCE_LIB_FOLDER" ] && _flag_lib_folder=ON && _flag_libs_name=OFF
+		[ "$_flag_bin_folder" = "ON" ] && _bin_folder=$o && _flag_bin_folder=OFF
+		[ "$o" = "FORCE_BIN_FOLDER" ] && _flag_bin_folder=ON && _flag_libs_name=OFF
+		[ "$_flag_include_folder" = "ON" ] && _include_folder=$o && _flag_include_folder=OFF
+		[ "$o" = "FORCE_INCLUDE_FOLDER" ] && _flag_include_folder=ON && _flag_libs_name=OFF
 
-		[ "$_flags" == "ON" ] && _var_flags=$o && _flags=OFF
-		[ "$o" == "GET_FLAGS" ] && _flags=ON && _flag_libs_name=OFF
-		[ "$_folders" == "ON" ] && _var_folders=$o && _folders=OFF
-		[ "$o" == "GET_FOLDER" ] && _folders=ON && _flag_libs_name=OFF
+		[ "$_flags" = "ON" ] && _var_flags=$o && _flags=OFF
+		[ "$o" = "GET_FLAGS" ] && _flags=ON && _flag_libs_name=OFF
+		[ "$_folders" = "ON" ] && _var_folders=$o && _folders=OFF
+		[ "$o" = "GET_FOLDER" ] && _folders=ON && _flag_libs_name=OFF
 
-		[ "$o" == "NO_SET_FLAGS" ] && _opt_set_flags=OFF && _flag_libs_name=OFF
+		[ "$o" = "NO_SET_FLAGS" ] && _opt_set_flags=OFF && _flag_libs_name=OFF
 
-		[ "$_flag_libs_name" == "ON" ] && _libs_name="$_libs_name $o"
-		[ "$o" == "LIBS_NAME" ] && _flag_libs_name=ON
+		[ "$_flag_libs_name" = "ON" ] && _libs_name="$_libs_name $o"
+		[ "$o" = "LIBS_NAME" ] && _flag_libs_name=ON
 	done
 
 	# check origin for this schema
@@ -913,21 +913,21 @@ __link_feature_library() {
 				;;
 	esac
 
-	if [ "$_origin" == "SYSTEM" ]; then
+	if [ "$_origin" = "SYSTEM" ]; then
 		echo "We do not link against STELLA version of $SCHEMA, but from SYSTEM."
 		return
 	fi
 
 	echo "** Linking to $SCHEMA"
 
-	[ "$STELLA_BUILD_COMPIL_FRONTEND" == "" ] && echo "** WARN : compil frontend empty - did you set a toolset ?"
+	[ "$STELLA_BUILD_COMPIL_FRONTEND" = "" ] && echo "** WARN : compil frontend empty - did you set a toolset ?"
 
 
 
 	# INSPECT required lib through schema
 	__push_schema_context
 	__feature_inspect $SCHEMA
-	if [ "$TEST_FEATURE" == "0" ]; then
+	if [ "$TEST_FEATURE" = "0" ]; then
 		echo " ** ERROR : depend on lib $SCHEMA"
 		__pop_schema_context
 		return
@@ -941,17 +941,17 @@ __link_feature_library() {
 
 	# TODO useless ?
 	# 	REQUIRED_LIB_ROOT="$FEAT_INSTALL_ROOT/stella-dep/$REQUIRED_LIB_NAME"
-	# 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-	# 		[ "$STELLA_BUILD_RELOCATE" == "ON" ] && __tweak_install_name_darwin "$REQUIRED_LIB_ROOT" "RPATH"
-	# 		[ "$STELLA_BUILD_RELOCATE" == "OFF" ] && __tweak_install_name_darwin "$REQUIRED_LIB_ROOT" "PATH"
+	# 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+	# 		[ "$STELLA_BUILD_RELOCATE" = "ON" ] && __tweak_install_name_darwin "$REQUIRED_LIB_ROOT" "RPATH"
+	# 		[ "$STELLA_BUILD_RELOCATE" = "OFF" ] && __tweak_install_name_darwin "$REQUIRED_LIB_ROOT" "PATH"
 	# 	fi
 
 	# ISOLATE STATIC OR DYNAMIC LIBS
 	# if we want specific static or dynamic linking, we isolate specific version
 	# by default, linker use dynamic version first and then static version if dynamic is not found
 	local _flag_lib_isolation=FALSE
-	[ "$_opt_flavour" == "FORCE_STATIC" ] && _flag_lib_isolation=TRUE
-	[ "$_opt_flavour" == "FORCE_DYNAMIC" ] && _flag_lib_isolation=TRUE
+	[ "$_opt_flavour" = "FORCE_STATIC" ] && _flag_lib_isolation=TRUE
+	[ "$_opt_flavour" = "FORCE_DYNAMIC" ] && _flag_lib_isolation=TRUE
 
 	local LIB_TARGET_FOLDER=
 	local LIB_EXTENSION=
@@ -963,8 +963,8 @@ __link_feature_library() {
 			;;
 		FORCE_DYNAMIC)
 			LIB_TARGET_FOLDER="$REQUIRED_LIB_ROOT/stella-dep-dynamic"
-			[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && LIB_EXTENSION=".so"
-			[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && LIB_EXTENSION=".dylib"
+			[ "$STELLA_CURRENT_PLATFORM" = "linux" ] && LIB_EXTENSION=".so"
+			[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && LIB_EXTENSION=".dylib"
 			;;
 		DEFAULT)
 			LIB_TARGET_FOLDER="$REQUIRED_LIB_ROOT/$_lib_folder"
@@ -972,38 +972,38 @@ __link_feature_library() {
 	esac
 
 	# TODO do not base lib isolation on file extension but on result of __is_*__bin from lib-parse-bin
-	if [ "$_flag_lib_isolation" == "TRUE" ]; then
+	if [ "$_flag_lib_isolation" = "TRUE" ]; then
 		echo "*** Isolate dependencies into $LIB_TARGET_FOLDER"
 		__del_folder "$LIB_TARGET_FOLDER"
 		echo "*** Copying items from $REQUIRED_LIB_ROOT/$_lib_folder to $LIB_TARGET_FOLDER"
 		__copy_folder_content_into "$REQUIRED_LIB_ROOT"/"$_lib_folder" "$LIB_TARGET_FOLDER" "*"$LIB_EXTENSION"*"
 		__copy_folder_content_into "$REQUIRED_LIB_ROOT"/"$_lib_folder/pkgconfig" "$LIB_TARGET_FOLDER/pkgconfig"
 
-		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-			[ "$STELLA_BUILD_RELOCATE" == "ON" ] && __tweak_install_name_darwin "$LIB_TARGET_FOLDER" "RPATH"
-			[ "$STELLA_BUILD_RELOCATE" == "OFF" ] && __tweak_install_name_darwin "$LIB_TARGET_FOLDER" "PATH"
+		if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+			[ "$STELLA_BUILD_RELOCATE" = "ON" ] && __tweak_install_name_darwin "$LIB_TARGET_FOLDER" "RPATH"
+			[ "$STELLA_BUILD_RELOCATE" = "OFF" ] && __tweak_install_name_darwin "$LIB_TARGET_FOLDER" "PATH"
 		fi
 	fi
 
 	# On Darwin, the install_name of the linked lib is used to link the lib
 	#			BUT if install_name of the linked lib is "@rpath/lib" so we will miss the rpath value !
 	#			SO better to add a rpath value anyway
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		__set_build_mode "RPATH" "ADD_FIRST" "$LIB_TARGET_FOLDER"
 	fi
 	# On linux we need to add an rpath value to the folder where reside the linked lib
 	#			if needed, we will remove rpath value and turn into a hard link after build
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		__set_build_mode "RPATH" "ADD_FIRST" "$LIB_TARGET_FOLDER"
 	fi
 
 
 
 	# manage pkg-config ----
-	if [ "$_opt_use_pkg_config" == "ON" ]; then
+	if [ "$_opt_use_pkg_config" = "ON" ]; then
 		__add_toolset "pkgconfig"
 		STELLA_BUILD_PKG_CONFIG_PATH=$LIB_TARGET_FOLDER/pkgconfig:$STELLA_BUILD_PKG_CONFIG_PATH
-		if [ "$_flag_lib_isolation" == "TRUE" ]; then
+		if [ "$_flag_lib_isolation" = "TRUE" ]; then
 			for f in $LIB_TARGET_FOLDER/pkgconfig/*.pc; do
 				#ed -i .bak "s,^prefix=.*,prefix=$LIB_TARGET_FOLDER," "$f"
 				sed -i .bak "s,^libdir=.*,libdir=$LIB_TARGET_FOLDER," "$f"
@@ -1027,20 +1027,20 @@ __link_feature_library() {
 
 
 	# set stella build system flags ----
-	if [ "$_opt_set_flags" == "ON" ]; then
+	if [ "$_opt_set_flags" = "ON" ]; then
 		__set_link_flags "$_LIB" "$_INCLUDE" "$_libs_name"
 
 		# NOTE : we cannot really set rpath now, each built binary may have a different path, so rpath might be false
-		# if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
+		# if [ "$STELLA_BUILD_RELOCATE" = "ON" ]; then
 		# 	local p="$(__abs_to_rel_path "$_LIB" "$FEAT_INSTALL_ROOT")"
 		# 	# NOTE : $ORIGIN may have problem on some systems, see : http://www.cmake.org/pipermail/cmake/2008-January/019290.html
-		# 	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+		# 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		# 		# from root
 		# 		__set_build_mode "RPATH" "ADD_FIRST" '$ORIGIN/'$p
 		# 		# from lib or bin folder
 		# 		__set_build_mode "RPATH" "ADD_FIRST" '$ORIGIN/../'$p
 		# 	fi
-		# 	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+		# 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		# 		# from root
 		# 		__set_build_mode "RPATH" "ADD_FIRST" "@loader_path/$p"
 		# 		# from lib or bin folder
@@ -1050,12 +1050,12 @@ __link_feature_library() {
 	fi
 
 	# set <var> flags ----
-	if [ ! "$_var_flags" == "" ]; then
+	if [ ! "$_var_flags" = "" ]; then
 		__link_flags "$STELLA_BUILD_COMPIL_FRONTEND_BIN" "$_var_flags" "$_LIB" "$_INCLUDE" "$_libs_name"
 	fi
 
 	# set <folder> vars ----
-	if [ ! "$_var_folders" == "" ]; then
+	if [ ! "$_var_folders" = "" ]; then
 		eval "$_var_folders"_ROOT=\"$_ROOT\"
 		eval "$_var_folders"_LIB=\"$_LIB\"
 		eval "$_var_folders"_INCLUDE=\"$_INCLUDE\"
@@ -1070,7 +1070,7 @@ __set_link_flags() {
 	local _include_path="$2"
 	local _libs_name="$3"
 
-	if [ ! "$STELLA_BUILD_CONFIG_TOOL_BIN" == "cmake" ]; then
+	if [ ! "$STELLA_BUILD_CONFIG_TOOL_BIN" = "cmake" ]; then
 		if [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "gcc" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "clang-omp" ]; then
 			__link_flags_gcc-clang "_flags" "$_lib_path" "$_include_path" "$_libs_name"
 			LINKED_LIBS_C_CXX_FLAGS="$LINKED_LIBS_C_CXX_FLAGS $_flags_C_CXX_FLAGS"
@@ -1138,7 +1138,7 @@ __link_rpath_flags_gcc-clang() {
 	local _LINK_RPATH_FLAGS
 	local _rpath
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		# to avoid problem with $$ORIGIN -- only usefull with standard build tools (do not need this with cmake)
 		# relative to /lib or /root folder
 		_rpath='$ORIGIN/../'$p
@@ -1149,7 +1149,7 @@ __link_rpath_flags_gcc-clang() {
 		_rpath=${_rpath/\$ORIGIN/\$\$ORIGIN}
 		_LINK_RPATH_FLAGS="$_LINK_RPATH_FLAGS -Wl,-rpath='"$_rpath"'"
 	fi
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		# NOTE : if we use ' or " around $r, it will be used as rpath value
 		_LINK_RPATH_FLAGS="-Wl,-rpath,@loader_path/$p -Wl,-rpath,@loader_path/../$p"
 	fi
@@ -1254,7 +1254,7 @@ __prepare_build() {
 	__set_build_env DARWIN_STDLIB $STELLA_BUILD_DARWIN_STDLIB
 	__set_build_env LINK_FLAGS_DEFAULT $STELLA_BUILD_LINK_FLAGS_DEFAULT
 
-	[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && __set_build_env RUNPATH_OVER_RPATH
+	[ "$STELLA_CURRENT_PLATFORM" = "linux" ] && __set_build_env RUNPATH_OVER_RPATH
 
 	# trim list
 	STELLA_BUILD_RPATH="$(__trim $STELLA_BUILD_RPATH)"
@@ -1322,10 +1322,10 @@ __set_env_vars_for_cmake() {
 		_rpath="$r;$_rpath"
 	done
 
-	if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
+	if [ "$STELLA_BUILD_RELOCATE" = "ON" ]; then
 
 		# all phase
-		[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && __set_build_env "CMAKE_RPATH" "ALL_PHASE_USE_RPATH_DARWIN"
+		[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && __set_build_env "CMAKE_RPATH" "ALL_PHASE_USE_RPATH_DARWIN"
 		__set_build_env "CMAKE_RPATH" "ALL_PHASE_USE_RPATH"
 
 		# cmake build phase
@@ -1334,19 +1334,19 @@ __set_env_vars_for_cmake() {
 		# cmake install phase
 		__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_USE_FINAL_RPATH"
 
-		[ ! "$_rpath" == "" ] && __set_build_env "CMAKE_RPATH" "INSTALL_PHASE_ADD_FINAL_RPATH" "$_rpath"
+		[ ! "$_rpath" = "" ] && __set_build_env "CMAKE_RPATH" "INSTALL_PHASE_ADD_FINAL_RPATH" "$_rpath"
 	else
 
-		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+		if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 			# force install_name with hard path
 			__set_build_env "CMAKE_RPATH" "ALL_PHASE_USE_RPATH" # -- we need this for forcing install_name
 			__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_USE_FINAL_RPATH" # -- we need this for forcing install_name
 			# \${CMAKE_INSTALL_PREFIX}/lib is correct because when building we pass INSTALL_LIB_DIR with /lib
 			STELLA_CMAKE_EXTRA_FLAGS="$STELLA_CMAKE_EXTRA_FLAGS -DCMAKE_INSTALL_NAME_DIR=\${CMAKE_INSTALL_PREFIX}/lib"
 
-			[ ! "$_rpath" == "" ] && __set_build_env "CMAKE_RPATH" "INSTALL_PHASE_ADD_FINAL_RPATH" "$_rpath"
+			[ ! "$_rpath" = "" ] && __set_build_env "CMAKE_RPATH" "INSTALL_PHASE_ADD_FINAL_RPATH" "$_rpath"
 		fi
-		if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+		if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 
 			__set_build_env "CMAKE_RPATH" "ALL_PHASE_USE_RPATH"
 
@@ -1357,7 +1357,7 @@ __set_env_vars_for_cmake() {
 			__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_USE_FINAL_RPATH"
 			# add dependent lib directories to rpath value.
 			__set_build_env "CMAKE_RPATH" "INSTALL_PHASE_ADD_DEPENDENT_LIB"
-			[ ! "$_rpath" == "" ] && __set_build_env "CMAKE_RPATH" "INSTALL_PHASE_ADD_FINAL_RPATH" "$_rpath"
+			[ ! "$_rpath" = "" ] && __set_build_env "CMAKE_RPATH" "INSTALL_PHASE_ADD_FINAL_RPATH" "$_rpath"
 		fi
 	fi
 
@@ -1387,8 +1387,8 @@ __set_env_vars_for_cmake() {
 	# -DCMAKE_MODULE_PATH="$CMAKE_MODULE_PATH"
 
 	# save rpath related flags
-	[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && STELLA_CMAKE_EXTRA_FLAGS="$STELLA_CMAKE_EXTRA_FLAGS $STELLA_CMAKE_RPATH $STELLA_CMAKE_RPATH_BUILD_PHASE $STELLA_CMAKE_RPATH_INSTALL_PHASE"
-	[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && STELLA_CMAKE_EXTRA_FLAGS="$STELLA_CMAKE_EXTRA_FLAGS $STELLA_CMAKE_RPATH $STELLA_CMAKE_RPATH_DARWIN $STELLA_CMAKE_RPATH_BUILD_PHASE $STELLA_CMAKE_RPATH_INSTALL_PHASE"
+	[ "$STELLA_CURRENT_PLATFORM" = "linux" ] && STELLA_CMAKE_EXTRA_FLAGS="$STELLA_CMAKE_EXTRA_FLAGS $STELLA_CMAKE_RPATH $STELLA_CMAKE_RPATH_BUILD_PHASE $STELLA_CMAKE_RPATH_INSTALL_PHASE"
+	[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && STELLA_CMAKE_EXTRA_FLAGS="$STELLA_CMAKE_EXTRA_FLAGS $STELLA_CMAKE_RPATH $STELLA_CMAKE_RPATH_DARWIN $STELLA_CMAKE_RPATH_BUILD_PHASE $STELLA_CMAKE_RPATH_INSTALL_PHASE"
 
 	STELLA_CMAKE_EXTRA_FLAGS="$(__trim $STELLA_CMAKE_EXTRA_FLAGS)"
 }
@@ -1400,12 +1400,12 @@ __set_env_vars_for_gcc-clang() {
 	# RPATH Management
 	for r in $STELLA_BUILD_RPATH; do
 
-		if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+		if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 			# to avoid problem with $$ORIGIN -- only usefull with standard build tools (do not need this with cmake)
 			r=${r/\$ORIGIN/\$\$ORIGIN}
 			STELLA_LINK_FLAGS="$STELLA_LINK_FLAGS -Wl,-rpath='"$r"'"
 		fi
-		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+		if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 			# NOTE : if we use ' or " around $r, it will be used as rpath value
 			STELLA_LINK_FLAGS="$STELLA_LINK_FLAGS -Wl,-rpath,$r"
 		fi
@@ -1422,7 +1422,7 @@ __set_env_vars_for_gcc-clang() {
 	STELLA_LINK_FLAGS="$LINKED_LIBS_LINK_FLAGS $STELLA_LINK_FLAGS $STELLA_DYNAMIC_LINK_FLAGS $STELLA_STATIC_LINK_FLAGS"
 
 
- 	if [ "$STELLA_BUILD_MIX_CPP_C_FLAGS" == "ON" ]; then
+ 	if [ "$STELLA_BUILD_MIX_CPP_C_FLAGS" = "ON" ]; then
  		# flags to pass to the C compiler.
 		export CFLAGS="$STELLA_C_CXX_FLAGS $STELLA_CPP_FLAGS"
 		# flags to pass to the C++ compiler
@@ -1457,25 +1457,25 @@ __set_build_mode() {
 
 	# LINK_FLAGS_DEFAULT -----------------------------------------------------------------
 	# activate default link flags
-	[ "$1" == "LINK_FLAGS_DEFAULT" ] && STELLA_BUILD_LINK_FLAGS_DEFAULT=$2
+	[ "$1" = "LINK_FLAGS_DEFAULT" ] && STELLA_BUILD_LINK_FLAGS_DEFAULT=$2
 
 	# MIX_CPP_C_FLAGS -----------------------------------------------------------------
 	# set CFLAGS and CXXFLAGS with CPPFLAGS
-	[ "$1" == "MIX_CPP_C_FLAGS" ] && STELLA_BUILD_MIX_CPP_C_FLAGS=$2
+	[ "$1" = "MIX_CPP_C_FLAGS" ] && STELLA_BUILD_MIX_CPP_C_FLAGS=$2
 
 	# STATIC/DYNAMIC LINK -----------------------------------------------------------------
 	# force build system to force a linking mode when it is possible
 	# STATIC | DYNAMIC | DEFAULT
-	[ "$1" == "LINK_MODE" ] && STELLA_BUILD_LINK_MODE=$2
+	[ "$1" = "LINK_MODE" ] && STELLA_BUILD_LINK_MODE=$2
 
 	# CPU_INSTRUCTION_SCOPE -----------------------------------------------------------------
 	# http://sdf.org/~riley/blog/2014/10/30/march-mtune/
 	# CURRENT | SAME_FAMILY | GENERIC
-	[ "$1" == "CPU_INSTRUCTION_SCOPE" ] && STELLA_BUILD_CPU_INSTRUCTION_SCOPE=$2
+	[ "$1" = "CPU_INSTRUCTION_SCOPE" ] && STELLA_BUILD_CPU_INSTRUCTION_SCOPE=$2
 
 	# ARCH -----------------------------------------------------------------
 	# Setting flags for a specific arch
-	[ "$1" == "ARCH" ] && STELLA_BUILD_ARCH=$2
+	[ "$1" = "ARCH" ] && STELLA_BUILD_ARCH=$2
 
 	# BINARIES RELOCATABLE -----------------------------------------------------------------
 	# ON | OFF
@@ -1484,11 +1484,11 @@ __set_build_mode() {
 	# 				on macos : LC_LOAD_DYLIB contain a dependency with using couple of values : @rpath and @loader_path
 	#		if OFF : RPATH values will be added for each dependency by absolute path
 	#		if ON : RPATH values will contain relative values to a nested lib folder containing dependencies
-	[ "$1" == "RELOCATE" ] && STELLA_BUILD_RELOCATE=$2
+	[ "$1" = "RELOCATE" ] && STELLA_BUILD_RELOCATE=$2
 
 
 	# GENERIC RPATH (runtime search path values) -----------------------------------------------------------------
-	if [ "$1" == "RPATH" ]; then
+	if [ "$1" = "RPATH" ]; then
 		case $2 in
 			ADD)
 				STELLA_BUILD_RPATH="$STELLA_BUILD_RPATH $3"
@@ -1500,24 +1500,24 @@ __set_build_mode() {
 	fi
 
 	# MACOSX_DEPLOYMENT_TARGET -----------------------------------------------------------------
-	[ "$1" == "MACOSX_DEPLOYMENT_TARGET" ] && STELLA_BUILD_MACOSX_DEPLOYMENT_TARGET=$2
+	[ "$1" = "MACOSX_DEPLOYMENT_TARGET" ] && STELLA_BUILD_MACOSX_DEPLOYMENT_TARGET=$2
 
 	# DARWIN STDLIB -----------------------------------------------------------------
 	# http://stackoverflow.com/a/19637199
 	# On 10.8 and earlier libstdc++ is chosen by default, on version >= 10.9 libc++ is chosen by default.
 	# by default -mmacosx-version-min value is used to choose one of them
-	[ "$1" == "DARWIN_STDLIB" ] && STELLA_BUILD_DARWIN_STDLIB=$2
+	[ "$1" = "DARWIN_STDLIB" ] && STELLA_BUILD_DARWIN_STDLIB=$2
 
 	# OPTIMIZATION LEVEL-----------------------------------------------------------------
-	[ "$1" == "OPTIMIZATION" ] && STELLA_BUILD_OPTIMIZATION=$2
+	[ "$1" = "OPTIMIZATION" ] && STELLA_BUILD_OPTIMIZATION=$2
 
 	# PARALLELIZATION -----------------------------------------------------------------
-	[ "$1" == "PARALLELIZE" ] && STELLA_BUILD_PARALLELIZE=$2
+	[ "$1" = "PARALLELIZE" ] && STELLA_BUILD_PARALLELIZE=$2
 
 	# DEPENDENCIES FROM SYSTEM -----------------------------------------------------------------
 	# these features will be picked from the system
 	# have an effect only for feature declared in FEAT_SOURCE_DEPENDENCIES, FEAT_BINARY_DEPENDENCIES or passed to  __link_feature_libray
-	if [ "$1" == "DEP_FROM_SYSTEM" ]; then
+	if [ "$1" = "DEP_FROM_SYSTEM" ]; then
 		case $2 in
 			ADD)
 				STELLA_BUILD_DEP_FROM_SYSTEM="$STELLA_BUILD_DEP_FROM_SYSTEM $3"
@@ -1531,11 +1531,11 @@ __set_build_env() {
 
 	# LINK_FLAGS_DEFAULT -----------------------------------------------------------------
 	# Activate some default link flags
-	# TODO experimental new flags ===> transform into set_build_env
+	# TODO experimental new flags => transform into set_build_env
 	# https://sourceware.org/binutils/docs/ld/Options.html
 	# http://www.kaizou.org/2015/01/linux-libraries/
-	if [ "$1" == "LINK_FLAGS_DEFAULT" ]; then
-		if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$1" = "LINK_FLAGS_DEFAULT" ]; then
+		if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 				if [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "gcc" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "clang-omp" ]; then
 					case $2 in
 						ON)
@@ -1552,7 +1552,7 @@ __set_build_env() {
 
 	# CPU_INSTRUCTION_SCOPE -----------------------------------------------------------------
 	# http://sdf.org/~riley/blog/2014/10/30/march-mtune/
-	if [ "$1" == "CPU_INSTRUCTION_SCOPE" ]; then
+	if [ "$1" = "CPU_INSTRUCTION_SCOPE" ]; then
 		if [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "gcc" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "clang-omp" ]; then
 			case $2 in
 				CURRENT)
@@ -1569,17 +1569,17 @@ __set_build_env() {
 	fi
 
 	# set OPTIMIZATION -----------------------------------------------------------------
-	if [ "$1" == "OPTIMIZATION" ]; then
+	if [ "$1" = "OPTIMIZATION" ]; then
 		if [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "gcc" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "clang-omp" ]; then
-			[ ! "$2" == "" ] && STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS -O$2"
+			[ ! "$2" = "" ] && STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS -O$2"
 		fi
 	fi
 
 	# ARCH -----------------------------------------------------------------
 	# Setting flags for a specific arch
-	if [ "$1" == "ARCH" ]; then
+	if [ "$1" = "ARCH" ]; then
 		if [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "gcc" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "clang-omp" ]; then
-			if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+			if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 				case $2 in
 					x86)
 						STELLA_C_CXX_FLAGS="-m32 $STELLA_C_CXX_FLAGS"
@@ -1591,7 +1591,7 @@ __set_build_env() {
 			fi
 			# for darwin -m and -arch are near the same
 			# http://stackoverflow.com/questions/1754460/apples-gcc-whats-the-difference-between-arch-i386-and-m32
-			if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+			if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 				case $2 in
 					x86)
 						STELLA_C_CXX_FLAGS="-arch i386 $STELLA_C_CXX_FLAGS"
@@ -1610,9 +1610,9 @@ __set_build_env() {
 	# fPIC is usefull when building shared libraries for x64
 	# not for x86 : http://stackoverflow.com/questions/7216244/why-is-fpic-absolutely-necessary-on-64-and-not-on-32bit-platforms -- http://stackoverflow.com/questions/6961832/does-32bit-x86-code-need-to-be-specially-pic-compiled-for-shared-library-files
 	# On MacOS it is active by default
-	if [ "$1" == "ARCH" ]; then
+	if [ "$1" = "ARCH" ]; then
 		if [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "gcc" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "clang-omp" ]; then
-			if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+			if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 				case $2 in
 					x64)
 						STELLA_C_CXX_FLAGS="-fPIC $STELLA_C_CXX_FLAGS"
@@ -1623,9 +1623,9 @@ __set_build_env() {
 	fi
 
 	# MACOSX_DEPLOYMENT_TARGET -----------------------------------------------------------------
-	if [ "$1" == "MACOSX_DEPLOYMENT_TARGET" ]; then
-		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
-			if [ ! "$2" == "" ]; then
+	if [ "$1" = "MACOSX_DEPLOYMENT_TARGET" ]; then
+		if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+			if [ ! "$2" = "" ]; then
 				export MACOSX_DEPLOYMENT_TARGET=$2
 				STELLA_CMAKE_EXTRA_FLAGS="$STELLA_CMAKE_EXTRA_FLAGS -DCMAKE_OSX_DEPLOYMENT_TARGET=$2"
 				STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS -mmacosx-version-min=$2"
@@ -1639,13 +1639,13 @@ __set_build_env() {
 	# On 10.8 and earlier libstdc++ is chosen by default, on version >= 10.9 libc++ is chosen by default.
 	# by default -mmacosx-version-min value is used to choose one of them
 	# about linux and macos c++ libs : # http://stackoverflow.com/a/19774902/5027535
-	if [ "$1" == "DARWIN_STDLIB" ]; then
-		if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$1" = "DARWIN_STDLIB" ]; then
+		if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 			# we seems to need this on both cflags and ldflags (i.e for openttd)
-			[ "$2" == "LIBCPP" ] && STELLA_LINK_FLAGS="$STELLA_LINK_FLAGS -stdlib=libc++"
-			[ "$2" == "LIBSTDCPP" ] && STELLA_LINK_FLAGS="$STELLA_LINK_FLAGS -stdlib=libstdc++"
-			[ "$2" == "LIBCPP" ] && STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS -stdlib=libc++"
-			[ "$2" == "LIBSTDCPP" ] && STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS -stdlib=libstdc++"
+			[ "$2" = "LIBCPP" ] && STELLA_LINK_FLAGS="$STELLA_LINK_FLAGS -stdlib=libc++"
+			[ "$2" = "LIBSTDCPP" ] && STELLA_LINK_FLAGS="$STELLA_LINK_FLAGS -stdlib=libstdc++"
+			[ "$2" = "LIBCPP" ] && STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS -stdlib=libc++"
+			[ "$2" = "LIBSTDCPP" ] && STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS -stdlib=libstdc++"
 		fi
 	fi
 
@@ -1653,9 +1653,9 @@ __set_build_env() {
 	# RUNPATH/RPATH
 	# prefer setting RUNPATH over setting RPATH
 	# enable-new-dtags : http://blog.tremily.us/posts/rpath/
-	if [ "$1" == "RUNPATH_OVER_RPATH" ]; then
+	if [ "$1" = "RUNPATH_OVER_RPATH" ]; then
 		if [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "gcc" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN" = "clang-omp" ]; then
-			if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+			if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 				STELLA_DYNAMIC_LINK_FLAGS="$STELLA_DYNAMIC_LINK_FLAGS -Wl,--enable-new-dtags"
 			fi
 		fi
@@ -1694,7 +1694,7 @@ __set_build_env() {
 	#			* CMAKE set binary RPATH value with INSTALL_NAME_DIR if it setted
 	#	Default :
 	#		CMAKE_MACOSX_RPATH : ON
-	if [ "$1" == "CMAKE_RPATH" ]; then
+	if [ "$1" = "CMAKE_RPATH" ]; then
 		case $2 in
 
 			# no rpath during BUILD PHASE
@@ -1775,7 +1775,7 @@ __inspect_and_fix_build() {
 	# EXCLUDE_FILTER <expr> -- exclude these files
 	# INCLUDE_FILTER is apply first, before EXCLUDE_FILTER
 
-	[ "$1" == "" ] && return
+	[ "$1" = "" ] && return
 
 	[ -z "$(__filter_list "$path" "INCLUDE_TAG INCLUDE_FILTER EXCLUDE_TAG EXCLUDE_FILTER $OPT")" ] && return $_result
 
@@ -1800,10 +1800,10 @@ __inspect_and_fix_build() {
 __fix_built_files() {
 	local path="$1"
 	local OPT="$2"
-	if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
+	if [ "$STELLA_BUILD_RELOCATE" = "ON" ]; then
 		__tweak_binary_file "$path" "$OPT RELOCATE WANTED_RPATH $STELLA_BUILD_RPATH"
 	fi
-	if [ "$STELLA_BUILD_RELOCATE" == "OFF" ]; then
+	if [ "$STELLA_BUILD_RELOCATE" = "OFF" ]; then
 		# TODO NON_RELOCATE will change binary, maybe we dont want that...
 		#__tweak_binary_file "$path" "$OPT NON_RELOCATE WANTED_RPATH $STELLA_BUILD_RPATH"
 		__tweak_binary_file "$path" "$OPT WANTED_RPATH $STELLA_BUILD_RPATH"
@@ -1815,11 +1815,11 @@ __check_built_files() {
 	local OPT="$2"
 	local _result=0
 	local _check_arch=
-	[ ! "$STELLA_BUILD_ARCH" == "" ] && _check_arch="ARCH $STELLA_BUILD_ARCH"
-	if [ "$STELLA_BUILD_RELOCATE" == "ON" ]; then
+	[ ! "$STELLA_BUILD_ARCH" = "" ] && _check_arch="ARCH $STELLA_BUILD_ARCH"
+	if [ "$STELLA_BUILD_RELOCATE" = "ON" ]; then
 		__check_binary_file "$path" "$OPT RELOCATE $_check_arch WANTED_RPATH $STELLA_BUILD_RPATH" || _result=1
 	fi
-	if [ "$STELLA_BUILD_RELOCATE" == "OFF" ]; then
+	if [ "$STELLA_BUILD_RELOCATE" = "OFF" ]; then
 		# if we are in export mode or in default mode, linked libs should be relocatable
 		__check_binary_file "$path" "$OPT NON_RELOCATE $_check_arch WANTED_RPATH $STELLA_BUILD_RPATH" || _result=1
 	fi

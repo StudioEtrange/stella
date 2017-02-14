@@ -1,4 +1,4 @@
-if [ ! "$_STELLA_COMMON_MAKE_SFX_INCLUDED_" == "1" ]; then
+if [ ! "$_STELLA_COMMON_MAKE_SFX_INCLUDED_" = "1" ]; then
 _STELLA_COMMON_MAKE_SFX_INCLUDED_=1
 
 # SFX means auto extractible archive
@@ -22,18 +22,18 @@ __make_sevenzip_sfx_bin() {
 
 	local _opt_target_is_sevenzip=OFF
 	for o in $_opt; do
-		[ "$o" == "7Z" ] && _opt_target_is_sevenzip=ON
+		[ "$o" = "7Z" ] && _opt_target_is_sevenzip=ON
 	done
 
 	local tp_7z=$(mktmp)
 
-	if [ "$_opt_target_is_sevenzip" == "ON" ]; then
+	if [ "$_opt_target_is_sevenzip" = "ON" ]; then
 		tp_7z="$_target"
 	else
 		tp_7z=$(mktmp)
 	fi
 
-	if [ "$_opt_target_is_sevenzip" == "OFF" ]; then
+	if [ "$_opt_target_is_sevenzip" = "OFF" ]; then
 		__compress "7Z" "$_target" "$tp_7z"
 	fi
 
@@ -56,7 +56,7 @@ __make_sevenzip_sfx_bin() {
 
 	cat "$extractor_binary" "$tp_7z" > "$_output_sfx"
 
-	[ "$_opt_target_is_sevenzip" == "OFF" ] && rm -Rf "$tp_7z"
+	[ "$_opt_target_is_sevenzip" = "OFF" ] && rm -Rf "$tp_7z"
 
 	case $_platform in
 		linux|darwin)
@@ -76,14 +76,14 @@ __make_targz_sfx_shell() {
 
 	local _opt_target_is_targz=OFF
 	for o in $_opt; do
-		[ "$o" == "TARGZ" ] && _opt_target_is_targz=ON
+		[ "$o" = "TARGZ" ] && _opt_target_is_targz=ON
 	done
 
 
 	local tp_header=$(mktmp)
 	local tp_gz
 
-	if [ "$_opt_target_is_targz" == "ON" ]; then
+	if [ "$_opt_target_is_targz" = "ON" ]; then
 		tp_gz="$_target"
 	else
 		tp_gz=$(mktmp)
@@ -96,14 +96,14 @@ __make_targz_sfx_shell() {
 	echo "exit 0" >> "$tp_header"
 	echo "__ARCHIVE_BELOW__" >> "$tp_header"
 
-	if [ "$_opt_target_is_targz" == "OFF" ]; then
+	if [ "$_opt_target_is_targz" = "OFF" ]; then
 		__compress "TARGZ" "$_target" "$tp_gz"
 	fi
 
 	cat "$tp_header" "$tp_gz" > "$_output_sfx"
 
 	rm -Rf "$tp_header"
-	[ "$_opt_target_is_targz" == "OFF" ] && rm -Rf "$tp_gz"
+	[ "$_opt_target_is_targz" = "OFF" ] && rm -Rf "$tp_gz"
 
 	chmod +x $_output_sfx 2>/dev/null
 }

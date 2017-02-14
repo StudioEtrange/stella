@@ -1,4 +1,4 @@
-if [ ! "$_STELLA_COMMON_NET_INCLUDED_" == "1" ]; then
+if [ ! "$_STELLA_COMMON_NET_INCLUDED_" = "1" ]; then
 _STELLA_COMMON_NET_INCLUDED_=1
 
 
@@ -15,7 +15,7 @@ __read_proxy_values() {
 	if [ -f "$STELLA_ENV_FILE" ]; then
 		__get_key "$STELLA_ENV_FILE" "STELLA_PROXY" "ACTIVE" "PREFIX"
 
-		if [ ! "$STELLA_PROXY_ACTIVE" == "" ]; then
+		if [ ! "$STELLA_PROXY_ACTIVE" = "" ]; then
 			__get_key "$STELLA_ENV_FILE" "STELLA_PROXY_$STELLA_PROXY_ACTIVE" "PROXY_HOST" "PREFIX"
 			__get_key "$STELLA_ENV_FILE" "STELLA_PROXY_$STELLA_PROXY_ACTIVE" "PROXY_PORT" "PREFIX"
 			__get_key "$STELLA_ENV_FILE" "STELLA_PROXY_$STELLA_PROXY_ACTIVE" "PROXY_USER" "PREFIX"
@@ -23,18 +23,18 @@ __read_proxy_values() {
 
 			# read NO_PROXY values from env file
 			__get_key "$STELLA_ENV_FILE" "STELLA_PROXY" "NO_PROXY" "PREFIX"
-			if [ "$STELLA_PROXY_NO_PROXY" == "" ]; then
+			if [ "$STELLA_PROXY_NO_PROXY" = "" ]; then
 				STELLA_NO_PROXY="$STELLA_DEFAULT_NO_PROXY"
 			else
-				[ "$STELLA_DEFAULT_NO_PROXY" == "" ] && STELLA_NO_PROXY="$STELLA_PROXY_NO_PROXY"
-				[ ! "$STELLA_DEFAULT_NO_PROXY" == "" ] && STELLA_NO_PROXY="$STELLA_DEFAULT_NO_PROXY","$STELLA_PROXY_NO_PROXY"
+				[ "$STELLA_DEFAULT_NO_PROXY" = "" ] && STELLA_NO_PROXY="$STELLA_PROXY_NO_PROXY"
+				[ ! "$STELLA_DEFAULT_NO_PROXY" = "" ] && STELLA_NO_PROXY="$STELLA_DEFAULT_NO_PROXY","$STELLA_PROXY_NO_PROXY"
 			fi
 
 			eval STELLA_PROXY_HOST=$(echo '$STELLA_PROXY_'$STELLA_PROXY_ACTIVE'_PROXY_HOST')
 			eval STELLA_PROXY_PORT=$(echo '$STELLA_PROXY_'$STELLA_PROXY_ACTIVE'_PROXY_PORT')
 
 			eval STELLA_PROXY_USER=$(echo '$STELLA_PROXY_'$STELLA_PROXY_ACTIVE'_PROXY_USER')
-			if [ "$STELLA_PROXY_USER" == "" ]; then
+			if [ "$STELLA_PROXY_USER" = "" ]; then
 				STELLA_HTTP_PROXY=http://$STELLA_PROXY_HOST:$STELLA_PROXY_PORT
 				STELLA_HTTPS_PROXY=http://$STELLA_PROXY_HOST:$STELLA_PROXY_PORT
 			else
@@ -64,7 +64,7 @@ __read_proxy_values() {
 __set_system_proxy_values() {
 
 	# override already existing system proxy env var only if stella proxy is active
-	if [ ! "$STELLA_PROXY_ACTIVE" == "" ]; then
+	if [ ! "$STELLA_PROXY_ACTIVE" = "" ]; then
 		http_proxy="$STELLA_HTTP_PROXY"
 		export http_proxy="$STELLA_HTTP_PROXY"
 
@@ -77,20 +77,20 @@ __set_system_proxy_values() {
 		HTTPS_PROXY="$https_proxy"
 		export HTTPS_PROXY="$https_proxy"
 
-		if [ ! "$STELLA_NO_PROXY" == "" ]; then
+		if [ ! "$STELLA_NO_PROXY" = "" ]; then
 			# NOTE : on nix system, if NO_PROXY is setted, then no_proxy is ignored
 			no_proxy="$STELLA_NO_PROXY"
 			NO_PROXY="$STELLA_NO_PROXY"
 			export no_proxy="$STELLA_NO_PROXY"
 			export NO_PROXY="$STELLA_NO_PROXY"
 
-			[ ! "$STELLA_NO_PROXY" == "" ] && echo "STELLA Proxy : bypass for $STELLA_NO_PROXY"
+			[ ! "$STELLA_NO_PROXY" = "" ] && echo "STELLA Proxy : bypass for $STELLA_NO_PROXY"
 		fi
 	fi
 
 
 
-	if [ ! "$STELLA_PROXY_HOST" == "" ]; then
+	if [ ! "$STELLA_PROXY_HOST" = "" ]; then
 		echo "STELLA Proxy : $STELLA_PROXY_HOST:$STELLA_PROXY_PORT"
 		__proxy_override
 	fi
@@ -141,13 +141,13 @@ __proxy_override() {
 	# wait = 15
 	function wget() {
 		# NOTE a lot of these wget option do not exist on different wget version
-		[ ! "$STELLA_PROXY_USER" == "" ] && no_proxy="$STELLA_NO_PROXY" https_proxy="$STELLA_HTTPS_PROXY" http_proxy="$STELLA_HTTP_PROXY" command wget --wait=15 --proxy=on --proxy-user="$STELLA_PROXY_USER" --proxy-password="$STELLA_PROXY_PASS" "$@"
-		[ "$STELLA_PROXY_USER" == "" ] && no_proxy="$STELLA_NO_PROXY" https_proxy="$STELLA_HTTPS_PROXY" http_proxy="$STELLA_HTTP_PROXY" command wget --wait=15 --proxy=on --proxy-user="$STELLA_PROXY_USER" --proxy-password="$STELLA_PROXY_PASS" "$@"
+		[ ! "$STELLA_PROXY_USER" = "" ] && no_proxy="$STELLA_NO_PROXY" https_proxy="$STELLA_HTTPS_PROXY" http_proxy="$STELLA_HTTP_PROXY" command wget --wait=15 --proxy=on --proxy-user="$STELLA_PROXY_USER" --proxy-password="$STELLA_PROXY_PASS" "$@"
+		[ "$STELLA_PROXY_USER" = "" ] && no_proxy="$STELLA_NO_PROXY" https_proxy="$STELLA_HTTPS_PROXY" http_proxy="$STELLA_HTTP_PROXY" command wget --wait=15 --proxy=on --proxy-user="$STELLA_PROXY_USER" --proxy-password="$STELLA_PROXY_PASS" "$@"
 	}
 
 	function curl() {
-		[ ! "$STELLA_PROXY_USER" == "" ] && echo $(command curl --noproxy $STELLA_NO_PROXY --proxy "$STELLA_PROXY_HOST:$STELLA_PROXY_PORT" --proxy-user "$STELLA_PROXY_USER:$STELLA_PROXY_PASS" "$@")
-		[ "$STELLA_PROXY_USER" == "" ] && echo $(command curl --noproxy $STELLA_NO_PROXY --proxy "$STELLA_PROXY_HOST:$STELLA_PROXY_PORT" "$@")
+		[ ! "$STELLA_PROXY_USER" = "" ] && echo $(command curl --noproxy $STELLA_NO_PROXY --proxy "$STELLA_PROXY_HOST:$STELLA_PROXY_PORT" --proxy-user "$STELLA_PROXY_USER:$STELLA_PROXY_PASS" "$@")
+		[ "$STELLA_PROXY_USER" = "" ] && echo $(command curl --noproxy $STELLA_NO_PROXY --proxy "$STELLA_PROXY_HOST:$STELLA_PROXY_PORT" "$@")
 	}
 
 
@@ -160,9 +160,9 @@ __proxy_override() {
 	}
 
 	function mvn() {
-		# -DnonProxyHosts=\""${STELLA_NO_PROXY//,/|}"\" ==> seems to not, work use instead -Dhttp.nonProxyHosts
-		[ ! "$STELLA_PROXY_USER" == "" ] && command mvn -DproxyActive=true -DproxyId="$STELLA_PROXY_ACTIVE" -DproxyHost="$STELLA_PROXY_HOST" -DproxyPort="$STELLA_PROXY_PORT" -Dhttp.nonProxyHosts=\""${STELLA_NO_PROXY//,/|}"\" -DproxyUsername="$STELLA_PROXY_USER" -DproxyPassword="$STELLA_PROXY_PASS" "$@"
-		[ "$STELLA_PROXY_USER" == "" ] && command mvn -DproxyActive=true  -DproxyId="$STELLA_PROXY_ACTIVE" -DproxyHost="$STELLA_PROXY_HOST" -DproxyPort="$STELLA_PROXY_PORT" -Dhttp.nonProxyHosts=\""${STELLA_NO_PROXY//,/|}"\" "$@"
+		# -DnonProxyHosts=\""${STELLA_NO_PROXY//,/|}"\" => seems to not, work use instead -Dhttp.nonProxyHosts
+		[ ! "$STELLA_PROXY_USER" = "" ] && command mvn -DproxyActive=true -DproxyId="$STELLA_PROXY_ACTIVE" -DproxyHost="$STELLA_PROXY_HOST" -DproxyPort="$STELLA_PROXY_PORT" -Dhttp.nonProxyHosts=\""${STELLA_NO_PROXY//,/|}"\" -DproxyUsername="$STELLA_PROXY_USER" -DproxyPassword="$STELLA_PROXY_PASS" "$@"
+		[ "$STELLA_PROXY_USER" = "" ] && command mvn -DproxyActive=true  -DproxyId="$STELLA_PROXY_ACTIVE" -DproxyHost="$STELLA_PROXY_HOST" -DproxyPort="$STELLA_PROXY_PORT" -Dhttp.nonProxyHosts=\""${STELLA_NO_PROXY//,/|}"\" "$@"
 
 	}
 
@@ -216,11 +216,11 @@ __proxy_override() {
 	#		ENV http_proxy http://<proxy_host>:<proxy_port>
 
 	function docker-machine() {
-		if [ "$1" == "create" ]; then
+		if [ "$1" = "create" ]; then
 			shift 1
 			command docker-machine create --engine-env http_proxy="$STELLA_HTTP_PROXY" --engine-env https_proxy="$STELLA_HTTPS_PROXY" --engine-env no_proxy="$STELLA_NO_PROXY" "$@"
 		else
-			if [ "$1" == "env" ]; then
+			if [ "$1" = "env" ]; then
 				echo "
 __no_proxy_for $(command docker-machine ip $2);
 $(command docker-machine "$@");
@@ -233,14 +233,14 @@ $(command docker-machine "$@");
 
 	# minishift, which relies on a boot2docker VM , needs docker daemon env to be setted
 	function minishift() {
-		if [ "$1" == "start" ]; then
+		if [ "$1" = "start" ]; then
 			shift 1
 			command minishift start --docker-env http_proxy="$STELLA_HTTP_PROXY" --docker-env https_proxy="$STELLA_HTTP_PROXY" "$@"
 			# TODO : passing no_proxy to env is bugged in minishift args
 			#--docker-env no_proxy="$STELLA_NO_PROXY"
 			__no_proxy_for $(command minishift ip)
 		else
-			if [ "$1" == "docker-env" ]; then
+			if [ "$1" = "docker-env" ]; then
 				echo "
 __no_proxy_for $(command minishift ip);
 $(command minishift "$@");
@@ -252,14 +252,14 @@ $(command minishift "$@");
 	}
 
 	function minikube() {
-		if [ "$1" == "start" ]; then
+		if [ "$1" = "start" ]; then
 			shift 1
 			command minikube start --docker-env http_proxy="$STELLA_HTTP_PROXY" --docker-env https_proxy="$STELLA_HTTP_PROXY" "$@"
 			# TODO : passing no_proxy to env is bugged in minikube args
 			#--docker-env no_proxy="$STELLA_NO_PROXY"
 			__no_proxy_for $(command minikube ip)
 		else
-			if [ "$1" == "docker-env" ]; then
+			if [ "$1" = "docker-env" ]; then
 				echo "
 __no_proxy_for $(command minikube ip);
 $(command minikube "$@");
@@ -342,11 +342,11 @@ __register_no_proxy() {
 	local _exist=
 	STELLA_PROXY_NO_PROXY="${STELLA_PROXY_NO_PROXY//,/ }"
 	for h in $STELLA_PROXY_NO_PROXY; do
-		[ "$h" == "$_host" ] && _exist=1
+		[ "$h" = "$_host" ] && _exist=1
 	done
 
-	if [ "$_exist" == "" ]; then
-		if [ "$STELLA_PROXY_NO_PROXY" == "" ]; then
+	if [ "$_exist" = "" ]; then
+		if [ "$STELLA_PROXY_NO_PROXY" = "" ]; then
 			STELLA_PROXY_NO_PROXY="$_host"
 		else
 			STELLA_PROXY_NO_PROXY="$STELLA_PROXY_NO_PROXY $_host"
@@ -365,13 +365,13 @@ __no_proxy_for() {
 	local _exist=
 	local _tmp_no_proxy="${STELLA_NO_PROXY//,/ }"
 	for h in $_tmp_no_proxy; do
-		[ "$h" == "$_host" ] && _exist=1
+		[ "$h" = "$_host" ] && _exist=1
 	done
 
-	if [ "$_exist" == "" ]; then
+	if [ "$_exist" = "" ]; then
 		echo "STELLA Proxy : temp proxy bypass for $_host"
-		[ ! "$STELLA_NO_PROXY" == "" ] && STELLA_NO_PROXY="$STELLA_NO_PROXY","$_host"
-		[ "$STELLA_NO_PROXY" == "" ] && STELLA_NO_PROXY="$_host"
+		[ ! "$STELLA_NO_PROXY" = "" ] && STELLA_NO_PROXY="$STELLA_NO_PROXY","$_host"
+		[ "$STELLA_NO_PROXY" = "" ] && STELLA_NO_PROXY="$_host"
 		__set_system_proxy_values
 	fi
 

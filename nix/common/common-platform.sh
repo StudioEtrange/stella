@@ -1,4 +1,4 @@
-if [ ! "$_STELLA_PLATFORM_INCLUDED_" == "1" ]; then
+if [ ! "$_STELLA_PLATFORM_INCLUDED_" = "1" ]; then
 _STELLA_PLATFORM_INCLUDED_=1
 
 
@@ -149,17 +149,17 @@ __set_current_platform_info() {
 
 	# CPU 64Bits capable
 	STELLA_CPU_ARCH=
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		grep -q -o -w 'lm' /proc/cpuinfo && STELLA_CPU_ARCH=64 || echo STELLA_CPU_ARCH=32
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		local _cpu=`sysctl hw.cpu64bit_capable | egrep -i 'hw.cpu64bit_capable' | awk '{print $NF}'`
 		STELLA_CPU_ARCH=32
-		[ "$_cpu" == "1" ] && STELLA_CPU_ARCH=64
+		[ "$_cpu" = "1" ] && STELLA_CPU_ARCH=64
 	fi
 
-	if [ "$(uname -m | grep 64)" == "" ]; then
+	if [ "$(uname -m | grep 64)" = "" ]; then
 		STELLA_KERNEL_ARCH=32
 	else
 		STELLA_KERNEL_ARCH=64
@@ -171,13 +171,13 @@ __set_current_platform_info() {
 
 	local _err=
 	type netstat &>/dev/null || _err=1
-	if [ "$_err" == "" ]; then
+	if [ "$_err" = "" ]; then
 		STELLA_DEFAULT_INTERFACE=$(netstat -rn | awk '/^0.0.0.0/ {thif=substr($0,74,10); print thif;} /^default.*UG/ {thif=substr($0,65,10); print thif;}')
 	fi
 
 	_err=
 	type ifconfig &>/dev/null || _err=1
-	if [ "$_err" == "" ]; then
+	if [ "$_err" = "" ]; then
 		STELLA_HOST_DEFAULT_IP=$(ifconfig ${STELLA_DEFAULT_INTERFACE} | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*')
 		STELLA_HOST_IP=$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*')
 	fi
@@ -195,7 +195,7 @@ __get_macos_version() {
 
 __override_platform_command() {
 	#http://unix.stackexchange.com/questions/30091/fix-or-alternative-for-mktemp-in-os-x
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		function mktmp() {
 			local tempfile=$(mktemp -t stella)
 	    	echo "$tempfile"
@@ -215,7 +215,7 @@ __override_platform_command() {
 		}
 	fi
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		GETOPT_CMD=PURE_BASH
 	else
 		GETOPT_CMD=getopt
@@ -270,9 +270,9 @@ __require() {
 
 
 	for o in $_OPT; do
-		[ "$o" == "OPTIONAL" ] && _opt_optional=ON
-		[ "$o" == "SYSTEM" ] && _opt_system=ON && _opt_stella_feature=OFF && _opt_stella_toolset=OFF
-		[ "$o" == "STELLA_FEATURE" ] && _opt_system=OFF && _opt_stella_feature=ON && _opt_stella_toolset=OFF
+		[ "$o" = "OPTIONAL" ] && _opt_optional=ON
+		[ "$o" = "SYSTEM" ] && _opt_system=ON && _opt_stella_feature=OFF && _opt_stella_toolset=OFF
+		[ "$o" = "STELLA_FEATURE" ] && _opt_system=OFF && _opt_stella_feature=ON && _opt_stella_toolset=OFF
 	done
 
 	echo "** REQUIRE $_id ($_artefact)"
@@ -283,15 +283,15 @@ __require() {
 
 	type $_artefact &>/dev/null || _err=1
 
-	if [ "$_err" == "1" ]; then
-		if [ "$_opt_optional" == "ON" ]; then
-			if [ "$_opt_system" == "ON" ]; then
+	if [ "$_err" = "1" ]; then
+		if [ "$_opt_optional" = "ON" ]; then
+			if [ "$_opt_system" = "ON" ]; then
 				echo "** WARN -- You should install $_artefact -- Try stella.sh sys install $_id OR your regular OS package manager"
 			else
-				if [ "$_opt_stella_feature" == "ON" ]; then
+				if [ "$_opt_stella_feature" = "ON" ]; then
 					echo "** WARN -- You should install $_artefact -- Try stella.sh feature install $_id"
 				else
-					if [ "$_opt_stella_toolset" == "ON" ]; then
+					if [ "$_opt_stella_toolset" = "ON" ]; then
 						# TODO optionnal toolset ? it shoud not exist -- CHANGE warn message
 						echo "** WARN -- You should install $_artefact -- Try stella.sh toolset install $_id"
 					else
@@ -302,13 +302,13 @@ __require() {
 				fi
 			fi
 		else
-			if [ "$_opt_system" == "ON" ]; then
+			if [ "$_opt_system" = "ON" ]; then
 				echo "** ERROR -- Please install $_artefact"
 				echo "** Try stella.sh sys install $_id OR your regular OS package manager"
 				_result=1
 				exit 1
 			else
-				if [ "$_opt_stella_feature" == "ON" ]; then
+				if [ "$_opt_stella_feature" = "ON" ]; then
 					echo "** REQUIRE $_id : installing it from stella"
 					(__feature_install "$_id" "INTERNAL HIDDEN")
 					__feature_init "$_id" "HIDDEN"
@@ -352,7 +352,7 @@ __gcc_check_min_version() {
 # detect if current gcc binary is in fact clang (mainly for MacOS)
 # return 1 if gcc is clang
 __gcc_is_clang() {
-	if [ "$(echo | gcc -dM -E - | grep __clang__)" == "" ]; then
+	if [ "$(echo | gcc -dM -E - | grep __clang__)" = "" ]; then
 		echo "0"
 	else
 		echo "1"
@@ -466,12 +466,12 @@ __sys_package_manager() {
 	local _flag_package_manager=OFF
 	local _packages=
 	for o in $_packages_list; do
-		[ "$o" == "|" ] && _flag_package_manager=OFF
-		[ "$_flag_package_manager" == "ON" ] && _packages="$_packages $o"
-		[ "$o" == "$_package_manager" ] && _flag_package_manager=ON
+		[ "$o" = "|" ] && _flag_package_manager=OFF
+		[ "$_flag_package_manager" = "ON" ] && _packages="$_packages $o"
+		[ "$o" = "$_package_manager" ] && _flag_package_manager=ON
 	done
 
-	if [ "$_action" == "INSTALL" ]; then
+	if [ "$_action" = "INSTALL" ]; then
 		case $_package_manager in
 			apt-get)
 				type sudo &>/dev/null && \
@@ -497,7 +497,7 @@ __sys_package_manager() {
 				;;
 		esac
 	fi
-	if [ "$_action" == "REMOVE" ]; then
+	if [ "$_action" = "REMOVE" ]; then
 		case $_package_manager in
 			apt-get)
 				type sudo &>/dev/null && \
@@ -526,7 +526,7 @@ __sys_package_manager() {
 # --------- SYSTEM RECIPES--------
 __sys_install_docker() {
 	echo " ** Install Docker on your system"
-	if [ "$STELLA_CURRENT_OS" == "macos" ]; then
+	if [ "$STELLA_CURRENT_OS" = "macos" ]; then
 		echo "ERROR : Docker is not directly available on macos"
 		return
 	fi
@@ -577,7 +577,7 @@ __sys_remove_brew() {
 __sys_install_build-chain-standard() {
 	local _package_manager=
 
-	if [ "$STELLA_CURRENT_OS" == "macos" ]; then
+	if [ "$STELLA_CURRENT_OS" = "macos" ]; then
 		echo " ** Install build-chain-standard on your system"
 		# from https://github.com/lockfale/msf-installer/blob/master/msf_install.sh
 		# http://docs.python-guide.org/en/latest/starting/install/osx/
@@ -607,7 +607,7 @@ __sys_install_build-chain-standard() {
 	fi
 }
 __sys_remove_build-chain-standard() {
-	if [ "$STELLA_CURRENT_OS" == "macos" ]; then
+	if [ "$STELLA_CURRENT_OS" = "macos" ]; then
 		echo " ** Remove Xcode and Command Line Development Tools by hand"
 	else
 		__sys_package_manager "REMOVE" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib | yum gcc gcc-c++ make kernel-devel | apk gcc g++ make"

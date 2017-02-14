@@ -1,4 +1,4 @@
-if [ ! "$_STELLA_BOOT_INCLUDED_" == "1" ]; then
+if [ ! "$_STELLA_BOOT_INCLUDED_" = "1" ]; then
 _STELLA_BOOT_INCLUDED_=1
 
 # TODO : include into API
@@ -61,7 +61,7 @@ __boot_stella() {
   local _uri="$2"
   local _arg="$3"
 
-  if [ "$_uri" == "local" ]; then
+  if [ "$_uri" = "local" ]; then
     __stella_uri_schema="local"
   else
     # [schema://][user[:password]@][host][:port][/path][?[arg1=val1]...][#fragment]
@@ -97,7 +97,7 @@ __boot_stella() {
       local _docker_prefix
       __require "docker" "docker" "SYSTEM"
 
-      if [ "$__stella_uri_schema" == "dm" ]; then
+      if [ "$__stella_uri_schema" = "dm" ]; then
         __require "docker-machine" "docker-machine" "SYSTEM"
         [ ! -z "$FORCE" ] && docker-machine create --driver virtualbox $__stella_uri_host
         docker-machine start $__stella_uri_host
@@ -105,8 +105,8 @@ __boot_stella() {
         eval $(docker-machine env $__stella_uri_host)
       fi
 
-      if [ "$__stella_uri_schema" == "docker" ]; then
-        [ ! "$__stella_uri_host" == "" ] && _docker_prefix="DOCKER_HOST=tcp://$__stella_uri_host:$__stella_uri_port"
+      if [ "$__stella_uri_schema" = "docker" ]; then
+        [ ! "$__stella_uri_host" = "" ] && _docker_prefix="DOCKER_HOST=tcp://$__stella_uri_host:$__stella_uri_port"
       fi
 
       # folders
@@ -136,18 +136,18 @@ __boot_stella() {
       #ssh://user@host:port/#abs_or_rel_path
 
       local _ssh_port="22"
-    	[ ! "$__stella_uri_port" == "" ] && _ssh_port="$__stella_uri_port"
+    	[ ! "$__stella_uri_port" = "" ] && _ssh_port="$__stella_uri_port"
       local _ssh_user=
-      [ ! "$__stella_uri_user" == "" ] && _ssh_user="$__stella_uri_user"@
+      [ ! "$__stella_uri_user" = "" ] && _ssh_user="$__stella_uri_user"@
 
       __require "ssh" "ssh" "SYSTEM"
 
       __transfert_stella "$_uri" "ENV"
 
       # folders
-      [ "$__stella_uri_fragment" == "" ] && __stella_uri_fragment="."
-      [ "$__stella_uri_fragment" == "#" ] && __stella_uri_fragment="."
-      [ ! "$__stella_uri_fragment" == "." ] && __stella_uri_fragment=${__stella_uri_fragment:1}
+      [ "$__stella_uri_fragment" = "" ] && __stella_uri_fragment="."
+      [ "$__stella_uri_fragment" = "#" ] && __stella_uri_fragment="."
+      [ ! "$__stella_uri_fragment" = "." ] && __stella_uri_fragment=${__stella_uri_fragment:1}
       local _boot_folder="$__stella_uri_fragment"
       #local _stella_folder="$__stella_uri_fragment"/stella
       local _stella_folder="./stella"

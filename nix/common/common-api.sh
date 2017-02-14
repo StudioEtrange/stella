@@ -1,4 +1,4 @@
-if [ ! "$_STELLA_COMMON_API_INCLUDED_" == "1" ]; then
+if [ ! "$_STELLA_COMMON_API_INCLUDED_" = "1" ]; then
 _STELLA_COMMON_API_INCLUDED_=1
 
 
@@ -10,9 +10,9 @@ __api_proxy() {
 	shift
 
 	for f in $STELLA_API_COMMON_PUBLIC $STELLA_API_BOOT_PUBLIC $STELLA_API_BINARY_PUBLIC $STELLA_API_BUILD_PUBLIC $STELLA_API_APP_PUBLIC $STELLA_API_API_PUBLIC $STELLA_API_FEATURE_PUBLIC $STELLA_API_NETWORK_PUBLIC $STELLA_API_PLATFORM_PUBLIC; do
-		if [ "$f" == "$FUNC_NAME" ]; then
+		if [ "$f" = "$FUNC_NAME" ]; then
 			for j in $STELLA_API_RETURN_FUNCTION; do
-				if [ "$j" == "$FUNC_NAME" ]; then
+				if [ "$j" = "$FUNC_NAME" ]; then
 					_result=$(__$FUNC_NAME "$@")
 					echo $_result
 					return

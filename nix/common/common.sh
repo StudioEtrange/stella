@@ -1,4 +1,4 @@
-if [ ! "$_STELLA_COMMON_INCLUDED_" == "1" ]; then
+if [ ! "$_STELLA_COMMON_INCLUDED_" = "1" ]; then
 _STELLA_COMMON_INCLUDED_=1
 
 # TODO : do not hash
@@ -11,22 +11,22 @@ _STELLA_COMMON_INCLUDED_=1
 
 #sorted=$(sort_version "build507 build510 build403 build4000 build" "ASC")
 #echo $sorted
-# ===> build build403 build507 build510 build4000
+# > build build403 build507 build510 build4000
 #sorted=$(sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "ASC SEP .")
 #echo $sorted
-# ===> 1.1.0 1.1.1 1.1.1a 1.1.1b
+# > 1.1.0 1.1.1 1.1.1a 1.1.1b
 #sorted=$(sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "DESC SEP .")
 #echo $sorted
-# ===> 1.1.1b 1.1.1a 1.1.1 1.1.0
+# > 1.1.1b 1.1.1a 1.1.1 1.1.0
 #sorted=$(sort_version "1.1.0 1.1.1 1.1.1alpha 1.1.1beta1 1.1.1beta2" "ASC ENDING_CHAR_REVERSE SEP .")
 #echo $sorted
-# ===> 1.1.0 1.1.1alpha 1.1.1beta1 1.1.1beta2 1.1.1
+# > 1.1.0 1.1.1alpha 1.1.1beta1 1.1.1beta2 1.1.1
 #sorted=$(sort_version "1.1.0 1.1.1 1.1.1alpha 1.1.1beta1 1.1.1beta2" "DESC ENDING_CHAR_REVERSE SEP .")
 #echo $sorted
-# ===> 1.1.1 1.1.1beta2 1.1.1beta1 1.1.1alpha 1.1.0
+# > 1.1.1 1.1.1beta2 1.1.1beta1 1.1.1alpha 1.1.0
 #sorted=$(sort_version "1.9.0 1.10.0 1.10.1.1 1.10.1 1.10.1alpha1 1.10.1beta1 1.10.1beta2 1.10.2 1.10.2.1 1.10.2.2 1.10.0RC1 1.10.0RC2" "DESC ENDING_CHAR_REVERSE SEP .")
 #echo $sorted
-# ===> 1.10.2.2 1.10.2.1 1.10.2 1.10.1.1 1.10.1 1.10.1beta2 1.10.1beta1 1.10.1alpha1 1.10.0 1.10.0RC2 1.10.0RC1 1.9.0
+# > 1.10.2.2 1.10.2.1 1.10.2 1.10.1.1 1.10.1 1.10.1beta2 1.10.1beta1 1.10.1alpha1 1.10.0 1.10.0RC2 1.10.0RC1 1.9.0
 
 
 # NOTE : ending characters in a version number may be ordered in the opposite way example :
@@ -44,12 +44,12 @@ __sort_version() {
 
 	local flag_sep=OFF
 	for o in $opt; do
-		[ "$o" == "ASC" ] && mode=$o
-		[ "$o" == "DESC" ] && mode=$o
-		[ "$o" == "ENDING_CHAR_REVERSE" ] && opposite_order_for_ending_chars=ON
+		[ "$o" = "ASC" ] && mode=$o
+		[ "$o" = "DESC" ] && mode=$o
+		[ "$o" = "ENDING_CHAR_REVERSE" ] && opposite_order_for_ending_chars=ON
 		# we need separator only if we use ENDING_CHAR_REVERSE and if there is any separator (obviously)
-		[ "$flag_sep" == "ON" ] && separator="$o" && flag_sep=OFF
-		[ "$o" == "SEP" ] && flag_sep=ON
+		[ "$flag_sep" = "ON" ] && separator="$o" && flag_sep=OFF
+		[ "$o" = "SEP" ] && flag_sep=ON
 	done
 
 	local internal_separator=}
@@ -59,18 +59,18 @@ __sort_version() {
 	local number_of_block=0
 	for r in $list; do
 		# separate each block of number and block of letter
-		[ ! "$separator" == "" ] && new_item="$(echo $r | sed "s,\([0-9]*\)\([^0-9]*\)\([0-9]*\),\1$internal_separator\2$internal_separator\3,g" | sed "s,^\([0-9]\),$internal_separator\1," | sed "s,\([0-9]\)$,\1$internal_separator$separator$internal_separator,")"
-		[ "$separator" == "" ] && new_item="$(echo $r | sed "s,\([0-9]*\)\([^0-9]*\)\([0-9]*\),\1$internal_separator\2$internal_separator\3,g" | sed "s,^\([0-9]\),$internal_separator\1," | sed "s,\([0-9]\)$,\1$internal_separator,")"
+		[ ! "$separator" = "" ] && new_item="$(echo $r | sed "s,\([0-9]*\)\([^0-9]*\)\([0-9]*\),\1$internal_separator\2$internal_separator\3,g" | sed "s,^\([0-9]\),$internal_separator\1," | sed "s,\([0-9]\)$,\1$internal_separator$separator$internal_separator,")"
+		[ "$separator" = "" ] && new_item="$(echo $r | sed "s,\([0-9]*\)\([^0-9]*\)\([0-9]*\),\1$internal_separator\2$internal_separator\3,g" | sed "s,^\([0-9]\),$internal_separator\1," | sed "s,\([0-9]\)$,\1$internal_separator,")"
 
-		if [ "$opposite_order_for_ending_chars" == "OFF" ]; then
-			[ "$mode" == "ASC" ] && substitute=A
-			[ "$mode" == "DESC" ] && substitute=A
+		if [ "$opposite_order_for_ending_chars" = "OFF" ]; then
+			[ "$mode" = "ASC" ] && substitute=A
+			[ "$mode" = "DESC" ] && substitute=A
 		else
-			[ "$mode" == "ASC" ] && substitute=z
-			[ "$mode" == "DESC" ] && substitute=z
+			[ "$mode" = "ASC" ] && substitute=z
+			[ "$mode" = "DESC" ] && substitute=z
 		fi
 
-		[ ! "$separator" == "" ] && new_item="$(echo $new_item | sed "s,\\$separator,$substitute,g")"
+		[ ! "$separator" = "" ] && new_item="$(echo $new_item | sed "s,\\$separator,$substitute,g")"
 
 		new_list="$new_list $new_item"
 		match_list="$new_item $r $match_list"
@@ -92,7 +92,7 @@ __sort_version() {
 		for b in $(echo $i | tr "$internal_separator" "\n"); do
 			count=$[$count +1]
 
-			if [ ! "$(echo $b | sed "s,[0-9]*,,g")" == "" ]; then
+			if [ ! "$(echo $b | sed "s,[0-9]*,,g")" = "" ]; then
 				char_block_list="$char_block_list $count"
 			fi
 		done
@@ -114,21 +114,21 @@ __sort_version() {
 
 		block_is_char=
 		for j in $char_block_list; do
-			[ "$count" == "$j" ] && block_is_char=1
+			[ "$count" = "$j" ] && block_is_char=1
 		done
-		if [ "$block_is_char" == "" ]; then
+		if [ "$block_is_char" = "" ]; then
 			block_arg=n$block_arg
-			[ "$mode" == "ASC" ] && block_arg=$block_arg
-			[ "$mode" == "DESC" ] && block_arg=r$block_arg
+			[ "$mode" = "ASC" ] && block_arg=$block_arg
+			[ "$mode" = "DESC" ] && block_arg=r$block_arg
 		else
-			[ "$mode" == "ASC" ] && block_arg=$block_arg
-			[ "$mode" == "DESC" ] && block_arg=r$block_arg
+			[ "$mode" = "ASC" ] && block_arg=$block_arg
+			[ "$mode" = "DESC" ] && block_arg=r$block_arg
 		fi
 
 		sorted_arg="$sorted_arg -k $count,$count"$block_arg
 	done
-	[ "$mode" == "ASC" ] && sorted_arg="-t$internal_separator $sorted_arg"
-	[ "$mode" == "DESC" ] && sorted_arg="-t$internal_separator $sorted_arg"
+	[ "$mode" = "ASC" ] && sorted_arg="-t$internal_separator $sorted_arg"
+	[ "$mode" = "DESC" ] && sorted_arg="-t$internal_separator $sorted_arg"
 
 	sorted_list="$(echo "$new_list" | tr ' ' '\n' | sort $(echo "$sorted_arg") | tr '\n' ' ')"
 
@@ -140,12 +140,12 @@ __sort_version() {
 		flag_found=OFF
 		flag=KEY
 		for m in $match_list; do
-			if [ "$flag_found" == "ON" ]; then
+			if [ "$flag_found" = "ON" ]; then
 				result_list="$result_list $m"
 				break
 			fi
-			if [ "$flag" == "KEY" ]; then
-				[[ $m == $r ]] && flag_found=ON
+			if [ "$flag" = "KEY" ]; then
+				[ "$m" = "$r" ] && flag_found=ON
 			fi
 		done
 	done
@@ -160,7 +160,7 @@ __sort_version() {
 
 
 __url_encode() {
-	if [ "$(which xxd 2>/dev/null)" == "" ]; then
+	if [ "$(which xxd 2>/dev/null)" = "" ]; then
 		__url_encode_1 "$@"
 	else
 		__url_encode_with_xxd "$@"
@@ -295,9 +295,9 @@ __transfert_stella() {
 	local _opt_ex_workspace="EXCLUDE /$(__abs_to_rel_path $STELLA_INTERNAL_WORK_ROOT $STELLA_ROOT)/"
 	local _opt_ex_env="EXCLUDE /.stella-env"
 	for o in $_OPT; do
-		[ "$o" == "CACHE" ] && _opt_ex_cache=
-		[ "$o" == "WORKSPACE" ] && _opt_ex_workspace=
-		[ "$o" == "ENV" ] && _opt_ex_env=
+		[ "$o" = "CACHE" ] && _opt_ex_cache=
+		[ "$o" = "WORKSPACE" ] && _opt_ex_workspace=
+		[ "$o" = "ENV" ] && _opt_ex_env=
 	done
 
 	__transfert_folder_rsync "$STELLA_ROOT" "$_uri" "$_opt_ex_cache $_opt_ex_workspace $_opt_ex_env"
@@ -320,9 +320,9 @@ __transfert_folder_rsync() {
 	local _exclude=
 	local _opt_folder_content=OFF
 	for o in $_OPT; do
-		[ "$_flag_exclude" == "ON" ] && _exclude="$o $_exclude" && _flag_exclude=OFF
-		[ "$o" == "EXCLUDE" ] && _flag_exclude=ON
-		[ "$o" == "FOLDER_CONTENT" ] && _opt_folder_content=ON
+		[ "$_flag_exclude" = "ON" ] && _exclude="$o $_exclude" && _flag_exclude=OFF
+		[ "$o" = "EXCLUDE" ] && _flag_exclude=ON
+		[ "$o" = "FOLDER_CONTENT" ] && _opt_folder_content=ON
 	done
 
 	__require "rsync" "rsync"
@@ -331,14 +331,14 @@ __transfert_folder_rsync() {
 	__uri_parse "$_uri"
 
 	local _ssh_port="22"
-	[ ! "$__stella_uri_port" == "" ] && _ssh_port="$__stella_uri_port"
+	[ ! "$__stella_uri_port" = "" ] && _ssh_port="$__stella_uri_port"
 
 	local _target="$__stella_uri_host":"${__stella_uri_fragment:1}"
-	[ ! "$__stella_uri_user" == "" ] && _target="$__stella_uri_user"@"$_target"
+	[ ! "$__stella_uri_user" = "" ] && _target="$__stella_uri_user"@"$_target"
 
 	local _base_folder=
 	# $_folder must not finish with / or only folder content will be transfered, not folder itself
-	if [ "$_opt_folder_content" == "ON" ]; then
+	if [ "$_opt_folder_content" = "ON" ]; then
 		# remove last '/' char (tested on macos and linux)
 		_folder="$_folder/"
 	else
@@ -371,10 +371,10 @@ __transfert_file_rsync() {
 	__uri_parse "$_uri"
 
 	local _ssh_port="22"
-	[ ! "$__stella_uri_port" == "" ] && _ssh_port="$__stella_uri_port"
+	[ ! "$__stella_uri_port" = "" ] && _ssh_port="$__stella_uri_port"
 
 	local _target="$__stella_uri_host":"${__stella_uri_fragment:1}"
-	[ ! "$__stella_uri_user" == "" ] && _target="$__stella_uri_user"@"$_target"
+	[ ! "$__stella_uri_user" = "" ] && _target="$__stella_uri_user"@"$_target"
 
 	__require "rsync" "rsync"
 	__require "ssh" "ssh"
@@ -386,7 +386,7 @@ __daemonize() {
 	local _item_path=$1
 	local _log_file=$2
 
-	if [ "$_log_file" == "" ]; then
+	if [ "$_log_file" = "" ]; then
 		nohup -- $_item_path 1>/dev/null 2>&1 &
 	else
 		nohup -- $_item_path 1>$_log_file 2>&1 &
@@ -425,17 +425,17 @@ __filter_list() {
 	local _include_filter=
 	local _opt_filter=OFF
 	for o in $_opt; do
-		[ "$_flag_include_filter" == "ON" ] && _include_filter="$o" && _flag_include_filter=OFF
-		[ ! "$_tag_include" == "" ] && [ "$o" == "$_tag_include" ] && _flag_include_filter=ON && _opt_filter=ON
-		[ "$_flag_exclude_filter" == "ON" ] && _exclude_filter="$o" && _flag_exclude_filter=OFF
-		[ ! "$_tag_exclude" == "" ] && [ "$o" == "$_tag_exclude" ] && _flag_exclude_filter=ON && _invert_filter="-Ev" && _opt_filter=ON
-		[ "$_flag_tag_include" == "ON" ] && _tag_include="$o" && _flag_tag_include=OFF
-		[ "$o" == "INCLUDE_TAG" ] && _flag_tag_include=ON
-		[ "$_flag_tag_exclude" == "ON" ] && _tag_exclude="$o" && _flag_tag_exclude=OFF
-		[ "$o" == "EXCLUDE_TAG" ] && _flag_tag_exclude=ON
+		[ "$_flag_include_filter" = "ON" ] && _include_filter="$o" && _flag_include_filter=OFF
+		[ ! "$_tag_include" = "" ] && [ "$o" = "$_tag_include" ] && _flag_include_filter=ON && _opt_filter=ON
+		[ "$_flag_exclude_filter" = "ON" ] && _exclude_filter="$o" && _flag_exclude_filter=OFF
+		[ ! "$_tag_exclude" = "" ] && [ "$o" = "$_tag_exclude" ] && _flag_exclude_filter=ON && _invert_filter="-Ev" && _opt_filter=ON
+		[ "$_flag_tag_include" = "ON" ] && _tag_include="$o" && _flag_tag_include=OFF
+		[ "$o" = "INCLUDE_TAG" ] && _flag_tag_include=ON
+		[ "$_flag_tag_exclude" = "ON" ] && _tag_exclude="$o" && _flag_tag_exclude=OFF
+		[ "$o" = "EXCLUDE_TAG" ] && _flag_tag_exclude=ON
 	done
 
-	if [ "$_opt_filter" == "OFF" ]; then
+	if [ "$_opt_filter" = "OFF" ]; then
 		echo "$_list"
 	else
 		for l in $_list; do
@@ -471,7 +471,7 @@ __string_contains() { [ -z "${1##*$2*}" ] && [ -n "$1" -o -z "$2" ]; }
 __get_stella_version() {
 	local _stella_root_="$1"
 
-	[ "$_stella_root_" == "" ] && _stella_root_="$STELLA_ROOT"
+	[ "$_stella_root_" = "" ] && _stella_root_="$STELLA_ROOT"
 
 	_s_flavour=$(__get_stella_flavour "$_stella_root_")
 
@@ -495,7 +495,7 @@ __get_stella_version() {
 # return STABLE or DEV
 __get_stella_flavour() {
 	local _stella_root_="$1"
-	[ "$_stella_root_" == "" ] && _stella_root_="$STELLA_ROOT"
+	[ "$_stella_root_" = "" ] && _stella_root_="$STELLA_ROOT"
 
 	local _s_flavour=unknown
 
@@ -524,7 +524,7 @@ __is_dir_empty() {
 
 
 __get_path_from_string() {
-	if [ "$1" == "${1%/*}" ]; then
+	if [ "$1" = "${1%/*}" ]; then
 		echo "."
 	else
 		echo ${1%/*}
@@ -568,12 +568,12 @@ __rel_to_abs_path() {
 	local _abs_root_path="$2"
 	local result
 
-	if [ "$_abs_root_path" == "" ]; then
+	if [ "$_abs_root_path" = "" ]; then
 		_abs_root_path=$STELLA_CURRENT_RUNNING_DIR
 	fi
 
 
-	if [ "$(__is_abs $_abs_root_path)" == "FALSE" ]; then
+	if [ "$(__is_abs $_abs_root_path)" = "FALSE" ]; then
 		result="$_rel_path"
 	else
 
@@ -591,8 +591,8 @@ __rel_to_abs_path() {
 					# NOTE using this method if directory does not exist returned path is not real absolute (example : /tata/toto/../titi instead of /tata/titi)
 					# TODO : we rely on pure bash version, because readlink -m option used un alternative2 do not exist on some system
 					result=$(__rel_to_abs_path_alternative_1 "$_rel_path" "$_abs_root_path")
-					#[ "$STELLA_CURRENT_PLATFORM" == "darwin" ] && result=$(__rel_to_abs_path_alternative_1 "$_rel_path" "$_abs_root_path")
-					#[ "$STELLA_CURRENT_PLATFORM" == "linux" ] && result=$(__rel_to_abs_path_alternative_2 "$_rel_path" "$_abs_root_path")
+					#[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && result=$(__rel_to_abs_path_alternative_1 "$_rel_path" "$_abs_root_path")
+					#[ "$STELLA_CURRENT_PLATFORM" = "linux" ] && result=$(__rel_to_abs_path_alternative_2 "$_rel_path" "$_abs_root_path")
 				fi
 				;;
 		esac
@@ -664,7 +664,7 @@ __abs_to_rel_path() {
 
 	local result=""
 
-	if [ "$_abs_path_root" == "" ]; then
+	if [ "$_abs_path_root" = "" ]; then
 		_abs_path_root=$STELLA_CURRENT_RUNNING_DIR
 	fi
 
@@ -672,13 +672,13 @@ __abs_to_rel_path() {
 
 	local common_part="$_abs_path_root" # for now
 
-	if [ "$(__is_abs $_abs_path_to_translate)" == "FALSE" ]; then
+	if [ "$(__is_abs $_abs_path_to_translate)" = "FALSE" ]; then
 		result="$_abs_path_to_translate"
 	else
 
 		case $_abs_path_root in
 			/*)
-				while [[ "${_abs_path_to_translate#$common_part}" == "${_abs_path_to_translate}" ]]; do
+				while [ "${_abs_path_to_translate#$common_part}" = "${_abs_path_to_translate}" ]; do
 					# no match, means that candidate common part is not correct
 					# go up one level (reduce common part)
 					common_part="$(dirname $common_part)"
@@ -692,7 +692,7 @@ __abs_to_rel_path() {
 
 				done
 
-				if [[ $common_part == "/" ]]; then
+				if [ "$common_part" = "/" ]; then
 					# special case for root (no common path)
 					result="$result/"
 				fi
@@ -719,7 +719,7 @@ __abs_to_rel_path() {
 		esac
 	fi
 
-	if [ "${result:(-1)}" == "/" ]; then
+	if [ "${result:(-1)}" = "/" ]; then
 		result=${result%?}
 	fi
 	echo "$result"
@@ -762,7 +762,7 @@ __count_folder_item() {
 	local _path="$1"
 	local _filter="$2"
 
-	if [ "$_filter" == "" ]; then
+	if [ "$_filter" = "" ]; then
 
 		_filter="*"
 	fi
@@ -782,13 +782,13 @@ __copy_folder_content_into() {
 	local source="$1"
 	local dest="$2"
 	local select_filter="$3"
-	if [ "$select_filter" == "" ]; then
+	if [ "$select_filter" = "" ]; then
 		select_filter="*"
 	fi
 	if [ -d "$source" ]; then
 		if [ $(__count_folder_item $1 $select_filter) -gt 0 ]; then
 			mkdir -p "$dest"
-			if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+			if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 				cp -fa "$source/"$select_filter "$dest"
 			else
 				cp -fa "$source/"$select_filter --target-directory="$dest"
@@ -854,71 +854,71 @@ __resource() {
 	local _checkout_version=
 	local _download_filename=_AUTO_
 	for o in $OPT; do
-		if [ "$_opt_force_name" == "ON" ]; then
+		if [ "$_opt_force_name" = "ON" ]; then
 			_download_filename=$o
 			_opt_force_name=OFF
 		else
-			if [ "$_opt_version" == "ON" ]; then
+			if [ "$_opt_version" = "ON" ]; then
 				_checkout_version=$o
 				_opt_version=OFF
 			else
-				[ "$o" == "VERSION" ] && _opt_version=ON
-				[ "$o" == "MERGE" ] && _opt_merge=ON
-				[ "$o" == "DEST_ERASE" ] && _opt_dest_erase=ON
-				[ "$o" == "STRIP" ] && _opt_strip=ON
-				[ "$o" == "FORCE_NAME" ] && _opt_force_name=ON
-				if [ "$o" == "DELETE" ]; then _opt_delete=ON;  _opt_revert=OFF;  _opt_get=OFF; _opt_update=OFF; fi
-				if [ "$o" == "UPDATE" ]; then _opt_update=ON;  _opt_revert=OFF;  _opt_get=OFF; _opt_delete=OFF; fi
-				if [ "$o" == "REVERT" ]; then _opt_revert=ON;  _opt_update=OFF;  _opt_get=OFF; _opt_delete=OFF; fi
+				[ "$o" = "VERSION" ] && _opt_version=ON
+				[ "$o" = "MERGE" ] && _opt_merge=ON
+				[ "$o" = "DEST_ERASE" ] && _opt_dest_erase=ON
+				[ "$o" = "STRIP" ] && _opt_strip=ON
+				[ "$o" = "FORCE_NAME" ] && _opt_force_name=ON
+				if [ "$o" = "DELETE" ]; then _opt_delete=ON;  _opt_revert=OFF;  _opt_get=OFF; _opt_update=OFF; fi
+				if [ "$o" = "UPDATE" ]; then _opt_update=ON;  _opt_revert=OFF;  _opt_get=OFF; _opt_delete=OFF; fi
+				if [ "$o" = "REVERT" ]; then _opt_revert=ON;  _opt_update=OFF;  _opt_get=OFF; _opt_delete=OFF; fi
 			fi
 		fi
 	done
 
-	[ "$_opt_revert" == "ON" ] && echo " ** Reverting resource :"
-	[ "$_opt_update" == "ON" ] && echo " ** Updating resource :"
-	[ "$_opt_delete" == "ON" ] && echo " ** Deleting resource :"
-	[ "$_opt_get" == "ON" ] && echo " ** Getting resource :"
-	[ ! "$FINAL_DESTINATION" == "" ] && echo " $NAME in $FINAL_DESTINATION" || echo " $NAME"
+	[ "$_opt_revert" = "ON" ] && echo " ** Reverting resource :"
+	[ "$_opt_update" = "ON" ] && echo " ** Updating resource :"
+	[ "$_opt_delete" = "ON" ] && echo " ** Deleting resource :"
+	[ "$_opt_get" = "ON" ] && echo " ** Getting resource :"
+	[ ! "$FINAL_DESTINATION" = "" ] && echo " $NAME in $FINAL_DESTINATION" || echo " $NAME"
 
 	#[ "$FORCE" ] && rm -Rf $FINAL_DESTINATION
-	if [ "$_opt_get" == "ON" ]; then
+	if [ "$_opt_get" = "ON" ]; then
 		#if [ "$FORCE" ]; then
-		#	[ "$_opt_merge" == "OFF" ] && rm -Rf "$FINAL_DESTINATION"
-		#	[ "$_opt_merge" == "ON" ] && rm -f "$FINAL_DESTINATION/._MERGED_$NAME"
+		#	[ "$_opt_merge" = "OFF" ] && rm -Rf "$FINAL_DESTINATION"
+		#	[ "$_opt_merge" = "ON" ] && rm -f "$FINAL_DESTINATION/._MERGED_$NAME"
 		#fi
-		if [ "$_opt_dest_erase" == "ON" ]; then
-			[ "$_opt_merge" == "OFF" ] && rm -Rf "$FINAL_DESTINATION"
-			[ "$_opt_merge" == "ON" ] && rm -f "$FINAL_DESTINATION/._MERGED_$NAME"
+		if [ "$_opt_dest_erase" = "ON" ]; then
+			[ "$_opt_merge" = "OFF" ] && rm -Rf "$FINAL_DESTINATION"
+			[ "$_opt_merge" = "ON" ] && rm -f "$FINAL_DESTINATION/._MERGED_$NAME"
 		fi
 	fi
 
 
-	if [ "$_opt_delete" == "ON" ]; then
-		[ "$_opt_merge" == "OFF" ] && rm -Rf "$FINAL_DESTINATION"
-		[ "$_opt_merge" == "ON" ] && rm -f "$FINAL_DESTINATION/._MERGED_$NAME"
+	if [ "$_opt_delete" = "ON" ]; then
+		[ "$_opt_merge" = "OFF" ] && rm -Rf "$FINAL_DESTINATION"
+		[ "$_opt_merge" = "ON" ] && rm -f "$FINAL_DESTINATION/._MERGED_$NAME"
 		_FLAG=0
 	fi
 
-	if [ "$_opt_delete" == "OFF" ]; then
+	if [ "$_opt_delete" = "OFF" ]; then
 		# strip root folder mode
 		_STRIP=
-		[ "$_opt_strip" == "ON" ] && _STRIP=STRIP
+		[ "$_opt_strip" = "ON" ] && _STRIP=STRIP
 
 
 		_FLAG=1
 		case $PROTOCOL in
 			HTTP_ZIP|FILE_ZIP)
-				[ "$_opt_revert" == "ON" ] && echo "REVERT Not supported with this protocol" && _FLAG=0
-				[ "$_opt_update" == "ON" ] && echo "UPDATE Not supported with this protocol" && _FLAG=0
+				[ "$_opt_revert" = "ON" ] && echo "REVERT Not supported with this protocol" && _FLAG=0
+				[ "$_opt_update" = "ON" ] && echo "UPDATE Not supported with this protocol" && _FLAG=0
 				if [ -d "$FINAL_DESTINATION" ]; then
-					if [ "$_opt_get" == "ON" ]; then
-						if [ "$_opt_merge" == "ON" ]; then
+					if [ "$_opt_get" = "ON" ]; then
+						if [ "$_opt_merge" = "ON" ]; then
 							if [ -f "$FINAL_DESTINATION/._MERGED_$NAME" ]; then
 								echo " ** Ressource already merged"
 								_FLAG=0
 							fi
 						fi
-						if [ "$_opt_strip" == "ON" ]; then
+						if [ "$_opt_strip" = "ON" ]; then
 							#echo " ** Ressource already stripped"
 							echo " ** Destination folder exist"
 							#_FLAG=0
@@ -927,13 +927,13 @@ __resource() {
 				fi
 				;;
 			HTTP|FILE)
-				[ "$_opt_strip" == "ON" ] && echo "STRIP option not in use"
-				[ "$_opt_revert" == "ON" ] && echo "REVERT Not supported with this protocol" && _FLAG=0
-				[ "$_opt_update" == "ON" ] && echo "UPDATE Not supported with this protocol" && _FLAG=0
+				[ "$_opt_strip" = "ON" ] && echo "STRIP option not in use"
+				[ "$_opt_revert" = "ON" ] && echo "REVERT Not supported with this protocol" && _FLAG=0
+				[ "$_opt_update" = "ON" ] && echo "UPDATE Not supported with this protocol" && _FLAG=0
 
 				if [ -d "$FINAL_DESTINATION" ]; then
-					if [ "$_opt_get" == "ON" ]; then
-						if [ "$_opt_merge" == "ON" ]; then
+					if [ "$_opt_get" = "ON" ]; then
+						if [ "$_opt_merge" = "ON" ]; then
 							if [ -f "$FINAL_DESTINATION/._MERGED_$NAME" ]; then
 								echo " ** Ressource already merged"
 								_FLAG=0
@@ -943,55 +943,55 @@ __resource() {
 				fi
 				;;
 			HG|GIT)
-				[ "$_opt_strip" == "ON" ] && echo "STRIP option not supported with this protocol"
-				[ "$_opt_merge" == "ON" ] && echo "MERGE option not supported with this protocol"
+				[ "$_opt_strip" = "ON" ] && echo "STRIP option not supported with this protocol"
+				[ "$_opt_merge" = "ON" ] && echo "MERGE option not supported with this protocol"
 				if [ -d "$FINAL_DESTINATION" ]; then
-					if [ "$_opt_get" == "ON" ]; then
+					if [ "$_opt_get" = "ON" ]; then
 						echo " ** Ressource already exist"
 						_FLAG=0
 					fi
 				else
-					[ "$_opt_revert" == "ON" ] && echo " ** Ressource does not exist" && _FLAG=0
-					[ "$_opt_update" == "ON" ] && echo " ** Ressource does not exist" && _FLAG=0
+					[ "$_opt_revert" = "ON" ] && echo " ** Ressource does not exist" && _FLAG=0
+					[ "$_opt_update" = "ON" ] && echo " ** Ressource does not exist" && _FLAG=0
 				fi
 				;;
 		esac
 	fi
 
-	if [ "$_FLAG" == "1" ]; then
+	if [ "$_FLAG" = "1" ]; then
 		[ ! -d $FINAL_DESTINATION ] && mkdir -p $FINAL_DESTINATION
 
 		case $PROTOCOL in
 			HTTP_ZIP)
-				if [ "$_opt_get" == "ON" ]; then __download_uncompress "$URI" "$_download_filename" "$FINAL_DESTINATION" "$_STRIP"; fi
-				if [ "$_opt_merge" == "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
+				if [ "$_opt_get" = "ON" ]; then __download_uncompress "$URI" "$_download_filename" "$FINAL_DESTINATION" "$_STRIP"; fi
+				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
 				;;
 			HTTP)
 				# HTTP protocol use always merge by default : because it never erase destination folder
 				# but the 'merged' flag file will be created only if we pass the option MERGE
-				if [ "$_opt_get" == "ON" ]; then __download "$URI" "$_download_filename" "$FINAL_DESTINATION"; fi
-				if [ "$_opt_merge" == "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
+				if [ "$_opt_get" = "ON" ]; then __download "$URI" "$_download_filename" "$FINAL_DESTINATION"; fi
+				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
 				;;
 			HG)
-				if [ "$_opt_revert" == "ON" ]; then cd "$FINAL_DESTINATION"; hg revert --all -C; fi
-				if [ "$_opt_update" == "ON" ]; then cd "$FINAL_DESTINATION"; hg pull; hg update $_checkout_version; fi
-				if [ "$_opt_get" == "ON" ]; then hg clone $URI "$FINAL_DESTINATION"; if [ ! "$_checkout_version" == "" ]; then cd "$FINAL_DESTINATION"; hg update $_checkout_version; fi; fi
-				# [ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
+				if [ "$_opt_revert" = "ON" ]; then cd "$FINAL_DESTINATION"; hg revert --all -C; fi
+				if [ "$_opt_update" = "ON" ]; then cd "$FINAL_DESTINATION"; hg pull; hg update $_checkout_version; fi
+				if [ "$_opt_get" = "ON" ]; then hg clone $URI "$FINAL_DESTINATION"; if [ ! "$_checkout_version" = "" ]; then cd "$FINAL_DESTINATION"; hg update $_checkout_version; fi; fi
+				# [ "$_opt_merge" = "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
 			GIT)
 				__require "git" "git" "SYSTEM"
-				if [ "$_opt_revert" == "ON" ]; then cd "$FINAL_DESTINATION"; git reset --hard; fi
-				if [ "$_opt_update" == "ON" ]; then cd "$FINAL_DESTINATION"; git pull;if [ ! "$_checkout_version" == "" ]; then git checkout $_checkout_version; fi; fi
-				if [ "$_opt_get" == "ON" ]; then git clone --recursive $URI "$FINAL_DESTINATION"; if [ ! "$_checkout_version" == "" ]; then cd "$FINAL_DESTINATION"; git checkout $_checkout_version; fi; fi
-				# [ "$_opt_merge" == "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
+				if [ "$_opt_revert" = "ON" ]; then cd "$FINAL_DESTINATION"; git reset --hard; fi
+				if [ "$_opt_update" = "ON" ]; then cd "$FINAL_DESTINATION"; git pull;if [ ! "$_checkout_version" = "" ]; then git checkout $_checkout_version; fi; fi
+				if [ "$_opt_get" = "ON" ]; then git clone --recursive $URI "$FINAL_DESTINATION"; if [ ! "$_checkout_version" = "" ]; then cd "$FINAL_DESTINATION"; git checkout $_checkout_version; fi; fi
+				# [ "$_opt_merge" = "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
 			FILE)
-				if [ "$_opt_get" == "ON" ]; then __copy_folder_content_into "$URI" "$FINAL_DESTINATION"; fi
-				if [ "$_opt_merge" == "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
+				if [ "$_opt_get" = "ON" ]; then __copy_folder_content_into "$URI" "$FINAL_DESTINATION"; fi
+				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
 				;;
 			FILE_ZIP)
 				__uncompress "$URI" "$FINAL_DESTINATION%" "$_STRIP"
-				if [ "$_opt_merge" == "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
+				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
 				;;
 			*)
 				echo " ** ERROR Unknow protocol"
@@ -1015,7 +1015,7 @@ __download_uncompress() {
 	OPT="$4"
 
 
-	if [ "$FILE_NAME" == "_AUTO_" ]; then
+	if [ "$FILE_NAME" = "_AUTO_" ]; then
 		#_AFTER_SLASH=${URL##*/}
 		FILE_NAME=$(__get_filename_from_url "$URL")
 		echo "** Guessed file name is $FILE_NAME"
@@ -1090,12 +1090,12 @@ __uncompress() {
 	local _opt_dest_erase=OFF # delete destination folder (default : FALSE)
 	local _opt_strip=OFF # delete first folder in archive  (default : FALSE)
 	for o in $OPT; do
-		[ "$o" == "DEST_ERASE" ] && _opt_dest_erase=ON
-		[ "$o" == "STRIP" ] && _opt_strip=ON
+		[ "$o" = "DEST_ERASE" ] && _opt_dest_erase=ON
+		[ "$o" = "STRIP" ] && _opt_strip=ON
 	done
 
 
-	if [ "$_opt_dest_erase" == "ON" ]; then
+	if [ "$_opt_dest_erase" = "ON" ]; then
 		rm -Rf "$UNZIP_DIR"
 	fi
 
@@ -1108,18 +1108,18 @@ __uncompress() {
 	case "$FILE_PATH" in
 		*.zip)
 			__require "unzip" "unzip" "SYSTEM"
-			[ "$_opt_strip" == "OFF" ] && unzip -a -o "$FILE_PATH"
-			[ "$_opt_strip" == "ON" ] && __unzip-strip "$FILE_PATH" "$UNZIP_DIR"
+			[ "$_opt_strip" = "OFF" ] && unzip -a -o "$FILE_PATH"
+			[ "$_opt_strip" = "ON" ] && __unzip-strip "$FILE_PATH" "$UNZIP_DIR"
 			;;
 		*.gz | *.tgz)
-			if [ "$_opt_strip" == "OFF" ]; then
+			if [ "$_opt_strip" = "OFF" ]; then
 				tar xzf "$FILE_PATH"
 			else
 				tar xzf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-strip "$FILE_PATH" "$UNZIP_DIR"
 			fi
 			;;
 		*.xz | *.bz2)
-			if [ "$_opt_strip" == "OFF" ]; then
+			if [ "$_opt_strip" = "OFF" ]; then
 				tar xf "$FILE_PATH"
 			else
 				tar xf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-strip "$FILE_PATH" "$UNZIP_DIR"
@@ -1127,8 +1127,8 @@ __uncompress() {
 			;;
 		*.7z)
 			__require "7z" "7z" "SYSTEM"
-			[ "$_opt_strip" == "OFF" ] && 7z x "$FILE_PATH" -y -o"$UNZIP_DIR"
-			[ "$_opt_strip" == "ON" ] && __sevenzip-strip "$FILE_PATH" "$UNZIP_DIR"
+			[ "$_opt_strip" = "OFF" ] && 7z x "$FILE_PATH" -y -o"$UNZIP_DIR"
+			[ "$_opt_strip" = "ON" ] && __sevenzip-strip "$FILE_PATH" "$UNZIP_DIR"
 			;;
 		*.deb)
 			# STRIP not supported. Often in debian packages, there is a lot of folder at first level
@@ -1150,11 +1150,11 @@ __download() {
 	FILE_NAME="$2"
 	DEST_DIR="$3"
 
-	if [ "$FILE_NAME" == "" ]; then
+	if [ "$FILE_NAME" = "" ]; then
 		FILE_NAME="_AUTO_"
 	fi
 
-	if [ "$FILE_NAME" == "_AUTO_" ]; then
+	if [ "$FILE_NAME" = "_AUTO_" ]; then
 		#_AFTER_SLASH=${URL##*/}
 		FILE_NAME=$(__get_filename_from_url "$URL")
 		echo "** Guessed file name is $FILE_NAME"
@@ -1164,7 +1164,7 @@ __download() {
 
 	echo " ** Download $FILE_NAME from $URL into cache"
 
-	#if [ "$FORCE" == "1" ]; then
+	#if [ "$FORCE" = "1" ]; then
 	#	rm -Rf "$STELLA_APP_CACHE_DIR/$FILE_NAME"
 	#fi
 
@@ -1201,9 +1201,9 @@ __download() {
 		fi
 	fi
 
-	if [ ! "$_tmp_dir" == "" ]; then
-		if [ ! "$DEST_DIR" == "" ]; then
-			if [ ! "$DEST_DIR" == "$STELLA_APP_CACHE_DIR" ]; then
+	if [ ! "$_tmp_dir" = "" ]; then
+		if [ ! "$DEST_DIR" = "" ]; then
+			if [ ! "$DEST_DIR" = "$STELLA_APP_CACHE_DIR" ]; then
 				if [ ! -d "$DEST_DIR" ]; then
 					mkdir -p "$DEST_DIR"
 				fi
@@ -1279,15 +1279,15 @@ __mercurial_project_version() {
 	_opt_version_short=OFF
 	_opt_version_long=OFF
 	for o in $_OPT; do
-		[ "$o" == "SHORT" ] && _opt_version_short=ON
-		[ "$o" == "LONG" ] && _opt_version_long=ON
+		[ "$o" = "SHORT" ] && _opt_version_short=ON
+		[ "$o" = "LONG" ] && _opt_version_long=ON
 	done
 
 	if [[ -n `which hg 2> /dev/null` ]]; then
-		if [ "$_opt_version_long" == "ON" ]; then
+		if [ "$_opt_version_long" = "ON" ]; then
 			echo "$(hg log -R "$_PATH" -r . --template "{latesttag}-{latesttagdistance}-{node|short}")"
 		fi
-		if [ "$_opt_version_short" == "ON" ]; then
+		if [ "$_opt_version_short" = "ON" ]; then
 			echo "$(hg log -R "$_PATH" -r . --template "v{latesttag}")"
 		fi
 	fi
@@ -1300,15 +1300,15 @@ __git_project_version() {
 	_opt_version_short=OFF
 	_opt_version_long=OFF
 	for o in $_OPT; do
-		[ "$o" == "SHORT" ] && _opt_version_short=ON
-		[ "$o" == "LONG" ] && _opt_version_long=ON
+		[ "$o" = "SHORT" ] && _opt_version_short=ON
+		[ "$o" = "LONG" ] && _opt_version_long=ON
 	done
 
 	if [[ -n `which git 2> /dev/null` ]]; then
-		if [ "$_opt_version_long" == "ON" ]; then
+		if [ "$_opt_version_long" = "ON" ]; then
 			echo "$(git --git-dir "$_PATH/.git" describe --tags --long --always --first-parent)"
 		fi
-		if [ "$_opt_version_short" == "ON" ]; then
+		if [ "$_opt_version_short" = "ON" ]; then
 			echo "$(git --git-dir "$_PATH/.git" describe --tags --abbrev=0 --always --first-parent)"
 		fi
 	fi
@@ -1324,7 +1324,7 @@ __get_key() {
 
 	_opt_section_prefix=OFF
 	for o in $_OPT; do
-		[ "$o" == "PREFIX" ] && _opt_section_prefix=ON
+		[ "$o" = "PREFIX" ] && _opt_section_prefix=ON
 	done
 
 	# trim whitespace
@@ -1334,7 +1334,7 @@ __get_key() {
 	local _exp1="/\[$_SECTION\]/,/\[.*\]/p"
 	local _exp2="/$_KEY=/{print \$2}"
 
-	if [ "$_opt_section_prefix" == "ON" ]; then
+	if [ "$_opt_section_prefix" = "ON" ]; then
 		eval "$_SECTION"_"$_KEY"='$(sed -n -e "$_win_endline" -e "$_exp1" "$_FILE" | awk -F= "$_exp2" )'
 	else
 		eval $_KEY='$(sed -n -e "$_win_endline" -e "$_exp1" "$_FILE" | awk -F= "$_exp2" )'
@@ -1368,7 +1368,7 @@ __ini_file() {
 	local _FILE=$2
 	local _SECTION=$3
 	local _KEY=$4
-	if [ ! "$_KEY" == "" ]; then
+	if [ ! "$_KEY" = "" ]; then
 		local _VALUE=$5
 	fi
 

@@ -1,4 +1,4 @@
-if [ ! "$_STELLA_LIB_BINARY_INCLUDED_" == "1" ]; then
+if [ ! "$_STELLA_LIB_BINARY_INCLUDED_" = "1" ]; then
 _STELLA_LIB_BINARY_INCLUDED_=1
 
 
@@ -193,10 +193,10 @@ __info_ar() {
 		echo "-*-Embedded-*-"
 		_format="$(__type_bin "$_file" "$((_data_pos))")"
 		echo "Format : $_format"
-		if [ "$_format" == "FILE_MACHO" ]; then
+		if [ "$_format" = "FILE_MACHO" ]; then
 			__info_macho "$_file" "$_data_pos"
 		fi
-		if [ "$_format" == "FILE_ELF" ]; then
+		if [ "$_format" = "FILE_ELF" ]; then
 			__info_elf "$_file" "$_data_pos"
 		fi
 	}
@@ -259,10 +259,10 @@ __info_macho_universal() {
 		# FORMAT ---
 		_format="$(__type_bin "$_file" "$_pos ")"
 		echo "Format : $_format"
-		if [ "$_format" == "FILE_MACHO" ]; then
+		if [ "$_format" = "FILE_MACHO" ]; then
 			__info_macho "$_file" "$_pos"
 		fi
-		if [ "$_format" == "FILE_AR" ]; then
+		if [ "$_format" = "FILE_AR" ]; then
 			__info_ar "$_file" "$_pos" "$_size"
 		fi
 		echo
@@ -300,7 +300,7 @@ __bit_bin() {
 	local _file="$1"
   # Usefull to read files in archive
   local _offset="$2"
-  [ "$_offset" == "" ] && _offset=0
+  [ "$_offset" = "" ] && _offset=0
 	local _bit
 	local _type="$(__type_bin "$_file" "$_offset")"
 	case $_type in
@@ -321,7 +321,7 @@ __type_bin() {
   local _file="$1"
   # Usefull to read files in archive
   local _offset="$2"
-  [ "$_offset" == "" ] && _offset=0
+  [ "$_offset" = "" ] && _offset=0
   local _result=0
 
   local _generic_magic="$(__get_generic_magic_bin "$_file" "$_offset")"
@@ -347,7 +347,7 @@ __is_macho_universal() {
 __is_macho() {
   local _file="$1"
 	local _offset="$2"
-	[ "$_offset" == "" ] && _offset=0
+	[ "$_offset" = "" ] && _offset=0
   local _result=1
   [[ "$(__type_bin "$_file" "$_offset")" =~ FILE_MACHO ]] && _result=0
   return $_result
@@ -356,7 +356,7 @@ __is_macho() {
 __is_elf() {
   local _file="$1"
 	local _offset="$2"
-	[ "$_offset" == "" ] && _offset=0
+	[ "$_offset" = "" ] && _offset=0
   local _result=1
   [[ "$(__type_bin "$_file" "$_offset")" =~ FILE_ELF ]] && _result=0
   return $_result
@@ -396,7 +396,7 @@ __is_static_lib() {
 		local _type_bin="$(__type_bin "$_file")"
 		case $_type_bin in
 			FILE_MACHO_UNIVERSAL)
-					[ "$(__macho_universal_global_filetype "$_file")" == "UNIXARCH" ] && _result=0
+					[ "$(__macho_universal_global_filetype "$_file")" = "UNIXARCH" ] && _result=0
 				;;
 			FILE_AR)
 				_result=0
@@ -462,7 +462,7 @@ __extract_raw_bin() {
 
 	[ -f "$_file" ] || return 1
 
-  [ "$_offset" == "" ] && _offset=0
+  [ "$_offset" = "" ] && _offset=0
   local _head=$(__trim $(od -v -j $_offset -A none -t x1 -N $_size "$_file") | tr '[:lower:]' '[:upper:]')
   echo "${_head// /}"
   return 0
@@ -479,7 +479,7 @@ __get_generic_magic_bin() {
   # elf magic size 4
   # ar magic size 8
   local _max_magic_size=8
-  [ "$_offset" == "" ] && _offset=0
+  [ "$_offset" = "" ] && _offset=0
   local _raw_magic="$(__extract_raw_bin "$_file" "$_max_magic_size" "$_offset")" || _result=$?
 
   echo "$_raw_magic"
@@ -525,7 +525,7 @@ __get_ordered_bin() {
   local _array_bin=( $(__build_array_bin "$_raw_bin") )
 	local i
 	for ((i=0; i<$_size; i++)) {
-		[ "$_endian" == "BIG" ] && _ordered_bin="$_ordered_bin${_array_bin[$((_offset + i))]}" || \
+		[ "$_endian" = "BIG" ] && _ordered_bin="$_ordered_bin${_array_bin[$((_offset + i))]}" || \
 		_ordered_bin="${_array_bin[$((_offset + i))]}$_ordered_bin"
 	}
 
@@ -542,7 +542,7 @@ __ar_header() {
   local _file="$1"
 	local _offset="$2"
   local _size=$__AR_HEADER_SIZE__
-	[ "$_offset" == "" ] && _offset=0
+	[ "$_offset" = "" ] && _offset=0
   local _raw_header="$(__extract_raw_bin "$_file" "$_size" "$_offset")"  || _result=$?
   echo "$_raw_header"
   return 0
@@ -553,7 +553,7 @@ __ar_magic() {
 	local _opt="$2"
   # FORMAT -- return file format
   # KEY -- return magic key [DEFAULT]
-  [ "$_opt" == "" ] && _opt="KEY"
+  [ "$_opt" = "" ] && _opt="KEY"
   local _magic
   local _format
   case $_header in
@@ -561,7 +561,7 @@ __ar_magic() {
     *)
     return 1;;
   esac
-  [ "$_opt" == "KEY" ] && echo "$_magic" || echo "$_format"
+  [ "$_opt" = "KEY" ] && echo "$_magic" || echo "$_format"
   return 0
 }
 
@@ -577,7 +577,7 @@ __ar_bit() {
 	local _bit="32"
 	local _test="0"
 	__is_macho "$_file" "$_pos" && _test="1" && _bit="$(__macho_bit "$(__macho_header "$_file" "$_pos")")"
-	[ "$_test" == "0" ] && __is_elf "$_file" "$_pos" && _bit="$(__elf_bit "$(__elf_header "$_file" "$_pos")")"
+	[ "$_test" = "0" ] && __is_elf "$_file" "$_pos" && _bit="$(__elf_bit "$(__elf_header "$_file" "$_pos")")"
 	echo "$_bit"
 }
 
@@ -586,9 +586,9 @@ __ar_nb_object() {
 	local _file="$1"
 	local _offset="$2"
 	local _size="$3"
-	[ "$_offset" == "" ] && _offset=0
+	[ "$_offset" = "" ] && _offset=0
 	local _end_offset
-	if [ ! "$_size" == "" ]; then
+	if [ ! "$_size" = "" ]; then
 		_end_offset=$(( _offset + _size ))
 	else
 		_end_offset=$(wc -c "$_file" | awk '{print $1}')
@@ -617,8 +617,8 @@ __ar_object_header() {
 	local _obj_number="$2"
 	# represent the beginning of the ar if it is inside another file (Macho Universal Binary)
 	local _offset="$3"
-	[ "$_obj_number" == "" ] && _obj_number=1
-	[ "$_offset" == "" ] && _offset=0
+	[ "$_obj_number" = "" ] && _obj_number=1
+	[ "$_offset" = "" ] && _offset=0
 
 	local _raw_header
 	local _obj_pos=$(( _offset + __AR_HEADER_SIZE__))
@@ -639,8 +639,8 @@ __ar_object_pos() {
 	local _obj_number="$2"
 	# represent the beginning of the ar if it is inside another file (Macho Universal Binary)
 	local _offset="$3"
-	[ "$_obj_number" == "" ] && _obj_number=1
-	[ "$_offset" == "" ] && _offset=0
+	[ "$_obj_number" = "" ] && _obj_number=1
+	[ "$_offset" = "" ] && _offset=0
 	local _raw_header
 	local _obj_pos=$(( _offset + __AR_HEADER_SIZE__))
 	local _obj_size
@@ -662,8 +662,8 @@ __ar_object_data_pos() {
 	local _obj_number="$2"
 	# represent the beginning of the ar if it is inside another file (Macho Universal Binary)
 	local _offset="$3"
-	[ "$_obj_number" == "" ] && _obj_number=1
-	[ "$_offset" == "" ] && _offset=0
+	[ "$_obj_number" = "" ] && _obj_number=1
+	[ "$_offset" = "" ] && _offset=0
 	local _raw_header
 	local _obj_pos=$(( _offset + __AR_HEADER_SIZE__))
 	local _obj_size
@@ -722,7 +722,7 @@ __macho_header() {
   local _file="$1"
 	local _offset="$2"
   local _size=$__MACHO_HEADER_SIZE__
-	[ "$_offset" == "" ] && _offset=0
+	[ "$_offset" = "" ] && _offset=0
   local _raw_header="$(__extract_raw_bin "$_file" "$_size" "$_offset")"  || _result=$?
   echo "$_raw_header"
   return 0
@@ -742,7 +742,7 @@ __macho_magic() {
   local _opt="$2"
   # FORMAT -- return file format
   # KEY -- return magic key [DEFAULT]
-  [ "$_opt" == "" ] && _opt="KEY"
+  [ "$_opt" = "" ] && _opt="KEY"
   local _key_magic
   local _format
 
@@ -759,7 +759,7 @@ __macho_magic() {
     return 1;;
   esac
 
-  [ "$_opt" == "KEY" ] && echo "$_key_magic" || echo "$_format"
+  [ "$_opt" = "KEY" ] && echo "$_key_magic" || echo "$_format"
   return 0
 }
 
@@ -898,7 +898,7 @@ __macho_universal_nbarch() {
 __macho_universal_cputype() {
   local _header="$1"
 	local _arch_number="$2"
-	[ "$_arch_number" == "" ] && _arch_number=1
+	[ "$_arch_number" = "" ] && _arch_number=1
 	_arch_number=$((_arch_number - 1))
 	local _endian="BIG"
 	local _offset=$((__FAT_HEADER_SIZE__ + __FAT_ARCH_SIZE__ * _arch_number ))
@@ -910,7 +910,7 @@ __macho_universal_cputype() {
 __macho_universal_cpusubtype() {
   local _header="$1"
 	local _arch_number="$2"
-	[ "$_arch_number" == "" ] && _arch_number=1
+	[ "$_arch_number" = "" ] && _arch_number=1
 	_arch_number=$((_arch_number - 1))
 	local _endian="BIG"
 	local _offset=$((__FAT_HEADER_SIZE__ + __FAT_ARCH_SIZE__ * _arch_number + 4))
@@ -923,7 +923,7 @@ __macho_universal_cpusubtype() {
 __macho_universal_position() {
   local _header="$1"
   local _arch_number="$2"
-	[ "$_arch_number" == "" ] && _arch_number=1
+	[ "$_arch_number" = "" ] && _arch_number=1
 	_arch_number=$((_arch_number - 1))
 	local _endian="BIG"
 	local _offset=$((__FAT_HEADER_SIZE__ + __FAT_ARCH_SIZE__ * _arch_number + 8))
@@ -936,7 +936,7 @@ __macho_universal_position() {
 __macho_universal_size() {
   local _header="$1"
 	local _arch_number="$2"
-	[ "$_arch_number" == "" ] && _arch_number=1
+	[ "$_arch_number" = "" ] && _arch_number=1
 	_arch_number=$((_arch_number - 1))
 	local _endian="BIG"
 	local _offset=$((__FAT_HEADER_SIZE__ + __FAT_ARCH_SIZE__ * _arch_number + 12))
@@ -974,7 +974,7 @@ __macho_universal_global_filetype() {
 __elf_header() {
   local _file="$1"
 	local _offset="$2"
-	[ "$_offset" == "" ] && _offset=0
+	[ "$_offset" = "" ] && _offset=0
   local _size=$__ELF_HEADER_SIZE__
   local _raw_header="$(__extract_raw_bin "$_file" "$_size" "$_offset")"  || _result=$?
   echo "$_raw_header"
@@ -988,7 +988,7 @@ __elf_magic() {
   local _opt="$2"
   # FORMAT -- return file format
   # KEY -- return magic key [DEFAULT]
-  [ "$_opt" == "" ] && _opt="KEY"
+  [ "$_opt" = "" ] && _opt="KEY"
   local _key_magic
   local _format
   case $_header in
@@ -997,7 +997,7 @@ __elf_magic() {
     return 1;;
   esac
 
-  [ "$_opt" == "KEY" ] && echo "$_key_magic" || echo "$_format"
+  [ "$_opt" = "KEY" ] && echo "$_key_magic" || echo "$_format"
   return 0
 }
 
