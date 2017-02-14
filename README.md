@@ -47,7 +47,7 @@ git clone https://github.com/StudioEtrange/stella
 stella.bat stella install dep
 ```
 
-### With git but and behind a proxy
+### With git but behind a proxy
 
 nix system :
 
@@ -55,7 +55,7 @@ nix system :
 https_proxy="http://my.proxy.com"  http_proxy="http://my.proxy.com" git clone https://github.com/StudioEtrange/stella
 ```
 
-windows :
+windows system :
 
 ```
 set "https_proxy=http://my.proxy.com"
@@ -64,19 +64,6 @@ git clone https://github.com/StudioEtrange/stella
 stella.bat stella install dep
 ```
 
-### without git
-
-nix system :
-
-```
-curl -sSL https://raw.githubusercontent.com/StudioEtrange/stella/master/nix/pool/stella-bridge.sh | bash -s -- standalone stella
-```
-
-windows system :
-
-```
-powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/StudioEtrange/stella/master/win/pool/stella-bridge.bat', 'stella-bridge.bat')" && stella-bridge.bat standalone & del /q stella-bridge.bat
-```
 
 ## Tested Platforms
 

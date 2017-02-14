@@ -154,10 +154,19 @@ https://github.com/marascio/bash-tips-and-tricks/tree/master/showing-progress-wi
 
 [ ] note on bootstrap applications
 Bootstrap a brand new application and use stella as a library or tools collection inside your project
-NIX : 
+NIX :
 	cd your_project
 	curl -sSL https://raw.githubusercontent.com/StudioEtrange/stella/master/nix/pool/stella-bridge.sh | bash -s -- bootstrap [stella folder]
 
 WIN:
   cd your_project
 	powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/StudioEtrange/stella/master/win/pool/stella-bridge.bat', 'stella-bridge.bat')" && stella-bridge.bat bootstrap & del /q stella-bridge.bat
+
+[ ] note on bootstrap a standalone stable stella
+
+### Without git
+NIX
+curl -sSL https://raw.githubusercontent.com/StudioEtrange/stella/master/nix/pool/stella-bridge.sh | bash -s -- standalone stella
+
+WIN
+powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/StudioEtrange/stella/master/win/pool/stella-bridge.bat', 'stella-bridge.bat')" && stella-bridge.bat standalone & del /q stella-bridge.bat
