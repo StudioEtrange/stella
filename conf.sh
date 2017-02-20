@@ -24,6 +24,7 @@ STELLA_PATCH="$STELLA_POOL/patch"
 STELLA_BIN="$STELLA_ROOT/nix/bin"
 STELLA_FEATURE_RECIPE="$STELLA_POOL/feature-recipe"
 STELLA_FEATURE_RECIPE_EXPERIMENTAL="$STELLA_FEATURE_RECIPE/exp"
+STELLA_FEATURE_RECIPE_EXTRA=""
 STELLA_ARTEFACT="$STELLA_POOL/artefact"
 STELLA_APPLICATION="$STELLA_ROOT/app"
 STELLA_TEMPLATE="$STELLA_POOL/template"
@@ -181,7 +182,7 @@ STELLA_BINARY_DEFAULT_LIB_IGNORED='^/System/Library|^/usr/lib|^/lib'
 
 
 # API ---------------------------------------------
-STELLA_API_COMMON_PUBLIC="get_active_path uncompress daemonize rel_to_abs_path is_abs argparse get_filename_from_string \
+STELLA_API_COMMON_PUBLIC="find_folder_up get_active_path uncompress daemonize rel_to_abs_path is_abs argparse get_filename_from_string \
 get_resource delete_resource update_resource revert_resource download_uncompress copy_folder_content_into del_folder \
 get_key add_key del_key mercurial_project_version git_project_version get_stella_version \
 make_sevenzip_sfx_bin make_targz_sfx_shell compress trim"
@@ -194,7 +195,7 @@ STELLA_API_PLATFORM_PUBLIC="python_major_version python_short_version sys_instal
 STELLA_API_NETWORK_PUBLIC="proxy_tunnel enable_proxy disable_proxy no_proxy_for register_proxy register_no_proxy"
 STELLA_API_BOOT_PUBLIC="boot_shell boot_cmd boot_script"
 
-STELLA_API_RETURN_FUNCTION="python_major_version python_short_version list_feature_version get_active_path rel_to_abs_path trim is_abs mercurial_project_version git_project_version get_stella_version list_active_features get_filename_from_string get_key"
+STELLA_API_RETURN_FUNCTION="find_folder_up python_major_version python_short_version list_feature_version get_active_path rel_to_abs_path trim is_abs mercurial_project_version git_project_version get_stella_version list_active_features get_filename_from_string get_key"
 STELLA_API=__api_proxy
 
 

@@ -563,6 +563,22 @@ __is_abs() {
 	esac
 }
 
+# search a specific folder starting from a root folder and searching in parent folder
+__find_folder_up() {
+	local _root="$1"
+	local _search="$2"
+
+	cwd="$_root"
+	while [ ! -d "$cwd/$_search" ] && [ "x$cwd" != x/ ]; do
+		cwd=`dirname "$cwd"`
+	done
+	if [ -d "$cwd/$_search" ]; then
+		echo "$cwd/$_search"
+	else
+		echo
+	fi
+}
+
 # NOTE by default path is determined giving by the current running directory
 __rel_to_abs_path() {
 	local _rel_path="$1"

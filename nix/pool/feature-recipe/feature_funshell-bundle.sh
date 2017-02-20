@@ -1,7 +1,7 @@
-if [ ! "$_FUNSHELL_INCLUDED_" = "1" ]; then 
+if [ ! "$_FUNSHELL_INCLUDED_" = "1" ]; then
 _FUNSHELL_INCLUDED_=1
 
-# TODO create recipes for each tool
+# TODO create recipes for each of theses tools :
 # http://www.binarytides.com/linux-fun-commands/
 feature_funshell-bundle() {
 	FEAT_NAME="funshell-bundle"
@@ -14,7 +14,7 @@ feature_funshell-bundle() {
 
 feature_funshell-bundle_1_0() {
 	FEAT_VERSION=1_0
-	
+
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -29,14 +29,14 @@ feature_funshell-bundle_1_0() {
 
 
 feature_funshell-bundle_print() {
-	
+
 	figlet " ** Fun     Shell **"
 	echo " -- a collection of amazing shell tools."
 	echo " 		figlet"
 	echo "		lolcat"
 	echo "		fortune"
 	echo "		cowsay"
-	echo "		cmatrix"		
+	echo "		cmatrix"
 
 }
 

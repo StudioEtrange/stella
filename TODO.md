@@ -5,7 +5,9 @@ NIX RECIPE inspiration
 * nixos (https://github.com/NixOS/nixpkgs)
 * homebrew (https://github.com/Homebrew/homebrew-core)
 * 0install (http://0install.net/)
-
+* rudix (http://rudix.org/)
+WIN RECIPE inspiration
+* bluego (https://bitbucket.org/Vertexwahn/bluego)
 mingw-w64 RECIPE :
 * http://www.gaia-gis.it/spatialite-3.0.0-BETA/mingw64_how_to.html
 
