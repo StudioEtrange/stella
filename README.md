@@ -30,6 +30,7 @@ For the whole list of commands use
 stella.bat -h
 ```
 
+
 ## Installation
 
 ### Easy way : with git
@@ -109,6 +110,11 @@ cd my_app
 ./stella-link.sh boot shell local
 jq
 ```
+
+## More Usage Examples
+
+
+You can find in https://github.com/StudioEtrange/stella-app some examples of shell scripts and shell app using Stella
 
 ## Tested Platforms
 
