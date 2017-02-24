@@ -6,11 +6,14 @@ _DOCKER_INCLUDED_=1
 # docker have a lof ot dependencies and OS specific stuff
 # consider to install it from your OS system package manager or by the provided method here http://docs.docker.com/ OR the install script here https://get.docker.com/
 
-# depending of the supporting state of your current OS,
-# this recipe will install a docker binary which will be a server AND a client, or just a client, depending of your OS
+# this recipe will install docker binaries server AND client, or just a client, depending of your OS
+# in past relase docker binary was the server AND the client, now its splitted into dockerd and docker binaries
 
 # this recipe is based on https://docs.docker.com/engine/installation/binaries/
 
+# NOTE service docker startup scripts : https://github.com/docker/docker/tree/master/contrib/init
+#						for supervisord : https://blog.jayway.com/2015/03/14/docker-in-docker-with-jenkins-and-supervisord/
+#															https://www.kf-interactive.com/blog/roll-your-own-docker-registry-with-docker-compose-supervisor-and-nginx/
 feature_docker() {
 	FEAT_NAME=docker
 	FEAT_LIST_SCHEMA="1_12_6:binary 1_8_1:binary 1_9_1:binary 1_10_3:binary 1_11_1:binary"

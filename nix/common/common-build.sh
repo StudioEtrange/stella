@@ -1777,7 +1777,7 @@ __inspect_and_fix_build() {
 
 	[ "$1" = "" ] && return
 
-	[ -z "$(__filter_list "$path" "INCLUDE_TAG INCLUDE_FILTER EXCLUDE_TAG EXCLUDE_FILTER $OPT")" ] && return $_result
+	[ -z "$(__filter_list "$path/*" "INCLUDE_TAG INCLUDE_FILTER EXCLUDE_TAG EXCLUDE_FILTER $OPT")" ] && return $_result
 
 
 	local f=

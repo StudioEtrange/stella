@@ -51,6 +51,7 @@ https://odb.github.io/shml/
 [ ] Update README
   [ ] history : FIRST PUSH OF stella pre version : https://bitbucket.org/StudioEtrange/ryzomcore-script/src/1308706a1dc3f1dde7d65b048e9b16f2a2f2f518
 
+[ ] nix : bash-lib : https://github.com/aks/bash-lib
 [ ] COMMENTS code
 [ ] Format output (log system)
 [ ] Test and remove DEST_ERASE in each feature_recipe : cause problem when bundled in merge mode. But only for binary ? keep it for source? only when get binary
