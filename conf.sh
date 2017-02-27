@@ -21,7 +21,6 @@ STELLA_ROOT="$_STELLA_CONF_CURRENT_FILE_DIR"
 STELLA_COMMON="$STELLA_ROOT/nix/common"
 STELLA_POOL="$STELLA_ROOT/nix/pool"
 STELLA_PATCH="$STELLA_POOL/patch"
-STELLA_BIN="$STELLA_ROOT/nix/bin"
 STELLA_FEATURE_RECIPE="$STELLA_POOL/feature-recipe"
 STELLA_FEATURE_RECIPE_EXPERIMENTAL="$STELLA_FEATURE_RECIPE/exp"
 STELLA_FEATURE_RECIPE_EXTRA=""
@@ -44,23 +43,38 @@ STELLA_DIST_URL="$STELLA_URL/dist"
 # /dist
 
 # STELLA INCLUDE ---------------------------------------------
-source $STELLA_COMMON/stack.sh
-source $STELLA_COMMON/common-platform.sh
-source $STELLA_COMMON/common.sh
-source $STELLA_COMMON/common-feature.sh
-source $STELLA_COMMON/common-app.sh
-source $STELLA_COMMON/lib-parse-bin.sh
-source $STELLA_COMMON/common-binary.sh
-source $STELLA_COMMON/common-build.sh
-source $STELLA_COMMON/common-api.sh
-source $STELLA_COMMON/lib-sfx.sh
-source $STELLA_COMMON/common-network.sh
-source $STELLA_COMMON/common-boot.sh
+
+. $STELLA_COMMON/stack.sh
+. $STELLA_COMMON/common-log.sh
+. $STELLA_COMMON/common-platform.sh
+. $STELLA_COMMON/common.sh
+. $STELLA_COMMON/common-feature.sh
+. $STELLA_COMMON/common-app.sh
+. $STELLA_COMMON/lib-parse-bin.sh
+. $STELLA_COMMON/common-binary.sh
+. $STELLA_COMMON/common-build.sh
+. $STELLA_COMMON/common-api.sh
+. $STELLA_COMMON/lib-sfx.sh
+. $STELLA_COMMON/common-network.sh
+. $STELLA_COMMON/common-boot.sh
+
+
+# LOG ---------------------------
+# Before include stella-link.sh
+# 	STELLA_LOG_STATE="OFF" ==> Disable log
+# STELLA_LOG_STATE : ON|OFF
+STELLA_LOG_STATE_DEFAULT="ON"
+STELLA_LOG_LEVEL_DEFAULT="1"
+[ "$STELLA_LOG_STATE" = "" ] && __set_log_state "$STELLA_LOG_STATE_DEFAULT"
+[ "$STELLA_LOG_LEVEL" = "" ] && __set_log_level "$STELLA_LOG_LEVEL_DEFAULT"
+
 
 # GATHER PLATFORM INFO ---------------------------------------------
 __set_current_platform_info
 
 # GATHER CURRENT APP INFO ---------------------------------------------
+# Before include stella-link.sh
+# 	STELLA_APP_PROPERTIES_FILENAME="foo.properties" ==> change properties name
 [ "$STELLA_APP_PROPERTIES_FILENAME" = "" ] && STELLA_APP_PROPERTIES_FILENAME="stella.properties"
 STELLA_APP_NAME=
 
@@ -105,7 +119,6 @@ fi
 
 # OTHERS ---------------------------------------------
 FEATURE_LIST_ENABLED=
-VERBOSE_MODE=0
 STELLA_DEFAULT_NO_PROXY="localhost,127.0.0.1,localaddress,.localdomain.com"
 
 
@@ -194,8 +207,9 @@ STELLA_API_BUILD_PUBLIC="toolset_info set_toolset start_build_session set_build_
 STELLA_API_PLATFORM_PUBLIC="python_major_version python_short_version sys_install sys_remove require"
 STELLA_API_NETWORK_PUBLIC="proxy_tunnel enable_proxy disable_proxy no_proxy_for register_proxy register_no_proxy"
 STELLA_API_BOOT_PUBLIC="boot_shell boot_cmd boot_script"
+STELLA_API_LOG_PUBLIC="log set_log_level set_log_state"
 
-STELLA_API_RETURN_FUNCTION="find_folder_up python_major_version python_short_version list_feature_version get_active_path rel_to_abs_path trim is_abs mercurial_project_version git_project_version get_stella_version list_active_features get_filename_from_string get_key"
+STELLA_API_RETURN_FUNCTION="log find_folder_up python_major_version python_short_version list_feature_version get_active_path rel_to_abs_path trim is_abs mercurial_project_version git_project_version get_stella_version list_active_features get_filename_from_string get_key"
 STELLA_API=__api_proxy
 
 
