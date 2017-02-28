@@ -1,9 +1,10 @@
-if [ ! "$_AUTOTOOLSBUNDLE_INCLUDED_" = "1" ]; then
-_AUTOTOOLSBUNDLE_INCLUDED_=1
+if [ ! "$_AUTOTOOLS_INCLUDED_" = "1" ]; then
+_AUTOTOOLS_INCLUDED_=1
 
-feature_autotools-bundle() {
-	echo "******** DEPRECATED autotools BUNDLE ****** use feature autotools"
-	FEAT_NAME=autotools-bundle
+
+
+feature_autotools() {
+	FEAT_NAME=autotools
 	FEAT_LIST_SCHEMA="1"
 	FEAT_DEFAULT_VERSION=1
 	FEAT_DEFAULT_ARCH=
@@ -11,7 +12,7 @@ feature_autotools-bundle() {
 	FEAT_BUNDLE=MERGE
 }
 
-feature_autotools-bundle_1() {
+feature_autotools_1() {
 	FEAT_VERSION=1
 
 	FEAT_SOURCE_DEPENDENCIES=

@@ -69,7 +69,7 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 # Available preconfigured build toolset on Nix system :
 # TOOLSET 		| CONFIG TOOL 				| BUILD TOOL 		| COMPIL FRONTEND
 # STANDARD		|	configure						|		make				|			default
-# AUTOTOOLS		|	autotools-bundle#1	|		make				|			default <===== TODO DEPRECATED THIS : prefer __add_toolset "autotools-bundle#1"
+# AUTOTOOLS		|	autotools-bundle#1	|		make				|			default <===== TODO DEPRECATED THIS : prefer __add_toolset "autotools"
 # NINJA				| cmake								|		ninja				| 		default
 # CMAKE				|	cmake								|		make				|			default
 # NONE ===> disable build toolset and all tools
@@ -216,11 +216,12 @@ __set_toolset() {
 			;;
 
 		AUTOTOOLS)
-			echo "********* DEPRECATED *******************"
-			STELLA_BUILD_TOOLSET=AUTOTOOLS
-			CONFIG_TOOL=autotools-bundle#1
-			BUILD_TOOL=make
-			COMPIL_FRONTEND=default
+			echo "********* DEPRECATED use __add_toolset autotools *******************"
+			exit
+			#STELLA_BUILD_TOOLSET=AUTOTOOLS
+			#CONFIG_TOOL=autotools-bundle#1
+			#BUILD_TOOL=make
+			#COMPIL_FRONTEND=default
 			;;
 
 		STANDARD)
@@ -265,7 +266,7 @@ __set_toolset() {
 			;;
 		autotools*)
 			echo "********* DEPRECATED *******************"
-			STELLA_BUILD_CONFIG_TOOL_BIN=configure
+			#STELLA_BUILD_CONFIG_TOOL_BIN=configure
 			;;
 	esac
 
@@ -317,12 +318,13 @@ __enable_current_toolset() {
 			;;
 		autotools)
 			echo "********* DEPRECATED *******************"
-			__toolset_install "autotools-bundle#1"
-			__toolset_init "autotools-bundle#1"
+			#__toolset_install "autotools-bundle#1"
+			#__toolset_init "autotools-bundle#1"
 			;;
 		autotools*)
-			__toolset_install "$STELLA_BUILD_CONFIG_TOOL"
-			__toolset_init "$STELLA_BUILD_CONFIG_TOOL"
+			echo "********* DEPRECATED *******************"
+			#__toolset_install "$STELLA_BUILD_CONFIG_TOOL"
+			#__toolset_init "$STELLA_BUILD_CONFIG_TOOL"
 			;;
 	esac
 

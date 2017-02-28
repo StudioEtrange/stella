@@ -67,7 +67,7 @@ https://ryzomcore.atlassian.net/wiki/display/RC/MinGW+External+Libraries
 https://ryzomcore.atlassian.net/wiki/display/RC/Create+External+Libs
 
 [ ] win : build mingw-w64 compiler from source https://github.com/niXman/mingw-builds
-
+[ ] nix : replace each echo informative message (not return string function) with log() call
 [ ] Default build arch equivalent to current cpu arch ? (and change option name buildarch with forcearch) (set STELLA_BUILD_ARCH_DEFAULT)
 [ ] feature system : FEAT_DEFAULT_ARCH must be fill with current cpu arch
 [ ] feature built from source must pick an arch and be installed in a folder with version@arch -- buildarch option should be remove -- by default built arch should be current cpu arch
