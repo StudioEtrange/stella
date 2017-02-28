@@ -23,7 +23,7 @@ STELLA_POOL="$STELLA_ROOT/nix/pool"
 STELLA_PATCH="$STELLA_POOL/patch"
 STELLA_FEATURE_RECIPE="$STELLA_POOL/feature-recipe"
 STELLA_FEATURE_RECIPE_EXPERIMENTAL="$STELLA_FEATURE_RECIPE/exp"
-STELLA_FEATURE_RECIPE_EXTRA=""
+
 STELLA_ARTEFACT="$STELLA_POOL/artefact"
 STELLA_APPLICATION="$STELLA_ROOT/app"
 STELLA_TEMPLATE="$STELLA_POOL/template"
@@ -126,6 +126,7 @@ STELLA_DEFAULT_NO_PROXY="localhost,127.0.0.1,localaddress,.localdomain.com"
 __STELLA_FEATURE_LIST=
 __STELLA_FEATURE_LIST_STABLE=
 __STELLA_FEATURE_LIST_EXP=
+
 for recipe in "$STELLA_FEATURE_RECIPE"/*.sh; do
 	recipe=$(basename "$recipe")
 	recipe=${recipe#feature_}
@@ -139,6 +140,14 @@ for recipe in "$STELLA_FEATURE_RECIPE_EXPERIMENTAL"/*.sh; do
 	__STELLA_FEATURE_LIST_EXP="$__STELLA_FEATURE_LIST_EXP $recipe"
 done
 __STELLA_FEATURE_LIST="$__STELLA_FEATURE_LIST_STABLE $__STELLA_FEATURE_LIST_EXP"
+
+# Before include stella-link.sh
+# 	STELLA_FEATURE_RECIPE_EXTRA=/foo/recipe ==> add a recipe folder
+__STELLA_FEATURE_LIST_EXTRA=
+if [ ! "$STELLA_FEATURE_RECIPE_EXTRA" = "" ]; then
+	__feature_add_repo "$STELLA_FEATURE_RECIPE_EXTRA"
+fi
+
 
 # SYS PACKAGE --------------------------------------------
 # list of available installable system package
@@ -201,7 +210,7 @@ get_key add_key del_key mercurial_project_version git_project_version get_stella
 make_sevenzip_sfx_bin make_targz_sfx_shell compress trim"
 STELLA_API_API_PUBLIC="api_connect api_disconnect"
 STELLA_API_APP_PUBLIC="get_app_property link_app get_data get_assets get_data_pack get_assets_pack delete_data delete_assets delete_data_pack delete_assets_pack update_data update_assets revert_data revert_assets update_data_pack update_assets_pack revert_data_pack revert_assets_pack get_feature get_features"
-STELLA_API_FEATURE_PUBLIC="feature_info list_feature_version feature_remove feature_catalog_info feature_install feature_install_list feature_init list_active_features feature_reinit_installed feature_inspect"
+STELLA_API_FEATURE_PUBLIC="feature_add_repo feature_info list_feature_version feature_remove feature_catalog_info feature_install feature_install_list feature_init list_active_features feature_reinit_installed feature_inspect"
 STELLA_API_BINARY_PUBLIC="tweak_linked_lib get_rpath add_rpath check_rpath check_binary_file tweak_binary_file"
 STELLA_API_BUILD_PUBLIC="toolset_info set_toolset start_build_session set_build_mode auto_build"
 STELLA_API_PLATFORM_PUBLIC="python_major_version python_short_version sys_install sys_remove require"

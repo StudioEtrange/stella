@@ -15,7 +15,6 @@ feature_tensorflow() {
 }
 
 
-# need toolset : bazel version 0_3_2
 feature_tensorflow_0_11_0() {
 	FEAT_VERSION=0_11_0
 

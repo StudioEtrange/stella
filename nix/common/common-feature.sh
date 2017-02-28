@@ -71,10 +71,16 @@ __feature_init() {
 }
 
 
-__feature__add_repo() {
+__feature_add_repo() {
 	local _path="$1"
 	STELLA_FEATURE_RECIPE_EXTRA="$_path"
-	__STELLA_FEATURE_LIST="$__STELLA_FEATURE_LIST "
+	for recipe in "$_path"/*.sh; do
+		recipe=$(basename "$recipe")
+		recipe=${recipe#feature_}
+		recipe=${recipe%.sh}
+		__STELLA_FEATURE_LIST_EXTRA="$__STELLA_FEATURE_LIST_EXTRA $recipe"
+	done
+	__STELLA_FEATURE_LIST="$__STELLA_FEATURE_LIST_EXTRA $__STELLA_FEATURE_LIST"
 }
 
 
@@ -691,8 +697,7 @@ __feature_init_installed() {
 		fi
 	done
 
-	# TODO log
-	#echo "** Features initialized : $FEATURE_LIST_ENABLED"
+	__log "** Features initialized : $FEATURE_LIST_ENABLED"
 }
 
 
