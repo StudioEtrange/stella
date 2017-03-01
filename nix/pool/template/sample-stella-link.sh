@@ -5,7 +5,7 @@ if [ ! "$1" = "nothing" ]; then
 		if [ ! -f "$STELLA_ROOT/stella.sh" ]; then
 			if [ -f "$(dirname $_STELLA_LINK_CURRENT_FILE_DIR)/stella-link.sh" ]; then
 				echo " ** Try to chain link stella from $(dirname $_STELLA_LINK_CURRENT_FILE_DIR)"
-				source $(dirname $_STELLA_LINK_CURRENT_FILE_DIR)/stella-link.sh chaining
+				. $(dirname $_STELLA_LINK_CURRENT_FILE_DIR)/stella-link.sh chaining
 			else
 				echo "** WARNING Stella is missing -- bootstraping stella"
 				$_STELLA_LINK_CURRENT_FILE_DIR/stella-link.sh bootstrap
@@ -17,11 +17,11 @@ fi
 ACTION=$1
 case $ACTION in
 	include)
-		source "$STELLA_ROOT/conf.sh"
+		. "$STELLA_ROOT/conf.sh"
 		__init_stella_env
 		;;
 	env)
-		source "$STELLA_ROOT/conf.sh"
+		. "$STELLA_ROOT/conf.sh"
 		__init_stella_env
 		echo "** Current env is setted/refreshed with stella env"
 		;;

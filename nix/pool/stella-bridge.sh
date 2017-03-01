@@ -26,7 +26,7 @@ standalone() {
 		__get_stella "$_STELLA_INSTALL_PATH" "STABLE" "LATEST"
 	fi
 
-	source "$_STELLA_INSTALL_PATH/conf.sh"
+	. "$_STELLA_INSTALL_PATH/conf.sh"
 	__ask_install_requirements
 }
 
@@ -46,7 +46,7 @@ bootstrap() {
 	# Check if APP/PROJECT in current dir is linked to STELLA
 	if [ -f "$STELLA_CURRENT_RUNNING_DIR/stella-link.sh" ]; then
 		IS_STELLA_LINK_FILE="TRUE"
-		source "$STELLA_CURRENT_RUNNING_DIR/stella-link.sh" nothing
+		. "$STELLA_CURRENT_RUNNING_DIR/stella-link.sh" nothing
 		if [ ! "$STELLA_ROOT" = "" ]; then
 			if [ -f "$STELLA_ROOT/stella.sh" ]; then
 				IS_STELLA_LINKED="TRUE"
@@ -56,7 +56,7 @@ bootstrap() {
 
 	if [ "$IS_STELLA_LINKED" = "TRUE" ]; then
 		echo "** This app/project is linked to a STELLA installation located in $STELLA_ROOT"
-		source "$STELLA_ROOT/conf.sh"
+		. "$STELLA_ROOT/conf.sh"
 
 	else
 
@@ -73,7 +73,7 @@ bootstrap() {
 			IS_STELLA_JUST_INSTALLED="TRUE"
 		fi
 
-		source "$_STELLA_INSTALL_PATH/conf.sh"
+		. "$_STELLA_INSTALL_PATH/conf.sh"
 
 	fi
 

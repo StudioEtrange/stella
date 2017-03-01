@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 _STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-# shellcheck source=/dev/null
-source $_STELLA_CURRENT_FILE_DIR/conf.sh
+. $_STELLA_CURRENT_FILE_DIR/conf.sh
 
-# NOTE : use this with source command only
+# NOTE : use this with source (or .) command only
 # NOTE : warn : some env var (like PATH) are cumulative
 if [ "$1" = "env" ]; then
 	__init_stella_env
@@ -48,7 +47,7 @@ usage() {
 	echo ""
 	echo "Special Usage"
 	echo " o-- env management :"
-	echo " L     source <stella.sh|stella-link.sh> env : set the current shell env with all stella env var setted"
+	echo " L     . <stella.sh|stella-link.sh> env : set the current shell env with all stella env var setted"
 }
 
 

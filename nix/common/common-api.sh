@@ -46,7 +46,7 @@ __api_connect() {
 	saveSTELLA_APP_ROOT=$STELLA_APP_ROOT
 	STELLA_APP_ROOT=
   _STELLA_CONF_INCLUDED_=
-  source $_approot/stella-link.sh include
+  . $_approot/stella-link.sh include
 }
 
 # reconnect api to current stella application
@@ -54,7 +54,7 @@ __api_disconnect() {
 	STELLA_APP_ROOT=
   _STELLA_CONF_INCLUDED_=
 	# TODO saveSTELLA_APP_ROOT
-  source $saveSTELLA_APP_ROOT/stella-link.sh include
+  . $saveSTELLA_APP_ROOT/stella-link.sh include
 }
 
 fi

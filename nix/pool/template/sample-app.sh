@@ -1,7 +1,7 @@
 #!/bin/bash
 _CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 _CURRENT_RUNNING_DIR="$( cd "$( dirname "." )" && pwd )"
-source $_CURRENT_FILE_DIR/stella-link.sh include
+. $_CURRENT_FILE_DIR/stella-link.sh include
 
 
 usage() {
@@ -22,7 +22,7 @@ OPTIONS="
 FORCE=''				   'f'		  ''					b			0		'1'					  Force.
 OPT='default_val' 						'' 			'string'				s 			0			''		  Sample option.
 "
-$STELLA_API argparse "$0" "$OPTIONS" "$PARAMETERS" "foo" "$(usage)" "APPARG" "$@"
+$STELLA_API argparse "$0" "$OPTIONS" "$PARAMETERS" "$STELLA_APP_NAME" "$(usage)" "APPARG" "$@"
 
 #-------------------------------------------------------------------------------------------
 

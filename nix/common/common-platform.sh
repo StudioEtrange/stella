@@ -123,7 +123,7 @@ __set_current_platform_info() {
 	exit() {
 	:
 	}
-	source $STELLA_ARTEFACT/screenFetch/screenfetch-dev -n -E 1>/dev/null 2>&1
+	. $STELLA_ARTEFACT/screenFetch/screenfetch-dev -n -E 1>/dev/null 2>&1
 	unset exit
 
 

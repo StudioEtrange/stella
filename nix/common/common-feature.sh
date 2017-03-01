@@ -812,17 +812,17 @@ __internal_feature_context() {
 		local _feat_found=0
 		if [ ! -z "$STELLA_FEATURE_RECIPE_EXTRA" ]; then
 			if [ -f "$STELLA_FEATURE_RECIPE_EXTRA/feature_$TMP_FEAT_SCHEMA_NAME.sh" ]; then
-				source "$STELLA_FEATURE_RECIPE_EXTRA/feature_$TMP_FEAT_SCHEMA_NAME.sh"
+				. "$STELLA_FEATURE_RECIPE_EXTRA/feature_$TMP_FEAT_SCHEMA_NAME.sh"
 				_feat_found=1
 			fi
 		fi
 		if [ "$_feat_found" = "0" ]; then
 			if [ -f "$STELLA_FEATURE_RECIPE/feature_$TMP_FEAT_SCHEMA_NAME.sh" ]; then
-				source "$STELLA_FEATURE_RECIPE/feature_$TMP_FEAT_SCHEMA_NAME.sh"
+				. "$STELLA_FEATURE_RECIPE/feature_$TMP_FEAT_SCHEMA_NAME.sh"
 				_feat_found=1
 			else
 				if [ -f "$STELLA_FEATURE_RECIPE_EXPERIMENTAL/feature_$TMP_FEAT_SCHEMA_NAME.sh" ]; then
-					source "$STELLA_FEATURE_RECIPE_EXPERIMENTAL/feature_$TMP_FEAT_SCHEMA_NAME.sh"
+					. "$STELLA_FEATURE_RECIPE_EXPERIMENTAL/feature_$TMP_FEAT_SCHEMA_NAME.sh"
 					_feat_found=1
 				fi
 			fi
@@ -901,17 +901,17 @@ __select_official_schema() {
 		local _feat_found=0
 		if [ ! -z "$STELLA_FEATURE_RECIPE_EXTRA" ]; then
 			if [ -f "$STELLA_FEATURE_RECIPE_EXTRA/feature_$_TR_FEATURE_NAME.sh" ]; then
-				source "$STELLA_FEATURE_RECIPE_EXTRA/feature_$_TR_FEATURE_NAME.sh"
+				. "$STELLA_FEATURE_RECIPE_EXTRA/feature_$_TR_FEATURE_NAME.sh"
 				_feat_found=1
 			fi
 		fi
 		if [ "$_feat_found" = "0" ]; then
 			if [ -f "$STELLA_FEATURE_RECIPE/feature_$_TR_FEATURE_NAME.sh" ]; then
-				source "$STELLA_FEATURE_RECIPE/feature_$_TR_FEATURE_NAME.sh"
+				. "$STELLA_FEATURE_RECIPE/feature_$_TR_FEATURE_NAME.sh"
 				_feat_found=1
 			else
 				if [ -f "$STELLA_FEATURE_RECIPE_EXPERIMENTAL/feature_$_TR_FEATURE_NAME.sh" ]; then
-					source "$STELLA_FEATURE_RECIPE_EXPERIMENTAL/feature_$_TR_FEATURE_NAME.sh"
+					. "$STELLA_FEATURE_RECIPE_EXPERIMENTAL/feature_$_TR_FEATURE_NAME.sh"
 					_feat_found=1
 				fi
 			fi
