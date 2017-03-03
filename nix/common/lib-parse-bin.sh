@@ -1,3 +1,4 @@
+#!sh
 if [ ! "$_STELLA_LIB_BINARY_INCLUDED_" = "1" ]; then
 _STELLA_LIB_BINARY_INCLUDED_=1
 

@@ -1,6 +1,7 @@
-if [ ! "$_STELLA_STACK_INCLUDED_" == "1" ]; then 
+#!sh
+if [ ! "$_STELLA_STACK_INCLUDED_" = "1" ]; then
 _STELLA_STACK_INCLUDED_=1
-# inspired from Example 26-14. Emulating a push-down stack 
+# inspired from Example 26-14. Emulating a push-down stack
 # http://www.linuxtopia.org/online_books/advanced_bash_scripting_guide/arrays.html
 
 # Stack Pointer

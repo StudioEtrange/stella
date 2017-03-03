@@ -1,3 +1,4 @@
+#!sh
 if [ ! "$_STELLA_COMMON_API_INCLUDED_" = "1" ]; then
 _STELLA_COMMON_API_INCLUDED_=1
 
@@ -52,6 +53,7 @@ __api_connect() {
 # reconnect api to current stella application
 __api_disconnect() {
 	STELLA_APP_ROOT=
+
   _STELLA_CONF_INCLUDED_=
 	# TODO saveSTELLA_APP_ROOT
   . $saveSTELLA_APP_ROOT/stella-link.sh include

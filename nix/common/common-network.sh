@@ -1,3 +1,4 @@
+#!sh
 if [ ! "$_STELLA_COMMON_NET_INCLUDED_" = "1" ]; then
 _STELLA_COMMON_NET_INCLUDED_=1
 
@@ -303,6 +304,8 @@ __register_proxy() {
 
 	__uri_parse "$2"
 
+	#local _ssl_port="$3"
+
 	local _host="$__stella_uri_host"
 	local _port="$__stella_uri_port"
 	local _user="$__stella_uri_user"
@@ -337,7 +340,6 @@ __register_no_proxy() {
 	__uri_parse "$_uri"
 
 	local _host="$__stella_uri_host"
-
 
 	local _exist=
 	STELLA_PROXY_NO_PROXY="${STELLA_PROXY_NO_PROXY//,/ }"

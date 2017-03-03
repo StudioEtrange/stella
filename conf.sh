@@ -1,3 +1,4 @@
+#!sh
 if [ ! "$_STELLA_CONF_INCLUDED_" = "1" ]; then
 _STELLA_CONF_INCLUDED_=1
 
@@ -44,18 +45,31 @@ STELLA_DIST_URL="$STELLA_URL/dist"
 
 # STELLA INCLUDE ---------------------------------------------
 
+#shellcheck source=nix/common/stack.sh
 . $STELLA_COMMON/stack.sh
+#shellcheck source=nix/common/common-log.sh
 . $STELLA_COMMON/common-log.sh
+#shellcheck source=nix/common/common-platform.sh
 . $STELLA_COMMON/common-platform.sh
+#shellcheck source=nix/common/common.sh
 . $STELLA_COMMON/common.sh
+#shellcheck source=nix/common/common-feature.sh
 . $STELLA_COMMON/common-feature.sh
+#shellcheck source=nix/common/common-app.sh
 . $STELLA_COMMON/common-app.sh
+#shellcheck source=nix/common/common-lib-parse-bin.sh
 . $STELLA_COMMON/lib-parse-bin.sh
+#shellcheck source=nix/common/common-binary.sh
 . $STELLA_COMMON/common-binary.sh
+#shellcheck source=nix/common/common-build.sh
 . $STELLA_COMMON/common-build.sh
+#shellcheck source=nix/common/common-api.sh
 . $STELLA_COMMON/common-api.sh
+#shellcheck source=nix/common/lib-sfx.sh
 . $STELLA_COMMON/lib-sfx.sh
+#shellcheck source=nix/common/common-network.sh
 . $STELLA_COMMON/common-network.sh
+#shellcheck source=nix/common/common-boot.sh
 . $STELLA_COMMON/common-boot.sh
 
 
@@ -186,7 +200,7 @@ __set_build_mode_default "LINK_FLAGS_DEFAULT" "ON"
 
 [ "$STELLA_CURRENT_OS" = "macos" ] && __set_build_mode_default MACOSX_DEPLOYMENT_TARGET "$(__get_macos_version)"
 
-STELLA_BUILD_DEFAULT_TOOLSET=STANDARD
+STELLA_BUILD_DEFAULT_TOOLSET="STANDARD"
 
 
 # . is current running directory

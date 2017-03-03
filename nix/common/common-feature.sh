@@ -1,3 +1,4 @@
+#!sh
 if [ ! "$_STELLA_COMMON_FEATURE_INCLUDED_" = "1" ]; then
 _STELLA_COMMON_FEATURE_INCLUDED_=1
 
@@ -322,7 +323,7 @@ __feature_remove() {
 	if [ "$TEST_FEATURE" = "1" ]; then
 
 		if [ ! "$FEAT_BUNDLE" = "" ]; then
-			echo " ** Remove bundle $FEAT_NAME version $FEAT_VERSION"
+			__log " ** Remove bundle $FEAT_NAME version $FEAT_VERSION"
 			__del_folder $FEAT_INSTALL_ROOT
 
 			__push_schema_context
@@ -334,7 +335,7 @@ __feature_remove() {
 			FEAT_BUNDLE_MODE=
 			__pop_schema_context
 		else
-			echo " ** Remove $FEAT_NAME version $FEAT_VERSION from $FEAT_INSTALL_ROOT"
+			__log " ** Remove $FEAT_NAME version $FEAT_VERSION from $FEAT_INSTALL_ROOT"
 			__del_folder $FEAT_INSTALL_ROOT
 		fi
 	fi
@@ -432,13 +433,13 @@ __feature_install() {
 
 	if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" = "" ]; then
 		if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" = "$STELLA_CURRENT_OS" ]; then
-			echo " $_SCHEMA not installed on $STELLA_CURRENT_OS"
+			__log " $_SCHEMA not installed on $STELLA_CURRENT_OS"
 			return
 		fi
 	fi
 	if [ ! "$FEAT_SCHEMA_OS_EXCLUSION" = "" ]; then
 		if [ "$FEAT_SCHEMA_OS_EXCLUSION" = "$STELLA_CURRENT_OS" ]; then
-			echo " $_SCHEMA not installed on $STELLA_CURRENT_OS"
+			__log " $_SCHEMA not installed on $STELLA_CURRENT_OS"
 			return
 		fi
 	fi
@@ -515,16 +516,16 @@ __feature_install() {
 					fi
 
 					if [ "$_origin" = "STELLA" ]; then
-						echo "Installing dependency $dep"
+						__log "Installing dependency $dep"
 
 
 						__feature_install $dep "$_OPT HIDDEN"
 						if [ "$TEST_FEATURE" = "0" ]; then
-							echo "** Error while installing dependency feature $FEAT_SCHEMA_SELECTED"
+							__log "** Error while installing dependency feature $FEAT_SCHEMA_SELECTED"
 						fi
 
 					fi
-					[ "$_origin" = "SYSTEM" ] && echo "Using dependency $dep from SYSTEM."
+					[ "$_origin" = "SYSTEM" ] && __log "Using dependency $dep from SYSTEM."
 
 				done
 
@@ -587,7 +588,7 @@ __feature_install() {
 
 			else
 
-				echo " ** Installing $FEAT_NAME version $FEAT_VERSION in $FEAT_INSTALL_ROOT"
+				__log " ** Installing $FEAT_NAME version $FEAT_VERSION in $FEAT_INSTALL_ROOT"
 
 				# NOTE : feature_callback is called from recipe itself
 
@@ -604,18 +605,18 @@ __feature_install() {
 					__feature_inspect $FEAT_SCHEMA_SELECTED
 
 					if [ "$TEST_FEATURE" = "1" ]; then
-						echo "** Feature $_SCHEMA is installed"
+						__log "** Feature $_SCHEMA is installed"
 						__feature_init "$FEAT_SCHEMA_SELECTED" $_OPT
 					else
-						echo "** Error while installing feature $FEAT_SCHEMA_SELECTED"
+						__log "** Error while installing feature $FEAT_SCHEMA_SELECTED"
 						#__del_folder $FEAT_INSTALL_ROOT
 						# Sometimes current directory is lost by the system
-						cd $STELLA_APP_ROOT
+						cd "$STELLA_APP_ROOT"
 					fi
 				fi
 			fi
 		else
-			echo "** Feature $_SCHEMA already installed"
+			__log "** Feature $_SCHEMA already installed"
 			__feature_init "$FEAT_SCHEMA_SELECTED" $_OPT
 		fi
 
@@ -636,7 +637,7 @@ __feature_install() {
 
 
 	else
-		echo " ** Error unknow feature $_SCHEMA"
+		__log " ** Error unknow feature $_SCHEMA"
 	fi
 
 }

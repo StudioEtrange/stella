@@ -45,6 +45,18 @@ use
   apm install linter
   apm install linter-checkbashisms
 ```
+
+* shell code style guideline
+
+in shell
+
+  ```
+    pip install bashate
+  ```
+
+use
+  `bashate stella.sh`
+
 [ ] nix : color & style
 https://odb.github.io/shml/
 [ ] nix : explore https://github.com/alebcay/awesome-shell
@@ -139,6 +151,7 @@ http://stackoverflow.com/a/238140/5027535
 https://gist.github.com/unhammer/b0ab6a6aa8e1eeaf236b
 https://github.com/edouard-lopez/progress-bar.sh
 http://stackoverflow.com/a/16348366/5027535
+dtruss/strace : https://www.reddit.com/r/golang/comments/363dhp/how_do_i_make_go_get_to_display_the_progress_of/
 spinner :
 http://stackoverflow.com/a/3330834/5027535
 https://github.com/marascio/bash-tips-and-tricks/tree/master/showing-progress-with-a-bash-spinner

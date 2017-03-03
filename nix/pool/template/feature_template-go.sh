@@ -1,4 +1,4 @@
-if [ ! "$_TEMPLATEGO_INCLUDED_" = "1" ]; then 
+if [ ! "$_TEMPLATEGO_INCLUDED_" = "1" ]; then
 _TEMPLATEGO_INCLUDED_=1
 
 
@@ -27,7 +27,7 @@ feature_template-go_snapshot() {
 	FEAT_SOURCE_CALLBACK=
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
-	
+
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/getopt"
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
 
@@ -36,18 +36,25 @@ feature_template-go_snapshot() {
 
 feature_template-go_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
-	SRC_DIR="$FEAT_INSTALL_ROOT/src/getopt"
+	SRC_DIR="$FEAT_INSTALL_ROOT/src/product"
 	BUILD_DIR=
 
-	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP FORCE_NAME $FEAT_SOURCE_URL_FILENAME"
+	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
-	# get dependencies
+	__add_toolset "go-build-chain#1_5_3"
+
+	__start_manual_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
+
+
+	# get all dependencies
 	cd "$SRC_DIR"
 	cd Godeps
 	GOPATH="$INSTALL_DIR" godep restore
 
-	cd "$INSTALL_DIR"
-	GOPATH="$INSTALL_DIR" go install getopt
+	GOPATH="$INSTALL_DIR" go install product
+
+	__end_manual_build
+	
 }
 
 fi

@@ -14,7 +14,7 @@ feature_docker-swarm() {
 
 feature_docker-swarm_1_2_5() {
 	FEAT_VERSION="1_2_5"
-	FEAT_SOURCE_DEPENDENCIES="go-build-chain#1_5_3"
+	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL="https://github.com/docker/swarm/archive/v1.2.5.tar.gz"
@@ -42,6 +42,9 @@ feature_docker-swarm_install_source() {
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP FORCE_NAME $FEAT_SOURCE_URL_FILENAME"
 
+	__add_toolset "go-build-chain#1_5_3"
+
+	__start_manual_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
 
 	# get internal dependencies (in the same github)
 	cd "$INSTALL_DIR"
@@ -54,6 +57,8 @@ feature_docker-swarm_install_source() {
 	GOPATH="$INSTALL_DIR" godep restore
 
 	GOPATH="$INSTALL_DIR" go install swarm
+
+	__end_manual_build
 }
 
 fi

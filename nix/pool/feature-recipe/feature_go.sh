@@ -11,7 +11,7 @@ feature_go() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-go_set_env() {
+feature_go_set_env() {
 	GOROOT="$FEAT_INSTALL_ROOT"
 	export GOROOT="$FEAT_INSTALL_ROOT"
 }
@@ -42,7 +42,7 @@ feature_go_1_6_3() {
 
 	FEAT_SOURCE_CALLBACK=
 	FEAT_BINARY_CALLBACK=
-	FEAT_ENV_CALLBACK="go_set_env"
+	FEAT_ENV_CALLBACK="feature_go_set_env"
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/go
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
@@ -73,7 +73,7 @@ feature_go_1_5_3() {
 
 	FEAT_SOURCE_CALLBACK=
 	FEAT_BINARY_CALLBACK=
-	FEAT_ENV_CALLBACK="go_set_env"
+	FEAT_ENV_CALLBACK="feature_go_set_env"
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/go
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
@@ -102,7 +102,7 @@ feature_go_1_4_3() {
 
 	FEAT_SOURCE_CALLBACK=
 	FEAT_BINARY_CALLBACK=
-	FEAT_ENV_CALLBACK="go_set_env"
+	FEAT_ENV_CALLBACK="feature_go_set_env"
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/go
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
@@ -132,7 +132,7 @@ feature_go_1_4_2() {
 
 	FEAT_SOURCE_CALLBACK=
 	FEAT_BINARY_CALLBACK=
-	FEAT_ENV_CALLBACK="go_set_env"
+	FEAT_ENV_CALLBACK="feature_go_set_env"
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/go
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin

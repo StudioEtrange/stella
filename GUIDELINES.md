@@ -9,6 +9,7 @@ Stella is intended to work at least with `bash`. But we will try to stick when i
 
 | avoid  | use | note |
 | ------ | --- | ------- |
+| source  | .  ||
 | ==  | =  ||
 | [[ ]] | [ ] | [[ is not POSIX but largely supported across shell. Often it is recommended to use [[  over [. But for now we stick to POSIX |
 
@@ -27,11 +28,14 @@ http://carlosbecker.com/posts/lint-shell-scripts
 https://wiki.ubuntu.com/DashAsBinSh
 http://mywiki.wooledge.org/Bashism
 http://wiki.bash-hackers.org/scripting/obsolete
+https://github.com/koalaman/shellcheck/wiki/SC2039
 
 * Shebang
 
 http://stackoverflow.com/questions/733824/how-to-run-a-shell-script-on-a-unix-console-or-mac-terminal
 
-* Best practices for bash only
+* Best practices
 
-https://github.com/progrium/bashstyle
+https://github.com/progrium/bashstyle ==> for bash
+https://github.com/openstack-dev/bashate ==> for shell
+http://www.etalabs.net/sh_tricks.html ==> POSIX shell tricks
