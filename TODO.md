@@ -122,7 +122,9 @@ SSHFS ? cache delivering only via HTTP ?
 
 [ ] speed up grep http://applocator.blogspot.fr/2013/10/speed-up-bash-scripts-that-use-grep.html
 
-
+[ ] ryzom nix : openal, libgnu_regex (?), libmysql, lua51, lua52, luabind, stlport (?)
+https://github.com/Shopify/homebrew-shopify/blob/master/mysql-client.rb
+https://github.com/Homebrew/homebrew-core/blob/master/Formula/mysql.rb
 
 [ ] macos : download homebrew binary (but special build and should depend on brew installed library ?) https://homebrew.bintray.com/bottles/libzip-1.0.1.el_capitan.bottle.tar.gz
 

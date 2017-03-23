@@ -5,7 +5,7 @@ _qt_INCLUDED_=1
 #https://bitbucket.org/StudioEtrange/ryzomcore-script/src/b5b7fc357f33a46e894ab1ff97019ccb98ac3018/nix/lib_qt_build.sh?at=default&fileviewer=file-view-default
 #https://github.com/cartr/homebrew-qt4
 # TODO not finished
-
+# https://github.com/Homebrew/homebrew-core/blob/master/Formula/qt5.rb (not tested)
 
 feature_qt() {
 	FEAT_NAME=qt
@@ -74,12 +74,12 @@ feature_qt_install_source() {
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "STRIP" #DEST_ERASE"
 
-	if [ "$STELLA_CURRENT_PLATFORM" == "darwin" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		#QMAKESPEC=macx-g++
 		QMAKESPEC=unsupported/macx-clang
 		# TODO 32 bits http://www.qtcentre.org/threads/40557-spec-to-use-when-compiling-for-32-bit-MacOS-X-on-Snow-Leopard-(no-macx-g-32-)
 	fi
-	if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		if [ ! -z "$STELLA_BUILD_ARCH"]; then
 			[ "$STELLA_BUILD_ARCH" = "x64" ] && QMAKESPEC=linux-g++-64
 			[ "$STELLA_BUILD_ARCH" = "x86" ] && QMAKESPEC=linux-g++-32
