@@ -341,7 +341,7 @@ __enable_current_toolset() {
 
 	case $STELLA_BUILD_COMPIL_FRONTEND in
 		default)
-			# NOTE : will look for gcc (or clang on macos) and if not found ask to install default system compiler
+			# NOTE : will look for gcc (or clang on macos)
 			__require "gcc" "build-chain-standard" "SYSTEM"
 		;;
 		clang-omp*)

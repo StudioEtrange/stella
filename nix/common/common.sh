@@ -327,6 +327,7 @@ __transfert_folder_rsync() {
 		[ "$o" = "FOLDER_CONTENT" ] && _opt_folder_content=ON
 	done
 
+	# NOTE : rsync needs to be present on both host (source, target)
 	__require "rsync" "rsync"
 	__require "ssh" "ssh"
 
@@ -370,6 +371,10 @@ __transfert_file_rsync() {
 	local _file="$1"
 	local _uri="$2"
 
+	# NOTE : rsync needs to be present on both host (source, target)
+	__require "rsync" "rsync"
+	__require "ssh" "ssh"
+
 	__uri_parse "$_uri"
 
 	local _ssh_port="22"
@@ -378,11 +383,10 @@ __transfert_file_rsync() {
 	local _target="$__stella_uri_host":"${__stella_uri_fragment:1}"
 	[ ! "$__stella_uri_user" = "" ] && _target="$__stella_uri_user"@"$_target"
 
-	__require "rsync" "rsync"
-	__require "ssh" "ssh"
 
 	rsync -avz -e "ssh -p $_ssh_port" "$_file" "$_target"
 }
+
 
 __daemonize() {
 	local _item_path=$1
@@ -607,7 +611,7 @@ __rel_to_abs_path() {
 					result="$(cd "$_abs_root_path/$_rel_path" && pwd )"
 				else
 					# NOTE using this method if directory does not exist returned path is not real absolute (example : /tata/toto/../titi instead of /tata/titi)
-					# TODO : we rely on pure bash version, because readlink -m option used un alternative2 do not exist on some system
+					# TODO : we rely on pure bash version, because readlink -m option used in alternative2 do not exist on some system
 					result=$(__rel_to_abs_path_alternative_1 "$_rel_path" "$_abs_root_path")
 					#[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && result=$(__rel_to_abs_path_alternative_1 "$_rel_path" "$_abs_root_path")
 					#[ "$STELLA_CURRENT_PLATFORM" = "linux" ] && result=$(__rel_to_abs_path_alternative_2 "$_rel_path" "$_abs_root_path")

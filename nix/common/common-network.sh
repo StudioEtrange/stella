@@ -181,7 +181,7 @@ __proxy_override() {
 
 	# DOCKER ENGINE / DAEMON
 	# Docker daemon rely on HTTP_PROXY env
-	#		but the env var need to be setted in daemon environement (not client)
+	#		but the env var need to be setted in daemon environement when daemon is launched (not after)
 	#		Instead configure /etc/default/docker or /etc/sysconfig/docker or /etc/systemd/system/docker.service.d/http-proxy.conf (for rhel/centos) or /var/lib/boot2docker/profile (for boot2docker)
 	#			and add
 	#			HTTP_PROXY="http://<proxy_host>:<proxy_port>"
@@ -294,7 +294,8 @@ __proxy_tunnel() {
 
 	# TODO : what if targeted proxy require a user/password ?
 
-	ssh -N -L 7999:$_target_proxy_host:$_target_proxy_port $_bridge_uri
+	# NOTE : -4 : force ipv4 connection
+	ssh -4 -N -L 7999:$_target_proxy_host:$_target_proxy_port $_bridge_uri
 
 	__disable_proxy
 }

@@ -31,7 +31,7 @@ __get_os_from_distro() {
 		Debian|debian*)
 			echo "debian"
 			;;
-		centos*)
+		CentOS*|centos*)
 			echo "centos"
 			;;
 		archlinux*)

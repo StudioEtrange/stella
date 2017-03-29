@@ -180,3 +180,7 @@ powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.github
 [ ] openal
 http://repo.or.cz/openal-soft.git
 https://github.com/kcat/openal-soft
+
+[ ] nix : init management detection (systemd, upstart, sysV)
+http://unix.stackexchange.com/questions/196166/how-to-find-out-if-a-system-uses-sysv-upstart-or-systemd-initsystem
+http://unix.stackexchange.com/questions/18209/detect-init-system-using-the-shell
