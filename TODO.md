@@ -181,6 +181,9 @@ powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.github
 http://repo.or.cz/openal-soft.git
 https://github.com/kcat/openal-soft
 
-[ ] nix : init management detection (systemd, upstart, sysV)
+[ ] nix : init management detection (systemd, upstart, sysV(=init))
 http://unix.stackexchange.com/questions/196166/how-to-find-out-if-a-system-uses-sysv-upstart-or-systemd-initsystem
 http://unix.stackexchange.com/questions/18209/detect-init-system-using-the-shell
+http://unix.stackexchange.com/questions/138994/init-systems-and-service-management-on-different-distributions
+
+[ ] nix : review boost recipes (still using __prepare_build)

@@ -1,4 +1,4 @@
-if [ ! "$_UPX_INCLUDED_" = "1" ]; then 
+if [ ! "$_UPX_INCLUDED_" = "1" ]; then
 _UPX_INCLUDED_=1
 
 # OK
@@ -20,7 +20,7 @@ feature_upx_3_91() {
 	FEAT_SOURCE_URL=http://upx.sourceforge.net/download/upx-3.91-src.tar.bz2
 	FEAT_SOURCE_URL_FILENAME=upx-3.91-src.tar.bz2
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
-	
+
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
@@ -29,7 +29,7 @@ feature_upx_3_91() {
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
-	
+
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/upx
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 }
@@ -39,7 +39,7 @@ feature_ucl_link() {
 
 	__link_feature_library "ucl#1_03" "LIBS_NAME ucl FORCE_STATIC"
 	__link_feature_library "zlib#1_2_8" "LIBS_NAME z FORCE_DYNAMIC"
-	
+
 }
 
 feature_upx_install_source() {
@@ -50,10 +50,12 @@ feature_upx_install_source() {
 	__set_toolset "STANDARD"
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
-	
+
 	__feature_callback
 
-	__prepare_build "$INSTALL_DIR"
+	__start_manual_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
+
+	#__prepare_build "$INSTALL_DIR"
 
 
 	CXXFLAGS="$CXXFLAGS "
@@ -75,6 +77,8 @@ feature_upx_install_source() {
 	fi
 
 	__inspect_and_fix_build "$INSTALL_DIR"
+
+	__end_manual_build
 
 }
 

@@ -1,33 +1,33 @@
-if [ ! "$_svn_INCLUDED_" = "1" ]; then 
+if [ ! "$_svn_INCLUDED_" = "1" ]; then
 _svn_INCLUDED_=1
 
-# TODO : 
-# depend on zlib, apr, apr-util, expat, sqllite3, libsasl2
+# TODO :
+# depend on zlib, expat, sqllite3, libsasl2
 
 
 feature_svn() {
 	FEAT_NAME=svn
-	FEAT_LIST_SCHEMA="1_8_14:source"
-	FEAT_DEFAULT_VERSION=1_8_14
+	FEAT_LIST_SCHEMA="1_8_17:source"
+	FEAT_DEFAULT_VERSION=1_8_17
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-feature_svn_1_8_14() {
-	FEAT_VERSION=1_8_14
-	
-	FEAT_SOURCE_DEPENDENCIES=
+feature_svn_1_8_17() {
+	FEAT_VERSION=1_8_17
+
+	FEAT_SOURCE_DEPENDENCIES="apr#1_5_2 apr-util#1_5_4"
 	FEAT_BINARY_DEPENDENCIES=
 
-	FEAT_SOURCE_URL=http://www.apache.org/dist/subversion/subversion-1.8.14.tar.gz
-	FEAT_SOURCE_URL_FILENAME=subversion-1.8.14.tar.gz
+	FEAT_SOURCE_URL=http://www.apache.org/dist/subversion/subversion-1.8.17.tar.gz
+	FEAT_SOURCE_URL_FILENAME=subversion-1.8.17.tar.gz
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
 
-	FEAT_SOURCE_CALLBACK=
+	FEAT_SOURCE_CALLBACK=feature_svn_source_callback
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
@@ -36,12 +36,17 @@ feature_svn_1_8_14() {
 
 }
 
+feature_svn_source_callback() {
+	__link_feature_library "apr"
+	__link_feature_library "apr-util"
+}
+
 feature_svn_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
 	__set_toolset "STANDARD"
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 
@@ -50,6 +55,7 @@ feature_svn_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
+	__feature_callback
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
 
 }

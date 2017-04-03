@@ -21,6 +21,8 @@ __read_proxy_values() {
 			__get_key "$STELLA_ENV_FILE" "STELLA_PROXY_$STELLA_PROXY_ACTIVE" "PROXY_PORT" "PREFIX"
 			__get_key "$STELLA_ENV_FILE" "STELLA_PROXY_$STELLA_PROXY_ACTIVE" "PROXY_USER" "PREFIX"
 			__get_key "$STELLA_ENV_FILE" "STELLA_PROXY_$STELLA_PROXY_ACTIVE" "PROXY_PASS" "PREFIX"
+			__get_key "$STELLA_ENV_FILE" "STELLA_PROXY_$STELLA_PROXY_ACTIVE" "PROXY_SCHEMA" "PREFIX"
+
 
 			# read NO_PROXY values from env file
 			__get_key "$STELLA_ENV_FILE" "STELLA_PROXY" "NO_PROXY" "PREFIX"
@@ -33,16 +35,18 @@ __read_proxy_values() {
 
 			eval STELLA_PROXY_HOST=$(echo '$STELLA_PROXY_'$STELLA_PROXY_ACTIVE'_PROXY_HOST')
 			eval STELLA_PROXY_PORT=$(echo '$STELLA_PROXY_'$STELLA_PROXY_ACTIVE'_PROXY_PORT')
+			eval STELLA_PROXY_SCHEMA=$(echo '$STELLA_PROXY_'$STELLA_PROXY_ACTIVE'_PROXY_SCHEMA')
+			[ "$STELLA_PROXY_SCHEMA" = "" ] && STELLA_PROXY_SCHEMA="http"
 
 			eval STELLA_PROXY_USER=$(echo '$STELLA_PROXY_'$STELLA_PROXY_ACTIVE'_PROXY_USER')
 			if [ "$STELLA_PROXY_USER" = "" ]; then
-				STELLA_HTTP_PROXY=http://$STELLA_PROXY_HOST:$STELLA_PROXY_PORT
-				STELLA_HTTPS_PROXY=http://$STELLA_PROXY_HOST:$STELLA_PROXY_PORT
+				STELLA_HTTP_PROXY=$STELLA_PROXY_SCHEMA://$STELLA_PROXY_HOST:$STELLA_PROXY_PORT
+				STELLA_HTTPS_PROXY=$STELLA_PROXY_SCHEMA://$STELLA_PROXY_HOST:$STELLA_PROXY_PORT
 			else
 				eval STELLA_PROXY_PASS=$(echo '$STELLA_PROXY_'$STELLA_PROXY_ACTIVE'_PROXY_PASS')
 
-				STELLA_HTTP_PROXY=http://$STELLA_PROXY_USER:$STELLA_PROXY_PASS@$STELLA_PROXY_HOST:$STELLA_PROXY_PORT
-				STELLA_HTTPS_PROXY=http://$STELLA_PROXY_USER:$STELLA_PROXY_PASS@$STELLA_PROXY_HOST:$STELLA_PROXY_PORT
+				STELLA_HTTP_PROXY=$STELLA_PROXY_SCHEMA://$STELLA_PROXY_USER:$STELLA_PROXY_PASS@$STELLA_PROXY_HOST:$STELLA_PROXY_PORT
+				STELLA_HTTPS_PROXY=$STELLA_PROXY_SCHEMA://$STELLA_PROXY_USER:$STELLA_PROXY_PASS@$STELLA_PROXY_HOST:$STELLA_PROXY_PORT
 			fi
 
 			__log "STELLA Proxy : $STELLA_PROXY_ACTIVE is ACTIVE"
@@ -54,6 +58,7 @@ __read_proxy_values() {
 	__reset_proxy_values() {
 	STELLA_PROXY_ACTIVE=
 	STELLA_PROXY_HOST=
+	STELLA_PROXY_SCHEMA=
 	STELLA_PROXY_USER=
 	STELLA_PROXY_PASS=
 	STELLA_HTTP_PROXY=
@@ -92,7 +97,7 @@ __set_system_proxy_values() {
 
 
 	if [ ! "$STELLA_PROXY_HOST" = "" ]; then
-		__log "STELLA Proxy : $STELLA_PROXY_HOST:$STELLA_PROXY_PORT"
+		__log "STELLA Proxy : $STELLA_PROXY_SCHEMA://$STELLA_PROXY_HOST:$STELLA_PROXY_PORT"
 		__proxy_override
 	fi
 }
@@ -186,7 +191,7 @@ __proxy_override() {
 	#			and add
 	#			HTTP_PROXY="http://<proxy_host>:<proxy_port>"
 	#			HTTPS_PROXY="http://<proxy_host>:<proxy_port>"
-	#		Docker daemon is used when accessing docker hub (like for search, pull, ...)
+	#		Docker daemon is used when accessing docker hub (like for search, pull, ...) and registry also when pushing (push)
 	#		see https://docs.docker.com/engine/admin/systemd/#/http-proxy
 	#
 	# DOCKER CLIENT
@@ -285,11 +290,13 @@ __proxy_tunnel() {
 	__get_key "$STELLA_ENV_FILE" "STELLA_PROXY_$_target_proxy_name" "PROXY_PORT" "PREFIX"
 	__get_key "$STELLA_ENV_FILE" "STELLA_PROXY_$_target_proxy_name" "PROXY_USER" "PREFIX"
 	__get_key "$STELLA_ENV_FILE" "STELLA_PROXY_$_target_proxy_name" "PROXY_PASS" "PREFIX"
+	__get_key "$STELLA_ENV_FILE" "STELLA_PROXY_$_target_proxy_name" "PROXY_SCHEMA" "PREFIX"
 
 	eval _target_proxy_host=$(echo '$STELLA_PROXY_'$_target_proxy_name'_PROXY_HOST')
 	eval _target_proxy_port=$(echo '$STELLA_PROXY_'$_target_proxy_name'_PROXY_PORT')
+	eval _target_proxy_schema=$(echo '$STELLA_PROXY_'$_target_proxy_name'_PROXY_SCHEMA')
 
-	__register_proxy "_STELLA_TUNNEL_" "localhost:7999"
+	__register_proxy "_STELLA_TUNNEL_" "http://localhost:7999"
 	__enable_proxy "_STELLA_TUNNEL_"
 
 	# TODO : what if targeted proxy require a user/password ?
@@ -311,11 +318,17 @@ __register_proxy() {
 	local _port="$__stella_uri_port"
 	local _user="$__stella_uri_user"
 	local _pass="$__stella_uri_password"
+	local _schema="$__stella_uri_schema"
+
+	if [ "$_schema" = "" ]; then
+		_schema="http"
+	fi
 
 	__add_key "$STELLA_ENV_FILE" "STELLA_PROXY_$_proxy_name" "PROXY_HOST" "$_host"
 	__add_key "$STELLA_ENV_FILE" "STELLA_PROXY_$_proxy_name" "PROXY_PORT" "$_port"
 	__add_key "$STELLA_ENV_FILE" "STELLA_PROXY_$_proxy_name" "PROXY_USER" "$_user"
 	__add_key "$STELLA_ENV_FILE" "STELLA_PROXY_$_proxy_name" "PROXY_PASS" "$_pass"
+	__add_key "$STELLA_ENV_FILE" "STELLA_PROXY_$_proxy_name" "PROXY_SCHEMA" "$_schema"
 }
 
 __enable_proxy() {

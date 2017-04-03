@@ -74,7 +74,7 @@ STELLA_DIST_URL="$STELLA_URL/dist"
 
 
 # LOG ---------------------------
-# Before include stella-link.sh
+# Before include stella-link.sh, you can override log state
 # 	STELLA_LOG_STATE="OFF" ==> Disable log
 # STELLA_LOG_STATE : ON|OFF
 STELLA_LOG_STATE_DEFAULT="ON"
@@ -87,7 +87,7 @@ STELLA_LOG_LEVEL_DEFAULT="1"
 __set_current_platform_info
 
 # GATHER CURRENT APP INFO ---------------------------------------------
-# Before include stella-link.sh
+# Before include stella-link.sh, you can override file properties file
 # 	STELLA_APP_PROPERTIES_FILENAME="foo.properties" ==> change properties name
 [ "$STELLA_APP_PROPERTIES_FILENAME" = "" ] && STELLA_APP_PROPERTIES_FILENAME="stella.properties"
 STELLA_APP_NAME=
@@ -121,13 +121,21 @@ STELLA_INTERNAL_TEMP_DIR=$STELLA_INTERNAL_WORK_ROOT/temp
 
 STELLA_INTERNAL_TOOLSET_ROOT=$STELLA_INTERNAL_WORK_ROOT/toolset_$STELLA_CURRENT_PLATFORM_SUFFIX/$STELLA_CURRENT_OS
 
+
 # current config env
-# app env config has priority over stella config env
-STELLA_ENV_FILE=
-if [ -f "$STELLA_APP_ROOT/.stella-env" ]; then
-	STELLA_ENV_FILE="$STELLA_APP_ROOT/.stella-env"
+# Before include stella-link.sh, you can override env file
+# 	STELLA_APP_ENV_FILE="$HOME/.my-env" ==> change stella config env
+# or you can override it with a APP_ENV_FILE in properties file
+if [ "$STELLA_APP_ENV_FILE" = "" ]; then
+	# app env config has priority over stella config env
+	if [ -f "$STELLA_APP_ROOT/.stella-env" ]; then
+		STELLA_APP_ENV_FILE="$STELLA_APP_ROOT/.stella-env"
+		STELLA_ENV_FILE=$STELLA_APP_ENV_FILE
+	else
+		STELLA_ENV_FILE="$STELLA_ROOT/.stella-env"
+	fi
 else
-	STELLA_ENV_FILE="$STELLA_ROOT/.stella-env"
+	STELLA_ENV_FILE=$STELLA_APP_ENV_FILE
 fi
 
 

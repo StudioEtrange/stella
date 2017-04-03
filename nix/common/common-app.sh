@@ -164,6 +164,7 @@ __init_app() {
 }
 
 # extract APP properties
+# STELLA_APP_PROPERTIES are all evaluated
 __get_all_properties() {
 	local _properties_file=$1
 
@@ -171,12 +172,18 @@ __get_all_properties() {
 
 		# STELLA VARs
 		__get_key "$_properties_file" "STELLA" "APP_NAME" "PREFIX"
+		STELLA_APP_NAME=$(eval echo "$STELLA_APP_NAME")
 		__get_key "$_properties_file" "STELLA" "APP_WORK_ROOT" "PREFIX"
+		STELLA_APP_WORK_ROOT=$(eval echo "$STELLA_APP_WORK_ROOT")
 		# so that nested stella application will use the same cache folder
 		#[ "$STELLA_APP_CACHE_DIR" = "" ] && __get_key "$_properties_file" "STELLA" "APP_CACHE_DIR" "PREFIX"
 		__get_key "$_properties_file" "STELLA" "APP_CACHE_DIR" "PREFIX"
+		STELLA_APP_CACHE_DIR=$(eval echo "$STELLA_APP_CACHE_DIR")
 
 		__get_key "$_properties_file" "STELLA" "APP_FEATURE_LIST" "PREFIX"
+		STELLA_APP_FEATURE_LIST=$(eval echo "$STELLA_APP_FEATURE_LIST")
+		__get_key "$_properties_file" "STELLA" "APP_ENV_FILE" "PREFIX"
+		STELLA_APP_ENV_FILE=$(eval echo "$STELLA_APP_ENV_FILE")
 
 	fi
 }

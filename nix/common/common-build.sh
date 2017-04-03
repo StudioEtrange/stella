@@ -839,7 +839,7 @@ __link_feature_library() {
 	# FORCE_INCLUDE_FOLDER <path> -- folder prefix where include resides, default "/include"
 	# GET_FLAGS <prefix> -- init prefix_C_CXX_FLAGS, prefix_CPP_FLAGS, prefix_LINK_FLAGS with correct flags
 	# GET_FOLDER <prefix> -- init prefix_ROOT, prefix_LIB, prefix_BIN, prefix_INCLUDE with correct path
-	# NO_SET_FLAGS -- do not set stella build system flags (by default, flags will be generated)
+	# NO_SET_FLAGS -- do not set stella build system flags (by default, flags will be generated) and do not add RPATH values
 	# LIBS_NAME -- libraries name to use with -l arg -- you can specify several libraries. If you do not use LIBS_NAME -l flag will not be setted, only -L will be setted. If you use LIBS_NAME both -l and -L flags will be setted
 
 	local _ROOT=
@@ -976,6 +976,7 @@ __link_feature_library() {
 
 	# TODO do not base lib isolation on file extension but on result of __is_*__bin from lib-parse-bin
 	if [ "$_flag_lib_isolation" = "TRUE" ]; then
+
 		echo "*** Isolate dependencies into $LIB_TARGET_FOLDER"
 		__del_folder "$LIB_TARGET_FOLDER"
 		echo "*** Copying items from $REQUIRED_LIB_ROOT/$_lib_folder to $LIB_TARGET_FOLDER"
@@ -988,18 +989,19 @@ __link_feature_library() {
 		fi
 	fi
 
-	# On Darwin, the install_name of the linked lib is used to link the lib
-	#			BUT if install_name of the linked lib is "@rpath/lib" so we will miss the rpath value !
-	#			SO better to add a rpath value anyway
-	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		__set_build_mode "RPATH" "ADD_FIRST" "$LIB_TARGET_FOLDER"
+	if [ "$_opt_set_flags" = "ON" ]; then
+		# On Darwin, the install_name of the linked lib is used to link the lib
+		#			BUT if install_name of the linked lib is "@rpath/lib" so we will miss the rpath value !
+		#			SO better to add a rpath value anyway
+		if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+			__set_build_mode "RPATH" "ADD_FIRST" "$LIB_TARGET_FOLDER"
+		fi
+		# On linux we need to add an rpath value to the folder where reside the linked lib
+		#			if needed, we will remove rpath value and turn into a hard link after build
+		if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+			__set_build_mode "RPATH" "ADD_FIRST" "$LIB_TARGET_FOLDER"
+		fi
 	fi
-	# On linux we need to add an rpath value to the folder where reside the linked lib
-	#			if needed, we will remove rpath value and turn into a hard link after build
-	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		__set_build_mode "RPATH" "ADD_FIRST" "$LIB_TARGET_FOLDER"
-	fi
-
 
 
 	# manage pkg-config ----
