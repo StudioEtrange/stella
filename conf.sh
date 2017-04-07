@@ -92,7 +92,8 @@ __set_current_platform_info
 [ "$STELLA_APP_PROPERTIES_FILENAME" = "" ] && STELLA_APP_PROPERTIES_FILENAME="stella.properties"
 STELLA_APP_NAME=
 
-[ "$STELLA_APP_ROOT" = "" ] && STELLA_APP_ROOT="$STELLA_CURRENT_RUNNING_DIR"
+# default app root folder is stella root folder
+[ "$STELLA_APP_ROOT" = "" ] && STELLA_APP_ROOT="$STELLA_ROOT"
 
 _STELLA_APP_PROPERTIES_FILE="$(__select_app $STELLA_APP_ROOT)"
 __get_all_properties $_STELLA_APP_PROPERTIES_FILE
