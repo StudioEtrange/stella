@@ -65,22 +65,24 @@ goto :eof
 :: TOOLSET & BUILD TOOLS ----------------
 :: Available tools :
 :: 	CONFIG_TOOL : cmake, configure
-:: 	BUILD_TOOL : nmake, ninja, jom, mingw-make, make
-:: 	COMPIL_FRONTEND :  cl, gcc, mingw-gcc
+:: 	BUILD_TOOL : nmake, ninja, jom, mingw-make, msys-make, msys-mingw-make, make (?)
+:: 	COMPIL_FRONTEND :  cl, mingw-gcc, msys-gcc, msys-mingw-gcc, gcc (?)
 ::						in reality COMPIL_FRONTEND should be called COMPIL_DRIVER
 ::
 ::
 :: Available preconfigured build toolset on windows system :
 :: 	TOOLSET 		| CONFIG TOOL 				| BUILD TOOL 							| COMPIL FRONTEND
 ::	MS				|	cmake					|		nmake							|			cl
-:: 	MSYS2			| 	configure				|		make							|			gcc
-::	MINGW-W64		| 	NULL					|		mingw-make						|		( cl OR gcc ?) (default?)
+:: 	MSYS2			| 	configure				|		msys-mingw-make ?				|			msys-mingw-gcc ?
+::	MINGW-W64		| 	NULL					|		mingw-make						|		mingw-gcc (default?)
 :: NONE ===> disable build toolset and all tools
 
 :: TODO : MSYS2 TOOLSET
 ::		make AND gcc are installed from pacman : bundle : mingw64/mingw-w64-x86_64-toolchain or mingw32/mingw-w64-i686-toolchain
-::				we do not use make/gcc versions from msys2, but from mingw-w64 inside msys2
+::				we do not use msys/make nor msys/gcc versions from msys2 (whose rely on msys2.dll), but from mingw-w64 inside msys2
 ::				WARN : bundle mingw-w64-x86_64-toolchain install a lot of binaries which may generate conflicts (ex:python)
+::				NOTE : activate a mingw env when using msys2_shell.cmd ? https://www.booleanworld.com/get-unix-linux-environment-windows-msys2/
+::					   in the same way as vs_env_vars function
 :: MINGW-W64 TOOLSET
 ::		make AND gcc are part of default mingw-w64 env
 
