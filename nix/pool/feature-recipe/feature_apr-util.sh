@@ -6,7 +6,6 @@ feature_apr-util() {
 	FEAT_NAME=apr-util
 
 	FEAT_LIST_SCHEMA="1_5_4:source"
-	FEAT_DEFAULT_VERSION=1_5_4
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 

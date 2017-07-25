@@ -8,7 +8,6 @@ _svn_INCLUDED_=1
 feature_svn() {
 	FEAT_NAME=svn
 	FEAT_LIST_SCHEMA="1_8_17:source"
-	FEAT_DEFAULT_VERSION=1_8_17
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -16,7 +15,7 @@ feature_svn() {
 feature_svn_1_8_17() {
 	FEAT_VERSION=1_8_17
 
-	FEAT_SOURCE_DEPENDENCIES="apr#1_5_2 apr-util#1_5_4"
+	FEAT_SOURCE_DEPENDENCIES="apr#1_5_2 apr-util#1_5_4  sqlite#3_18_0"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://www.apache.org/dist/subversion/subversion-1.8.17.tar.gz
@@ -39,6 +38,7 @@ feature_svn_1_8_17() {
 feature_svn_source_callback() {
 	__link_feature_library "apr"
 	__link_feature_library "apr-util"
+	__link_feature_library "sqlite"
 }
 
 feature_svn_install_source() {

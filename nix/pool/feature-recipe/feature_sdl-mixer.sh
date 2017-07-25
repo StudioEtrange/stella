@@ -1,4 +1,4 @@
-if [ ! "$_sdlmixer_INCLUDED_" = "1" ]; then 
+if [ ! "$_sdlmixer_INCLUDED_" = "1" ]; then
 _sdlmixer_INCLUDED_=1
 
 #http://www.libsdl.org/projects/SDL_mixer/
@@ -11,7 +11,6 @@ _sdlmixer_INCLUDED_=1
 feature_sdl-mixer() {
 	FEAT_NAME=sdl-mixer
 	FEAT_LIST_SCHEMA="2_0_0:source 1_2_12:source"
-	FEAT_DEFAULT_VERSION=2_0_0
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -21,7 +20,7 @@ feature_sdl-mixer() {
 
 feature_sdl-mixer_2_0_0() {
 	FEAT_VERSION=2_0_0
-	
+
 	FEAT_SOURCE_DEPENDENCIES="sdl#2_0_3"
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -39,12 +38,12 @@ feature_sdl-mixer_2_0_0() {
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libSDL2_mixer.a
 	FEAT_SEARCH_PATH=
-	
+
 }
 
 feature_sdl-mixer_1_2_12() {
 	FEAT_VERSION=1_2_12
-	
+
 	FEAT_SOURCE_DEPENDENCIES="sdl#1_2_15"
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -62,7 +61,7 @@ feature_sdl-mixer_1_2_12() {
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libSDL_mixer.a
 	FEAT_SEARCH_PATH=
-	
+
 }
 
 
@@ -88,7 +87,7 @@ feature_sdl-mixer_install_source() {
 
 	__set_toolset "STANDARD"
 
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=

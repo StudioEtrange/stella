@@ -16,7 +16,6 @@ _miniconda_INCLUDED_=1
 feature_miniconda() {
 	FEAT_NAME=miniconda
 	FEAT_LIST_SCHEMA="4_2_12_PYTHON3@x64:binary 4_2_12_PYTHON3@x86:binary 4_2_12_PYTHON2@x64:binary 4_2_12_PYTHON2@x86:binary 4_1_11_PYTHON2@x64:binary 4_1_11_PYTHON2@x86:binary 4_1_11_PYTHON3@x64:binary 4_1_11_PYTHON3@x86:binary"
-	FEAT_DEFAULT_VERSION=4_2_12_PYTHON2
 	FEAT_DEFAULT_ARCH=x64
 	FEAT_DEFAULT_FLAVOUR="binary"
 }

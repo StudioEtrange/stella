@@ -941,21 +941,25 @@ __find_linked_lib_linux() {
 
 
 # fix already linked shared lib by modifying LOAD_DYLIB and adding rpath values
-# 	- before you can filter libs to tweak with filters
+# 	- first you can filter libs to tweak
 # 				INCLUDE_FILTER <expr> -- include these files to tweak
 # 				EXCLUDE_FILTER <expr> -- exclude these files to tweak
 # 				INCLUDE_FILTER is apply first, before EXCLUDE_FILTER
-# 	-	first choose linked lib to modify path
+# 	-	second filter linked lib to modify path
 # 				INCLUDE_LINKED_LIB <expr> -- include these linked libs while tweaking
 # 				EXCLUDE_LINKED_LIB <expr> -- exclude these linked libs while tweaking
 # 				INCLUDE_LINKED_LIB is apply first, before EXCLUDE_LINKED_LIB
-#		-	second transform path of linked lib -- you can choose between (exclusive choices) :
+#		-	third transform path of linked lib -- you can choose between (exclusive choices) :
 #				-	REL_LINK_TO_ABS -- transform all linked libs with a rel path to abs path - Try to find elf with information contained in file and turn it into abs path
-#				-	ABS_LINK_TO_REL -- transform all linked libs with an abs path to rel path (for ELF : set linked lib with lib file name and add an RPATH value corresponding to the relative path to the lib with $ORIGIN/<computed_rel_path_to_lib>)
-#																																					(for MachO : set linked lib as @rpath/lib and add an RPATH value corresponding to the relative path to the lib with @loader_path/<computed_rel_path_to_lib>)
-#				- ABS_LINK_FORCE <path> -- force linked libs with a given path injecting an abs path. (for ELF and Macho : each linked lib will be <path>/linked_lib_file)
-#				- REL_LINK_FORCE <path> -- force linked libs with a given path injecting an rpath value.  (for MachO : set linked lib as @rpath/linked_lib_file and add an RPATH value corresponding to the relative path to the given <path> with @loader_path/<computed_rel_path_to_path>)
-#																																					(for Elf : set linked lib as linked_lib_file and add an RPATH value corresponding to the relative path to the given <path> with $ORIGIN/<computed_rel_path_to_path>)
+#																																	(for ELF and Macho : each linked lib will be "<path>/linked_lib_file")
+#				-	ABS_LINK_TO_REL -- transform all linked libs with an abs path to rel path
+#																																	(for ELF : set linked lib with "lib file name" AND add an RPATH value corresponding to the relative path to the lib with "$ORIGIN/<computed_rel_path_to_lib>")
+#																																	(for MachO : set linked lib with "@rpath/lib" and AND an RPATH value corresponding to the relative path to the lib with "@loader_path/<computed_rel_path_to_lib>")
+#				- ABS_LINK_FORCE <path> -- force linked libs with a given path injecting an abs path.
+#																																	(for ELF and Macho : each linked lib will be "<path>/linked_lib_file")
+#				- REL_LINK_FORCE <path> -- force linked libs with a given path injecting an rpath value.
+#																																	(for Elf : set linked lib with "linked_lib_file" AND add an RPATH value corresponding to the relative path to the given <path> with "$ORIGIN/<computed_rel_path_to_path>")
+#																																	(for MachO : set linked lib with "@rpath/linked_lib_file" AND add an RPATH value corresponding to the relative path to the given <path> with "@loader_path/<computed_rel_path_to_path>")
 #				- ABS_RELINK <path_to_lib> -- switch linked lib to another lib with a given path injecting an abs path.
 #				- REL_RELINK <path_to_lib> -- switch linked lib to another lib with a given path injecting an rpath value.
 __tweak_linked_lib() {

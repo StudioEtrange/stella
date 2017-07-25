@@ -8,24 +8,37 @@ _STELLA_COMMON_INCLUDED_=1
 
 
 # VARIOUS-----------------------------
+
+# option :
+# ENDING_CHAR_REVERSE
+# SEP .
+__get_last_version() {
+	local list=$1
+	local opt="$2"
+
+
+	echo $(__sort_version "$list" "$opt DESC") | cut -d' ' -f 1
+}
+
+
 # sort a list of version
 
-#sorted=$(sort_version "build507 build510 build403 build4000 build" "ASC")
+#sorted=$(__sort_version "build507 build510 build403 build4000 build" "ASC")
 #echo $sorted
 # > build build403 build507 build510 build4000
-#sorted=$(sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "ASC SEP .")
+#sorted=$(__sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "ASC SEP .")
 #echo $sorted
 # > 1.1.0 1.1.1 1.1.1a 1.1.1b
-#sorted=$(sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "DESC SEP .")
+#sorted=$(__sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "DESC SEP .")
 #echo $sorted
 # > 1.1.1b 1.1.1a 1.1.1 1.1.0
-#sorted=$(sort_version "1.1.0 1.1.1 1.1.1alpha 1.1.1beta1 1.1.1beta2" "ASC ENDING_CHAR_REVERSE SEP .")
+#sorted=$(__sort_version "1.1.0 1.1.1 1.1.1alpha 1.1.1beta1 1.1.1beta2" "ASC ENDING_CHAR_REVERSE SEP .")
 #echo $sorted
 # > 1.1.0 1.1.1alpha 1.1.1beta1 1.1.1beta2 1.1.1
-#sorted=$(sort_version "1.1.0 1.1.1 1.1.1alpha 1.1.1beta1 1.1.1beta2" "DESC ENDING_CHAR_REVERSE SEP .")
+#sorted=$(__sort_version "1.1.0 1.1.1 1.1.1alpha 1.1.1beta1 1.1.1beta2" "DESC ENDING_CHAR_REVERSE SEP .")
 #echo $sorted
 # > 1.1.1 1.1.1beta2 1.1.1beta1 1.1.1alpha 1.1.0
-#sorted=$(sort_version "1.9.0 1.10.0 1.10.1.1 1.10.1 1.10.1alpha1 1.10.1beta1 1.10.1beta2 1.10.2 1.10.2.1 1.10.2.2 1.10.0RC1 1.10.0RC2" "DESC ENDING_CHAR_REVERSE SEP .")
+#sorted=$(__sort_version "1.9.0 1.10.0 1.10.1.1 1.10.1 1.10.1alpha1 1.10.1beta1 1.10.1beta2 1.10.2 1.10.2.1 1.10.2.2 1.10.0RC1 1.10.0RC2" "DESC ENDING_CHAR_REVERSE SEP .")
 #echo $sorted
 # > 1.10.2.2 1.10.2.1 1.10.2 1.10.1.1 1.10.1 1.10.1beta2 1.10.1beta1 1.10.1alpha1 1.10.0 1.10.0RC2 1.10.0RC1 1.9.0
 
@@ -1195,7 +1208,7 @@ __download() {
 		if [ ! -f "$STELLA_INTERNAL_CACHE_DIR/$FILE_NAME" ]; then
 			# NOTE : curl seems to be more compatible
 			if [[ -n `which curl 2> /dev/null` ]]; then
-				curl -fSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL" || \
+				curl -fkSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL" || \
 				curl -fkSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL" || \
 				rm -f "$STELLA_APP_CACHE_DIR/$FILE_NAME"
 			else
@@ -1513,6 +1526,7 @@ __argparse(){
 	#GETOPT_CMD is an env variable we can choose a getopt command instead of default "getopt"
 
 	# Debug mode
+	# for debug :
 	#export ARGP_DEBUG=1
 	export ARGP_HELP_FMT=
 	#export ARGP_HELP_FMT="rmargin=$(tput cols)"
@@ -1525,6 +1539,8 @@ __argparse(){
 	# echo "argp returned this for us to eval: '$RES'"
 	[ "$RES" ] || exit 0
 
+	# for debug :
+	#echo $RES
 	eval $RES
 
 	if [ "$COMMAND_LINE_RESULT" ]; then

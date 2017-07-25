@@ -6,7 +6,6 @@ feature_patchelf() {
 	FEAT_NAME=patchelf
 
 	FEAT_LIST_SCHEMA="0_9:source 0_8:source"
-	FEAT_DEFAULT_VERSION=0_9
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 

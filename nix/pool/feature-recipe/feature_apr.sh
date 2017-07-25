@@ -6,7 +6,6 @@ feature_apr() {
 	FEAT_NAME=apr
 
 	FEAT_LIST_SCHEMA="1_5_2:source"
-	FEAT_DEFAULT_VERSION=1_5_2
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 

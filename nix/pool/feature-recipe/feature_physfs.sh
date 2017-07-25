@@ -1,4 +1,4 @@
-if [ ! "$_physfs_INCLUDED_" = "1" ]; then 
+if [ ! "$_physfs_INCLUDED_" = "1" ]; then
 _physfs_INCLUDED_=1
 
 
@@ -6,7 +6,6 @@ _physfs_INCLUDED_=1
 feature_physfs() {
 	FEAT_NAME=physfs
 	FEAT_LIST_SCHEMA="2_0_3:source"
-	FEAT_DEFAULT_VERSION=2_0_3
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -16,7 +15,7 @@ feature_physfs() {
 
 feature_physfs_2_0_3() {
 	FEAT_VERSION=2_0_3
-	
+
 	FEAT_SOURCE_DEPENDENCIES="readline zlib#1_2_8"
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -34,7 +33,7 @@ feature_physfs_2_0_3() {
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libphysfs.a
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-	
+
 }
 
 
@@ -49,7 +48,7 @@ feature_physfs_install_source() {
 
 	__set_toolset "CMAKE"
 
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=

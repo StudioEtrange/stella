@@ -5,25 +5,23 @@ _gcc_INCLUDED_=1
 # https://github.com/Homebrew/homebrew-versions/blob/master/gcc48.rb
 # http://stackoverflow.com/questions/9450394/how-to-install-gcc-piece-by-piece-with-gmp-mpfr-mpc-elf-without-shared-libra
 
-# TODO do not work on DARWIN / but work on linux
-
+# NOTE : need g++
 
 feature_gcc() {
 	FEAT_NAME=gcc
-	FEAT_LIST_SCHEMA="4_8_2:source"
-	FEAT_DEFAULT_VERSION=4_8_2
+	FEAT_LIST_SCHEMA="4_8_5:source"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
-feature_gcc_4_8_2() {
-	FEAT_VERSION=4_8_2
+feature_gcc_4_8_5() {
+	FEAT_VERSION=4_8_5
 
 
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
-	FEAT_SOURCE_URL="https://ftp.gnu.org/gnu/gcc/gcc-4.8.2/gcc-4.8.2.tar.bz2"
+	FEAT_SOURCE_URL="https://ftp.gnu.org/gnu/gcc/gcc-4.8.5/gcc-4.8.5.tar.bz2"
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
@@ -65,6 +63,7 @@ feature_gcc_install_source() {
 
 	__set_toolset "STANDARD"
 	__add_toolset "autotools"
+	__check_toolset "C++"
 
   __feature_callback
 
@@ -75,7 +74,7 @@ feature_gcc_install_source() {
   AUTO_INSTALL_BUILD_FLAG_PREFIX=
   AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP BUILD_KEEP"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD"
 
 }
 

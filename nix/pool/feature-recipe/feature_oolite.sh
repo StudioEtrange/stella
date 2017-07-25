@@ -1,4 +1,4 @@
-if [ ! "$_oolite_INCLUDED_" = "1" ]; then 
+if [ ! "$_oolite_INCLUDED_" = "1" ]; then
 _oolite_INCLUDED_=1
 
 # TODO : to finish
@@ -9,7 +9,6 @@ feature_oolite() {
 	FEAT_NAME=oolite
 
 	FEAT_LIST_SCHEMA="1_82:source"
-	FEAT_DEFAULT_VERSION=1_82
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 
@@ -44,7 +43,7 @@ feature_oolite_1_82() {
 feature_oolite_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
+
 	__set_toolset "STANDARD"
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
@@ -56,9 +55,9 @@ feature_oolite_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_CONFIG NO_OUT_OF_TREE_BUILD SOURCE_KEEP"
-	
 
-	
+
+
 
 }
 

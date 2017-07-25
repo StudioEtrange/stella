@@ -1,4 +1,4 @@
-if [ ! "$_CMATRIX_INCLUDED_" = "1" ]; then 
+if [ ! "$_CMATRIX_INCLUDED_" = "1" ]; then
 _CMATRIX_INCLUDED_=1
 
 # darwin -- OK -- 20151012
@@ -7,7 +7,6 @@ _CMATRIX_INCLUDED_=1
 feature_cmatrix() {
 	FEAT_NAME=cmatrix
 	FEAT_LIST_SCHEMA="1_2a:source"
-	FEAT_DEFAULT_VERSION=1_2a
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -39,7 +38,7 @@ feature_cmatrix_1_2a() {
 feature_cmatrix_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 	#__set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL make"

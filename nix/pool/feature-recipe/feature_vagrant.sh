@@ -8,12 +8,10 @@ feature_vagrant() {
 	FEAT_NAME=vagrant
 	if [ "$STELLA_CURRENT_OS" = "ubuntu" ]; then
 		FEAT_LIST_SCHEMA="1_9_1@x64:binary 1_9_1@x86:binary 1_8_4@x64:binary 1_8_4@x86:binary"
-		FEAT_DEFAULT_VERSION=1_9_1
 		FEAT_DEFAULT_ARCH=x64
 	fi
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_LIST_SCHEMA="1_9_1@x64:binary 1_9_1@x86:binary 1_8_4@x64:binary 1_8_4@x86:binary"
-		FEAT_DEFAULT_VERSION=1_9_1
 		FEAT_DEFAULT_ARCH=x64
 	fi
 	FEAT_DEFAULT_FLAVOUR="binary"

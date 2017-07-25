@@ -7,7 +7,6 @@ _pkgconfig_INCLUDED_=1
 feature_pkgconfig() {
 	FEAT_NAME=pkgconfig
 	FEAT_LIST_SCHEMA="0_29:source"
-	FEAT_DEFAULT_VERSION=0_29
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }

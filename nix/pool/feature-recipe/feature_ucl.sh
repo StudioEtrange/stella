@@ -1,4 +1,4 @@
-if [ ! "$_UCL_INCLUDED_" = "1" ]; then 
+if [ ! "$_UCL_INCLUDED_" = "1" ]; then
 _UCL_INCLUDED_=1
 
 # OK
@@ -7,14 +7,13 @@ _UCL_INCLUDED_=1
 feature_ucl() {
 	FEAT_NAME=ucl
 	FEAT_LIST_SCHEMA="1_03:source"
-	FEAT_DEFAULT_VERSION=1_03
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
 feature_ucl_1_03() {
 	FEAT_VERSION=1_03
-	
+
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -40,10 +39,8 @@ feature_ucl_install_source() {
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
 
-
-	#__set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL make"
 	__set_toolset "STANDARD"
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 

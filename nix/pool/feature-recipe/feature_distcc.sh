@@ -5,7 +5,6 @@ _distcc_INCLUDED_=1
 feature_distcc() {
 	FEAT_NAME=distcc
 	FEAT_LIST_SCHEMA="3_2_1rc1:source"
-	FEAT_DEFAULT_VERSION=3_2_1rc1
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }

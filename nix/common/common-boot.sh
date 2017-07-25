@@ -6,28 +6,34 @@ _STELLA_BOOT_INCLUDED_=1
 # TODO : when booting a script, how pass arg to script ?
 
 # When docker/dm
-#     stella requirement are installed
+#     stella requirements are installed
 #     stella is mounted on /
-#     stella env file is conserved
+#     stella env file is mounted
 #     current folder is stella_root or <path>
-#     script to execute is mounted on /<script.sh>
+#     when 'shell' : bootstrap shell with stella env setted, inside container
+#     when 'script' : executing script is mounted on /<script.sh>
+#     when 'cmd' : nothing special
 
 # When dm
 #     if -f option is used then docker-machine is created
 
 # When ssh
-#     stella requirement are not installed
+#     stella requirements are installed
 #     current folder is <path> or default path when logging in ssh
 #     stella is sync in default path/stella
-#     stella env file is conserved
-#     script is sync in <path>/<script.sh> or default_path/<script.sh>
+#     stella env file is synced
+#     when 'shell' : bootstrap shell with stella env setted
+#     when 'script' : executing script is sync in <path>/<script.sh> or default_path/<script.sh>
+#     when 'cmd' : nothing special
 
 # When local
 #     stella requirement are not installed
 #     current folder do not change
 #     stella do not move
 #     stella env file is conserved
-#     script to execute do not move
+#     when 'shell' : N/1
+#     when 'script' : nothing special
+#     when 'cmd' : nothing special
 
 # MAIN FUNCTION -----------------------------------------
 __boot_shell() {

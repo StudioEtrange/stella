@@ -1,18 +1,17 @@
-if [ ! "$_AUTOMAKE_INCLUDED_" = "1" ]; then 
+if [ ! "$_AUTOMAKE_INCLUDED_" = "1" ]; then
 _AUTOMAKE_INCLUDED_=1
 
 
 feature_automake() {
 	FEAT_NAME=automake
 	FEAT_LIST_SCHEMA="1_14:source"
-	FEAT_DEFAULT_VERSION=1_14
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
 feature_automake_1_14() {
 	FEAT_VERSION=1_14
-	
+
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -40,14 +39,14 @@ feature_automake_1_14_callback() {
 feature_automake_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 	#__set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL make"
 	__set_toolset "STANDARD"
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
-	AUTO_INSTALL_CONF_FLAG_POSTFIX=	
+	AUTO_INSTALL_CONF_FLAG_POSTFIX=
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
@@ -55,7 +54,7 @@ feature_automake_install_source() {
 
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
-	
+
 }
 
 fi

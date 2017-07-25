@@ -1,4 +1,4 @@
-if [ ! "$_WGET_INCLUDED_" = "1" ]; then 
+if [ ! "$_WGET_INCLUDED_" = "1" ]; then
 _WGET_INCLUDED_=1
 
 # OK
@@ -7,21 +7,20 @@ _WGET_INCLUDED_=1
 feature_wget() {
 	FEAT_NAME=wget
 	FEAT_LIST_SCHEMA="1_15:source"
-	FEAT_DEFAULT_VERSION=1_15
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
 feature_wget_1_15() {
 	FEAT_VERSION=1_15
-	
+
 	FEAT_SOURCE_DEPENDENCIES="openssl#1_0_2d zlib#1_2_8"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://ftp.gnu.org/gnu/wget/wget-1.15.tar.gz
 	FEAT_SOURCE_URL_FILENAME=wget-1.15.tar.gz
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
-	
+
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
@@ -43,9 +42,7 @@ feature_wget_link() {
 feature_wget_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
 
-	#__set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL make"
 	__set_toolset "STANDARD"
 
 

@@ -6,7 +6,6 @@ _SPARK_INCLUDED_=1
 feature_spark() {
 	FEAT_NAME=spark
 	FEAT_LIST_SCHEMA="1_6_1:binary 1_6_1_HADOOP_2_6:binary 1_6_0:binary 1_6_0_HADOOP_2_4:binary 1_3_0_HADOOP_2_4:binary 1_3_1_HADOOP_2_4:binary 1_4_0_HADOOP_2_4:binary 1_4_1_HADOOP_2_4:binary 1_5_1_HADOOP_2_4:binary 1_5_2_HADOOP_2_4:binary 1_5_2_HADOOP_2_6:binary"
-	FEAT_DEFAULT_VERSION=1_6_1_HADOOP_2_6
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }

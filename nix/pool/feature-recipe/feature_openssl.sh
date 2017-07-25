@@ -12,7 +12,6 @@ _OPENSSL_INCLUDED_=1
 feature_openssl() {
 	FEAT_NAME=openssl
 	FEAT_LIST_SCHEMA="1_0_2k:source 1_0_2d:source"
-	FEAT_DEFAULT_VERSION=1_0_2k
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -99,7 +98,7 @@ feature_openssl_install_source() {
 	fi
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		OPENSSL_OPT="shared no-idea no-mdc2 no-rc5 enable-ssl2 enable-tlsext enable-cms"
+		OPENSSL_OPT="shared no-idea no-mdc2 no-rc5 enable-ssl2 enable-tlsext enable-cms enable-krb5"
 
 		[ "$ARCH" = "x86" ] && OPENSSL_PLATFORM=linux-generic32
 		[ "$ARCH" = "x64" ] && OPENSSL_PLATFORM=linux-x86_64
@@ -107,7 +106,7 @@ feature_openssl_install_source() {
 
 	__feature_callback
 
-	__start_manual_build "openssl" "$SRC_DIR" "$INSTALL_DIR" 
+	__start_manual_build "openssl" "$SRC_DIR" "$INSTALL_DIR"
 	#__prepare_build "$INSTALL_DIR" "$SRC_DIR" "$SRC_DIR"
 
 	cd "$SRC_DIR"
@@ -133,7 +132,8 @@ feature_openssl_install_source() {
 	__end_manual_build
 
 	# clean --------------------------------
-	rm -Rf $SRC_DIR
+	cd "$INSTALL_DIR"
+	rm -Rf "$SRC_DIR"
 
 	__inspect_and_fix_build "$INSTALL_DIR" "EXCLUDE_FILTER /share/man/"
 }

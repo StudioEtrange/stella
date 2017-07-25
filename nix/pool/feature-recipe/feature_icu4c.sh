@@ -6,7 +6,6 @@ _icu4c_INCLUDED_=1
 feature_icu4c() {
 	FEAT_NAME=icu4c
 	FEAT_LIST_SCHEMA="55_1:source"
-	FEAT_DEFAULT_VERSION=55_1
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -37,7 +36,7 @@ feature_icu4c_55_1() {
 feature_icu4c_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
+
 	__set_toolset "STANDARD"
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"

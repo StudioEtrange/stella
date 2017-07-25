@@ -1,4 +1,4 @@
-if [ ! "$_luajit_INCLUDED_" = "1" ]; then 
+if [ ! "$_luajit_INCLUDED_" = "1" ]; then
 _luajit_INCLUDED_=1
 
 # NOTE : Do not need lua
@@ -6,7 +6,6 @@ _luajit_INCLUDED_=1
 feature_luajit() {
 	FEAT_NAME=luajit
 	FEAT_LIST_SCHEMA="2_0_4:source"
-	FEAT_DEFAULT_VERSION=2_0_4
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -40,13 +39,13 @@ feature_luajit_2_0_4() {
 feature_luajit_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 	__set_toolset "STANDARD"
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_CONFIG"
-	
+
 }
 
 

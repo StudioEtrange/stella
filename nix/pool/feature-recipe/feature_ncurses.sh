@@ -5,7 +5,6 @@ _NCURSES_INCLUDED_=1
 feature_ncurses() {
 	FEAT_NAME=ncurses
 	FEAT_LIST_SCHEMA="6_0:source 5_9:source"
-	FEAT_DEFAULT_VERSION=6_0
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }

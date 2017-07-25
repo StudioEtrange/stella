@@ -6,7 +6,6 @@ _kafka_INCLUDED_=1
 feature_kafka() {
 	FEAT_NAME=kafka
 	FEAT_LIST_SCHEMA="0_9_0_1:binary"
-	FEAT_DEFAULT_VERSION=0_9_0_1
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }

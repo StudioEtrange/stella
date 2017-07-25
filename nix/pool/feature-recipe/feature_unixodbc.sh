@@ -6,7 +6,6 @@ _unixodbc_INCLUDED_=1
 feature_unixodbc() {
 	FEAT_NAME=unixodbc
 	FEAT_LIST_SCHEMA="2_3_4:source"
-	FEAT_DEFAULT_VERSION=2_3_4
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

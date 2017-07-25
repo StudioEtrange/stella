@@ -6,7 +6,6 @@ _hbase_INCLUDED_=1
 feature_hbase() {
 	FEAT_NAME=hbase
 	FEAT_LIST_SCHEMA="1_2_1:binary 1_1_5:binary"
-	FEAT_DEFAULT_VERSION=1_1_5
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }

@@ -5,7 +5,6 @@ _tig_INCLUDED_=1
 feature_tig() {
 	FEAT_NAME=tig
 	FEAT_LIST_SCHEMA="2_2:source"
-	FEAT_DEFAULT_VERSION=2_2
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }

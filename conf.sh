@@ -63,6 +63,12 @@ STELLA_DIST_URL="$STELLA_URL/dist"
 . $STELLA_COMMON/common-binary.sh
 #shellcheck source=nix/common/common-build.sh
 . $STELLA_COMMON/common-build.sh
+#shellcheck source=nix/common/common-build-toolset.sh
+. $STELLA_COMMON/common-build-toolset.sh
+#shellcheck source=nix/common/common-build-env.sh
+. $STELLA_COMMON/common-build-env.sh
+#shellcheck source=nix/common/common-build-link.sh
+. $STELLA_COMMON/common-build-link.sh
 #shellcheck source=nix/common/common-api.sh
 . $STELLA_COMMON/common-api.sh
 #shellcheck source=nix/common/lib-sfx.sh
@@ -172,6 +178,11 @@ if [ ! "$STELLA_FEATURE_RECIPE_EXTRA" = "" ]; then
 fi
 
 
+# these features will be picked from the system
+# have an effect only for feature declared in FEAT_SOURCE_DEPENDENCIES, FEAT_BINARY_DEPENDENCIES or passed to __link_feature_libray
+[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && STELLA_FEATURE_FROM_SYSTEM="python krb5"
+[ "$STELLA_CURRENT_PLATFORM" = "linux" ] && STELLA_FEATURE_FROM_SYSTEM="openssl python krb5"
+
 # SYS PACKAGE --------------------------------------------
 # list of available installable system package
 [ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && STELLA_SYS_PACKAGE_LIST="git brew x11 build-chain-standard sevenzip wget curl unzip cmake"
@@ -180,24 +191,28 @@ fi
 
 
 # BUILD MODULE ---------------------------------------------
-# Define linking mode.
-# have an effect only for feature linked with __link_feature_libray (do not ovveride specific FORCE_STATIC or FORCE_DYNAMIC)
-# DEFAULT | STATIC | DYNAMIC
-__set_build_mode_default "LINK_MODE" "DEFAULT"
-# these features will be picked from the system
-# have an effect only for feature declared in FEAT_SOURCE_DEPENDENCIES, FEAT_BINARY_DEPENDENCIES or passed to __link_feature_libray
-[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && STELLA_BUILD_DEP_FROM_SYSTEM_DEFAULT="python"
-[ "$STELLA_CURRENT_PLATFORM" = "linux" ] && STELLA_BUILD_DEP_FROM_SYSTEM_DEFAULT="openssl python"
+
 # parallelize build (except specificied unparallelized one)
 # ON | OFF
 __set_build_mode_default "PARALLELIZE" "ON"
 # compiler optimization
 __set_build_mode_default "OPTIMIZATION" "2"
+
+
+# Define linking mode.
+# have an effect only for feature linked with __link_feature_libray (do not ovveride specific FORCE_STATIC or FORCE_DYNAMIC)
+# DEFAULT | STATIC | DYNAMIC
+__set_build_mode_default "LINK_MODE" "DEFAULT"
+# TODO : REWORK
 # rellocatable shared libraries
 # you will not enable to move from another system any binary (executable or shared libs) linked to stella shared libs
 # everything will be sticked to your stella shared lib installation path
 # this will affect rpath values (and install_name for darwin)
 __set_build_mode_default "RELOCATE" "OFF"
+# DEFAULT | ABSOLUTE | RELATIVE
+STELLA_FEATURE_LINK_PATH="DEFAULT"
+__set_build_mode_default "LINK_PATH" "$STELLA_FEATURE_LINK_PATH"
+
 
 # ARCH x86 x64
 # By default we do not provide any build arch information
@@ -212,6 +227,7 @@ __set_build_mode_default "LINK_FLAGS_DEFAULT" "ON"
 STELLA_BUILD_DEFAULT_TOOLSET="STANDARD"
 
 
+# TODO : useless
 # . is current running directory
 # $ORIGIN and @loader_path is directory of the file who wants to load a shared library
 # NOTE : '@loader_path' does not work, you have to write '@loader_path/.'
@@ -236,7 +252,7 @@ STELLA_API_APP_PUBLIC="get_app_property link_app get_data get_assets get_data_pa
 STELLA_API_FEATURE_PUBLIC="feature_add_repo feature_info list_feature_version feature_remove feature_catalog_info feature_install feature_install_list feature_init list_active_features feature_reinit_installed feature_inspect"
 STELLA_API_BINARY_PUBLIC="tweak_linked_lib get_rpath add_rpath check_rpath check_binary_file tweak_binary_file"
 STELLA_API_BUILD_PUBLIC="toolset_info set_toolset start_build_session set_build_mode auto_build"
-STELLA_API_PLATFORM_PUBLIC="python_major_version python_short_version sys_install sys_remove require"
+STELLA_API_PLATFORM_PUBLIC="python_get_libs python_get_includes python_get_ldflags python_get_clags python_get_prefix python_major_version python_short_version sys_install sys_remove require"
 STELLA_API_NETWORK_PUBLIC="proxy_tunnel enable_proxy disable_proxy no_proxy_for register_proxy register_no_proxy"
 STELLA_API_BOOT_PUBLIC="boot_shell boot_cmd boot_script"
 STELLA_API_LOG_PUBLIC="log set_log_level set_log_state"

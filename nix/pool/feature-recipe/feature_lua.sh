@@ -1,11 +1,10 @@
-if [ ! "$_lua_INCLUDED_" = "1" ]; then 
+if [ ! "$_lua_INCLUDED_" = "1" ]; then
 _lua_INCLUDED_=1
 
 
 feature_lua() {
 	FEAT_NAME=lua
 	FEAT_LIST_SCHEMA="5_3_2:source"
-	FEAT_DEFAULT_VERSION=5_3_2
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -39,12 +38,12 @@ feature_lua_5_3_2() {
 feature_lua_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 	__set_toolset "STANDARD"
 	__set_build_mode "PARALLELIZE" "OFF"
-	
+
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
 	AUTO_INSTALL_CONF_FLAG_POSTFIX=
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
@@ -53,7 +52,7 @@ feature_lua_install_source() {
 
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_CONFIG NO_INSTALL"
-	
+
 }
 
 

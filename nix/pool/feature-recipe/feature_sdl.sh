@@ -1,10 +1,9 @@
-if [ ! "$_SDL_INCLUDED_" = "1" ]; then 
+if [ ! "$_SDL_INCLUDED_" = "1" ]; then
 _SDL_INCLUDED_=1
 
 feature_sdl() {
 	FEAT_NAME=sdl
 	FEAT_LIST_SCHEMA="2_0_3:source 1_2_15:source"
-	FEAT_DEFAULT_VERSION=2_0_3
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -14,7 +13,7 @@ feature_sdl() {
 
 feature_sdl_2_0_3() {
 	FEAT_VERSION=2_0_3
-	
+
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -32,12 +31,12 @@ feature_sdl_2_0_3() {
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libSDL2.a
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-	
+
 }
 
 feature_sdl_1_2_15() {
 	FEAT_VERSION=1_2_15
-	
+
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -55,7 +54,7 @@ feature_sdl_1_2_15() {
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libSDL.a
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-	
+
 }
 
 feature_sdl_1_2_15_callback() {
@@ -83,11 +82,10 @@ feature_sdl_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
-	
-	#__set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL make"
+
 	__set_toolset "STANDARD"
 
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=

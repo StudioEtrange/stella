@@ -17,7 +17,6 @@ _DOCKER_INCLUDED_=1
 feature_docker() {
 	FEAT_NAME=docker
 	FEAT_LIST_SCHEMA="17_03_0_CE:binary 1_13_1:binary 1_12_6:binary 1_8_1:binary 1_9_1:binary 1_10_3:binary 1_11_1:binary"
-	FEAT_DEFAULT_VERSION=1_13_1
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }

@@ -7,7 +7,6 @@ _BOOSTBUILD_INCLUDED_=1
 feature_boost-build() {
 	FEAT_NAME=boost-build
 	FEAT_LIST_SCHEMA="2014_10:source"
-	FEAT_DEFAULT_VERSION=2014_10
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -43,13 +42,15 @@ feature_boost-build_install_source() {
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP FORCE_NAME $FEAT_SOURCE_URL_FILENAME"
 
-	__prepare_build "$INSTALL_DIR"
+	__start_manual_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
 
 	cd $SRC_DIR
 	./bootstrap.sh
   ./b2 --prefix="$INSTALL_DIR" install
 
   __del_folder "$SRC_DIR"
+
+	__end_manual_build
 
 }
 

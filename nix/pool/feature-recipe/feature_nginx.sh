@@ -1,4 +1,4 @@
-if [ ! "$_NGINX_INCLUDED_" = "1" ]; then 
+if [ ! "$_NGINX_INCLUDED_" = "1" ]; then
 _NGINX_INCLUDED_=1
 
 
@@ -9,14 +9,13 @@ _NGINX_INCLUDED_=1
 feature_nginx() {
 	FEAT_NAME=nginx
 	FEAT_LIST_SCHEMA="1_7_11:source"
-	FEAT_DEFAULT_VERSION=1_7_11
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
 feature_nginx_1_7_11() {
 	FEAT_VERSION=1_7_11
-	
+
 	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 openssl#1_0_2d"
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -51,14 +50,14 @@ feature_nginx_get_pcre() {
 }
 
 feature_nginx_install_source() {
-	
+
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src/nginx"
 
 
 	#__set_toolset "CUSTOM"  "CONFIG_TOOL configure BUILD_TOOL make"
 	__set_toolset "STANDARD"
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 
@@ -72,7 +71,7 @@ feature_nginx_install_source() {
 
 	# out of tree build do not work
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD"
-	
+
 	rm -Rf "$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 }
 

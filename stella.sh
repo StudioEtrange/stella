@@ -4,7 +4,7 @@ _STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 #shellcheck source=conf.sh
 . "$_STELLA_CURRENT_FILE_DIR"/conf.sh
 
-# NOTE : use this with source (or .) command only
+# NOTE : use "env" with source (or .) command only
 # NOTE : warn : some env var (like PATH) are cumulative
 if [ "$1" = "env" ]; then
 	__init_stella_env
@@ -25,6 +25,7 @@ usage() {
 	echo " o-- feature management :"
 	echo " L     feature install <feature schema> [--depforce] [--depignore] [--buildarch=x86|x64] [--export=<path>] [--portable=<path>] : install a feature. [--depforce] will force to reinstall all dependencies. [--depignore] will ignore dependencies. schema = feature_name[#version][@arch][:binary|source][/os_restriction][\\os_exclusion]"
 	echo " L     feature remove <feature schema> : remove a feature"
+	echo " L     feature info <feature schema> : show some feature informations"
 	echo " L     feature list <all|feature name|active> : list all available feature OR available versions of a feature OR current active features"
 	echo " o-- various :"
 	echo " L     stella api list : list public functions of stella api"
@@ -58,7 +59,7 @@ usage() {
 # arguments
 PARAMETERS="
 DOMAIN=                          'domain'     		a           'app feature stella proxy sys boot'         										   				Action domain.
-ACTION=                         'action'   					a           'tunnel deploy script shell cmd version search remove on off register link api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature install list'         	Action to compute.
+ACTION=                         'action'   					a           'info tunnel deploy script shell cmd version search remove on off register link api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature install list'         	Action to compute.
 ID=							 								''								s 						''
 "
 OPTIONS="
@@ -166,6 +167,19 @@ if [ "$DOMAIN" = "feature" ]; then
 			[ ! "$PORTABLE" = "" ] && _OPT="$_OPT PORTABLE $PORTABLE"
 			__feature_install "$ID" "$_OPT"
 			;;
+
+		info)
+			__feature_catalog_info "$ID"
+			if [ ! "$FEAT_SCHEMA_SELECTED" = "" ]; then
+				echo "** $FEAT_NAME"
+				echo " Available versions : $FEAT_LIST_SCHEMA"
+				echo " Link : $FEAT_LINK"
+				echo " $FEAT_DESC"
+			else
+				echo "** Feature unknown"
+			fi
+			;;
+
 		list)
 			case $ID in
 				all)

@@ -1,4 +1,4 @@
-if [ ! "$_FREETYPE_INCLUDED_" = "1" ]; then 
+if [ ! "$_FREETYPE_INCLUDED_" = "1" ]; then
 _FREETYPE_INCLUDED_=1
 
 # TODO
@@ -13,7 +13,6 @@ _FREETYPE_INCLUDED_=1
 feature_freetype() {
 	FEAT_NAME=freetype
 	FEAT_LIST_SCHEMA="2_6_0:source 2_6_1:source"
-	FEAT_DEFAULT_VERSION=2_6_1
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -27,11 +26,11 @@ feature_freetype_2_6_1() {
 	FEAT_SOURCE_URL=http://downloads.sourceforge.net/project/freetype/freetype2/2.6.1/freetype-2.6.1.tar.bz2
 	FEAT_SOURCE_URL_FILENAME=freetype-2.6.1.tar.bz2
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
-	
+
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
-	
+
 	FEAT_SOURCE_CALLBACK="feature_freetype_link"
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
@@ -48,11 +47,11 @@ feature_freetype_2_6_0() {
 	FEAT_SOURCE_URL=https://downloads.sf.net/project/freetype/freetype2/2.6/freetype-2.6.tar.bz2
 	FEAT_SOURCE_URL_FILENAME=freetype-2.6.tar.bz2
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
-	
+
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
-	
+
 	FEAT_SOURCE_CALLBACK="feature_freetype_2_6_0_patch feature_freetype_link"
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
@@ -76,7 +75,7 @@ feature_freetype_link() {
 feature_freetype_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
+
 
 	__set_toolset "STANDARD"
 
@@ -92,7 +91,7 @@ feature_freetype_install_source() {
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
 
-	
+
 }
 
 

@@ -1,12 +1,14 @@
-if [ ! "$_TEMPLATE-BUNDLE_INCLUDED_" = "1" ]; then 
+if [ ! "$_TEMPLATE-BUNDLE_INCLUDED_" = "1" ]; then
 _TEMPLATE-BUNDLE_INCLUDED_=1
 
 
 feature_template-bundle() {
 	FEAT_NAME=template-bundle
 	FEAT_LIST_SCHEMA="1_0_0@x64 1_0_0@x86"
-	FEAT_DEFAULT_VERSION=1_0_0
 	FEAT_DEFAULT_ARCH=x64
+
+	FEAT_DESC="template is foo"
+	FEAT_LINK="https://github.com/bar/template"
 
 	# should be MERGE or NESTED or LIST
 	# NESTED : each item will be installed inside the bundle path in a separate directory (with each feature name but without version)

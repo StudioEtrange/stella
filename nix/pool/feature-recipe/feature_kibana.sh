@@ -9,7 +9,6 @@ _KIBANA_INCLUDED_=1
 feature_kibana() {
 	FEAT_NAME=kibana
 	FEAT_LIST_SCHEMA="5_2_0:binary 4_3_3:binary 4_5_4:binary 4_0_0:binary 3_1_2:source 4_0_1:binary 4_0_3:binary 4_1_0:binary 4_1_2:binary 4_2_0:binary 4_2_2:binary 4_3_1:binary"
-	FEAT_DEFAULT_VERSION=5_2_0
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }

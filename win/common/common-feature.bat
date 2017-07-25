@@ -177,7 +177,7 @@ goto :eof
 			set "_t=!_info_prefix!_TEST_FEATURE"
 			set "!_t!=!TEST_FEATURE!"
 			set "_t=!_info_prefix!_FEAT_INSTALL_ROOT"
-			set "!_t!=!FEAT_INSTALL_ROOT!"			
+			set "!_t!=!FEAT_INSTALL_ROOT!"
 			set "_t=!_info_prefix!_FEAT_NAME"
 			set "!_t!=!FEAT_NAME!"
 			set "_t=!_info_prefix!_FEAT_ARCH"

@@ -8,7 +8,6 @@ feature_packer() {
 
 	FEAT_NAME=packer
 	FEAT_LIST_SCHEMA="0_6_0@x64:binary 0_6_0@x86:binary 0_7_5@x64:binary 0_7_5@x86:binary"
-	FEAT_DEFAULT_VERSION=0_7_5
 	FEAT_DEFAULT_ARCH=x64
 	FEAT_DEFAULT_FLAVOUR="binary"
 }

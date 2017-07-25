@@ -1,4 +1,4 @@
-if [ ! "$_BZIP2_INCLUDED_" = "1" ]; then 
+if [ ! "$_BZIP2_INCLUDED_" = "1" ]; then
 _BZIP2_INCLUDED_=1
 
 # darwin -- OK -- 20151012
@@ -6,7 +6,6 @@ _BZIP2_INCLUDED_=1
 feature_bzip2() {
 	FEAT_NAME=bzip2
 	FEAT_LIST_SCHEMA="1_0_6:source"
-	FEAT_DEFAULT_VERSION=1_0_6
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -40,7 +39,7 @@ feature_bzip2_1_0_6() {
 feature_bzip2_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 	#__set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL make"
@@ -52,7 +51,7 @@ feature_bzip2_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_CONFIG"
-	
+
 
 }
 

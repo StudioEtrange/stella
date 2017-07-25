@@ -17,7 +17,6 @@ feature_augeas() {
 	FEAT_NAME=augeas
 
 	FEAT_LIST_SCHEMA="1_6_0:source 1_5_0:source"
-	FEAT_DEFAULT_VERSION=1_6_0
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -84,7 +83,8 @@ feature_augeas_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
-	__set_toolset "AUTOTOOLS"
+	__set_toolset "STANDARD"
+	__add_toolset "autotools"
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 

@@ -5,12 +5,51 @@ _NODEJS_INCLUDED_=1
 
 feature_nodejs() {
 	FEAT_NAME=nodejs
-	FEAT_LIST_SCHEMA="4_4_5@x64:binary 4_4_5@x86:binary 0_12_14@x64:binary 0_12_14@x86:binary 0_10_45@x64:binary 0_10_45@x86:binary"
-	FEAT_DEFAULT_VERSION=4_4_5
+	FEAT_LIST_SCHEMA="6_10_2@x64:binary 6_10_2@x86:binary 4_4_5@x64:binary 4_4_5@x86:binary 0_12_14@x64:binary 0_12_14@x86:binary 0_10_45@x64:binary 0_10_45@x86:binary"
 	FEAT_DEFAULT_ARCH=x64
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
+
+feature_nodejs_6_10_2() {
+	FEAT_VERSION=6_10_2
+
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL=
+	FEAT_SOURCE_URL_FILENAME=
+	FEAT_SOURCE_URL_PROTOCOL=
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		FEAT_BINARY_URL_x86=
+		FEAT_BINARY_URL_FILENAME_x86=
+		FEAT_BINARY_URL_PROTOCOL_x86=
+
+		FEAT_BINARY_URL_x64=https://nodejs.org/dist/v6.10.2/node-v6.10.2-darwin-x64.tar.gz
+		FEAT_BINARY_URL_FILENAME_x64=node-v6.10.2-darwin-x64.tar.gz
+		FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP
+	fi
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		FEAT_BINARY_URL_x86=https://nodejs.org/dist/v6.10.2/node-v6.10.2-linux-x86.tar.xz
+		FEAT_BINARY_URL_FILENAME_x86=node-v6.10.2-linux-x86.tar.xz
+		FEAT_BINARY_URL_PROTOCOL_x86=HTTP_ZIP
+
+		FEAT_BINARY_URL_x64=https://nodejs.org/dist/v6.10.2/node-v6.10.2-linux-x64.tar.xz
+		FEAT_BINARY_URL_FILENAME_x64=node-v6.10.2-linux-x64.tar.xz
+		FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP
+	fi
+
+	FEAT_SOURCE_CALLBACK=
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/node
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+
+}
 
 feature_nodejs_4_4_5() {
 	FEAT_VERSION=4_4_5

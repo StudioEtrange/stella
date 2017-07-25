@@ -1,11 +1,10 @@
-if [ ! "_EXPAT_INCLUDED_" = "1" ]; then 
+if [ ! "_EXPAT_INCLUDED_" = "1" ]; then
 _EXPAT_INCLUDED_=1
 
 
 feature_expat() {
 	FEAT_NAME=expat
 	FEAT_LIST_SCHEMA="2_1_0:source"
-	FEAT_DEFAULT_VERSION=2_1_0
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -37,9 +36,8 @@ feature_expat_2_1_0() {
 feature_expat_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
 
-	#__set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL make"
+
 	__set_toolset "STANDARD"
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
@@ -53,7 +51,7 @@ feature_expat_install_source() {
 	__feature_callback
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
-	
+
 
 }
 

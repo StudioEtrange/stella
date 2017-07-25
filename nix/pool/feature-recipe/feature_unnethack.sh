@@ -1,4 +1,4 @@
-if [ ! "$_UNNETHACK_INCLUDED_" = "1" ]; then 
+if [ ! "$_UNNETHACK_INCLUDED_" = "1" ]; then
 _UNNETHACK_INCLUDED_=1
 
 # OK
@@ -7,7 +7,6 @@ _UNNETHACK_INCLUDED_=1
 feature_unnethack() {
 	FEAT_NAME=unnethack
 	FEAT_LIST_SCHEMA="5_1_0:source"
-	FEAT_DEFAULT_VERSION=5_1_0
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -15,7 +14,7 @@ feature_unnethack() {
 
 feature_unnethack_5_1_0() {
 	FEAT_VERSION=unnethack_5_1_0
-	
+
 	# depend on ncurses
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -23,7 +22,7 @@ feature_unnethack_5_1_0() {
 	FEAT_SOURCE_URL=http://sourceforge.net/projects/unnethack/files/unnethack/5.1.0/unnethack-5.1.0-20131208.tar.gz
 	FEAT_SOURCE_URL_FILENAME=unnethack-5.1.0-20131208.tar.gz
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
-	
+
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
@@ -43,7 +42,7 @@ feature_unnethack_5_1_0() {
 feature_unnethack_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
+
 
 	__set_toolset "STANDARD"
 

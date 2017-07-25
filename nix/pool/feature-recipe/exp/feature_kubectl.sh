@@ -5,7 +5,6 @@ _kubectl_INCLUDED_=1
 feature_kubectl() {
 	FEAT_NAME=kubectl
 	FEAT_LIST_SCHEMA="0_14_0:binary"
-	FEAT_DEFAULT_VERSION=0_14_0
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }

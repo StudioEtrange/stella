@@ -6,7 +6,6 @@ feature_protobuf-pythoncpp() {
 	FEAT_NAME=protobuf-pythoncpp
 
 	FEAT_LIST_SCHEMA="3_1_0:source 3_0_0:source"
-	FEAT_DEFAULT_VERSION=3_1_0
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 

@@ -1,4 +1,4 @@
-if [ ! "$_sdlimage_INCLUDED_" = "1" ]; then 
+if [ ! "$_sdlimage_INCLUDED_" = "1" ]; then
 _sdlimage_INCLUDED_=1
 
 #https://www.libsdl.org/projects/SDL_image/
@@ -11,7 +11,6 @@ _sdlimage_INCLUDED_=1
 feature_sdl-image() {
 	FEAT_NAME=sdl-image
 	FEAT_LIST_SCHEMA="2_0_0:source 1_2_12:source"
-	FEAT_DEFAULT_VERSION=2_0_0
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -21,7 +20,7 @@ feature_sdl-image() {
 
 feature_sdl-image_2_0_0() {
 	FEAT_VERSION=2_0_0
-	
+
 	FEAT_SOURCE_DEPENDENCIES="sdl#2_0_3"
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -39,12 +38,12 @@ feature_sdl-image_2_0_0() {
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libSDL2_image.a
 	FEAT_SEARCH_PATH=
-	
+
 }
 
 feature_sdl-image_1_2_12() {
 	FEAT_VERSION=1_2_12
-	
+
 	FEAT_SOURCE_DEPENDENCIES="sdl#1_2_15"
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -62,7 +61,7 @@ feature_sdl-image_1_2_12() {
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libSDL_image.a
 	FEAT_SEARCH_PATH=
-	
+
 }
 
 
@@ -88,7 +87,7 @@ feature_sdl-image_install_source() {
 
 	__set_toolset "STANDARD"
 
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=

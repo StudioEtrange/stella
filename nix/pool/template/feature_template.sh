@@ -5,9 +5,11 @@ _TEMPLATE_INCLUDED_=1
 feature_template() {
 	FEAT_NAME=template
 	FEAT_LIST_SCHEMA="1_0_0@x64:binary 1_0_0@x86:binary"
-	FEAT_DEFAULT_VERSION=1_0_0
 	FEAT_DEFAULT_ARCH=x64
 	FEAT_DEFAULT_FLAVOUR="binary"
+
+	FEAT_DESC="template is foo"
+	FEAT_LINK="https://github.com/bar/template"
 }
 
 
@@ -131,6 +133,7 @@ feature_template_install_source() {
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
 	__set_toolset "STANDARD"
+	__check_toolset "C++"
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 

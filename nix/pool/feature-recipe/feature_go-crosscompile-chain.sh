@@ -1,13 +1,12 @@
-if [ ! "$_GOCROSSCOMPILE_INCLUDED_" = "1" ]; then 
+if [ ! "$_GOCROSSCOMPILE_INCLUDED_" = "1" ]; then
 _GOCROSSCOMPILE_INCLUDED_=1
 
 
-# TODO review with https://github.com/StudioEtrange/ngrok-build 
+# TODO review with https://github.com/StudioEtrange/ngrok-build
 
 feature_go-crosscompile-chain() {
 	FEAT_NAME="go-crosscompile-chain"
 	FEAT_LIST_SCHEMA="1_4_3"
-	FEAT_DEFAULT_VERSION=1_4_3
 	FEAT_DEFAULT_ARCH=
 
 	FEAT_BUNDLE=NESTED
@@ -15,7 +14,7 @@ feature_go-crosscompile-chain() {
 
 feature_go-crosscompile-chain_1_4_3() {
 	FEAT_VERSION=1_4_3
-	
+
 	# need gcc
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -53,7 +52,7 @@ feature_go_prepare_crosschain() {
 	go get github.com/tools/godep
 
 	echo "** install gox"
-  	go get github.com/mitchellh/gox
+  go get github.com/mitchellh/gox
 
 	echo "** install gonative"
 	go get github.com/inconshreveable/gonative
@@ -62,7 +61,7 @@ feature_go_prepare_crosschain() {
 	mkdir -p "$FEAT_INSTALL_ROOT/_GONATIVE_TOOLCHAIN_"
 	cd "$FEAT_INSTALL_ROOT/_GONATIVE_TOOLCHAIN_"
 	gonative build --version="$BUILDCHAIN_GO_VERSION" --platforms="windows_386 windows_amd64 linux_386 linux_amd64 darwin_386 darwin_amd64"
-	
+
 }
 
 fi

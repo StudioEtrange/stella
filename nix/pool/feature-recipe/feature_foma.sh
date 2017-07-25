@@ -1,4 +1,4 @@
-if [ ! "$_FOMA_INCLUDED_" = "1" ]; then 
+if [ ! "$_FOMA_INCLUDED_" = "1" ]; then
 _FOMA_INCLUDED_=1
 
 
@@ -6,7 +6,6 @@ _FOMA_INCLUDED_=1
 feature_foma() {
 	FEAT_NAME=foma
 	FEAT_LIST_SCHEMA="0_9_18:binary"
-	FEAT_DEFAULT_VERSION=0_9_18
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }

@@ -1,4 +1,4 @@
-if [ ! "$_sdlgfx_INCLUDED_" = "1" ]; then 
+if [ ! "$_sdlgfx_INCLUDED_" = "1" ]; then
 _sdlgfx_INCLUDED_=1
 
 #http://cms.ferzkopp.net/index.php/software/13-sdl-gfx
@@ -11,7 +11,6 @@ _sdlgfx_INCLUDED_=1
 feature_sdl-gfx() {
 	FEAT_NAME=sdl-gfx
 	FEAT_LIST_SCHEMA="1_0_1:source 2_0_25:source"
-	FEAT_DEFAULT_VERSION=1_0_1
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -21,7 +20,7 @@ feature_sdl-gfx() {
 
 feature_sdl-gfx_1_0_1() {
 	FEAT_VERSION=1_0_1
-	
+
 	FEAT_SOURCE_DEPENDENCIES="sdl#2_0_3"
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -39,12 +38,12 @@ feature_sdl-gfx_1_0_1() {
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libSDL2_gfx.a
 	FEAT_SEARCH_PATH=
-	
+
 }
 
 feature_sdl-gfx_2_0_25() {
 	FEAT_VERSION=2_0_25
-	
+
 	FEAT_SOURCE_DEPENDENCIES="sdl#1_2_15"
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -62,7 +61,7 @@ feature_sdl-gfx_2_0_25() {
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libSDL_gfx.a
 	FEAT_SEARCH_PATH=
-	
+
 }
 
 
@@ -87,7 +86,7 @@ feature_sdl-gfx_install_source() {
 
 	__set_toolset "STANDARD"
 
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=

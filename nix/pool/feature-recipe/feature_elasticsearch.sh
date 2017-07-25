@@ -6,7 +6,6 @@ _ELASTICSEARCH_INCLUDED_=1
 feature_elasticsearch() {
 	FEAT_NAME=elasticsearch
 	FEAT_LIST_SCHEMA="5_2_0:binary 2_3_5:binary 1_4_4:binary 1_5_0:binary 1_5_2:binary 1_6_0:binary 1_6_2:binary 1_7_3:binary 2_0_0:binary 2_0_2:binary 2_1_1:binary"
-	FEAT_DEFAULT_VERSION=5_2_0
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }

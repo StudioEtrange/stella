@@ -6,7 +6,6 @@ _SOCAT_INCLUDED_=1
 feature_socat() {
 	FEAT_NAME=socat
 	FEAT_LIST_SCHEMA="1_7_3_0:source"
-	FEAT_DEFAULT_VERSION=1_7_3_0
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -41,7 +40,7 @@ feature_socat_link() {
 feature_socat_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
+
 	__set_toolset "STANDARD"
 
 

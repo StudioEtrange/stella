@@ -1,4 +1,4 @@
-if [ ! "$_redis_INCLUDED_" = "1" ]; then 
+if [ ! "$_redis_INCLUDED_" = "1" ]; then
 _redis_INCLUDED_=1
 
 
@@ -6,7 +6,6 @@ _redis_INCLUDED_=1
 feature_redis() {
 	FEAT_NAME=redis
 	FEAT_LIST_SCHEMA="3_0_7:source"
-	FEAT_DEFAULT_VERSION=3_0_7
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -51,17 +50,17 @@ feature_redis_install_source() {
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 	__set_toolset "STANDARD"
-	
+
 	__feature_callback
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_CONFIG SOURCE_KEEP"
 
-	__copy_folder_content_into "$SRC_DIR" "$INSTALL_DIR" 
+	__copy_folder_content_into "$SRC_DIR" "$INSTALL_DIR"
 
 	rm -Rf "$INSTALL_DIR/deps"
 	rm -Rf "$INSTALL_DIR/src"
 	rm -Rf "$SRC_DIR"
-	
+
 }
 
 

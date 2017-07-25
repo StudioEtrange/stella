@@ -298,7 +298,7 @@ abend() {
 
 
 add_param() {
-  local NAME DESC TYPE RANGE MANDATORY LABEL
+  local NAME DESC TYPE RANGE MANDATORY LABEL ORIGINAL_NAME
 
     NAME=$(convert_to_env_name "$1")
     ORIGINAL_NAME="$1" # original name of the param
@@ -393,8 +393,8 @@ add_param() {
 }
 
 add_opt() {
-    local NAME DEFAULT DESC SOPT LABEL LOPT TYPE RANGE MANDATORY
-    ORIGINAL_NAME="$1" # ie (debug
+    local NAME DEFAULT DESC SOPT LABEL LOPT TYPE RANGE MANDATORY ORIGINAL_NAME
+    ORIGINAL_NAME="$1" # ie (debug)
     NAME=$(convert_to_env_name "$1") # ie (debug => DEBUG)
     LOPT=$(convert_to_option_name "$1") # long name in 'command line option style' (ie ARGP_DEBUG => argp-debug)
     DEFAULT=${2:-}
@@ -1164,31 +1164,31 @@ get_opt_name() {
 
 process_params() {
     [[ "$ARGP_DEBUG" ]] && debug_args "$@"
-    local SHIFT_NUM=0 PARAM NAME TYPE RANGE MANDATORY VALUE
+    local SHIFT_NUM=0 PARAM PARAM_NAME TYPE RANGE MANDATORY VALUE
 
-    for NAME in $ARGP_PARAM_LIST; do
+    for PARAM_NAME in $ARGP_PARAM_LIST; do
         VALUE="${1:-}"
         MANDATORY=1
 
-        TYPE=$(get_param_type "$NAME")
+        TYPE=$(get_param_type "$PARAM_NAME")
         [[ "$TYPE" ]] || {
-            abend 1 "$ARGP_PROG: argp.sh: no type for param \"$NAME\""
+            abend 1 "$ARGP_PROG: argp.sh: no type for param \"$PARAM_NAME\""
         }
-        RANGE=$(get_param_range "$NAME")
+        RANGE=$(get_param_range "$PARAM_NAME")
 
         ((SHIFT_NUM++))
         shift
 
         [[ "$VALUE" ]] || {
-              [[ "$MANDATORY" == "1" ]] && abend 1 "$NAME is mandatory"
+              [[ "$MANDATORY" == "1" ]] && abend 1 "$PARAM_NAME is mandatory"
         }
 
         [[ "$ARGP_DEBUG" ]] &&
-        echo "process_params: param='$NAME' value='$VALUE' type='$TYPE' range='$RANGE'"
+        echo "process_params: param='$PARAM_NAME' value='$VALUE' type='$TYPE' range='$RANGE'"
 
-        check_type_and_value "$NAME" "$VALUE" "$TYPE" "$RANGE"
+        check_type_and_value "$PARAM_NAME" "$VALUE" "$TYPE" "$RANGE"
 
-        export $NAME="$VALUE"
+        export $PARAM_NAME="$VALUE"
         set +x
     done
 
@@ -1198,7 +1198,7 @@ process_params() {
 
 process_opts() {
     [[ "$ARGP_DEBUG" ]] && debug_args "$@"
-    local SHIFT_NUM=0 OPTION NAME TYPE RANGE
+    local SHIFT_NUM=0 OPTION OPT_NAME TYPE RANGE
 
     while true; do
         OPTION="${1:-}"
@@ -1227,50 +1227,48 @@ process_opts() {
         [[ "$OPTION" == "--" ]] && break
 
         # here is where all the user options get done:
-        NAME=$(get_opt_name "$OPTION")
-        [[ "$NAME" ]] || {
+        OPT_NAME=$(get_opt_name "$OPTION")
+        [[ "$OPT_NAME" ]] || {
             abend 1 "$ARGP_PROG: argp.sh: no name for option \"$OPTION\""
         }
 
-        TYPE=$(get_opt_type "$NAME")
+        TYPE=$(get_opt_type "$OPT_NAME")
         [[ "$TYPE" ]] || {
             abend 1 "$ARGP_PROG: argp.sh: no type for option \"$OPTION\""
         }
-        RANGE=$(get_opt_range "$NAME")
+        RANGE=$(get_opt_range "$OPT_NAME")
 
-        [[ "$ARGP_DEBUG" ]] &&
-        echo "process_opts: option='$OPTION' name='$NAME' type='$TYPE' range='$RANGE'"
+        [[ "$ARGP_DEBUG" ]] && echo "process_opts: option='$OPTION' name='$OPT_NAME' type='$TYPE' range='$RANGE'"
         case $TYPE in
             b)
                 if [[ "$RANGE" ]]; then
-                    export $NAME="$RANGE"
+                    export $OPT_NAME="$RANGE"
                 else
                     # if no previous value, reset it
-                    [[ "${!NAME}" ]] || export $NAME=
-                    if [[ "${!NAME}" =~ ^[0-9]+$ ]]; then
-                        export $NAME=$(( NAME + 1 ))
+                    [[ "${!OPT_NAME}" ]] || export $OPT_NAME=
+                    if [[ "${!OPT_NAME}" =~ ^[0-9]+$ ]]; then
+                        export $OPT_NAME=$(( OPT_NAME + 1 ))
                     else
-                        export $NAME=1
+                        export $OPT_NAME=1
                     fi
                 fi
                 ;;
             *)
                 local VALUE="$1"
-                [[ "$RANGE" ]] &&
-                check_type_and_value "$NAME" "$VALUE" "$TYPE" "$RANGE"
+                [[ "$RANGE" ]] && check_type_and_value "$OPT_NAME" "$VALUE" "$TYPE" "$RANGE"
                 case $TYPE in
                     a|s*)
                         local SEP=${TYPE:1}
-                        if [[ "$SEP" && "${!NAME}" ]]; then
-                            export $NAME="${!NAME}${SEP}$VALUE"
-                        elif [[ "$OPTION_SEP" && "${!NAME}" ]]; then
-                            export $NAME="${!NAME}${OPTION_SEP}$VALUE"
+                        if [[ "$SEP" && "${!OPT_NAME}" ]]; then
+                            export $OPT_NAME="${!OPT_NAME}${SEP}$VALUE"
+                        elif [[ "$OPTION_SEP" && "${!OPT_NAME}" ]]; then
+                            export $OPT_NAME="${!OPT_NAME}${OPTION_SEP}$VALUE"
                         else
-                            export $NAME="$VALUE"
+                            export $OPT_NAME="$VALUE"
                         fi
                         ;;
                     *)
-                        export $NAME="$VALUE"
+                        export $OPT_NAME="$VALUE"
                         ;;
                 esac
                 ((SHIFT_NUM++))
@@ -1283,16 +1281,17 @@ process_opts() {
 }
 
 output_values_param() {
-  local NAME VALUE MANDATORY
-  for NAME in $ARGP_PARAM_LIST; do
-        VALUE="${!NAME}"
+  local PARAM_NAME VALUE MANDATORY
+  # NOTE : use local PARAM_NAME to not override param name which can be "NAME"
+  for PARAM_NAME in $ARGP_PARAM_LIST; do
+        VALUE="${!PARAM_NAME}"
         MANDATORY=1
 
         [[ "$VALUE" ]] || {
-          [[ "$MANDATORY" == "1" ]] && abend 1 "$NAME is mandatory"
+          [[ "$MANDATORY" == "1" ]] && abend 1 "$PARAM_NAME is mandatory"
         }
         [[ "$VALUE" == *\'* ]] && VALUE=$(echo "${VALUE}" |sed -e "s/'/'\\\''/g")
-        echo -n "export $NAME='$VALUE'; "
+        echo -n "export $PARAM_NAME='$VALUE'; "
     done
 
     echo -n "set -- "
@@ -1306,20 +1305,21 @@ output_values_param() {
 
 output_values() {
     [[ "$ARGP_DEBUG" ]] && debug_args "$@"
-    local NAME VALUE MANDATORY DEF
-    for NAME in $ARGP_OPTION_LIST; do
-        VALUE="${!NAME}"
-        MANDATORY=$(get_opt_mandatory $NAME)
+    local OPT_NAME VALUE MANDATORY DEF
+    # NOTE : use local OPT_NAME to not override option name which can be "NAME"
+    for OPT_NAME in $ARGP_OPTION_LIST; do
+        VALUE="${!OPT_NAME}"
+        MANDATORY=$(get_opt_mandatory $OPT_NAME)
 
         [[ "$VALUE" ]] || {
-            DEF=$(get_opt_default $NAME)
+            DEF=$(get_opt_default $OPT_NAME)
             [[ "$DEF" ]] || {
-              [[ "$MANDATORY" == "1" ]] && abend 1 "$NAME is mandatory"
+              [[ "$MANDATORY" == "1" ]] && abend 1 "$OPT_NAME is mandatory"
             }
-            VALUE=$(get_opt_default $NAME)
+            VALUE=$(get_opt_default $OPT_NAME)
         }
         [[ "$VALUE" == *\'* ]] && VALUE=$(echo "${VALUE}" |sed -e "s/'/'\\\''/g")
-        echo -n "export $NAME='$VALUE'; "
+        echo -n "export $OPT_NAME='$VALUE'; "
     done
 
     #echo -n "set -- "
@@ -1636,16 +1636,14 @@ main() {
     set -- "${ARGS[@]}"
     shift $ARGP_NUM_SHIFT
     [[ "$ARGP_DEBUG" ]] && debug_args "$@"
-
     output_values "$@" >&3
+
 
     process_params "$@"
     ARGP_NUM_SHIFT=$?
     shift $ARGP_NUM_SHIFT
     [[ "$ARGP_DEBUG" ]] && debug_args "$@"
-
     output_values_param "$@" >&3
-
 }
 
 check_bash() {
@@ -1676,7 +1674,7 @@ try_c_version() {
 
 if [[ "$GETOPT_CMD" == "PURE_BASH" ]]; then
   # include pure-getopt from Aron Griffis https://github.com/agriffis/pure-getopt
-  source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/getopt.bash"
+  source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../pool/artefact/pure-getopt/getopt.bash"
   GETOPT_CMD=getopt
 fi
 

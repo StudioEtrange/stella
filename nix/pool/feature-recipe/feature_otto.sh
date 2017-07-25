@@ -6,7 +6,6 @@ _otto_INCLUDED_=1
 feature_otto() {
 	FEAT_NAME=otto
 	FEAT_LIST_SCHEMA="0_2_0@x64:binary 0_2_0@x86:binary"
-	FEAT_DEFAULT_VERSION=0_2_0
 	FEAT_DEFAULT_ARCH=x64
 	FEAT_DEFAULT_FLAVOUR="binary"
 }

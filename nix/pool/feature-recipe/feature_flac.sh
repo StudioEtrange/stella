@@ -1,4 +1,4 @@
-if [ ! "$_flac_INCLUDED_" = "1" ]; then 
+if [ ! "$_flac_INCLUDED_" = "1" ]; then
 _flac_INCLUDED_=1
 
 # https://github.com/Homebrew/homebrew/blob/master/Library/Formula/flac.rb
@@ -6,7 +6,6 @@ _flac_INCLUDED_=1
 feature_flac() {
 	FEAT_NAME=flac
 	FEAT_LIST_SCHEMA="1_3_1:source"
-	FEAT_DEFAULT_VERSION=1_3_1
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -16,7 +15,7 @@ feature_flac() {
 
 feature_flac_1_3_1() {
 	FEAT_VERSION=1_3_1
-	
+
 	FEAT_SOURCE_DEPENDENCIES="libogg#DEV20150926"
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -34,7 +33,7 @@ feature_flac_1_3_1() {
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/flac
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-	
+
 }
 
 
@@ -49,7 +48,7 @@ feature_flac_install_source() {
 
 	__set_toolset "STANDARD"
 
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 

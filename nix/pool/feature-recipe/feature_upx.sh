@@ -6,7 +6,6 @@ _UPX_INCLUDED_=1
 feature_upx() {
 	FEAT_NAME=upx
 	FEAT_LIST_SCHEMA="3_91:source"
-	FEAT_DEFAULT_VERSION=3_91
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -54,8 +53,6 @@ feature_upx_install_source() {
 	__feature_callback
 
 	__start_manual_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
-
-	#__prepare_build "$INSTALL_DIR"
 
 
 	CXXFLAGS="$CXXFLAGS "

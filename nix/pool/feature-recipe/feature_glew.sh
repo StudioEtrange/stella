@@ -1,10 +1,9 @@
-if [ ! "$_glew_INCLUDED_" = "1" ]; then 
+if [ ! "$_glew_INCLUDED_" = "1" ]; then
 _glew_INCLUDED_=1
 
 feature_glew() {
 	FEAT_NAME=glew
 	FEAT_LIST_SCHEMA="1_13_0:source"
-	FEAT_DEFAULT_VERSION=1_13_0
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -14,7 +13,7 @@ feature_glew() {
 
 feature_glew_1_13_0() {
 	FEAT_VERSION=1_13_0
-	
+
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -32,7 +31,7 @@ feature_glew_1_13_0() {
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libGLEW.a
 	FEAT_SEARCH_PATH=
-	
+
 }
 
 
@@ -42,7 +41,7 @@ feature_glew_install_source() {
 
 	__set_toolset "STANDARD"
 
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=

@@ -1,4 +1,4 @@
-if [ ! "$_dumb_INCLUDED_" = "1" ]; then 
+if [ ! "$_dumb_INCLUDED_" = "1" ]; then
 _dumb_INCLUDED_=1
 
 
@@ -6,7 +6,6 @@ _dumb_INCLUDED_=1
 feature_dumb() {
 	FEAT_NAME=dumb
 	FEAT_LIST_SCHEMA="0_9_3:source"
-	FEAT_DEFAULT_VERSION=0_9_3
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -16,7 +15,7 @@ feature_dumb() {
 
 feature_dumb_0_9_3() {
 	FEAT_VERSION=0_9_3
-	
+
 	FEAT_SOURCE_DEPENDENCIES="readline zlib#1_2_8"
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -34,7 +33,7 @@ feature_dumb_0_9_3() {
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libdumb.a
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-	
+
 }
 
 
@@ -50,7 +49,7 @@ feature_dumb_install_source() {
 
 	__set_toolset "STANDARD"
 
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 

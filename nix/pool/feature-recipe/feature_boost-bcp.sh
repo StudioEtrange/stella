@@ -6,7 +6,6 @@ _BOOSTBCP_INCLUDED_=1
 feature_boost-bcp() {
 	FEAT_NAME=boost-bcp
 	FEAT_LIST_SCHEMA="1_58_0:source"
-	FEAT_DEFAULT_VERSION=1_58_0
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -42,7 +41,8 @@ feature_boost-bcp_install_source() {
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
-	__prepare_build "$INSTALL_DIR"
+	__start_manual_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
+
 
 	cd "$SRC_DIR/tools/bcp"
 
@@ -52,6 +52,8 @@ feature_boost-bcp_install_source() {
   cp -f "$SRC_DIR/dist/bin/bcp" "$INSTALL_DIR/bin/"
 
 	__del_folder "$SRC_DIR"
+
+	__end_manual_build
 
 
 }

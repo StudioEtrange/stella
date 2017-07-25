@@ -5,7 +5,6 @@ _DOCKERMACHINE_INCLUDED_=1
 feature_docker-machine() {
 	FEAT_NAME=docker-machine
 	FEAT_LIST_SCHEMA="0_10_0@x64:binary 0_8_2@x64:binary 0_2_0@x64:binary 0_2_0@x86:binary 0_4_0@x86:binary 0_4_0@x64:binary 0_5_6@x64:binary 0_6_0@x64:binary 0_7_0@x64:binary"
-	FEAT_DEFAULT_VERSION=0_10_0
 	FEAT_DEFAULT_ARCH=x64
 	FEAT_DEFAULT_FLAVOUR=binary
 }

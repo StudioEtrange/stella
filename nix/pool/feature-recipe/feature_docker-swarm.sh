@@ -5,7 +5,6 @@ _DOCKERSWARM_INCLUDED_=1
 feature_docker-swarm() {
 	FEAT_NAME="docker-swarm"
 	FEAT_LIST_SCHEMA="1_2_5:source"
-	FEAT_DEFAULT_VERSION="1_2_5"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }

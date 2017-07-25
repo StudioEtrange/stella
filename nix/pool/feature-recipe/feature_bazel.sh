@@ -7,7 +7,6 @@ _bazel_INCLUDED_=1
 feature_bazel() {
 	FEAT_NAME=bazel
 	FEAT_LIST_SCHEMA="0_4_2:source 0_3_2:source 0_2_2b:source"
-	FEAT_DEFAULT_VERSION=0_4_2
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }

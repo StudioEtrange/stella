@@ -71,7 +71,9 @@ elf_specs_scanelf() {
 
 # functions for readelf backend
 elf_rpath_readelf() {
-	readelf -d "$1" | awk '$2 == "(RPATH)" || $2 == "(RUNPATH)" { print $5 }' | cut -d '[' -f 2 | sed 's/]//'
+	#readelf -d "$1" | awk '$2 == "(RPATH)" || $2 == "(RUNPATH)" { print $5 }' | cut -d '[' -f 2 | sed 's/]//'
+	readelf -d "$1" | awk '$2 == "(RUNPATH)" { if($5!="") {runpath=$5;} }  $2 == "(RPATH)" { if($5!="") {rpath=$5;} } END { if(runpath!="") {print runpath;} else {print rpath;} }' | cut -d '[' -f 2 | sed 's/]//'
+	# objdump -x "$1" | awk '$1 == "RUNPATH" { if($2!="") {runpath=$2;} }  $1 == "RPATH" { if($2!="") {rpath=$2;} } END { if(runpath!="") {print runpath;} else {print rpath;} }'
 }
 
 elf_interp_readelf() {

@@ -5,9 +5,11 @@ _TEMPLATEGO_INCLUDED_=1
 feature_template-go() {
 	FEAT_NAME="template-go"
 	FEAT_LIST_SCHEMA="snapshot:source"
-	FEAT_DEFAULT_VERSION="snapshot"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
+
+	FEAT_DESC="template is foo"
+	FEAT_LINK="https://github.com/bar/template"
 }
 
 
@@ -36,7 +38,7 @@ feature_template-go_snapshot() {
 
 feature_template-go_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
-	SRC_DIR="$FEAT_INSTALL_ROOT/src/product"
+	SRC_DIR="$FEAT_INSTALL_ROOT/src"
 	BUILD_DIR=
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
@@ -49,12 +51,13 @@ feature_template-go_install_source() {
 	# get all dependencies
 	cd "$SRC_DIR"
 	cd Godeps
+	# with godep
 	GOPATH="$INSTALL_DIR" godep restore
 
 	GOPATH="$INSTALL_DIR" go install product
 
 	__end_manual_build
-	
+
 }
 
 fi

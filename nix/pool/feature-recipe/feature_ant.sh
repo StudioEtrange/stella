@@ -1,4 +1,4 @@
-if [ ! "$_ANT_INCLUDED_" = "1" ]; then 
+if [ ! "$_ANT_INCLUDED_" = "1" ]; then
 _ANT_INCLUDED_=1
 
 
@@ -6,7 +6,6 @@ _ANT_INCLUDED_=1
 feature_ant() {
 	FEAT_NAME=ant
 	FEAT_LIST_SCHEMA="1_9_5:binary"
-	FEAT_DEFAULT_VERSION=1_9_5
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
@@ -20,7 +19,7 @@ feature_ant_env() {
 
 feature_ant_1_9_5() {
 	FEAT_VERSION=1_9_5
-	
+
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -38,7 +37,7 @@ feature_ant_1_9_5() {
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/ant
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-	
+
 }
 
 

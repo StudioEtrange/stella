@@ -173,7 +173,8 @@ __set_current_platform_info() {
 	local _err=
 	type netstat &>/dev/null || _err=1
 	if [ "$_err" = "" ]; then
-		STELLA_DEFAULT_INTERFACE=$(netstat -rn | awk '/^0.0.0.0/ {thif=substr($0,74,10); print thif;} /^default.*UG/ {thif=substr($0,65,10); print thif;}')
+		# NOTE : we pick the first default interface if we have more than one
+		STELLA_DEFAULT_INTERFACE=$(netstat -rn | awk '/^0.0.0.0/ {thif=substr($0,74,10); print thif;} /^default.*UG/ {thif=substr($0,65,10); print thif;}' | head -1)
 	fi
 
 	_err=
@@ -388,33 +389,29 @@ __python_short_version() {
 	python -c 'import sys;print(str(sys.version_info.major) + "." + str(sys.version_info.minor));'
 }
 
-# TODO python-config symbolic link do not exist on python 3.x
-# REPLACE with :
-# _python_version="$($STELLA_API python_short_version)"
-# _pyconf=python"$_python_version"-config
-# _python_path="$($pyconf--prefix)"
+# NOTE python-config symbolic link do not exist on python 3.x
 __python_get_libs() {
 	# -lpython2.7 -ldl -framework CoreFoundation
-	python-config --libs
+	python$(__python_short_version)-config --libs
 }
 
 __python_get_ldflags() {
 	#-L/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/config -lpython2.7 -ldl -framework CoreFoundation
-	python-config --ldflags
+	python$(__python_short_version)-config --ldflags
 }
 
 __python_get_clags() {
 	#-I/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7 -I/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7 -fno-strict-aliasing -fno-common -dynamic -arch i386 -arch x86_64 -g -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes
-	python-config --cflags
+	python$(__python_short_version)-config --cflags
 }
 
 __python_get_prefix() {
 	# /Library/Frameworks/Python.framework/Versions/2.7
-	python-config --prefix
+	python$(__python_short_version)-config --prefix
 }
 __python_get_includes() {
 	#-I/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7 -I/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7
-	python-config --includes
+	python$(__python_short_version)-config --includes
 }
 
 # PACKAGE SYSTEM ----------------------------
@@ -453,16 +450,23 @@ __sys_remove() {
 	__sys_remove_$1
 }
 
-__sys_package_manager() {
+
+# use a package manager
+# arg _package_manager is optionnal - if not set, try to autodetect
+__use_package_manager() {
 	# INSTALL or REMOVE
 	local _action="$1"
 	local _id="$2"
 	local _packages_list="$3"
+	local _package_manager="$4"
 
 	echo " ** $_action $_id on your system"
 
-	local _package_manager="$(__get_current_package_manager)"
+	if [ "$_package_manager" = "" ]; then
+		_package_manager="$(__get_current_package_manager)"
+	fi
 
+	echo " ** use $_package_manager as package manager"
 
 	local _flag_package_manager=OFF
 	local _packages=
@@ -604,14 +608,14 @@ __sys_install_build-chain-standard() {
 
 	else
 		#bison util-linux build-essential gcc-multilib g++-multilib g++ pkg-config
-		__sys_package_manager "INSTALL" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib | yum gcc gcc-c++ make kernel-devel | apk gcc g++ make"
+		__use_package_manager "INSTALL" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib | yum gcc gcc-c++ make kernel-devel | apk gcc g++ make"
 	fi
 }
 __sys_remove_build-chain-standard() {
 	if [ "$STELLA_CURRENT_OS" = "macos" ]; then
 		echo " ** Remove Xcode and Command Line Development Tools by hand"
 	else
-		__sys_package_manager "REMOVE" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib | yum gcc gcc-c++ make kernel-devel | apk gcc g++ make"
+		__use_package_manager "REMOVE" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib | yum gcc gcc-c++ make kernel-devel | apk gcc g++ make"
 	fi
 
 }
@@ -627,45 +631,45 @@ __sys_remove_x11() {
 }
 
 __sys_install_sevenzip() {
-	__sys_package_manager "INSTALL" "7z" "apt-get p7zip-full | brew p7zip | yum p7zip | apk p7zip"
+	__use_package_manager "INSTALL" "7z" "apt-get p7zip-full | brew p7zip | yum p7zip | apk p7zip"
 }
 __sys_remove_sevenzip() {
-	__sys_package_manager "REMOVE" "7z" "apt-get p7zip-full | brew p7zip | yum p7zip | apk p7zip"
+	__use_package_manager "REMOVE" "7z" "apt-get p7zip-full | brew p7zip | yum p7zip | apk p7zip"
 }
 
 __sys_install_curl() {
-	__sys_package_manager "INSTALL" "curl" "apt-get curl | brew curl | yum curl | apk curl"
+	__use_package_manager "INSTALL" "curl" "apt-get curl | brew curl | yum curl | apk curl"
 }
 __sys_remove_curl() {
-	__sys_package_manager "REMOVE" "curl" "apt-get curl | brew curl | yum curl | apk curl"
+	__use_package_manager "REMOVE" "curl" "apt-get curl | brew curl | yum curl | apk curl"
 }
 
 __sys_install_wget() {
-	__sys_package_manager "INSTALL" "wget" "apt-get wget | brew wget | yum wget | apk get"
+	__use_package_manager "INSTALL" "wget" "apt-get wget | brew wget | yum wget | apk get"
 }
 __sys_remove_wget() {
-	__sys_package_manager "REMOVE" "wget" "apt-get wget | brew wget | yum wget | apk get"
+	__use_package_manager "REMOVE" "wget" "apt-get wget | brew wget | yum wget | apk get"
 }
 
 __sys_install_unzip() {
-	__sys_package_manager "INSTALL" "unzip" "apt-get unzip | brew unzip | yum unzip"
+	__use_package_manager "INSTALL" "unzip" "apt-get unzip | brew unzip | yum unzip"
 }
 __sys_remove_unzip() {
-	__sys_package_manager "REMOVE" "unzip" "apt-get unzip | brew unzip | yum unzip"
+	__use_package_manager "REMOVE" "unzip" "apt-get unzip | brew unzip | yum unzip"
 }
 
 __sys_install_cmake() {
-	__sys_package_manager "INSTALL" "cmake" "apt-get cmake | brew cmake | yum cmake | apk cmake"
+	__use_package_manager "INSTALL" "cmake" "apt-get cmake | brew cmake | yum cmake | apk cmake"
 }
 __sys_remove_cmake() {
-	__sys_package_manager "REMOVE" "cmake" "apt-get cmake | brew cmake | yum cmake | apk cmake"
+	__use_package_manager "REMOVE" "cmake" "apt-get cmake | brew cmake | yum cmake | apk cmake"
 }
 
 __sys_install_git() {
-	__sys_package_manager "INSTALL" "git" "apt-get git | brew git | yum git | apk git"
+	__use_package_manager "INSTALL" "git" "apt-get git | brew git | yum git | apk git"
 }
 __sys_remove_git() {
-	__sys_package_manager "REMOVE" "git" "apt-get git | brew git | yum git | apk git"
+	__use_package_manager "REMOVE" "git" "apt-get git | brew git | yum git | apk git"
 }
 
 

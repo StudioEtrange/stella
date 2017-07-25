@@ -1,4 +1,4 @@
-if [ ! "$_NETCAT_INCLUDED_" = "1" ]; then 
+if [ ! "$_NETCAT_INCLUDED_" = "1" ]; then
 _NETCAT_INCLUDED_=1
 
 
@@ -6,7 +6,6 @@ _NETCAT_INCLUDED_=1
 feature_netcat() {
 	FEAT_NAME=netcat
 	FEAT_LIST_SCHEMA="0_7_1:source"
-	FEAT_DEFAULT_VERSION=0_7_1
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -38,9 +37,8 @@ feature_netcat_0_7_1() {
 feature_netcat_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
 
-	#__set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL make"
+
 	__set_toolset "STANDARD"
 
 

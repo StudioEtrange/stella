@@ -7,7 +7,6 @@ _AMBARI_INCLUDED_=1
 feature_ambari() {
 	FEAT_NAME="ambari"
 	FEAT_LIST_SCHEMA="2_2_2:source"
-	FEAT_DEFAULT_VERSION="2_2_2"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }

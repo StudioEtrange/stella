@@ -1,4 +1,4 @@
-if [ ! "$_SBT_INCLUDED_" = "1" ]; then 
+if [ ! "$_SBT_INCLUDED_" = "1" ]; then
 _SBT_INCLUDED_=1
 
 
@@ -6,7 +6,6 @@ _SBT_INCLUDED_=1
 feature_sbt() {
 	FEAT_NAME=sbt
 	FEAT_LIST_SCHEMA="0_13_7:binary"
-	FEAT_DEFAULT_VERSION=0_13_7
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
@@ -24,8 +23,8 @@ feature_sbt_0_13_7() {
 	FEAT_BINARY_URL=https://dl.bintray.com/sbt/native-packages/sbt/0.13.7/sbt-0.13.7.tgz
 	FEAT_BINARY_URL_FILENAME=sbt-0.13.7.tgz
 	FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
-	
-	
+
+
 	FEAT_SOURCE_CALLBACK=
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=

@@ -6,7 +6,6 @@ feature_texinfo() {
 	FEAT_NAME=texinfo
 
 	FEAT_LIST_SCHEMA="5_1:source"
-	FEAT_DEFAULT_VERSION=5_1
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 

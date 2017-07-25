@@ -5,7 +5,6 @@ feature_vowpal_wabbit() {
 	FEAT_NAME=vowpal_wabbit
 
 	FEAT_LIST_SCHEMA="8_2_0:source"
-	FEAT_DEFAULT_VERSION=8_2_0
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 

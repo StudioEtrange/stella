@@ -1,4 +1,4 @@
-if [ ! "$_libogg_INCLUDED_" = "1" ]; then 
+if [ ! "$_libogg_INCLUDED_" = "1" ]; then
 _libogg_INCLUDED_=1
 
 # darwin -- OK -- 20151012
@@ -7,7 +7,6 @@ feature_libogg() {
 	FEAT_NAME=libogg
 	# CMakeList.txt are not yet present in official release
 	FEAT_LIST_SCHEMA="DEV20150926:source"
-	FEAT_DEFAULT_VERSION=DEV20150926
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -40,12 +39,12 @@ feature_libogg_DEV20150926() {
 feature_libogg_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
+
 	__set_toolset "CMAKE"
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "FORCE_NAME $FEAT_SOURCE_URL_FILENAME STRIP"
 
-	
+
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="-DBUILD_SHARED_LIBS=TRUE"
@@ -54,9 +53,9 @@ feature_libogg_install_source() {
 
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
-	
 
-	
+
+
 
 }
 

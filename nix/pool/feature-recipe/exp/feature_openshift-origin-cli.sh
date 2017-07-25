@@ -5,7 +5,6 @@ _openshiftorigincli_INCLUDED_=1
 feature_openshift-origin-cli() {
 	FEAT_NAME=openshift-origin-cli
 	FEAT_LIST_SCHEMA="1_3_1:binary"
-	FEAT_DEFAULT_VERSION=1_3_1
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }

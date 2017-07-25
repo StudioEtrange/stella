@@ -7,7 +7,6 @@ _gmp_INCLUDED_=1
 feature_gmp() {
 	FEAT_NAME=gmp
 	FEAT_LIST_SCHEMA="6_0_0a:source"
-	FEAT_DEFAULT_VERSION=6_0_0a
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

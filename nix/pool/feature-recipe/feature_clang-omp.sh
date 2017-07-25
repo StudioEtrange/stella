@@ -16,7 +16,6 @@ _clangomp_INCLUDED_=1
 feature_clang-omp() {
 	FEAT_NAME=clang-omp
 	FEAT_LIST_SCHEMA="3_9_0:source"
-	FEAT_DEFAULT_VERSION=3_9_0
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }

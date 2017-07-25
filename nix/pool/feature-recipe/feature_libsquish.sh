@@ -4,7 +4,6 @@ _LIBSQUISH_INCLUDED_=1
 feature_libsquish() {
 	FEAT_NAME=libsquish
 	FEAT_LIST_SCHEMA="1_13:source"
-	FEAT_DEFAULT_VERSION=1_13
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -38,7 +37,7 @@ feature_libsquish_1_13() {
 feature_libsquish_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
+
 	__set_toolset "CMAKE"
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE"

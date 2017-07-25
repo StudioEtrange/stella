@@ -1,11 +1,10 @@
-if [ ! "$_libidn_INCLUDED_" = "1" ]; then 
+if [ ! "$_libidn_INCLUDED_" = "1" ]; then
 _libidn_INCLUDED_=1
 
 
 feature_libidn() {
 	FEAT_NAME=libidn
 	FEAT_LIST_SCHEMA="1_30:source"
-	FEAT_DEFAULT_VERSION=1_30
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -45,8 +44,8 @@ feature_libidn_install_source() {
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
-	
-	
+
+
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="--disable-dependency-tracking --disable-csharp"
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=

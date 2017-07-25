@@ -6,13 +6,11 @@ feature_perl() {
 
 	FEAT_NAME=perl
 	FEAT_LIST_SCHEMA="5_18_2:source"
-	FEAT_DEFAULT_VERSION=5_18_2
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
 feature_perl_5_18_2() {
-
 	FEAT_VERSION=5_18_2
 
 	FEAT_SOURCE_DEPENDENCIES=

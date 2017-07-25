@@ -6,7 +6,6 @@ feature_ninja() {
 
 	FEAT_NAME=ninja
 	FEAT_LIST_SCHEMA="1_7_2:source 1_7_2:binary 1_7_1:source 1_7_1:binary 1_6_0:source 1_6_0:binary"
-	FEAT_DEFAULT_VERSION=1_7_2
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }

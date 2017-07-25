@@ -2,9 +2,9 @@
 
 getopt() {
   # pure-getopt, a drop-in replacement for GNU getopt in pure Bash.
-  # version 1.4
+  # version 1.4.1
   #
-  # Copyright 2012 Aron Griffis <aron@arongriffis.com>
+  # Copyright 2012-2017 Aron Griffis <aron@scampersand.com>
   #
   # Permission is hereby granted, free of charge, to any person obtaining
   # a copy of this software and associated documentation files (the
@@ -13,10 +13,10 @@ getopt() {
   # distribute, sublicense, and/or sell copies of the Software, and to
   # permit persons to whom the Software is furnished to do so, subject to
   # the following conditions:
-  # 
+  #
   # The above copyright notice and this permission notice shall be included
   # in all copies or substantial portions of the Software.
-  # 
+  #
   # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
   # OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
   # MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -81,7 +81,7 @@ getopt() {
         (-h|--help)
           _getopt_help
           return 2  # as does GNU getopt
-          ;; 
+          ;;
 
         (-l|--longoptions)
           long="$long${long:+,}$2"
@@ -122,7 +122,7 @@ getopt() {
           return 4 ;;
 
         (-V|--version)
-          echo "pure-getopt 1.4"
+          echo "pure-getopt 1.4.1"
           return 0 ;;
 
         (--)
@@ -149,7 +149,7 @@ getopt() {
     if [[ $short == -* ]]; then
       # Leading dash means generate output in place rather than reordering,
       # unless we're already in compatibility mode.
-      [[ $flags == *c* ]] || flags=i$flgas
+      [[ $flags == *c* ]] || flags=i$flags
       short=${short#?}
     elif [[ $short == +* ]]; then
       # Leading plus means POSIXLY_CORRECT, unless we're already in
@@ -399,7 +399,7 @@ getopt() {
         return 2 ;;
       (1)
         printf '%s' "$matches"; return 0 ;;
-      (*) 
+      (*)
         [[ $flags == *q* ]] || \
         printf "$name: option %s is ambiguous; possibilities: %s\n" >&2 \
           "$(_getopt_quote "$q")" "$(_getopt_quote "${matches[@]}")"
@@ -448,23 +448,27 @@ getopt() {
     cat <<-EOT >&2
 	
 	Usage:
-	 getopt optstring parameters
-	 getopt [options] [--] optstring parameters
-	 getopt [options] -o|--options optstring [options] [--] parameters
+	 getopt <optstring> <parameters>
+	 getopt [options] [--] <optstring> <parameters>
+	 getopt [options] -o|--options <optstring> [options] [--] <parameters>
+	
+	Parse command options.
 	
 	Options:
-	 -a, --alternative            Allow long options starting with single -
-	 -h, --help                   This small usage guide
-	 -l, --longoptions <longopts> Long options to be recognized
-	 -n, --name <progname>        The name under which errors are reported
-	 -o, --options <optstring>    Short options to be recognized
-	 -q, --quiet                  Disable error reporting by getopt(3)
-	 -Q, --quiet-output           No normal output
-	 -s, --shell <shell>          Set shell quoting conventions
-	 -T, --test                   Test for getopt(1) version
-	 -u, --unquote                Do not quote the output
-	 -V, --version                Output version information
+	 -a, --alternative             allow long options starting with single -
+	 -l, --longoptions <longopts>  the long options to be recognized
+	 -n, --name <progname>         the name under which errors are reported
+	 -o, --options <optstring>     the short options to be recognized
+	 -q, --quiet                   disable error reporting by getopt(3)
+	 -Q, --quiet-output            no normal output
+	 -s, --shell <shell>           set quoting conventions to those of <shell>
+	 -T, --test                    test for getopt(1) version
+	 -u, --unquoted                do not quote the output
 	
+	 -h, --help     display this help and exit
+	 -V, --version  output version information and exit
+	
+	For more details see getopt(1).
 	EOT
   }
 

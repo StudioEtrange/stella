@@ -13,7 +13,7 @@ __list_feature_version() {
 	local _SCHEMA=$1
 
 	__internal_feature_context $_SCHEMA
-	echo $FEAT_LIST_SCHEMA
+	echo "$(__sort_version "$FEAT_LIST_SCHEMA" "DESC SEP _")"
 }
 
 
@@ -358,6 +358,19 @@ __feature_install_list() {
 	done
 }
 
+
+__feature_choose_origin() {
+	local _SCHEMA="$1"
+	__translate_schema "$_SCHEMA" "_CHOOSE_ORIGIN_FEATURE_NAME"
+
+	local _origin="STELLA"
+	for u in $STELLA_FEATURE_FROM_SYSTEM; do
+		[ "$u" = "$_CHOOSE_ORIGIN_FEATURE_NAME" ] && _origin="SYSTEM"
+	done
+
+	echo $_origin
+}
+
 __feature_install() {
 	local _SCHEMA=$1
 	local _OPT="$2"
@@ -510,7 +523,7 @@ __feature_install() {
 					fi
 
 					if [ "$_force_origin" = "" ]; then
-						_origin="$(__dep_choose_origin $dep)"
+						_origin="$(__feature_choose_origin $dep)"
 					else
 						_origin="$_force_origin"
 					fi
@@ -746,8 +759,10 @@ __internal_feature_context() {
 	FEAT_SCHEMA_OS_EXCLUSION=
 
 	FEAT_NAME=
+	FEAT_DESC=
+	FEAT_LINK=
 	FEAT_LIST_SCHEMA=
-	FEAT_DEFAULT_VERSION=
+	#FEAT_DEFAULT_VERSION=
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR=
 	FEAT_VERSION=
@@ -922,10 +937,6 @@ __select_official_schema() {
 		fi
 
 		# fill schema with default values
-		if [ "$_TR_FEATURE_VER" = "" ]; then
-			_TR_FEATURE_VER=$FEAT_DEFAULT_VERSION
-			[ ! "$_VAR_FEATURE_VER" = "" ] && eval $_VAR_FEATURE_VER=$FEAT_DEFAULT_VERSION
-		fi
 		if [ "$_TR_FEATURE_ARCH" = "" ]; then
 			_TR_FEATURE_ARCH=$FEAT_DEFAULT_ARCH
 			[ ! "$_VAR_FEATURE_ARCH" = "" ] && eval $_VAR_FEATURE_ARCH=$FEAT_DEFAULT_ARCH
@@ -933,6 +944,20 @@ __select_official_schema() {
 		if [ "$_TR_FEATURE_FLAVOUR" = "" ]; then
 			_TR_FEATURE_FLAVOUR=$FEAT_DEFAULT_FLAVOUR
 			[ ! "$_VAR_FEATURE_FLAVOUR" = "" ] && eval $_VAR_FEATURE_FLAVOUR=$FEAT_DEFAULT_FLAVOUR
+		fi
+		# select last available version by default
+		if [ "$_TR_FEATURE_VER" = "" ]; then
+			local list_version=
+			local k
+			for k in $FEAT_LIST_SCHEMA; do
+				__translate_schema "_TR_FEATURE_NAME#$k" "NONE" "_TMP_V"
+				list_version="$list_version $_TMP_V"
+			done
+			# TODO use ENDING_CHAR_REVERSE for some feature in a new FIELD (like FEAT_VERSION_ORDER)
+			_TR_FEATURE_VER="$(__get_last_version "$list_version" "SEP _")"
+			[ ! "$_VAR_FEATURE_VER" = "" ] && eval $_VAR_FEATURE_VER=$_TR_FEATURE_VER
+			#_TR_FEATURE_VER=$FEAT_DEFAULT_VERSION
+			#[ ! "$_VAR_FEATURE_VER" = "" ] && eval $_VAR_FEATURE_VER=$FEAT_DEFAULT_VERSION
 		fi
 
 		_FILLED_SCHEMA="$_TR_FEATURE_NAME"#"$_TR_FEATURE_VER"

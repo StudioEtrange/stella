@@ -1,11 +1,10 @@
-if [ ! "$_gnustepmake_INCLUDED_" = "1" ]; then 
+if [ ! "$_gnustepmake_INCLUDED_" = "1" ]; then
 _gnustepmake_INCLUDED_=1
 
 feature_gnustep-make() {
 	FEAT_NAME=gnustep-make
 
 	FEAT_LIST_SCHEMA="2_6_7:source"
-	FEAT_DEFAULT_VERSION=2_6_7
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 
@@ -44,7 +43,7 @@ feature_gnustep-make_setenv() {
 feature_gnustep-make_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
+
 	__set_toolset "STANDARD"
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
@@ -57,9 +56,9 @@ feature_gnustep-make_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX="tooldir=$INSTALL_DIR/bin"
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
-	
 
-	
+
+
 
 }
 

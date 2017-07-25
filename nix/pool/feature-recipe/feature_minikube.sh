@@ -21,7 +21,6 @@ _minikube_INCLUDED_=1
 feature_minikube() {
 	FEAT_NAME=minikube
 	FEAT_LIST_SCHEMA="0_11_0:binary"
-	FEAT_DEFAULT_VERSION=0_11_0
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }

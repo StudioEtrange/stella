@@ -6,7 +6,6 @@ _FUNSHELL_INCLUDED_=1
 feature_funshell-bundle() {
 	FEAT_NAME="funshell-bundle"
 	FEAT_LIST_SCHEMA="1_0"
-	FEAT_DEFAULT_VERSION=1_0
 	FEAT_DEFAULT_ARCH=
 
 	FEAT_BUNDLE=LIST

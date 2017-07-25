@@ -1,4 +1,4 @@
-if [ ! "$_PCRE_INCLUDED_" = "1" ]; then 
+if [ ! "$_PCRE_INCLUDED_" = "1" ]; then
 _PCRE_INCLUDED_=1
 
 
@@ -7,7 +7,6 @@ feature_pcre() {
 
 	FEAT_NAME=pcre
 	FEAT_LIST_SCHEMA="8_36:source"
-	FEAT_DEFAULT_VERSION=8_36
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -43,7 +42,7 @@ feature_pcre_link() {
 feature_pcre_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	
+
 	#__set_toolset "CUSTOM" "CONFIG_TOOL configure BUILD_TOOL make"
 	__set_toolset "STANDARD"
 
@@ -66,7 +65,7 @@ feature_pcre_install_source() {
 	__feature_callback
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
-	
+
 }
 
 

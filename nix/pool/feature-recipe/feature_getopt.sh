@@ -1,4 +1,4 @@
-if [ ! "$_GETOPT_INCLUDED_" = "1" ]; then 
+if [ ! "$_GETOPT_INCLUDED_" = "1" ]; then
 _GETOPT_INCLUDED_=1
 
 #https://github.com/Homebrew/homebrew/blob/master/Library/Formula/gnu-getopt.rb
@@ -8,7 +8,6 @@ feature_getopt() {
 
 	FEAT_NAME=getopt
 	FEAT_LIST_SCHEMA="1_1_6:source"
-	FEAT_DEFAULT_VERSION=1_1_6
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -42,7 +41,7 @@ feature_getopt_1_1_6_patch() {
 	# https://github.com/Homebrew/homebrew/blob/master/Library/Formula/gnu-getopt.rb
 
 	__link_feature_library "gettext" "LIBS_NAME intl GET_FLAGS _gettext NO_SET_FLAGS"
-	
+
 	#sed -i .bak 's,^\(CPPFLAGS=.*\),\1 '"-I$FEAT_INSTALL_ROOT/include"',' $SRC_DIR/Makefile
 	#sed -i .bak 's,^\(LDFLAGS=.*\),\1 '"-L$FEAT_INSTALL_ROOT/lib -lintl"',' $SRC_DIR/Makefile
 
@@ -66,7 +65,7 @@ feature_getopt_install_source() {
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 	__feature_callback
-	
+
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
 	AUTO_INSTALL_CONF_FLAG_POSTFIX=
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=

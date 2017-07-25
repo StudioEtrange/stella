@@ -4,9 +4,11 @@ _dump1090_INCLUDED_=1
 feature_dump1090() {
 	FEAT_NAME=dump1090
 	FEAT_LIST_SCHEMA="SNAPSHOT_MalcolmRobb:source"
-	FEAT_DEFAULT_VERSION=SNAPSHOT_MalcolmRobb
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
+
+	FEAT_DESC="Dump1090 is a simple Mode S decoder for RTLSDR devices"
+	FEAT_LINK="https://github.com/antirez/dump1090"
 }
 
 

@@ -9,7 +9,6 @@ feature_flex() {
 	FEAT_NAME=flex
 
 	FEAT_LIST_SCHEMA="2_6_0:source"
-	FEAT_DEFAULT_VERSION=2_6_0
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }

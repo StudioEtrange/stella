@@ -26,7 +26,6 @@ _predictionio_INCLUDED_=1
 feature_predictionio() {
 	FEAT_NAME=predictionio
 	FEAT_LIST_SCHEMA="0_9_6:binary"
-	FEAT_DEFAULT_VERSION=0_9_6
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }

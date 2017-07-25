@@ -7,7 +7,6 @@ feature_tensorflow() {
 	FEAT_NAME=tensorflow
 
 	FEAT_LIST_SCHEMA="0_11_0:source"
-	FEAT_DEFAULT_VERSION=0_11_0
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 

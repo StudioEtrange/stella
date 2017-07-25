@@ -15,7 +15,6 @@ feature_angband() {
 	FEAT_NAME=angband
 
 	FEAT_LIST_SCHEMA="4_0_4:source"
-	FEAT_DEFAULT_VERSION=4_0_4
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 

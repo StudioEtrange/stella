@@ -9,7 +9,6 @@ feature_libxml2() {
 	FEAT_NAME=libxml2
 
 	FEAT_LIST_SCHEMA="2_9_1:source"
-	FEAT_DEFAULT_VERSION=2_9_1
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 
@@ -66,6 +65,7 @@ feature_libxml2_install_source() {
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
 	__set_toolset "STANDARD"
+	__add_toolset "AUTOTOOLS"
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 

@@ -5,12 +5,11 @@ _BOOST_INCLUDED_=1
 # Note for windows : http://stackoverflow.com/questions/7282645/how-to-build-boost-iostreams-with-gzip-and-bzip2-support-on-windows
 
 # TODO Apply debian patch ? : https://packages.debian.org/sid/libboost1.60-dev
-
+# TODO : NON_RELOCATE
 
 feature_boost() {
 	FEAT_NAME=boost
 	FEAT_LIST_SCHEMA="1_61_0:source 1_59_0:source"
-	FEAT_DEFAULT_VERSION=1_61_0
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -172,7 +171,7 @@ feature_boost_install_source() {
 
 	__feature_callback
 
-	__prepare_build "$INSTALL_DIR"
+	__start_manual_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
 
 
 
@@ -267,11 +266,14 @@ feature_boost_install_source() {
 
 	# we fix rpath and install name values as absolute path, to be clean
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		# TODO : NON_RELOCATE
 		__tweak_binary_file "$FEAT_INSTALL_ROOT/lib" "NON_RELOCATE"
 	fi
 
 	__inspect_and_fix_build "$FEAT_INSTALL_ROOT/lib"
 
+
+	__end_manual_build
 }
 
 

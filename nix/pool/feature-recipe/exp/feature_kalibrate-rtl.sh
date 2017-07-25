@@ -7,7 +7,6 @@ _kalibratertl_INCLUDED_=1
 feature_kalibrate-rtl() {
 	FEAT_NAME=kalibrate-rtl
 	FEAT_LIST_SCHEMA="SNAPSHOT:source"
-	FEAT_DEFAULT_VERSION=SNAPSHOT
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -57,7 +56,7 @@ feature_kalibrate-rtl_install_source() {
 
 	__set_toolset "STANDARD"
 	__add_toolset "autotools"
-	
+
 export AL_OPTS=-I/Users/nomorgan/WORK/stella/workspace/toolset_darwin/macos/pkgconfig/0_29/share/aclocal
 export ACLOCAL="aclocal -I/Users/nomorgan/WORK/stella/workspace/toolset_darwin/macos/pkgconfig/0_29/share/aclocal"
 #http://askubuntu.com/questions/567813/automake-does-not-find-pkg-config-macros

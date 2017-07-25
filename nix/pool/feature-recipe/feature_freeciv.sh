@@ -12,7 +12,6 @@ _freeciv_INCLUDED_=1
 feature_freeciv() {
 	FEAT_NAME=freeciv
 	FEAT_LIST_SCHEMA="2_5_1:source"
-	FEAT_DEFAULT_VERSION=2_5_1
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }

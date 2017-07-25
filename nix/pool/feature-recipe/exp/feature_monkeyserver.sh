@@ -8,7 +8,6 @@ feature_monkeyserver() {
 	FEAT_NAME=monkeyserver
 
 	FEAT_LIST_SCHEMA="1_6_9:source"
-	FEAT_DEFAULT_VERSION=1_6_9
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }

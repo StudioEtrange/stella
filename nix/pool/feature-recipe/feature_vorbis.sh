@@ -1,4 +1,4 @@
-if [ ! "$_vorbis_INCLUDED_" = "1" ]; then 
+if [ ! "$_vorbis_INCLUDED_" = "1" ]; then
 _vorbis_INCLUDED_=1
 
 
@@ -6,7 +6,6 @@ _vorbis_INCLUDED_=1
 feature_vorbis() {
 	FEAT_NAME=vorbis
 	FEAT_LIST_SCHEMA="1_3_5:source"
-	FEAT_DEFAULT_VERSION=1_3_5
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -16,7 +15,7 @@ feature_vorbis() {
 
 feature_vorbis_1_3_5() {
 	FEAT_VERSION=1_3_5
-	
+
 	FEAT_SOURCE_DEPENDENCIES="libogg#DEV20150926"
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -34,7 +33,7 @@ feature_vorbis_1_3_5() {
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libvorbis.a
 	FEAT_SEARCH_PATH=
-	
+
 }
 
 
@@ -48,7 +47,7 @@ feature_vorbis_install_source() {
 
 	__set_toolset "STANDARD"
 
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 

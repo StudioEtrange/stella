@@ -1,4 +1,4 @@
-if [ ! "$_haskell_INCLUDED_" = "1" ]; then 
+if [ ! "$_haskell_INCLUDED_" = "1" ]; then
 _haskell_INCLUDED_=1
 
 # TODO NOT FINISHED
@@ -24,7 +24,6 @@ _haskell_INCLUDED_=1
 feature_haskell() {
 	FEAT_NAME=haskell
 	FEAT_LIST_SCHEMA="7_10_3:binary"
-	FEAT_DEFAULT_VERSION=7_10_3
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }

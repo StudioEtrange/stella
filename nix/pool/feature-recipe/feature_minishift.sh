@@ -28,7 +28,6 @@ _minishift_INCLUDED_=1
 feature_minishift() {
 	FEAT_NAME=minishift
 	FEAT_LIST_SCHEMA="0_9_0:binary"
-	FEAT_DEFAULT_VERSION=0_9_0
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }

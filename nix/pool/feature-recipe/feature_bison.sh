@@ -10,9 +10,11 @@ feature_bison() {
 	FEAT_NAME=bison
 
 	FEAT_LIST_SCHEMA="3_0_4:source"
-	FEAT_DEFAULT_VERSION=3_0_4
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
+
+	FEAT_LINK="https://www.gnu.org/software/bison/"
+	FEAT_DESC="Bison is a general-purpose parser generator"
 }
 
 feature_bison_3_0_4() {
