@@ -64,364 +64,33 @@ goto :eof
 
 :: TOOLSET & BUILD TOOLS ----------------
 :: Available tools :
-:: 	CONFIG_TOOL : cmake, configure
-:: 	BUILD_TOOL : nmake, ninja, jom, mingw-make, msys-make, msys-mingw-make, make (?)
-:: 	COMPIL_FRONTEND :  cl, mingw-gcc, msys-gcc, msys-mingw-gcc, gcc (?)
+:: 	CONFIG_TOOL SCHEMA : cmake, configure
+:: 	BUILD_TOOL SCHEMA : nmake, ninja, jom, mingw-make, msys-make, msys-mingw-make
+:: 	COMPIL_FRONTEND SCHEMA :  cl, mingw-gcc, msys-gcc, msys-mingw-gcc
 ::						in reality COMPIL_FRONTEND should be called COMPIL_DRIVER
 ::
 ::
 :: Available preconfigured build toolset on windows system :
 :: 	TOOLSET 		| CONFIG TOOL 				| BUILD TOOL 							| COMPIL FRONTEND
 ::	MS				|	cmake					|		nmake							|			cl
-:: 	MSYS2			| 	configure				|		msys-mingw-make ?				|			msys-mingw-gcc ?
-::	MINGW-W64		| 	NULL					|		mingw-make						|		mingw-gcc (default?)
+:: 	MSYS2			| 	configure				|		msys-mingw-make					|			msys-mingw-gcc
+::	MINGW-W64		| 	NULL					|		mingw-make						|			mingw-gcc
 :: NONE ===> disable build toolset and all tools
 
-:: TODO : MSYS2 TOOLSET
+:: MSYS2 TOOLSET
 ::		make AND gcc are installed from pacman : bundle : mingw64/mingw-w64-x86_64-toolchain or mingw32/mingw-w64-i686-toolchain
 ::				we do not use msys/make nor msys/gcc versions from msys2 (whose rely on msys2.dll), but from mingw-w64 inside msys2
 ::				WARN : bundle mingw-w64-x86_64-toolchain install a lot of binaries which may generate conflicts (ex:python)
 ::				NOTE : activate a mingw env when using msys2_shell.cmd ? https://www.booleanworld.com/get-unix-linux-environment-windows-msys2/
 ::					   in the same way as vs_env_vars function
 :: MINGW-W64 TOOLSET
-::		make AND gcc are part of default mingw-w64 env
+::		mingw-make AND mingw-gcc are part of default mingw-w64 env
 
 
 :start_build_session
 	call :reset_build_env
 
 	call :set_toolset "!STELLA_BUILD_DEFAULT_TOOLSET!"
-goto :eof
-
-
-:: TOOLSET ------------------------------------------------------------------------------------------------------------------------------
-:toolset_install
-	call %STELLA_COMMON%\common-feature.bat :push_schema_context
-	set "_toolset_install_save_app_feature_root=!STELLA_APP_FEATURE_ROOT!"
-	set "_toolset_install_save_force=!FORCE!"
-	set "FORCE="
-
-	set "STELLA_APP_FEATURE_ROOT=!STELLA_INTERNAL_TOOLSET_ROOT!"
-	call %STELLA_COMMON%\common-feature.bat :feature_install %~1 "HIDDEN"
-
-	set "STELLA_APP_FEATURE_ROOT=!_toolset_install_save_app_feature_root!"
-	set "FORCE=!_toolset_install_save_force!"
-	call %STELLA_COMMON%\common-feature.bat :pop_schema_context
-goto :eof
-
-:toolset_info
-	call %STELLA_COMMON%\common-feature.bat :push_schema_context
-	set "_toolset_info_save_app_feature_root=!STELLA_APP_FEATURE_ROOT!"
-	set "STELLA_APP_FEATURE_ROOT=!STELLA_INTERNAL_TOOLSET_ROOT!"
-
-	call %STELLA_COMMON%\common-feature.bat :feature_info %~1 "TOOLSET"
-
-	set "STELLA_APP_FEATURE_ROOT=!_toolset_info_save_app_feature_root!"
-	call %STELLA_COMMON%\common-feature.bat :pop_schema_context
-goto :eof
-
-
-:toolset_init
-	set "_schema_toolset=%~1"
-
-	call %STELLA_COMMON%\common-feature.bat :push_schema_context
-	set "_toolset_init_save_app_feature_root=!STELLA_APP_FEATURE_ROOT!"
-	set "STELLA_APP_FEATURE_ROOT=!STELLA_INTERNAL_TOOLSET_ROOT!"
-
-
-	call %STELLA_COMMON%\common-feature.bat :internal_feature_context "!_schema_toolset!"
-
-	call %STELLA_COMMON%\common-feature.bat :feature_inspect !FEAT_SCHEMA_SELECTED!
-
-	if "!TEST_FEATURE!"=="1" (
-
-		if not "!FEAT_BUNDLE!"=="" (
-			call %STELLA_COMMON%\common-feature.bat :push_schema_context
-
-			set "FEAT_BUNDLE_MODE=!FEAT_BUNDLE!"
-			for %%p in (!FEAT_BUNDLE_ITEM!) do (
-				REM call :feature_init %%p "HIDDEN"
-				call %STELLA_COMMON%\common-feature.bat :internal_feature_context "%%p"
-				if not "!FEAT_SEARCH_PATH!"=="" set "STELLA_BUILD_TOOLSET_PATH=!FEAT_SEARCH_PATH!;!STELLA_BUILD_TOOLSET_PATH!"
-				for %%e in (!FEAT_ENV_CALLBACK!) do (
-					call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :%%e
-				)
-			)
-			set "FEAT_BUNDLE_MODE="
-
-			call %STELLA_COMMON%\common-feature.bat :pop_schema_context
-		)
-
-		if not "!FEAT_SEARCH_PATH!"=="" set "STELLA_BUILD_TOOLSET_PATH=!FEAT_SEARCH_PATH!;!STELLA_BUILD_TOOLSET_PATH!"
-
-		REM TODO : warn : env vars should be uninitialized later because use of a toolset is temporary
-		for %%p in (!FEAT_ENV_CALLBACK!) do (
-			call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :%%p
-		)
-
-	)
-
-	set "STELLA_APP_FEATURE_ROOT=!_toolset_init_save_app_feature_root!"
-	call %STELLA_COMMON%\common-feature.bat :pop_schema_context
-goto :eof
-
-:add_toolset
-	set "_add_toolset=%~1"
-	set "STELLA_BUILD_EXTRA_TOOLSET=!STELLA_BUILD_EXTRA_TOOLSET! !_add_toolset!"
-goto :eof
-
-:set_toolset
-	set "_toolset=%~1"
-	set "OPT=%~2"
-
-	:: configure tool
-	set _flag_configure=
-	:: build tool
-	set _flag_build=
-	:: compiler frontend
-	set _flag_frontend=
-
-	set "CONFIG_TOOL="
-	set "BUILD_TOOL="
-	set "COMPIL_FRONTEND="
-
-	if "!_toolset!"=="CUSTOM" (
-		set "STELLA_BUILD_TOOLSET=CUSTOM"
-		for %%O in (%OPT%) do (
-			if "!_flag_configure!"=="ON" (
-				set "CONFIG_TOOL=%%O"
-				set "_flag_configure=OFF"
-			)
-			if "%%O"=="CONFIG_TOOL" (
-				set "_flag_configure=ON"
-			)
-			if "!_flag_build!"=="ON" (
-				set "BUILD_TOOL=%%O"
-				set "_flag_build=OFF"
-			)
-			if "%%O"=="BUILD_TOOL" (
-				set "_flag_build=ON"
-			)
-			if "!_flag_frontend!"=="ON" (
-				set "COMPIL_FRONTEND=%%O"
-				set "_flag_frontend=OFF"
-			)
-			if "%%O"=="COMPIL_FRONTEND" (
-				set "_flag_frontend=ON"
-			)
-		)
-	)
-
-	if "!_toolset!"=="NONE" (
-		set "STELLA_BUILD_TOOLSET=NONE"
-		set "CONFIG_TOOL="
-		set "BUILD_TOOL="
-		set "COMPIL_FRONTEND="
-	)
-
-	if "!_toolset!"=="MINGW-W64" (
-		set "STELLA_BUILD_TOOLSET=MINGW-W64"
-		set "CONFIG_TOOL="
-		set "BUILD_TOOL=mingw-make"
-		set "COMPIL_FRONTEND=mingw-gcc"
-	)
-
-
-	if "!_toolset!"=="MS" (
-		set "STELLA_BUILD_TOOLSET=MS"
-		set "CONFIG_TOOL=cmake"
-		set "BUILD_TOOL=nmake"
-		set "COMPIL_FRONTEND=cl"
-	)
-
-
-	REM TODO autoselect ninja instead of make if using cmake
-	REM if "!CONFIG_TOOL!"=="cmake" (
-	REM if not "!_flag_build!"=="FORCE" (
-	REM 		call %STELLA_COMMON%\common.bat :which "_test1" "ninja"
-	REM 		if not "!_test1!"=="" (
-	REM 			set "BUILD_TOOL=ninja"
-	REM 			if not "!_flag_frontend!"=="FORCE" (
-	REM 				set "COMPIL_FRONTEND=gcc"
-	REM 			)
-	REM 		)
-	REM 	)
-	REM )
-
-
-	set "STELLA_BUILD_CONFIG_TOOL=!CONFIG_TOOL!"
-	set "STELLA_BUILD_BUILD_TOOL=!BUILD_TOOL!"
-	set "STELLA_BUILD_COMPIL_FRONTEND=!COMPIL_FRONTEND!"
-
-	REM STELLA_BUILD_CONFIG_TOOL
-	set "STELLA_BUILD_CONFIG_TOOL_BIN="
-	set "_t="
-	call %STELLA_COMMON%\common-feature.bat :translate_schema "!STELLA_BUILD_CONFIG_TOOL!" "_t"
-	if "!_t!"=="cmake" (
-		set "STELLA_BUILD_CONFIG_TOOL_BIN=cmake"
-	)
-	if "!_t!"=="configure" (
-		set "STELLA_BUILD_CONFIG_TOOL_BIN=configure"
-	)
-
-	REM STELLA_BUILD_BUILD_TOOL
-	set "STELLA_BUILD_BUILD_TOOL_BIN="
-	set "_t="
-	call %STELLA_COMMON%\common-feature.bat :translate_schema "!STELLA_BUILD_BUILD_TOOL!" "_t"
-	if "!_t!"=="nmake" (
-		set "STELLA_BUILD_BUILD_TOOL_BIN=nmake"
-	)
-	if "!_t!"=="mingw-make" (
-		set "STELLA_BUILD_BUILD_TOOL_BIN=mingw32-make"
-	)
-	if "!_t!"=="make" (
-		set "STELLA_BUILD_BUILD_TOOL_BIN=make"
-	)
-	if "!_t!"=="ninja" (
-		set "STELLA_BUILD_BUILD_TOOL_BIN=ninja"
-	)
-	if "!_t!"=="jom" (
-		set "STELLA_BUILD_BUILD_TOOL_BIN=jom"
-	)
-
-	REM STELLA_BUILD_COMPIL_FRONTEND
-	set "STELLA_BUILD_COMPIL_FRONTEND_BIN="
-	set "_t="
-	call %STELLA_COMMON%\common-feature.bat :translate_schema "!STELLA_BUILD_COMPIL_FRONTEND!" "_t"
-	if "!_t!"=="gcc" (
-		set "STELLA_BUILD_COMPIL_FRONTEND_BIN=gcc"
-	)
-	if "!_t!"=="mingw-gcc" (
-		set "STELLA_BUILD_COMPIL_FRONTEND_BIN=gcc"
-	)
-	if "!_t!"=="cl" (
-		set "STELLA_BUILD_COMPIL_FRONTEND_BIN=cl"
-	)
-goto :eof
-
-:enable_current_toolset
-
-	echo ** Require build toolset : !STELLA_BUILD_TOOLSET! [ config_tool:!STELLA_BUILD_CONFIG_TOOL! build_tool:!STELLA_BUILD_BUILD_TOOL! compil_frontend:!STELLA_BUILD_COMPIL_FRONTEND! ]
-	set "_active_vs="
-	if "!STELLA_BUILD_TOOLSET!"=="MS" (
-		set "_active_vs=1"
-	)
-	if "!STELLA_BUILD_TOOLSET!" == "MINGW-W64" (
-		call :toolset_install "mingw-w64"
-		call :toolset_init "mingw-w64"
-	)
-
-	REM STELLA_BUILD_CONFIG_TOOL
-	if not "!STELLA_BUILD_CONFIG_TOOL!"=="" (
-		set "_t="
-		call %STELLA_COMMON%\common-feature.bat :translate_schema "!STELLA_BUILD_CONFIG_TOOL!" "_t"
-		if "!_t!"=="cmake" (
-			call :toolset_install "!STELLA_BUILD_CONFIG_TOOL!"
-			call :toolset_init "!STELLA_BUILD_CONFIG_TOOL!"
-		)
-	)
-
-	REM STELLA_BUILD_BUILD_TOOL
-	if not "!STELLA_BUILD_BUILD_TOOL!"=="" (
-		if "!STELLA_BUILD_BUILD_TOOL_BIN!"=="nmake" (
-			set "_active_vs=1"
-		) else (
-			set "_t="
-			call %STELLA_COMMON%\common-feature.bat :translate_schema "!STELLA_BUILD_BUILD_TOOL!" "_t"
-			if "!_t!"=="mingw-make" (
-				call :toolset_install "mingw-w64"
-				call :toolset_init "mingw-w64"
-			) else (
-				REM ninja, jom, make
-				call :toolset_install "!STELLA_BUILD_BUILD_TOOL!"
-				call :toolset_init "!STELLA_BUILD_BUILD_TOOL!"
-			)
-		)
-	)
-
-	REM STELLA_BUILD_COMPIL_FRONTEND
-	if not "!STELLA_BUILD_COMPIL_FRONTEND!"=="" (
-		if "!STELLA_BUILD_COMPIL_FRONTEND_BIN!"=="cl" (
-			set "_active_vs=1"
-		) else (
-			set "_t="
-			call %STELLA_COMMON%\common-feature.bat :translate_schema "!STELLA_BUILD_COMPIL_FRONTEND!" "_t"
-			if "!_t!"=="mingw-gcc" (
-				call :toolset_install "mingw-w64"
-				call :toolset_init "mingw-w64"
-			) else (
-				REM gcc
-				call :toolset_install "!STELLA_BUILD_COMPIL_FRONTEND!"
-				call :toolset_init "!STELLA_BUILD_COMPIL_FRONTEND!"
-			)
-		)
-	)
-
-	echo ** Require build toolset : !STELLA_BUILD_TOOLSET! [ config_tool:!STELLA_BUILD_CONFIG_TOOL! build_tool:!STELLA_BUILD_BUILD_TOOL! compil_frontend:!STELLA_BUILD_COMPIL_FRONTEND! ]
-
-	echo ** Require extra toolset : !STELLA_BUILD_EXTRA_TOOLSET!
-	for %%s in (!STELLA_BUILD_EXTRA_TOOLSET!) do (
-		call :toolset_install "%%s"
-		call :toolset_init "%%s"
-	)
-
-	echo ** All toolset are installed
-
-	echo ** Set toolsets search path
-	set "_save_path_CURRENT_TOOLSET=!PATH!"
-
-	REM set visual studio path and env vars
-	if "!_active_vs!"=="1" (
-		call :vs_env_vars !STELLA_BUILD_ARCH!
-	)
-
-	set "PATH=!STELLA_BUILD_TOOLSET_PATH!;!PATH!"
-
-
-	echo ** Init specific toolset env var
-	set "_t="
-	call %STELLA_COMMON%\common-feature.bat :translate_schema "!STELLA_BUILD_COMPIL_FRONTEND!" "_t"
-	if "!_t!"=="mingw-gcc" (
-		call :toolset_info "mingw-w64"
-		set "CC=!TOOLSET_FEAT_INSTALL_ROOT!\bin\gcc"
-		set "CXX=!TOOLSET_FEAT_INSTALL_ROOT!\bin\gcc"
-		set "CPP=!TOOLSET_FEAT_INSTALL_ROOT!\bin\gcc"
-		REM set "AR=!TOOLSET_FEAT_INSTALL_ROOT!\bin\ar"
-		REM set "AS=!TOOLSET_FEAT_INSTALL_ROOT!\bin\as"
-		REM set "LIBRARY_PATH=!LIBRARY_PATH!;!TOOLSET_FEAT_INSTALL_ROOT!\lib\gcc\x86_64-w64-mingw32\4.9.2"
-		REM set CMAKE_C_COMPILER=mingw32-gcc
-		REM set CMAKE_CXX_COMPILER=mingw32-gcc
-		REM activate gcc libs search folder at link time
-		REM export LIBRARY_PATH="$LIBRARY_PATH:$TOOLSET_FEAT_INSTALL_ROOT/lib"
-	)
-	if "!_t!"=="gcc" (
-		call :toolset_info "!STELLA_BUILD_COMPIL_FRONTEND!"
-		set "CC=!TOOLSET_FEAT_INSTALL_ROOT!\bin\gcc"
-		set "CXX=!TOOLSET_FEAT_INSTALL_ROOT!\bin\gcc"
-		set "CPP=!TOOLSET_FEAT_INSTALL_ROOT!\bin\gcc"
-		set "LIBRARY_PATH=!LIBRARY_PATH!;!TOOLSET_FEAT_INSTALL_ROOT!\lib"
-		REM set CMAKE_C_COMPILER=gcc
-		REM set CMAKE_CXX_COMPILER=gcc
-		REM activate gcc libs search folder at link time
-		REM export LIBRARY_PATH="$LIBRARY_PATH:$TOOLSET_FEAT_INSTALL_ROOT/lib"
-	)
-	REM https://msdn.microsoft.com/en-us/library/d7ahf12s.aspx
-	REM set AS=ml
-	REM set BC=bc
-	REM set RC=rc
-	if "!_t!"=="cl" (
-		set CC=cl
-		set CXX=cl
-		set CPP=cl
-		REM set CMAKE_C_COMPILER=cl
-		REM set CMAKE_CXX_COMPILER=cl
-	)
-
-goto :eof
-
-:disable_current_toolset
-	echo ** Disable current toolset path
-	set "PATH=!_save_path_CURRENT_TOOLSET!"
 goto :eof
 
 :: BUILD ------------------------------------------------------------------------------------------------------------------------------
@@ -432,15 +101,88 @@ goto :eof
 
 	echo ** Manual-building !NAME!
 
-	call :enable_current_toolset
+	call %STELLA_COMMON%\common-build-toolset.bat :enable_current_toolset
 
 	call :prepare_build "!INSTALL_DIR!" "!SOURCE_DIR!"
 goto :eof
 
 :end_manual_build
-	call :disable_current_toolset
+	call %STELLA_COMMON%\common-build-toolset.bat :disable_current_toolset
 	echo ** Done
 goto :eof
+
+
+:prepare_build
+	set "_install_dir=%~1"
+	set "_source_dir=%~2"
+	set "_build_dir=%~3"
+
+
+	:: set env
+	call :set_build_env "ARCH" "!STELLA_BUILD_ARCH!"
+	call :set_build_env "CPU_INSTRUCTION_SCOPE" "!STELLA_BUILD_CPU_INSTRUCTION_SCOPE!"
+	call :set_build_env "OPTIMIZATION" "!STELLA_BUILD_OPTIMIZATION!"
+
+	:: trim list
+	call %STELLA_COMMON%\common.bat :trim "STELLA_C_CXX_FLAGS" "!STELLA_C_CXX_FLAGS!"
+	call %STELLA_COMMON%\common.bat :trim "STELLA_CPP_FLAGS" "!STELLA_CPP_FLAGS!"
+	call %STELLA_COMMON%\common.bat :trim "STELLA_LINK_FLAGS" "!STELLA_LINK_FLAGS!"
+
+
+	:: set compiler env flags -------------
+	:: cmake take care of compiler flags in case of other compil frontend
+	if "!STELLA_BUILD_CONFIG_TOOL_BIN_FAMILY!"=="cmake" (
+		call :set_env_vars_for_cmake
+	) else (
+		:: gcc
+		if "!STELLA_BUILD_COMPIL_FRONTEND_BIN_FAMILY!"=="gcc" (
+			call :set_env_vars_for_gcc
+		) else (
+			:: cl
+			if "!STELLA_BUILD_COMPIL_FRONTEND_BIN_FAMILY!"=="cl" (
+				call :set_env_vars_for_cl
+			)
+		)
+	)
+
+
+	:: print build info ------------
+	echo ** BUILD TOOLSET
+	echo ====^> Preconfigured Toolset : !STELLA_BUILD_TOOLSET!
+	echo ====^> Configuration Tool : !STELLA_BUILD_CONFIG_TOOL! [family : !STELLA_BUILD_CONFIG_TOOL_BIN_FAMILY!]
+	echo ====^> Build management Tool : !STELLA_BUILD_BUILD_TOOL! [family : !STELLA_BUILD_BUILD_TOOL_BIN_FAMILY!]
+	echo ====^> Compiler Frontend : !STELLA_BUILD_COMPIL_FRONTEND! [family : !STELLA_BUILD_COMPIL_FRONTEND_BIN_FAMILY!]
+	echo ====^> env CC : !CC!
+	echo ====^> env CXX : !CXX!
+	echo ====^> env CPP : !CPP!
+	echo ====^> Extra toolset : !STELLA_BUILD_EXTRA_TOOLSET!
+	echo ====^> Toolset features checked : !STELLA_BUILD_CHECK_TOOLSET!
+	echo ** BUILD INFO
+	echo ====^> Build arch directive : !STELLA_BUILD_ARCH!
+	echo ====^> Parallelized (if supported) : !STELLA_BUILD_PARALLELIZE!
+	echo ====^> Relocatable : !STELLA_BUILD_RELOCATE!
+	echo ====^> Linked lib from stella features : !STELLA_LINKED_LIBS_LIST!
+	echo ** FOLDERS
+	echo ====^> Install directory : !_install_dir!
+	echo ====^> Source directory : !_source_dir!
+	echo ====^> Build directory : !_build_dir!
+	echo ** SOME FLAGS
+	echo ====^> STELLA_C_CXX_FLAGS : !STELLA_C_CXX_FLAGS!
+	echo ====^> STELLA_CPP_FLAGS : !STELLA_CPP_FLAGS!
+	echo ====^> STELLA_LINK_FLAGS : !STELLA_LINK_FLAGS!
+	echo ====^> STELLA_DYNAMIC_LINK_FLAGS : !STELLA_DYNAMIC_LINK_FLAGS!
+	echo ====^> STELLA_STATIC_LINK_FLAGS : !STELLA_STATIC_LINK_FLAGS!
+	echo ====^> CMAKE_LIBRARY_PATH : !CMAKE_LIBRARY_PATH!
+	echo ====^> CMAKE_INCLUDE_PATH : !CMAKE_INCLUDE_PATH!
+	echo ====^> STELLA_CMAKE_EXTRA_FLAGS : !STELLA_CMAKE_EXTRA_FLAGS!
+	echo ** SOME ENV
+	echo ====^> INCLUDE : !INCLUDE!
+	echo ====^> LIB : !LIB!
+	echo ====^> LIBPATH : !LIBPATH!
+	echo ====^> LIBRARY_PATH (unix world var) : !LIBRARY_PATH!
+goto :eof
+
+
 
 :auto_build
 	set "NAME=%~1"
@@ -480,7 +222,7 @@ goto :eof
 	echo  ** Auto-building !NAME! into !INSTALL_DIR! for !STELLA_CURRENT_OS!
 
 
-	call :enable_current_toolset
+	call %STELLA_COMMON%\common-build-toolset.bat :enable_current_toolset
 
 
 	:: folder stuff
@@ -514,13 +256,13 @@ goto :eof
 	if "!_opt_configure!"=="ON" (
 		call :launch_configure "!SOURCE_DIR!" "!INSTALL_DIR!" "!BUILD_DIR!" "!OPT!"
 	)
-
 	if "!_opt_build!"=="ON" (
 		call :launch_build "!SOURCE_DIR!" "!INSTALL_DIR!" "!BUILD_DIR!" "!OPT!"
 	)
 
 
 	cd /D "!INSTALL_DIR!"
+
 	:: clean workspace
 	if not "!_opt_source_keep!"=="ON" (
 		call %STELLA_COMMON%\common.bat :del_folder "!SOURCE_DIR!"
@@ -537,7 +279,7 @@ goto :eof
 		call :inspect_and_fix_build "!INSTALL_DIR!"
 	)
 
-	call :disable_current_toolset
+	call %STELLA_COMMON%\common-build-toolset.bat :disable_current_toolset
 	echo ** Done
 goto :eof
 
@@ -568,22 +310,31 @@ goto :eof
 	:: AUTO_INSTALL_CONF_FLAG_PREFIX -- TODO NOT USED
 	:: AUTO_INSTALL_CONF_FLAG_POSTFIX
 
+	if "!STELLA_BUILD_CONFIG_TOOL_BIN_FAMILY!"=="configure" (
 
+		echo TODO NOT IMPLEMENTED
+	)
 
-	if "!STELLA_BUILD_CONFIG_TOOL_BIN!"=="cmake" (
-		if "!STELLA_BUILD_BUILD_TOOL_BIN!"=="mingw32-make" (
+	if "!STELLA_BUILD_CONFIG_TOOL_BIN_FAMILY!"=="cmake" (
+		if "!STELLA_BUILD_BUILD_TOOL!"=="mingw-make" (
 			set "CMAKE_GENERATOR=MinGW Makefiles"
 		)
+		if "!STELLA_BUILD_BUILD_TOOL!"=="msys-make" (
+			set "CMAKE_GENERATOR=MSYS Makefiles"
+		)
+		if "!STELLA_BUILD_BUILD_TOOL!"=="msys-mingw-make" (
+			set "CMAKE_GENERATOR=MSYS Makefiles"
+		)
 
-		if "!STELLA_BUILD_BUILD_TOOL_BIN!"=="ninja" (
+		if "!STELLA_BUILD_BUILD_TOOL!"=="ninja" (
 			set "CMAKE_GENERATOR=Ninja"
 		)
 
-		if "!STELLA_BUILD_BUILD_TOOL_BIN!"=="nmake" (
+		if "!STELLA_BUILD_BUILD_TOOL!"=="nmake" (
 			set "CMAKE_GENERATOR=NMake Makefiles"
 		)
 
-		if "!STELLA_BUILD_BUILD_TOOL_BIN!"=="jom" (
+		if "!STELLA_BUILD_BUILD_TOOL!"=="jom" (
 			set "CMAKE_GENERATOR=NMake Makefiles"
 			REM set "CMAKE_GENERATOR=NMake Makefiles JOM"
 		)
@@ -683,7 +434,8 @@ goto :eof
 	)
 
 
-	if "!STELLA_BUILD_BUILD_TOOL_BIN!"=="mingw32-make" (
+	REM TODO REVIEW MSYS / MinGW Make
+	if "!STELLA_BUILD_BUILD_TOOL_BIN_FAMILY!"=="make" (
 		if "!_opt_parallelize!"=="ON" (
 			set "_FLAG_PARALLEL=-j!STELLA_NB_CPU!"
 		)
@@ -692,21 +444,21 @@ goto :eof
 		)
 		if "!_opt_configure!"=="ON" (
 			:: First step : build
-			mingw32-make !_debug! !_FLAG_PARALLEL! !AUTO_INSTALL_BUILD_FLAG_POSTFIX!
+			make !_debug! !_FLAG_PARALLEL! !AUTO_INSTALL_BUILD_FLAG_POSTFIX!
 
 			:: Other build step
 			for %%s in (!_post_build_step!) do (
-				mingw32-make !_debug! !_FLAG_PARALLEL! !AUTO_INSTALL_BUILD_FLAG_POSTFIX! %%s
+				make !_debug! !_FLAG_PARALLEL! !AUTO_INSTALL_BUILD_FLAG_POSTFIX! %%s
 			)
 		) else (
 			:: First step : build
-			mingw32-make !_debug! !_FLAG_PARALLEL! ^
+			make !_debug! !_FLAG_PARALLEL! ^
 			PREFIX="!AUTO_INSTALL_DIR!" prefix="!AUTO_INSTALL_DIR!" ^
 			!AUTO_INSTALL_BUILD_FLAG_POSTFIX!
 
 			:: Other build step
 			for %%s in (!_post_build_step!) do (
-				mingw32-make !_debug! ^
+				make !_debug! ^
 				PREFIX="!AUTO_INSTALL_DIR!" prefix="!AUTO_INSTALL_DIR!" ^
 				!AUTO_INSTALL_BUILD_FLAG_POSTFIX! %%s
 			)
@@ -714,7 +466,7 @@ goto :eof
 
 	)
 
-	if "!STELLA_BUILD_BUILD_TOOL_BIN!"=="make" (
+	if "!STELLA_BUILD_BUILD_TOOL_BIN_FAMILY!"=="make" (
 		if "!_opt_parallelize!"=="ON" (
 			set "_FLAG_PARALLEL=-j!STELLA_NB_CPU!"
 		)
@@ -746,7 +498,7 @@ goto :eof
 	)
 
 
-	if "!STELLA_BUILD_BUILD_TOOL_BIN!"=="jom" (
+	if "!STELLA_BUILD_BUILD_TOOL_BIN_FAMILY!"=="jom" (
 		REM TODO parallelization flag ?
 		REM if "!_opt_parallelize!"=="ON" (
 		REM			set "_FLAG_PARALLEL=-j!STELLA_NB_CPU!"
@@ -769,7 +521,7 @@ goto :eof
 	)
 
 
-	if "!STELLA_BUILD_BUILD_TOOL_BIN!"=="ninja" (
+	if "!STELLA_BUILD_BUILD_TOOL_BIN_FAMILY!"=="ninja" (
 		if not "!_opt_parallelize!"=="ON" (
 			set "_FLAG_PARALLEL=-j1"
 		) else (
@@ -787,7 +539,7 @@ goto :eof
 		for %%s in (!_post_build_step!) do (
 			REM install step exist mainly when cmake generate it, otherwise ignore 'install' step
 			if "%%s"=="install" (
-				if "!STELLA_BUILD_CONFIG_TOOL_BIN!"=="cmake" (
+				if "!STELLA_BUILD_CONFIG_TOOL_BIN_FAMILY!"=="cmake" (
 					ninja !_debug! !AUTO_INSTALL_BUILD_FLAG_POSTFIX! %%s
 				)
 			) else (
@@ -796,7 +548,7 @@ goto :eof
 		)
 	)
 
-	if "!STELLA_BUILD_BUILD_TOOL_BIN!"=="nmake" (
+	if "!STELLA_BUILD_BUILD_TOOL_BIN_FAMILY!"=="nmake" (
 		if "!_opt_parallelize!"=="ON" (
 			set "CL=/MP !CL!"
 		)
@@ -808,7 +560,7 @@ goto :eof
 		for %%s in (!_post_build_step!) do (
 			REM install step exist mainly when cmake generate it, otherwise ignore 'install' step
 			if "%%s"=="install" (
-				if "!STELLA_BUILD_CONFIG_TOOL_BIN!"=="cmake" (
+				if "!STELLA_BUILD_CONFIG_TOOL_BIN_FAMILY!"=="cmake" (
 					nmake !AUTO_INSTALL_BUILD_FLAG_POSTFIX! install
 				)
 			) else (
@@ -842,394 +594,6 @@ goto :eof
 
 goto :eof
 
-:link_feature_library
-	set "SCHEMA=%~1"
-	set "OPT=%~2"
-
-
-	set _ROOT=
-	set _BIN=
-	set _LIB=
-	set _INCLUDE=
-
-
-	set _folders=OFF
-	set _var_folders=
-	set _flags=OFF
-	set _var_flags=
-	set _opt_flavour=
-	set _flag_lib_folder=OFF
-	set _lib_folder=lib
-	set _flag_bin_folder=OFF
-	set _bin_folder=bin
-	set _flag_include_folder=OFF
-	set _include_folder=include
-	set _opt_set_flags=ON
-	set _flag_libs_name=OFF
-	set _libs_name=
-	set _flag_rename=OFF
-	set _list_rename=
-
-
-	if "!STELLA_BUILD_LINK_MODE!"=="DEFAULT" (
-		set "_opt_flavour=DEFAULT"
-	)
-	if "!STELLA_BUILD_LINK_MODE!"=="DYNAMIC" (
-		set "_opt_flavour=FORCE_DYNAMIC"
-	)
-	if "!STELLA_BUILD_LINK_MODE!"=="STATIC" (
-		set "_opt_flavour=FORCE_STATIC"
-	)
-
-	for %%O in (%OPT%) do (
-		if "%%O"=="FORCE_STATIC" (
-			set _opt_flavour=%%O
-			set _flag_libs_name=OFF
-			set _flag_rename=OFF
-		)
-		if "%%O"=="FORCE_DYNAMIC" (
-			set _opt_flavour=%%O
-			set _flag_libs_name=OFF
-			set _flag_rename=OFF
-		)
-
-		if "!_flag_lib_folder!"=="ON" (
-			set "_lib_folder=%%O"
-			set _flag_lib_folder=OFF
-		)
-		if "%%O"=="FORCE_LIB_FOLDER" (
-			set _flag_lib_folder=ON
-			set _flag_libs_name=OFF
-			set _flag_rename=OFF
-		)
-		if "!_flag_bin_folder!"=="ON" (
-			set "_bin_folder=%%O"
-			set _flag_bin_folder=OFF
-		)
-		if "%%O"=="FORCE_BIN_FOLDER" (
-			set _flag_bin_folder=ON
-			set _flag_libs_name=OFF
-			set _flag_rename=OFF
-		)
-		if "!_flag_include_folder!"=="ON" (
-			set "_include_folder=%%O"
-			set _flag_include_folder=OFF
-		)
-		if "%%O"=="FORCE_INCLUDE_FOLDER" (
-			set _flag_include_folder=ON
-			set _flag_libs_name=OFF
-			set _flag_rename=OFF
-		)
-
-		if "!_flags!"=="ON" (
-			set "_var_flags=%%O"
-			set _flags=OFF
-		)
-		if "%%O"=="GET_FLAGS" (
-			set _flags=ON
-			set _flag_libs_name=OFF
-			set _flag_rename=OFF
-		)
-		if "!_folders!"=="ON" (
-			set "_var_folders=%%O"
-			set _folders=OFF
-		)
-		if "%%O"=="GET_FOLDER" (
-			set _folders=ON
-			set _flag_libs_name=OFF
-			set _flag_rename=OFF
-		)
-
-		if "%%O"=="NO_SET_FLAGS" (
-			set _opt_set_flags=OFF
-			set _flag_libs_name=OFF
-			set _flag_rename=OFF
-		)
-
-		if "!_flag_libs_name!"=="ON" (
-			set "_libs_name=!_libs_name! %%O"
-		)
-		if "%%O"=="LIBS_NAME" (
-			set "_flag_libs_name=ON"
-			set _flag_rename=OFF
-		)
-
-		if "!_flag_rename!"=="ON" (
-			set "_list_rename=!_list_rename! %%O"
-		)
-		if "%%O"=="FORCE_RENAME" (
-			set "_flag_rename=ON"
-			set _flag_libs_name=OFF
-		)
-
-	)
-
-	if "!_opt_flavour!"=="DEFAULT" (
-		set "_list_rename="
-	)
-
-	:: check origin for this schema
-	set "_origin="
-	set _dummy=%SCHEMA:FORCE_ORIGIN_STELLA =%
-	if not "!_dummy!"=="!SCHEMA!" (
-		set "_origin=STELLA"
-		set "SCHEMA=!_dummy!"
-	) else (
-		set _dummy=%SCHEMA:FORCE_ORIGIN_SYSTEM =%
-		if not "!_dummy!"=="!SCHEMA!" (
-			set "_origin=SYSTEM"
-			set "SCHEMA=!_dummy!"
-		) else (
-
-			call :dep_choose_origin "_origin" "!SCHEMA!"
-		)
-	)
-
-	if "!_origin!"=="SYSTEM" (
-		echo We do not link against STELLA version of !SCHEMA!, but from SYSTEM.
-		goto :eof
-	)
-
-	echo ** Linked to !SCHEMA!
-
-
-	if "!STELLA_BUILD_COMPIL_FRONTEND!"=="" (
-		echo ** WARN : compil frontend empty - did you set a toolset ?
-	)
-
-	:: INSPECT required lib through schema
-	call %STELLA_COMMON%\common-feature.bat :push_schema_context
-	call %STELLA_COMMON%\common-feature.bat :feature_inspect !SCHEMA!
-
-	if "!TEST_FEATURE!"=="1" (
-		set "REQUIRED_LIB_ROOT=!FEAT_INSTALL_ROOT!"
-	) else (
-		set "REQUIRED_LIB_ROOT="
-		echo ** ERROR : depend on lib !SCHEMA!
-	)
-	call %STELLA_COMMON%\common-feature.bat :pop_schema_context
-
-	:: ISOLATE LIBS
-	set "LIB_TARGET_FOLDER="
-
-	if "!_opt_flavour!"=="FORCE_STATIC" (
-
-		set "LIB_TARGET_FOLDER=!REQUIRED_LIB_ROOT!\stella-dep-static"
-		echo *** Isolate dependencies into !LIB_TARGET_FOLDER!
-
-		call %STELLA_COMMON%\common.bat :del_folder "!LIB_TARGET_FOLDER!"
-		mkdir "!LIB_TARGET_FOLDER!"
-
-		echo *** Copying items from !REQUIRED_LIB_ROOT!\!_lib_folder! to !LIB_TARGET_FOLDER!
-		for %%f in ("!REQUIRED_LIB_ROOT!\!_lib_folder!\*.*") do (
-			call :is_import_or_static_lib "_type" "%%f"
-			if "!_type!"=="STATIC" (
-				set "_renamed_filename="
-				set "_filename=%%~nxf"
-				set _pair=1
-				set _do_rename=0
-				for %%k in (!_list_rename!) do (
-					if "!_pair!"=="1" (
-						set _pair=0
-						if "!_filename!"=="%%k" set _do_rename=1
-					) else (
-						if "!_do_rename!"=="1" set "_renamed_filename=%%k"
-						set _pair=1
-						set _do_rename=0
-					)
-				)
-				copy /Y "%%f" "!LIB_TARGET_FOLDER!\!_renamed_filename!"
-			)
-		)
-	)
-	if "!_opt_flavour!"=="FORCE_DYNAMIC" (
-
-		set "LIB_TARGET_FOLDER=!REQUIRED_LIB_ROOT!\stella-dep-dynamic"
-		echo *** Isolate dependencies into !LIB_TARGET_FOLDER!
-
-		call %STELLA_COMMON%\common.bat :del_folder "!LIB_TARGET_FOLDER!"
-		mkdir "!LIB_TARGET_FOLDER!"
-
-		echo *** Copying items from !REQUIRED_LIB_ROOT!\!_lib_folder! to !LIB_TARGET_FOLDER!
-		for %%f in ("!REQUIRED_LIB_ROOT!\!_lib_folder!\*.*") do (
-			call :is_import_or_static_lib "_type" "%%f"
-			if "!_type!"=="IMPORT" (
-				set "_renamed_filename="
-				set "_filename=%%~nxf"
-				set _pair=1
-				set _do_rename=0
-				for %%k in (!_list_rename!) do (
-					if "!_pair!"=="1" (
-						set _pair=0
-						if "!_filename!"=="%%k" set _do_rename=1
-					) else (
-						if "!_do_rename!"=="1" set "_renamed_filename=%%k"
-						set _pair=1
-						set _do_rename=0
-					)
-				)
-				copy /Y "%%f" "!LIB_TARGET_FOLDER!\!_renamed_filename!"
-			)
-		)
-		REM TODO DO NOT COPY DLL ?
-		echo *** Copying DLL items from !REQUIRED_LIB_ROOT!\!_bin_folder! to !LIB_TARGET_FOLDER!
-		for %%f in ("!REQUIRED_LIB_ROOT!\!_bin_folder!\*.dll") do (
-			set "_renamed_filename="
-			set "_filename=%%~nxf"
-			set _pair=1
-			set _do_rename=0
-			for %%k in (!_list_rename!) do (
-				if "!_pair!"=="1" (
-					set _pair=0
-					if "!_filename!"=="%%k" set _do_rename=1
-				) else (
-					if "!_do_rename!"=="1" set "_renamed_filename=%%k"
-					set _pair=1
-					set _do_rename=0
-				)
-			)
-			copy /Y "%%f" "!LIB_TARGET_FOLDER!\!_renamed_filename!"
-		)
-
-	)
-	if "!_opt_flavour!"=="DEFAULT" (
-		set "LIB_TARGET_FOLDER=!REQUIRED_LIB_ROOT!\!_lib_folder!"
-	)
-
-	:: RESULTS
-
-	set "_ROOT=!REQUIRED_LIB_ROOT!"
-	set "_BIN=!REQUIRED_LIB_ROOT!\bin"
-	set "_INCLUDE=!REQUIRED_LIB_ROOT!\!_include_folder!"
-	set "_LIB=!LIB_TARGET_FOLDER!"
-
-
-	set "LINKED_LIBS_PATH=!LINKED_LIBS_PATH! !_opt_flavour! !_LIB!"
-
-	:: set stella build system flags ----
-	if "!_opt_set_flags!"=="ON" (
-		call :set_link_flags "!_LIB!" "!_INCLUDE!" "!_libs_name!"
-	)
-
-	:: set <var> flags ----
-	if not "!_var_flags!"=="" (
-		call :link_flags "!STELLA_BUILD_COMPIL_FRONTEND_BIN!" "!_var_flags!" "!_lib_path!" "!_include_path!" "!_libs_name!"
-	)
-
-	:: set <folder> vars ----
-	if not "!_var_folders!"=="" (
-		set "_t=!_var_folders!_ROOT"
-		set "%_t%=!_ROOT!"
-		set "_t=!_var_folders!_LIB"
-		set "%_t%=!_LIB!"
-		set "_t=!_var_folders!_INCLUDE"
-		set "%_t%=!_INCLUDE!"
-		set "_t=!_var_folders!_BIN"
-		set "%_t%=!_BIN!"
-	)
-goto :eof
-
-
-:set_link_flags
-	set "_lib_path=%~1"
-	set "_include_path=%~2"
-	set "_libs_name=%~3"
-
-	if not "!STELLA_BUILD_CONFIG_TOOL_BIN!"=="cmake" (
-		REM if "!STELLA_BUILD_COMPIL_FRONTEND_BIN!"=="mingw32-gcc" (
-		REM 	call :link_flags_gcc "_flags" "!_lib_path!" "!_include_path!" "!_libs_name!"
-			REM set "LINKED_LIBS_C_CXX_FLAGS=!LINKED_LIBS_C_CXX_FLAGS! !_flags_C_CXX_FLAGS!"
-			REM set "LINKED_LIBS_CPP_FLAGS=!LINKED_LIBS_CPP_FLAGS! !_flags_CPP_FLAGS!"
-			REM set "LINKED_LIBS_LINK_FLAGS=!LINKED_LIBS_LINK_FLAGS !_flags_LINK_FLAGS!"
-		)
-		if "!STELLA_BUILD_COMPIL_FRONTEND_BIN!"=="gcc" (
-			call :link_flags_gcc "_flags" "!_lib_path!" "!_include_path!" "!_libs_name!"
-			set "LINKED_LIBS_C_CXX_FLAGS=!LINKED_LIBS_C_CXX_FLAGS! !_flags_C_CXX_FLAGS!"
-			set "LINKED_LIBS_CPP_FLAGS=!LINKED_LIBS_CPP_FLAGS! !_flags_CPP_FLAGS!"
-			set "LINKED_LIBS_LINK_FLAGS=!LINKED_LIBS_LINK_FLAGS !_flags_LINK_FLAGS!"
-		)
-		if "!STELLA_BUILD_COMPIL_FRONTEND!"=="cl" (
-			call :link_flags_cl "_flags" "!_lib_path!" "!_include_path!" "!_libs_name!"
-			set "LINKED_LIBS_C_CXX_FLAGS=!LINKED_LIBS_C_CXX_FLAGS! !_flags_C_CXX_FLAGS!"
-			set "LINKED_LIBS_CPP_FLAGS=!LINKED_LIBS_CPP_FLAGS! !_flags_CPP_FLAGS!"
-			set "LINKED_LIBS_LINK_FLAGS=!LINKED_LIBS_LINK_FLAGS !_flags_LINK_FLAGS!"
-		)
-
-	) else (
-		set "LINKED_LIBS_CMAKE_LIBRARY_PATH=!LINKED_LIBS_CMAKE_LIBRARY_PATH!;!_lib_path!"
-		set "LINKED_LIBS_CMAKE_INCLUDE_PATH=!LINKED_LIBS_CMAKE_INCLUDE_PATH!;!_include_path!"
-	)
-
-goto :eof
-
-:: set flag for each compiler front end
-:link_flags
-	set "_frontend_bin=%~1"
-	set "_var_flags=%~2"
-	set "_lib_path=%~3"
-	set "_include_path=%~4"
-	set "_libs_name=%~5"
-
-	if "!_frontend_bin!"=="gcc" (
-		call :link_flags_gcc "!_var_flags!" "!_lib_path!" "!_include_path!" "!_libs_name!"
-	)
-
-	REM if "!_frontend_bin!"=="mingw32-gcc" (
-	REM		call :link_flags_gcc "!_var_flags!" "!_lib_path!" "!_include_path!" "!_libs_name!"
-	REM )
-
-	if "!_frontend_bin!"=="cl" (
-		call :link_flags_cl "!_var_flags!" "!_lib_path!" "!_include_path!" "!_libs_name!"
-	)
-goto :eof
-
-
-
-:link_flags_gcc
-	set "_var_flags=%~1"
-	set "_lib_path=%~2"
-	set "_include_path=%~3"
-	set "_libs_name=%~4"
-
-	set _C_CXX_FLAGS=
-	set "_CPP_FLAGS=-I!_include_path!"
-	set "_LINK_FLAGS=-L!_lib_path!"
-
-	for %%a in (!_libs_name!) do (
-		set "_LINK_FLAGS=!_LINK_FLAGS! -l%%a"
-	)
-
-	set "_t=!_var_flags!_C_CXX_FLAGS"
-	set "%_t%=!_C_CXX_FLAGS!"
-	set "_t=!_var_flags!_CPP_FLAGS"
-	set "%_t%=!_CPP_FLAGS!"
-	set "_t=!_var_flags!_LINK_FLAGS"
-	set "%_t%=!_LINK_FLAGS!"
-goto :eof
-
-:link_flags_cl
-	set "_var_flags=%~1"
-	set "_lib_path=%~2"
-	set "_include_path=%~3"
-	set "_libs_name=%~4"
-
-	REM cl /I<path> /link /LIBPATH:<truc> foo.lib
-
-	set "_C_CXX_FLAGS=/I!_include_path!"
-	set "_CPP_FLAGS="
-	set "_LINK_FLAGS=/LIBPATH:!_lib_path!"
-
-	for %%a in (!_libs_name!) do (
-		set "_LINK_FLAGS=!_LINK_FLAGS! %%a"
-	)
-
-	set "_t=!_var_flags!_C_CXX_FLAGS"
-	set "%_t%=!_C_CXX_FLAGS!"
-	set "_t=!_var_flags!_CPP_FLAGS"
-	set "%_t%=!_CPP_FLAGS!"
-	set "_t=!_var_flags!_LINK_FLAGS"
-	set "%_t%=!_LINK_FLAGS!"
-goto :eof
 
 :: ENV and FLAGS management---------------------------------------------------------------------------------------------------------------------------------------
 
@@ -1247,13 +611,14 @@ goto :eof
 	set STELLA_CMAKE_RPATH_DARWIN=
 
 	:: LINKED LIBRARIES
-	set LINKED_LIBS_C_CXX_FLAGS=
-	set LINKED_LIBS_CPP_FLAGS=
-	set LINKED_LIBS_LINK_FLAGS=
-	set LINKED_LIBS_PATH=
-	set LINKED_LIBS_CMAKE_LIBRARY_PATH=
-	set LINKED_LIBS_CMAKE_INCLUDE_PATH=
+	set STELLA_LINKED_LIBS_LIST=
+	set STELLA_LINKED_LIBS_C_CXX_FLAGS=
+	set STELLA_LINKED_LIBS_CPP_FLAGS=
+	set STELLA_LINKED_LIBS_LINK_FLAGS=
+	set STELLA_LINKED_LIBS_CMAKE_LIBRARY_PATH=
+	set STELLA_LINKED_LIBS_CMAKE_INCLUDE_PATH=
 	set STELLA_BUILD_PKG_CONFIG_PATH=
+	REM set LINKED_LIBS_PATH=
 
 	:: BUILD MODE
 	set "STELLA_BUILD_RELOCATE=!STELLA_BUILD_RELOCATE_DEFAULT!"
@@ -1289,191 +654,17 @@ goto :eof
 	set STELLA_BUILD_TOOLSET=
 	set STELLA_BUILD_TOOLSET_PATH=
 	set STELLA_BUILD_EXTRA_TOOLSET=
+	set STELLA_BUILD_CHECK_TOOLSET=
 	set STELLA_BUILD_CONFIG_TOOL=
 	set STELLA_BUILD_BUILD_TOOL=
 	set STELLA_BUILD_COMPIL_FRONTEND=
-	set STELLA_BUILD_CONFIG_TOOL_BIN=
-	set STELLA_BUILD_BUILD_TOOL_BIN=
-	set STELLA_BUILD_COMPIL_FRONTEND_BIN=
+	set STELLA_BUILD_CONFIG_TOOL_SCHEMA=
+	set STELLA_BUILD_BUILD_TOOL_SCHEMA=
+	set STELLA_BUILD_COMPIL_FRONTEND_SCHEMA=
+	set STELLA_BUILD_CONFIG_TOOL_BIN_FAMILY=
+	set STELLA_BUILD_BUILD_TOOL_BIN_FAMILY=
+	set STELLA_BUILD_COMPIL_FRONTEND_BIN_FAMILY=
 goto :eof
-
-
-:prepare_build
-	set "_install_dir=%~1"
-	set "_source_dir=%~2"
-	set "_build_dir=%~3"
-
-
-	:: set env
-	call :set_build_env "ARCH" "!STELLA_BUILD_ARCH!"
-	call :set_build_env "CPU_INSTRUCTION_SCOPE" "!STELLA_BUILD_CPU_INSTRUCTION_SCOPE!"
-	call :set_build_env "OPTIMIZATION" "!STELLA_BUILD_OPTIMIZATION!"
-
-	:: trim list
-	call %STELLA_COMMON%\common.bat :trim "STELLA_C_CXX_FLAGS" "!STELLA_C_CXX_FLAGS!"
-	call %STELLA_COMMON%\common.bat :trim "STELLA_CPP_FLAGS" "!STELLA_CPP_FLAGS!"
-	call %STELLA_COMMON%\common.bat :trim "STELLA_LINK_FLAGS" "!STELLA_LINK_FLAGS!"
-
-
-	:: set compiler env flags -------------
-	:: cmake take care of compiler flags
-	if "!STELLA_BUILD_CONFIG_TOOL_BIN!"=="cmake" (
-		call :set_env_vars_for_cmake
-	) else (
-		:: gcc
-		if "!STELLA_BUILD_COMPIL_FRONTEND_BIN!"=="gcc" (
-			call :set_env_vars_for_gcc
-		) else (
-			:: mingw32-gcc
-			REM if "!STELLA_BUILD_COMPIL_FRONTEND_BIN!"=="mingw32-gcc" (
-			REM	call :set_env_vars_for_gcc
-			REM ) else (
-				:: cl
-				if "!STELLA_BUILD_COMPIL_FRONTEND_BIN!"=="cl" (
-					call :set_env_vars_for_cl
-				)
-			REM )
-		)
-	)
-
-
-	:: print build info ------------
-	echo ** BUILD TOOLSET
-	echo ====^> Preconfigured Toolset : !STELLA_BUILD_TOOLSET!
-	echo ====^> Configuration Tool : !STELLA_BUILD_CONFIG_TOOL! [!STELLA_BUILD_CONFIG_TOOL_BIN!]
-	echo ====^> Build management Tool : !STELLA_BUILD_BUILD_TOOL! [!STELLA_BUILD_BUILD_TOOL_BIN!]
-	echo ====^> Compiler Frontend : !STELLA_BUILD_COMPIL_FRONTEND! [!STELLA_BUILD_COMPIL_FRONTEND_BIN!]
-	echo ====^> env CC : !CC!
-	echo ====^> env CXX : !CXX!
-	echo ====^> env CPP : !CPP!
-	echo ====^> Extra toolset : !STELLA_BUILD_EXTRA_TOOLSET!
-	echo ** BUILD INFO
-	echo ====^> Build arch directive : !STELLA_BUILD_ARCH!
-	echo ====^> Parallelized (if supported) : !STELLA_BUILD_PARALLELIZE!
-	echo ====^> Relocatable : !STELLA_BUILD_RELOCATE!
-	echo ====^> Linked lib from stella features : !LINKED_LIBS_LIST!
-	echo ** FOLDERS
-	echo ====^> Install directory : !_install_dir!
-	echo ====^> Source directory : !_source_dir!
-	echo ====^> Build directory : !_build_dir!
-	echo ** SOME FLAGS
-	echo ====^> STELLA_C_CXX_FLAGS : !STELLA_C_CXX_FLAGS!
-	echo ====^> STELLA_CPP_FLAGS : !STELLA_CPP_FLAGS!
-	echo ====^> STELLA_LINK_FLAGS : !STELLA_LINK_FLAGS!
-	echo ====^> STELLA_DYNAMIC_LINK_FLAGS : !STELLA_DYNAMIC_LINK_FLAGS!
-	echo ====^> STELLA_STATIC_LINK_FLAGS : !STELLA_STATIC_LINK_FLAGS!
-	echo ====^> CMAKE_LIBRARY_PATH : !CMAKE_LIBRARY_PATH!
-	echo ====^> CMAKE_INCLUDE_PATH : !CMAKE_INCLUDE_PATH!
-	echo ====^> STELLA_CMAKE_EXTRA_FLAGS : !STELLA_CMAKE_EXTRA_FLAGS!
-	echo ** SOME ENV
-	echo ====^> INCLUDE : !INCLUDE!
-	echo ====^> LIB : !LIB!
-	echo ====^> LIBPATH : !LIBPATH!
-	echo ====^> LIBRARY_PATH (unix world var) : !LIBRARY_PATH!
-goto :eof
-
-
-
-
-:: set flags and env for CMAKE
-:set_env_vars_for_cmake
-
-
-
-	:: CMAKE Flags
-	:: note :
-	::	- these flags have to be passed to the cmake command line, as cmake do not read en var
-	::	- list of environment variables read by cmake http://www.cmake.org/Wiki/CMake_Useful_Variables:Environment_Variables
-	set "CMAKE_C_FLAGS=!STELLA_C_CXX_FLAGS!"
-	set "CMAKE_CXX_FLAGS=!STELLA_C_CXX_FLAGS!"
-
-	:: Linker flags to be used to create shared libraries
-	set "CMAKE_SHARED_LINKER_FLAGS=!STELLA_LINK_FLAGS! !STELLA_DYNAMIC_LINK_FLAGS!"
-	:: Linker flags to be used to create module
-	set "CMAKE_MODULE_LINKER_FLAGS=!STELLA_LINK_FLAGS! !STELLA_DYNAMIC_LINK_FLAGS!"
-	:: Linker flags to be used to create static libraries
-	set "CMAKE_STATIC_LINKER_FLAGS=!STELLA_LINK_FLAGS! !STELLA_STATIC_LINK_FLAGS!"
-	:: Linker flags to be used to create executables
-	set "CMAKE_EXE_LINKER_FLAGS=!STELLA_LINK_FLAGS! !STELLA_DYNAMIC_LINK_FLAGS!"
-
-	:: Linked libraries
-	call %STELLA_COMMON%\common.bat :trim "LINKED_LIBS_CMAKE_LIBRARY_PATH" "!LINKED_LIBS_CMAKE_LIBRARY_PATH!"
-	call %STELLA_COMMON%\common.bat :trim "LINKED_LIBS_CMAKE_INCLUDE_PATH" "!LINKED_LIBS_CMAKE_INCLUDE_PATH!"
-	set "CMAKE_LIBRARY_PATH=!LINKED_LIBS_CMAKE_LIBRARY_PATH!"
-	set "CMAKE_INCLUDE_PATH=!LINKED_LIBS_CMAKE_INCLUDE_PATH!"
-	:: -DCMAKE_MODULE_PATH="$CMAKE_MODULE_PATH"
-
-	:: TODO do we need this ?
-	if not "!CMAKE_LIBRARY_PATH!"=="" set "CMAKE_LIBRARY_PATH=%CMAKE_LIBRARY_PATH:\=\\%"
-	if not "!CMAKE_INCLUDE_PATH!"=="" set "CMAKE_INCLUDE_PATH=%CMAKE_INCLUDE_PATH:\=\\%"
-
-
-	call %STELLA_COMMON%\common.bat :trim "STELLA_CMAKE_EXTRA_FLAGS" "!STELLA_CMAKE_EXTRA_FLAGS!"
-
-goto :eof
-
-
-
-:: set flags and env for standard build tools (GNU MAKE,...)
-:set_env_vars_for_gcc
-
-	:: ADD linked libraries flags
-	call %STELLA_COMMON%\common.bat :trim "LINKED_LIBS_C_CXX_FLAGS" "!LINKED_LIBS_C_CXX_FLAGS!"
-	call %STELLA_COMMON%\common.bat :trim "LINKED_LIBS_CPP_FLAGS" "!LINKED_LIBS_CPP_FLAGS!"
-	call %STELLA_COMMON%\common.bat :trim "LINKED_LIBS_LINK_FLAGS" "!LINKED_LIBS_LINK_FLAGS!"
-
-	set "STELLA_C_CXX_FLAGS=!STELLA_C_CXX_FLAGS! !LINKED_LIBS_C_CXX_FLAGS!"
-	set "STELLA_CPP_FLAGS=!STELLA_CPP_FLAGS! !LINKED_LIBS_CPP_FLAGS!"
-	set "STELLA_LINK_FLAGS=!LINKED_LIBS_LINK_FLAGS! !STELLA_LINK_FLAGS! !STELLA_DYNAMIC_LINK_FLAGS! !STELLA_STATIC_LINK_FLAGS!"
-
-
- 	:: flags to pass to the C compiler.
-	set "CFLAGS=!STELLA_C_CXX_FLAGS!"
-	:: flags to pass to the C++ compiler.
-	set "CXXFLAGS=!STELLA_C_CXX_FLAGS!"
-	:: flags to pass to the C preprocessor. Used when compiling C and C++ (Used to pass include_folder)
-	set "CPPFLAGS=!STELLA_CPP_FLAGS!"
-
-	:: flags to pass to the linker
-	set "LDFLAGS=!STELLA_LINK_FLAGS!"
-	::if [ "$STELLA_CURRENT_PLATFORM" == "linux" ]; then
-		:: TODO experimental new flags
-		:: https://sourceware.org/binutils/docs/ld/Options.html
-		:: http://www.kaizou.org/2015/01/linux-libraries/
-		::export LDFLAGS="-Wl,--copy-dt-needed-entries -Wl,--as-needed -Wl,--no-allow-shlib-undefined -Wl,--no-undefined $STELLA_LINK_FLAGS"
-
-goto :eof
-
-
-:: set flags and env for standard build tools (NMAKE,...)
-:set_env_vars_for_cl
-
-
-	:: ADD linked libraries flags
-	call %STELLA_COMMON%\common.bat :trim "LINKED_LIBS_C_CXX_FLAGS" "!LINKED_LIBS_C_CXX_FLAGS!"
-	call %STELLA_COMMON%\common.bat :trim "LINKED_LIBS_CPP_FLAGS" "!LINKED_LIBS_CPP_FLAGS!"
-	call %STELLA_COMMON%\common.bat :trim "LINKED_LIBS_LINK_FLAGS" "!LINKED_LIBS_LINK_FLAGS!"
-
-	set "STELLA_C_CXX_FLAGS=!STELLA_C_CXX_FLAGS! !LINKED_LIBS_C_CXX_FLAGS!"
-	set "STELLA_CPP_FLAGS=!STELLA_CPP_FLAGS! !LINKED_LIBS_CPP_FLAGS!"
-	set "STELLA_LINK_FLAGS=!LINKED_LIBS_LINK_FLAGS! !STELLA_LINK_FLAGS! !STELLA_DYNAMIC_LINK_FLAGS! !STELLA_STATIC_LINK_FLAGS!"
-
-	REM http://msdn.microsoft.com/en-us/library/d7ahf12s.aspx
- 	REM flags to pass to the C compiler.
-	set "CFLAGS=!STELLA_C_CXX_FLAGS!"
-	REM flags to pass to the C++ compiler. (.cxx files)
-	set "CXXFLAGS=!STELLA_C_CXX_FLAGS!"
-	REM  flags to pass to the C++ compiler. (.cpp files)
-	set "CPPFLAGS=!STELLA_C_CXX_FLAGS!"
-	REM STELLA_CPP_FLAGS is not used
-
-	:: flags to pass to the linker
-	:: https://msdn.microsoft.com/en-us/library/6y6t9esh.aspx
-	REM do not work == make link.exe to not found an UNKNOW link.obj file when we use LINK env var
-	REM set "LINK=!STELLA_LINK_FLAGS!"
-
-goto :eof
-
 
 
 :set_build_mode_default
@@ -1541,76 +732,6 @@ goto :eof
 			set "STELLA_BUILD_DEP_FROM_SYSTEM=!STELLA_BUILD_DEP_FROM_SYSTEM! %~3"
 		)
 	)
-
-goto :eof
-
-:: settings compiler flags -- depend on toolset (configure tool, build tool, compiler frontend)
-
-:set_build_env
-	:: CPU_INSTRUCTION_SCOPE -----------------------------------------------------------------
-	:: http://sdf.org/~riley/blog/2014/10/30/march-mtune/
-	if "%~1"=="CPU_INSTRUCTION_SCOPE" (
-		set "_gcc="
-		if "!STELLA_BUILD_COMPIL_FRONTEND_BIN!"=="gcc" (
-			set "_gcc=1"
-		)
-		REM if "!STELLA_BUILD_COMPIL_FRONTEND_BIN!"=="mingw32-gcc" (
-		REM	set "_gcc=1"
-		REM )
-		if "!_gcc!"=="1" (
-			if "%~2"=="CURRENT" (
-				set "STELLA_C_CXX_FLAGS=!STELLA_C_CXX_FLAGS! -march=native"
-			)
-			if "%~2"=="SAME_FAMILY" (
-				set "STELLA_C_CXX_FLAGS=!STELLA_C_CXX_FLAGS! -mtune=native"
-			)
-			if "%~2"=="GENERIC" (
-				set "STELLA_C_CXX_FLAGS=!STELLA_C_CXX_FLAGS! -mtune=generic"
-			)
-		)
-	)
-
-	:: set OPTIMIZATION -----------------------------------------------------------------
-	if "%~1"=="OPTIMIZATION" (
-		set "_gcc="
-		if "!STELLA_BUILD_COMPIL_FRONTEND_BIN!"=="gcc" (
-			set "_gcc=1"
-		)
-		REM if "!STELLA_BUILD_COMPIL_FRONTEND_BIN!"=="mingw32-gcc" (
-		REM 	set "_gcc=1"
-		REM )
-		if "!_gcc!"=="1" (
-			if not "%~2"=="" (
-				set "STELLA_C_CXX_FLAGS=!STELLA_C_CXX_FLAGS! -O%~2"
-			)
-		)
-	)
-
-	:: ARCH -----------------------------------------------------------------
-	:: Setting flags for a specific arch
-	if "%~1"=="ARCH" (
-		set "_gcc="
-		if "!STELLA_BUILD_COMPIL_FRONTEND_BIN!"=="gcc" (
-			set "_gcc=1"
-		)
-		REM if "!STELLA_BUILD_COMPIL_FRONTEND_BIN!"=="mingw32-gcc" (
-		REM 	set "_gcc=1"
-		REM )
-		if "!_gcc!"=="1" (
-			if "%~2"=="x86" (
-				set "STELLA_C_CXX_FLAGS=-m32 !STELLA_C_CXX_FLAGS!"
-			)
-			if "%~2"=="x64" (
-				set "STELLA_C_CXX_FLAGS=-m64 !STELLA_C_CXX_FLAGS!"
-			)
-		)
-		if "!STELLA_BUILD_COMPIL_FRONTEND_BIN!"=="cl" (
-			echo TODO arch for cl ?
-			REM set "CL=/arch:x86"
-			REM set "LINK=/MACHINE:X86"
-		)
-	)
-
 
 goto :eof
 
@@ -1753,203 +874,23 @@ goto :eof
 goto :eof
 
 
-REM could also search (after winsdk 7.1) in this key
-REM HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows Kits\\Installed Roots
-REM see https://github.com/rpavlik/cmake-modules/blob/master/FindWindowsSDK.cmake
-:find_winsdk
-	set "_result_var=%~1"
-	set "_version=%~2"
 
-	for /F "tokens=1 delims=" %%i in ('reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\Windows\!_version!" /v InstallationFolder 2^>NUL ^| findstr InstallationFolder') do (
-		set "_tp=%%i"
-	)
-	set "_tp=%_tp:InstallationFolder=%"
-	set "_tp=%_tp:REG_SZ=%"
-
-	call %STELLA_COMMON%\common.bat :trim "_tp" "!_tp!"
-
-	set "!_result_var!="
-	if exist "!_tp!" (
-		set "!_result_var!=!_tp!"
-	)
-
-goto :eof
+:dep_choose_origin
+	set "_result_dep_choose_origin=%~1"
+	set "_SCHEMA=%~2"
 
 
-REM usefull when using Visual Studio Express which not contain MFC
-REM use MFC and ATL from WDK/DDK instead
-REM code based on wdk7.1.0
-REM http://www.codeproject.com/Articles/30439/How-to-compile-MFC-code-in-Visual-C-Express
-REM https://ryzomcore.atlassian.net/wiki/display/RC/Building+Ryzom+MFC+Tools+with+VS+Express
-REM http://www.microsoft.com/en-us/download/details.aspx?id=11800
-REM _wdk_path example : set "_wdk_path=E:\CODE\WinDDK\7600.16385.1"
-:_mfc_atl_wdk_tweak
-	:: x86 | x64
-	set "_target_arch=%~1"
-	set "_wdk_path=%~2"
-	echo ** Use MFC and ATL from WDK
-	:: when using WDK instead of regular MFC some localized rc files are absent
-	if not exist "%_wdk_path%\inc\mfc42\l.fra" (
-		echo ** Make symbolic link for mfc42\l.fra
-		call %STELLA_COMMON%\common.bat :run_admin %STELLA_COMMON%\symlink.bat "%_wdk_path%\inc\mfc42" "%_wdk_path%\inc\mfc42\l.fra"
-	)
-
-	set "INCLUDE=%INCLUDE%;%_wdk_path%\inc\mfc42;%_wdk_path%\inc\atl71;%_wdk_path%\inc\api"
-	if "!_target_arch!"=="x64" set "LIB=%LIB%;%_wdk_path%\lib\mfc\amd64;%_wdk_path%\lib\atl\amd64;%_wdk_path%\lib\win7\amd64"
-	if "!_target_arch!"=="x86" set "LIB=%LIB%;%_wdk_path%\lib\mfc\i386;%_wdk_path%\lib\atl\i386;%_wdk_path%\lib\win7\i386"
-goto :eof
-
-:vs_env_vars
-	:: x86 | x64 | arm
-	set "_target_arch=%~1"
-
-	set INCLUDE=
-	set LIB=
-	set LIBPATH=
-
-	set vstudio=
-	set vcpath=
+	call %STELLA_COMMON%\common-feature.bat :translate_schema "!_SCHEMA!" "_CHOOSE_ORIGIN_FEATURE_NAME"
 
 
-	echo ** Active Visual Studio
 
-	REM Visual Studio 2005
-	if not "!VS80COMNTOOLS!"=="" (
-		if exist "!VS80COMNTOOLS!" (
-			set "vstudio=vs8"
-			set "vcpath=%VS80COMNTOOLS%..\..\VC"
-			echo ** Detected Visual Studio 2005 in !VS80COMNTOOLS!
-			echo ** WARN Please update Visual Studio or it may not work
-			if "!_target_arch!"=="arm" (
-				echo ** WARNING ARM target supported with Visual Studio 2012 / VC11 and after only
-			)
-		) else (
-			echo ** WARN VS80COMNTOOLS is setted with !VS80COMNTOOLS! but folder do not exist
-		)
-	)
-	REM Visual Studio 2008
-	if not "!VS90COMNTOOLS!"=="" (
-		if exist "!VS90COMNTOOLS!" (
-			set "vstudio=vs9"
-			set "vcpath=%VS90COMNTOOLS%..\..\VC"
-			echo ** Detected Visual Studio 2008 in !VS90COMNTOOLS!
-			echo ** WARN Please update Visual Studio or it may not work
-			if "!_target_arch!"=="arm" (
-				echo ** WARNING ARM target supported with Visual Studio 2012 / VC11 and after only
-			)
-		) else (
-			echo ** WARN VS90COMNTOOLS is setted with !VS90COMNTOOLS! but folder do not exist
-		)
-	)
-	REM Visual Studio 2010
-	if not "!VS100COMNTOOLS!"=="" (
-		if exist "!VS100COMNTOOLS!" (
-			set "vstudio=vs10"
-			set "vcpath=%VS100COMNTOOLS%..\..\VC"
-			echo ** Detected Visual Studio 2010 in !VS100COMNTOOLS!
-			echo ** WARN You should update Visual Studio
-			if "!_target_arch!"=="arm" (
-				echo ** WARNING ARM target supported with Visual Studio 2012 / VC11 and after only
-			)
-		) else (
-			echo ** WARN VS100COMNTOOLS is setted with !VS100COMNTOOLS! but folder do not exist
-		)
-	)
-	REM Visual Studio 2012
-	if not "!VS110COMNTOOLS!"=="" (
-		if exist "!VS110COMNTOOLS!" (
-			set "vstudio=vs11"
-			set "vcpath=%VS110COMNTOOLS%..\..\VC"
-			echo ** Detected Visual Studio 2012 in !VS110COMNTOOLS!
-		) else (
-			echo ** WARN VS110COMNTOOLS is setted with !VS110COMNTOOLS! but folder do not exist
-		)
-	)
-	REM Visual Studio 2013
-	if not "!VS120COMNTOOLS!"=="" (
-		if exist "!VS120COMNTOOLS!" (
-			set "vstudio=vs12"
-			set "vcpath=%VS120COMNTOOLS%..\..\VC"
-			echo ** Detected Visual Studio 2013 in !VS120COMNTOOLS!
-		) else (
-			echo ** WARN VS120COMNTOOLS is setted with !VS120COMNTOOLS! but folder do not exist
-		)
-	)
-	REM Visual Studio 2014 OR VS13/VC13 does not exist
-	REM Visual Studio 2015
-	if not "!VS140COMNTOOLS!"=="" (
-		if exist "!VS140COMNTOOLS!" (
-			set "vstudio=vs14"
-			set "vcpath=%VS140COMNTOOLS%..\..\VC"
-			echo ** Detected Visual Studio 2015 in !VS140COMNTOOLS!
-		) else (
-			echo ** WARN VS140COMNTOOLS is setted with !VS140COMNTOOLS! but folder do not exist
+	set "_origin=STELLA"
+	for %%u in (!STELLA_BUILD_DEP_FROM_SYSTEM!) do (
+		if "%%u"=="!_CHOOSE_ORIGIN_FEATURE_NAME!" (
+			set "_origin=SYSTEM"
 		)
 	)
 
-
-
-	if not "!vstudio!"=="" (
-
-		set "_save_path_vs_env_vars=!PATH!"
-
-		REM set VC env vars
-		if "!vstudio!"=="vs10" (
-			if "!_target_arch!"=="x86" (
-				REM use SDK7.1 to set env for x86 target seems to be broken
-				call "!vcpath!\vcvarsall.bat" x86
-			) else (
-				REM for 64 bits build with visual studio 2010, need WinSDK 7.1
-				call :find_winsdk "sdk71path" "v7.1"
-				if "!sdk71path!"=="" (
-					echo ** WARNING : for x64 target you MUST install Windows SDK 7.1.
-				) else (
-					echo ** Windows SDK 7.1 Command Line environment activation
-					REM TODO /Debug output
-					if "!_target_arch!"=="x64" call "!sdk71path!bin\SetEnv" /x64 /release
-					REM if "!_target_arch!"=="x86" call "!sdk71path!bin\SetEnv" /x86 /release
-					REM by default WinSDK7.1 take same architecture than current processors
-					if "!_target_arch!"=="" call "!sdk71path!bin\SetEnv" /release
-				)
-			)
-
-		) else (
-			if exist "!vcpath!\vcvarsall.bat" (
-				echo ** Visual Studio Command Line environment activation
-				if "!_target_arch!"=="" (
-					call "!vcpath!\vcvarsall.bat"
-				)
-				if "!_target_arch!"=="x64" (
-					call "!vcpath!\vcvarsall.bat" amd64
-				)
-				if "!_target_arch!"=="x86" (
-					call "!vcpath!\vcvarsall.bat" x86
-				)
-			) else (
-				echo ** WARNING : VC does not exist OR vcvarsall.bat does not exist
-				echo ** Please install VC
-			)
-		)
-
-		REM NOTE on PATH variable :
-		REM ORIGINALPATH is a variable setted with some version of VS or WINSDK command line.
-		REM ORIGINALPATH is setted using the value of %PATH% variable defined in the system (not the real current value of PATH)
-		REM so ORIGINALPATH miss our previously setted PATH setting. It is like a "reset" of PATH
-		REM so we have to set again our own PATH after this
-
-
-		REM Reinit PATH Values
-		set "PATH=!_save_path_vs_env_vars!;!PATH!"
-
-		REM DO NOT USE THIS cause problem with toolset because of STELLA_APP_ROOT redefined
-		REM call %STELLA_COMMON%\common-feature.bat :feature_reinit_installed
-
-
-	) else (
-		echo WARN Visual Studio is not found
-		call %STELLA_COMMON%\common-platform.bat :require "cl" "vs" "SYSTEM"
-	)
-
-
+	set "%_result_dep_choose_origin%=!_origin!"
 
 goto :eof
