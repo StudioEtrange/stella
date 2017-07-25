@@ -23,7 +23,9 @@ REM 		 a MINGW-W64 32 bits package (windows native) [ name : mingw32/mingw-w64-i
 
 
 REM MINGW-W64 is a native gcc tool chain for windows
-REM MSYS2 vs MINGW-W64 : https://sourceforge.net/p/msys2/discussion/general/thread/dcf8f4d3/#8473/588e
+REM MSYS2 vs MINGW-W64 : 
+REM			https://sourceforge.net/p/msys2/discussion/general/thread/dcf8f4d3/#8473/588e
+REM			https://www.booleanworld.com/get-unix-linux-environment-windows-msys2/
 
 :feature_msys2
 	set "FEAT_NAME=msys2"
@@ -61,12 +63,12 @@ goto :eof
 	set FEAT_ENV_CALLBACK=
 
 	set "FEAT_INSTALL_TEST=!FEAT_INSTALL_ROOT!\msys2.exe"
-	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!"
+	set "FEAT_SEARCH_PATH=!FEAT_INSTALL_ROOT!;!FEAT_INSTALL_ROOT!\usr\bin;!FEAT_INSTALL_ROOT!\mingw32\bin;!FEAT_INSTALL_ROOT!\mingw64\bin"
 
 goto :eof
 
 :feature_msys2_install_binary
 	call %STELLA_COMMON%\common.bat :get_resource "!FEAT_NAME!" "!FEAT_BINARY_URL!" "!FEAT_BINARY_URL_PROTOCOL!" "!FEAT_INSTALL_ROOT!" "STRIP"
 	:: update catalog
-	"!FEAT_INSTALL_ROOT!\msys2_shell.cmd" -where "!FEAT_INSTALL_ROOT!" -c "pacman -Sy"
+	"!FEAT_INSTALL_ROOT!\msys2_shell.cmd" -where "!FEAT_INSTALL_ROOT!" -c "HTTP_PROXY=!http_proxy! HTTPS_PROXY=!https_proxy! http_proxy=!http_proxy! https_proxy=!https_proxy! no_proxy=!no_proxy! pacman -Sy"
 goto :eof

@@ -235,3 +235,13 @@ http://unix.stackexchange.com/questions/138994/init-systems-and-service-manageme
     archipel https://github.com/ArchipelProject/Archipel http://archipelproject.org/
         archipel client : https://hub.docker.com/r/schrauber/archipelclient/
     nobullshitvm https://github.com/ChoHag/nbsvm
+
+
+[ ] nix : review boost recipes (still using __prepare_build)
+
+[ ] win build :
+  * auto_build launch_configure : implements autotools (mingw or msys)
+  * auto_build :  # INCLUDE_FILTER <expr> -- include these files for inspect and fix
+                  # EXCLUDE_FILTER <expr> -- exclude these files for inspect and fix
+                  # INCLUDE_FILTER is apply first, before EXCLUDE_FILTER
+                  # BUILD_ACTION <action1> <action2>

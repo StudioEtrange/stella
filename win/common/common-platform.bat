@@ -295,16 +295,24 @@ goto :eof
 	call :sys_remove_%~1
 goto :eof
 
-:sys_package_manager
+
+REM use a package manager
+REM arg _package_manager is optionnal - if not set, try to autodetect
+:use_package_manager
 	REM INSTALL or REMOVE
 	set "_action=%~1"
 	set "_id=%~2"
 	set "_packages_list=%~3"
-	set "_optional_args=%~4"
+	REM set "_optional_args=%~4"
+	set "_package_manager=%~4"
 
 	echo  ** !_action! !_id! on your system
 
-	call :get_current_package_manager "_package_manager"
+	if "!_package_manager!"=="" (
+		call :get_current_package_manager "_package_manager"
+	)
+
+	echo ** use !_package_manager! as package manager
 
 	set "_flag_package_manager=OFF"
 	set "_packages="
@@ -323,12 +331,18 @@ goto :eof
 
 	if "!_action!"=="INSTALL" (
 		if "!_package_manager!"=="chocolatey" (
-			choco install !_packages! !_optional_args!
+			choco install !_packages!
+		)
+		if "!_package_manager!"=="msys2" (
+			msys2_shell.cmd -c "HTTP_PROXY=!http_proxy! HTTPS_PROXY=!https_proxy! http_proxy=!http_proxy! https_proxy=!https_proxy! no_proxy=!no_proxy! pacman -S !_packages!"
 		)
 	)
 	if "!_action!"=="REMOVE" (
 		if "!_package_manager!"=="chocolatey" (
-			choco uninstall !_packages! !_optional_args!
+			choco uninstall !_packages!
+		)
+		if "!_package_manager!"=="msys2" (
+			msys2_shell.cmd -c "HTTP_PROXY=!http_proxy! HTTPS_PROXY=!https_proxy! http_proxy=!http_proxy! https_proxy=!https_proxy! no_proxy=!no_proxy! pacman -Rsn !_packages!"
 		)
 	)
 
@@ -361,9 +375,9 @@ goto :eof
 :sys_install_vs2015community
 	REM NOTE : by default some visual studio tools are not installed
 	REM https://social.msdn.microsoft.com/Forums/en-US/1071be0e-2a46-4c30-9546-ea9d7c4755fa/where-is-vcvarsallbat-file?forum=visualstudiogeneral
-	call :sys_package_manager "INSTALL" "vs2015community" "chocolatey visualstudio2015community"
+	call :use_package_manager "INSTALL" "vs2015community" "chocolatey visualstudio2015community"
 goto :eof
 
 :sys_remove_vs2015community
-	call :sys_package_manager "REMOVE" "vs2015community" "chocolatey visualstudio2015community"
+	call :use_package_manager "REMOVE" "vs2015community" "chocolatey visualstudio2015community"
 goto :eof
