@@ -84,7 +84,7 @@ if exist "%STELLA_APP_ROOT%\.stella-env" (
 :: OTHERS ---------------------------------------------
 set FEATURE_LIST_ENABLED=
 set VERBOSE_MODE=0
-set "STELLA_NO_PROXY=localhost,127.0.0.1,localaddress,.localdomain.com"
+set "STELLA_DEFAULT_NO_PROXY=localhost,127.0.0.1,localaddress,.localdomain.com"
 set "WGET=wget.exe"
 set "UZIP=unzip.exe"
 set "SEVENZIP=7z.exe"

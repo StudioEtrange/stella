@@ -23,7 +23,6 @@ __read_proxy_values() {
 			__get_key "$STELLA_ENV_FILE" "STELLA_PROXY_$STELLA_PROXY_ACTIVE" "PROXY_PASS" "PREFIX"
 			__get_key "$STELLA_ENV_FILE" "STELLA_PROXY_$STELLA_PROXY_ACTIVE" "PROXY_SCHEMA" "PREFIX"
 
-
 			# read NO_PROXY values from env file
 			__get_key "$STELLA_ENV_FILE" "STELLA_PROXY" "NO_PROXY" "PREFIX"
 			if [ "$STELLA_PROXY_NO_PROXY" = "" ]; then
@@ -44,7 +43,6 @@ __read_proxy_values() {
 				STELLA_HTTPS_PROXY=$STELLA_PROXY_SCHEMA://$STELLA_PROXY_HOST:$STELLA_PROXY_PORT
 			else
 				eval STELLA_PROXY_PASS=$(echo '$STELLA_PROXY_'$STELLA_PROXY_ACTIVE'_PROXY_PASS')
-
 				STELLA_HTTP_PROXY=$STELLA_PROXY_SCHEMA://$STELLA_PROXY_USER:$STELLA_PROXY_PASS@$STELLA_PROXY_HOST:$STELLA_PROXY_PORT
 				STELLA_HTTPS_PROXY=$STELLA_PROXY_SCHEMA://$STELLA_PROXY_USER:$STELLA_PROXY_PASS@$STELLA_PROXY_HOST:$STELLA_PROXY_PORT
 			fi
@@ -55,7 +53,7 @@ __read_proxy_values() {
 }
 
 # reset stella proxy values
-	__reset_proxy_values() {
+__reset_proxy_values() {
 	STELLA_PROXY_ACTIVE=
 	STELLA_PROXY_HOST=
 	STELLA_PROXY_SCHEMA=
@@ -90,11 +88,9 @@ __set_system_proxy_values() {
 			export no_proxy="$STELLA_NO_PROXY"
 			export NO_PROXY="$STELLA_NO_PROXY"
 
-			[ ! "$STELLA_NO_PROXY" = "" ] && __log "STELLA Proxy : bypass for $STELLA_NO_PROXY"
+			__log "STELLA Proxy : bypass for $STELLA_NO_PROXY"
 		fi
 	fi
-
-
 
 	if [ ! "$STELLA_PROXY_HOST" = "" ]; then
 		__log "STELLA Proxy : $STELLA_PROXY_SCHEMA://$STELLA_PROXY_HOST:$STELLA_PROXY_PORT"

@@ -1090,6 +1090,13 @@ goto :eof
 	set "!_result_which!=!_t!"
 goto :eof
 
+
+:uri_parse
+	REM powershell -Command
+	echo TODO
+
+goto :eof
+
 :: check if a "findstr windows regexp" can be found in a string
 :: regexp example : http://stackoverflow.com/questions/2613826/regular-expressions-in-findstr
 ::					or see findstr /?
