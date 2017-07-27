@@ -41,7 +41,7 @@ goto :eof
 	set result=
 	set "_s=[ ] * a!"
 	call %STELLA_COMMON%\common.bat :strlen2 result _s
-	echo %result% && if not "!result!"=="18" goto :TEST_ERROR
+	echo %result% && if not "!result!"=="8" goto :TEST_ERROR
 
 	set result=
 	REM call %STELLA_COMMON%\common.bat :strlen3 _s result
