@@ -47,11 +47,55 @@ rem		call %STELLA_COMMON%\common.bat :trim "result" "!_s!"
 goto :eof
 
 
-REM http://stackoverflow.com/a/5841587
+
+:: Compute string length
+:: ARG1 result var name
+:: ARG2 string 
+:: http://www.dostips.com/?t=Function.strLen
+:: https://ss64.org/viewtopic.php?id=424
 :strlen
-	echo TODO strlen
+	set "_strlen_result_var=%~1"
+	set "_strlen_str=%~2#"
+	set "_strlen_len=0"
+echo "!_strlen_str!"
+	::special case with !
+	REM set "_strlen_str=!_strlen_str:^!=X%!
+echo "!_strlen_str!"
+	for %%N in (4096 2048 1024 512 256 128 64 32 16 8 4 2 1) do (
+		if "!_strlen_str:~%%N,1!" neq "" (
+			set /a "_strlen_len+=%%N"
+			set "_strlen_str=!_strlen_str:~%%N!"
+		)
+	)
+	
+	set "!_strlen_result_var!=!_strlen_len!"
 goto :eof
 
+:strlen2
+    set "s=!%~2!#"
+    set "len=0"
+    for %%P in (4096 2048 1024 512 256 128 64 32 16 8 4 2 1) do (
+        if "!s:~%%P,1!" NEQ "" ( 
+            set /a "len+=%%P"
+            set "s=!s:~%%P!"
+        )
+    )
+    REM echo !len!
+     set "%~1=!len!"
+goto :eof
+
+:strlen3
+
+	set "str=A!%~1!"&rem keep the A up front to ensure we get the length and not the upper bound
+	         rem it also avoids trouble in case of empty string
+	set "len=0"
+	for /L %%A in (12,-1,0) do (
+		set /a "len|=1<<%%A"
+		for %%B in (!len!) do if "!str:~%%B,1!"=="" set /a "len&=~1<<%%A"
+	)
+
+	 SET /a %~2=%len%
+goto :eof
 :: FILES TOOL ---------------------------------------
 :del_folder
 	if exist "%~1" (
@@ -1151,7 +1195,33 @@ goto :eof
     )
 goto :eof
 
+:: TODO special symbols
+:: Remove a string from a string
+:: ARG1 result var name
+:: ARG2 string
+:: ARG3 string to remove
+REM http://www.dostips.com/forum/viewtopic.php?f=3&t=1485#p7110
+REM http://www.dostips.com/forum/viewtopic.php?f=3&t=1485&sid=0506db72102d2c70f59b0a52b776877c&start=15#p11628
+REM http://www.dostips.com/forum/viewtopic.php?f=3&t=1485&sid=0506db72102d2c70f59b0a52b776877c&start=15#p29901
+REM http://www.dostips.com/forum/viewtopic.php?f=3&t=1485&start=30#p50132
+:string_remove
+	set "_string_remove_result_var=%~1"
+	set "_string_remove_str=%~2"
+	set "_string_remove_str_to_remove=%~3"
 
+	:: special case for carret symbol
+	set "_string_remove_str=!_string_remove_str:^^^^=^!"
+	REM echo "!_string_remove_str!"
+	set "_string_remove_str_to_remove=!_string_remove_str_to_remove:^^^^=^!"
+	
+
+	:: special case for = symbol
+	REM set "_string_remove_str_to_remove=!_string_remove_str_to_remove:=!"
+	REM echo "!_string_remove_str_to_remove!"
+
+	set "!_string_remove_result_var!=!_string_remove_str:%_string_remove_str_to_remove%=!"
+
+goto :eof
 
 :run_admin
 	set _cmd=%*
