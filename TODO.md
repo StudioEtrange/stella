@@ -21,6 +21,10 @@
  * https://github.com/Alexpux/MINGW-packages
  * https://github.com/Alexpux/MSYS2-packages
 
+## both
+* cmake recipes
+  * hunter  https://github.com/ruslo/hunter
+
 # Various
 
 * NOTE : homebrew flag setting system https://github.com/Homebrew/homebrew/blob/master/Library/Homebrew/extend/ENV/super.rb

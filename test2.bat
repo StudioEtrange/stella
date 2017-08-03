@@ -46,7 +46,7 @@ goto :eof
 	set "_uri_pattern=^(([a-z]+)://)?((([^:\/]+)(:([^@\/]*))?@)?([^:\/?]*)(:([0-9]+))?)(\/[^?#]*)?(\?[^#]*)?(#.*)?$"
 
 	call :match_regex "_tmp_prefix" "!_uri_pattern!" "!_uri!"
-	
+
 	:: affect result
 	set "v=!_var_prefix_uri_parse!_URI"
 	set "!v!=!_tmp_prefix_0!"
@@ -70,43 +70,27 @@ goto :eof
 	set "!v!=!_tmp_prefix_13!"
 
 	:: query parsing
-	set "_uri_query_pattern=^[?&]+([^= ]+)(=([^&]*))?"
 	set "_query=!_tmp_prefix_12!"
+	set "_uri_query_pattern=[?&]+([^= ]+)(=([^&]*))?"
+	if not "!_query!"=="" (
+		set "_i=1"
 		:loop_uri_parse
-		if not "!_query!"=="" (
+
 			call :match_regex "_tmp_prefix_query" "!_uri_query_pattern!" "!_query!"
-			if not "!_tmp_prefix_query_1!"=="" (
-				set "v=!_var_prefix_uri_parse!_!_tmp_prefix_query_1!"
-				if "!_tmp_prefix_query_3!"=="" (
-					set !v!=
+			set "_arg=_tmp_prefix_query_!i!"
+			set /a "_i+=2"
+			set "_val=_tmp_prefix_query_!i!"
+			if not "!%_arg%!"=="" (
+				set "_arg_name=!_var_prefix_uri_parse!_!%_arg%!"
+				if "!%_val%!"=="" (
+					set "!_arg_name!="
 				) else (
-					set "!v!=!_tmp_prefix_query_3!"
+					set "!_arg_name!=!%_val%!"
 				)
-				REM TODO HERE continue
-				:: next arg
-				call :string_remove "_new_query" "!_query!" "!_tmp_prefix_query_0!"
-				
-				echo "X!_new_query!"
-				echo "X!_query!"
-				echo "X!_tmp_prefix_query_0!"
+				goto :loop_uri_parse
 			)
-		)
-	
+	)
+
+
+
 goto :eof
-
-
-
-:: Remove a string from a string
-:: ARG1 result var name
-:: ARG2 string
-:: ARG3 string to remove
-:string_remove
-	set "_string_remove_result_var=%~1"
-	set "_string_remove_str=%~2"
-	set "_string_remove_str_to_remove=%~3"
-
-	set !_string_remove_result_var!=
-	set !_string_remove_result_var!=!_string_remove_str:%_string_remove_str_to_remove%=!
-goto :eof
-
-

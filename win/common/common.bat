@@ -37,7 +37,7 @@ rem		call %STELLA_COMMON%\common.bat :trim "result" "!_s!"
 	REM trailing spaces
 	REM TODO : replace 1000 by len of string
 	for /l %%a in (1,1,1000) do (
-		if "!_string:~-1!"==" " ( 
+		if "!_string:~-1!"==" " (
 			set _string=!_string:~0,-1!
 		) else (
 			set %_var%=!_string!
@@ -50,52 +50,25 @@ goto :eof
 
 :: Compute string length
 :: ARG1 result var name
-:: ARG2 string 
+:: ARG2 string
 :: http://www.dostips.com/?t=Function.strLen
 :: https://ss64.org/viewtopic.php?id=424
-:strlen
+:: TODO : DO NOT WORK WITH SPECIAL CHARACTERS
+:broken_strlen
 	set "_strlen_result_var=%~1"
 	set "_strlen_str=%~2#"
 	set "_strlen_len=0"
-echo "!_strlen_str!"
-	::special case with !
-	REM set "_strlen_str=!_strlen_str:^!=X%!
-echo "!_strlen_str!"
+
 	for %%N in (4096 2048 1024 512 256 128 64 32 16 8 4 2 1) do (
 		if "!_strlen_str:~%%N,1!" neq "" (
 			set /a "_strlen_len+=%%N"
 			set "_strlen_str=!_strlen_str:~%%N!"
 		)
 	)
-	
+
 	set "!_strlen_result_var!=!_strlen_len!"
 goto :eof
 
-:strlen2
-    set "s=!%~2!#"
-    set "len=0"
-    for %%P in (4096 2048 1024 512 256 128 64 32 16 8 4 2 1) do (
-        if "!s:~%%P,1!" NEQ "" ( 
-            set /a "len+=%%P"
-            set "s=!s:~%%P!"
-        )
-    )
-    REM echo !len!
-     set "%~1=!len!"
-goto :eof
-
-:strlen3
-
-	set "str=A!%~1!"&rem keep the A up front to ensure we get the length and not the upper bound
-	         rem it also avoids trouble in case of empty string
-	set "len=0"
-	for /L %%A in (12,-1,0) do (
-		set /a "len|=1<<%%A"
-		for %%B in (!len!) do if "!str:~%%B,1!"=="" set /a "len&=~1<<%%A"
-	)
-
-	 SET /a %~2=%len%
-goto :eof
 :: FILES TOOL ---------------------------------------
 :del_folder
 	if exist "%~1" (
@@ -155,17 +128,17 @@ REM http://stackoverflow.com/questions/141344/how-to-check-if-directory-exists-i
 
 	set "%_result_var_is_path_abs%=FALSE"
 
-	
+
 	if "!_test_path:~1,1!"==":" (
 		set "%_result_var_is_path_abs%=TRUE"
 		goto :eof
 	)
-	
+
 	if "!_test_path:~0,2!"=="\\" (
 		set "%_result_var_is_path_abs%=TRUE"
 		goto :eof
 	)
-	
+
 goto :eof
 
 :: Convert relative to absolute path
@@ -182,15 +155,15 @@ REM %~dp0 get the fully qualified path of the 0th argument (which is the current
 	set "_abs_root_path=%~3"
 
 	call :is_path_abs "IS_ABS" "%_rel_path%"
-	if "%IS_ABS%"=="TRUE" ( 
+	if "%IS_ABS%"=="TRUE" (
 		set "_abs_root_path="
 		for %%A in ( %_rel_path%\ ) do set "_temp_path=%%~dpA"
 		set %_result_var_rel_to_abs_path%=!_temp_path:~0,-1!
-	) else (	
+	) else (
 		if not defined _abs_root_path set "_abs_root_path=%STELLA_CURRENT_RUNNING_DIR%"
 		for /f "tokens=*" %%A in ("!_abs_root_path!.\%_rel_path%") do set "%_result_var_rel_to_abs_path%=%%~fA"
 	)
-	
+
 	REM for %%A in ( %_rel_path%\ ) do set _rel_path=%%~dpA
 	REM set _rel_path=%_rel_path:~0,-1%
 goto :eof
@@ -231,7 +204,7 @@ REM http://www.dostips.com/DtCodeCmdLib.php#Function.MakeRelative
 	set _abs_path=%_upp%!_abs_path:%_mat%=!
 
 
-	if "%_abs_path%"=="" ( 
+	if "%_abs_path%"=="" (
 		set _abs_path=.
 	) else (
 		set _abs_path=!_abs_path:~0,-1!
@@ -240,7 +213,7 @@ REM http://www.dostips.com/DtCodeCmdLib.php#Function.MakeRelative
 	set %_result_var_abs_to_rel_path%=%_abs_path%
 
 
-	
+
 goto :eof
 
 :: MEASURE TOOL------------
@@ -277,7 +250,7 @@ goto :eof
 	if %_ms% lss 0 set /a _secs = %_secs% - 1 & set /a _ms = 100%_ms%
 	if 1%_ms% lss 100 set _ms=0%_ms%
 
-	set /a _totalsecs = %_hours%*3600 + %_mins%*60 + %_secs% 
+	set /a _totalsecs = %_hours%*3600 + %_mins%*60 + %_secs%
 	set "STELLA_TIMECOUNT_ELAPSED=%_hours%:%_mins%:%_secs%.%_ms% -- total : %_totalsecs%.%_ms%s"
 goto :eof
 
@@ -289,12 +262,12 @@ goto :eof
 	set _FOLDER=%~2
 	set _COMMAND=%~3
 	set "_OPT=%~4"
-	
+
 	REM OPTIONS
 	REM WAIT : the launcher script will wait until the forked terminal is finished
 	REM SAME_WINDOW : will compute in the same terminal
 	REM DETACH : terminal will not close at the end
-	
+
 	set _opt_wait=OFF
 	set _opt_same_window=OFF
 	set _opt_detach=OFF
@@ -313,12 +286,12 @@ goto :eof
 		set "_DETACH=/C"
 	)
 
-	if "%_opt_wait%"=="ON" ( 
+	if "%_opt_wait%"=="ON" (
 		set "_WAIT=/wait"
 	) else (
 		set _WAIT=
 	)
-		
+
 	if "%_opt_same_window%"=="ON" (
 		set "_SAME_WINDOW=/b"
 	) else (
@@ -328,7 +301,7 @@ goto :eof
 	if "%_opt_wait%"=="ON" (
 		call %STELLA_COMMON%\common.bat :timecount_start timecount_id
 	)
-	
+
 	start "%_TITLE%" %_WAIT% %_SAME_WINDOW% /D%_FOLDER% cmd %_DETACH% %_COMMAND%
 
 	if "%_opt_wait%"=="ON" (
@@ -434,7 +407,7 @@ goto :eof
 				if "%%O"=="DEST_ERASE" set _opt_dest_erase=ON
 			)
 		)
-			
+
 	)
 
 	set "_text=Getting"
@@ -457,7 +430,7 @@ goto :eof
 		set "_text=Deleting"
 	)
 
-	
+
 	if not "%FINAL_DESTINATION%"=="" (
 		echo ** !_text! resource : %NAME% in %FINAL_DESTINATION%
 	) else (
@@ -501,7 +474,7 @@ goto :eof
 		set "_STRIP="
 		if "!_opt_strip!"=="ON" set "_STRIP=STRIP"
 
-		
+
 
 		set _TEST=0
 		if "%PROTOCOL%"=="HTTP_ZIP" set _TEST=1
@@ -512,7 +485,7 @@ goto :eof
 
 		if "%PROTOCOL%"=="HG" set _TEST=3
 		if "%PROTOCOL%"=="GIT" set _TEST=3
-		
+
 
 
 
@@ -539,7 +512,7 @@ goto :eof
 						echo ** Destination folder exist
 						REM set _FLAG=0
 					)
-				)	
+				)
 			)
 		)
 
@@ -553,7 +526,7 @@ goto :eof
 				echo UPDATE Not supported with this protocol
 				set _FLAG=0
 			)
-			
+
 			if exist "%FINAL_DESTINATION%" (
 				if "!_opt_get!"=="ON" (
 					if "!_opt_merge!"=="ON" (
@@ -562,7 +535,7 @@ goto :eof
 							set _FLAG=0
 						)
 					)
-				)	
+				)
 			)
 		)
 
@@ -661,13 +634,13 @@ goto :eof
 	set UNZIP_DIR=%~3
 	set OPT=%~4
 
-	
+
 	REM OPTIONS
 	REM 	DEST_ERASE
 	REM 		delete destination folder
 	REM 	STRIP
 	REM 		delete first level folders in archive
-	
+
 	set _opt_dest_erase=OFF
 	set _opt_strip=OFF
 	for %%O in (%OPT%) do (
@@ -704,15 +677,15 @@ goto :eof
 	REM 		first, delete unzip folder
 	REM 	STRIP
 	REM 		delete first level folders in archive
-	
+
 	set _opt_dest_erase=OFF
 	set _opt_strip=OFF
 	for %%O in (%OPT%) do (
 		if "%%O"=="DEST_ERASE" set _opt_dest_erase=ON
 		if "%%O"=="STRIP" set _opt_strip=ON
 	)
-	
-	
+
+
 	if "!_opt_dest_erase!"=="ON" if exist "%UNZIP_DIR%" call :del_folder "%UNZIP_DIR%"
 	if not exist "%UNZIP_DIR%" mkdir "%UNZIP_DIR%"
 
@@ -813,7 +786,7 @@ goto :eof
 				"%SEVENZIP%" x "%FILE_PATH%" -y -o"%STELLA_APP_TEMP_DIR%\%_FILENAME%"
 			)
 		)
-		
+
 		cd /D "%STELLA_APP_TEMP_DIR%\%_FILENAME%"
 
 		REM we strip folder only if there is one folder at the root
@@ -853,7 +826,7 @@ REM - use powershell in batch http://stackoverflow.com/a/20476904
 	set URL=%~1
 	set FILE_NAME=%~2
 	set DEST_DIR=%~3
-	
+
 	if "%URL%"=="" (
 		echo ** ERROR missing URL
 		goto :eof
@@ -872,7 +845,7 @@ REM - use powershell in batch http://stackoverflow.com/a/20476904
 	)
 
 	echo ** Download %FILE_NAME% from %URL% into cache
-	
+
 	REM if "%FORCE%"=="1" (
 	REM	del /q /f "%STELLA_APP_CACHE_DIR%\%FILE_NAME%"
 	REM )
@@ -904,7 +877,7 @@ REM TODO alternative with http://godoc.org/github.com/Unknwon/goconfig (OR try h
 	set "_SECTION=%~2"
 	set "_KEY=%~3"
 	set "_VAL=%~4"
-	
+
 	if not exist "%_FILE%" > "%_FILE%" echo(
 	>nul goconfig-cli setkey "%_FILE%" "%_SECTION%" "%_KEY%" "%_VAL%"
 goto :eof
@@ -944,7 +917,7 @@ REM alternative with bash and jscript (ini.bat) : http://stackoverflow.com/quest
 	set "_SECTION=%~2"
 	set "_KEY=%~3"
 	set "_VAL=%~4"
-	
+
 	if not exist "%_FILE%" > "%_FILE%" echo(
 	if "%_SECTION%"=="" (
 		>nul call %STELLA_COMMON%\ini.bat /i "%_KEY%" /v "%_VAL%" "%_FILE%"
@@ -1099,7 +1072,7 @@ REM return STABLE or DEV
 			set "%_result_var_get_stella_flavour%=STABLE"
 		)
 	)
-	
+
 goto :eof
 
 :: like basename in bash
@@ -1144,7 +1117,7 @@ goto :eof
 :: check if a "findstr windows regexp" can be found in a string
 :: regexp example : http://stackoverflow.com/questions/2613826/regular-expressions-in-findstr
 ::					or see findstr /?
-:: by setting 
+:: by setting
 ::		_match_exp with TRUE or FALSE
 :: first argument is the regexp
 :: second argument is the string
@@ -1195,27 +1168,28 @@ goto :eof
     )
 goto :eof
 
-:: TODO special symbols
+
 :: Remove a string from a string
 :: ARG1 result var name
 :: ARG2 string
 :: ARG3 string to remove
+:: TODO : DO NOT WORK WITH SPECIAL CHARACTERS = !
 REM http://www.dostips.com/forum/viewtopic.php?f=3&t=1485#p7110
 REM http://www.dostips.com/forum/viewtopic.php?f=3&t=1485&sid=0506db72102d2c70f59b0a52b776877c&start=15#p11628
 REM http://www.dostips.com/forum/viewtopic.php?f=3&t=1485&sid=0506db72102d2c70f59b0a52b776877c&start=15#p29901
 REM http://www.dostips.com/forum/viewtopic.php?f=3&t=1485&start=30#p50132
-:string_remove
+:broken_string_remove
 	set "_string_remove_result_var=%~1"
 	set "_string_remove_str=%~2"
 	set "_string_remove_str_to_remove=%~3"
 
 	:: special case for carret symbol
 	set "_string_remove_str=!_string_remove_str:^^^^=^!"
-	REM echo "!_string_remove_str!"
 	set "_string_remove_str_to_remove=!_string_remove_str_to_remove:^^^^=^!"
-	
+
 
 	:: special case for = symbol
+	REM https://stackoverflow.com/questions/9556676/batch-file-how-to-replace-equal-signs-and-a-string-variable
 	REM set "_string_remove_str_to_remove=!_string_remove_str_to_remove:=!"
 	REM echo "!_string_remove_str_to_remove!"
 

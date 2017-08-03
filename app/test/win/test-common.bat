@@ -4,7 +4,7 @@
 
 call %~dp0\stella-link.bat include
 
-set "TEST_LIST=test_strlen_1 test_strlen_2 test_string_remove_1 test_string_remove_2 test_string_remove_3 test_string_remove_4 test_string_remove_5 test_trim test_is_path_abs test_abs_to_rel_path test_key"
+set "TEST_LIST=test_strlen_1 test_strlen_2 test_string_remove_1 test_string_remove_2 test_string_remove_3 test_string_remove_4 test_string_remove_5 test_string_remove_6 test_trim test_is_path_abs test_abs_to_rel_path test_key"
 for %%T in (!test_list!) do (
 	set TEST_CURRENT=%%T
 	echo ** Launch : !TEST_CURRENT!
@@ -24,59 +24,65 @@ REM various tests -----------------------------
 
 :test_strlen_1
 	set result=
-	call %STELLA_COMMON%\common.bat :strlen "result" "12345"
+	call %STELLA_COMMON%\common.bat :broken_strlen "result" "12345"
 	echo %result% && if not "!result!"=="5" goto :TEST_ERROR
 
 	set result=
-	call %STELLA_COMMON%\common.bat :strlen "result" "foo testbartestfoo"
+	call %STELLA_COMMON%\common.bat :broken_strlen "result" "foo testbartestfoo"
 	echo %result% && if not "!result!"=="18" goto :TEST_ERROR
 
 	set result=
-	call %STELLA_COMMON%\common.bat :strlen "result" ""
+	call %STELLA_COMMON%\common.bat :broken_strlen "result" ""
 	echo %result% && if not "!result!"=="0" goto :TEST_ERROR
 goto :eof
 
+
+
 :test_strlen_2
+	set result=
+	call %STELLA_COMMON%\common.bat :broken_strlen "result" "^"
+	echo !result! && if not "!result!"=="1" goto :TEST_ERROR
 
 	set result=
-	set "_s=[ ] * a!"
-	call %STELLA_COMMON%\common.bat :strlen2 result _s
-	echo %result% && if not "!result!"=="8" goto :TEST_ERROR
-
-	set result=
-	REM call %STELLA_COMMON%\common.bat :strlen3 _s result
-	echo %result% && if not "!result!"=="18" goto :TEST_ERROR
+	call %STELLA_COMMON%\common.bat :broken_strlen "result" "a !"
+	echo !result! && if not "!result!"=="3" goto :TEST_ERROR
 goto :eof
 
 
 
 :test_string_remove_1
 	set result=
-	call %STELLA_COMMON%\common.bat :string_remove "result" "footest bartestfoo" "test"
+	call %STELLA_COMMON%\common.bat :broken_string_remove "result" "footest bartestfoo" "test"
 	echo %result% && if not "%result%"=="foo barfoo" goto :TEST_ERROR
 goto :eof
 
 :test_string_remove_2
 	set result=
-	call %STELLA_COMMON%\common.bat :string_remove "result" "footest&bar^test&barf^^o^^^o" "&bar^"
+	call %STELLA_COMMON%\common.bat :broken_string_remove "result" "footest&bar^test&barf^^o^^^o" "&bar^"
 	echo "%result%" && if not "%result%"=="footesttest&barf^^o^^^o" goto :TEST_ERROR
 goto :eof
 
 :test_string_remove_3
 	set result=
-	call %STELLA_COMMON%\common.bat :string_remove "result" "footest&bar^test&barfoo" "&bar"
+	call %STELLA_COMMON%\common.bat :broken_string_remove "result" "footest&bar^test&barfoo" "&bar"
 	echo "!result!" && if not "!result!"=="footest^testfoo" goto :TEST_ERROR
 goto :eof
 
 :test_string_remove_4
 	set result=
-	call %STELLA_COMMON%\common.bat :string_remove "result" "foo& | ( < > ^test" "& | ( < > ^"
+	call %STELLA_COMMON%\common.bat :broken_string_remove "result" "foo& | ( < > ^test" "& | ( < > ^"
 	echo "!result!" && if not "!result!"=="footest" goto :TEST_ERROR
 goto :eof
 
 :test_string_remove_5
 	set result=
-	call %STELLA_COMMON%\common.bat :string_remove "result" "foo=bar=" "="
+	call %STELLA_COMMON%\common.bat :broken_string_remove "result" "foo!bar" "!"
+	echo "!result!" && if not "!result!"=="foobar" goto :TEST_ERROR
+goto :eof
+
+:test_string_remove_6
+	set result=
+	call %STELLA_COMMON%\common.bat :broken_string_remove "result" "foo=bar=" "="
 	echo "!result!" && if not "!result!"=="footest" goto :TEST_ERROR
 goto :eof
 
@@ -101,30 +107,28 @@ goto :eof
 
 :test_abs_to_rel_path
 	call %STELLA_COMMON%\common.bat :abs_to_rel_path "result" "path10" "c:\path1\path2"
-	echo  %result% && if not "%result%"=="path10" goto :TEST_ERROR
+	echo %result% && if not "%result%"=="path10" goto :TEST_ERROR
 
 	call %STELLA_COMMON%\common.bat :abs_to_rel_path "result" "c:\path1\test.txt" "c:\path1\path2"
-	echo  %result% && if not "%result%"=="..\test.txt" goto :TEST_ERROR
+	echo %result% && if not "%result%"=="..\test.txt" goto :TEST_ERROR
 
 	call %STELLA_COMMON%\common.bat :abs_to_rel_path "result" "c:\path1\path2\test.txt" "c:\path1"
-	echo  %result% && if not "%result%"=="path2\test.txt" goto :TEST_ERROR
+	echo %result% && if not "%result%"=="path2\test.txt" goto :TEST_ERROR
 
 	call %STELLA_COMMON%\common.bat :abs_to_rel_path "result" "c:\test.txt" "c:\path1\path2"
-	echo  %result% && if not "%result%"=="..\..\test.txt" goto :TEST_ERROR
+	echo %result% && if not "%result%"=="..\..\test.txt" goto :TEST_ERROR
 
 	call %STELLA_COMMON%\common.bat :abs_to_rel_path "result" "c:\path1" "c:\path1\path2"
-	echo  %result% && if not "%result%"==".." goto :TEST_ERROR
+	echo %result% && if not "%result%"==".." goto :TEST_ERROR
 
 	call %STELLA_COMMON%\common.bat :abs_to_rel_path "result" "c:\path1\path3" "c:\path1\path2"
-	echo  %result% && if not "%result%"=="..\path3" goto :TEST_ERROR
-
+	echo %result% && if not "%result%"=="..\path3" goto :TEST_ERROR
 
 	call %STELLA_COMMON%\common.bat :abs_to_rel_path "result" "c:\path1\path2\" "c:\path1\"
-	echo  %result% && if not "%result%"=="path2" goto :TEST_ERROR
-
+	echo %result% && if not "%result%"=="path2" goto :TEST_ERROR
 
 	call %STELLA_COMMON%\common.bat :abs_to_rel_path "result" "c:\path1" "c:\path1"
-	echo  %result% && if not "%result%"=="." goto :TEST_ERROR
+	echo %result% && if not "%result%"=="." goto :TEST_ERROR
 goto :eof
 
 
