@@ -5,7 +5,7 @@
 call %~dp0\stella-link.bat include
 
 set "TEST_LIST=test_strlen_1 test_strlen_2 test_string_remove_1 test_string_remove_2 test_string_remove_3 test_string_remove_4 test_string_remove_5 test_string_remove_6 test_trim test_is_path_abs test_abs_to_rel_path test_key"
-for %%T in (!test_list!) do (
+for %%T in (!TEST_LIST!) do (
 	set TEST_CURRENT=%%T
 	echo ** Launch : !TEST_CURRENT!
 	call :!TEST_CURRENT!
@@ -207,6 +207,70 @@ goto:eof
 	echo Should be dcf : %PREFIX_2% && if not "%PREFIX_2%"=="dcf" goto :ERROR
 	echo Should be NONE : %PREFIX_3% && if not "%PREFIX_3%"=="" goto :ERROR
 goto:eof
+
+
+
+
+
+set "prefix=PREFIX"
+
+
+echo TEST1
+set "pattern=^a.*b$"
+set "str=test"
+call %STELLA_COMMON%\common.bat :match_regex "%prefix%" "%pattern%" "%str%"
+echo Should be NONE : %PREFIX_0%
+echo Should be NONE : %PREFIX_1%
+echo Should be NONE : %PREFIX_2%
+echo Should be NONE : %PREFIX_3%
+
+echo TEST2
+set "pattern=^a.*b$"
+set "str=acbacb"
+call %STELLA_COMMON%\common.bat :match_regex "%prefix%" "%pattern%" "%str%"
+echo Should be acbacb : %PREFIX_0%
+echo Should be NONE : %PREFIX_1%
+echo Should be NONE : %PREFIX_2%
+echo Should be NONE : %PREFIX_3%
+
+echo TEST3
+set "pattern=a.b"
+set "str=acbadb"
+call %STELLA_COMMON%\common.bat :match_regex "%prefix%" "%pattern%" "%str%"
+echo Should be abc : %PREFIX_0%
+echo Should be adc : %PREFIX_1%
+echo Should be NONE : %PREFIX_2%
+echo Should be NONE : %PREFIX_3%
+
+echo TEST4
+set "pattern=^(a.b)(d.f)$"
+set "str=acbdcf"
+call %STELLA_COMMON%\common.bat :match_regex "%prefix%" "%pattern%" "%str%"
+
+echo Should be acbdcf : %PREFIX_0%
+echo Should be abc : %PREFIX_1%
+echo Should be dcf : %PREFIX_2%
+echo Should be NONE : %PREFIX_3%
+
+
+echo TEST5
+set "str=https://user:password@google.fr/foo/bar?a=1&b=2&c#frag"
+call %STELLA_COMMON%\common.bat :uri_parse "%prefix%" "%str%"
+
+echo uri should be https://user:password@google.fr/foo/bar?a=1^&b=2^&c#frag : "%PREFIX_URI%"
+echo schema should be https : %PREFIX_SCHEMA%
+echo address should be user:password@google.fr : %PREFIX_ADDRESS%
+echo user should be user : %PREFIX_USER%
+echo password should be password : %PREFIX_PASSWORD%
+echo host should be google.fr : %PREFIX_HOST%
+echo port should be NONE : %PREFIX_PORT%
+echo path should be /foo/bar : %PREFIX_PATH%
+echo query should be ?a=1^&b=2^&c : "%PREFIX_QUERY%"
+echo fragment should be frag : %PREFIX_FRAGMENT%
+echo arg a value should be 1 : %PREFIX_a%
+echo arg b value should be 2 : %PREFIX_b%
+echo arg c value should be NONE : %PREFIX_c%
+
 
 
 @echo on
