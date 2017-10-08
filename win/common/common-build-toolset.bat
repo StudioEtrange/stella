@@ -3,8 +3,6 @@ call %*
 goto :eof
 
 
-
-
 :: TOOLSET ------------------------------------------------------------------------------------------------------------------------------
 :toolset_install
 	call %STELLA_COMMON%\common-feature.bat :push_schema_context
@@ -97,29 +95,29 @@ goto :eof
 	:: compiler frontend
 	set _flag_frontend=
 
-	set "CONFIG_TOOL="
-	set "BUILD_TOOL="
-	set "COMPIL_FRONTEND="
+	set "STELLA_BUILD_CONFIG_TOOL_SCHEMA="
+	set "STELLA_BUILD_BUILD_TOOL_SCHEMA="
+	set "STELLA_BUILD_COMPIL_FRONTEND_SCHEMA="
 
 	if "!_toolset!"=="CUSTOM" (
 		set "STELLA_BUILD_TOOLSET=CUSTOM"
 		for %%O in (%OPT%) do (
 			if "!_flag_configure!"=="ON" (
-				set "CONFIG_TOOL=%%O"
+				set "STELLA_BUILD_CONFIG_TOOL_SCHEMA=%%O"
 				set "_flag_configure=OFF"
 			)
 			if "%%O"=="CONFIG_TOOL" (
 				set "_flag_configure=ON"
 			)
 			if "!_flag_build!"=="ON" (
-				set "BUILD_TOOL=%%O"
+				set "STELLA_BUILD_BUILD_TOOL_SCHEMA=%%O"
 				set "_flag_build=OFF"
 			)
 			if "%%O"=="BUILD_TOOL" (
 				set "_flag_build=ON"
 			)
 			if "!_flag_frontend!"=="ON" (
-				set "COMPIL_FRONTEND=%%O"
+				set "STELLA_BUILD_COMPIL_FRONTEND_SCHEMA=%%O"
 				set "_flag_frontend=OFF"
 			)
 			if "%%O"=="COMPIL_FRONTEND" (
@@ -130,50 +128,34 @@ goto :eof
 
 	if "!_toolset!"=="NONE" (
 		set "STELLA_BUILD_TOOLSET=NONE"
-		set "CONFIG_TOOL="
-		set "BUILD_TOOL="
-		set "COMPIL_FRONTEND="
+		set "STELLA_BUILD_CONFIG_TOOL_SCHEMA="
+		set "STELLA_BUILD_BUILD_TOOL_SCHEMA="
+		set "STELLA_BUILD_COMPIL_FRONTEND_SCHEMA="
 	)
 	if "!_toolset!"=="MS" (
 		set "STELLA_BUILD_TOOLSET=MS"
-		set "CONFIG_TOOL=cmake"
-		set "BUILD_TOOL=nmake"
-		set "COMPIL_FRONTEND=cl"
+		set "STELLA_BUILD_CONFIG_TOOL_SCHEMA=cmake"
+		set "STELLA_BUILD_BUILD_TOOL_SCHEMA=nmake"
+		set "STELLA_BUILD_COMPIL_FRONTEND_SCHEMA=cl"
 	)
 
 	if "!_toolset!"=="MINGW-W64" (
 		set "STELLA_BUILD_TOOLSET=MINGW-W64"
-		set "CONFIG_TOOL="
-		set "BUILD_TOOL=mingw-make"
-		set "COMPIL_FRONTEND=mingw-gcc"
+		set "STELLA_BUILD_CONFIG_TOOL_SCHEMA="
+		set "STELLA_BUILD_BUILD_TOOL_SCHEMA=mingw-make"
+		set "STELLA_BUILD_COMPIL_FRONTEND_SCHEMA=mingw-gcc"
 	)
 
 	if "!_toolset!"=="MSYS2" (
 		set "STELLA_BUILD_TOOLSET=MSYS2"
-		set "CONFIG_TOOL=configure"
-		set "BUILD_TOOL=msys-mingw-make"
-		set "COMPIL_FRONTEND=msys-mingw-gcc"
+		set "STELLA_BUILD_CONFIG_TOOL_SCHEMA=configure"
+		set "STELLA_BUILD_BUILD_TOOL_SCHEMA=msys-mingw-make"
+		set "STELLA_BUILD_COMPIL_FRONTEND_SCHEMA=msys-mingw-gcc"
 	)
 
 
 
 	REM TODO autoselect ninja instead of make if using cmake
-	REM if "!CONFIG_TOOL!"=="cmake" (
-	REM if not "!_flag_build!"=="FORCE" (
-	REM 		call %STELLA_COMMON%\common.bat :which "_test1" "ninja"
-	REM 		if not "!_test1!"=="" (
-	REM 			set "BUILD_TOOL=ninja"
-	REM 			if not "!_flag_frontend!"=="FORCE" (
-	REM 				set "COMPIL_FRONTEND=gcc"
-	REM 			)
-	REM 		)
-	REM 	)
-	REM )
-
-
-	set "STELLA_BUILD_CONFIG_TOOL_SCHEMA=!CONFIG_TOOL!"
-	set "STELLA_BUILD_BUILD_TOOL_SCHEMA=!BUILD_TOOL!"
-	set "STELLA_BUILD_COMPIL_FRONTEND_SCHEMA=!COMPIL_FRONTEND!"
 
 
 	REM STELLA_BUILD_CONFIG_TOOL
@@ -231,7 +213,7 @@ goto :eof
 		set "STELLA_BUILD_COMPIL_FRONTEND_BIN_FAMILY=gcc"
 	)
 	set "STELLA_BUILD_COMPIL_FRONTEND=!_t!"
-	
+
 goto :eof
 
 
@@ -324,7 +306,7 @@ goto :eof
 	)
 
 	echo ** Require build toolset : !STELLA_BUILD_TOOLSET! [ config tool scbema :!STELLA_BUILD_CONFIG_TOOL_SCHEMA! build tool schema :!STELLA_BUILD_BUILD_TOOL_SCHEMA! compil frontend schema : !STELLA_BUILD_COMPIL_FRONTEND_SCHEMA! ]
-	
+
 	echo ** Require extra toolset : !STELLA_BUILD_EXTRA_TOOLSET!
 	for %%s in (!STELLA_BUILD_EXTRA_TOOLSET!) do (
 		call :toolset_install "%%s"

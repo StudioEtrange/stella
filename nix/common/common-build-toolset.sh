@@ -81,12 +81,10 @@ __set_toolset() {
 	local MODE="$1"
 	local OPT="$2"
 
-	# configure tool
-	local CONFIG_TOOL=
-	# build toot
-	local BUILD_TOOL=
-	# compiler frontend
-	local COMPIL_FRONTEND=
+
+	STELLA_BUILD_CONFIG_TOOL_SCHEMA=
+	STELLA_BUILD_BUILD_TOOL_SCHEMA=
+	STELLA_BUILD_COMPIL_FRONTEND_SCHEMA=
 
 	case $MODE in
 		CUSTOM)
@@ -95,20 +93,20 @@ __set_toolset() {
 			local _flag_frontend=
 			local _flag_build=
 			for o in $OPT; do
-				[ "$_flag_configure" = "ON" ] && CONFIG_TOOL=$o && _flag_configure=OFF
+				[ "$_flag_configure" = "ON" ] && STELLA_BUILD_CONFIG_TOOL_SCHEMA=$o && _flag_configure=OFF
 				[ "$o" = "CONFIG_TOOL" ] && _flag_configure=ON
-				[ "$_flag_build" = "ON" ] && BUILD_TOOL=$o && _flag_build=OFF
+				[ "$_flag_build" = "ON" ] && STELLA_BUILD_BUILD_TOOL_SCHEMA=$o && _flag_build=OFF
 				[ "$o" = "BUILD_TOOL" ] && _flag_build=ON
-				[ "$_flag_frontend" = "ON" ] && COMPIL_FRONTEND=$o && _flag_frontend=OFF
+				[ "$_flag_frontend" = "ON" ] && STELLA_BUILD_COMPIL_FRONTEND_SCHEMA=$o && _flag_frontend=OFF
 				[ "$o" = "COMPIL_FRONTEND" ] && _flag_frontend=ON
 			done
 			;;
 
 		NONE)
 			STELLA_BUILD_TOOLSET=NONE
-			CONFIG_TOOL=
-			BUILD_TOOL=
-			COMPIL_FRONTEND=
+			STELLA_BUILD_CONFIG_TOOL_SCHEMA=
+			STELLA_BUILD_BUILD_TOOL_SCHEMA=
+			STELLA_BUILD_COMPIL_FRONTEND_SCHEMA=
 			;;
 
 		AUTOTOOLS)
@@ -118,36 +116,26 @@ __set_toolset() {
 
 		STANDARD)
 			STELLA_BUILD_TOOLSET=STANDARD
-			CONFIG_TOOL=configure
-			BUILD_TOOL=make
-			COMPIL_FRONTEND=default
+			STELLA_BUILD_CONFIG_TOOL_SCHEMA=configure
+			STELLA_BUILD_BUILD_TOOL_SCHEMA=make
+			STELLA_BUILD_COMPIL_FRONTEND_SCHEMA=default
 			;;
 		CMAKE)
 			STELLA_BUILD_TOOLSET=CMAKE
-			CONFIG_TOOL=cmake
-			BUILD_TOOL=make
-			COMPIL_FRONTEND=default
+			STELLA_BUILD_CONFIG_TOOL_SCHEMA=cmake
+			STELLA_BUILD_BUILD_TOOL_SCHEMA=make
+			STELLA_BUILD_COMPIL_FRONTEND_SCHEMA=default
 			;;
 		NINJA)
 			STELLA_BUILD_TOOLSET=NINJA
-			CONFIG_TOOL=cmake
-			BUILD_TOOL=ninja
-			COMPIL_FRONTEND=default
+			STELLA_BUILD_CONFIG_TOOL_SCHEMA=cmake
+			STELLA_BUILD_BUILD_TOOL_SCHEMA=ninja
+			STELLA_BUILD_COMPIL_FRONTEND_SCHEMA=default
 			;;
 	esac
 
 	# TODO autoselect ninja instead of make if using cmake
-	#if [ "$CONFIG_TOOL" = "cmake" ]; then
-	#	if [ ! "$_flag_build" = "FORCE" ]; then
-	#		if exists ninja
-	#			BUILD_TOOL=ninja
-	#		fi
-	#	fi
-	#fi
 
-	STELLA_BUILD_CONFIG_TOOL_SCHEMA=$CONFIG_TOOL
-	STELLA_BUILD_BUILD_TOOL_SCHEMA=$BUILD_TOOL
-	STELLA_BUILD_COMPIL_FRONTEND_SCHEMA=$COMPIL_FRONTEND
 
 	case $STELLA_BUILD_CONFIG_TOOL_SCHEMA in
 		configure)
@@ -184,8 +172,8 @@ __set_toolset() {
 			STELLA_BUILD_COMPIL_FRONTEND=default
 		;;
 		clang-omp*)
-			# NOTE : create a 'clang' binary family ? but clang and gcc are kind of same family
-			STELLA_BUILD_COMPIL_FRONTEND_BIN_FAMILY=clang
+			# TODO : create a 'clang' binary family ? but clang and gcc are kind of same family
+			STELLA_BUILD_COMPIL_FRONTEND_BIN_FAMILY=gcc
 			STELLA_BUILD_COMPIL_FRONTEND=clang-omp
 		;;
 		gcc*)

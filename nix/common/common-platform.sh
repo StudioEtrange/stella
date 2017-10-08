@@ -443,7 +443,11 @@ __get_current_package_manager() {
 }
 
 __sys_install() {
-	__sys_install_$1
+	# _item package name
+	# other args : optionnal arguments
+	local _item=$1
+	shift
+	__sys_install_$item $@
 }
 
 __sys_remove() {
@@ -530,7 +534,11 @@ __use_package_manager() {
 
 # --------- SYSTEM RECIPES--------
 __sys_install_docker() {
-	echo " ** Install Docker on your system"
+	# NOTE install with ansible : https://medium.com/@tedchength/installing-docker-using-ansible-script-c182787f2fa1
+	# NOTE install specific version : https://forums.docker.com/t/how-can-i-install-a-specific-version-of-the-docker-engine/1993/6
+	#																	http://www.hashjoin.com/t/upgrade-docker-engine-specific-version.html
+	local _version=$1
+	echo " ** Install Docker $_version on your system"
 	if [ "$STELLA_CURRENT_OS" = "macos" ]; then
 		echo "ERROR : Docker is not directly available on macos"
 		return
@@ -541,6 +549,13 @@ __sys_install_docker() {
 	chmod +x "$STELLA_APP_TEMP_DIR"/docker-install.sh
 	"$STELLA_APP_TEMP_DIR"/docker-install.sh
 
+	# override last default version
+	if [ ! -z "$_version" ]; then
+		__use_package_manager "INSTALL" "docker" "apt-get docker-ce=$_version | yum docker-ce-$_version"
+	fi
+
+	echo "NOTE : you should add a user to docker group, to use docker without sudo"
+	echo "			sudo usermod -aG docker USER"
 }
 
 __sys_install_brew() {

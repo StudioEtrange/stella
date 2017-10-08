@@ -23,7 +23,7 @@
 
 ## both
 * cmake recipes
-  * hunter  https://github.com/ruslo/hunter
+  * hunter https://github.com/ruslo/hunter
 
 # Various
 
@@ -88,25 +88,33 @@ use
     DEPRECATED STELLA_BUILD_RELOCATE
 
 
-    STELLA_FEATURE_LINK_PATH = DEFAULT | ABSOLUTE | RELATIVE
-    #STELLA_BUILD_LINK_PATH = DEFAULT | ABSOLUTE | RELATIVE
-    STELLA_LINK_PATH
 
-    A/stella feature link management :
-      force ABSOLUTE LINK to dependencies (do not use of RPATH)
-        macho : each dependency should have install_name should contain PATH of lib
+
+    STELLA_LINK_PATH_MODE (ex STELLA_BUILD_LINK_PATH :  DEFAULT | ABSOLUTE | RELATIVE
+                            and STELLA_FEATURE_LINK_PATH)
+          while building feature AND installing feature
+            => inspect_and_fix_build (should be inspect_and_fix_feature or inspect_and_fix_binary ?) should be outside build module, but after install ? NO because build module could be use independently
+    A/stella link management :
+      force ABSOLUTE LINK to dynamic dependencies (do not use of RPATH)
+        macho : each dynamic dependency should have install_name should contain PATH of lib
         macho and elf : binary file should have linked lib with "path/linked_lib_file"
-      force RELATIVE LINK to dependencies (use of RPATH)
+      force RELATIVE LINK to dynamic dependencies (use of RPATH)
         macho : each dependency should have install_name should contain RPATH : @rpath/lib_filename
         macho : binary file should have linked lib with "@rpath/linked_lib_file" AND add an RPATH value with "@loader_path/<rel_path>"
         elf : binary file should have linked lib with "linked_lib_file" AND add an RPATH value with "$ORIGIN/<rel_path>"
       DEFAULT do not change anything while building OR installing feature
 
 
-    B/stella install feature mode :
+    STELLA_BUILD_LINK_MODE
+    B/ stella build preference link mode while building
+      STATIC prefer link to static version of dependencies
+      DYNAMIC prefer link to dynamic version of dependencies
+
+    STELLA_FEATURE_INSTALL_MODE (ex STELLA_BUILD_RELOCATE and EXPORT and RELOCATE mode when install feature)
+    C/stella install feature mode :
       PORTABLE
           regroup all dependencies into a single /lib folder
-          should be force RELATIVE LINK for all dependencies
+          should be force RELATIVE LINK for all dynamic dependencies
       EXPORT
           install feature outside stella/app folder
           could be PORTABLE or not
@@ -224,12 +232,13 @@ https://github.com/kcat/openal-soft
 http://unix.stackexchange.com/questions/196166/how-to-find-out-if-a-system-uses-sysv-upstart-or-systemd-initsystem
 http://unix.stackexchange.com/questions/18209/detect-init-system-using-the-shell
 http://unix.stackexchange.com/questions/138994/init-systems-and-service-management-on-different-distributions
+https://github.com/ansible/ansible-modules-core/blob/devel/system/service.py
 
 [ ] nix : review boost recipes (replace prepare_build with start_manual_build)
 
 [ ] win/nix : add command to embed a minimal stella inside app
 
-[ ] win : visual c++ build tools 2015 et  2017 http://landinghub.visualstudio.com/visual-cpp-build-tools
+[ ] win : visual c++ build tools 2015 et 2017 http://landinghub.visualstudio.com/visual-cpp-build-tools
 
 [ ] VM :
     terraform agnostic IaaS management : https://www.terraform.io/
@@ -240,6 +249,19 @@ http://unix.stackexchange.com/questions/138994/init-systems-and-service-manageme
         archipel client : https://hub.docker.com/r/schrauber/archipelclient/
     nobullshitvm https://github.com/ChoHag/nbsvm
 
+[ ] infra management
+  https://blog.docker.com/2017/01/infrakit-hood-high-availability/
+  https://github.com/docker/infrakit
+    OS
+  https://github.com/linuxkit/linuxkit
+
+[ ] ruby :
+    uru : manage ruby environnement https://bitbucket.org/jonforums/uru
+    ruby-build : download ruby source and build ruby. Do not manage dependencies. Do not manage ruby env https://github.com/rbenv/ruby-build
+    ruby-install : download ruby source and build ruby. Manage dependencies. Do not manage ruby env.
+    rbenv : manage ruby env https://github.com/rbenv/rbenv
+    chruby : manage ruby env
+    rvm : download ruby source and build ruby. Manage dependencies. Manage ruby env
 
 [ ] nix : review boost recipes (still using __prepare_build)
 

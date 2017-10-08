@@ -64,18 +64,19 @@ goto :eof
 
 :: TOOLSET & BUILD TOOLS ----------------
 :: Available tools :
-:: 	CONFIG_TOOL SCHEMA : cmake, configure
-:: 	BUILD_TOOL SCHEMA : nmake, ninja, jom, mingw-make, msys-make, msys-mingw-make
-:: 	COMPIL_FRONTEND SCHEMA :  cl, mingw-gcc, msys-gcc, msys-mingw-gcc
-::						in reality COMPIL_FRONTEND should be called COMPIL_DRIVER
+:: 	CONFIG TOOL (and family) : cmake, configure
+:: 	BUILD TOOL (and family) : nmake, ninja, jom, mingw-make (make), msys-make (make), msys-mingw-make (make)
+:: 	COMPIL FRONTEND (and family) :  cl, mingw-gcc (gcc), msys-gcc (gcc), msys-mingw-gcc (gcc)
 ::
+::	NOTE : - in reality COMPIL_FRONTEND should be called COMPIL_DRIVER
+::				 - family has an impact on option/flag passed to the real binary
 ::
 :: Available preconfigured build toolset on windows system :
-:: 	TOOLSET 		| CONFIG TOOL 				| BUILD TOOL 							| COMPIL FRONTEND
-::	MS				|	cmake					|		nmake							|			cl
-:: 	MSYS2			| 	configure				|		msys-mingw-make					|			msys-mingw-gcc
-::	MINGW-W64		| 	NULL					|		mingw-make						|			mingw-gcc
-:: NONE ===> disable build toolset and all tools
+:: 	TOOLSET 		| CONFIG TOOL 			| BUILD TOOL (binary family) | COMPIL FRONTEND (binary family)
+::	MS					|		cmake						|		nmake										 |			cl
+:: 	MSYS2				| 	configure				|		msys-mingw-make	(make)	 |			msys-mingw-gcc (gcc)
+::	MINGW-W64		| 	NULL						|		mingw-make (make)				 |			mingw-gcc (gcc)
+:: 	NONE ===> disable build toolset and all tools
 
 :: MSYS2 TOOLSET
 ::		make AND gcc are installed from pacman : bundle : mingw64/mingw-w64-x86_64-toolchain or mingw32/mingw-w64-i686-toolchain

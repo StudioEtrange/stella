@@ -65,17 +65,18 @@ _STELLA_COMMON_BUILD_INCLUDED_=1
 
 # TOOLSET & BUILD TOOLS ----------------
 # Available tools :
-# CONFIG_TOOL SCHEMA : configure, cmake, autotools
-# BUILD_TOOL SCHEMA : make, ninja
-# COMPIL_FRONTEND SCHEMA : default (default means gcc or other aliased compiler already present on system), clang-omp, gcc (means gcc AND g++)
-#										in fact COMPIL_FRONTEND should be called COMPIL_DRIVER
+# CONFIG TOOL (and family) : configure, cmake, autotools
+# BUILD TOOL (and family) : make (make), ninja
+# COMPIL FRONTEND (and family) : clang-omp (gcc), gcc (gcc), default (gcc) : default means gcc or other aliased compiler already present on system
 #
+#				NOTE : - in fact COMPIL_FRONTEND should be called COMPIL_DRIVER
+#							 - family has an impact on option/flag passed to the real binary
+
 # Available preconfigured build toolset on Nix system :
-# TOOLSET 		| CONFIG TOOL 				| BUILD TOOL 		| COMPIL FRONTEND
-# STANDARD		|	configure						|		make				|			default
-# AUTOTOOLS		|	autotools-bundle#1	|		make				|			default <===== TODO DEPRECATED THIS : prefer __add_toolset "autotools"
-# NINJA				| cmake								|		ninja				| 		default
-# CMAKE				|	cmake								|		make				|			default
+# TOOLSET 		| CONFIG TOOL 				| BUILD TOOL (binary family) | COMPIL FRONTEND (binary family)
+# STANDARD		|	configure						|		make (make)							 |		default (gcc)
+# NINJA				| cmake								|		ninja										 | 		default (gcc)
+# CMAKE				|	cmake								|		make (make)							 |		default (gcc)
 # NONE ===> disable build toolset and all tools
 
 # NOTE :
@@ -183,7 +184,7 @@ __prepare_build() {
 			__set_env_vars_for_cmake
 		;;
 		*)
-			if [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN_FAMILY" = "gcc" ] || [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN_FAMILY" = "clang" ]; then
+			if [ "$STELLA_BUILD_COMPIL_FRONTEND_BIN_FAMILY" = "gcc" ]; then
 				__set_env_vars_for_gcc
 			fi
 		;;

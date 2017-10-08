@@ -15,7 +15,7 @@ goto :eof
 :read_proxy_values
 	if exist "!STELLA_ENV_FILE!" (
 		call %STELLA_COMMON%\common.bat :get_key "!STELLA_ENV_FILE!" "STELLA_PROXY" "ACTIVE" "PREFIX"
-	
+
 		if not "!STELLA_PROXY_ACTIVE!"=="" (
 			call %STELLA_COMMON%\common.bat :get_key "!STELLA_ENV_FILE!" "STELLA_PROXY_!STELLA_PROXY_ACTIVE!" "PROXY_HOST" "PREFIX"
 			call %STELLA_COMMON%\common.bat :get_key "!STELLA_ENV_FILE!" "STELLA_PROXY_!STELLA_PROXY_ACTIVE!" "PROXY_PORT" "PREFIX"
@@ -37,7 +37,7 @@ goto :eof
 
 			for %%I in (STELLA_PROXY_!STELLA_PROXY_ACTIVE!_PROXY_HOST) do set "STELLA_PROXY_HOST=!%%I!"
 			for %%I in (STELLA_PROXY_!STELLA_PROXY_ACTIVE!_PROXY_PORT) do set "STELLA_PROXY_PORT=!%%I!"
-			
+
 			for %%I in (STELLA_PROXY_!STELLA_PROXY_ACTIVE!_PROXY_SCHEMA) do set "STELLA_PROXY_SCHEMA=!%%I!"
 			if "!STELLA_PROXY_SCHEMA!"=="" (
 				set "STELLA_PROXY_SCHEMA=http"
@@ -58,7 +58,7 @@ goto :eof
 goto :eof
 
 REM reset stella proxy values
-:reset_proxy_values		
+:reset_proxy_values
 	set STELLA_PROXY_ACTIVE=
 	set STELLA_PROXY_HOST=
 	set STELLA_PROXY_SCHEMA=
@@ -77,12 +77,12 @@ goto :eof
 		set "HTTP_PROXY=!STELLA_HTTP_PROXY!"
 		set "https_proxy=!STELLA_HTTPS_PROXY!"
 		set "HTTPS_PROXY=!STELLA_HTTPS_PROXY!"
-		
+
 		if not "!STELLA_NO_PROXY!"=="" (
 			REM NOTE : on nix system, if NO_PROXY is setted, then no_proxy is ignored
 			set "no_proxy=!STELLA_NO_PROXY!"
 			set "NO_PROXY=!STELLA_NO_PROXY!"
-			
+
 			REM echo STELLA Proxy : bypass for !STELLA_NO_PROXY!
 		)
 	)
@@ -123,12 +123,13 @@ REM use of http_proxy env var
 REM configuration file .gitconfig in home directory override http_proxy env
 
 REM mvn
+REM TODO add -DnonProxyHosts= use | instead of , for separator
 if "!STELLA_PROXY_USER!"=="" set "MVN=!MVN! -DproxyActive=true  -DproxyId=!STELLA_PROXY_ACTIVE! -DproxyHost=!STELLA_PROXY_HOST! -DproxyPort=!STELLA_PROXY_PORT!"
 if not "!STELLA_PROXY_USER!"=="" set "MVN=!MVN! -DproxyActive=true  -DproxyId=!STELLA_PROXY_ACTIVE! -DproxyHost=!STELLA_PROXY_HOST! -DproxyPort=!STELLA_PROXY_PORT! -DproxyUsername=!STELLA_PROXY_USER! -DproxyPassword=!STELLA_PROXY_PASS!"
 
 REM npm
-REM	command npm --https-proxy="$HTTPS_PROXY" --http-proxy="$HTTP_PROXY" "$@"	
-	
+REM	command npm --https-proxy="$HTTPS_PROXY" --http-proxy="$HTTP_PROXY" "$@"
+
 goto :eof
 
 REM -------------------- FUNCTIONS-----------------

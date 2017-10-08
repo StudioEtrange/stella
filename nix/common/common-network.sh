@@ -181,14 +181,31 @@ __proxy_override() {
 	# PROXY for DOCKER ----------
 
 	# DOCKER ENGINE / DAEMON
-	# Docker daemon rely on HTTP_PROXY env
-	#		but the env var need to be setted in daemon environement when daemon is launched (not after)
-	#		Instead configure /etc/default/docker or /etc/sysconfig/docker or /etc/systemd/system/docker.service.d/http-proxy.conf (for rhel/centos) or /var/lib/boot2docker/profile (for boot2docker)
-	#			and add
-	#			HTTP_PROXY="http://<proxy_host>:<proxy_port>"
-	#			HTTPS_PROXY="http://<proxy_host>:<proxy_port>"
 	#		Docker daemon is used when accessing docker hub (like for search, pull, ...) and registry also when pushing (push)
 	#		see https://docs.docker.com/engine/admin/systemd/#/http-proxy
+	# 	Docker daemon rely on HTTP_PROXY env
+	#		but the env var need to be setted in daemon environement when daemon is launched (not after)
+	#		Instead configure
+	# 		for Docker Upstart and SysVinit : /etc/default/docker
+	#			for Systemd : /etc/systemd/system/docker.service.d/http-proxy.conf
+	#			for ? : /etc/sysconfig/docker
+	#			for boot2docker : /var/lib/boot2docker/profile
+	#			and add proxy information
+	#			/etc/default/docker
+	#						export http_proxy="http://HOST:PORT"
+	#						export https_proxy="http://HOST:PORT"
+	#						export HTTP_PROXY="http://HOST:PORT"
+	#						export HTTPS_PROXY="http://HOST:PORT"
+	#			/etc/systemd/system/docker.service.d/http-proxy.conf
+	#						[Service]
+	#						Environment="HTTP_PROXY=http://HOST:PORT"
+	#							OR EnvironmentFile=/etc/network-environment (content of envfile : HTTP_PROXY=http://HOST:PORT HTTPS_PROXY=http://HOST:PORT)
+	#						TO SEE VALUES :
+	#											systemctl show -p EnvironmentFile docker.service
+	#											systemctl show -p Environment docker.service
+	#
+	#						Then use : systemctl daemon-reload docker
+	#											 systemctl start docker
 	#
 	# DOCKER CLIENT
 	# docker client rely on HTTP_PROXY env to communicate to docker daemon via http
