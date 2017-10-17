@@ -447,7 +447,7 @@ __sys_install() {
 	# other args : optionnal arguments
 	local _item=$1
 	shift
-	__sys_install_$item $@
+	__sys_install_$_item $@
 }
 
 __sys_remove() {
