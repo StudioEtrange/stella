@@ -43,10 +43,11 @@ usage() {
 	echo " L     boot shell <uri> : launch an interactive new shell with all stella env var setted inside an <uri> (use 'local' for current host)"
 	echo " L     boot cmd <uri> -- <command> : execute a command with all stella env var setted inside an <uri> (use 'local' for current host)"
 	echo " L     boot script <uri> -- <script_path>"
-	echo " o-- system package management : WARN This will affect your system"
-	echo " L     sys install <package name> : install  a system package"
-	echo " L     sys remove <package name> : remove a system package"
+	echo " o-- system management : "
+	echo " L     sys install <package name> : install  a system package -- WARN This will affect your system"
+	echo " L     sys remove <package name> : remove a system package -- WARN This will affect your system"
 	echo " L     sys list all : list all available system package name"
+	echo " L	 sys info host : print current host info"
 	echo ""
 	echo "Special Usage"
 	echo " o-- env management :"
@@ -211,6 +212,10 @@ if [ "$DOMAIN" = "sys" ]; then
 	fi
 	if [ "$ACTION" = "list" ]; then
 		echo "$STELLA_SYS_PACKAGE_LIST"
+	fi
+	
+	if [ "$ACTION" = "info" ]; then
+		$STELLA_ARTEFACT/screenFetch/screenfetch-dev -v -E
 	fi
 fi
 

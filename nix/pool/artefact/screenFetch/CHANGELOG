@@ -3,11 +3,48 @@
     changelog
 **** **** **** ****
 
-	- Fixing package detection in apt/dpkg distros
-	- Fix xmonad detection
-	- Add detection for Sabayon, Haiku, Logos and Chapeau
-	- Add ChromeOS logo (without distro detection)
-	- Add an option to supply custom ASCII art
+v3.8.0
+	- Additional Intel GPU checks
+	- Gentoo release check (whether it's stable/testing/experimental)
+	- Chromebrew detection for Chrome OS pkgs
+	- OpenBSD fixes
+	- Manjaro logo updated
+	- Added Fux logo
+	- Enable easily addable custom lines through customlines() function
+	- Line wrapping with '-w' command line option
+	- Fix issue with extra space and host variable
+	- Improvements to OS X font detection
+	- Fixed package count, shell detection and colors on NetBSD
+	- Added pkgsrc support for OS X
+	- Use new NixOS logo
+	- Use new KaOS logo
+	- PCLinuxOS logo added
+	- pomf host removed (does not exist anymore)
+	- Display the package count, resolution, GPU and OS version on Haiku
+	- Display release version and package count on TinyCore Linux
+	- Display exact release version on Windows 10
+	- Use modern logo on Windows 10 and Windows 8
+	- Support for Blackbox on Windows
+	- Improve BusyBox shell detection
+	- Added detection for Trinity/TWin, chromeos-wm, FLWM, howm, sway, LXQt and Deepin [DEs/WMs]
+	- Added detection for Alpine, BunsenLabs, Chrome OS, Chromium OS, Devuan, Fux, GrombyangOS, KDE neon, Kogaion, Mer, Msys, Netrunner, Oracle Linux, PCLinuxOS, Qubes OS, Parrot Security, Pardus, Red Star OS, ROSA, SailfishOS, SparkyLinux, SteamOS, SUSE Linux Enterprise and SwagArch
+
+v3.7.0
+	- Show RAM in IEC units (MiB instead of MB)
+	- Count Chocolatey packages in Cygwin if present
+
+v3.6.8
+	- Added classic Mac OS logo
+	- Added generic Unix logo for unknown non-Linux distros
+	- Added an option to display ASCII distribution logo only
+	- Fixed total memory detection on OpenBSD
+	- Fixed package detection in Solus and in apt/dpkg distros
+	- Fixed xmonad detection
+	- Added detection for Sabayon, Haiku, Logos, Chapeau, BLAG, Dragora, gNewSense, NixOS, Crux, Lunar and GNU/Hurd (generic)
+	- Added detection for CDE/dtwm, Lumina and 9wm
+	- Added ChromeOS logo (without distro detection)
+	- Use Ubuntu-3color logo by default, remove old yellow logo
+	- Added an option to supply custom ASCII art
 	- Combine GTK 2/3 themes if they are the same
 	- Reimplement '-d' (allows for setting what information is displayed on the command line)
 

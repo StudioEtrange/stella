@@ -1,3 +1,4 @@
+
 # screenFetch - The Bash Screenshot Information Tool
 
 ## What is screenFetch?
@@ -17,10 +18,18 @@ command! This script is very easy to add to and can easily be extended.
 
 1. Install `screenfetch` from the official repositories or `screenfetch-git` from the AUR. That's it!
 
+### Netrunner Rolling
+
+1. Install `screenfetch-netrunner` from the official repositories.
+
 ### Mageia
 
 1. Install screenfetch from the official repositories with urpmi or rpmdrake.
    e.g.: `urpmi screenfetch`
+
+### Crux Linux
+
+1. Install screenfetch from either [6c37/crux-ports](https://github.com/6c37/crux-ports) or [6c37/crux-ports-git](https://github.com/6c37/crux-ports-git).
 
 ### Mac
 
@@ -31,22 +40,48 @@ command! This script is very easy to add to and can easily be extended.
 1. Emerge screenfetch from portage using `emerge screenfetch`
 2. Sabayon users can install screenfetch from entropy using `equo install screenfetch`
 
-### Ubuntu (>14.04) and Debian (stable/testing/unstable)
+### Ubuntu and Debian
 
-1. Install: `apt-get install screenfetch`
+1. Install from the official repositories: `apt install screenfetch`
 2. There is also a PPA for Ubuntu located at https://launchpad.net/%7Edjcj/+archive/ubuntu/screenfetch
 
 ### FreeBSD
 
-1. screenfetch can be installed by using the ports system.
+1. Install screenfetch using the [ports](https://freshports.org/sysutils/screenfetch/) system: `cd /usr/ports/sysutils/screenfetch/ && make install clean`
+2. Install screenfetch as a binary package: `pkg install screenFetch`
+3. Make sure fdescfs(5) and procfs(5) are mounted, they're required by bash(1).
 
-### Fedora (21 or later)
+### Fedora
 
-1. Install it with yum running: `yum install screenfetch`
+1. Install it with dnf running: `dnf install screenfetch`
+
+### Fux
+
+1. Installation: `dnf install screenfetch`
+
+### KaOS
+
+1. Install screenfetch from the official repositories with octopi or pacman.
+   e.g.: `pacman -S screenfetch`
+
+### openSUSE
+
+1. If using 13.2 or earlier, add "utilities" repo: `zypper ar -r http://download.opensuse.org/repositories/utilities/openSUSE_$(lsb_release -rs)/utilities.repo`
+2. Install it with zypper running: `zypper install screenfetch`
+
+### MSYS2
+
+1. Install screenfetch from the official repositories: `pacman -S screenfetch`
+
+### ChromeOS/ChromiumOS
+
+0. Requires Developer Mode to be enabled. Instructions to enable it and enter the CLI are here - https://www.chromium.org/chromium-os/poking-around-your-chrome-os-device.
+1. Download the executable file and put it under the `/usr/local/bin/` directory: `wget -P /usr/local/bin/ https://raw.githubusercontent.com/KittyKatt/screenFetch/master/screenfetch-dev`
+2. Make the file executable by doing the following: `chmod +x /usr/local/bin/screenfetch-dev`
 
 ### Others
 
-1. Download the latest source at https://github.com/KittyKatt/screenFetch
+1. Download the latest source at https://github.com/KittyKatt/screenFetch: `wget -P /path/to/screenfetch/ https://raw.githubusercontent.com/KittyKatt/screenFetch/master/screenfetch-dev`
 2. In a terminal, make the file executable by doing the following: `chmod +x /path/to/screenfetch/screenfetch-dev`
 3. Then, either keep it there, or move it to somewhere in your $PATH to make it available without having to use the full path to the script.
 
@@ -62,11 +97,18 @@ specified on the command line, and those are shown below or by executing `screen
       -o 'OPTIONS'       Allows for setting script variables on the
                          command line. Must be in the following format...
                          'OPTION1="OPTIONARG1";OPTION2="OPTIONARG2"'
+      -d '+var;-var;var' Allows for setting what information is displayed
+                         on the command line. You can add displays with +var,var. You
+                         can delete displays with -var,var. Setting without + or - will
+                         set display to that explicit combination. Add and delete statements
+                         may be used in conjunction by placing a ; between them as so:
+                         +var,var,var;-var,var.
       -n                 Do not display ASCII distribution logo.
       -N                 Strip all color from output.
+      -w                 Wrap long lines.
       -t                 Truncate output based on terminal width (Experimental!).
       -p                 Output in portrait mode, with logo above info.
-      -s(m)              Using this flag tells the script that you want it
+      -s [-u IMGHOST]    Using this flag tells the script that you want it
                          to take a screenshot. Use the -m flag if you would like
                          to move it to a new location afterwards.
       -c string          You may change the outputted colors with -c. The format is
@@ -97,12 +139,4 @@ script, become part of the project, or talk to me about anything else,
 you can either email me at `zeldarealm@gmail.com` or you can connect
 to Rizon and reach me at `irc://irc.rizon.net/screenFetch`
 
-## Screenshots
 
-![Screenfetch sample](https://u.teknik.io/hOfW3J.png)
-
-![Screenfetch sample](https://u.teknik.io/PexJgr.png)
-
-![Screenfetch sample](https://u.teknik.io/hjpGj7.png)
-
-![Screenfetch sample](https://u.teknik.io/k5bhMn.png)
