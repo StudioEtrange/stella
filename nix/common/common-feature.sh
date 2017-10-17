@@ -999,12 +999,13 @@ __select_official_schema() {
 				fi
 				[ "$_official" = "1" ] && break
 			done
+			[ "$_official" = "1" ] && break
 		done
 
 		if 	[ "$_official" = "1" ]; then
 			[ ! "$a" = "" ] && _FILLED_SCHEMA="$_FILLED_SCHEMA"@"$a"
 			[ ! "$f" = "" ] && _FILLED_SCHEMA="$_FILLED_SCHEMA":"$f"
-		
+
 			[ ! "$_VAR_FEATURE_ARCH" = "" ] && eval $_VAR_FEATURE_ARCH="$a"
 			[ ! "$_VAR_FEATURE_FLAVOUR" = "" ] && eval $_VAR_FEATURE_FLAVOUR="$f"
 		fi
