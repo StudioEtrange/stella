@@ -913,7 +913,6 @@ __select_official_schema() {
 	local _official=0
 	if [[ " ${__STELLA_FEATURE_LIST[@]} " =~ " ${_TR_FEATURE_NAME} " ]]; then
 		# grab feature info
-		# grab feature info
 		local _feat_found=0
 		if [ ! -z "$STELLA_FEATURE_RECIPE_EXTRA" ]; then
 			if [ -f "$STELLA_FEATURE_RECIPE_EXTRA/feature_$_TR_FEATURE_NAME.sh" ]; then
@@ -936,15 +935,6 @@ __select_official_schema() {
 			feature_$_TR_FEATURE_NAME
 		fi
 
-		# fill schema with default values
-		if [ "$_TR_FEATURE_ARCH" = "" ]; then
-			_TR_FEATURE_ARCH=$FEAT_DEFAULT_ARCH
-			[ ! "$_VAR_FEATURE_ARCH" = "" ] && eval $_VAR_FEATURE_ARCH=$FEAT_DEFAULT_ARCH
-		fi
-		if [ "$_TR_FEATURE_FLAVOUR" = "" ]; then
-			_TR_FEATURE_FLAVOUR=$FEAT_DEFAULT_FLAVOUR
-			[ ! "$_VAR_FEATURE_FLAVOUR" = "" ] && eval $_VAR_FEATURE_FLAVOUR=$FEAT_DEFAULT_FLAVOUR
-		fi
 		# select last available version by default
 		if [ "$_TR_FEATURE_VER" = "" ]; then
 			local list_version=
@@ -961,8 +951,6 @@ __select_official_schema() {
 		fi
 
 		_FILLED_SCHEMA="$_TR_FEATURE_NAME"#"$_TR_FEATURE_VER"
-		[ ! "$_TR_FEATURE_ARCH" = "" ] && _FILLED_SCHEMA="$_FILLED_SCHEMA"@"$_TR_FEATURE_ARCH"
-		[ ! "$_TR_FEATURE_FLAVOUR" = "" ] && _FILLED_SCHEMA="$_FILLED_SCHEMA":"$_TR_FEATURE_FLAVOUR"
 
 		# ADDING OS restriction and OS exclusion
 		_OS_OPTION=
@@ -970,14 +958,56 @@ __select_official_schema() {
 		[ ! "$_TR_FEATURE_OS_EXCLUSION" = "" ] && _OS_OPTION="$_OS_OPTION"\\\\"$_TR_FEATURE_OS_EXCLUSION"
 
 
-		# check filled schema exists
+		
+
+		# check schema exists 
+		# by looking for different arch and flavour if not specified
+		# starting with default ones
+		local _looking_arch
+		local _looking_flavour
+		if [ "$_TR_FEATURE_ARCH" = "" ]; then
+			# arch should have default value empty and no values specified at all into FEAT_LIST_SCHEMA
+			# so we do not have to look for any value
+			[ ! "$FEAT_DEFAULT_ARCH" = "" ] && _looking_arch="$FEAT_DEFAULT_ARCH x64 x86"
+		else
+			_looking_arch="$_TR_FEATURE_ARCH"
+		fi
+		if [ "$_TR_FEATURE_FLAVOUR" = "" ]; then
+			_looking_flavour="$FEAT_DEFAULT_FLAVOUR binary source"
+		else
+			_looking_flavour="$_TR_FEATURE_FLAVOUR"
+		fi
+
 		local l
+		local a
+		local f
 		for l in $FEAT_LIST_SCHEMA; do
-			if [ "$_TR_FEATURE_NAME"#"$l" = "$_FILLED_SCHEMA" ]; then
-				[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
-			fi
+			# flavour is always presents in FEAT_LIST_SCHEMA
+			for f in $_looking_flavour; do
+				# arch is not always presents in FEAT_LIST_SCHEMA and could not have default value
+				if [ "$_looking_arch" = "" ]; then
+					if [ "$_TR_FEATURE_NAME"#"$l" = "$_FILLED_SCHEMA":"$f" ]; then
+						[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
+					fi
+				else
+					for a in $_looking_arch; do
+						if [ "$_TR_FEATURE_NAME"#"$l" = "$_FILLED_SCHEMA"@"$a":"$f" ]; then
+							[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
+						fi
+						[ "$_official" = "1" ] && break
+					done
+				fi
+				[ "$_official" = "1" ] && break
+			done
 		done
 
+		if 	[ "$_official" = "1" ]; then
+			[ ! "$a" = "" ] && _FILLED_SCHEMA="$_FILLED_SCHEMA"@"$a"
+			[ ! "$f" = "" ] && _FILLED_SCHEMA="$_FILLED_SCHEMA":"$f"
+		
+			[ ! "$_VAR_FEATURE_ARCH" = "" ] && eval $_VAR_FEATURE_ARCH="$a"
+			[ ! "$_VAR_FEATURE_FLAVOUR" = "" ] && eval $_VAR_FEATURE_FLAVOUR="$f"
+		fi
 	fi
 
 	if [ "$_official" = "1" ]; then
