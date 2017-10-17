@@ -961,12 +961,15 @@ __select_official_schema() {
 		
 
 		# check schema exists 
-		# by looking for different arch and flavour if not specified
-		# starting with default ones
+		# we already know which version to find
+		# now we are looking for different arch and flavour
+		# starting with specified ones, then with default ones, then with possible ones
+		# NOTE : version must exist and take precedence on flavour which take precedence on arch
 		local _looking_arch
 		local _looking_flavour
+		echo X $_TR_FEATURE_ARCH
 		if [ "$_TR_FEATURE_ARCH" = "" ]; then
-			# arch should have default value empty and no values specified at all into FEAT_LIST_SCHEMA
+			# arch could have absolute no info specified in default value and FEAT_LIST_SCHEMA
 			# so we do not have to look for any value
 			[ ! "$FEAT_DEFAULT_ARCH" = "" ] && _looking_arch="$FEAT_DEFAULT_ARCH x64 x86"
 		else
@@ -981,36 +984,45 @@ __select_official_schema() {
 		local l
 		local a
 		local f
-		for l in $FEAT_LIST_SCHEMA; do
-			# flavour is always presents in FEAT_LIST_SCHEMA
-			for f in $_looking_flavour; do
-				# we do not look for any arch while searching source flavour
-				# arch is not used when schema contains source,
-				# only used for binary flavour
-				if [ "$f" = "source" ]; then
+	
+		# flavour is always presents in FEAT_LIST_SCHEMA
+		for f in $_looking_flavour; do
+			# we do not look for any arch while searching source flavour
+			# arch is not used when schema contains source,
+			# only used for binary flavour
+			if [ "$f" = "source" ]; then
+				for l in $FEAT_LIST_SCHEMA; do
 					if [ "$_TR_FEATURE_NAME"#"$l" = "$_FILLED_SCHEMA":"$f" ]; then
 						[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
 					fi
-				else
-					# arch is not always presents in FEAT_LIST_SCHEMA and could not have default value
-					if [ "$_looking_arch" = "" ]; then
+					[ "$_official" = "1" ] && break
+				done
+			else
+				# arch is not always presents in FEAT_LIST_SCHEMA and could not have default value
+				if [ "$_looking_arch" = "" ]; then
+					for l in $FEAT_LIST_SCHEMA; do
 						if [ "$_TR_FEATURE_NAME"#"$l" = "$_FILLED_SCHEMA":"$f" ]; then
 							[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
 						fi
-					else
-						for a in $_looking_arch; do
+						[ "$_official" = "1" ] && break
+					done
+				else
+					for a in $_looking_arch; do
+						for l in $FEAT_LIST_SCHEMA; do
 							if [ "$_TR_FEATURE_NAME"#"$l" = "$_FILLED_SCHEMA"@"$a":"$f" ]; then
 								[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
 							fi
 							[ "$_official" = "1" ] && break
 						done
-					fi
+						[ "$_official" = "1" ] && break
+					done
 				fi
-				[ "$_official" = "1" ] && break
-			done
+			fi
 			[ "$_official" = "1" ] && break
 		done
 
+		echo a $a in $_looking_arch
+		echo f $f in $_looking_flavour
 		if 	[ "$_official" = "1" ]; then
 			[ ! "$a" = "" ] && _FILLED_SCHEMA="$_FILLED_SCHEMA"@"$a"
 			[ ! "$f" = "" ] && _FILLED_SCHEMA="$_FILLED_SCHEMA":"$f"
