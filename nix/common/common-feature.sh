@@ -967,7 +967,6 @@ __select_official_schema() {
 		# NOTE : version must exist and take precedence on flavour which take precedence on arch
 		local _looking_arch
 		local _looking_flavour
-		echo X $_TR_FEATURE_ARCH
 		if [ "$_TR_FEATURE_ARCH" = "" ]; then
 			# arch could have absolute no info specified in default value and FEAT_LIST_SCHEMA
 			# so we do not have to look for any value
@@ -1021,8 +1020,6 @@ __select_official_schema() {
 			[ "$_official" = "1" ] && break
 		done
 
-		echo a $a in $_looking_arch
-		echo f $f in $_looking_flavour
 		if 	[ "$_official" = "1" ]; then
 			[ ! "$a" = "" ] && _FILLED_SCHEMA="$_FILLED_SCHEMA"@"$a"
 			[ ! "$f" = "" ] && _FILLED_SCHEMA="$_FILLED_SCHEMA":"$f"
