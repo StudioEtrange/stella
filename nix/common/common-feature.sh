@@ -984,18 +984,27 @@ __select_official_schema() {
 		for l in $FEAT_LIST_SCHEMA; do
 			# flavour is always presents in FEAT_LIST_SCHEMA
 			for f in $_looking_flavour; do
-				# arch is not always presents in FEAT_LIST_SCHEMA and could not have default value
-				if [ "$_looking_arch" = "" ]; then
+				# we do not look for any arch while searching source flavour
+				# arch is not used when schema contains source,
+				# only used for binary flavour
+				if [ "$f" = "source" ]; then
 					if [ "$_TR_FEATURE_NAME"#"$l" = "$_FILLED_SCHEMA":"$f" ]; then
 						[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
 					fi
 				else
-					for a in $_looking_arch; do
-						if [ "$_TR_FEATURE_NAME"#"$l" = "$_FILLED_SCHEMA"@"$a":"$f" ]; then
+					# arch is not always presents in FEAT_LIST_SCHEMA and could not have default value
+					if [ "$_looking_arch" = "" ]; then
+						if [ "$_TR_FEATURE_NAME"#"$l" = "$_FILLED_SCHEMA":"$f" ]; then
 							[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
 						fi
-						[ "$_official" = "1" ] && break
-					done
+					else
+						for a in $_looking_arch; do
+							if [ "$_TR_FEATURE_NAME"#"$l" = "$_FILLED_SCHEMA"@"$a":"$f" ]; then
+								[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
+							fi
+							[ "$_official" = "1" ] && break
+						done
+					fi
 				fi
 				[ "$_official" = "1" ] && break
 			done
