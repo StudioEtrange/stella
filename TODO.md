@@ -122,8 +122,8 @@ use
       DEFAULT
           do not change anything while building OR installing feature
 
-
-
+[ ] win : review 'select_official_schema' function, like in nix, to take care of all arch/flavour possibility
+[ ] nix : use busybox to get binaries small unix tool without building them (i.e unzip) https://busybox.net/
 [ ] Test and fix path with space
 [ ] win : function require
 [ ] function get_resource : change option STRIP to option NO_STRIP. STRIP will be by default if possible
@@ -240,20 +240,6 @@ https://github.com/ansible/ansible-modules-core/blob/devel/system/service.py
 
 [ ] win : visual c++ build tools 2015 et 2017 http://landinghub.visualstudio.com/visual-cpp-build-tools
 
-[ ] VM :
-    terraform agnostic IaaS management : https://www.terraform.io/
-    libvirt : VM management library (qemu, lxc, virtualbox, vmware ...)
-        https://github.com/Homebrew/homebrew-core/blob/master/Formula/libvirt.rb
-    terraform libvirt provider https://github.com/dmacvicar/terraform-provider-libvirt
-    archipel https://github.com/ArchipelProject/Archipel http://archipelproject.org/
-        archipel client : https://hub.docker.com/r/schrauber/archipelclient/
-    nobullshitvm https://github.com/ChoHag/nbsvm
-
-[ ] infra management
-  https://blog.docker.com/2017/01/infrakit-hood-high-availability/
-  https://github.com/docker/infrakit
-    OS
-  https://github.com/linuxkit/linuxkit
 
 [ ] ruby :
     uru : manage ruby environnement https://bitbucket.org/jonforums/uru
@@ -271,3 +257,50 @@ https://github.com/ansible/ansible-modules-core/blob/devel/system/service.py
                   # EXCLUDE_FILTER <expr> -- exclude these files for inspect and fix
                   # INCLUDE_FILTER is apply first, before EXCLUDE_FILTER
                   # BUILD_ACTION <action1> <action2>
+
+
+# DEPLOY PROJECTS
+
+## bare metal deploy
+
+* cobbler
+** http://cobbler.github.io/
+** https://github.com/cobbler/cobbler
+** relocating cobbler http://cobbler.github.io/manuals/2.6.0/2/5_-_Relocating_Your_Installation.html
+** cobbler in docker 1 : http://container-solutions.com/cobbler-in-a-docker-container/ https://github.com/ContainerSolutions/docker-cobbler https://github.com/honnix/docker-cobbler
+** cobbler in docker 2 : https://github.com/yongfengdu/docker-cobbler
+
+* foreman
+** https://theforeman.org/
+
+* stacki
+** https://github.com/StackIQ/stacki
+
+## hadoop deploy
+
+* from bare metal to hadoop : cobbler + ansible + cloudera manager
+** https://blog.godatadriven.com/bare-metal-hadoop-provisioning-ansible-cobbler.html
+
+## Kubernetes deploy
+
+* several contribution of kubernetes deploy techniques : https://github.com/kubernetes/kube-deploy
+* kops : https://github.com/kubernetes/kops
+* kubernetes-everywhere : https://github.com/kubernetes/kubernetes-anywhere
+* ansible : http://blog.jameskyle.org/2014/08/deploying-baremetal-kubernetes-cluster/
+* 
+
+
+## VM :
+    terraform agnostic IaaS management : https://www.terraform.io/
+    libvirt : VM management library (qemu, lxc, virtualbox, vmware ...)
+        https://github.com/Homebrew/homebrew-core/blob/master/Formula/libvirt.rb
+    terraform libvirt provider https://github.com/dmacvicar/terraform-provider-libvirt
+    archipel https://github.com/ArchipelProject/Archipel http://archipelproject.org/
+        archipel client : https://hub.docker.com/r/schrauber/archipelclient/
+    nobullshitvm https://github.com/ChoHag/nbsvm
+
+## infra management
+  https://blog.docker.com/2017/01/infrakit-hood-high-availability/
+  https://github.com/docker/infrakit
+    OS
+  https://github.com/linuxkit/linuxkit
