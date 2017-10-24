@@ -331,7 +331,9 @@ __enable_current_toolset() {
 	case $STELLA_BUILD_COMPIL_FRONTEND_BIN_FAMILY in
 		gcc)
 			if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+				# TODO REVIEW : https://stackoverflow.com/questions/9922949/how-to-print-the-ldlinker-search-path
 				echo "===> gcc hardcoded search path during linking (-L flag)"
+				#gcc -m64 -Xlinker --verbose  2>/dev/null | grep SEARCH | sed 's/SEARCH_DIR("=\?\([^"]\+\)"); */\1\n/g'  | grep -vE '^$'
 				gcc -print-search-dirs | sed '/^lib/b 1;d;:1;s,/[^/.][^/]*/\.\./,/,;t 1;s,:[^=]*=,:;,;s,;,;  ,g' | tr \; \\012
 				if $(type ld &>/dev/null); then
 					echo "===> ld search path during linking (-L flag)"
