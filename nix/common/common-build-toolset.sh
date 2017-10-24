@@ -327,7 +327,18 @@ __enable_current_toolset() {
 	done
 
 
+	echo "** Some informations about toolset"
+	case $STELLA_BUILD_COMPIL_FRONTEND_BIN_FAMILY in
+		gcc)
+			echo "===> gcc hardcoded search path during linking (-L flag)"
+			gcc -print-search-dirs | sed '/^lib/b 1;d;:1;s,/[^/.][^/]*/\.\./,/,;t 1;s,:[^=]*=,:;,;s,;,;  ,g' | tr \; \\012
+			if $(type ld &>/dev/null); then
+				echo "===> ld search path during linking (-L flag)"
+				ld --verbose | grep SEARCH_DIR | tr -s ' ;' \\012
+			fi
+	esac
 
+	
 
 
 	echo "** Init specific toolset env var"
