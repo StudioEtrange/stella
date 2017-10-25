@@ -1,7 +1,8 @@
 if [ ! "$_krb5_INCLUDED_" = "1" ]; then
 _krb5_INCLUDED_=1
 
-# NOTE : need yacc while building
+# TODO : DO NOT WORK -- need yacc while building
+# see https://stackoverflow.com/questions/10733238/make-yacc-command-not-found-after-installing-bison
 
 feature_krb5() {
 	FEAT_NAME=krb5
