@@ -8,9 +8,11 @@ _ORACLEJDK_INCLUDED_=1
 #		 Java SE Development Kit (=JDK) includes a JRE and all components needed to develop
 #		 Java EE Development Kit do NOT include any Java SE Development Kit (JDK) nor any JRE. It includes a server (and other examples stuff) implementing the Java EE rules
 
+# releases : http://www.oracle.com/technetwork/java/javase/archive-139210.html
+
 feature_oracle-jdk() {
 	FEAT_NAME=oracle-jdk
-	FEAT_LIST_SCHEMA="8u91@x86:binary 8u91@x64:binary 8u45@x86:binary 8u45@x64:binary 7u80@x86:binary 7u80@x64:binary"
+	FEAT_LIST_SCHEMA="8u152@x64:binary 8u152@x86:binary 8u91@x86:binary 8u91@x64:binary 8u45@x86:binary 8u45@x64:binary 7u80@x86:binary 7u80@x64:binary"
 	FEAT_DEFAULT_ARCH=x64
 	FEAT_DEFAULT_FLAVOUR=binary
 }
@@ -21,6 +23,46 @@ feature_oraclesejdk_env() {
 
 
 
+feature_oracle-jdk_8u152() {
+	FEAT_VERSION=8u152
+
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+	FEAT_SOURCE_URL=
+	FEAT_SOURCE_URL_FILENAME=
+	FEAT_SOURCE_URL_PROTOCOL=
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		FEAT_BINARY_URL_x86="http://download.oracle.com/otn-pub/java/jdk/8u152-b16/aa0333dd3019491ca4f6ddbe78cdb6d0/jdk-8u152-linux-i586.tar.gz"
+		FEAT_BINARY_URL_FILENAME_x86=jdk-8u152-linux-i586.tar.gz
+		FEAT_BINARY_URL_PROTOCOL_x86=HTTP_ZIP
+
+		FEAT_BINARY_URL_x64="http://download.oracle.com/otn-pub/java/jdk/8u152-b16/aa0333dd3019491ca4f6ddbe78cdb6d0/jdk-8u152-linux-x64.tar.gz"
+		FEAT_BINARY_URL_FILENAME_x64=jdk-8u152-linux-x64.tar.gz
+		FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP
+	fi
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		FEAT_BINARY_URL_x86=
+		FEAT_BINARY_URL_FILENAME_86=
+		FEAT_BINARY_URL_PROTOCOL_x86=
+
+		FEAT_BINARY_URL_x64="http://download.oracle.com/otn-pub/java/jdk/8u152-b16/aa0333dd3019491ca4f6ddbe78cdb6d0/jdk-8u152-macosx-x64.dmg"
+		FEAT_BINARY_URL_FILENAME_x64=jdk-8u152-macosx-x64.dmg
+		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
+
+
+		DMG_VOLUME_NAME="JDK 8 Update 152"
+		PKG_NAME="JDK 8 Update 152.pkg"
+	fi
+
+	FEAT_SOURCE_CALLBACK=
+	FEAT_BINARY_CALLBACK=feature_oracle-jdk_fix_jni_header
+	FEAT_ENV_CALLBACK=feature_oraclesejdk_env
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/java"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
+}
 
 
 feature_oracle-jdk_8u91() {
@@ -33,11 +75,11 @@ feature_oracle-jdk_8u91() {
 	FEAT_SOURCE_URL_PROTOCOL=
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		FEAT_BINARY_URL_x86="http://download.oracle.com/otn-pub/java/jdk/8u91-b14/jdk-8u91-linux-i586.tar.gz"
+		FEAT_BINARY_URL_x86="http://download.oracle.com/otn/java/jdk/8u91-b14/jdk-8u91-linux-i586.tar.gz"
 		FEAT_BINARY_URL_FILENAME_x86=jdk-8u91-linux-i586.tar.gz
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP_ZIP
 
-		FEAT_BINARY_URL_x64="http://download.oracle.com/otn-pub/java/jdk/8u91-b14/jdk-8u91-linux-x64.tar.gz"
+		FEAT_BINARY_URL_x64="http://download.oracle.com/otn/java/jdk/8u91-b14/jdk-8u91-linux-x64.tar.gz"
 		FEAT_BINARY_URL_FILENAME_x64=jdk-8u91-linux-x64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP
 	fi
@@ -47,7 +89,7 @@ feature_oracle-jdk_8u91() {
 		FEAT_BINARY_URL_FILENAME_86=
 		FEAT_BINARY_URL_PROTOCOL_x86=
 
-		FEAT_BINARY_URL_x64="http://download.oracle.com/otn-pub/java/jdk/8u91-b14/jdk-8u91-macosx-x64.dmg"
+		FEAT_BINARY_URL_x64="http://download.oracle.com/otn/java/jdk/8u91-b14/jdk-8u91-macosx-x64.dmg"
 		FEAT_BINARY_URL_FILENAME_x64=jdk-8u91-macosx-x64.dmg
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
 
@@ -76,11 +118,11 @@ feature_oracle-jdk_8u45() {
 	FEAT_SOURCE_URL_PROTOCOL=
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		FEAT_BINARY_URL_x86="http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-i586.tar.gz"
+		FEAT_BINARY_URL_x86="http://download.oracle.com/otn/java/jdk/8u45-b14/jdk-8u45-linux-i586.tar.gz"
 		FEAT_BINARY_URL_FILENAME_x86=jdk-8u45-linux-i586.tar.gz
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP_ZIP
 
-		FEAT_BINARY_URL_x64="http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.tar.gz"
+		FEAT_BINARY_URL_x64="http://download.oracle.com/otn/java/jdk/8u45-b14/jdk-8u45-linux-x64.tar.gz"
 		FEAT_BINARY_URL_FILENAME_x64=jdk-8u45-linux-x64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP
 	fi
@@ -90,7 +132,7 @@ feature_oracle-jdk_8u45() {
 		FEAT_BINARY_URL_FILENAME_86=
 		FEAT_BINARY_URL_PROTOCOL_x86=
 
-		FEAT_BINARY_URL_x64="http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-macosx-x64.dmg"
+		FEAT_BINARY_URL_x64="http://download.oracle.com/otn/java/jdk/8u45-b14/jdk-8u45-macosx-x64.dmg"
 		FEAT_BINARY_URL_FILENAME_x64=jdk-8u45-macosx-x64.dmg
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
 
@@ -108,6 +150,7 @@ feature_oracle-jdk_8u45() {
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 }
 
+# 
 feature_oracle-jdk_7u80() {
 	FEAT_VERSION=7u80
 
@@ -120,11 +163,11 @@ feature_oracle-jdk_7u80() {
 
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		FEAT_BINARY_URL_x86="http://download.oracle.com/otn-pub/java/jdk/7u80-b15/jdk-7u80-linux-i586.tar.gz"
+		FEAT_BINARY_URL_x86="http://download.oracle.com/otn/java/jdk/7u80-b15/jdk-7u80-linux-i586.tar.gz"
 		FEAT_BINARY_URL_FILENAME_x86=jdk-7u80-linux-i586.tar.gz
 		FEAT_BINARY_URL_PROTOCOL_x86=HTTP_ZIP
 
-		FEAT_BINARY_URL_x64="http://download.oracle.com/otn-pub/java/jdk/7u80-b15/jdk-7u80-linux-x64.tar.gz"
+		FEAT_BINARY_URL_x64="http://download.oracle.com/otn/java/jdk/7u80-b15/jdk-7u80-linux-x64.tar.gz"
 		FEAT_BINARY_URL_FILENAME_x64=jdk-7u80-linux-x64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP
 	fi
@@ -134,7 +177,7 @@ feature_oracle-jdk_7u80() {
 		FEAT_BINARY_URL_FILENAME_86=
 		FEAT_BINARY_URL_PROTOCOL_x86=
 
-		FEAT_BINARY_URL_x64="http://download.oracle.com/otn-pub/java/jdk/7u80-b15/jdk-7u80-macosx-x64.dmg"
+		FEAT_BINARY_URL_x64="http://download.oracle.com/otn/java/jdk/7u80-b15/jdk-7u80-macosx-x64.dmg"
 		FEAT_BINARY_URL_FILENAME_x64=jdk-7u80-macosx-x64.dmg
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
 
