@@ -12,12 +12,40 @@ feature_vagrant() {
 		FEAT_DEFAULT_ARCH=x64
 	fi
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		FEAT_LIST_SCHEMA="2_0_0@x64:binary 1_9_1@x64:binary 1_9_1@x86:binary 1_8_4@x64:binary 1_8_4@x86:binary"
+		FEAT_LIST_SCHEMA="2_0_1@x64:binary 2_0_0@x64:binary 1_9_1@x64:binary 1_9_1@x86:binary 1_8_4@x64:binary 1_8_4@x86:binary"
 		FEAT_DEFAULT_ARCH=x64
 	fi
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
+feature_vagrant_2_0_1() {
+	FEAT_VERSION=2_0_1
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL=
+	FEAT_SOURCE_URL_FILENAME=
+	FEAT_SOURCE_URL_PROTOCOL=
+
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		FEAT_BINARY_URL_x86=
+		FEAT_BINARY_URL_FILENAME_x86=
+		FEAT_BINARY_URL_PROTOCOL_x86=
+		FEAT_BINARY_URL_x64=https://releases.hashicorp.com/vagrant/2.0.1/vagrant_2.0.1_x86_64.dmg
+		FEAT_BINARY_URL_FILENAME_x64=vagrant_2.0.1_x86_64.dmg
+		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
+	fi
+
+	FEAT_SOURCE_CALLBACK=
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/vagrant
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+
+}
 
 feature_vagrant_2_0_0() {
 	FEAT_VERSION=2_0_0
@@ -30,9 +58,9 @@ feature_vagrant_2_0_0() {
 
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		FEAT_BINARY_URL_x86=https://releases.hashicorp.com/vagrant/2.0.0/vagrant_2.0.0_x86_64.dmg
-		FEAT_BINARY_URL_FILENAME_x86=vagrant_2.0.0_x86_64.dmg
-		FEAT_BINARY_URL_PROTOCOL_x86=HTTP
+		FEAT_BINARY_URL_x86=
+		FEAT_BINARY_URL_FILENAME_x86=
+		FEAT_BINARY_URL_PROTOCOL_x86=
 		FEAT_BINARY_URL_x64=https://releases.hashicorp.com/vagrant/2.0.0/vagrant_2.0.0_x86_64.dmg
 		FEAT_BINARY_URL_FILENAME_x64=vagrant_2.0.0_x86_64.dmg
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
