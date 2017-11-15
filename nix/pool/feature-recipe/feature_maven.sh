@@ -5,7 +5,7 @@ _MAVEN_INCLUDED_=1
 
 feature_maven() {
 	FEAT_NAME=maven
-	FEAT_LIST_SCHEMA="3_3_9:binary 3_3_3:binary 3_3_1:binary 3_0_5:binary"
+	FEAT_LIST_SCHEMA="3_5_2:binary 3_3_9:binary 3_3_3:binary 3_3_1:binary 3_0_5:binary"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
@@ -17,6 +17,29 @@ feature_maven_env() {
 
 
 
+
+
+feature_maven_3_5_2() {
+	FEAT_VERSION=3_5_2
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL=
+	FEAT_SOURCE_URL_FILENAME=
+	FEAT_SOURCE_URL_PROTOCOL=
+
+	FEAT_BINARY_URL=http://archive.apache.org/dist/maven/maven-3/3.5.2/binaries/apache-maven-3.5.2-bin.tar.gz
+	FEAT_BINARY_URL_FILENAME=apache-maven-3.5.2-bin.tar.gz
+	FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
+
+	FEAT_SOURCE_CALLBACK=
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=feature_maven_env
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/mvn
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+
+}
 feature_maven_3_3_9() {
 	FEAT_VERSION=3_3_9
 	FEAT_SOURCE_DEPENDENCIES=
