@@ -123,9 +123,9 @@ REM use of http_proxy env var
 REM configuration file .gitconfig in home directory override http_proxy env
 
 REM mvn
-REM TODO add -DnonProxyHosts= use | instead of , for separator
-if "!STELLA_PROXY_USER!"=="" set "MVN=!MVN! -DproxyActive=true  -DproxyId=!STELLA_PROXY_ACTIVE! -DproxyHost=!STELLA_PROXY_HOST! -DproxyPort=!STELLA_PROXY_PORT!"
-if not "!STELLA_PROXY_USER!"=="" set "MVN=!MVN! -DproxyActive=true  -DproxyId=!STELLA_PROXY_ACTIVE! -DproxyHost=!STELLA_PROXY_HOST! -DproxyPort=!STELLA_PROXY_PORT! -DproxyUsername=!STELLA_PROXY_USER! -DproxyPassword=!STELLA_PROXY_PASS!"
+set "_temp=!STELLA_NO_PROXY:,=|!"
+if "!STELLA_PROXY_USER!"=="" set "MVN=!MVN! -DproxyActive=true  -DproxyId=!STELLA_PROXY_ACTIVE! -DproxyHost=!STELLA_PROXY_HOST! -DproxyPort=!STELLA_PROXY_PORT! -Dhttp.nonProxyHosts="!_temp!""
+if not "!STELLA_PROXY_USER!"=="" set "MVN=!MVN! -DproxyActive=true  -DproxyId=!STELLA_PROXY_ACTIVE! -DproxyHost=!STELLA_PROXY_HOST! -DproxyPort=!STELLA_PROXY_PORT! -DproxyUsername=!STELLA_PROXY_USER! -DproxyPassword=!STELLA_PROXY_PASS! -Dhttp.nonProxyHosts=!_temp!"
 
 REM npm
 REM	command npm --https-proxy="$HTTPS_PROXY" --http-proxy="$HTTP_PROXY" "$@"
