@@ -309,13 +309,16 @@ __transfert_stella() {
 	_opt_ex_workspace="EXCLUDE /$(__abs_to_rel_path $STELLA_INTERNAL_WORK_ROOT $STELLA_ROOT)/"
 	local _opt_ex_env
 	_opt_ex_env="EXCLUDE /.stella-env"
+	local _opt_ex_git
+	_opt_ex_git="EXCLUDE /.git/"
+
 	for o in $_OPT; do
 		[ "$o" = "CACHE" ] && _opt_ex_cache=
 		[ "$o" = "WORKSPACE" ] && _opt_ex_workspace=
 		[ "$o" = "ENV" ] && _opt_ex_env=
 	done
 
-	__transfert_folder_rsync "$STELLA_ROOT" "$_uri" "$_opt_ex_cache $_opt_ex_workspace $_opt_ex_env"
+	__transfert_folder_rsync "$STELLA_ROOT" "$_uri" "$_opt_ex_cache $_opt_ex_workspace $_opt_ex_env $_opt_ex_git"
 }
 
 # [user@]host[:port][/#abs_or_rel_path]
