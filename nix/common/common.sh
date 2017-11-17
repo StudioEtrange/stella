@@ -359,12 +359,12 @@ __transfert_folder_rsync() {
 	[ "$__stella_uri_host" = "" ] && _localhost=ON
 	local _target=
 
-	if [ "$localhost" = "OFF" ]; then
+	if [ "$_localhost" = "OFF" ]; then
 		_target="$__stella_uri_host":"${__stella_uri_fragment:1}"
 		[ ! "$__stella_uri_user" = "" ] && _target="$__stella_uri_user"@"$_target"
 	fi
 
-	if [ "$localhost" = "ON" ]; then
+	if [ "$_localhost" = "ON" ]; then
 		_target="${__stella_uri_fragment:1}"
 	fi
 
@@ -384,8 +384,8 @@ __transfert_folder_rsync() {
 	done
 
 
-	[ "$localhost" = "ON" ] && rsync $_opt_exclude --force --delete -avz "$_folder" "$_target"
-	[ "$localhost" = "OFF" ] && rsync $_opt_exclude --force --delete -avz -e "ssh -p $_ssh_port" "$_folder" "$_target"
+	[ "$_localhost" = "ON" ] && rsync $_opt_exclude --force --delete -avz "$_folder" "$_target"
+	[ "$_localhost" = "OFF" ] && rsync $_opt_exclude --force --delete -avz -e "ssh -p $_ssh_port" "$_folder" "$_target"
 }
 
 
