@@ -321,12 +321,14 @@ __transfert_stella() {
 	__transfert_folder_rsync "$STELLA_ROOT" "$_uri" "$_opt_ex_cache $_opt_ex_workspace $_opt_ex_env $_opt_ex_git"
 }
 
-# [user@]host[:port][/#abs_or_rel_path]
+# [user@][host][:port][/#abs_or_rel_path]
 # path could be absolute path in the target system
 # or could be relavite path to the default folder when logging with ssh
 # example
 # __transfert_folder_rsync /foo/folder user@ip
 #			here path is empty, so folder will be sync inside home directory of user as /home/user/folder
+# __transfert_folder_rsync /foo/folder user@ip/path
+# __transfert_folder_rsync /foo/folder /path
 __transfert_folder_rsync() {
 	local _folder="$1"
 	local _uri="$2"
@@ -343,6 +345,8 @@ __transfert_folder_rsync() {
 		[ "$o" = "FOLDER_CONTENT" ] && _opt_folder_content=ON
 	done
 
+	local _localhost=OFF
+
 	# NOTE : rsync needs to be present on both host (source, target)
 	__require "rsync" "rsync"
 	__require "ssh" "ssh"
@@ -352,8 +356,17 @@ __transfert_folder_rsync() {
 	local _ssh_port="22"
 	[ ! "$__stella_uri_port" = "" ] && _ssh_port="$__stella_uri_port"
 
-	local _target="$__stella_uri_host":"${__stella_uri_fragment:1}"
-	[ ! "$__stella_uri_user" = "" ] && _target="$__stella_uri_user"@"$_target"
+	[ "$__stella_uri_host" = "" ] && _localhost=ON
+	local _target=
+
+	if [ "$localhost" = "OFF" ]; then
+		_target="$__stella_uri_host":"${__stella_uri_fragment:1}"
+		[ ! "$__stella_uri_user" = "" ] && _target="$__stella_uri_user"@"$_target"
+	fi
+
+	if [ "$localhost" = "ON" ]; then
+		_target="${__stella_uri_fragment:1}"
+	fi
 
 	local _base_folder=
 	# $_folder must not finish with / or only folder content will be transfered, not folder itself
@@ -371,8 +384,8 @@ __transfert_folder_rsync() {
 	done
 
 
-
-	rsync $_opt_exclude --force --delete -avz -e "ssh -p $_ssh_port" "$_folder" "$_target"
+	[ "$localhost" = "ON" ] && rsync $_opt_exclude --force --delete -avz "$_folder" "$_target"
+	[ "$localhost" = "OFF" ] && rsync $_opt_exclude --force --delete -avz -e "ssh -p $_ssh_port" "$_folder" "$_target"
 }
 
 
