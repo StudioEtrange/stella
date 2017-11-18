@@ -26,6 +26,9 @@ set STELLA_DIST_URL=%STELLA_URL%/dist
 
 
 :: fix missing path C:\Windows\System32 on some windows systems (where resides findstr, where,...) -- cause of some broken installers
+:: NOTE maybe use %comspec% instead, which contains cmd (command line) path
+::for /f "delims=" %%a in ("%comspec%") do set "compath=%%~DPa"
+::set "PATH=%PATH%;%compath:~0,-1%"
 set "PATH=!PATH!;C:\Windows\System32"
 
 :: GATHER PLATFORM INFO ---------------------------------------------
