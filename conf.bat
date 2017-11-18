@@ -25,6 +25,8 @@ set STELLA_FEATURE_RECIPE_URL=%STELLA_POOL_URL%/win/feature-recipe
 set STELLA_DIST_URL=%STELLA_URL%/dist
 
 
+:: fix missing path C:\Windows\System32 on some windows systems (where resides findstr, where,...) -- cause of some broken installers
+set "PATH=!PATH!;C:\Windows\System32"
 
 :: GATHER PLATFORM INFO ---------------------------------------------
 call %STELLA_COMMON%\common-platform.bat :set_current_platform_info
