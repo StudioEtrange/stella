@@ -113,6 +113,7 @@ EOL
 
 	ln -s "$INSTALL_DIR"/bin/clang "$INSTALL_DIR"/bin/clang-omp
 	ln -s "$INSTALL_DIR"/bin/clang++ "$INSTALL_DIR"/bin/clang++-omp
+	ln -s "$INSTALL_DIR"/bin/clang++ "$INSTALL_DIR"/bin/clang-omp++
 
 	__del_folder "$SRC_DIR"
 }
