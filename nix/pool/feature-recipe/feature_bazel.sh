@@ -6,7 +6,7 @@ _bazel_INCLUDED_=1
 
 feature_bazel() {
 	FEAT_NAME=bazel
-	FEAT_LIST_SCHEMA="0_6_1:binary 0_4_2:source 0_3_2:source 0_2_2b:source"
+	FEAT_LIST_SCHEMA="0_6_1:binary 0_5_4:binary 0_4_2:source 0_3_2:source 0_2_2b:source"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
@@ -22,20 +22,55 @@ feature_bazel_0_6_1() {
 	FEAT_SOURCE_URL=
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
-	
+
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		FEAT_BINARY_URL=https://github.com/bazelbuild/bazel/releases/download/0.6.1/bazel-0.6.1-without-jdk-installer-linux-x86_64.sh
 		FEAT_BINARY_URL_FILENAME=bazel-0.6.1-without-jdk-installer-linux-x86_64.sh
 		FEAT_BINARY_URL_PROTOCOL=HTTP
 	fi
-	
+
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		FEAT_BINARY_URL=https://github.com/bazelbuild/bazel/releases/download/0.6.1/bazel-0.6.1-without-jdk-installer-darwin-x86_64.sh
 		FEAT_BINARY_URL_FILENAME=bazel-0.6.1-without-jdk-installer-darwin-x86_64.sh
 		FEAT_BINARY_URL_PROTOCOL=HTTP
 	fi
-	
-	
+
+
+
+	FEAT_SOURCE_CALLBACK=
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/bazel
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+
+}
+
+
+
+feature_bazel_0_5_4() {
+	FEAT_VERSION=0_5_4
+
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=oracle-jdk#8u91
+
+	FEAT_SOURCE_URL=
+	FEAT_SOURCE_URL_FILENAME=
+	FEAT_SOURCE_URL_PROTOCOL=
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		FEAT_BINARY_URL=https://github.com/bazelbuild/bazel/releases/download/0.5.4/bazel-0.5.4-without-jdk-installer-linux-x86_64.sh
+		FEAT_BINARY_URL_FILENAME=bazel-0.5.4-without-jdk-installer-linux-x86_64.sh
+		FEAT_BINARY_URL_PROTOCOL=HTTP
+	fi
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		FEAT_BINARY_URL=https://github.com/bazelbuild/bazel/releases/download/0.5.4/bazel-0.5.4-without-jdk-installer-darwin-x86_64.sh
+		FEAT_BINARY_URL_FILENAME=bazel-0.5.4-without-jdk-installer-darwin-x86_64.sh
+		FEAT_BINARY_URL_PROTOCOL=HTTP
+	fi
+
+
 
 	FEAT_SOURCE_CALLBACK=
 	FEAT_BINARY_CALLBACK=
@@ -122,13 +157,13 @@ feature_bazel_0_2_2b() {
 
 feature_bazel_install_binary() {
 	__require "unzip" "unzip" "SYSTEM"
-	
+
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT"
-	
+
 	chmod +x "$FEAT_INSTALL_ROOT/$FEAT_BINARY_URL_FILENAME"
-	
+
 	"$FEAT_INSTALL_ROOT/$FEAT_BINARY_URL_FILENAME" --prefix="$FEAT_INSTALL_ROOT"
-	
+
 	rm -f "$FEAT_INSTALL_ROOT/$FEAT_BINARY_URL_FILENAME"
 }
 
