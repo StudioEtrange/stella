@@ -7,23 +7,61 @@ _minikube_INCLUDED_=1
 
 # example :
 # minikube start --vm-driver=virtualbox
-# eval $(minikube docker-env)
 # minikube dashboard
 
 # use with kubectl
 # export KUBECONFIG=$HOME/.kube/config
 # kubectl config use-context minikube
-# kubectl run-container hello-minikube --image=gcr.io/google_containers/echoserver:1.4 --port=8080
+# kubectl run hello-minikube --image=gcr.io/google_containers/echoserver:1.4 --port=8080
 
 # use with docker
+# eval $(minikube docker-env)
 # docker ps
+
+# log into minikube VM
+# minikube ssh
 
 feature_minikube() {
 	FEAT_NAME=minikube
-	FEAT_LIST_SCHEMA="0_11_0:binary"
+	FEAT_LIST_SCHEMA="0_24_1:binary 0_11_0:binary"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
+
+
+# for kubernetes v1.8.0
+feature_minikube_0_24_1() {
+	FEAT_VERSION=0_24_1
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL=
+	FEAT_SOURCE_URL_FILENAME=
+	FEAT_SOURCE_URL_PROTOCOL=
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		FEAT_BINARY_URL=https://github.com/kubernetes/minikube/releases/download/v0.24.1/minikube-linux-amd64
+		FEAT_BINARY_URL_FILENAME=minikube-0_24_1-linux-amd64
+		FEAT_BINARY_URL_PROTOCOL=HTTP
+
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		FEAT_BINARY_URL=https://github.com/kubernetes/minikube/releases/download/v0.24.1/minikube-darwin-amd64
+		FEAT_BINARY_URL_FILENAME=minikube-0_24_1-darwin-amd64
+		FEAT_BINARY_URL_PROTOCOL=HTTP
+	fi
+
+	FEAT_SOURCE_CALLBACK=
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/minikube
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
+
+}
+
+
 
 # with kubernetes v1.4.0
 feature_minikube_0_11_0() {
