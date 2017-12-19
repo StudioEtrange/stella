@@ -40,6 +40,7 @@ __read_proxy_values() {
 				[ "$STELLA_DEFAULT_NO_PROXY" = "" ] && STELLA_NO_PROXY="$STELLA_PROXY_NO_PROXY"
 				[ ! "$STELLA_DEFAULT_NO_PROXY" = "" ] && STELLA_NO_PROXY="$STELLA_DEFAULT_NO_PROXY","$STELLA_PROXY_NO_PROXY"
 			fi
+			STELLA_NO_PROXY=${STELLA_NO_PROXY%,}
 
 			eval STELLA_PROXY_HOST=$(echo '$STELLA_PROXY_'$STELLA_PROXY_ACTIVE'_PROXY_HOST')
 			eval STELLA_PROXY_PORT=$(echo '$STELLA_PROXY_'$STELLA_PROXY_ACTIVE'_PROXY_PORT')
@@ -91,6 +92,8 @@ __read_system_proxy_values() {
 
 	# NOTE : on nix system, if NO_PROXY is setted, then no_proxy is ignored
 	[ "$NO_PROXY" = "" ] && STELLA_NO_PROXY="$no_proxy" || STELLA_NO_PROXY="$NO_PROXY"
+	STELLA_NO_PROXY=${STELLA_NO_PROXY%,}
+	
 
 	if [ ! "$STELLA_HTTP_PROXY" = "" ]; then
 		STELLA_PROXY_ACTIVE="FROM_SYSTEM"
@@ -122,6 +125,7 @@ __set_system_proxy_values() {
 		export HTTPS_PROXY="$https_proxy"
 
 		if [ ! "$STELLA_NO_PROXY" = "" ]; then
+			STELLA_NO_PROXY=${STELLA_NO_PROXY%,}
 			# NOTE : on nix system, if NO_PROXY is setted, then no_proxy is ignored
 			no_proxy="$STELLA_NO_PROXY"
 			NO_PROXY="$STELLA_NO_PROXY"
