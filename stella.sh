@@ -20,8 +20,9 @@ usage() {
 	echo " L     app get-data|get-assets|delete-data|delete-assets|update-data|update-assets|revert-data|revert-assets <data id|assets id>"
 	echo " L     app get-data-pack|get-assets-pack|update-data-pack|update-assets-pack|revert-data-pack|revert-assets-pack|delete-data-pack|delete-assets-pack <data pack name|assets pack name>"
 	echo " L     app get-feature <all|feature schema> : install all features defined in app properties file or install a matching one"
-	echo " L     app link <app-path> [--stellaroot=<path>] : link an app to a specific stella path"
-	echo " L     app deploy user@host:path [--cache] [--workspace] : : deploy current app version to an other target via ssh. [--cache] : include app cache folder. [--workspace] : include app workspace folder"
+	echo " L     app link <app-path> [--stellaroot=<path>] : link an app to the current or a specific stella path"
+	echo " L     app vendor <app-path> [--stellaroot=<path>] : vendorize stella (current or a specific one) into an app"
+	echo " L     app deploy user@host:[/abs_path|#rel_path] [--cache] [--workspace] : : deploy current app version to an other target via ssh. [--cache] : include app cache folder. [--workspace] : include app workspace folder"
 	echo " o-- feature management :"
 	echo " L     feature install <feature schema> [--depforce] [--depignore] [--buildarch=x86|x64] [--export=<path>] [--portable=<path>] : install a feature. [--depforce] will force to reinstall all dependencies. [--depignore] will ignore dependencies. schema = feature_name[#version][@arch][:binary|source][/os_restriction][\\os_exclusion]"
 	echo " L     feature remove <feature schema> : remove a feature"
@@ -32,7 +33,7 @@ usage() {
 	echo " L     stella install dep : install all features and systems requirements if any, for the current OS ($STELLA_CURRENT_OS)"
 	echo " L     stella version print : print stella version"
 	echo " L     stella search path : print current system search path"
-	echo " L     stella deploy <user@host:path> [--cache] [--workspace] : deploy current stella version to an other target via ssh. [--cache] : include stella cache folder. [--workspace] : include stella workspace folder"
+	echo " L     stella deploy <user@host:[/abs_path|#rel_path]> [--cache] [--workspace] : deploy current stella version to an other target via ssh. [--cache] : include stella cache folder. [--workspace] : include stella workspace folder"
 	echo " o-- network management :"
 	echo " L     proxy on <proxy name> : active a registered proxy"
 	echo " L     proxy off now : disable proxy"
@@ -47,7 +48,7 @@ usage() {
 	echo " L     sys install <package name> : install  a system package -- WARN This will affect your system"
 	echo " L     sys remove <package name> : remove a system package -- WARN This will affect your system"
 	echo " L     sys list all : list all available system package name"
-	echo " L	 sys info host : print current host info"
+	echo " L     sys info host : print current host info"
 	echo ""
 	echo "Special Usage"
 	echo " o-- env management :"
@@ -60,7 +61,7 @@ usage() {
 # arguments
 PARAMETERS="
 DOMAIN=                          'domain'     		a           'app feature stella proxy sys boot'         										   				Action domain.
-ACTION=                         'action'   					a           'info tunnel deploy script shell cmd version search remove on off register link api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature install list'         	Action to compute.
+ACTION=                         'action'   					a           'info tunnel deploy script shell cmd version search remove on off register link vendor api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature install list'         	Action to compute.
 ID=							 								''								s 						''
 "
 OPTIONS="
@@ -101,8 +102,12 @@ if [ "$DOMAIN" = "app" ]; then
 		__link_app "$ID" "STELLA_ROOT $STELLAROOT"
 	fi
 
+	if [ "$ACTION" = "vendor" ]; then
+		__vendorize_stella "$ID" "STELLA_ROOT $STELLAROOT"
+	fi
+
 	case $ACTION in
-		init|link);;
+		init|link|vendor);;
 		*)
 		if [ ! -f "$_STELLA_APP_PROPERTIES_FILE" ]; then
 				echo "** ERROR properties file does not exist"
@@ -115,7 +120,7 @@ if [ "$DOMAIN" = "app" ]; then
 				_deploy_options=
 				[ "$CACHE" = "1" ] && _deploy_options="CACHE"
 				[ "$WORKSPACE" = "1" ] && _deploy_options="$_deploy_options WORKSPACE"
-				__transfert_app "$ID" "$_deploy_options"
+				__transfer_app "$ID" "$_deploy_options"
 				;;
 		get-feature)
 				if [ "$ID" = "all" ]; then
@@ -213,7 +218,7 @@ if [ "$DOMAIN" = "sys" ]; then
 	if [ "$ACTION" = "list" ]; then
 		echo "$STELLA_SYS_PACKAGE_LIST"
 	fi
-	
+
 	if [ "$ACTION" = "info" ]; then
 		$STELLA_ARTEFACT/screenFetch/screenfetch-dev -v -E
 	fi
@@ -291,7 +296,7 @@ if [ "$DOMAIN" = "stella" ]; then
 		_deploy_options=
 		[ "$CACHE" = "1" ] && _deploy_options="CACHE"
 		[ "$WORKSPACE" = "1" ] && _deploy_options="$_deploy_options WORKSPACE"
-		__transfert_stella "$ID" "$_deploy_options"
+		__transfer_stella "$ID" "$_deploy_options"
 	fi
 
 fi

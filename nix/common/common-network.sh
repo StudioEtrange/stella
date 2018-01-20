@@ -396,7 +396,7 @@ __disable_proxy() {
 }
 
 
-# no_proxy is reaf from conf file only if a stella proxy is active
+# no_proxy is read from conf file only if a stella proxy is active
 __register_no_proxy() {
 	local _uri="$1"
 	__get_key "$STELLA_ENV_FILE" "STELLA_PROXY" "NO_PROXY" "PREFIX"

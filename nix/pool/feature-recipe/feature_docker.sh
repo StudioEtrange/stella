@@ -16,12 +16,44 @@ _DOCKER_INCLUDED_=1
 #															https://www.kf-interactive.com/blog/roll-your-own-docker-registry-with-docker-compose-supervisor-and-nginx/
 feature_docker() {
 	FEAT_NAME=docker
-	FEAT_LIST_SCHEMA="17_03_0_CE:binary 1_13_1:binary 1_12_6:binary 1_8_1:binary 1_9_1:binary 1_10_3:binary 1_11_1:binary"
+	FEAT_LIST_SCHEMA="17_12_0_CE:binary 17_03_0_CE:binary 1_13_1:binary 1_12_6:binary 1_8_1:binary 1_9_1:binary 1_10_3:binary 1_11_1:binary"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
 
+
+
+feature_docker_17_12_0_CE() {
+	FEAT_VERSION=17_12_0_CE
+
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL=
+	FEAT_SOURCE_URL_FILENAME=
+	FEAT_SOURCE_URL_PROTOCOL=
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		FEAT_BINARY_URL=https://download.docker.com/mac/static/stable/x86_64/docker-17.12.0-ce.tgz
+		FEAT_BINARY_URL_FILENAME=docker-client-17.12.0-ce-darwin.tgz
+	fi
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		FEAT_BINARY_URL=https://download.docker.com/linux/static/stable/x86_64/docker-17.12.0-ce.tgz
+		FEAT_BINARY_URL_FILENAME=docker-17.12.0-ce-linux.tgz
+	fi
+	FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
+
+	FEAT_SOURCE_CALLBACK=
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/docker
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
+
+}
 
 feature_docker_17_03_0_CE() {
 	FEAT_VERSION=17_03_0_CE

@@ -7,8 +7,8 @@ _STELLA_COMMON_APP_INCLUDED_=1
 
 # APP RESSOURCES & ENV MANAGEMENT ---------------
 
-__transfert_app(){
-	# target form is [USER@]HOST:[DEST]
+__transfer_app(){
+	# target form is [user@][host][:port][/abs_path|#rel_path]
 	local _target=$1
 
 	local _OPT=$2
@@ -19,7 +19,7 @@ __transfert_app(){
 		[ "$o" = "WORKSPACE" ] && _opt_ex_workspace=
 	done
 
-	__transfert_folder_rsync "$STELLA_APP_ROOT" "$_target" "$_opt_ex_cache $_opt_ex_workspace"
+	__transfer_folder_rsync "$STELLA_APP_ROOT" "$_target" "$_opt_ex_cache $_opt_ex_workspace"
 }
 
 
@@ -53,18 +53,46 @@ __create_app_samples() {
 }
 
 
+# copy a version of stella into a folder of an app and link it
+__vendorize_stella() {
+	local _target_approot="$1"
+	local _OPT="$2"
+	local _flag_stella_root=OFF
+	local _stella_root="$STELLA_ROOT"
+
+	local _folder_name="pool"
+
+	for o in $_OPT; do
+		[ "$_flag_stella_root" = "ON" ] && _stella_root="$o" && _flag_stella_root=OFF
+		[ "$o" = "STELLA_ROOT" ] && _flag_stella_root=ON
+	done
+
+	_target_approot=$(__rel_to_abs_path $_target_approot $STELLA_CURRENT_RUNNING_DIR)
+	mkdir -p "$_target_approot/$_folder_name"
+
+	__STELLA_ROOT_SAVE="$STELLA_ROOT"
+	STELLA_ROOT="$_stella_root"
+	__transfer_stella "$_target_approot/$_folder_name/"
+	STELLA_ROOT="$__STELLA_ROOT_SAVE"
+
+	rm -Rf "$_target_approot/$_folder_name/stella/app"
+	rm -Rf "$_target_approot/$_folder_name/stella/win"
+	rm -f "$_target_approot/$_folder_name"/stella/*.bat
+	rm -f "$_target_approot/$_folder_name/stella/.stella-env"
+
+	__link_app "$_target_approot" "STELLA_ROOT $_target_approot/$_folder_name/stella"
+}
 
 # align stella installation to current app one (recreate stella-link file)
-# align workspace and cache folder paths of the current one (change stella properties path)
+# align workspace and cache folder paths of the current app with another app (change stella properties path)
 __link_app() {
 	local _target_approot="$1"
-	#local _stella_root=$2
 
 	local _OPT="$2"
 	local _opt_share_cache=OFF
 	local _opt_share_workspace=OFF
 	local _flag_stella_root=OFF
-	local _stella_root=$STELLA_ROOT
+	local _stella_root="$STELLA_ROOT"
 	for o in $_OPT; do
 		[ "$o" = "CACHE" ] && _opt_share_cache=ON
 		[ "$o" = "WORKSPACE" ] && _opt_share_workspace=ON

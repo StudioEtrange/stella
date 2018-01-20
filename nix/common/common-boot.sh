@@ -140,7 +140,7 @@ __boot_stella() {
 
 
     ssh )
-      #ssh://user@host:port/#abs_or_rel_path
+      #ssh://user@host:port[/abs_path|#rel_path]
 
       local _ssh_port="22"
     	[ ! "$__stella_uri_port" = "" ] && _ssh_port="$__stella_uri_port"
@@ -149,16 +149,31 @@ __boot_stella() {
 
       __require "ssh" "ssh" "SYSTEM"
 
-      __transfert_stella "$_uri" "ENV"
+
 
       # folders
-      [ "$__stella_uri_fragment" = "" ] && __stella_uri_fragment="."
-      [ "$__stella_uri_fragment" = "#" ] && __stella_uri_fragment="."
-      [ ! "$__stella_uri_fragment" = "." ] && __stella_uri_fragment=${__stella_uri_fragment:1}
-      local _boot_folder="$__stella_uri_fragment"
-      #local _stella_folder="$__stella_uri_fragment"/stella
-      local _stella_folder="./stella"
-      local _boot_script_path="$__stella_uri_fragment/$(__get_filename_from_string $_arg)"
+      local _boot_folder="."
+      [ "${__stella_uri_fragment:1}" = "" ] && _boot_folder="${__stella_uri_path}" || _boot_folder="${__stella_uri_fragment:1}"
+
+      # relative path
+      if [ ! "${__stella_uri_fragment:1}" = "" ]; then
+        _stella_folder="${__stella_uri_fragment:1}/stella"
+        __transfer_stella "${__stella_uri_schema}://${__stella_uri_address}#${_stella_folder}" "ENV"
+      else
+        # absolute  path
+        if [ ! "$__stella_uri_path" = "" ]; then
+          _stella_folder="$__stella_uri_path/stella"
+          __transfer_stella "${__stella_uri_schema}://${__stella_uri_address}${_stella_folder}" "ENV"
+        # empty path
+        else
+          _stella_folder="./stella"
+          __transfer_stella "${__stella_uri_schema}://${__stella_uri_address}#${_stella_folder}" "ENV"
+        fi
+      fi
+
+
+
+
 
       # http://www.cyberciti.biz/faq/linux-unix-bsd-sudo-sorry-you-must-haveattytorun/
       case $_mode in
@@ -169,8 +184,25 @@ __boot_stella() {
           ssh -t -p "$_ssh_port" "$_ssh_user$__stella_uri_host" "cd $_boot_folder && $_stella_folder/stella.sh stella install dep && $_stella_folder/stella.sh boot cmd local -- '$_arg'"
           ;;
         SCRIPT )
-          __transfert_file_rsync "$_arg" "$_uri"
-          ssh -t -p "$_ssh_port" "$_ssh_user$__stella_uri_host" "cd $_boot_folder && $_stella_folder/stella.sh stella install dep && $_stella_folder/stella.sh boot script local -- '$_boot_script_path'"
+          _script_filename="$(__get_filename_from_string $_arg)"
+
+          # relative path
+          if [ ! "${__stella_uri_fragment:1}" = "" ]; then
+            _script_target="${__stella_uri_fragment:1}/$_script_filename"
+            __transfer_file_rsync "$_arg" "${__stella_uri_schema}://${__stella_uri_address}#${_script_target}"
+          else
+            # absolute  path
+            if [ ! "$__stella_uri_path" = "" ]; then
+              _script_target="$__stella_uri_path/$_script_filename"
+              __transfer_file_rsync "$_arg" "${__stella_uri_schema}://${__stella_uri_address}${_script_target}"
+            # empty path
+            else
+              _script_target="./$_script_filename"
+              __transfer_file_rsync "$_arg" "${__stella_uri_schema}://${__stella_uri_address}#${_script_target}"
+            fi
+          fi
+
+          ssh -t -p "$_ssh_port" "$_ssh_user$__stella_uri_host" "cd $_boot_folder && $_stella_folder/stella.sh stella install dep && $_stella_folder/stella.sh boot script local -- '$_script_target'"
           ;;
         esac
     ;;

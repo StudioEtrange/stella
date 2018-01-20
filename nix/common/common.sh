@@ -299,8 +299,8 @@ __uri_parse() {
 	return 0
 }
 
-# [user@]host[:port][/#abs_or_rel_path]
-__transfert_stella() {
+# [user@][host][:port][/abs_path|#rel_path]
+__transfer_stella() {
 	local _uri="$1"
 	local _OPT="$2"
 	local _opt_ex_cache
@@ -318,18 +318,18 @@ __transfert_stella() {
 		[ "$o" = "ENV" ] && _opt_ex_env=
 	done
 
-	__transfert_folder_rsync "$STELLA_ROOT" "$_uri" "$_opt_ex_cache $_opt_ex_workspace $_opt_ex_env $_opt_ex_git"
+	__transfer_folder_rsync "$STELLA_ROOT" "$_uri" "$_opt_ex_cache $_opt_ex_workspace $_opt_ex_env $_opt_ex_git"
 }
 
-# [user@][host][:port][/#abs_or_rel_path]
+# [user@][host][:port][/abs_path|#rel_path]
 # path could be absolute path in the target system
 # or could be relavite path to the default folder when logging with ssh
 # example
-# __transfert_folder_rsync /foo/folder user@ip
+# __transfer_folder_rsync /foo/folder user@ip
 #			here path is empty, so folder will be sync inside home directory of user as /home/user/folder
-# __transfert_folder_rsync /foo/folder user@ip/path
-# __transfert_folder_rsync /foo/folder /path
-__transfert_folder_rsync() {
+# __transfer_folder_rsync /foo/folder user@ip/path
+# __transfer_folder_rsync /foo/folder #../path
+__transfer_folder_rsync() {
 	local _folder="$1"
 	local _uri="$2"
 
@@ -349,23 +349,29 @@ __transfert_folder_rsync() {
 
 	# NOTE : rsync needs to be present on both host (source, target)
 	__require "rsync" "rsync"
-	__require "ssh" "ssh"
 
 	__uri_parse "$_uri"
 
-	local _ssh_port="22"
-	[ ! "$__stella_uri_port" = "" ] && _ssh_port="$__stella_uri_port"
-
-	[ "$__stella_uri_host" = "" ] && _localhost=ON
-	local _target=
-
-	if [ "$_localhost" = "OFF" ]; then
-		_target="$__stella_uri_host":"${__stella_uri_fragment:1}"
-		[ ! "$__stella_uri_user" = "" ] && _target="$__stella_uri_user"@"$_target"
+	if [ "$__stella_uri_schema" = "ssh" ]; then
+		__require "ssh" "ssh"
+		_ssh_port="22"
+		[ ! "$__stella_uri_port" = "" ] && _ssh_port="$__stella_uri_port"
 	fi
 
-	if [ "$_localhost" = "ON" ]; then
+	[ "$__stella_uri_host" = "" ] && _localhost="ON"
+	local _target=
+
+	# we use relative path
+	if [ ! "${__stella_uri_fragment:1}" = "" ]; then
 		_target="${__stella_uri_fragment:1}"
+	else
+		# we use absolute path
+		_target="${__stella_uri_path}"
+	fi
+
+	if [ "$_localhost" = "OFF" ]; then
+		_target="$__stella_uri_host":"$_target"
+		[ ! "$__stella_uri_user" = "" ] && _target="$__stella_uri_user"@"$_target"
 	fi
 
 	local _base_folder=
@@ -389,31 +395,48 @@ __transfert_folder_rsync() {
 }
 
 
-# [user@]host[:port][/#abs_or_rel_path]
+# [user@][host][:port][/abs_path|#rel_path]
 # path could be absolute path in the target system
 # or could be relavite path to the default folder when logging with ssh
 # if path end with a "/" it will be a destination folder, else it will be the name of the transfered file
 # example
-# __transfert_folder_rsync /foo/file1 user@ip:folder/file2
+# __transfer_folder_rsync /foo/file1 user@ip:#folder/file2
 #			file1 will be sync inside home directory of user as /home/user/folder/file2
-__transfert_file_rsync() {
+__transfer_file_rsync() {
 	local _file="$1"
 	local _uri="$2"
 
+
 	# NOTE : rsync needs to be present on both host (source, target)
 	__require "rsync" "rsync"
-	__require "ssh" "ssh"
-
 	__uri_parse "$_uri"
 
-	local _ssh_port="22"
-	[ ! "$__stella_uri_port" = "" ] && _ssh_port="$__stella_uri_port"
+	if [ "$__stella_uri_schema" = "ssh" ]; then
+		__require "ssh" "ssh"
+		_ssh_port="22"
+		[ ! "$__stella_uri_port" = "" ] && _ssh_port="$__stella_uri_port"
+	fi
 
-	local _target="$__stella_uri_host":"${__stella_uri_fragment:1}"
-	[ ! "$__stella_uri_user" = "" ] && _target="$__stella_uri_user"@"$_target"
+	local _localhost=OFF
+	[ "$__stella_uri_host" = "" ] && _localhost="ON"
+	local _target=
 
+	# we use relative path
+	if [ ! "${__stella_uri_fragment:1}" = "" ]; then
+		_target="${__stella_uri_fragment:1}"
+	else
+		# we use absolute path
+		_target="${__stella_uri_path}"
+	fi
 
-	rsync -avz -e "ssh -p $_ssh_port" "$_file" "$_target"
+	if [ "$_localhost" = "OFF" ]; then
+		_target="$__stella_uri_host":"$_target"
+		[ ! "$__stella_uri_user" = "" ] && _target="$__stella_uri_user"@"$_target"
+	fi
+
+	[ "$_localhost" = "ON" ] && rsync -avz "$_file" "$_target"
+	[ "$_localhost" = "OFF" ] && rsync -avz -e "ssh -p $_ssh_port" "$_file" "$_target"
+
 }
 
 
@@ -1161,6 +1184,13 @@ __uncompress() {
 			__require "unzip" "unzip" "SYSTEM"
 			[ "$_opt_strip" = "OFF" ] && unzip -a -o "$FILE_PATH"
 			[ "$_opt_strip" = "ON" ] && __unzip-strip "$FILE_PATH" "$UNZIP_DIR"
+			;;
+		*.tar )
+			if [ "$_opt_strip" = "OFF" ]; then
+				tar xf "$FILE_PATH"
+			else
+				tar xf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-strip "$FILE_PATH" "$UNZIP_DIR"
+			fi
 			;;
 		*.gz | *.tgz)
 			if [ "$_opt_strip" = "OFF" ]; then
