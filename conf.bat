@@ -90,14 +90,7 @@ if exist "%STELLA_APP_ROOT%\.stella-env" (
 set FEATURE_LIST_ENABLED=
 set VERBOSE_MODE=0
 set "STELLA_DEFAULT_NO_PROXY=localhost,127.0.0.1,localaddress,.localdomain.com"
-set "WGET=wget.exe"
-set "UZIP=unzip.exe"
-set "SEVENZIP=7z.exe"
-set "GIT=git"
-set "HG=hg"
-set "MVN=mvn"
-set "CURL=curl"
-set "NPM=npm"
+
 
 
 :: FEATURE LIST ---------------------------------------------
@@ -143,6 +136,7 @@ set "STELLA_API_APP_PUBLIC=get_app_property link_app get_data get_assets get_dat
 set "STELLA_API_FEATURE_PUBLIC=feature_remove feature_catalog_info feature_install feature_install_list feature_init list_active_features feature_reinit_installed feature_inspect"
 set "STELLA_API_BUILD_PUBLIC=is_import_or_static_lib"
 set "STELLA_API_PLATFORM_PUBLIC=require"
+set "STELLA_API_NETWORK_PUBLIC=enable_proxy disable_proxy no_proxy_for register_proxy register_no_proxy"
 
 set "STELLA_API=%STELLA_COMMON%\common-api.bat :api_proxy+"
 

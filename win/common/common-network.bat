@@ -4,15 +4,24 @@ goto :eof
 
 REM --------------- PROXY INIT ----------------
 
-REM TODO : review with nix common-network.sh
 :init_proxy
 	call :reset_proxy_values
 	call :read_proxy_values
-	call :set_system_proxy_values
+
+	if not "!STELLA_PROXY_ACTIVE!"=="" (
+		:: do not set system proxy values if we uses values from system
+		if not "!STELLA_PROXY_ACTIVE!"=="FROM_SYSTEM" (
+			call :set_system_proxy_values
+		)
+		call :proxy_override
+	)
 goto :eof
 
 
 :read_proxy_values
+
+	set "use_system_proxy_setting=OFF"
+
 	if exist "!STELLA_ENV_FILE!" (
 		call %STELLA_COMMON%\common.bat :get_key "!STELLA_ENV_FILE!" "STELLA_PROXY" "ACTIVE" "PREFIX"
 
@@ -37,7 +46,6 @@ goto :eof
 
 			for %%I in (STELLA_PROXY_!STELLA_PROXY_ACTIVE!_PROXY_HOST) do set "STELLA_PROXY_HOST=!%%I!"
 			for %%I in (STELLA_PROXY_!STELLA_PROXY_ACTIVE!_PROXY_PORT) do set "STELLA_PROXY_PORT=!%%I!"
-
 			for %%I in (STELLA_PROXY_!STELLA_PROXY_ACTIVE!_PROXY_SCHEMA) do set "STELLA_PROXY_SCHEMA=!%%I!"
 			if "!STELLA_PROXY_SCHEMA!"=="" (
 				set "STELLA_PROXY_SCHEMA=http"
@@ -53,8 +61,17 @@ goto :eof
 				set "STELLA_HTTPS_PROXY=!STELLA_PROXY_SCHEMA!://!STELLA_PROXY_USER!:!STELLA_PROXY_PASS!@!STELLA_PROXY_HOST!:!STELLA_PROXY_PORT!"
 			)
 			REM echo STELLA Proxy Active : !STELLA_PROXY_ACTIVE! [ !STELLA_PROXY_HOST!:!STELLA_PROXY_PORT! ]
+		) else (
+			set "use_system_proxy_setting=ON"
 		)
+	) else (
+		set "use_system_proxy_setting=ON"
 	)
+
+	if "!use_system_proxy_setting!"=="ON" (
+		call :read_system_proxy_values
+	)
+
 goto :eof
 
 REM reset stella proxy values
@@ -70,6 +87,38 @@ REM reset stella proxy values
 	set STELLA_NO_PROXY=
 goto :eof
 
+:read_system_proxy_values
+
+
+	if "!HTTP_PROXY!"=="" (
+		set "STELLA_HTTP_PROXY=!http_proxy!"
+	) else (
+		set "STELLA_HTTP_PROXY=!HTTP_PROXY!"
+	)
+	if "!HTTPS_PROXY!"=="" (
+		set "STELLA_HTTPS_PROXY=!https_proxy!"
+	) else (
+		set "STELLA_HTTPS_PROXY=!HTTPS_PROXY!"
+	)
+	if "!STELLA_NO_PROXY!"=="" (
+		set "STELLA_NO_PROXY=!no_proxy!"
+	) else (
+		set "STELLA_NO_PROXY=!NO_PROXY!"
+	)
+
+	if not "!STELLA_HTTP_PROXY!"=="" (
+		set "STELLA_PROXY_ACTIVE=FROM_SYSTEM"
+
+		call %STELLA_COMMON%\common.bat :uri_parse "parseproxy" "!STELLA_HTTP_PROXY!"
+		set "STELLA_PROXY_SCHEMA=!parseproxy_SCHEMA!"
+		set "STELLA_PROXY_USER="!parseproxy_USER!"
+		set "STELLA_PROXY_PASS="!parseproxy_PASSWORD!"
+		set "STELLA_PROXY_HOST="!parseproxy_HOST!"
+		set "STELLA_PROXY_PORT="!parseproxy_PORT!"
+	)
+goto :eof
+
+
 :set_system_proxy_values
 	:: override already existing system proxy env var only if stella proxy is active
 	if "!STELLA_PROXY_ACTIVE!"=="" (
@@ -79,17 +128,11 @@ goto :eof
 		set "HTTPS_PROXY=!STELLA_HTTPS_PROXY!"
 
 		if not "!STELLA_NO_PROXY!"=="" (
-			REM NOTE : on nix system, if NO_PROXY is setted, then no_proxy is ignored
 			set "no_proxy=!STELLA_NO_PROXY!"
 			set "NO_PROXY=!STELLA_NO_PROXY!"
 
 			REM echo STELLA Proxy : bypass for !STELLA_NO_PROXY!
 		)
-	)
-
-	if not "!STELLA_PROXY_HOST!"=="" (
-		REM echo STELLA Proxy : !STELLA_PROXY_SCHEMA!://!STELLA_PROXY_HOST!:!STELLA_PROXY_PORT!"
-		call :proxy_override
 	)
 goto :eof
 
@@ -136,15 +179,19 @@ REM -------------------- FUNCTIONS-----------------
 
 :register_proxy
 	set "_name=%~1"
-	set "_host=%~2"
-	set "_port=%~3"
-	set "_user=%~4"
-	set "_pass=%~5"
+	set "_uri=%~2"
 
-	call %STELLA_COMMON%\common.bat :add_key "!STELLA_ENV_FILE!" "STELLA_PROXY_%_name%" "PROXY_HOST" "%_host%"
-	call %STELLA_COMMON%\common.bat :add_key "!STELLA_ENV_FILE!" "STELLA_PROXY_%_name%" "PROXY_PORT" "%_port%"
-	call %STELLA_COMMON%\common.bat :add_key "!STELLA_ENV_FILE!" "STELLA_PROXY_%_name%" "PROXY_USER" "%_user%"
-	call %STELLA_COMMON%\common.bat :add_key "!STELLA_ENV_FILE!" "STELLA_PROXY_%_name%" "PROXY_PASS" "%_pass%"
+	call %STELLA_COMMON%\common.bat :uri_parse "parseproxy" "!_uri!"
+
+	if "!parseproxy_SCHEMA!"=="" (
+		set "parseproxy_SCHEMA=http"
+	)
+
+	call %STELLA_COMMON%\common.bat :add_key "!STELLA_ENV_FILE!" "STELLA_PROXY_%_name%" "PROXY_HOST" "!parseproxy_HOST!"
+	call %STELLA_COMMON%\common.bat :add_key "!STELLA_ENV_FILE!" "STELLA_PROXY_%_name%" "PROXY_PORT" "!parseproxy_PORT!"
+	call %STELLA_COMMON%\common.bat :add_key "!STELLA_ENV_FILE!" "STELLA_PROXY_%_name%" "PROXY_USER" "!parseproxy_USER!"
+	call %STELLA_COMMON%\common.bat :add_key "!STELLA_ENV_FILE!" "STELLA_PROXY_%_name%" "PROXY_PASS" "!parseproxy_PASSWORD!"
+	call %STELLA_COMMON%\common.bat :add_key "!STELLA_ENV_FILE!" "STELLA_PROXY_%_name%" "PROXY_SCHEMA" "!parseproxy_SCHEMA!"
 goto:eof
 
 :enable_proxy
@@ -155,5 +202,69 @@ goto:eof
 
 :disable_proxy
 	call :enable_proxy
+	call :reset_proxy_values
+	call :reset_system_proxy_values
+
 	echo STELLA Proxy Disabled
 goto:eof
+
+
+
+:: no_proxy is read from conf file only if a stella proxy is active
+:register_no_proxy
+	set "_uri=%~1"
+	
+	call %STELLA_COMMON%\common.bat :get_key "!STELLA_ENV_FILE!" "STELLA_PROXY" "NO_PROXY" "PREFIX"
+
+	call %STELLA_COMMON%\common.bat :uri_parse "parseproxy" "!_uri!"
+
+	set "_exist="
+	if not "!STELLA_PROXY_NO_PROXY!"=="" set "STELLA_PROXY_NO_PROXY=!STELLA_PROXY_NO_PROXY:,= !"
+	for %%p in (!STELLA_PROXY_NO_PROXY!) do (
+		if "%%p"=="!parseproxy_HOST!" (
+			set "_exist=1"
+		)
+	)
+
+	if "!_exist!"=="" (
+		if "!STELLA_PROXY_NO_PROXY!"== "" (
+			set "STELLA_PROXY_NO_PROXY=!parseproxy_HOST!"
+		) else (
+			set "STELLA_PROXY_NO_PROXY=!STELLA_PROXY_NO_PROXY! !parseproxy_HOST!"
+		)
+
+		call %STELLA_COMMON%\common.bat :trim "STELLA_PROXY_NO_PROXY" "!STELLA_PROXY_NO_PROXY!"
+		set "STELLA_PROXY_NO_PROXY=!STELLA_PROXY_NO_PROXY: =,!"
+		call %STELLA_COMMON%\common.bat :add_key "!STELLA_ENV_FILE!" "STELLA_PROXY" "NO_PROXY" "!STELLA_PROXY_NO_PROXY!"
+		call :init_proxy
+	)
+goto:eof
+
+
+:: only temporary no proxy
+:: will be reseted each time proxy values are read from env file
+:no_proxy_for
+	set "_uri=%~1"
+
+	call %STELLA_COMMON%\common.bat :uri_parse "parseproxy" "!_uri!"
+
+
+	set "_exist="
+	set "_tmp_no_proxy=!STELLA_NO_PROXY:,= !"
+
+	for %%p in (!_tmp_no_proxy!) do (
+		if "%%p"=="!parseproxy_HOST!" (
+			set "_exist=1"
+		)
+	)
+
+	if "!_exist!"=="" (
+		echo STELLA Proxy : temp proxy bypass for !parseproxy_HOST!
+		if "!STELLA_NO_PROXY!"== "" (
+			set "STELLA_NO_PROXY=!parseproxy_HOST!"
+		) else (
+			set "STELLA_NO_PROXY=!STELLA_NO_PROXY!,!parseproxy_HOST!"
+		)
+		call :set_system_proxy_values
+	)
+goto :eof

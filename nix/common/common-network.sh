@@ -65,7 +65,6 @@ __read_proxy_values() {
 		use_system_proxy_setting="ON"
 	fi
 
-	# TODO if we do that, some shell command could be impacted for nothing, but some needs that (like minikube)
 	[ "$use_system_proxy_setting" = "ON" ] && __read_system_proxy_values
 
 }
@@ -87,10 +86,10 @@ __reset_proxy_values() {
 
 __read_system_proxy_values() {
 
-	[ "$http_proxy" = "" ] && STELLA_HTTP_PROXY="$HTTP_PROXY" || STELLA_HTTP_PROXY="$http_proxy"
-	[ "$https_proxy" = "" ] && STELLA_HTTPS_PROXY="$HTTPS_PROXY" || STELLA_HTTPS_PROXY="$https_proxy"
+	[ "$HTTP_PROXY" = "" ] && STELLA_HTTP_PROXY="$http_proxy" || STELLA_HTTP_PROXY="$HTTP_PROXY"
+	[ "$HTTPS_PROXY" = "" ] && STELLA_HTTPS_PROXY="$https_proxy" || STELLA_HTTPS_PROXY="$HTTPS_PROXY"
 
-	# NOTE : on nix system, if NO_PROXY is setted, then no_proxy is ignored
+	
 	[ "$NO_PROXY" = "" ] && STELLA_NO_PROXY="$no_proxy" || STELLA_NO_PROXY="$NO_PROXY"
 	STELLA_NO_PROXY=${STELLA_NO_PROXY%,}
 	
@@ -126,7 +125,6 @@ __set_system_proxy_values() {
 
 		if [ ! "$STELLA_NO_PROXY" = "" ]; then
 			STELLA_NO_PROXY=${STELLA_NO_PROXY%,}
-			# NOTE : on nix system, if NO_PROXY is setted, then no_proxy is ignored
 			no_proxy="$STELLA_NO_PROXY"
 			NO_PROXY="$STELLA_NO_PROXY"
 			export no_proxy="$STELLA_NO_PROXY"
@@ -366,8 +364,6 @@ __register_proxy() {
 
 	__uri_parse "$2"
 
-	#local _ssl_port="$3"
-
 	local _host="$__stella_uri_host"
 	local _port="$__stella_uri_port"
 	local _user="$__stella_uri_user"
@@ -400,7 +396,7 @@ __disable_proxy() {
 }
 
 
-# no_proxy is reaf from conf file only if a stella proxy is active
+# no_proxy is read from conf file only if a stella proxy is active
 __register_no_proxy() {
 	local _uri="$1"
 	__get_key "$STELLA_ENV_FILE" "STELLA_PROXY" "NO_PROXY" "PREFIX"

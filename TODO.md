@@ -147,7 +147,7 @@ use
 [ ] add possibility of a last step before/after install, to do some test like make test or make check (i.e : for gmp lib)
 [ ] win : sys_install_vs2015community => this chocolatey recipe do not install all VC Tools by default
 [ ] stella-env file : make it local or global with an option ?
-[ ] "no_proxy" should be in stella-env file
+[X] "no_proxy" should be in stella-env file
 [ ] proxy values in stella-env should be local or global
 [X] win : link-app : add option to align workspace/cache path (like on nix)
 [ ] ssh : launch stella app through ssh
@@ -180,7 +180,7 @@ use
 
 [ ] win/nix : remove FORCE global option, add it as option for each function
 
-[ ] change proxyport, proxyhost, proxyuser, proxypassword in stella.sh command line as a unique arg --proxy=uri, and use  function uri_parse
+[X] win : change proxyport, proxyhost, proxyuser, proxypassword in stella.sh command line as a unique arg --proxy=uri, and use  function uri_parse
 
 [ ] download cache folder : first lookup in APP CACHE FOLDER, then in STELLA CACHE FOLDER. Linux [X] Win [ ]
 
@@ -250,7 +250,6 @@ https://github.com/ansible/ansible-modules-core/blob/devel/system/service.py
     rvm : download ruby source and build ruby. Manage dependencies. Manage ruby env
 
 [ ] nix : review boost recipes (still using __prepare_build)
-
 [ ] win build :
   * auto_build launch_configure : implements autotools (mingw or msys)
   * auto_build :  # INCLUDE_FILTER <expr> -- include these files for inspect and fix

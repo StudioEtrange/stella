@@ -276,6 +276,28 @@ REM REQUIRE ---------------------
 goto :eof
 
 
+REM SYSTEM COMMAND OVERRIDE --------------------
+:system_override
+
+	set "WGET=wget.exe"
+	set "UZIP=unzip.exe"
+	set "SEVENZIP=7z.exe"
+	set "GIT=git"
+	set "HG=hg"
+	set "MVN=mvn"
+	set "CURL=curl"
+	set "NPM=npm"
+	set "POWERSHELL=powershell"
+
+	:: fix missing powershell in path on some systems
+	set "_found="
+	call %STELLA_COMMON%\common.bat :which "_found" "powershell"
+	if "!_found!"=="" (
+		set "POWERSHELL=%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe"
+	)
+
+goto :eof
+
 REM PACKAGE SYSTEM ---------
 
 :get_current_package_manager
@@ -360,7 +382,7 @@ goto :eof
 	REM TODO manage web proxy
 	REM $env:chocolateyProxyLocation=!STELLA_PROXY_HOST!
 	REM $env:chocolateyProxyUser=!STELLA_PROXY_PORT!
-	powershell -NoProfile -ExecutionPolicy Bypass -Command "& '!STELLA_APP_TEMP_DIR!\chocolatey.ps1' %*"
+	!POWERSHELL! -NoProfile -ExecutionPolicy Bypass -Command "& '!STELLA_APP_TEMP_DIR!\chocolatey.ps1' %*"
 	set "PATH=!PATH!;C:\ProgramData\chocolatey\bin"
 	del /q "!STELLA_APP_CACHE_DIR!\chocolatey.ps1"
 	del /q "!STELLA_APP_TEMP_DIR!\chocolatey.ps1"
