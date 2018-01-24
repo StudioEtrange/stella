@@ -80,7 +80,13 @@ __vendorize_stella() {
 	rm -f "$_target_approot/$_folder_name"/stella/*.bat
 	rm -f "$_target_approot/$_folder_name/stella/.stella-env"
 
-	__link_app "$_target_approot" "STELLA_ROOT $_target_approot/$_folder_name/stella"
+	[ "$(__is_abs "$_stella_root")" = "FALSE" ] && _stella_root=$(__rel_to_abs_path "$_stella_root" "$_target_approot")
+	# keep the vendorized stella version safe
+	_s_ver=$(__get_stella_version "$_stella_root")
+	_s_flavour=$(__get_stella_flavour "$_stella_root")
+
+	__link_app "$_target_approot" "STELLA_ROOT $_target_approot/$_folder_name/stella VERSION $_s_ver FLAVOUR $_s_flavour"
+
 }
 
 # align stella installation to current app one (recreate stella-link file)
@@ -93,11 +99,19 @@ __link_app() {
 	local _opt_share_workspace=OFF
 	local _flag_stella_root=OFF
 	local _stella_root="$STELLA_ROOT"
+	local _flag_version=OFF
+	local _wanted_version=
+	local _flag_flavour=OFF
+	local _wanted_flavour=
 	for o in $_OPT; do
 		[ "$o" = "CACHE" ] && _opt_share_cache=ON
 		[ "$o" = "WORKSPACE" ] && _opt_share_workspace=ON
 		[ "$_flag_stella_root" = "ON" ] && _stella_root="$o" && _flag_stella_root=OFF
 		[ "$o" = "STELLA_ROOT" ] && _flag_stella_root=ON
+		[ "$_flag_version" = "ON" ] && _wanted_version="$o" && _flag_version=OFF
+		[ "$o" = "VERSION" ] && _flag_version=ON
+		[ "$_flag_flavour" = "ON" ] && _wanted_flavour="$o" && _flag_flavour=OFF
+		[ "$o" = "FLAVOUR" ] && _flag_flavour=ON
 	done
 
 	_target_approot=$(__rel_to_abs_path $_target_approot $STELLA_CURRENT_RUNNING_DIR)
@@ -105,8 +119,11 @@ __link_app() {
 	#[ "$_stella_root" = "" ] && _stella_root=$STELLA_ROOT
 	[ "$(__is_abs "$_stella_root")" = "FALSE" ] && _stella_root=$(__rel_to_abs_path "$_stella_root" "$_target_approot")
 
-	_s_ver=$(__get_stella_version "$_stella_root")
-	_s_flavour=$(__get_stella_flavour "$_stella_root")
+	[ "$_wanted_version" = "" ] && _s_ver=$(__get_stella_version "$_stella_root") \
+																	|| _s_ver="$_wanted_version"
+	[ "$_wanted_flavour" = "" ] && _s_flavour=$(__get_stella_flavour "$_stella_root") \
+																	|| _s_flavour="$_wanted_flavour"
+
 
 	_stella_root=$(__abs_to_rel_path "$_stella_root" "$_target_approot")
 

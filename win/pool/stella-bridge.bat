@@ -158,7 +158,17 @@ REM Various functions ------------------
 		pushd
 		if not exist "%_path%" mkdir "%_path%"
 		cd /D "%_path%"
-		powershell -Command "(New-Object Net.WebClient).DownloadFile('http://"%__STELLA_URL%"/dist/!_ver!/stella-all-"!_ver!".zip.exe', 'stella-all-"!_ver!".zip.exe')"
+
+		set "POWERSHELL=powershell"
+		set "_f="
+		for /F "delims=" %%A in ('where.exe powershell 2^>NUL') do (
+			set "_f=%%A"
+		)
+		if "!_f!"=="" (
+			set "POWERSHELL=%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe"
+		)
+
+		!POWERSHELL! -Command "(New-Object Net.WebClient).DownloadFile('http://"%__STELLA_URL%"/dist/!_ver!/stella-all-"!_ver!".zip.exe', 'stella-all-"!_ver!".zip.exe')"
 		popd
 	)
 
@@ -188,6 +198,7 @@ goto :eof
 		for /f "tokens=*" %%A in ("!_abs_root_path!.\%_rel_path%") do set "%_result_var_rel_to_abs_path%=%%~fA"
 	)
 goto :eof
+
 
 @echo on
 @endlocal

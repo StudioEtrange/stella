@@ -4,8 +4,22 @@ goto :eof
 ::--------------------------------------------------------
 ::-- Functions
 ::--------------------------------------------------------
+:get_last_version
+	echo TODO
+goto:eof
+
+::https://stackoverflow.com/questions/34417346/how-to-sort-lines-of-a-text-file-containing-version-numbers-in-format-major-mino
+:: https://www.dostips.com/forum/viewtopic.php?t=5595
+::type test.text | jsort.bat /R  /N
+::PROBLEM WITH OPTION ENDING_CHAR_REVERSE (cf nix implementation)
+:sort_version
+	echo TODO
+goto:eof
 
 :init_stella_env
+	:: OVERRIDE SYSTEM Command
+	call %STELLA_COMMON%\common-platform.bat :system_override
+
 	:: STACK
 	call :stack_init
 
@@ -89,7 +103,7 @@ REM note : the powershell command seems to not wait delete folder before release
 :del_folder2
 	if exist "%~1" (
 		echo ** Deleting %~1 folder
-		powershell -Command "remove-item %~1 -force -recurse"
+		!POWERSHELL! -Command "remove-item %~1 -force -recurse"
 	)
 goto :eof
 
@@ -1108,11 +1122,6 @@ goto :eof
 goto :eof
 
 
-:uri_parse
-	REM powershell -Command
-	echo TODO
-
-goto :eof
 
 :: check if a "findstr windows regexp" can be found in a string
 :: regexp example : http://stackoverflow.com/questions/2613826/regular-expressions-in-findstr
@@ -1154,7 +1163,7 @@ goto :eof
 		set "!v!="
 	)
 
-	for /F "tokens=1,* delims=#" %%I in ('powershell -command ^"^'!_string!^' ^| Select-String -AllMatches -Pattern ^'!_regex!^' ^| ForEach { $_.Matches } ^| ForEach { $_ } ^| ForEach  { $_.Groups } ^| ForEach {$i^=0} { [string]$i + ^'#^' + $_.Value^; $i++ ^; ^} ^"') do (
+	for /F "tokens=1,* delims=#" %%I in ('!POWERSHELL! -command ^"^'!_string!^' ^| Select-String -AllMatches -Pattern ^'!_regex!^' ^| ForEach { $_.Matches } ^| ForEach { $_ } ^| ForEach  { $_.Groups } ^| ForEach {$i^=0} { [string]$i + ^'#^' + $_.Value^; $i++ ^; ^} ^"') do (
 		set "v=!_var_prefix_match_regex!_%%I"
 		set "!v!=%%J"
 	)

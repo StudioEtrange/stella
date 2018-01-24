@@ -43,6 +43,13 @@ goto :eof
 		)
 	)
 
+	for %%F in (%STELLA_API_NETWORK_PUBLIC%) do (
+		if "%%F"=="%FUNC_NAME%" (
+			call %STELLA_COMMON%\common-platform.bat :%FUNC_NAME% %*
+			goto :eof
+		)
+	)
+
 	echo ** API ERROR : Function %FUNC_NAME% does not exist
 	
 goto :eof

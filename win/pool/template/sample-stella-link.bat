@@ -36,7 +36,16 @@ if "%~1"=="chaining" (
 
 if "%~1"=="bootstrap" (
 	cd /D "!_STELLA_LINK_CURRENT_FILE_DIR!"
-	powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/StudioEtrange/stella/master/win/pool/stella-bridge.bat', 'stella-bridge.bat')"
+
+	set "POWERSHELL=powershell"
+	set "_f="
+	for /F "delims=" %%A in ('where.exe powershell 2^>NUL') do (
+		set "_f=%%A"
+	)
+	if "!_f!"=="" (
+		set "POWERSHELL=%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe"
+	)
+	!POWERSHELL! -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/StudioEtrange/stella/master/win/pool/stella-bridge.bat', 'stella-bridge.bat')"
 	stella-bridge.bat bootstrap
 	del /q stella-bridge.bat
 	goto :eof
