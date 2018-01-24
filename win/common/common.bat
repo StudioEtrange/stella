@@ -4,6 +4,17 @@ goto :eof
 ::--------------------------------------------------------
 ::-- Functions
 ::--------------------------------------------------------
+:get_last_version
+	echo TODO
+goto:eof
+
+::https://stackoverflow.com/questions/34417346/how-to-sort-lines-of-a-text-file-containing-version-numbers-in-format-major-mino
+:: https://www.dostips.com/forum/viewtopic.php?t=5595
+::type test.text | jsort.bat /R  /N
+::PROBLEM WITH OPTION ENDING_CHAR_REVERSE (cf nix implementation)
+:sort_version
+	echo TODO
+goto:eof
 
 :init_stella_env
 	:: OVERRIDE SYSTEM Command
