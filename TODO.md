@@ -83,6 +83,7 @@ use
 [ ] Format output (log system)
 [ ] Test and remove DEST_ERASE in each feature_recipe : cause problem when bundled in merge mode. But only for binary ? keep it for source? only when get binary
 
+[ ] nix : make a flat distro of stella in one file https://github.com/shellfire-dev/fatten
 
 [ ] REWORK :
     DEPRECATED STELLA_BUILD_RELOCATE
@@ -124,6 +125,7 @@ use
 
 [ ] win : review 'select_official_schema' function, like in nix, to take care of all arch/flavour possibility
 [ ] nix : use busybox to get binaries small unix tool without building them (i.e unzip) https://busybox.net/
+[ ] nix : embedded ssh server/client : https://matt.ucc.asn.au/dropbear/dropbear.html
 [ ] Test and fix path with space
 [ ] win : function require
 [ ] function get_resource : change option STRIP to option NO_STRIP. STRIP will be by default if possible
@@ -180,7 +182,9 @@ use
 
 [ ] win/nix : remove FORCE global option, add it as option for each function
 
-[ ] change proxyport, proxyhost, proxyuser, proxypassword in stella.sh command line as a unique arg --proxy=uri, and use  function uri_parse
+[X] nix change proxyport, proxyhost, proxyuser, proxypassword in stella.sh command line as a unique arg --proxy=uri, and use  function uri_parse
+
+[ ] win : todo : function uri_parse
 
 [ ] download cache folder : first lookup in APP CACHE FOLDER, then in STELLA CACHE FOLDER. Linux [X] Win [ ]
 
@@ -236,7 +240,8 @@ https://github.com/ansible/ansible-modules-core/blob/devel/system/service.py
 
 [ ] nix : review boost recipes (replace prepare_build with start_manual_build)
 
-[ ] win/nix : add command to embed a minimal stella inside app
+[X] nix : add "vendor" command to embed a minimal stella inside app
+[ ] win : add "vendor" command to embed a minimal stella inside app
 
 [ ] win : visual c++ build tools 2015 et 2017 http://landinghub.visualstudio.com/visual-cpp-build-tools
 
@@ -287,7 +292,7 @@ https://github.com/ansible/ansible-modules-core/blob/devel/system/service.py
 * kops : https://github.com/kubernetes/kops
 * kubernetes-everywhere : https://github.com/kubernetes/kubernetes-anywhere
 * ansible : http://blog.jameskyle.org/2014/08/deploying-baremetal-kubernetes-cluster/
-* 
+*
 
 
 ## VM :
