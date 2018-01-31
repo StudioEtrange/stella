@@ -22,7 +22,7 @@ usage() {
 	echo " L     app get-feature <all|feature schema> : install all features defined in app properties file or install a matching one"
 	echo " L     app link <app-path> [--stellaroot=<path>] : link an app to the current or a specific stella path"
 	echo " L     app vendor <app-path> [--stellaroot=<path>] : vendorize stella (current or a specific one) into an app"
-	echo " L     app deploy user@host:[/abs_path|#rel_path] [--cache] [--workspace] : : deploy current app version to an other target via ssh. [--cache] : include app cache folder. [--workspace] : include app workspace folder"
+	echo " L     app deploy user@host:[/abs_path|#rel_path] [--cache] [--workspace] : deploy current app version to an other target via ssh. [--cache] : include app cache folder. [--workspace] : include app workspace folder"
 	echo " o-- feature management :"
 	echo " L     feature install <feature schema> [--depforce] [--depignore] [--buildarch=x86|x64] [--export=<path>] [--portable=<path>] : install a feature. [--depforce] will force to reinstall all dependencies. [--depignore] will ignore dependencies. schema = feature_name[#version][@arch][:binary|source][/os_restriction][\\os_exclusion]"
 	echo " L     feature remove <feature schema> : remove a feature"

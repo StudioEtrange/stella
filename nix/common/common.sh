@@ -1378,7 +1378,7 @@ __git_project_version() {
 	local _PATH=$1
 	local _OPT=$2
 
-	_opt_version_short=OFF
+	_opt_version_short=ON
 	_opt_version_long=OFF
 	for o in $_OPT; do
 		[ "$o" = "SHORT" ] && _opt_version_short=ON

@@ -83,6 +83,15 @@ use
 [ ] Format output (log system)
 [ ] Test and remove DEST_ERASE in each feature_recipe : cause problem when bundled in merge mode. But only for binary ? keep it for source? only when get binary
 
+[ ] nix : review speed and optimization
+https://stackoverflow.com/questions/5014823/how-to-profile-a-bash-shell-script-slow-startup
+https://stackoverflow.com/a/20855353
+https://github.com/F-Hauri/bashProfiler
+https://github.com/paypal/gnomon
+http://applocator.blogspot.fr/2013/10/speed-up-bash-scripts-that-use-grep.html
+
+[ ] nix : common-platform if netstat or ifconfig not present (centos7/rhel7) provide alternative with ip addr to get IP & interface
+
 [ ] nix : make a flat distro of stella in one file https://github.com/shellfire-dev/fatten
 
 [ ] REWORK :
@@ -172,7 +181,6 @@ use
     nix : bats
     win : ?
 
-[ ] speed up grep http://applocator.blogspot.fr/2013/10/speed-up-bash-scripts-that-use-grep.html
 [ ] ryzom nix : openal, libgnu_regex (?), libmysql, lua51, lua52, luabind, stlport (?)
  https://github.com/Shopify/homebrew-shopify/blob/master/mysql-client.rb
  https://github.com/Homebrew/homebrew-core/blob/master/Formula/mysql.rb
