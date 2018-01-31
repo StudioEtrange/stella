@@ -8,7 +8,39 @@ _firehol_INCLUDED_=1
 # this recipe will try to install what is it possible
 # https://firehol.org/source-install/
 
-# NOTE : FireHOL itself needs bash 4.x
+# NOTE :
+*	FireHOL itself needs bash 4.x
+* update-ipsets need ipset
+* Detail dependencies needed for each tool :
+# configure: Detecting commands for fireqos
+# checking for gawk... /usr/bin/gawk
+# checking for modprobe... (cached) /sbin/modprobe
+# checking whether MODPROBE has working -q option... (cached) yes
+# checking for rmmod... /sbin/rmmod
+# checking for seq... /usr/bin/seq
+# checking for tc... /sbin/tc
+# checking for tcpdump... /usr/sbin/tcpdump
+# configure: Detecting commands for link-balancer
+# checking for diff... /usr/bin/diff
+# checking for env... /usr/bin/env
+# checking for jq... no
+# checking for ln... /bin/ln
+# checking for ping6... /bin/ping6
+# checking for screen... /usr/bin/screen
+# checking for traceroute... /usr/sbin/traceroute
+# checking for wget... /usr/bin/wget
+# checking for whois... no
+# configure: Detecting commands for update-ipsets
+# checking for curl... /usr/bin/curl
+# checking for funzip... /usr/bin/funzip
+# checking for jq... no
+# checking for git... /usr/bin/git
+# checking for ipset... no
+# configure: Detecting commands for vnetbuild
+# checking for bridge... /sbin/bridge
+# checking for neato... no
+# checking for dot... no
+# checking for sh... /bin/sh
 
 feature_firehol() {
 	FEAT_NAME=firehol
