@@ -4,7 +4,11 @@ _firehol_INCLUDED_=1
 # https://firehol.org/
 # https://github.com/firehol/firehol
 
-# NOTE : needs bash 4.x
+# FireHOL, FireQOS, Link-Balancer, Update-Ipsets and VNetBuild are packaged as firehol
+# this recipe will try to install what is it possible
+# https://firehol.org/source-install/
+
+# NOTE : FireHOL itself needs bash 4.x
 
 feature_firehol() {
 	FEAT_NAME=firehol
@@ -39,9 +43,9 @@ feature_firehol_3_1_5() {
 	FEAT_ENV_CALLBACK=
 
 	# List of files to test if feature is installed
-	FEAT_INSTALL_TEST=$FEAT_INSTALL_ROOT/bin/firehol
+	FEAT_INSTALL_TEST=$FEAT_INSTALL_ROOT/sbin/firehol
 	# PATH to add to system PATH
-	FEAT_SEARCH_PATH=$FEAT_INSTALL_ROOT/bin
+	FEAT_SEARCH_PATH=$FEAT_INSTALL_ROOT/sbin
 
 }
 
@@ -58,7 +62,7 @@ feature_firehol_install_source() {
 	__feature_callback
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
-	AUTO_INSTALL_CONF_FLAG_POSTFIX=
+	type ipset &>/dev/null || AUTO_INSTALL_CONF_FLAG_POSTFIX="--disable-update-ipsets"
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
