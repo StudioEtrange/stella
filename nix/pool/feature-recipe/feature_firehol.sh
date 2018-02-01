@@ -9,9 +9,9 @@ _firehol_INCLUDED_=1
 # https://firehol.org/source-install/
 
 # NOTE :
-*	FireHOL itself needs bash 4.x
-* update-ipsets need ipset
-* Detail dependencies needed for each tool :
+#	FireHOL itself needs bash 4.x
+# update-ipsets need ipset
+# Detail dependencies needed for each tool :
 # configure: Detecting commands for fireqos
 # checking for gawk... /usr/bin/gawk
 # checking for modprobe... (cached) /sbin/modprobe

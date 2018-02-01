@@ -279,10 +279,6 @@ __require() {
 
 	echo "** REQUIRE $_id ($_artefact)"
 	local _err=
-	# if [[ ! -n `which $_artefact 2> /dev/null` ]]; then
-	# 	_err=1
-	# fi
-
 	type $_artefact &>/dev/null || _err=1
 
 	if [ "$_err" = "1" ]; then
@@ -477,8 +473,12 @@ __use_package_manager() {
 	for o in $_packages_list; do
 		[ "$o" = "|" ] && _flag_package_manager=OFF
 		[ "$_flag_package_manager" = "ON" ] && _packages="$_packages $o"
+		# NOTE : exception here for "brew-cask", because the package manager name is always just "brew"
+		[ "$o" = "$_package_manager"-cask ] && _flag_package_manager=ON && _package_manager="brew-cask"
 		[ "$o" = "$_package_manager" ] && _flag_package_manager=ON
 	done
+
+	[ "$_packages" = "" ] && echo " ** WARN : we do not find any configured package for $_id with $_package_manager"
 
 	if [ "$_action" = "INSTALL" ]; then
 		case $_package_manager in
@@ -491,6 +491,9 @@ __use_package_manager() {
 				;;
 			brew)
 				brew install $_packages
+				;;
+			brew-cask)
+				brew cask install $_packages
 				;;
 			yum)
 				sudo -E yum install -y $_packages
@@ -518,6 +521,9 @@ __use_package_manager() {
 			brew)
 				brew uninstall $_packages
 				;;
+			brew-cask)
+				brew cask uninstall $_packages
+				;;
 			yum)
 				sudo -E yum remove -y $_packages
 				;;
@@ -530,6 +536,7 @@ __use_package_manager() {
 				;;
 		esac
 	fi
+
 }
 
 # --------- SYSTEM RECIPES--------
@@ -560,6 +567,7 @@ __sys_install_docker() {
 
 __sys_install_brew() {
 	echo " ** Install Homebrew on your system"
+	echo " ** As of December 2015, Cask comes installed with Homebrew"
 
 	__download "https://raw.githubusercontent.com/Homebrew/install/master/install" "brew-install.rb" "$STELLA_APP_TEMP_DIR"
 
@@ -636,13 +644,12 @@ __sys_remove_build-chain-standard() {
 }
 
 
-
+# recipes using system package manager ------------------
 __sys_install_x11() {
-	brew install caskroom/cask/brew-cask
-	brew cask install xquartz
+	__use_package_manager "INSTALL" "x11" "brew-cask xquartz"
 }
 __sys_remove_x11() {
-	brew cask uninstall xquartz
+	__use_package_manager "REMOVE" "x11" "brew-cask xquartz"
 }
 
 __sys_install_sevenzip() {
