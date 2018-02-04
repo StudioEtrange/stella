@@ -26,7 +26,7 @@ __transfer_app(){
 		[ "$o" = "GIT" ] && _opt_ex_git=
 	done
 
-	__transfer_folder_rsync "$STELLA_APP_ROOT" "$_target" "$_opt_ex_cache $_opt_ex_workspace $_opt_ex_git"
+	__transfer_folder_rsync "$STELLA_APP_ROOT" "$_uri" "$_opt_ex_cache $_opt_ex_workspace $_opt_ex_git"
 }
 
 
