@@ -19,12 +19,6 @@ __transfer_app(){
 	_opt_ex_workspace="EXCLUDE /$(__abs_to_rel_path $STELLA_APP_WORK_ROOT $STELLA_APP_ROOT)/"
 	local _opt_ex_git
 	_opt_ex_git="EXCLUDE /.git/"
-	for o in $_OPT; do
-		[ "$o" = "CACHE" ] && _opt_ex_cache=
-		[ "$o" = "WORKSPACE" ] && _opt_ex_workspace=
-	done
-
-
 
 	for o in $_OPT; do
 		[ "$o" = "CACHE" ] && _opt_ex_cache=
