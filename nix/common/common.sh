@@ -300,6 +300,9 @@ __uri_parse() {
 }
 
 # [user@][host][:port][/abs_path|#rel_path]
+# By default
+# CACHE, WORKSPACE, ENV, GIT are excluded ==> use theses options to force include
+# APP, WIN are included ==> uses these option to force exclude
 __transfer_stella() {
 	local _uri="$1"
 	local _OPT="$2"
@@ -311,14 +314,20 @@ __transfer_stella() {
 	_opt_ex_env="EXCLUDE /.stella-env"
 	local _opt_ex_git
 	_opt_ex_git="EXCLUDE /.git/"
+	local _opt_ex_win
+	_opt_ex_win=
+	local _opt_ex_app
+	_opt_ex_app=
 
 	for o in $_OPT; do
 		[ "$o" = "CACHE" ] && _opt_ex_cache=
 		[ "$o" = "WORKSPACE" ] && _opt_ex_workspace=
 		[ "$o" = "ENV" ] && _opt_ex_env=
+		[ "$o" = "WIN" ] && _opt_ex_win="EXCLUDE /win/ EXCLUDE /stella.bat EXCLUDE /conf.bat"
+		[ "$o" = "APP" ] && _opt_ex_app="EXCLUDE /app/"
 	done
 
-	__transfer_folder_rsync "$STELLA_ROOT" "$_uri" "$_opt_ex_cache $_opt_ex_workspace $_opt_ex_env $_opt_ex_git"
+	__transfer_folder_rsync "$STELLA_ROOT" "$_uri" "$_opt_ex_win $_opt_ex_app $_opt_ex_cache $_opt_ex_workspace $_opt_ex_env $_opt_ex_git"
 }
 
 # [user@][host][:port][/abs_path|#rel_path]
@@ -345,12 +354,18 @@ __transfer_folder_rsync() {
 		[ "$o" = "FOLDER_CONTENT" ] && _opt_folder_content=ON
 	done
 
-	local _localhost=OFF
-
 	# NOTE : rsync needs to be present on both host (source, target)
 	__require "rsync" "rsync"
 
 	__uri_parse "$_uri"
+
+	local _localhost=OFF
+	if [ "$__stella_uri_host" = "" ]; then
+		_localhost="ON"
+	else
+		# default schema is ssh when host is not emplty
+		[ "$__stella_uri_schema" = "" ] && __stella_uri_schema="ssh"
+	fi
 
 	if [ "$__stella_uri_schema" = "ssh" ]; then
 		__require "ssh" "ssh"
@@ -358,9 +373,8 @@ __transfer_folder_rsync() {
 		[ ! "$__stella_uri_port" = "" ] && _ssh_port="$__stella_uri_port"
 	fi
 
-	[ "$__stella_uri_host" = "" ] && _localhost="ON"
-	local _target=
 
+	local _target=
 	# we use relative path
 	if [ ! "${__stella_uri_fragment:1}" = "" ]; then
 		_target="${__stella_uri_fragment:1}"
@@ -411,16 +425,22 @@ __transfer_file_rsync() {
 	__require "rsync" "rsync"
 	__uri_parse "$_uri"
 
+	local _localhost=OFF
+	if [ "$__stella_uri_host" = "" ]; then
+		_localhost="ON"
+	else
+		# default schema is ssh when host is not emplty
+		[ "$__stella_uri_schema" = "" ] && __stella_uri_schema="ssh"
+	fi
+
 	if [ "$__stella_uri_schema" = "ssh" ]; then
 		__require "ssh" "ssh"
 		_ssh_port="22"
 		[ ! "$__stella_uri_port" = "" ] && _ssh_port="$__stella_uri_port"
 	fi
 
-	local _localhost=OFF
-	[ "$__stella_uri_host" = "" ] && _localhost="ON"
-	local _target=
 
+	local _target=
 	# we use relative path
 	if [ ! "${__stella_uri_fragment:1}" = "" ]; then
 		_target="${__stella_uri_fragment:1}"
@@ -466,10 +486,10 @@ __filter_list() {
 
 	[ -z "$_list" ] && return
 
-	# INCLUDE_TAG -- option name of include option -- must be setted before using INCLUDE_TAG
+	# INCLUDE_TAG -- option name of include option -- must be setted before using	 INCLUDE_TAG
 	# EXCLUDE_TAG -- option name of exclude option -- must be setted before using EXCLUDE_TAG
-	# ${INCLUDE_TAG} <expr> -- include these linked libs
-	# ${EXCLUDE_TAG} <expr> -- exclude these linked libs
+	# ${INCLUDE_TAG} <expr> -- include these items
+	# ${EXCLUDE_TAG} <expr> -- exclude these items
 	# ${INCLUDE_TAG} is apply first, before ${EXCLUDE_TAG}
 
 	local _tag_include=
@@ -573,14 +593,12 @@ __is_dir_empty() {
 	fi
 }
 
-# path = ${foo%/*}
 # To get: /tmp/my.dir (like dirname)
-# file = ${foo##*/}
+# path = ${foo%/*}
 # To get: filename.tar.gz (like basename)
-# base = ${file%%.*}
+# file = ${foo##*/}
 # To get: filename
-
-
+# base = ${file%%.*}
 __get_path_from_string() {
 	if [ "$1" = "${1%/*}" ]; then
 		echo "."
