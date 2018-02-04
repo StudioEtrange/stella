@@ -323,6 +323,7 @@ __transfer_stella() {
 		[ "$o" = "CACHE" ] && _opt_ex_cache=
 		[ "$o" = "WORKSPACE" ] && _opt_ex_workspace=
 		[ "$o" = "ENV" ] && _opt_ex_env=
+		[ "$o" = "GIT" ] && _opt_ex_git=
 		[ "$o" = "WIN" ] && _opt_ex_win="EXCLUDE /win/ EXCLUDE /stella.bat EXCLUDE /conf.bat"
 		[ "$o" = "APP" ] && _opt_ex_app="EXCLUDE /app/"
 	done

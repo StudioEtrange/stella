@@ -7,19 +7,32 @@ _STELLA_COMMON_APP_INCLUDED_=1
 
 # APP RESSOURCES & ENV MANAGEMENT ---------------
 
+# [user@][host][:port][/abs_path|#rel_path]
+# By default
+# CACHE, WORKSPACE, GIT are excluded ==> use theses options to force include
 __transfer_app(){
-	# target form is [user@][host][:port][/abs_path|#rel_path]
-	local _target=$1
-
-	local _OPT=$2
-	local _opt_ex_cache="EXCLUDE /$(__abs_to_rel_path $STELLA_APP_CACHE_DIR $STELLA_APP_ROOT)/"
-	local _opt_ex_workspace="EXCLUDE /$(__abs_to_rel_path $STELLA_APP_WORK_ROOT $STELLA_APP_ROOT)/"
+	local _uri="$1"
+	local _OPT="$2"
+	local _opt_ex_cache
+	_opt_ex_cache="EXCLUDE /$(__abs_to_rel_path $STELLA_APP_CACHE_DIR $STELLA_APP_ROOT)/"
+	local _opt_ex_workspace
+	_opt_ex_workspace="EXCLUDE /$(__abs_to_rel_path $STELLA_APP_WORK_ROOT $STELLA_APP_ROOT)/"
+	local _opt_ex_git
+	_opt_ex_git="EXCLUDE /.git/"
 	for o in $_OPT; do
 		[ "$o" = "CACHE" ] && _opt_ex_cache=
 		[ "$o" = "WORKSPACE" ] && _opt_ex_workspace=
 	done
 
-	__transfer_folder_rsync "$STELLA_APP_ROOT" "$_target" "$_opt_ex_cache $_opt_ex_workspace"
+
+
+	for o in $_OPT; do
+		[ "$o" = "CACHE" ] && _opt_ex_cache=
+		[ "$o" = "WORKSPACE" ] && _opt_ex_workspace=
+		[ "$o" = "GIT" ] && _opt_ex_git=
+	done
+
+	__transfer_folder_rsync "$STELLA_APP_ROOT" "$_target" "$_opt_ex_cache $_opt_ex_workspace $_opt_ex_git"
 }
 
 
