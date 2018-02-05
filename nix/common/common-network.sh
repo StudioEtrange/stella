@@ -333,6 +333,33 @@ $(command minikube "$@");
 }
 
 # -------------------- FUNCTIONS-----------------
+# TODO : these function support only ipv4
+__get_network_info() {
+	local _err=
+	type netstat &>/dev/null || _err=1
+	if [ "$_err" = "" ]; then
+		# NOTE : we pick the first default interface if we have more than one
+		STELLA_DEFAULT_INTERFACE=$(netstat -rn | awk '/^0.0.0.0/ {thif=substr($0,74,10); print thif;} /^default.*UG/ {thif=substr($0,65,10); print thif;}' | head -1)
+	fi
+
+	_err=
+	type ifconfig &>/dev/null || _err=1
+	if [ "$_err" = "" ]; then
+		# contains default ip
+		STELLA_HOST_DEFAULT_IP="$(__get_ip_from_interface ${STELLA_DEFAULT_INTERFACE})"
+		# contains all available IP
+		STELLA_HOST_IP=$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*')
+	fi
+}
+
+__get_ip_from_interface() {
+	local _if="$1"
+	local _err=
+	type ifconfig &>/dev/null || _err=1
+	if [ "$_err" = "" ]; then
+		echo "$(ifconfig ${_if} 2>/dev/null | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*')"
+	fi
+}
 
 __proxy_tunnel() {
 	local _target_proxy_name="$1"
