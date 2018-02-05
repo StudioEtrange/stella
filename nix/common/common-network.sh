@@ -397,13 +397,14 @@ __disable_proxy() {
 
 
 # no_proxy is read from conf file only if a stella proxy is active
+# _list_uri could be a list of no proxy values separated with comma
 __register_no_proxy() {
 	local _list_uri="$1"
 	__get_key "$STELLA_ENV_FILE" "STELLA_PROXY" "NO_PROXY" "PREFIX"
 
 	_list_uri="${_list_uri//,/ }"
 	for p in $_list_uri
-			__uri_parse "$_list_uri"
+			__uri_parse "$p"
 
 			_host="$__stella_uri_host"
 
