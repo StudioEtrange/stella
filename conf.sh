@@ -257,7 +257,8 @@ STELLA_API_NETWORK_PUBLIC="proxy_tunnel enable_proxy disable_proxy no_proxy_for 
 STELLA_API_BOOT_PUBLIC="boot_shell boot_cmd boot_script"
 STELLA_API_LOG_PUBLIC="log set_log_level set_log_state"
 
-STELLA_API_RETURN_FUNCTION="filter_list log find_folder_up python_major_version python_short_version list_feature_version get_active_path rel_to_abs_path trim is_abs mercurial_project_version git_project_version get_stella_version list_active_features get_filename_from_string get_key"
+# NOTE : get_key do not return values, so if we put it inside return function list, it will be broken
+STELLA_API_RETURN_FUNCTION="filter_list log find_folder_up python_major_version python_short_version list_feature_version get_active_path rel_to_abs_path trim is_abs mercurial_project_version git_project_version get_stella_version list_active_features get_filename_from_string"
 STELLA_API=__api_proxy
 
 
