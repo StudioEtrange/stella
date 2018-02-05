@@ -32,6 +32,11 @@ _STELLA_BOOT_INCLUDED_=1
 #     when 'script' : nothing special
 #     when 'cmd' : nothing special
 
+
+# SAMPLE
+# from an app
+# ./stella-link.sh boot shell vagrant://default
+
 # MAIN FUNCTION -----------------------------------------
 __boot_shell() {
   local _uri="$1"

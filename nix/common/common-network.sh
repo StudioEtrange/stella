@@ -89,10 +89,10 @@ __read_system_proxy_values() {
 	[ "$HTTP_PROXY" = "" ] && STELLA_HTTP_PROXY="$http_proxy" || STELLA_HTTP_PROXY="$HTTP_PROXY"
 	[ "$HTTPS_PROXY" = "" ] && STELLA_HTTPS_PROXY="$https_proxy" || STELLA_HTTPS_PROXY="$HTTPS_PROXY"
 
-	
+
 	[ "$NO_PROXY" = "" ] && STELLA_NO_PROXY="$no_proxy" || STELLA_NO_PROXY="$NO_PROXY"
 	STELLA_NO_PROXY=${STELLA_NO_PROXY%,}
-	
+
 
 	if [ ! "$STELLA_HTTP_PROXY" = "" ]; then
 		STELLA_PROXY_ACTIVE="FROM_SYSTEM"
@@ -398,29 +398,33 @@ __disable_proxy() {
 
 # no_proxy is read from conf file only if a stella proxy is active
 __register_no_proxy() {
-	local _uri="$1"
+	local _list_uri="$1"
 	__get_key "$STELLA_ENV_FILE" "STELLA_PROXY" "NO_PROXY" "PREFIX"
 
-	__uri_parse "$_uri"
+	_list_uri="${_list_uri//,/ }"
+	for p in $_list_uri
+			__uri_parse "$_list_uri"
 
-	local _host="$__stella_uri_host"
+			_host="$__stella_uri_host"
 
-	local _exist=
-	STELLA_PROXY_NO_PROXY="${STELLA_PROXY_NO_PROXY//,/ }"
-	for h in $STELLA_PROXY_NO_PROXY; do
-		[ "$h" = "$_host" ] && _exist=1
+			_exist=
+			STELLA_PROXY_NO_PROXY="${STELLA_PROXY_NO_PROXY//,/ }"
+			for h in $STELLA_PROXY_NO_PROXY; do
+				[ "$h" = "$_host" ] && _exist=1
+			done
+
+			if [ "$_exist" = "" ]; then
+				if [ "$STELLA_PROXY_NO_PROXY" = "" ]; then
+					STELLA_PROXY_NO_PROXY="$_host"
+				else
+					STELLA_PROXY_NO_PROXY="$STELLA_PROXY_NO_PROXY $_host"
+				fi
+
+				__add_key "$STELLA_ENV_FILE" "STELLA_PROXY" "NO_PROXY" "${STELLA_PROXY_NO_PROXY// /,}"
+			fi
 	done
+	__init_proxy
 
-	if [ "$_exist" = "" ]; then
-		if [ "$STELLA_PROXY_NO_PROXY" = "" ]; then
-			STELLA_PROXY_NO_PROXY="$_host"
-		else
-			STELLA_PROXY_NO_PROXY="$STELLA_PROXY_NO_PROXY $_host"
-		fi
-
-		__add_key "$STELLA_ENV_FILE" "STELLA_PROXY" "NO_PROXY" "${STELLA_PROXY_NO_PROXY// /,}"
-		__init_proxy
-	fi
 }
 
 # only temporary no proxy
