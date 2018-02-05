@@ -5,24 +5,21 @@ _STELLA_BOOT_INCLUDED_=1
 # TODO : include into API
 # TODO : when booting a script, how pass arg to script ?
 
-# When docker/dm
-#     stella requirements are installed
-#     stella is mounted on /
-#     stella env file is mounted
-#     current folder is stella_root or <path>
-#     when 'shell' : bootstrap shell with stella env setted, inside container
-#     when 'script' : executing script is mounted on /<script.sh>
-#     when 'cmd' : nothing special
 
-# When dm
-#     if -f option is used then docker-machine is created
+# [schema://][user[:password]@][host][:port][/abs_path|?rel_path]
+# schema values
+#     local://
+#     ssh://
+#     vagrant://
 
-# When ssh
+
+# When ssh or vagrant (with vagrant, use vagrant name machine as host)
 #     stella requirements are installed
-#     current folder is <path> or default path when logging in ssh
-#     stella is sync in default path/stella
+#     <path> is computed from default path when logging in ssh and then applying abs_path|rel_path
+#     current folder is setted to <path>
+#     stella is sync in default <path>/stella
 #     stella env file is synced
-#     when 'shell' : bootstrap shell with stella env setted
+#     when 'shell' : launch a shell with stella env setted
 #     when 'script' : executing script is sync in <path>/<script.sh> or default_path/<script.sh>
 #     when 'cmd' : nothing special
 
@@ -31,7 +28,7 @@ _STELLA_BOOT_INCLUDED_=1
 #     current folder do not change
 #     stella do not move
 #     stella env file is conserved
-#     when 'shell' : N/1
+#     when 'shell' : launch a shell with stella env setted
 #     when 'script' : nothing special
 #     when 'cmd' : nothing special
 
@@ -71,13 +68,13 @@ __boot_stella() {
   if [ "$_uri" = "local" ]; then
     __stella_uri_schema="local"
   else
-    # [schema://][user[:password]@][host][:port][/path][?[arg1=val1]...][#fragment]
+    # [schema://][user[:password]@][host][:port][/abspath|?relpath]
     __uri_parse "$_uri"
   fi
 
   case $__stella_uri_schema in
+
     local )
-      # local
 
       case $_mode in
         SHELL )
@@ -87,130 +84,92 @@ __boot_stella() {
           eval "$_arg"
           ;;
         SCRIPT )
-          source "$_arg"
+          . "$_arg"
           ;;
       esac
       ;;
 
 
 
+    ssh|vagrant )
+      #ssh://user@host:port[/abs_path|?rel_path]
+      #vagrant://vagrant-machine[/abs_path|?rel_path]
 
-    dm|docker )
-      # dm://docker-machine-id/docker-id/docker-id#/path
-      # docker://docker-daemon-host:docker-daemon-port/docker-id/docker-id#/path
+      if [ "$__stella_uri_schema" = "ssh" ]; then
+    		__require "ssh" "ssh"
+    		_ssh_port="22"
+    		[ ! "$__stella_uri_port" = "" ] && _ssh_port="$__stella_uri_port"
+        __ssh_opt="-p $_ssh_port"
+    	fi
 
-      # prepare docker
-      local _docker_opt
-      local _docker_prefix
-      __require "docker" "docker" "SYSTEM"
+    	if [ "$__stella_uri_schema" = "vagrant" ]; then
+    		__require "vagrant" "vagrant"
+    		__vagrant_ssh_opt="$(vagrant ssh-config $__stella_uri_host | sed '/^[[:space:]]*$/d' |  awk 'NR>1 {print " -o "$1"="$2}')"
+    		__stella_uri_host="localhost"
+    	fi
 
-      if [ "$__stella_uri_schema" = "dm" ]; then
-        __require "docker-machine" "docker-machine" "SYSTEM"
-        [ ! -z "$FORCE" ] && docker-machine create --driver virtualbox $__stella_uri_host
-        docker-machine start $__stella_uri_host
-        # will also set docker-machine ip as no_proxy
-        eval $(docker-machine env $__stella_uri_host)
-      fi
-
-      if [ "$__stella_uri_schema" = "docker" ]; then
-        [ ! "$__stella_uri_host" = "" ] && _docker_prefix="DOCKER_HOST=tcp://$__stella_uri_host:$__stella_uri_port"
-      fi
-
-      # folders
-      local _boot_folder="${__stella_uri_fragment:1}"
-      [ -z "$_boot_folder" ] && _boot_folder="/stella"
-      local _stella_folder="/stella"
-      local _boot_script_path="/$(__get_filename_from_string $_arg)"
-
-      case $_mode in
-        SHELL )
-          _docker_opt="-it"
-          eval $(echo $_docker_prefix) && docker run --rm -v "$STELLA_ROOT":"$_stella_folder" $_docker_opt ${__stella_uri_path:1} bash -c "cd $_boot_folder && $_stella_folder/stella.sh stella install dep && $_stella_folder/stella.sh boot shell local"
-          ;;
-        CMD )
-          eval $(echo $_docker_prefix) && docker run --rm -v "$STELLA_ROOT":"$_stella_folder" $_docker_opt ${__stella_uri_path:1} bash -c "cd $_boot_folder && $_stella_folder/stella.sh stella install dep && $_stella_folder/stella.sh boot cmd local -- '$_arg'"
-          ;;
-        SCRIPT )
-          eval $(echo $_docker_prefix) && docker run --rm -v "$STELLA_ROOT":"$_stella_folder" -v "$_arg":"$_boot_script_path" $_docker_opt ${__stella_uri_path:1} bash -c "cd $_boot_folder && $_stella_folder/stella.sh stella install dep && $_stella_folder/stella.sh boot script local -- '$_boot_script_path'"
-          ;;
-      esac
-      ;;
-
-
-
-
-    ssh )
-      #ssh://user@host:port[/abs_path|#rel_path]
-
-      local _ssh_port="22"
-    	[ ! "$__stella_uri_port" = "" ] && _ssh_port="$__stella_uri_port"
-      local _ssh_user=
-      [ ! "$__stella_uri_user" = "" ] && _ssh_user="$__stella_uri_user"@
-
-      __require "ssh" "ssh" "SYSTEM"
 
 
 
       # folders
       local _boot_folder="."
-      [ "${__stella_uri_fragment:1}" = "" ] && _boot_folder="${__stella_uri_path}" || _boot_folder="${__stella_uri_fragment:1}"
+      [ "${__stella_uri_query:1}" = "" ] && _boot_folder="${__stella_uri_path}" || _boot_folder="${__stella_uri_fragment:1}"
 
       # relative path
-      if [ ! "${__stella_uri_fragment:1}" = "" ]; then
-        _stella_folder="${__stella_uri_fragment:1}/stella"
-        __transfer_stella "${__stella_uri_schema}://${__stella_uri_address}#${_stella_folder}" "ENV"
+      if [ ! "${__stella_uri_query:1}" = "" ]; then
+        __transfer_stella "$_uri" "ENV"
+        __boot_folder="${__stella_uri_query:1}"
+        __stella_folder="stella"
       else
-        # absolute  path
+        # absolute ppath
         if [ ! "$__stella_uri_path" = "" ]; then
-          _stella_folder="$__stella_uri_path/stella"
-          __transfer_stella "${__stella_uri_schema}://${__stella_uri_address}${_stella_folder}" "ENV"
+          __transfer_stella "$_uri" "ENV"
+          __boot_folder="$__stella_uri_path"
+          __stella_folder="$__stella_uri_path/stella"
         # empty path
         else
-          _stella_folder="./stella"
-          __transfer_stella "${__stella_uri_schema}://${__stella_uri_address}#${_stella_folder}" "ENV"
+          __transfer_stella "$_uri" "ENV"
+          __boot_folder="."
+          __stella_folder="./stella"
         fi
       fi
 
-
-
-
+      # NOTE : __stella_uri_address contain user
+      # we need to build a user@host without port number
+      local _ssh_user=
+      [ ! "$__stella_uri_user" = "" ] && _ssh_user="$__stella_uri_user"@
 
       # http://www.cyberciti.biz/faq/linux-unix-bsd-sudo-sorry-you-must-haveattytorun/
       case $_mode in
         SHELL )
-          ssh -t -p "$_ssh_port" "$_ssh_user$__stella_uri_host" "cd $_boot_folder && $_stella_folder/stella.sh stella install dep && $_stella_folder/stella.sh boot shell local"
+          ssh -t $__ssh_opt $__vagrant_ssh_opt "$_ssh_user$__stella_uri_host" "cd $__boot_folder && $__stella_folder/stella.sh stella install dep && $__stella_folder/stella.sh boot shell local"
           ;;
         CMD )
-          ssh -t -p "$_ssh_port" "$_ssh_user$__stella_uri_host" "cd $_boot_folder && $_stella_folder/stella.sh stella install dep && $_stella_folder/stella.sh boot cmd local -- '$_arg'"
+          ssh -t $__ssh_opt $__vagrant_ssh_opt "$_ssh_user$__stella_uri_host" "cd $__boot_folder && $__stella_folder/stella.sh stella install dep && $__stella_folder/stella.sh boot cmd local -- '$_arg'"
           ;;
         SCRIPT )
-          _script_filename="$(__get_filename_from_string $_arg)"
+          __script_filename="$(__get_filename_from_string $_arg)"
 
           # relative path
-          if [ ! "${__stella_uri_fragment:1}" = "" ]; then
-            _script_target="${__stella_uri_fragment:1}/$_script_filename"
-            __transfer_file_rsync "$_arg" "${__stella_uri_schema}://${__stella_uri_address}#${_script_target}"
+          if [ ! "${__stella_uri_query:1}" = "" ]; then
+            __transfer_file_rsync "$_arg" "$_uri/$__script_filename"
           else
             # absolute  path
             if [ ! "$__stella_uri_path" = "" ]; then
-              _script_target="$__stella_uri_path/$_script_filename"
-              __transfer_file_rsync "$_arg" "${__stella_uri_schema}://${__stella_uri_address}${_script_target}"
+              __transfer_file_rsync "$_arg" "$_uri/$__script_filename"
             # empty path
             else
-              _script_target="./$_script_filename"
-              __transfer_file_rsync "$_arg" "${__stella_uri_schema}://${__stella_uri_address}#${_script_target}"
+              __transfer_file_rsync "$_arg" "${_uri}?./${__script_filename}"
             fi
           fi
 
-          ssh -t -p "$_ssh_port" "$_ssh_user$__stella_uri_host" "cd $_boot_folder && $_stella_folder/stella.sh stella install dep && $_stella_folder/stella.sh boot script local -- '$_script_target'"
+          ssh -t $__ssh_opt $__vagrant_ssh_opt "$_ssh_user$__stella_uri_host" "cd $__boot_folder && $__stella_folder/stella.sh stella install dep && $__stella_folder/stella.sh boot script local -- './${__script_filename}'"
           ;;
         esac
     ;;
-
-
-    vagrant)
-      echo TODO
-    ;;
+    *)
+      echo " ** ERROR uri protocol unknown"
+      ;;
 
   esac
 

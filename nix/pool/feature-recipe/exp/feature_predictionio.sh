@@ -23,6 +23,9 @@ _predictionio_INCLUDED_=1
 #   </property>
 # </configuration>
 
+
+# http://predictionio.incubator.apache.org/index.html
+
 feature_predictionio() {
 	FEAT_NAME=predictionio
 	FEAT_LIST_SCHEMA="0_9_6:binary"

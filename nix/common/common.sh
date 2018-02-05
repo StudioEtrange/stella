@@ -243,6 +243,7 @@ __url_decode() {
 
 
 # http://wp.vpalos.com/537/uri-parsing-using-bash-built-in-features/ (customized)
+# https://tools.ietf.org/html/rfc3986
 # URI parsing function
 #
 # The function creates global variables with the parsed results.
@@ -258,7 +259,21 @@ __uri_parse() {
 	local query
 	# top level parsing
 	local pattern='^(([a-z]+)://)?((([^:\/]+)(:([^@\/]*))?@)?([^:\/?]*)(:([0-9]+))?)(\/[^?#]*)?(\?[^#]*)?(#.*)?$'
-	[[ "$__stella_uri" =~ $pattern ]] || return 1;
+
+	__stella_uri_schema=
+	__stella_uri_address=
+	__stella_uri_user=
+	__stella_uri_password=
+	__stella_uri_host=
+	__stella_uri_port=
+	__stella_uri_path=
+	__stella_uri_query=
+	__stella_uri_fragment=
+
+	if [[ ! "$__stella_uri" =~ $pattern ]]; then
+		__stella_uri=
+		return 1;
+	fi
 
 	# component extraction
 	__stella_uri=${BASH_REMATCH[0]}
@@ -287,9 +302,9 @@ __uri_parse() {
 	count=0
 	query="$__stella_uri_query"
 	pattern='^[?&]+([^= ]+)(=([^&]*))?'
-	while [[ $query =~ $pattern ]]; do
+	while [[ "$query" =~ $pattern ]]; do
 			eval "__stella_uri_args[$count]='${BASH_REMATCH[1]}'"
-			eval "__stella_uri_arg_${BASH_REMATCH[1]}='${BASH_REMATCH[3]}'"
+			[ ! "${BASH_REMATCH[3]}" = "" ] && eval "__stella_uri_arg_${BASH_REMATCH[1]}='${BASH_REMATCH[3]}'"
 			query="${query:${#BASH_REMATCH[0]}}"
 			#let count++
 			count=$(( count + 1 ))
@@ -299,7 +314,7 @@ __uri_parse() {
 	return 0
 }
 
-# [user@][host][:port][/abs_path|#rel_path]
+# [user@][host][:port][/abs_path|?rel_path]
 # By default
 # CACHE, WORKSPACE, ENV, GIT are excluded ==> use theses options to force include
 # APP, WIN are included ==> uses these option to force exclude
@@ -331,12 +346,15 @@ __transfer_stella() {
 	__transfer_folder_rsync "$STELLA_ROOT" "$_uri" "$_opt_ex_win $_opt_ex_app $_opt_ex_cache $_opt_ex_workspace $_opt_ex_env $_opt_ex_git"
 }
 
-# [user@][host][:port][/abs_path|#rel_path]
+# [schema://][user@][host][:port][/abs_path|?rel_path]
 # path could be absolute path in the target system
 # or could be relavite path to the default folder when logging with ssh
 # example
 # __transfer_folder_rsync /foo/folder user@ip
+#			here by default ssh will be used - ssh://user@ip has the same effect
 #			here path is empty, so folder will be sync inside home directory of user as /home/user/folder
+# __transfer_folder_rsync /foo/folder vagrant://default
+#			use ssh configuration of vagrant to connect to machine named 'default'
 # __transfer_folder_rsync /foo/folder user@ip/path
 # __transfer_folder_rsync /foo/folder #../path
 __transfer_folder_rsync() {
@@ -360,9 +378,9 @@ __transfer_folder_rsync() {
 
 	__uri_parse "$_uri"
 
-	local _localhost=OFF
+	local _local_filesystem=OFF
 	if [ "$__stella_uri_host" = "" ]; then
-		_localhost="ON"
+		_local_filesystem="ON"
 	else
 		# default schema is ssh when host is not emplty
 		[ "$__stella_uri_schema" = "" ] && __stella_uri_schema="ssh"
@@ -374,17 +392,23 @@ __transfer_folder_rsync() {
 		[ ! "$__stella_uri_port" = "" ] && _ssh_port="$__stella_uri_port"
 	fi
 
+	if [ "$__stella_uri_schema" = "vagrant" ]; then
+		__require "vagrant" "vagrant"
+		__vagrant_ssh_opt="$(vagrant ssh-config $__stella_uri_host | sed '/^[[:space:]]*$/d' |  awk 'NR>1 {print " -o "$1"="$2}')"
+		__stella_uri_host="localhost"
+	fi
+
 
 	local _target=
 	# we use relative path
-	if [ ! "${__stella_uri_fragment:1}" = "" ]; then
-		_target="${__stella_uri_fragment:1}"
+	if [ ! "${__stella_uri_query:1}" = "" ]; then
+		_target="${__stella_uri_query:1}"
 	else
 		# we use absolute path
 		_target="${__stella_uri_path}"
 	fi
 
-	if [ "$_localhost" = "OFF" ]; then
+	if [ "$_local_filesystem" = "OFF" ]; then
 		_target="$__stella_uri_host":"$_target"
 		[ ! "$__stella_uri_user" = "" ] && _target="$__stella_uri_user"@"$_target"
 	fi
@@ -404,13 +428,24 @@ __transfer_folder_rsync() {
 		_opt_exclude="--exclude $(echo $_base_folder$o | sed 's,//,/,') $_opt_exclude"
 	done
 
-
-	[ "$_localhost" = "ON" ] && rsync $_opt_exclude --force --delete -avz "$_folder" "$_target"
-	[ "$_localhost" = "OFF" ] && rsync $_opt_exclude --force --delete -avz -e "ssh -p $_ssh_port" "$_folder" "$_target"
+	if [ "$_local_filesystem" = "ON" ]; then
+		rsync $_opt_exclude --force --delete -avz "$_folder" "$_target"
+	else
+		case $__stella_uri_schema in
+			ssh )
+				rsync $_opt_exclude --force --delete -avz -e "ssh -p $_ssh_port" "$_folder" "$_target"
+				;;
+			vagrant )
+				rsync $_opt_exclude --force --delete -avz -e "ssh $__vagrant_ssh_opt" "$_folder" "$_target"
+				;;
+			*)
+				echo "** ERROR protocol unknown"
+		esac
+	fi
 }
 
 
-# [user@][host][:port][/abs_path|#rel_path]
+# [schema://][user@][host][:port][/abs_path|?rel_path]
 # path could be absolute path in the target system
 # or could be relavite path to the default folder when logging with ssh
 # if path end with a "/" it will be a destination folder, else it will be the name of the transfered file
@@ -426,9 +461,9 @@ __transfer_file_rsync() {
 	__require "rsync" "rsync"
 	__uri_parse "$_uri"
 
-	local _localhost=OFF
+	local _local_filesystem=OFF
 	if [ "$__stella_uri_host" = "" ]; then
-		_localhost="ON"
+		_local_filesystem="ON"
 	else
 		# default schema is ssh when host is not emplty
 		[ "$__stella_uri_schema" = "" ] && __stella_uri_schema="ssh"
@@ -440,24 +475,41 @@ __transfer_file_rsync() {
 		[ ! "$__stella_uri_port" = "" ] && _ssh_port="$__stella_uri_port"
 	fi
 
+	if [ "$__stella_uri_schema" = "vagrant" ]; then
+		__require "vagrant" "vagrant"
+		__vagrant_ssh_opt="$(vagrant ssh-config $__stella_uri_host | sed '/^[[:space:]]*$/d' |  awk 'NR>1 {print " -o "$1"="$2}')"
+		__stella_uri_host="localhost"
+	fi
+
 
 	local _target=
 	# we use relative path
-	if [ ! "${__stella_uri_fragment:1}" = "" ]; then
-		_target="${__stella_uri_fragment:1}"
+	if [ ! "${__stella_uri_query:1}" = "" ]; then
+		_target="${__stella_uri_query:1}"
 	else
 		# we use absolute path
 		_target="${__stella_uri_path}"
 	fi
 
-	if [ "$_localhost" = "OFF" ]; then
+	if [ "$_local_filesystem" = "OFF" ]; then
 		_target="$__stella_uri_host":"$_target"
 		[ ! "$__stella_uri_user" = "" ] && _target="$__stella_uri_user"@"$_target"
 	fi
 
-	[ "$_localhost" = "ON" ] && rsync -avz "$_file" "$_target"
-	[ "$_localhost" = "OFF" ] && rsync -avz -e "ssh -p $_ssh_port" "$_file" "$_target"
-
+	if [ "$_local_filesystem" = "ON" ]; then
+		rsync -avz "$_file" "$_target"
+	else
+		case $__stella_uri_schema in
+			ssh )
+				rsync -avz -e "ssh -p $_ssh_port" "$_file" "$_target"
+				;;
+			vagrant )
+				rsync -avz -e "ssh $__vagrant_ssh_opt" "$_file" "$_target"
+				;;
+			*)
+				echo "** ERROR protocol unknown"
+		esac
+	fi
 }
 
 

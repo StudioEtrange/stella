@@ -79,13 +79,9 @@ __vendorize_stella() {
 
 	__STELLA_ROOT_SAVE="$STELLA_ROOT"
 	STELLA_ROOT="$_stella_root"
-	__transfer_stella "$_target_approot/$_folder_name/"
+	__transfer_stella "$_target_approot/$_folder_name/" "WIN APP ENV"
 	STELLA_ROOT="$__STELLA_ROOT_SAVE"
 
-	rm -Rf "$_target_approot/$_folder_name/stella/app"
-	rm -Rf "$_target_approot/$_folder_name/stella/win"
-	rm -f "$_target_approot/$_folder_name"/stella/*.bat
-	rm -f "$_target_approot/$_folder_name/stella/.stella-env"
 
 	[ "$(__is_abs "$_stella_root")" = "FALSE" ] && _stella_root=$(__rel_to_abs_path "$_stella_root" "$_target_approot")
 	# keep the vendorized stella version safe
