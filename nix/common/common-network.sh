@@ -403,7 +403,7 @@ __register_no_proxy() {
 	__get_key "$STELLA_ENV_FILE" "STELLA_PROXY" "NO_PROXY" "PREFIX"
 
 	_list_uri="${_list_uri//,/ }"
-	for p in $_list_uri
+	for p in $_list_uri; do
 			__uri_parse "$p"
 
 			_host="$__stella_uri_host"
