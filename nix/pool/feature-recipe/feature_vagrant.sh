@@ -217,7 +217,7 @@ feature_vagrant_install_binary() {
 		__check_binary_file "$FEAT_INSTALL_ROOT"/bin
 		__check_binary_file "$FEAT_INSTALL_ROOT"/embedded/lib "EXCLUDE_FILTER python*|ruby*"
 
-		vagrant plugin repair
+		#$FEAT_INSTALL_ROOT/bin/vagrant plugin repair
 	fi
 
 
