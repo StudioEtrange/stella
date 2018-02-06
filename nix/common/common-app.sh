@@ -7,7 +7,7 @@ _STELLA_COMMON_APP_INCLUDED_=1
 
 # APP RESSOURCES & ENV MANAGEMENT ---------------
 
-# [user@][host][:port][/abs_path|#rel_path]
+# [user@][host][:port][/abs_path|?rel_path]
 # By default
 # CACHE, WORKSPACE, GIT are excluded ==> use theses options to force include
 __transfer_app(){
