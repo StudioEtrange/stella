@@ -322,9 +322,9 @@ __transfer_stella() {
 	local _uri="$1"
 	local _OPT="$2"
 	local _opt_ex_cache
-	_opt_ex_cache="EXCLUDE /$(__abs_to_rel_path $STELLA_INTERNAL_CACHE_DIR $STELLA_ROOT)/"
+	_opt_ex_cache="EXCLUDE /$(__abs_to_rel_path "$STELLA_INTERNAL_CACHE_DIR" "$STELLA_ROOT")/"
 	local _opt_ex_workspace
-	_opt_ex_workspace="EXCLUDE /$(__abs_to_rel_path $STELLA_INTERNAL_WORK_ROOT $STELLA_ROOT)/"
+	_opt_ex_workspace="EXCLUDE /$(__abs_to_rel_path "$STELLA_INTERNAL_WORK_ROOT" "$STELLA_ROOT")/"
 	local _opt_ex_env
 	_opt_ex_env="EXCLUDE /.stella-env"
 	local _opt_ex_git
@@ -1473,8 +1473,8 @@ __git_project_version() {
 	_opt_version_short=ON
 	_opt_version_long=OFF
 	for o in $_OPT; do
-		[ "$o" = "SHORT" ] && _opt_version_short=ON
-		[ "$o" = "LONG" ] && _opt_version_long=ON
+		[ "$o" = "SHORT" ] && _opt_version_short=ON && _opt_version_long=OFF
+		[ "$o" = "LONG" ] && _opt_version_long=ON && _opt_version_short=OFF
 	done
 
 	if [[ -n `which git 2> /dev/null` ]]; then

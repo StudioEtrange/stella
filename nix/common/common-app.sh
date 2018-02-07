@@ -78,7 +78,7 @@ __vendorize_stella() {
 	local _folder_name="pool"
 
 	for o in $_OPT; do
-		[ "$_flag_stella_root" = "ON" ] && _stella_root="$o" && _flag_stella_root=OFF
+		[ "$_flag_stella_root" = "ON" ] && _stella_root="$o" && _flag_stella_root=OFF && _stella_root="$(__rel_to_abs_path $_stella_root)"
 		[ "$o" = "STELLA_ROOT" ] && _flag_stella_root=ON
 	done
 
@@ -87,7 +87,7 @@ __vendorize_stella() {
 
 	__STELLA_ROOT_SAVE="$STELLA_ROOT"
 	STELLA_ROOT="$_stella_root"
-	__transfer_stella "$_target_approot/$_folder_name/" "WIN APP ENV"
+	__transfer_stella "$_target_approot/$_folder_name" "WIN APP ENV"
 	STELLA_ROOT="$__STELLA_ROOT_SAVE"
 
 
@@ -102,6 +102,8 @@ __vendorize_stella() {
 
 # align stella installation to current app one (recreate stella-link file)
 # align workspace and cache folder paths of the current app with another app (change stella properties path)
+# TODO : when stella-link is modified by itself could raise errors
+#				exemple : ./stella-link app vendor . --stellaroot=<path>
 __link_app() {
 	local _target_approot="$1"
 
