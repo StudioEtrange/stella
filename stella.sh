@@ -233,13 +233,13 @@ if [ "$DOMAIN" = "boot" ]; then
 	__init_stella_env
 
 	if [ "$ACTION" = "cmd" ]; then
-		__boot_cmd "$ID" "$OTHERARG"
+		__boot_stella_cmd "$ID" "$OTHERARG"
 	fi
 	if [ "$ACTION" = "shell" ]; then
-		__boot_shell "$ID"
+		__boot_stella_shell "$ID"
 	fi
 	if [ "$ACTION" = "script" ]; then
-		__boot_script "$ID" "$OTHERARG"
+		__boot_stella_script "$ID" "$OTHERARG"
 	fi
 fi
 

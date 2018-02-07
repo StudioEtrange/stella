@@ -254,7 +254,7 @@ STELLA_API_BINARY_PUBLIC="tweak_linked_lib get_rpath add_rpath check_rpath check
 STELLA_API_BUILD_PUBLIC="toolset_info set_toolset start_build_session set_build_mode auto_build"
 STELLA_API_PLATFORM_PUBLIC="python_get_libs python_get_includes python_get_ldflags python_get_clags python_get_prefix python_major_version python_short_version sys_install sys_remove require"
 STELLA_API_NETWORK_PUBLIC="get_ip_from_interface get_ip_from_interface proxy_tunnel enable_proxy disable_proxy no_proxy_for register_proxy register_no_proxy"
-STELLA_API_BOOT_PUBLIC="boot_shell boot_cmd boot_script"
+STELLA_API_BOOT_PUBLIC="boot_stella_shell boot_stella_cmd boot_stella_script"
 STELLA_API_LOG_PUBLIC="log set_log_level set_log_state"
 
 # NOTE : get_key do not return values, so if we put it inside return function list, it will be broken

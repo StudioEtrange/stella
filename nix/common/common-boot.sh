@@ -38,19 +38,19 @@ _STELLA_BOOT_INCLUDED_=1
 # ./stella-link.sh boot shell vagrant://default
 
 # MAIN FUNCTION -----------------------------------------
-__boot_shell() {
+__boot_stella_shell() {
   local _uri="$1"
   __boot_stella "SHELL" "$_uri"
 }
 
-__boot_cmd() {
+__boot_stella_cmd() {
   local _uri="$1"
   local _cmd="$2"
   __boot_stella "CMD" "$_uri" "$_cmd"
 
 }
 
-__boot_script() {
+__boot_stella_script() {
   local _uri="$1"
   local _script="$2"
   __boot_stella "SCRIPT" "$_uri" "$_script"
@@ -101,21 +101,6 @@ __boot_stella() {
       #ssh://user@host:port[/abs_path|?rel_path]
       #vagrant://vagrant-machine[/abs_path|?rel_path]
 
-      #__require "ssh" "ssh"
-      #if [ "$__stella_uri_schema" = "ssh" ]; then
-    	#	_ssh_port="22"
-    	#	[ ! "$__stella_uri_port" = "" ] && _ssh_port="$__stella_uri_port"
-      #  __ssh_opt="-p $_ssh_port"
-    	#fi
-
-    	#if [ "$__stella_uri_schema" = "vagrant" ]; then
-    	#	__require "vagrant" "vagrant"
-      #  __vagrant_ssh_opt="$(vagrant ssh-config $__stella_uri_host | sed '/^[[:space:]]*$/d' |  awk '/^Host .*$/ { detected=1; }  { if(start) {print " -o "$1"="$2}; if(detected) start=1; }')"
-    	#	__stella_uri_host="localhost"
-    	#fi
-
-
-
 
       # folders
       local _boot_folder="."
@@ -148,11 +133,11 @@ __boot_stella() {
       # http://www.cyberciti.biz/faq/linux-unix-bsd-sudo-sorry-you-must-haveattytorun/
       case $_mode in
         SHELL )
-          __ssh_execute "cd $__boot_folder && $__stella_folder/stella.sh stella install dep && $__stella_folder/stella.sh boot shell local"
+          __ssh_execute "$_uri" "cd $__boot_folder && $__stella_folder/stella.sh stella install dep && $__stella_folder/stella.sh boot shell local"
           #ssh -t $__ssh_opt $__vagrant_ssh_opt "$_ssh_user$__stella_uri_host" "cd $__boot_folder && $__stella_folder/stella.sh stella install dep && $__stella_folder/stella.sh boot shell local"
           ;;
         CMD )
-          ssh -t $__ssh_opt $__vagrant_ssh_opt "$_ssh_user$__stella_uri_host" "cd $__boot_folder && $__stella_folder/stella.sh stella install dep && $__stella_folder/stella.sh boot cmd local -- '$_arg'"
+          __ssh_execute "$_uri" "cd $__boot_folder && $__stella_folder/stella.sh stella install dep && $__stella_folder/stella.sh boot cmd local -- '$_arg'"
           ;;
         SCRIPT )
           __script_filename="$(__get_filename_from_string $_arg)"
@@ -172,8 +157,8 @@ __boot_stella() {
               __target_script_path="./$__script_filename"
             fi
           fi
-          #ssh -t $__ssh_opt $__vagrant_ssh_opt "$_ssh_user$__stella_uri_host" "cd $__boot_folder && $__stella_folder/stella.sh stella install dep && $__stella_folder/stella.sh boot script local -- './${__script_filename}'"
-          ssh -t $__ssh_opt $__vagrant_ssh_opt "$_ssh_user$__stella_uri_host" "cd $__boot_folder && $__stella_folder/stella.sh stella install dep && $__target_script_path"
+          __ssh_execute "$_uri" "cd $__boot_folder && $__stella_folder/stella.sh stella install dep && $__target_script_path"
+          #ssh -t $__ssh_opt $__vagrant_ssh_opt "$_ssh_user$__stella_uri_host" "cd $__boot_folder && $__stella_folder/stella.sh stella install dep && $__target_script_path"
           ;;
         esac
     ;;
