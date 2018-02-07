@@ -20,8 +20,8 @@ _STELLA_BOOT_INCLUDED_=1
 #     stella is sync in default <path>/stella
 #     stella env file is synced
 #     when 'shell' : launch a shell with stella env setted
-#     when 'script' : executing script is sync in <path>/<script.sh> or default_path/<script.sh>
-#     when 'cmd' : nothing special
+#     when 'script' : executing script is sync in <path>/<script.sh> or default_path/<script.sh> then launch the script
+#     when 'cmd' : launch a cmd inside a bootstraped stella env
 
 # When local
 #     stella requirement are not installed
@@ -29,8 +29,8 @@ _STELLA_BOOT_INCLUDED_=1
 #     stella do not move
 #     stella env file is conserved
 #     when 'shell' : launch a shell with stella env setted
-#     when 'script' : nothing special
-#     when 'cmd' : nothing special
+#     when 'script' : launch the script
+#     when 'cmd' : launch a cmd inside a bootstraped stella env
 
 
 # SAMPLE
@@ -70,6 +70,7 @@ __boot_stella() {
   local _uri="$2"
   local _arg="$3"
 
+
   if [ "$_uri" = "local" ]; then
     __stella_uri_schema="local"
   else
@@ -89,7 +90,7 @@ __boot_stella() {
           eval "$_arg"
           ;;
         SCRIPT )
-          . "$_arg"
+          "$_arg"
           ;;
       esac
       ;;
@@ -100,18 +101,18 @@ __boot_stella() {
       #ssh://user@host:port[/abs_path|?rel_path]
       #vagrant://vagrant-machine[/abs_path|?rel_path]
 
-      if [ "$__stella_uri_schema" = "ssh" ]; then
-    		__require "ssh" "ssh"
-    		_ssh_port="22"
-    		[ ! "$__stella_uri_port" = "" ] && _ssh_port="$__stella_uri_port"
-        __ssh_opt="-p $_ssh_port"
-    	fi
+      #__require "ssh" "ssh"
+      #if [ "$__stella_uri_schema" = "ssh" ]; then
+    	#	_ssh_port="22"
+    	#	[ ! "$__stella_uri_port" = "" ] && _ssh_port="$__stella_uri_port"
+      #  __ssh_opt="-p $_ssh_port"
+    	#fi
 
-    	if [ "$__stella_uri_schema" = "vagrant" ]; then
-    		__require "vagrant" "vagrant"
-    		__vagrant_ssh_opt="$(vagrant ssh-config $__stella_uri_host | sed '/^[[:space:]]*$/d' |  awk 'NR>1 {print " -o "$1"="$2}')"
-    		__stella_uri_host="localhost"
-    	fi
+    	#if [ "$__stella_uri_schema" = "vagrant" ]; then
+    	#	__require "vagrant" "vagrant"
+      #  __vagrant_ssh_opt="$(vagrant ssh-config $__stella_uri_host | sed '/^[[:space:]]*$/d' |  awk '/^Host .*$/ { detected=1; }  { if(start) {print " -o "$1"="$2}; if(detected) start=1; }')"
+    	#	__stella_uri_host="localhost"
+    	#fi
 
 
 
@@ -141,13 +142,14 @@ __boot_stella() {
 
       # NOTE : __stella_uri_address contain user
       # we need to build a user@host without port number
-      local _ssh_user=
-      [ ! "$__stella_uri_user" = "" ] && _ssh_user="$__stella_uri_user"@
+      #local _ssh_user=
+      #[ ! "$__stella_uri_user" = "" ] && _ssh_user="$__stella_uri_user"@
 
       # http://www.cyberciti.biz/faq/linux-unix-bsd-sudo-sorry-you-must-haveattytorun/
       case $_mode in
         SHELL )
-          ssh -t $__ssh_opt $__vagrant_ssh_opt "$_ssh_user$__stella_uri_host" "cd $__boot_folder && $__stella_folder/stella.sh stella install dep && $__stella_folder/stella.sh boot shell local"
+          __ssh_execute "cd $__boot_folder && $__stella_folder/stella.sh stella install dep && $__stella_folder/stella.sh boot shell local"
+          #ssh -t $__ssh_opt $__vagrant_ssh_opt "$_ssh_user$__stella_uri_host" "cd $__boot_folder && $__stella_folder/stella.sh stella install dep && $__stella_folder/stella.sh boot shell local"
           ;;
         CMD )
           ssh -t $__ssh_opt $__vagrant_ssh_opt "$_ssh_user$__stella_uri_host" "cd $__boot_folder && $__stella_folder/stella.sh stella install dep && $__stella_folder/stella.sh boot cmd local -- '$_arg'"
@@ -158,17 +160,20 @@ __boot_stella() {
           # relative path
           if [ ! "${__stella_uri_query:1}" = "" ]; then
             __transfer_file_rsync "$_arg" "$_uri/$__script_filename"
+            __target_script_path="${__stella_uri_query:1}/$__script_filename"
           else
             # absolute  path
             if [ ! "$__stella_uri_path" = "" ]; then
               __transfer_file_rsync "$_arg" "$_uri/$__script_filename"
+              __target_script_path="${__stella_uri_path}/$__script_filename"
             # empty path
             else
               __transfer_file_rsync "$_arg" "${_uri}?./${__script_filename}"
+              __target_script_path="./$__script_filename"
             fi
           fi
-
-          ssh -t $__ssh_opt $__vagrant_ssh_opt "$_ssh_user$__stella_uri_host" "cd $__boot_folder && $__stella_folder/stella.sh stella install dep && $__stella_folder/stella.sh boot script local -- './${__script_filename}'"
+          #ssh -t $__ssh_opt $__vagrant_ssh_opt "$_ssh_user$__stella_uri_host" "cd $__boot_folder && $__stella_folder/stella.sh stella install dep && $__stella_folder/stella.sh boot script local -- './${__script_filename}'"
+          ssh -t $__ssh_opt $__vagrant_ssh_opt "$_ssh_user$__stella_uri_host" "cd $__boot_folder && $__stella_folder/stella.sh stella install dep && $__target_script_path"
           ;;
         esac
     ;;

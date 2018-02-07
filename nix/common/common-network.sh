@@ -333,6 +333,37 @@ $(command minikube "$@");
 }
 
 # -------------------- FUNCTIONS-----------------
+# support ssh:// and vagrant://
+# http://www.cyberciti.biz/faq/linux-unix-bsd-sudo-sorry-you-must-haveattytorun/
+__ssh_execute() {
+	local __uri="$1"
+	local __cmd="$2"
+
+	__require "ssh" "ssh"
+
+	__uri_parse "$_uri"
+
+	if [ "$__stella_uri_schema" = "ssh" ]; then
+		__ssh_port="22"
+		[ ! "$__stella_uri_port" = "" ] && __ssh_port="$__stella_uri_port"
+		__ssh_opt="-p $__ssh_port"
+	fi
+
+	if [ "$__stella_uri_schema" = "vagrant" ]; then
+		__require "vagrant" "vagrant"
+		__vagrant_ssh_opt="$(vagrant ssh-config $__stella_uri_host | sed '/^[[:space:]]*$/d' |  awk '/^Host .*$/ { detected=1; }  { if(start) {print " -o "$1"="$2}; if(detected) start=1; }')"
+		__stella_uri_host="localhost"
+	fi
+
+	# NOTE : __stella_uri_address contain user
+	# we need to build a user@host without port number
+	local __ssh_user=
+	[ ! "$__stella_uri_user" = "" ] && __ssh_user="$__stella_uri_user"@
+
+	ssh -t $__ssh_opt $__vagrant_ssh_opt "$__ssh_user$__stella_uri_host" "$__cmd"
+}
+
+
 # TODO : these function support only ipv4
 __get_network_info() {
 	local _err=

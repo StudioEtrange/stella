@@ -22,7 +22,7 @@ usage() {
 	echo " L     app get-feature <all|feature schema> : install all features defined in app properties file or install a matching one"
 	echo " L     app link <app-path> [--stellaroot=<path>] : link an app to the current or a specific stella path"
 	echo " L     app vendor <app-path> [--stellaroot=<path>] : vendorize stella (current or a specific one) into an app"
-	echo " L     app deploy <[schema://]user@host:[/abs_path|?rel_path]> [--cache] [--workspace] : deploy current app version to an other target via ssh. Vagrant use: vagrant://machine-name. [--cache] : include app cache folder. [--workspace] : include app workspace folder"
+	echo " L     app deploy <[schema://]user@host:[/abs_path|?rel_path]> [--cache] [--workspace] [--hidden] [--sudo] : deploy current app version to an other target via ssh. Vagrant use: vagrant://machine-name. [--cache] : include app cache folder. [--workspace] : include app workspace folder. [--sudo] : execute deploy as sudo. [--hidden] : exclude hidden files"
 	echo " o-- feature management :"
 	echo " L     feature install <feature schema> [--depforce] [--depignore] [--buildarch=x86|x64] [--export=<path>] [--portable=<path>] : install a feature. [--depforce] will force to reinstall all dependencies. [--depignore] will ignore dependencies. schema = feature_name[#version][@arch][:binary|source][/os_restriction][\\os_exclusion]"
 	echo " L     feature remove <feature schema> : remove a feature"
@@ -33,7 +33,7 @@ usage() {
 	echo " L     stella install dep : install all features and systems requirements if any, for the current OS ($STELLA_CURRENT_OS)"
 	echo " L     stella version print : print stella version"
 	echo " L     stella search path : print current system search path"
-	echo " L     stella deploy <[sechema://]user@host:[/abs_path|?rel_path]> [--cache] [--workspace] : deploy current stella version to an other target via ssh. Vagrant use: vagrant://machine-name. [--cache] : include stella cache folder. [--workspace] : include stella workspace folder"
+	echo " L     stella deploy <[sechema://]user@host:[/abs_path|?rel_path]> [--cache] [--workspace] [--sudo] : deploy current stella version to an other target via ssh. Vagrant use: vagrant://machine-name. [--cache] : include stella cache folder. [--workspace] : include stella workspace folder. [--sudo] : execute deploy as sudo."
 	echo " o-- network management :"
 	echo " L     proxy on <proxy name> : active a registered proxy"
 	echo " L     proxy off now : disable proxy"
@@ -80,6 +80,8 @@ PORTABLE=''                   ''          'path'              s           0     
 BUILDARCH=''				'a'				'arch'			a 			0 			 'x86 x64'
 CACHE=''                       	''    		''            		b     		0     		'1'           			Include cache folder when deploying.
 WORKSPACE=''                       	''    		''            		b     		0     		'1'           			Include workspace folder when deploying.
+HIDDEN=''                       	''    		''            		b     		0     		'1'           			Exclude hidden files.
+SUDO=''                       	''    		''            		b     		0     		'1'           			Execute as sudo.
 "
 
 __argparse "$0" "$OPTIONS" "$PARAMETERS" "Stella" "$(usage)" "OTHERARG" "$@"
@@ -120,6 +122,8 @@ if [ "$DOMAIN" = "app" ]; then
 				_deploy_options=
 				[ "$CACHE" = "1" ] && _deploy_options="CACHE"
 				[ "$WORKSPACE" = "1" ] && _deploy_options="$_deploy_options WORKSPACE"
+				[ "$HIDDEN" = "1" ] && _deploy_options="$_deploy_options EXCLUDE_HIDDEN"
+				[ "$SUDO" = "1" ] && _deploy_options="$_deploy_options SUDO"
 				__transfer_app "$ID" "$_deploy_options"
 				;;
 		get-feature)
@@ -296,6 +300,7 @@ if [ "$DOMAIN" = "stella" ]; then
 		_deploy_options=
 		[ "$CACHE" = "1" ] && _deploy_options="CACHE"
 		[ "$WORKSPACE" = "1" ] && _deploy_options="$_deploy_options WORKSPACE"
+		[ "$SUDO" = "1" ] && _deploy_options="$_deploy_options SUDO"
 		__transfer_stella "$ID" "$_deploy_options"
 	fi
 

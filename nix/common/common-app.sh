@@ -9,7 +9,7 @@ _STELLA_COMMON_APP_INCLUDED_=1
 
 # [user@][host][:port][/abs_path|?rel_path]
 # By default
-# CACHE, WORKSPACE, GIT are excluded ==> use theses options to force include
+# CACHE, WORKSPACE, GIT are excluded ==> use theses options to not exclude
 # EXCLUDE_HIDDEN use this option to exclude hidden files
 # SUDO use sudo on the target host
 __transfer_app(){
@@ -24,6 +24,7 @@ __transfer_app(){
 	local _opt_ex_hidden
 	_opt_ex_hidden=
 	local _opt_sudo
+	_opt_sudo=
 
 	for o in $_OPT; do
 		[ "$o" = "CACHE" ] && _opt_ex_cache=
