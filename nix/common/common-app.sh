@@ -10,6 +10,8 @@ _STELLA_COMMON_APP_INCLUDED_=1
 # [user@][host][:port][/abs_path|?rel_path]
 # By default
 # CACHE, WORKSPACE, GIT are excluded ==> use theses options to force include
+# EXCLUDE_HIDDEN use this option to exclude hidden files
+# SUDO use sudo on the target host
 __transfer_app(){
 	local _uri="$1"
 	local _OPT="$2"
@@ -19,14 +21,19 @@ __transfer_app(){
 	_opt_ex_workspace="EXCLUDE /$(__abs_to_rel_path $STELLA_APP_WORK_ROOT $STELLA_APP_ROOT)/"
 	local _opt_ex_git
 	_opt_ex_git="EXCLUDE /.git/"
+	local _opt_ex_hidden
+	_opt_ex_hidden=
+	local _opt_sudo
 
 	for o in $_OPT; do
 		[ "$o" = "CACHE" ] && _opt_ex_cache=
 		[ "$o" = "WORKSPACE" ] && _opt_ex_workspace=
 		[ "$o" = "GIT" ] && _opt_ex_git=
+		[ "$o" = "EXCLUDE_HIDDEN" ] && _opt_ex_hidden="EXCLUDE_HIDDEN"
+		[ "$o" = "SUDO" ] && _opt_sudo="SUDO"
 	done
 
-	__transfer_folder_rsync "$STELLA_APP_ROOT" "$_uri" "$_opt_ex_cache $_opt_ex_workspace $_opt_ex_git"
+	__transfer_folder_rsync "$STELLA_APP_ROOT" "$_uri" "$_opt_ex_cache $_opt_ex_workspace $_opt_ex_hidden $_opt_ex_git $_opt_sudo"
 }
 
 

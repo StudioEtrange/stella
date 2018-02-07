@@ -363,14 +363,20 @@ __transfer_folder_rsync() {
 
 	# EXCLUDE (repeat this option for each exclude filter to set - path are absolute to the root of the folder to transfert. example : /workspace/)
 	# FOLDER_CONTENT will transfer only folder content not folder itself
+	# SUDO use sudo on the target host
+	# EXCLUDE_HIDDEN use this option to exclude hidden files
 	local _OPT="$3"
 	local _flag_exclude=OFF
 	local _exclude=
 	local _opt_folder_content=OFF
+	local _opt_sudo=
+	local _opt_exclude_hidden=
 	for o in $_OPT; do
 		[ "$_flag_exclude" = "ON" ] && _exclude="$o $_exclude" && _flag_exclude=OFF
 		[ "$o" = "EXCLUDE" ] && _flag_exclude=ON
 		[ "$o" = "FOLDER_CONTENT" ] && _opt_folder_content=ON
+		[ "$o" = "EXCLUDE_HIDDEN" ] && _opt_exclude_hidden=ON
+		[ "$o" = "SUDO" ] && _opt_sudo='--rsync-path=sudo rsync'
 	done
 
 	# NOTE : rsync needs to be present on both host (source, target)
@@ -394,7 +400,7 @@ __transfer_folder_rsync() {
 
 	if [ "$__stella_uri_schema" = "vagrant" ]; then
 		__require "vagrant" "vagrant"
-		__vagrant_ssh_opt="$(vagrant ssh-config $__stella_uri_host | sed '/^[[:space:]]*$/d' |  awk 'NR>1 {print " -o "$1"="$2}')"
+		__vagrant_ssh_opt="$(vagrant ssh-config $__stella_uri_host | sed '/^[[:space:]]*$/d' |  awk '/^Host .*$/ { detected=1; }  { if(start) {print " -o "$1"="$2}; if(detected) start=1; }')"
 		__stella_uri_host="localhost"
 	fi
 
@@ -427,16 +433,17 @@ __transfer_folder_rsync() {
 	for o in $_exclude; do
 		_opt_exclude="--exclude $(echo $_base_folder$o | sed 's,//,/,') $_opt_exclude"
 	done
+	[ "$_opt_exclude_hidden" = "ON" ] && _opt_exclude="$_opt_exclude --exclude ${_base_folder}.*"
 
 	if [ "$_local_filesystem" = "ON" ]; then
-		rsync $_opt_exclude --force --delete -avz "$_folder" "$_target"
+		rsync $_opt_exclude --force --delete -avz "$_opt_sudo" "$_folder" "$_target"
 	else
 		case $__stella_uri_schema in
 			ssh )
-				rsync $_opt_exclude --force --delete -avz -e "ssh -p $_ssh_port" "$_folder" "$_target"
+				rsync $_opt_exclude --force --delete -avz "$_opt_sudo" -e "ssh -p $_ssh_port" "$_folder" "$_target"
 				;;
 			vagrant )
-				rsync $_opt_exclude --force --delete -avz -e "ssh $__vagrant_ssh_opt" "$_folder" "$_target"
+				rsync $_opt_exclude --force --delete -avz "$_opt_sudo" -e "ssh $__vagrant_ssh_opt" "$_folder" "$_target"
 				;;
 			*)
 				echo "** ERROR protocol unknown"
@@ -455,6 +462,12 @@ __transfer_folder_rsync() {
 __transfer_file_rsync() {
 	local _file="$1"
 	local _uri="$2"
+	local _OPT="$3"
+
+	local _opt_sudo=
+	for o in $_OPT; do
+		[ "$o" = "SUDO" ] && _opt_sudo='--rsync-path=sudo rsync'
+	done
 
 
 	# NOTE : rsync needs to be present on both host (source, target)
@@ -477,7 +490,7 @@ __transfer_file_rsync() {
 
 	if [ "$__stella_uri_schema" = "vagrant" ]; then
 		__require "vagrant" "vagrant"
-		__vagrant_ssh_opt="$(vagrant ssh-config $__stella_uri_host | sed '/^[[:space:]]*$/d' |  awk 'NR>1 {print " -o "$1"="$2}')"
+		__vagrant_ssh_opt="$(vagrant ssh-config $__stella_uri_host | sed '/^[[:space:]]*$/d' |  awk '/^Host .*$/ { detected=1; }  { if(start) {print " -o "$1"="$2}; if(detected) start=1; }')"
 		__stella_uri_host="localhost"
 	fi
 
@@ -497,14 +510,14 @@ __transfer_file_rsync() {
 	fi
 
 	if [ "$_local_filesystem" = "ON" ]; then
-		rsync -avz "$_file" "$_target"
+		rsync -avz "$_opt_sudo" "$_file" "$_target"
 	else
 		case $__stella_uri_schema in
 			ssh )
-				rsync -avz -e "ssh -p $_ssh_port" "$_file" "$_target"
+				rsync -avz "$_opt_sudo" -e "ssh -p $_ssh_port" "$_file" "$_target"
 				;;
 			vagrant )
-				rsync -avz -e "ssh $__vagrant_ssh_opt" "$_file" "$_target"
+				rsync -avz "$_opt_sudo" -e "ssh $__vagrant_ssh_opt" "$_file" "$_target"
 				;;
 			*)
 				echo "** ERROR protocol unknown"
