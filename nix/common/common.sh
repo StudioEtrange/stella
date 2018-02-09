@@ -365,18 +365,23 @@ __transfer_folder_rsync() {
 	local _uri="$2"
 
 	# EXCLUDE (repeat this option for each exclude filter to set - path are absolute to the root of the folder to transfert. example : /workspace/)
+	# INCLUDE (This option override exclude rules. Repeat this option for each include filter to set - path are absolute to the root of the folder to transfert. example : /workspace/)
 	# FOLDER_CONTENT will transfer only folder content not folder itself
 	# SUDO use sudo on the target host
 	# EXCLUDE_HIDDEN use this option to exclude hidden files
 	local _OPT="$3"
 	local _flag_exclude=OFF
 	local _exclude=
+	local _flag_include=OFF
+	local _include=
 	local _opt_folder_content=OFF
 	local _opt_sudo=OFF
 	local _opt_exclude_hidden=
 	for o in $_OPT; do
 		[ "$_flag_exclude" = "ON" ] && _exclude="$o $_exclude" && _flag_exclude=OFF
 		[ "$o" = "EXCLUDE" ] && _flag_exclude=ON
+		[ "$_flag_include" = "ON" ] && _include="$o $_include" && _flag_include=OFF
+		[ "$o" = "INCLUDE" ] && _flag_include=ON
 		[ "$o" = "FOLDER_CONTENT" ] && _opt_folder_content=ON
 		[ "$o" = "EXCLUDE_HIDDEN" ] && _opt_exclude_hidden=ON
 		[ "$o" = "SUDO" ] && _opt_sudo=ON
@@ -388,11 +393,16 @@ __transfer_folder_rsync() {
 	__uri_parse "$_uri"
 
 	local _local_filesystem="OFF"
-	if [ "$__stella_uri_host" = "" ]; then
+	if [ "$__stella_uri_schema" = "local" ]; then
 		_local_filesystem="ON"
 	else
-		# default schema is ssh when host is not emplty
-		[ "$__stella_uri_schema" = "" ] && __stella_uri_schema="ssh"
+		if [ "$__stella_uri_host" = "" ]; then
+			_local_filesystem="ON"
+			__stella_uri_schema="local"
+		else
+			# default schema is ssh when host is not emplty
+			[ "$__stella_uri_schema" = "" ] && __stella_uri_schema="ssh"
+		fi
 	fi
 
 	if [ "$__stella_uri_schema" = "ssh" ]; then
@@ -409,18 +419,31 @@ __transfer_folder_rsync() {
 
 
 	local _target=
-	# we use relative path
-	if [ ! "${__stella_uri_query:1}" = "" ]; then
-		_target="${__stella_uri_query:1}"
-	else
-		# we use absolute path
-		_target="${__stella_uri_path}"
+	if [ "$_local_filesystem" = "ON" ]; then
+		# we use explicit relative path with "?"
+		if [ ! "${__stella_uri_query:1}" = "" ]; then
+			_target="${__stella_uri_query:1}"
+		else
+			# we may have use absolute path or relative path.
+			# if relative path is used, __stella_uri_host will contain the "." or ".."
+			_target="${__stella_uri_host}${__stella_uri_path}"
+		fi
 	fi
 
+
 	if [ "$_local_filesystem" = "OFF" ]; then
+		# we use relative path
+		if [ ! "${__stella_uri_query:1}" = "" ]; then
+			_target="${__stella_uri_query:1}"
+		else
+			# we use absolute path
+			_target="${__stella_uri_path}"
+		fi
+
 		_target="$__stella_uri_host":"$_target"
 		[ ! "$__stella_uri_user" = "" ] && _target="$__stella_uri_user"@"$_target"
 	fi
+
 
 	local _base_folder=
 	# $_folder must not finish with / or only folder content will be transfered, not folder itself
@@ -431,29 +454,36 @@ __transfer_folder_rsync() {
 		_base_folder="/$(basename $_folder)/"
 	fi
 
+	local _opt_include=
+	for o in $_include; do
+		_opt_include="--include "$(echo "$_base_folder$o" | sed 's,//,/,')" $_opt_include"
+	done
+
 	local _opt_exclude=
 	for o in $_exclude; do
 		_opt_exclude="--exclude "$(echo "$_base_folder$o" | sed 's,//,/,')" $_opt_exclude"
 	done
 	[ "$_opt_exclude_hidden" = "ON" ] && _opt_exclude="$_opt_exclude --exclude ${_base_folder}.*"
 
-	if [ "$_local_filesystem" = "ON" ]; then
-		[ "$_opt_sudo" = "ON" ] && rsync $_opt_exclude --rsync-path="sudo rsync" --force --delete -avz "$_folder" "$_target"
-		[ "$_opt_sudo" = "OFF" ] && rsync $_opt_exclude --force --delete -avz "$_folder" "$_target"
-	else
-		case $__stella_uri_schema in
-			ssh )
-				[ "$_opt_sudo" = "ON" ] && rsync $_opt_exclude --rsync-path="sudo rsync" --force --delete -avz -e "ssh -p $_ssh_port" "$_folder" "$_target"
-				[ "$_opt_sudo" = "OFF" ] && rsync $_opt_exclude --force --delete -avz -e "ssh -p $_ssh_port" "$_folder" "$_target"
-				;;
-			vagrant )
-				[ "$_opt_sudo" = "ON" ] && rsync $_opt_exclude --rsync-path="sudo rsync" --force --delete -avz -e "ssh $__vagrant_ssh_opt" "$_folder" "$_target"
-				[ "$_opt_sudo" = "OFF" ] && rsync $_opt_exclude --force --delete -avz -e "ssh $__vagrant_ssh_opt" "$_folder" "$_target"
-				;;
-			*)
-				echo "** ERROR protocol unknown"
-		esac
-	fi
+
+	case $__stella_uri_schema in
+		ssh )
+			[ "$_opt_sudo" = "ON" ] && rsync $_opt_include $_opt_exclude --rsync-path="sudo rsync" --force --delete -avz -e "ssh -p $_ssh_port" "$_folder" "$_target"
+			[ "$_opt_sudo" = "OFF" ] && rsync $_opt_include $_opt_exclude --force --delete -avz -e "ssh -p $_ssh_port" "$_folder" "$_target"
+			;;
+		vagrant )
+			[ "$_opt_sudo" = "ON" ] && rsync $_opt_include $_opt_exclude --rsync-path="sudo rsync" --force --delete -avz -e "ssh $__vagrant_ssh_opt" "$_folder" "$_target"
+			[ "$_opt_sudo" = "OFF" ] && rsync $_opt_include $_opt_exclude --force --delete -avz -e "ssh $__vagrant_ssh_opt" "$_folder" "$_target"
+			;;
+		local )
+			[ "$_opt_sudo" = "ON" ] && rsync $_opt_include $_opt_exclude --rsync-path="sudo rsync" --force --delete -avz "$_folder" "$_target"
+			[ "$_opt_sudo" = "OFF" ] && rsync $_opt_include $_opt_exclude --force --delete -avz "$_folder" "$_target"
+			;;
+		*)
+			echo "** ERROR protocol unknown"
+			;;
+	esac
+
 }
 
 
@@ -480,11 +510,16 @@ __transfer_file_rsync() {
 	__uri_parse "$_uri"
 
 	local _local_filesystem=OFF
-	if [ "$__stella_uri_host" = "" ]; then
+	if [ "$__stella_uri_schema" = "local" ]; then
 		_local_filesystem="ON"
 	else
-		# default schema is ssh when host is not emplty
-		[ "$__stella_uri_schema" = "" ] && __stella_uri_schema="ssh"
+		if [ "$__stella_uri_host" = "" ]; then
+			_local_filesystem="ON"
+			__stella_uri_schema="local"
+		else
+			# default schema is ssh when host is not emplty
+			[ "$__stella_uri_schema" = "" ] && __stella_uri_schema="ssh"
+		fi
 	fi
 
 	if [ "$__stella_uri_schema" = "ssh" ]; then
@@ -501,36 +536,50 @@ __transfer_file_rsync() {
 
 
 	local _target=
-	# we use relative path
-	if [ ! "${__stella_uri_query:1}" = "" ]; then
-		_target="${__stella_uri_query:1}"
-	else
-		# we use absolute path
-		_target="${__stella_uri_path}"
+	if [ "$_local_filesystem" = "ON" ]; then
+		# we use explicit relative path with "?"
+		if [ ! "${__stella_uri_query:1}" = "" ]; then
+			_target="${__stella_uri_query:1}"
+		else
+			# we may have use absolute path or relative path.
+			# if relative path is used, __stella_uri_host will contain the "." or ".."
+			_target="${__stella_uri_host}${__stella_uri_path}"
+		fi
 	fi
 
+
 	if [ "$_local_filesystem" = "OFF" ]; then
+		# we use relative path
+		if [ ! "${__stella_uri_query:1}" = "" ]; then
+			_target="${__stella_uri_query:1}"
+		else
+			# we use absolute path
+			_target="${__stella_uri_path}"
+		fi
+
 		_target="$__stella_uri_host":"$_target"
 		[ ! "$__stella_uri_user" = "" ] && _target="$__stella_uri_user"@"$_target"
 	fi
 
-	if [ "$_local_filesystem" = "ON" ]; then
-		[ "$_opt_sudo" = "ON" ] && rsync --rsync-path="sudo rsync" -avz "$_file" "$_target"
-		[ "$_opt_sudo" = "OFF" ] && rsync -avz "$_file" "$_target"
-	else
-		case $__stella_uri_schema in
-			ssh )
-				[ "$_opt_sudo" = "ON" ] && rsync --rsync-path="sudo rsync" -avz -e "ssh -p $_ssh_port" "$_file" "$_target"
-				[ "$_opt_sudo" = "OFF" ] && rsync -avz -e "ssh -p $_ssh_port" "$_file" "$_target"
-				;;
-			vagrant )
-				[ "$_opt_sudo" = "ON" ] && rsync --rsync-path="sudo rsync" -avz -e "ssh $__vagrant_ssh_opt" "$_file" "$_target"
-				[ "$_opt_sudo" = "OFF" ] && rsync -avz -e "ssh $__vagrant_ssh_opt" "$_file" "$_target"
-				;;
-			*)
-				echo "** ERROR protocol unknown"
-		esac
-	fi
+
+	case $__stella_uri_schema in
+		ssh )
+			[ "$_opt_sudo" = "ON" ] && rsync --rsync-path="sudo rsync" -avz -e "ssh -p $_ssh_port" "$_file" "$_target"
+			[ "$_opt_sudo" = "OFF" ] && rsync -avz -e "ssh -p $_ssh_port" "$_file" "$_target"
+			;;
+		vagrant )
+			[ "$_opt_sudo" = "ON" ] && rsync --rsync-path="sudo rsync" -avz -e "ssh $__vagrant_ssh_opt" "$_file" "$_target"
+			[ "$_opt_sudo" = "OFF" ] && rsync -avz -e "ssh $__vagrant_ssh_opt" "$_file" "$_target"
+			;;
+		local )
+			[ "$_opt_sudo" = "ON" ] && rsync --rsync-path="sudo rsync" -avz "$_file" "$_target"
+			[ "$_opt_sudo" = "OFF" ] && rsync -avz "$_file" "$_target"
+			;;
+		*)
+			echo "** ERROR protocol unknown"
+			;;
+	esac
+
 }
 
 

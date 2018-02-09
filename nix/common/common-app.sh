@@ -34,7 +34,9 @@ __transfer_app(){
 		[ "$o" = "SUDO" ] && _opt_sudo="SUDO"
 	done
 
-	__transfer_folder_rsync "$STELLA_APP_ROOT" "$_uri" "$_opt_ex_cache $_opt_ex_workspace $_opt_ex_hidden $_opt_ex_git $_opt_sudo"
+	__standard_include="INCLUDE /.stella-id"
+
+	__transfer_folder_rsync "$STELLA_APP_ROOT" "$_uri" "$__standard_include $_opt_ex_cache $_opt_ex_workspace $_opt_ex_hidden $_opt_ex_git $_opt_sudo"
 }
 
 
@@ -68,42 +70,82 @@ __create_app_samples() {
 }
 
 
+__generate_app_link_files() {
+	local __target_approot="$1"
+	local __linked_stellaroot="$2"
+	local _OPT="$3"
+
+	local __linked_stella_version
+	local __linked_stella_flavour
+	local _flag_version=OFF
+	local _wanted_version=
+	local _flag_flavour=OFF
+	local _wanted_flavour=
+	for o in $_OPT; do
+		[ "$_flag_version" = "ON" ] && __linked_stella_version="$o" && _flag_version=OFF
+		[ "$o" = "VERSION" ] && _flag_version=ON
+		[ "$_flag_flavour" = "ON" ] && __linked_stella_flavour="$o" && _flag_flavour=OFF
+		[ "$o" = "FLAVOUR" ] && _flag_flavour=ON
+	done
+
+	# compute paths
+	[ "$(__is_abs "$__target_approot")" = "FALSE" ] && __target_approot=$(__rel_to_abs_path $__target_approot $STELLA_CURRENT_RUNNING_DIR)
+
+	[ "$(__is_abs "$__linked_stellaroot")" = "FALSE" ] && __abs_stellaroot=$(__rel_to_abs_path "$__linked_stellaroot") \
+																											|| __abs_stellaroot="$__linked_stellaroot"
+	[ "$__linked_stella_version" = "" ] && __linked_stella_version=$(__get_stella_version "$__abs_stellaroot")
+	[ "$__linked_stella_flavour" = "" ] && __linked_stella_flavour=$(__get_stella_flavour "$__abs_stellaroot")
+
+	__rel_stellaroot=$(__abs_to_rel_path "$__abs_stellaroot" "$__target_approot")
+
+
+	# generate stella-id file
+	echo "export STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$__rel_stellaroot" >"$__target_approot/.stella-id"
+	echo "STELLA_DEP_FLAVOUR=$__linked_stella_flavour" >>"$__target_approot/.stella-id"
+	echo "STELLA_DEP_VERSION=$__linked_stella_version" >>"$__target_approot/.stella-id"
+
+	# create stella-link
+	cat $STELLA_TEMPLATE/sample-stella-link.sh > $__target_approot/stella-link.sh
+	chmod +x $__target_approot/stella-link.sh
+}
+
+
 # copy a version of stella into a folder of an app and link it
 __vendorize_stella() {
 	local _target_approot="$1"
 	local _OPT="$2"
+
+
 	local _flag_stella_root=OFF
 	local _stella_root="$STELLA_ROOT"
-
+	local _flag_folder_name=OFF
 	local _folder_name="pool"
-
 	for o in $_OPT; do
-		[ "$_flag_stella_root" = "ON" ] && _stella_root="$o" && _flag_stella_root=OFF && _stella_root="$(__rel_to_abs_path $_stella_root)"
+		[ "$_flag_stella_root" = "ON" ] && _stella_root="$o" && _flag_stella_root=OFF
 		[ "$o" = "STELLA_ROOT" ] && _flag_stella_root=ON
+		[ "$_flag_folder_name" = "ON" ] && _folder_name="$o" && _flag_folder_name=OFF
+		[ "$o" = "FOLDER_NAME" ] && _flag_folder_name=ON
 	done
 
-	_target_approot=$(__rel_to_abs_path $_target_approot $STELLA_CURRENT_RUNNING_DIR)
+	_target_approot="$(__rel_to_abs_path "$_target_approot")"
 	mkdir -p "$_target_approot/$_folder_name"
 
+	[ "$(__is_abs "$__linked_stellaroot")" = "FALSE" ] && __abs_stellaroot=$(__rel_to_abs_path "$_stella_root") \
+																											|| __abs_stellaroot="$_stella_root"
 	__STELLA_ROOT_SAVE="$STELLA_ROOT"
-	STELLA_ROOT="$_stella_root"
+	STELLA_ROOT="$__abs_stellaroot"
 	__transfer_stella "$_target_approot/$_folder_name" "WIN APP ENV"
 	STELLA_ROOT="$__STELLA_ROOT_SAVE"
 
+	# we need to save version information of the vendorized stella before recreating link
+	local _ver
+	_ver=$(__get_stella_version "$__abs_stellaroot")
 
-	[ "$(__is_abs "$_stella_root")" = "FALSE" ] && _stella_root=$(__rel_to_abs_path "$_stella_root" "$_target_approot")
-	# keep the vendorized stella version safe
-	_s_ver=$(__get_stella_version "$_stella_root")
-	_s_flavour=$(__get_stella_flavour "$_stella_root")
-
-	__link_app "$_target_approot" "STELLA_ROOT $_target_approot/$_folder_name/stella VERSION $_s_ver FLAVOUR $_s_flavour"
-
+	__generate_app_link_files "$_target_approot" "$_target_approot/$_folder_name/$(basename $__abs_stellaroot)" "FLAVOUR VENDOR VERSION $_ver"
 }
 
 # align stella installation to current app one (recreate stella-link file)
 # align workspace and cache folder paths of the current app with another app (change stella properties path)
-# TODO : when stella-link is modified by itself could raise errors
-#				exemple : ./stella-link app vendor . --stellaroot=<path>
 __link_app() {
 	local _target_approot="$1"
 
@@ -121,42 +163,17 @@ __link_app() {
 		[ "$o" = "WORKSPACE" ] && _opt_share_workspace=ON
 		[ "$_flag_stella_root" = "ON" ] && _stella_root="$o" && _flag_stella_root=OFF
 		[ "$o" = "STELLA_ROOT" ] && _flag_stella_root=ON
-		[ "$_flag_version" = "ON" ] && _wanted_version="$o" && _flag_version=OFF
-		[ "$o" = "VERSION" ] && _flag_version=ON
-		[ "$_flag_flavour" = "ON" ] && _wanted_flavour="$o" && _flag_flavour=OFF
-		[ "$o" = "FLAVOUR" ] && _flag_flavour=ON
 	done
 
 	_target_approot=$(__rel_to_abs_path $_target_approot $STELLA_CURRENT_RUNNING_DIR)
 
-	#[ "$_stella_root" = "" ] && _stella_root=$STELLA_ROOT
-	[ "$(__is_abs "$_stella_root")" = "FALSE" ] && _stella_root=$(__rel_to_abs_path "$_stella_root" "$_target_approot")
-
-	[ "$_wanted_version" = "" ] && _s_ver=$(__get_stella_version "$_stella_root") \
-																	|| _s_ver="$_wanted_version"
-	[ "$_wanted_flavour" = "" ] && _s_flavour=$(__get_stella_flavour "$_stella_root") \
-																	|| _s_flavour="$_wanted_flavour"
-
-
-	_stella_root=$(__abs_to_rel_path "$_stella_root" "$_target_approot")
-
-	echo "#!/usr/bin/env bash" >$_target_approot/stella-link.sh.temp
-	echo "_STELLA_LINK_CURRENT_FILE_DIR=\"\$( cd \"\$( dirname \"\${BASH_SOURCE[0]}\" )\" && pwd )\"" >>$_target_approot/stella-link.sh.temp
-	echo "export STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$_target_approot/stella-link.sh.temp
-	echo "STELLA_DEP_FLAVOUR=$_s_flavour" >>$_target_approot/stella-link.sh.temp
-	echo "STELLA_DEP_VERSION=$_s_ver" >>$_target_approot/stella-link.sh.temp
-
-	cat $_target_approot/stella-link.sh.temp $STELLA_TEMPLATE/sample-stella-link.sh > $_target_approot/stella-link.sh
-	chmod +x $_target_approot/stella-link.sh
-	rm -f $_target_approot/stella-link.sh.temp
-
+	__generate_app_link_files "$_target_approot" "$_stella_root" "$_OPT"
 
 	# tweak stella properties file
 	_target_STELLA_APP_PROPERTIES_FILE="$_target_approot/$STELLA_APP_PROPERTIES_FILENAME"
 
 	[ "$_opt_share_cache" = "ON" ] && __add_key "$_target_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_CACHE_DIR" "$STELLA_APP_CACHE_DIR"
 	[ "$_opt_share_workspace" = "ON" ] && __add_key "$_target_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_WORK_ROOT" "$STELLA_APP_WORK_ROOT"
-
 
 }
 
@@ -171,40 +188,19 @@ __init_app() {
 		mkdir -p $STELLA_CURRENT_RUNNING_DIR/$_approot
 		_approot=$(__rel_to_abs_path "$_approot" "$STELLA_CURRENT_RUNNING_DIR")
 	else
-		mkdir -p $_approot
+		mkdir -p "$_approot"
 	fi
 
-
-    [ "$_workroot" = "" ] && _workroot=$_approot/workspace
-  	[ "$_cachedir" = "" ] && _cachedir=$_approot/cache
-
+  [ "$_workroot" = "" ] && _workroot="$_approot/workspace"
+	[ "$_cachedir" = "" ] && _cachedir="$_approot/cache"
 
 	[ "$(__is_abs "$_workroot")" = "FALSE" ] && _workroot=$(__rel_to_abs_path "$_workroot" "$_approot")
 	[ "$(__is_abs "$_cachedir")" = "FALSE" ] && _cachedir=$(__rel_to_abs_path "$_cachedir" "$_approot")
-	# [ "$(__is_abs "$_stella_root")" = "FALSE" ] && _stella_root=$(__rel_to_abs_path "$STELLA_ROOT" "$_approot")
-
-
-	_s_ver=$(__get_stella_version "$_stella_root")
-	_s_flavour=$(__get_stella_flavour "$_stella_root")
 
 	_workroot=$(__abs_to_rel_path "$_workroot" "$_approot")
 	_cachedir=$(__abs_to_rel_path "$_cachedir" "$_approot")
-	_stella_root=$(__abs_to_rel_path "$STELLA_ROOT" "$_approot")
 
-
-
-	echo "#!/usr/bin/env bash" >$_approot/stella-link.sh.temp
-	echo "_STELLA_LINK_CURRENT_FILE_DIR=\"\$( cd \"\$( dirname \"\${BASH_SOURCE[0]}\" )\" && pwd )\"" >>$_approot/stella-link.sh.temp
-	echo "export STELLA_ROOT=\$_STELLA_LINK_CURRENT_FILE_DIR/$_stella_root" >>$_approot/stella-link.sh.temp
-	echo "STELLA_DEP_FLAVOUR=$_s_flavour" >>$_approot/stella-link.sh.temp
-	echo "STELLA_DEP_VERSION=$_s_ver" >>$_approot/stella-link.sh.temp
-
-
-
-
-	cat $_approot/stella-link.sh.temp $STELLA_TEMPLATE/sample-stella-link.sh > $_approot/stella-link.sh
-	chmod +x $_approot/stella-link.sh
-	rm -f $_approot/stella-link.sh.temp
+	__generate_app_link_files "$_approot" "$STELLA_ROOT"
 
 	_STELLA_APP_PROPERTIES_FILE="$_approot/$STELLA_APP_PROPERTIES_FILENAME"
 	if [ -f "$_STELLA_APP_PROPERTIES_FILE" ]; then

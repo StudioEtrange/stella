@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+_STELLA_LINK_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+[ -f "$_STELLA_LINK_CURRENT_FILE_DIR/.stella-id" ] && . $_STELLA_LINK_CURRENT_FILE_DIR/.stella-id
 [ ! "$1" = "chaining" ] && export STELLA_APP_ROOT=$_STELLA_LINK_CURRENT_FILE_DIR
 
 if [ ! "$1" = "nothing" ]; then
