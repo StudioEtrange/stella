@@ -27,14 +27,13 @@ _minishift_INCLUDED_=1
 
 feature_minishift() {
 	FEAT_NAME=minishift
-	FEAT_LIST_SCHEMA="0_9_0:binary"
+	FEAT_LIST_SCHEMA="1_13_1:binary"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
-# with openshift origin 1.3.1
-feature_minishift_0_9_0() {
-	FEAT_VERSION=0_9_0
+feature_minishift_1_13_1() {
+	FEAT_VERSION=1_13_1
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
@@ -43,15 +42,15 @@ feature_minishift_0_9_0() {
 	FEAT_SOURCE_URL_PROTOCOL=
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		FEAT_BINARY_URL=https://github.com/jimmidyson/minishift/releases/download/v0.9.0/minishift-linux-amd64
-		FEAT_BINARY_URL_FILENAME=minishift-0_9_0-linux-amd64
-		FEAT_BINARY_URL_PROTOCOL=HTTP
+		FEAT_BINARY_URL=https://github.com/minishift/minishift/releases/download/v1.13.1/minishift-1.13.1-linux-amd64.tgz
+		FEAT_BINARY_URL_FILENAME=minishift-1.13.1-linux-amd64.tgz
+		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 
 	fi
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		FEAT_BINARY_URL=https://github.com/jimmidyson/minishift/releases/download/v0.9.0/minishift-darwin-amd64
-		FEAT_BINARY_URL_FILENAME=minishift-0_9_0-darwin-amd64
-		FEAT_BINARY_URL_PROTOCOL=HTTP
+		FEAT_BINARY_URL=https://github.com/minishift/minishift/releases/download/v1.13.1/minishift-1.13.1-darwin-amd64.tgz
+		FEAT_BINARY_URL_FILENAME=minishift-1.13.1-darwin-amd64.tgz
+		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 	fi
 
 	FEAT_SOURCE_CALLBACK=
@@ -67,10 +66,7 @@ feature_minishift_0_9_0() {
 
 
 feature_minishift_install_binary() {
-	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "FORCE_NAME $FEAT_BINARY_URL_FILENAME"
-
-	mv $FEAT_INSTALL_ROOT/$FEAT_BINARY_URL_FILENAME $FEAT_INSTALL_ROOT/minishift
-	chmod +x $FEAT_INSTALL_ROOT/minishift
+	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "STRIP"
 
 }
 
