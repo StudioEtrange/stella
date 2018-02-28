@@ -23,10 +23,44 @@ _minikube_INCLUDED_=1
 
 feature_minikube() {
 	FEAT_NAME=minikube
-	FEAT_LIST_SCHEMA="0_24_1:binary 0_11_0:binary"
+	FEAT_LIST_SCHEMA="0_25_0:binary 0_24_1:binary 0_11_0:binary"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
+
+
+feature_minikube_0_25_0() {
+	FEAT_VERSION=0_25_0
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL=
+	FEAT_SOURCE_URL_FILENAME=
+	FEAT_SOURCE_URL_PROTOCOL=
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		FEAT_BINARY_URL=https://github.com/kubernetes/minikube/releases/download/v0.25.0/minikube-linux-amd64
+		FEAT_BINARY_URL_FILENAME=minikube-0_25_0-linux-amd64
+		FEAT_BINARY_URL_PROTOCOL=HTTP
+
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		FEAT_BINARY_URL=https://github.com/kubernetes/minikube/releases/download/v0.25.0/minikube-darwin-amd64
+		FEAT_BINARY_URL_FILENAME=minikube-0_25_0-darwin-amd64
+		FEAT_BINARY_URL_PROTOCOL=HTTP
+	fi
+
+	FEAT_SOURCE_CALLBACK=
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/minikube
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
+
+}
+
+
 
 
 # for kubernetes v1.8.0

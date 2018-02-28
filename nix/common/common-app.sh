@@ -7,7 +7,7 @@ _STELLA_COMMON_APP_INCLUDED_=1
 
 # APP RESSOURCES & ENV MANAGEMENT ---------------
 
-# [user@][host][:port][/abs_path|?rel_path]
+# [schema://][user[:password]@][host][:port][/abs_path|?rel_path]
 # By default
 # CACHE, WORKSPACE, GIT are excluded ==> use theses options to not exclude
 # EXCLUDE_HIDDEN use this option to exclude hidden files
@@ -53,7 +53,6 @@ __select_app() {
 
 	if [ -f "$_app_path/$STELLA_APP_PROPERTIES_FILENAME" ]; then
 		_properties_file="$_app_path/$STELLA_APP_PROPERTIES_FILENAME"
-		#STELLA_APP_ROOT=$_app_path
 	fi
 
 	echo "$_properties_file"

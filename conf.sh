@@ -96,15 +96,25 @@ __set_current_platform_info
 # Before include stella-link.sh, you can override file properties file
 # 	STELLA_APP_PROPERTIES_FILENAME="foo.properties" ==> change properties name
 [ "$STELLA_APP_PROPERTIES_FILENAME" = "" ] && STELLA_APP_PROPERTIES_FILENAME="stella.properties"
-STELLA_APP_NAME=
+
+# define if current app is stella itself
+STELLA_APP_IS_STELLA=0
 
 # default app root folder is stella root folder
-[ "$STELLA_APP_ROOT" = "" ] && STELLA_APP_ROOT="$STELLA_ROOT"
+if [ "$STELLA_APP_ROOT" = "" ]; then
+	# STELLA_APP_ROOT is define in stella-link file
+	STELLA_APP_ROOT="$STELLA_ROOT"
+	STELLA_APP_IS_STELLA=1
+	STELLA_APP_NAME=stella
+else
+	STELLA_APP_NAME=
+	_STELLA_APP_PROPERTIES_FILE="$(__select_app $STELLA_APP_ROOT)"
+	__get_all_properties $_STELLA_APP_PROPERTIES_FILE
 
-_STELLA_APP_PROPERTIES_FILE="$(__select_app $STELLA_APP_ROOT)"
-__get_all_properties $_STELLA_APP_PROPERTIES_FILE
+	[ "$STELLA_APP_NAME" = "" ] && STELLA_APP_NAME=default-app
+fi
 
-[ "$STELLA_APP_NAME" = "" ] && STELLA_APP_NAME=stella
+
 
 # APP PATH ---------------------------------------------
 STELLA_APP_ROOT=$(__rel_to_abs_path "$STELLA_APP_ROOT" "$STELLA_CURRENT_RUNNING_DIR")
