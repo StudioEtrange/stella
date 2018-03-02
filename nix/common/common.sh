@@ -9,13 +9,47 @@ _STELLA_COMMON_INCLUDED_=1
 
 # VARIOUS-----------------------------
 
+# Share sudo authentification between ssh sessions until __sudo_ssh_end_session is called
+__sudo_ssh_begin_session() {
+	local _uri="$1"
+	__ssh_execute "$_uri" "sudo -v; echo 'Defaults !tty_tickets' | sudo tee /etc/sudoers.d/rsync_temp_hack_stella" "SHARED"
+}
+
+__sudo_ssh_end_session() {
+	local _uri="$1"
+	__ssh_execute "$_uri" "rm -v /etc/sudoers.d/rsync_temp_hack_stella" "SHARED SUDO"
+}
+
+# NOTE : keep sudo authentification alive until __sudo_end_session is called
+# 				https://stackoverflow.com/a/30547074
+# 				https://serverfault.com/a/833888
+# NOTE : trap signal
+# 			 SIGKILL and SIGSTOP cannot be trapped
+#				 ERR and EXIT are pseudo-signals
+# https://www.ibm.com/developerworks/aix/library/au-usingtraps/
+# https://linuxconfig.org/how-to-modify-scripts-behavior-on-signals-using-bash-traps
+__sudo_begin_session() {
+    sudo -v || exit $?
+    ( while true; do sudo -nv; sleep 50; done; ) &
+    STELLA_SUDO_PID="$!"
+    trap '__sudo_end_session; exit' SIGABRT SIGHUP SIGINT SIGQUIT SIGTERM ERR EXIT
+}
+__sudo_end_session() {
+		echo "** Ending sudo session $STELLA_SUDO_PID"
+    kill -0 "$STELLA_SUDO_PID"
+    trap - SIGABRT SIGHUP SIGINT SIGQUIT SIGTERM ERR EXIT
+    sudo -k
+}
+
+
+
+
 # option :
 # ENDING_CHAR_REVERSE
 # SEP .
 __get_last_version() {
 	local list=$1
 	local opt="$2"
-
 
 	echo $(__sort_version "$list" "$opt DESC") | cut -d' ' -f 1
 }
@@ -372,7 +406,8 @@ __transfer_stella() {
 __transfer_folder_rsync() {
 	local _folder="$1"
 	local _uri="$2"
-	__transfer_rsync "FOLDER" "$_folder" "$_uri"
+	local _opt="$3"
+	__transfer_rsync "FOLDER" "$_folder" "$_uri" "$_opt"
 }
 
 
@@ -389,8 +424,9 @@ __transfer_folder_rsync() {
 __transfer_file_rsync() {
 	local _file="$1"
 	local _uri="$2"
+	local _opt="$3"
 
-	__transfer_rsync "FILE" "$_file" "$_uri"
+	__transfer_rsync "FILE" "$_file" "$_uri" "$_opt"
 }
 
 
@@ -416,9 +452,9 @@ __transfer_rsync() {
 	local _mode="$1"
 	local _source="$2"
 	local _uri="$3"
+	local _OPT="$4"
 
 
-	local _OPT="$3"
 	local _flag_exclude=OFF
 	local _exclude=
 	local _flag_include=OFF
@@ -462,19 +498,25 @@ __transfer_rsync() {
 
 
 	local _target=
+	local _target_path=
 	if [ "$_local_filesystem" = "ON" ]; then
-		# we use explicit relative path with "?"
+		# we may have use absolute path or relative path.
+		# if relative path is used, it is specify with local://../foo OR local://?../foo
+		#	in case local://../foo form __stella_uri_host will contain the ".."
+		#		examples
+		# 		__transfer_rsync FOLDER /foo/folder ../path			==> relative path
+		#							__stella_uri_host contains '..' and __stella_uri_path contains '/path'
+		#			__transfer_rsync FOLDER /foo/folder 	/path			==> absolute path
+		#							__stella_uri_host is empty and __stella_uri_path contains '/path'
 		if [ ! "${__stella_uri_query:1}" = "" ]; then
+			# we use explicit relative path with local://?../foo
 			_target="${__stella_uri_query:1}"
 		else
-			# we may have use absolute path or relative path.
-			# if relative path is used, __stella_uri_host will contain the "." or ".."
-			# 		__transfer_rsync FOLDER /foo/folder ../path			==> relative path
-			#							__stella_uri_host contains '..' and __stella_uri_path contains '/path'
-			#			__transfer_rsync FOLDER /foo/folder 	/path			==> absolute path
-			#							__stella_uri_host is empty and __stella_uri_path contains '/path'
+			# we use relative path with local://../foo OR we use absolute path with local:///foo/bar
 			_target="${__stella_uri_host}${__stella_uri_path}"
 		fi
+		[ "$_target" = "" ] && _target="."
+		_target_path="$_target"
 	fi
 
 
@@ -486,9 +528,12 @@ __transfer_rsync() {
 			# we use absolute path
 			_target="${__stella_uri_path}"
 		fi
+		[ "$_target" = "" ] && _target="."
+		_target_path="$_target"
+		_target_address="$__stella_uri_host"
+		[ ! "$__stella_uri_user" = "" ] && _target_address="$__stella_uri_user"@"$_target_address"
 
-		_target="$__stella_uri_host":"$_target"
-		[ ! "$__stella_uri_user" = "" ] && _target="$__stella_uri_user"@"$_target"
+		_target="$_target_address":"$_target"
 	fi
 
 	local _base_folder=
@@ -518,18 +563,36 @@ __transfer_rsync() {
 			;;
 	esac
 
+	# NOTE : rsync do not create parent folders of the target. It creates only last level
+	#				solution ; http://www.schwertly.com/2013/07/forcing-rsync-to-create-a-remote-path-using-rsync-path/
+	# NOTE : rxync progress option https://serverfault.com/questions/219013/showing-total-progress-in-rsync-is-it-possible
+	#				--info=progress2 --no-inc-recursive is not portable because it needs a minimum version of rsync
+	# NOTE : rsync + ssh + sudo
+	#				https://serverfault.com/questions/534683/rsync-over-ssh-getting-no-tty-present
+	#				https://superuser.com/questions/270911/run-rsync-with-root-permission-on-remote-machine
 	case $__stella_uri_schema in
 		ssh )
-			[ "$_opt_sudo" = "ON" ] && rsync $_opt_include $_opt_exclude --rsync-path="sudo rsync" --force --delete -avz -e "ssh -p $_ssh_port" "$_source" "$_target"
-			[ "$_opt_sudo" = "OFF" ] && rsync $_opt_include $_opt_exclude --force --delete -avz -e "ssh -p $_ssh_port" "$_source" "$_target"
+			if [ "$_opt_sudo" = "ON" ]; then
+				rsync $_opt_include $_opt_exclude --rsync-path="stty raw -echo; sudo mkdir -p '$_target_path'; sudo rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh -t -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60 -p $_ssh_port" "$_source" "$_target"
+			fi
+			[ "$_opt_sudo" = "OFF" ] && rsync $_opt_include $_opt_exclude --rsync-path="mkdir -p '$(dirname $_target_path)' && rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60 -p $_ssh_port" "$_source" "$_target"
 			;;
 		vagrant )
-			[ "$_opt_sudo" = "ON" ] && rsync $_opt_include $_opt_exclude --rsync-path="sudo rsync" --force --delete -avz -e "ssh $__vagrant_ssh_opt" "$_source" "$_target"
-			[ "$_opt_sudo" = "OFF" ] && rsync $_opt_include $_opt_exclude --force --delete -avz -e "ssh $__vagrant_ssh_opt" "$_source" "$_target"
+			if [ "$_opt_sudo" = "ON" ]; then
+				rsync $_opt_include $_opt_exclude --rsync-path="stty raw -echo; sudo mkdir -p '$_target_path'; sudo rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh -t -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60 $__vagrant_ssh_opt" "$_source" "$_target"
+			fi
+			[ "$_opt_sudo" = "OFF" ] && rsync $_opt_include $_opt_exclude --rsync-path="mkdir -p '$(dirname $_target_path)' && rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh $__vagrant_ssh_opt" "$_source" "$_target"
 			;;
 		local )
-			[ "$_opt_sudo" = "ON" ] && rsync $_opt_include $_opt_exclude --rsync-path="sudo rsync" --force --delete -avz "$_source" "$_target"
-			[ "$_opt_sudo" = "OFF" ] && rsync $_opt_include $_opt_exclude --force --delete -avz "$_source" "$_target"
+			# '--rsync-path' option seems to not work when we are on the same host (local)
+			if [ "$_opt_sudo" = "ON" ]; then
+				sudo mkdir -p "$(dirname $_target_path)"
+				sudo rsync $_opt_include $_opt_exclude --force --delete -avz "$_source" "$_target"
+			fi
+			if [ "$_opt_sudo" = "OFF" ]; then
+				mkdir -p "$(dirname $_target_path)"
+				rsync $_opt_include $_opt_exclude --force --delete -avz "$_source" "$_target"
+			fi
 			;;
 		*)
 			echo "** ERROR protocol unknown"
@@ -541,8 +604,8 @@ __transfer_rsync() {
 
 
 __daemonize() {
-	local _item_path=$1
-	local _log_file=$2
+	local _item_path="$1"
+	local _log_file="$2"
 
 	if [ "$_log_file" = "" ]; then
 		nohup -- $_item_path 1>/dev/null 2>&1 &
@@ -705,9 +768,10 @@ __get_extension_from_string() {
 }
 
 
+# NOTE : alternative : [ -z "${_path##/*}" ]
 __is_abs() {
 	local _path="$1"
-	# alternative : [ -z "${_path##/*}" ]
+
 	case $_path in
 		/*)
 			echo "TRUE"

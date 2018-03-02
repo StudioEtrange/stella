@@ -37,6 +37,14 @@ __transfer_app(){
 	__standard_include="INCLUDE /.stella-id"
 
 	__transfer_folder_rsync "$STELLA_APP_ROOT" "$_uri" "$__standard_include $_opt_ex_cache $_opt_ex_workspace $_opt_ex_hidden $_opt_ex_git $_opt_sudo"
+
+	__app_path="$__path/$(basename "$STELLA_APP_ROOT")"
+	__stella_path="${__app_path}/$(__abs_to_rel_path "$STELLA_ROOT" "$STELLA_APP_ROOT")"
+	if [ "$(__is_logical_subfolder "$STELLA_APP_ROOT" "$STELLA_ROOT")" = "FALSE" ]; then
+		__uri_parse "$_uri"
+		__transfer_stella "${__stella_uri_schema}://${__stella_uri_address}/?$(dirname ${__stella_path})" "ENV $_opt_sudo"
+	fi
+
 }
 
 

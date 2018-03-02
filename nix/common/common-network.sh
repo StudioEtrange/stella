@@ -334,14 +334,29 @@ $(command minikube "$@");
 
 # -------------------- FUNCTIONS-----------------
 # support ssh:// and vagrant://
-# http://www.cyberciti.biz/faq/linux-unix-bsd-sudo-sorry-you-must-haveattytorun/
+# OPTIONS :
+#			SHARED : create a shared ssh connection for targeted host for a few time
+#			SUDO : use sudo
+#	NOTE : sudo: sorry, you must have a tty to run sudo
+# 			 http://www.cyberciti.biz/faq/linux-unix-bsd-sudo-sorry-you-must-haveattytorun/
+#
 __ssh_execute() {
 	local __uri="$1"
 	local __cmd="$2"
+	local __opt="$3"
 
 	__require "ssh" "ssh"
 
+	local __opt_shared=
+	local __opt_sudo=
+	for o in $__opt; do
+		[ "$o" = "SHARED" ] && __opt_shared="-o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60"
+		[ "$o" = "SUDO" ] && __opt_sudo="sudo "
+	done
+
 	__uri_parse "$_uri"
+
+	[ "$__stella_uri_schema" = "" ] && __stella_uri_schema="ssh"
 
 	if [ "$__stella_uri_schema" = "ssh" ]; then
 		__ssh_port="22"
@@ -360,11 +375,13 @@ __ssh_execute() {
 	local __ssh_user=
 	[ ! "$__stella_uri_user" = "" ] && __ssh_user="$__stella_uri_user"@
 
-	ssh -t $__ssh_opt $__vagrant_ssh_opt "$__ssh_user$__stella_uri_host" "$__cmd"
+	ssh -tt $__ssh_opt $__opt_shared $__vagrant_ssh_opt "$__ssh_user$__stella_uri_host" "${__opt_sudo}${__cmd}"
 }
 
 
+
 # TODO : these function support only ipv4
+# TODO : give alternative to netstat et ifconfig
 __get_network_info() {
 	local _err=
 	type netstat &>/dev/null || _err=1

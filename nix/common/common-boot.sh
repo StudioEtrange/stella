@@ -4,7 +4,7 @@ _STELLA_BOOT_INCLUDED_=1
 
 
 # TODO : when booting a script, how pass arg to script ?
-
+# TODO : take care of an optional boot_folder with something like [schema://][user[:password]@][host][:port][/abs_path|?rel_path][#boot_folder]
 
 # [schema://][user[:password]@][host][:port][/abs_path|?rel_path]
 # schema values
@@ -15,8 +15,6 @@ _STELLA_BOOT_INCLUDED_=1
 #          (with vagrant, use vagrant machine name as host)
 
 
-
-# TODO : implements this, using STELLA_APP_IS_STELLA
 
 # When schema is 'ssh' or 'vagrant'
 #     <path> is computed from default path when logging in ssh and then applying abs_path|rel_path
@@ -71,23 +69,40 @@ _STELLA_BOOT_INCLUDED_=1
 # MAIN FUNCTION -----------------------------------------
 __boot_stella_shell() {
   local _uri="$1"
-  __boot_stella "SHELL" "$_uri"
+  local _opt="$2"
+  __boot "$_opt STELLA SHELL" "$_uri"
 }
-
 __boot_stella_cmd() {
   local _uri="$1"
   local _cmd="$2"
-  __boot_stella "CMD" "$_uri" "$_cmd"
-
+  local _opt="$3"
+  __boot "$_opt STELLA CMD" "$_uri" "$_cmd"
 }
-
 __boot_stella_script() {
   local _uri="$1"
   local _script="$2"
-  __boot_stella "SCRIPT" "$_uri" "$_script"
+  local _opt="$3"
+  __boot "$_opt STELLA SCRIPT" "$_uri" "$_script"
 }
 
 
+__boot_app_shell() {
+  local _uri="$1"
+  local _opt="$2"
+  __boot "$_opt APP SHELL" "$_uri"
+}
+__boot_app_cmd() {
+  local _uri="$1"
+  local _cmd="$2"
+  local _opt="$3"
+  __boot "$_opt APP CMD" "$_uri" "$_cmd"
+}
+__boot_app_script() {
+  local _uri="$1"
+  local _script="$2"
+  local _opt="$3"
+  __boot "$_opt APP SCRIPT" "$_uri" "$_script"
+}
 
 
 
@@ -95,66 +110,128 @@ __boot_stella_script() {
 
 # INTERNAL -----------------------------------------
 
-# MODE = SHELL | CMD | SCRIPT
-__boot_stella() {
-  local _mode="$1"
+
+# ITEM : APP | STELLA
+# MODE : SHELL | CMD | SCRIPT
+# OTHER OPTIONS : SUDO
+__boot() {
+  local _opt="$1"
   local _uri="$2"
   local _arg="$3"
 
-  # transfer stella : oui, non
-  # transfer app : oui, non
+  local _mode=
+  local _item=
+  local _opt_sudo=
+  local _opt_sudo_cmd=
+  for o in $_opt; do
+    [ "$o" = "SCRIPT" ] && _mode="SCRIPT"
+    [ "$o" = "SHELL" ] && _mode="SHELL"
+		[ "$o" = "CMD" ] && _mode="CMD"
 
+		[ "$o" = "APP" ] && _item="APP"
+    [ "$o" = "STELLA" ] && _item="STELLA"
+
+		[ "$o" = "SUDO" ] && _opt_sudo="SUDO" && _opt_sudo_cmd="sudo "
+	done
+
+  local __have_to_transfer=0
 
   if [ "$_uri" = "local" ]; then
+    # we do not have to transfer anything
+    __have_to_transfer=0
     __stella_uri_schema="local"
+
   else
     # [schema://][user[:password]@][host][:port][/abs_path|?rel_path]
+    __have_to_transfer=1
+
     __uri_parse "$_uri"
-  fi
 
-
-  if [ ! "$__stella_uri_host" = "" ]; then
-    # boot stella itself
-    if [ "$STELLA_APP_IS_STELLA" = "1" ]; then
-
-      [ "${__stella_uri_query:1}" = "" ] && __path="${__stella_uri_path}" || __path="${__stella_uri_query:1}"
-      [ "$__path" = "" ] && __path="."
-
-      __stella_path="$__path/stella"
-      __transfer_stella "$_uri" "ENV"
-      __boot_folder="$__path"
-
+    if [ ! "${__stella_uri_query:1}" = "" ]; then
+      # we use explicit relative path with local://?../foo
+      __path="${__stella_uri_query:1}"
     else
-      # boot an app
-      __transfer_app "$_uri"
-      [ "${__stella_uri_query:1}" = "" ] && __path="${__stella_uri_path}" || __path="${__stella_uri_query:1}"
-      [ "$__path" = "" ] && __path="."
-
-      __stella_path="${__path}/$(__abs_to_rel_path "$STELLA_ROOT" "$STELLA_APP_ROOT")"
-      if [ "$(__is_logical_subfolder "$STELLA_APP_ROOT" "$STELLA_ROOT")" = "FALSE" ]; then
-        __transfer_stella "${__stella_uri_schema}://${__stella_uri_address}/?${__stella_path}" "ENV"
-      fi
-
-      __boot_folder="$__path"
+      # we use relative path with local://../foo OR we use absolute path with local:///foo/bar
+      [ "$__stella_uri_schema" = "local" ] && __path="${__stella_uri_host}${__stella_uri_path}"
+      [ ! "$__stella_uri_schema" = "local" ] && __path="${__stella_uri_path}"
     fi
+
+    if [ "$__path" = "" ]; then
+      __path="."
+    else
+      if [ "$(__is_abs "$__path")" = "FALSE" ]; then
+        __path="./$__path"
+      fi
+    fi
+
+    # TODO : dangerous tweak because it impacts the target OS.
+    #       Maybe, use __ssh_sudo_begin_session only with an explicit option like --sudopersist
+    [ ! "$_opt_sudo" = "" ] && __sudo_ssh_begin_session "$_uri"
+
+    # boot stella itself
+    if [ "$_item" = "STELLA" ]; then
+      #__boot_folder="$__path"
+      __stella_path="$__path/stella"
+      __stella_entrypoint="$__stella_path/stella.sh"
+      __transfer_stella "$_uri" "ENV $_opt_sudo"
+    fi
+
+    if [ "$_item" = "APP" ]; then
+      # boot an app
+      #__boot_folder="$__path"
+
+      __transfer_app "$_uri" "$_opt_sudo"
+      __app_path="$__path/$(basename "$STELLA_APP_ROOT")"
+      #__stella_path="${__app_path}/$(__abs_to_rel_path "$STELLA_ROOT" "$STELLA_APP_ROOT")"
+      __stella_entrypoint="${__app_path}/stella-link.sh"
+    fi
+
+    if [ "$_mode" = "SCRIPT" ]; then
+      __script_filename="$(__get_filename_from_string $_arg)"
+      __transfer_file_rsync "$_arg" "$_uri/$__script_filename" "$_opt_sudo"
+      __script_path="$__path/$__script_filename"
+    fi
+
+
   fi
 
 
   case $__stella_uri_schema in
 
     local )
-      #local://[/abs_path|?rel_path]
-      case $_mode in
-        SHELL )
-          __bootstrap_stella_env
-          ;;
-        CMD )
-          eval "$_arg"
-          ;;
-        SCRIPT )
-          "$_arg"
-          ;;
-      esac
+      if [ "$__have_to_transfer" = "0" ]; then
+        # local
+        case $_mode in
+          SHELL )
+            __bootstrap_stella_env
+            ;;
+          CMD )
+              eval "$_arg"
+            ;;
+          SCRIPT )
+              "$_arg"
+            ;;
+        esac
+      else
+          #local://[/abs_path|?rel_path]
+          case $_mode in
+            SHELL )
+               #cd $__boot_folder
+               $__stella_entrypoint stella install dep
+               $__stella_entrypoint boot shell local
+              ;;
+            CMD )
+              #cd $__boot_folder
+              $__stella_entrypoint stella install dep
+              $__stella_entrypoint boot cmd local -- $_arg
+              ;;
+            SCRIPT )
+              #cd $__boot_folder
+              $__stella_entrypoint stella install dep
+              $__script_path
+              ;;
+          esac
+      fi
       ;;
 
 
@@ -163,37 +240,22 @@ __boot_stella() {
       #ssh://user@host:port[/abs_path|?rel_path]
       #vagrant://vagrant-machine[/abs_path|?rel_path]
 
-      # http://www.cyberciti.biz/faq/linux-unix-bsd-sudo-sorry-you-must-haveattytorun/
       case $_mode in
         SHELL )
-          __ssh_execute "$_uri" "cd $__boot_folder && $__stella_path/stella.sh stella install dep && $__stella_path/stella.sh boot shell local"
+          #__ssh_execute "$_uri" "cd $__boot_folder && $__stella_entrypoint stella install dep && $__stella_entrypoint boot shell local" "SHARED"
+          __ssh_execute "$_uri" "${_opt_sudo_cmd}$__stella_entrypoint stella install dep; ${_opt_sudo_cmd}$__stella_entrypoint boot shell local" "SHARED"
           ;;
         CMD )
-          __ssh_execute "$_uri" "cd $__boot_folder && $__stella_path/stella.sh stella install dep && $__stella_path/stella.sh boot cmd local -- '$_arg'"
+          #__ssh_execute "$_uri" "cd $__boot_folder && $__stella_entrypoint stella install dep && $__stella_entrypoint boot cmd local -- '$_arg'" "SHARED"
+          __ssh_execute "$_uri" "${_opt_sudo_cmd}$__stella_entrypoint stella install dep; ${_opt_sudo_cmd}$__stella_entrypoint boot cmd local -- '$_arg'" "SHARED"
           ;;
         SCRIPT )
-          __script_filename="$(__get_filename_from_string $_arg)"
-
-          # relative path
-          if [ ! "${__stella_uri_query:1}" = "" ]; then
-            __transfer_file_rsync "$_arg" "$_uri/$__script_filename"
-            __target_script_path="${__stella_uri_query:1}/$__script_filename"
-          else
-            # absolute  path
-            if [ ! "$__stella_uri_path" = "" ]; then
-              __transfer_file_rsync "$_arg" "$_uri/$__script_filename"
-              __target_script_path="${__stella_uri_path}/$__script_filename"
-            # empty path
-            else
-              __transfer_file_rsync "$_arg" "${_uri}?./${__script_filename}"
-              __target_script_path="./$__script_filename"
-            fi
-          fi
-          __ssh_execute "$_uri" "cd $__boot_folder && $__stella_path/stella.sh stella install dep && $__target_script_path"
-          #ssh -t $__ssh_opt $__vagrant_ssh_opt "$_ssh_user$__stella_uri_host" "cd $__boot_folder && $__stella_folder/stella.sh stella install dep && $__target_script_path"
+          #__ssh_execute "$_uri" "cd $__boot_folder && $__stella_entrypoint stella install dep && $__script_path" "SHARED"
+          __ssh_execute "$_uri" "${_opt_sudo_cmd}$__stella_entrypoint stella install dep; ${_opt_sudo_cmd}$__script_path" "SHARED"
           ;;
-        esac
-    ;;
+      esac
+      [ ! "$_opt_sudo" = "" ] && __sudo_ssh_end_session "$_uri"
+      ;;
     *)
       echo " ** ERROR uri protocol unknown"
       ;;

@@ -232,14 +232,28 @@ fi
 if [ "$DOMAIN" = "boot" ]; then
 	__init_stella_env
 
+	[ "$SUDO" = "1" ] && _options="SUDO"
+
 	if [ "$ACTION" = "cmd" ]; then
-		__boot_stella_cmd "$ID" "$OTHERARG"
+		if [ "$STELLA_APP_IS_STELLA" = "1" ]; then
+			__boot_stella_cmd "$ID" "$OTHERARG" "$_options"
+		else
+			__boot_app_cmd "$ID" "$OTHERARG" "$_options"
+		fi
 	fi
 	if [ "$ACTION" = "shell" ]; then
-		__boot_stella_shell "$ID"
+		if [ "$STELLA_APP_IS_STELLA" = "1" ]; then
+			__boot_stella_shell "$ID" "$_options"
+		else
+			__boot_app_shell "$ID" "$_options"
+		fi
 	fi
 	if [ "$ACTION" = "script" ]; then
-		__boot_stella_script "$ID" "$OTHERARG"
+		if [ "$STELLA_APP_IS_STELLA" = "1" ]; then
+			__boot_stella_script "$ID" "$OTHERARG" "$_options"
+		else
+			__boot_app_script "$ID" "$OTHERARG" "$_options"
+		fi
 	fi
 fi
 
