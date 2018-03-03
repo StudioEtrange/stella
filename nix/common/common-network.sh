@@ -12,8 +12,8 @@ __init_proxy() {
 	if [ ! "$STELLA_PROXY_ACTIVE" = "" ]; then
 		# do not set system proxy values if we uses values from system
 		[ ! "$STELLA_PROXY_ACTIVE" = "FROM_SYSTEM" ] && __set_system_proxy_values
-		__log "STELLA Proxy : $STELLA_PROXY_SCHEMA://$STELLA_PROXY_HOST:$STELLA_PROXY_PORT"
-		__log "STELLA Proxy : bypass for $STELLA_NO_PROXY"
+		__log "INFO" "STELLA Proxy : $STELLA_PROXY_SCHEMA://$STELLA_PROXY_HOST:$STELLA_PROXY_PORT"
+		__log "INFO" "STELLA Proxy : bypass for $STELLA_NO_PROXY"
 		__proxy_override
 	fi
 }
@@ -57,7 +57,7 @@ __read_proxy_values() {
 				STELLA_HTTPS_PROXY=$STELLA_PROXY_SCHEMA://$STELLA_PROXY_USER:$STELLA_PROXY_PASS@$STELLA_PROXY_HOST:$STELLA_PROXY_PORT
 			fi
 
-			__log "STELLA Proxy : $STELLA_PROXY_ACTIVE is ACTIVE"
+			__log "INFO" "STELLA Proxy : $STELLA_PROXY_ACTIVE is ACTIVE"
 		else
 			use_system_proxy_setting="ON"
 		fi
@@ -465,7 +465,7 @@ __enable_proxy() {
 __disable_proxy() {
 	__add_key "$STELLA_ENV_FILE" "STELLA_PROXY" "ACTIVE"
 
-	__log "STELLA Proxy Disabled"
+	__log "INFO" "STELLA Proxy Disabled"
 	__reset_proxy_values
 	__reset_system_proxy_values
 }
@@ -519,7 +519,7 @@ __no_proxy_for() {
 	done
 
 	if [ "$_exist" = "" ]; then
-		__log "STELLA Proxy : temp proxy bypass for $_host"
+		__log "INFO" "STELLA Proxy : temp proxy bypass for $_host"
 		[ ! "$STELLA_NO_PROXY" = "" ] && STELLA_NO_PROXY="$STELLA_NO_PROXY","$_host"
 		[ "$STELLA_NO_PROXY" = "" ] && STELLA_NO_PROXY="$_host"
 		__set_system_proxy_values

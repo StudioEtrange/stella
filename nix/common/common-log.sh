@@ -20,7 +20,8 @@ __set_log_level() {
 }
 
 __log() {
-	local _msg="$1"
+	local _level="$1"
+	local _msg="$2"
 
 	[ "$STELLA_LOG_STATE" = "ON" ] && echo "$_msg"
 

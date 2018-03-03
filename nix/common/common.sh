@@ -270,11 +270,44 @@ __url_encode_2() {
 
 # https://gist.github.com/cdown/1163649
 __url_decode() {
-
     local url_encoded="${1//+/ }"
     printf '%b' "${url_encoded//%/\\x}"
 }
 
+
+# __uri_get_path ssh://host/?foo ==> ./foo
+# __uri_get_path local://../foo  ==> ../foo
+# __uri_get_path local://?../foo  ==> ../foo
+# __uri_get_path ssh://host/foo  ==> /foo
+# __uri_get_path local:///foo  ==> /foo
+# __uri_get_path ssh://host ==> .
+__uri_get_path() {
+	local _uri="$@"
+	local __path
+
+	__uri_parse "$_uri"
+
+	# we may have use absolute path or relative path.
+	# if relative path is used, it is specify with local://../foo OR local://?../foo
+	#	in case local://../foo form __stella_uri_host will contain the ".."
+	if [ ! "${__stella_uri_query:1}" = "" ]; then
+		# we use explicit relative path with local://?../foo
+		__path="${__stella_uri_query:1}"
+	else
+		# we use relative path with local://../foo OR we use absolute path with local:///foo/bar
+		[ "$__stella_uri_schema" = "local" ] && __path="${__stella_uri_host}${__stella_uri_path}"
+		# we use absolute path with other protocol (ssh://host/foo)
+		[ ! "$__stella_uri_schema" = "local" ] && __path="${__stella_uri_path}"
+	fi
+
+	[ "$__path" = "" ] && __path="."
+
+	if [ "$(__is_abs "$__path")" = "FALSE" ]; then
+		[ ! "${__path::1}" = "." ] && __path="./$__path"
+	fi
+
+	echo "$__path"
+}
 
 # http://wp.vpalos.com/537/uri-parsing-using-bash-built-in-features/ (customized)
 # https://tools.ietf.org/html/rfc3986
@@ -499,36 +532,15 @@ __transfer_rsync() {
 
 	local _target=
 	local _target_path=
+
+
 	if [ "$_local_filesystem" = "ON" ]; then
-		# we may have use absolute path or relative path.
-		# if relative path is used, it is specify with local://../foo OR local://?../foo
-		#	in case local://../foo form __stella_uri_host will contain the ".."
-		#		examples
-		# 		__transfer_rsync FOLDER /foo/folder ../path			==> relative path
-		#							__stella_uri_host contains '..' and __stella_uri_path contains '/path'
-		#			__transfer_rsync FOLDER /foo/folder 	/path			==> absolute path
-		#							__stella_uri_host is empty and __stella_uri_path contains '/path'
-		if [ ! "${__stella_uri_query:1}" = "" ]; then
-			# we use explicit relative path with local://?../foo
-			_target="${__stella_uri_query:1}"
-		else
-			# we use relative path with local://../foo OR we use absolute path with local:///foo/bar
-			_target="${__stella_uri_host}${__stella_uri_path}"
-		fi
-		[ "$_target" = "" ] && _target="."
+		_target="$(__uri_get_path "$_uri")"
 		_target_path="$_target"
 	fi
 
-
 	if [ "$_local_filesystem" = "OFF" ]; then
-		# we use relative path
-		if [ ! "${__stella_uri_query:1}" = "" ]; then
-			_target="${__stella_uri_query:1}"
-		else
-			# we use absolute path
-			_target="${__stella_uri_path}"
-		fi
-		[ "$_target" = "" ] && _target="."
+		_target="$(__uri_get_path "$_uri")"
 		_target_path="$_target"
 		_target_address="$__stella_uri_host"
 		[ ! "$__stella_uri_user" = "" ] && _target_address="$__stella_uri_user"@"$_target_address"
@@ -1150,11 +1162,11 @@ __resource() {
 		fi
 	done
 
-	[ "$_opt_revert" = "ON" ] && __log " ** Reverting resource :"
-	[ "$_opt_update" = "ON" ] && __log " ** Updating resource :"
-	[ "$_opt_delete" = "ON" ] && __log " ** Deleting resource :"
-	[ "$_opt_get" = "ON" ] && __log " ** Getting resource :"
-	[ ! "$FINAL_DESTINATION" = "" ] && __log " $NAME in $FINAL_DESTINATION" || __log " $NAME"
+	[ "$_opt_revert" = "ON" ] && __log "INFO" " ** Reverting resource :"
+	[ "$_opt_update" = "ON" ] && __log "INFO" " ** Updating resource :"
+	[ "$_opt_delete" = "ON" ] && __log "INFO" " ** Deleting resource :"
+	[ "$_opt_get" = "ON" ] && __log "INFO" " ** Getting resource :"
+	[ ! "$FINAL_DESTINATION" = "" ] && __log "INFO" " $NAME in $FINAL_DESTINATION" || __log "INFO" " $NAME"
 
 	#[ "$FORCE" ] && rm -Rf $FINAL_DESTINATION
 	if [ "$_opt_get" = "ON" ]; then
@@ -1184,34 +1196,34 @@ __resource() {
 		_FLAG=1
 		case $PROTOCOL in
 			HTTP_ZIP|FILE_ZIP)
-				[ "$_opt_revert" = "ON" ] && __log "REVERT Not supported with this protocol" && _FLAG=0
-				[ "$_opt_update" = "ON" ] && __log "UPDATE Not supported with this protocol" && _FLAG=0
+				[ "$_opt_revert" = "ON" ] && __log "INFO" "REVERT Not supported with this protocol" && _FLAG=0
+				[ "$_opt_update" = "ON" ] && __log "INFO" "UPDATE Not supported with this protocol" && _FLAG=0
 				if [ -d "$FINAL_DESTINATION" ]; then
 					if [ "$_opt_get" = "ON" ]; then
 						if [ "$_opt_merge" = "ON" ]; then
 							if [ -f "$FINAL_DESTINATION/._MERGED_$NAME" ]; then
-								__log " ** Ressource already merged"
+								__log "INFO" " ** Ressource already merged"
 								_FLAG=0
 							fi
 						fi
 						if [ "$_opt_strip" = "ON" ]; then
 							#__log " ** Ressource already stripped"
-							__log " ** Destination folder exist"
+							__log "INFO" " ** Destination folder exist"
 							#_FLAG=0
 						fi
 					fi
 				fi
 				;;
 			HTTP|FILE)
-				[ "$_opt_strip" = "ON" ] && __log "STRIP option not in use"
-				[ "$_opt_revert" = "ON" ] && __log "REVERT Not supported with this protocol" && _FLAG=0
-				[ "$_opt_update" = "ON" ] && __log "UPDATE Not supported with this protocol" && _FLAG=0
+				[ "$_opt_strip" = "ON" ] && __log "INFO" "STRIP option not in use"
+				[ "$_opt_revert" = "ON" ] && __log "INFO" "REVERT Not supported with this protocol" && _FLAG=0
+				[ "$_opt_update" = "ON" ] && __log "INFO" "UPDATE Not supported with this protocol" && _FLAG=0
 
 				if [ -d "$FINAL_DESTINATION" ]; then
 					if [ "$_opt_get" = "ON" ]; then
 						if [ "$_opt_merge" = "ON" ]; then
 							if [ -f "$FINAL_DESTINATION/._MERGED_$NAME" ]; then
-								__log " ** Ressource already merged"
+								__log "INFO" " ** Ressource already merged"
 								_FLAG=0
 							fi
 						fi
@@ -1219,16 +1231,16 @@ __resource() {
 				fi
 				;;
 			HG|GIT)
-				[ "$_opt_strip" = "ON" ] && __log "STRIP option not supported with this protocol"
-				[ "$_opt_merge" = "ON" ] && __log "MERGE option not supported with this protocol"
+				[ "$_opt_strip" = "ON" ] && __log "INFO" "STRIP option not supported with this protocol"
+				[ "$_opt_merge" = "ON" ] && __log "INFO" "MERGE option not supported with this protocol"
 				if [ -d "$FINAL_DESTINATION" ]; then
 					if [ "$_opt_get" = "ON" ]; then
-						__log " ** Ressource already exist"
+						__log "INFO" " ** Ressource already exist"
 						_FLAG=0
 					fi
 				else
-					[ "$_opt_revert" = "ON" ] && __log " ** Ressource does not exist" && _FLAG=0
-					[ "$_opt_update" = "ON" ] && __log " ** Ressource does not exist" && _FLAG=0
+					[ "$_opt_revert" = "ON" ] && __log "INFO" " ** Ressource does not exist" && _FLAG=0
+					[ "$_opt_update" = "ON" ] && __log "INFO" " ** Ressource does not exist" && _FLAG=0
 				fi
 				;;
 		esac
@@ -1270,7 +1282,7 @@ __resource() {
 				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
 				;;
 			*)
-				__log " ** ERROR Unknow protocol"
+				__log "INFO" " ** ERROR Unknow protocol"
 				;;
 		esac
 	fi
@@ -1294,7 +1306,7 @@ __download_uncompress() {
 	if [ "$FILE_NAME" = "_AUTO_" ]; then
 		#_AFTER_SLASH=${URL##*/}
 		FILE_NAME=$(__get_filename_from_url "$URL")
-		__log "** Guessed file name is $FILE_NAME"
+		__log "INFO" "** Guessed file name is $FILE_NAME"
 	fi
 
 	__download "$URL" "$FILE_NAME"
@@ -1344,7 +1356,7 @@ __compress() {
 			fi
 			;;
 		ZIP)
-			__log "TODO: *********** ZIP NOT IMPLEMENTED"
+			__log "DEBUG" "TODO: *********** ZIP NOT IMPLEMENTED"
 			;;
 		TAR*)
 				[ -d "$_target" ] && tar -c -v $_tar_flag -f "$_output_archive" -C "$_target/.." "$(basename $_target)"
@@ -1377,7 +1389,7 @@ __uncompress() {
 
 	mkdir -p "$UNZIP_DIR"
 
-	__log " ** Uncompress $FILE_PATH in $UNZIP_DIR"
+	__log "INFO" " ** Uncompress $FILE_PATH in $UNZIP_DIR"
 
 	cd "$UNZIP_DIR"
 
@@ -1420,7 +1432,7 @@ __uncompress() {
 				ar p "$FILE_PATH" data.tar.gz | tar xz
 			;;
 		*)
-			__log " ** ERROR : Unknown archive format"
+			__log "INFO" " ** ERROR : Unknown archive format"
 	esac
 }
 
@@ -1440,12 +1452,12 @@ __download() {
 	if [ "$FILE_NAME" = "_AUTO_" ]; then
 		#_AFTER_SLASH=${URL##*/}
 		FILE_NAME=$(__get_filename_from_url "$URL")
-		__log "** Guessed file name is $FILE_NAME"
+		__log "INFO" "** Guessed file name is $FILE_NAME"
 	fi
 
 	mkdir -p "$STELLA_APP_CACHE_DIR"
 
-	__log " ** Download $FILE_NAME from $URL into cache"
+	__log "INFO" " ** Download $FILE_NAME from $URL into cache"
 
 	#if [ "$FORCE" = "1" ]; then
 	#	rm -Rf "$STELLA_APP_CACHE_DIR/$FILE_NAME"
@@ -1469,10 +1481,10 @@ __download() {
 				fi
 			fi
 		else
-			__log " ** Already downloaded"
+			__log "INFO" " ** Already downloaded"
 		fi
 	else
-		__log " ** Already downloaded"
+		__log "INFO" " ** Already downloaded"
 	fi
 
 	local _tmp_dir
@@ -1491,11 +1503,11 @@ __download() {
 					mkdir -p "$DEST_DIR"
 				fi
 				cp "$_tmp_dir/$FILE_NAME" "$DEST_DIR/"
-				__log "** Downloaded $FILE_NAME is in $DEST_DIR"
+				__log "INFO" "** Downloaded $FILE_NAME is in $DEST_DIR"
 			fi
 		fi
 	else
-		__log "** ERROR downloading $URL"
+		__log "INFO" "** ERROR downloading $URL"
 	fi
 }
 

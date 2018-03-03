@@ -323,7 +323,7 @@ __feature_remove() {
 	if [ "$TEST_FEATURE" = "1" ]; then
 
 		if [ ! "$FEAT_BUNDLE" = "" ]; then
-			__log " ** Remove bundle $FEAT_NAME version $FEAT_VERSION"
+			__log "DEBUG" " ** Remove bundle $FEAT_NAME version $FEAT_VERSION"
 			__del_folder $FEAT_INSTALL_ROOT
 
 			__push_schema_context
@@ -335,7 +335,7 @@ __feature_remove() {
 			FEAT_BUNDLE_MODE=
 			__pop_schema_context
 		else
-			__log " ** Remove $FEAT_NAME version $FEAT_VERSION from $FEAT_INSTALL_ROOT"
+			__log "DEBUG" " ** Remove $FEAT_NAME version $FEAT_VERSION from $FEAT_INSTALL_ROOT"
 			__del_folder $FEAT_INSTALL_ROOT
 		fi
 	fi
@@ -446,13 +446,13 @@ __feature_install() {
 
 	if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" = "" ]; then
 		if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" = "$STELLA_CURRENT_OS" ]; then
-			__log " $_SCHEMA not installed on $STELLA_CURRENT_OS"
+			__log "INFO" " $_SCHEMA not installed on $STELLA_CURRENT_OS"
 			return
 		fi
 	fi
 	if [ ! "$FEAT_SCHEMA_OS_EXCLUSION" = "" ]; then
 		if [ "$FEAT_SCHEMA_OS_EXCLUSION" = "$STELLA_CURRENT_OS" ]; then
-			__log " $_SCHEMA not installed on $STELLA_CURRENT_OS"
+			__log "INFO" " $_SCHEMA not installed on $STELLA_CURRENT_OS"
 			return
 		fi
 	fi
@@ -529,16 +529,16 @@ __feature_install() {
 					fi
 
 					if [ "$_origin" = "STELLA" ]; then
-						__log "Installing dependency $dep"
+						__log "INFO" "Installing dependency $dep"
 
 
 						__feature_install $dep "$_OPT HIDDEN"
 						if [ "$TEST_FEATURE" = "0" ]; then
-							__log "** Error while installing dependency feature $FEAT_SCHEMA_SELECTED"
+							__log "INFO" "** Error while installing dependency feature $FEAT_SCHEMA_SELECTED"
 						fi
 
 					fi
-					[ "$_origin" = "SYSTEM" ] && __log "Using dependency $dep from SYSTEM."
+					[ "$_origin" = "SYSTEM" ] && __log "INFO" "Using dependency $dep from SYSTEM."
 
 				done
 
@@ -601,7 +601,7 @@ __feature_install() {
 
 			else
 
-				__log " ** Installing $FEAT_NAME version $FEAT_VERSION in $FEAT_INSTALL_ROOT"
+				__log "INFO" " ** Installing $FEAT_NAME version $FEAT_VERSION in $FEAT_INSTALL_ROOT"
 
 				# NOTE : feature_callback is called from recipe itself
 
@@ -618,10 +618,10 @@ __feature_install() {
 					__feature_inspect $FEAT_SCHEMA_SELECTED
 
 					if [ "$TEST_FEATURE" = "1" ]; then
-						__log "** Feature $_SCHEMA is installed"
+						__log "INFO" "** Feature $_SCHEMA is installed"
 						__feature_init "$FEAT_SCHEMA_SELECTED" $_OPT
 					else
-						__log "** Error while installing feature $FEAT_SCHEMA_SELECTED"
+						__log "INFO" "** Error while installing feature $FEAT_SCHEMA_SELECTED"
 						#__del_folder $FEAT_INSTALL_ROOT
 						# Sometimes current directory is lost by the system
 						cd "$STELLA_APP_ROOT"
@@ -629,7 +629,7 @@ __feature_install() {
 				fi
 			fi
 		else
-			__log "** Feature $_SCHEMA already installed"
+			__log "INFO" "** Feature $_SCHEMA already installed"
 			__feature_init "$FEAT_SCHEMA_SELECTED" $_OPT
 		fi
 
@@ -650,7 +650,7 @@ __feature_install() {
 
 
 	else
-		__log " ** Error unknow feature $_SCHEMA"
+		__log "INFO" " ** Error unknow feature $_SCHEMA"
 	fi
 
 }
@@ -711,7 +711,7 @@ __feature_init_installed() {
 		fi
 	done
 
-	__log "** Features initialized : $FEATURE_LIST_ENABLED"
+	__log "INFO" "** Features initialized : $FEATURE_LIST_ENABLED"
 }
 
 
@@ -958,9 +958,9 @@ __select_official_schema() {
 		[ ! "$_TR_FEATURE_OS_EXCLUSION" = "" ] && _OS_OPTION="$_OS_OPTION"\\\\"$_TR_FEATURE_OS_EXCLUSION"
 
 
-		
 
-		# check schema exists 
+
+		# check schema exists
 		# we already know which version to find
 		# now we are looking for different arch and flavour
 		# starting with specified ones, then with default ones, then with possible ones
@@ -983,7 +983,7 @@ __select_official_schema() {
 		local l
 		local a
 		local f
-	
+
 		# flavour is always presents in FEAT_LIST_SCHEMA
 		for f in $_looking_flavour; do
 			# we do not look for any arch while searching source flavour

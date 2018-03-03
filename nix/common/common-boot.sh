@@ -145,24 +145,8 @@ __boot() {
     # [schema://][user[:password]@][host][:port][/abs_path|?rel_path]
     __have_to_transfer=1
 
+    __path="$(__uri_get_path "$_uri")"
     __uri_parse "$_uri"
-
-    if [ ! "${__stella_uri_query:1}" = "" ]; then
-      # we use explicit relative path with local://?../foo
-      __path="${__stella_uri_query:1}"
-    else
-      # we use relative path with local://../foo OR we use absolute path with local:///foo/bar
-      [ "$__stella_uri_schema" = "local" ] && __path="${__stella_uri_host}${__stella_uri_path}"
-      [ ! "$__stella_uri_schema" = "local" ] && __path="${__stella_uri_path}"
-    fi
-
-    if [ "$__path" = "" ]; then
-      __path="."
-    else
-      if [ "$(__is_abs "$__path")" = "FALSE" ]; then
-        __path="./$__path"
-      fi
-    fi
 
     # TODO : dangerous tweak because it impacts the target OS.
     #       Maybe, use __ssh_sudo_begin_session only with an explicit option like --sudopersist
