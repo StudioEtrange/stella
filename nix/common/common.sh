@@ -38,6 +38,8 @@ __sudo_ssh_end_session() {
 #				 ERR and EXIT are pseudo-signals
 # https://www.ibm.com/developerworks/aix/library/au-usingtraps/
 # https://linuxconfig.org/how-to-modify-scripts-behavior-on-signals-using-bash-traps
+# NOTE as it catch it catch exit signal
+#				could have side effect when bootstrapping an env
 __sudo_begin_session() {
     sudo -v || exit $?
     ( while true; do sudo -nv; sleep 50; done; ) &

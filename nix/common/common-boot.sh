@@ -153,9 +153,11 @@ __boot() {
     #       Maybe, use __ssh_sudo_begin_session only with an explicit option like --sudopersist
     if [ ! "$_opt_sudo" = "" ]; then
       case $__stella_uri_schema in
-        local )
-          __sudo_begin_session
-        ;;
+        #local )
+          # NOTE : do not use this because it catch exit signal
+          #     and could have side effect when bootstrapping an env
+          #__sudo_begin_session
+        #;;
         ssh|vagrant )
           __sudo_ssh_begin_session "$_uri"
         ;;
@@ -234,28 +236,30 @@ __boot() {
                  $__stella_entrypoint stella install dep
                  $__stella_entrypoint boot shell local
               else
-               # TODO : not tested
-               sudo -Es -- <<EOF
-cd $__boot_folder
-$__stella_entrypoint stella install dep
-$__stella_entrypoint boot shell local
-EOF
+               sudo -Es eval "cd $__boot_folder && $__stella_entrypoint stella install dep && $__stella_entrypoint boot shell local"
               fi
               ;;
             CMD )
-              # TODO change this
-              #cd $__boot_folder
-              ${_opt_sudo_cmd}$__stella_entrypoint stella install dep
-              ${_opt_sudo_cmd}$__stella_entrypoint boot cmd local -- $_arg
+              if [ "$_opt_sudo" = "" ]; then
+                 cd $__boot_folder
+                 $__stella_entrypoint stella install dep
+                 $__stella_entrypoint boot cmd local -- $_arg
+              else
+               sudo -Es eval "cd $__boot_folder && $__stella_entrypoint stella install dep && $__stella_entrypoint boot cmd local -- '$_arg'"
+              fi
+
               ;;
             SCRIPT )
-              # TODO change this
-              #cd $__boot_folder
-              ${_opt_sudo_cmd}$__stella_entrypoint stella install dep
-              ${_opt_sudo_cmd}$__script_path
+              if [ "$_opt_sudo" = "" ]; then
+                cd $__boot_folder
+                $__stella_entrypoint stella install dep
+                $__script_path
+              else
+               sudo -Es eval "cd $__boot_folder && $__stella_entrypoint stella install dep && $__script_path"
+              fi
               ;;
           esac
-          [ ! "$_opt_sudo" = "" ] && __sudo_end_session
+
       fi
       ;;
 
