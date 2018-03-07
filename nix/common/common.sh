@@ -429,7 +429,7 @@ __transfer_stella() {
 		[ "$o" = "SUDO" ] && _opt_sudo="SUDO"
 		[ "$o" = "FOLDER_CONTENT" ] && _opt_folder_content="FOLDER_CONTENT"
 	done
-
+	__log "DEBUG" "** ${_opt_sudo} Transfer stella to $_uri"
 	__transfer_folder_rsync "$STELLA_ROOT" "$_uri" "$_opt_ex_win $_opt_ex_app $_opt_ex_cache $_opt_ex_workspace $_opt_ex_env $_opt_ex_git $_opt_sudo $_opt_folder_content"
 }
 

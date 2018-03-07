@@ -135,6 +135,8 @@ __boot() {
 		[ "$o" = "SUDO" ] && _opt_sudo="SUDO"
 	done
 
+  __log "INFO" "** ${_opt_sudo} Boot $_item $_mode to $_uri with '$_arg'"
+
   local __have_to_transfer=0
 
   if [ "$_uri" = "local" ]; then
@@ -175,7 +177,7 @@ __boot() {
           __boot_folder="$(__rel_to_abs_path "$__boot_folder")"
         fi
       fi
-      __stella_path="$__boot_folder/stella"
+      __stella_path="stella"
       __stella_entrypoint="$__stella_path/stella.sh"
     fi
 
@@ -190,7 +192,7 @@ __boot() {
           __boot_folder="$(__rel_to_abs_path "$__boot_folder")"
         fi
       fi
-      __app_path="$__boot_folder/$(basename "$STELLA_APP_ROOT")"
+      __app_path="$(basename "$STELLA_APP_ROOT")"
       __stella_entrypoint="${__app_path}/stella-link.sh"
     fi
 
@@ -205,7 +207,7 @@ __boot() {
           __boot_folder="$(__rel_to_abs_path "$__boot_folder")"
         fi
       fi
-      __script_path="$__boot_folder/$__script_filename"
+      __script_path="./$__script_filename"
     fi
 
   fi
@@ -236,16 +238,22 @@ __boot() {
                  $__stella_entrypoint stella install dep
                  $__stella_entrypoint boot shell local
               else
-               sudo -Es eval "cd $__boot_folder && $__stella_entrypoint stella install dep && $__stella_entrypoint boot shell local"
+                sudo -Es eval "cd $__boot_folder && $__stella_entrypoint stella install dep && $__stella_entrypoint boot shell local"
               fi
               ;;
             CMD )
               if [ "$_opt_sudo" = "" ]; then
                  cd $__boot_folder
                  $__stella_entrypoint stella install dep
-                 $__stella_entrypoint boot cmd local -- $_arg
+                 # cmd as is, without a bootstraped env
+                 [ "$_item" = "STELLA" ] && $__stella_entrypoint boot cmd local -- $_arg
+                 # cmd as is, without a bootstraped env
+                 [ "$_item" = "APP" ] && eval "$_arg"
               else
-               sudo -Es eval "cd $__boot_folder && $__stella_entrypoint stella install dep && $__stella_entrypoint boot cmd local -- '$_arg'"
+                # cmd is run into a bootstraped env
+                [ "$_item" = "STELLA" ] && sudo -Es eval "cd $__boot_folder && $__stella_entrypoint stella install dep && $__stella_entrypoint boot cmd local -- '$_arg'"
+                # cmd as is, without a bootstraped env
+                [ "$_item" = "APP" ] && sudo -Es eval "cd $__boot_folder && $__stella_entrypoint stella install dep && $_arg"
               fi
 
               ;;
@@ -271,13 +279,16 @@ __boot() {
 
       case $_mode in
         SHELL )
-          __ssh_execute "$_uri" "cd $__boot_folder; $__stella_entrypoint stella install dep && $__stella_entrypoint boot shell local" "SHARED $_opt_sudo"
+          __ssh_execute "$_uri" "cd $__boot_folder; $__stella_entrypoint stella install dep; $__stella_entrypoint boot shell local" "SHARED $_opt_sudo"
           ;;
         CMD )
-          __ssh_execute "$_uri" "cd $__boot_folder; $__stella_entrypoint stella install dep && $__stella_entrypoint boot cmd local -- '$_arg'" "SHARED $_opt_sudo"
+          # cmd is run into a bootstraped env
+          [ "$_item" = "STELLA" ] && __ssh_execute "$_uri" "cd $__boot_folder; $__stella_entrypoint stella install dep; $__stella_entrypoint boot cmd local -- '$_arg'"
+          # cmd as is, without a bootstraped env
+          [ "$_item" = "APP" ] && __ssh_execute "$_uri" "cd $__boot_folder; $__stella_entrypoint stella install dep; $_arg" "SHARED $_opt_sudo"
           ;;
         SCRIPT )
-          __ssh_execute "$_uri" "cd $__boot_folder; $__stella_entrypoint stella install dep && $__script_path" "SHARED $_opt_sudo"
+          __ssh_execute "$_uri" "cd $__boot_folder; $__stella_entrypoint stella install dep; $__script_path" "SHARED $_opt_sudo"
           ;;
       esac
       [ ! "$_opt_sudo" = "" ] && __sudo_ssh_end_session "$_uri"
