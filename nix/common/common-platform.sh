@@ -2,6 +2,8 @@
 if [ ! "$_STELLA_PLATFORM_INCLUDED_" = "1" ]; then
 _STELLA_PLATFORM_INCLUDED_=1
 
+# NOTE :
+#			This file contains specific code depending of the OS
 
 # DISTRIB/OS/PLATFORM INFO ---------------------------
 
@@ -171,7 +173,7 @@ __set_current_platform_info() {
 	STELLA_USERSPACE_ARCH=unknown
 
 	__get_network_info
-	
+
 	__override_platform_command
 
 }
@@ -312,7 +314,7 @@ __require() {
 	return $_result
 }
 
-# TOOLSET specific ----------------------------
+# TOOLSET specific --------------------------------------------------------
 
 # http://stackoverflow.com/questions/5188267/checking-the-gcc-version-in-a-makefile
 # return X.Y.Z as version of current gcc
@@ -345,7 +347,7 @@ __gcc_is_clang() {
 	fi
 }
 
-# RUNTIME specific ----------------------------
+# RUNTIME specific --------------------------------------------------------
 
 
 # retrieve current pyconfig.h
@@ -399,6 +401,42 @@ __python_get_includes() {
 }
 
 # PACKAGE SYSTEM ----------------------------
+# sample : __yum_proxy_set $STELLA_HTTP_PROXY
+__yum_proxy_set() {
+	local _uri="$1"
+
+	__yum_proxy_unset
+
+	__log "INFO" " * Set yum HTTP proxy with $_uri"
+	echo proxy=${_uri} | sudo -E tee -a /etc/yum.conf > /dev/null
+}
+
+__yum_proxy_unset() {
+	__log "INFO" " * Unset any yum HTTP proxy"
+	sudo sed -ibak '/proxy=/d' /etc/yum.conf
+}
+
+# _version could be 6 or 7 (for RHEL/Centos 6.x or 7.x)
+__yum_add_extra_repositories() {
+	local _version="$1"
+
+	__log "INFO" "Set some yum repositories into current OS ($STELLA_CURRENT_OS)"
+
+	[ ! "$_version" = "6" ] && [ ! "$_version" = "7" ] && return
+
+	# http://redhat-centos.blogspot.fr/2013/06/configuring-centos-base-repo-for-redhat.html
+	__log "INFO" "** Set base repositories of Centos"
+	__sudo_exec cp -f "$STELLA_ARTEFACT/centos-repo/centos-${_version}-base.repo" /etc/yum.repos.d/
+	__get_resource "gpg key" "http://mirror.centos.org/centos/RPM-GPG-KEY-CentOS-${_version}" "HTTP" "$STELLA_APP_WORK_ROOT" "FORCE_NAME RPM-GPG-KEY-CentOS-${_version}"
+	__sudo_exec cp -f "$STELLA_APP_WORK_ROOT/RPM-GPG-KEY-CentOS-${_version}" /etc/pki/rpm-gpg/
+
+	# http://www.rackspace.com/knowledge_center/article/install-epel-and-additional-repositories-on-centos-and-red-hat
+	__log "INFO" "** Add EPEL repositories"
+	__get_resource "epel" "https://dl.fedoraproject.org/pub/epel/epel-release-latest-${_version}.noarch.rpm" "HTTP" "$STELLA_APP_WORK_ROOT" "FORCE_NAME epel-release-latest-${_version}.noarch.rpm"
+	__sudo_exec rpm -Uvh "$STELLA_APP_WORK_ROOT/epel-release-latest-${_version}.noarch.rpm"
+}
+
+
 
 
 __get_current_package_manager() {
@@ -426,17 +464,7 @@ __get_current_package_manager() {
 	echo "$_package_manager"
 }
 
-__sys_install() {
-	# _item package name
-	# other args : optionnal arguments
-	local _item=$1
-	shift
-	__sys_install_$_item $@
-}
 
-__sys_remove() {
-	__sys_remove_$1
-}
 
 
 # use a package manager
@@ -471,11 +499,13 @@ __use_package_manager() {
 	if [ "$_action" = "INSTALL" ]; then
 		case $_package_manager in
 			apt-get)
-				type sudo &>/dev/null && \
-					sudo -E apt-get update && \
-					sudo -E apt-get -y install $_packages || \
-					apt-get update && \
-					apt-get -y install $_packages
+				__sudo_exec apt-get update
+				__sudo_exec apt-get -y install
+				#type sudo &>/dev/null && \
+				#	sudo -E apt-get update && \
+				#	sudo -E apt-get -y install $_packages || \
+				#	apt-get update && \
+				#	apt-get -y install $_packages
 				;;
 			brew)
 				brew install $_packages
@@ -484,14 +514,17 @@ __use_package_manager() {
 				brew cask install $_packages
 				;;
 			yum)
-				sudo -E yum install -y $_packages
+				__sudo_exec yum install -y $_packages
+				#sudo -E yum install -y $_packages
 				;;
 			apk)
-				type sudo &>/dev/null && \
-					sudo -E apk update && \
-					sudo -E apk add $_packages || \
-					apk update && \
-					apk add $_packages
+				__sudo_exec apk update
+				__sudo_exec apk add $_packages
+				#type sudo &>/dev/null && \
+				#	sudo -E apk update && \
+				#	sudo -E apk add $_packages || \
+				#	apk update && \
+				#	apk add $_packages
 				;;
 			*)	echo " ** WARN : dont know how to install $_id"
 				;;
@@ -500,11 +533,12 @@ __use_package_manager() {
 	if [ "$_action" = "REMOVE" ]; then
 		case $_package_manager in
 			apt-get)
+				# TODO use __sudo_exec
 				type sudo &>/dev/null && \
 					sudo -E apt-get update && \
 					sudo -E apt-get -y autoremove --purge $_packages || \
-					apt-get update && \
-					apt-get -y autoremove --purge $_packages
+						apt-get update && \
+						apt-get -y autoremove --purge $_packages
 				;;
 			brew)
 				brew uninstall $_packages
@@ -513,12 +547,14 @@ __use_package_manager() {
 				brew cask uninstall $_packages
 				;;
 			yum)
+				# TODO use __sudo_exec
 				sudo -E yum remove -y $_packages
 				;;
 			apk)
+				# TODO use __sudo_exec
 					type sudo &>/dev/null && \
 					sudo -E apk del $_packages || \
-					apk del $_packages
+						apk del $_packages
 				;;
 			*)	echo " ** WARN : dont know how to remove $_id"
 				;;
@@ -527,7 +563,19 @@ __use_package_manager() {
 
 }
 
-# --------- SYSTEM RECIPES--------
+# --------- SYSTEM INSTALL/REMOVE RECIPES------------------------------------
+__sys_install() {
+	# _item package name
+	# other args : optionnal arguments
+	local _item=$1
+	shift
+	__sys_install_$_item $@
+}
+
+__sys_remove() {
+	__sys_remove_$1
+}
+
 __sys_install_docker() {
 	# NOTE install with ansible : https://medium.com/@tedchength/installing-docker-using-ansible-script-c182787f2fa1
 	# NOTE install specific version : https://forums.docker.com/t/how-can-i-install-a-specific-version-of-the-docker-engine/1993/6
@@ -552,6 +600,8 @@ __sys_install_docker() {
 	echo "NOTE : you should add a user to docker group, to use docker without sudo"
 	echo "			sudo usermod -aG docker USER"
 }
+
+
 
 __sys_install_brew() {
 	echo " ** Install Homebrew on your system"
@@ -628,7 +678,6 @@ __sys_remove_build-chain-standard() {
 	else
 		__use_package_manager "REMOVE" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib | yum gcc gcc-c++ make kernel-devel | apk gcc g++ make"
 	fi
-
 }
 
 

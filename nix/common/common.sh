@@ -9,6 +9,16 @@ _STELLA_COMMON_INCLUDED_=1
 
 # VARIOUS-----------------------------
 
+# Try to sudo - if not exec without sudo
+# On some systems, sudo do not exist, and we may already exec cmd as root
+#		sample : __sudo_exec apt-get update
+__sudo_exec() {
+	type sudo &>/dev/null && \
+		sudo -E "$@" || \
+		"$@"
+}
+
+
 # Share sudo authentification between ssh sessions until __sudo_ssh_end_session is called
 __sudo_ssh_begin_session() {
 	local _uri="$1"
@@ -385,6 +395,8 @@ __uri_parse() {
 # By default
 # CACHE, WORKSPACE, ENV, GIT are excluded ==> use theses options to force include
 # APP, WIN are included ==> uses these option to force exclude
+# SUDO use sudo on the target
+# FOLDER_CONTENT use this option to transfer content of stella folder only (not stella folder itself)
 __transfer_stella() {
 	local _uri="$1"
 	local _OPT="$2"
@@ -402,6 +414,8 @@ __transfer_stella() {
 	_opt_ex_app=
 	local _opt_sudo
 	_opt_sudo=
+	local _opt_folder_content
+	_opt_folder_content=
 
 	for o in $_OPT; do
 		[ "$o" = "CACHE" ] && _opt_ex_cache=
@@ -411,9 +425,10 @@ __transfer_stella() {
 		[ "$o" = "WIN" ] && _opt_ex_win="EXCLUDE /win/ EXCLUDE /stella.bat EXCLUDE /conf.bat"
 		[ "$o" = "APP" ] && _opt_ex_app="EXCLUDE /app/"
 		[ "$o" = "SUDO" ] && _opt_sudo="SUDO"
+		[ "$o" = "FOLDER_CONTENT" ] && _opt_folder_content="FOLDER_CONTENT"
 	done
 
-	__transfer_folder_rsync "$STELLA_ROOT" "$_uri" "$_opt_ex_win $_opt_ex_app $_opt_ex_cache $_opt_ex_workspace $_opt_ex_env $_opt_ex_git $_opt_sudo"
+	__transfer_folder_rsync "$STELLA_ROOT" "$_uri" "$_opt_ex_win $_opt_ex_app $_opt_ex_cache $_opt_ex_workspace $_opt_ex_env $_opt_ex_git $_opt_sudo $_opt_folder_content"
 }
 
 
@@ -452,7 +467,7 @@ __transfer_folder_rsync() {
 #			SUDO use sudo while transfering to uri
 #
 # example
-# __transfer_file_rsync /foo/file1 ssh://user@ip:folder/file2
+# __transfer_file_rsync /foo/file1 ssh://user@ip/?folder/file2
 #			file1 will be sync inside home directory of user as /home/user/folder/file2
 __transfer_file_rsync() {
 	local _file="$1"
@@ -474,6 +489,8 @@ __transfer_file_rsync() {
 #					ssh://user@host:port[/abs_path|?rel_path]
 #					vagrant://vagrant-machine[/abs_path|?rel_path]
 #					local://[/abs_path|[?]rel_path]  ==> with local:// char '?' is optionnal to use relative_path
+#
+#	NOTE : use ssh shared connection by default
 #
 #	OPTIONS
 # 		EXCLUDE (repeat this option for each exclude filter to set - path are absolute to the root of the folder to transfert. example : /workspace/)
@@ -562,13 +579,13 @@ __transfer_rsync() {
 				fi
 
 				for o in $_include; do
-					_opt_include="--include "$(echo "$_base_folder$o" | sed 's,//,/,')" $_opt_include"
+					_opt_include="--include=$(echo $_base_folder$o | sed 's,//,/,') $_opt_include"
 				done
 
 				for o in $_exclude; do
-					_opt_exclude="--exclude "$(echo "$_base_folder$o" | sed 's,//,/,')" $_opt_exclude"
+					_opt_exclude="--exclude=$(echo $_base_folder$o | sed 's,//,/,') $_opt_exclude"
 				done
-				[ "$_opt_exclude_hidden" = "ON" ] && _opt_exclude="$_opt_exclude --exclude ${_base_folder}.*"
+				[ "$_opt_exclude_hidden" = "ON" ] && _opt_exclude="$_opt_exclude --exclude=${_base_folder}.*"
 
 			;;
 		FILE )
@@ -593,17 +610,21 @@ __transfer_rsync() {
 			if [ "$_opt_sudo" = "ON" ]; then
 				rsync $_opt_include $_opt_exclude --rsync-path="stty raw -echo; sudo mkdir -p '$_target_path'; sudo rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh -t -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60 $__vagrant_ssh_opt" "$_source" "$_target"
 			fi
-			[ "$_opt_sudo" = "OFF" ] && rsync $_opt_include $_opt_exclude --rsync-path="mkdir -p '$(dirname $_target_path)' && rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh $__vagrant_ssh_opt" "$_source" "$_target"
+			[ "$_opt_sudo" = "OFF" ] && rsync $_opt_include $_opt_exclude --rsync-path="mkdir -p '$(dirname $_target_path)' && rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh $__vagrant_ssh_opt -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60" "$_source" "$_target"
 			;;
 		local )
-			# '--rsync-path' option seems to not work when we are on the same host (local)
-			if [ "$_opt_sudo" = "ON" ]; then
-				sudo mkdir -p "$(dirname $_target_path)"
-				sudo rsync $_opt_include $_opt_exclude --force --delete -avz "$_source" "$_target"
-			fi
-			if [ "$_opt_sudo" = "OFF" ]; then
-				mkdir -p "$(dirname $_target_path)"
-				rsync $_opt_include $_opt_exclude --force --delete -avz "$_source" "$_target"
+			if [ "$_source" = "$_target" ]; then
+				__log "INFO" " ** source $_source and target $_target are equivalent, so no transfer"
+			else
+				# '--rsync-path' option seems to not work when we are on the same host (local)
+				if [ "$_opt_sudo" = "ON" ]; then
+					sudo mkdir -p "$(dirname $_target_path)"
+					sudo rsync $_opt_include $_opt_exclude --force --delete -avz "$_source" "$_target"
+				fi
+				if [ "$_opt_sudo" = "OFF" ]; then
+					mkdir -p "$(dirname $_target_path)"
+					rsync $_opt_include $_opt_exclude --force --delete -avz "$_source" "$_target"
+				fi
 			fi
 			;;
 		*)

@@ -9,6 +9,7 @@
 * homebrew (https://github.com/Homebrew/homebrew-core)
 * 0install (http://0install.net/)
 * rudix (http://rudix.org/)
+* appimage https://appimage.github.io/apps/
 
 ## WIN
 

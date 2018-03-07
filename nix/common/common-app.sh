@@ -11,7 +11,8 @@ _STELLA_COMMON_APP_INCLUDED_=1
 # By default
 # CACHE, WORKSPACE, GIT are excluded ==> use theses options to not exclude
 # EXCLUDE_HIDDEN use this option to exclude hidden files
-# SUDO use sudo on the target host
+# SUDO use sudo on the target
+# FOLDER_CONTENT use this option to transfer content of the app folder only (not folder itself)
 __transfer_app(){
 	local _uri="$1"
 	local _OPT="$2"
@@ -25,22 +26,27 @@ __transfer_app(){
 	_opt_ex_hidden=
 	local _opt_sudo
 	_opt_sudo=
-
+	local _opt_folder_content
+	_opt_folder_content=
 	for o in $_OPT; do
 		[ "$o" = "CACHE" ] && _opt_ex_cache=
 		[ "$o" = "WORKSPACE" ] && _opt_ex_workspace=
 		[ "$o" = "GIT" ] && _opt_ex_git=
 		[ "$o" = "EXCLUDE_HIDDEN" ] && _opt_ex_hidden="EXCLUDE_HIDDEN"
 		[ "$o" = "SUDO" ] && _opt_sudo="SUDO"
+		[ "$o" = "FOLDER_CONTENT" ] && _opt_folder_content="FOLDER_CONTENT"
 	done
 
 	__standard_include="INCLUDE /.stella-id"
 
-	__transfer_folder_rsync "$STELLA_APP_ROOT" "$_uri" "$__standard_include $_opt_ex_cache $_opt_ex_workspace $_opt_ex_hidden $_opt_ex_git $_opt_sudo"
+	__transfer_folder_rsync "$STELLA_APP_ROOT" "$_uri" "$__standard_include $_opt_ex_cache $_opt_ex_workspace $_opt_ex_hidden $_opt_ex_git $_opt_sudo $_opt_folder_content"
 
-	__app_path="$__path/$(basename "$STELLA_APP_ROOT")"
-	__stella_path="${__app_path}/$(__abs_to_rel_path "$STELLA_ROOT" "$STELLA_APP_ROOT")"
 	if [ "$(__is_logical_subfolder "$STELLA_APP_ROOT" "$STELLA_ROOT")" = "FALSE" ]; then
+		__path="$(__uri_get_path "$_uri")"
+		[ "$_opt_folder_content" = "" ] && __app_path="$__path/$(basename "$STELLA_APP_ROOT")" \
+																			|| __app_path="$__path"
+		__stella_path="${__app_path}/$(__abs_to_rel_path "$STELLA_ROOT" "$STELLA_APP_ROOT")"
+
 		__uri_parse "$_uri"
 		__transfer_stella "${__stella_uri_schema}://${__stella_uri_address}/?$(dirname ${__stella_path})" "ENV $_opt_sudo"
 	fi

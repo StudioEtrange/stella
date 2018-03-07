@@ -351,10 +351,10 @@ __ssh_execute() {
 	local __opt_sudo=
 	for o in $__opt; do
 		[ "$o" = "SHARED" ] && __opt_shared="-o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60"
-		[ "$o" = "SUDO" ] && __opt_sudo="sudo "
+		[ "$o" = "SUDO" ] && __opt_sudo="1"
 	done
 
-	__uri_parse "$_uri"
+	__uri_parse "$__uri"
 
 	[ "$__stella_uri_schema" = "" ] && __stella_uri_schema="ssh"
 
@@ -375,7 +375,13 @@ __ssh_execute() {
 	local __ssh_user=
 	[ ! "$__stella_uri_user" = "" ] && __ssh_user="$__stella_uri_user"@
 
-	ssh -tt $__ssh_opt $__opt_shared $__vagrant_ssh_opt "$__ssh_user$__stella_uri_host" "${__opt_sudo}${__cmd}"
+	# https://stackoverflow.com/questions/5560442/how-to-run-two-commands-in-sudo
+	if [ "$__opt_sudo" = "1" ]; then
+		ssh -tt $__ssh_opt $__opt_shared $__vagrant_ssh_opt "$__ssh_user$__stella_uri_host" "sudo -Es eval '${__cmd}'"
+	else
+		ssh -tt $__ssh_opt $__opt_shared $__vagrant_ssh_opt "$__ssh_user$__stella_uri_host" "${__cmd}"
+	fi
+
 }
 
 
