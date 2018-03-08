@@ -28,6 +28,8 @@ __transfer_app(){
 	_opt_sudo=
 	local _opt_folder_content
 	_opt_folder_content=
+	local _opt_copy_links
+	_opt_copy_links=
 	for o in $_OPT; do
 		[ "$o" = "CACHE" ] && _opt_ex_cache=
 		[ "$o" = "WORKSPACE" ] && _opt_ex_workspace=
@@ -35,13 +37,14 @@ __transfer_app(){
 		[ "$o" = "EXCLUDE_HIDDEN" ] && _opt_ex_hidden="EXCLUDE_HIDDEN"
 		[ "$o" = "SUDO" ] && _opt_sudo="SUDO"
 		[ "$o" = "FOLDER_CONTENT" ] && _opt_folder_content="FOLDER_CONTENT"
+		[ "$o" = "COPY_LINKS" ] && _opt_copy_links="COPY_LINKS"
 	done
 
 	__standard_include="INCLUDE /.stella-id"
 
 	__log "DEBUG" "** ${_opt_sudo} Transfer app $STELLA_APP_NAME to $_uri"
 
-	__transfer_folder_rsync "$STELLA_APP_ROOT" "$_uri" "$__standard_include $_opt_ex_cache $_opt_ex_workspace $_opt_ex_hidden $_opt_ex_git $_opt_sudo $_opt_folder_content"
+	__transfer_folder_rsync "$STELLA_APP_ROOT" "$_uri" "$__standard_include $_opt_ex_cache $_opt_ex_workspace $_opt_ex_hidden $_opt_ex_git $_opt_sudo $_opt_folder_content $_opt_copy_links"
 
 	if [ "$(__is_logical_subfolder "$STELLA_APP_ROOT" "$STELLA_ROOT")" = "FALSE" ]; then
 		__path="$(__uri_get_path "$_uri")"

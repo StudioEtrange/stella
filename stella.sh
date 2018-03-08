@@ -42,8 +42,8 @@ usage() {
 	echo " L     proxy tunnel <proxy name> --bridge=<user:password@host> : set a ssh tunnel from localhost to registered proxy <name> through a bridge, and set web traffic to use this tunnel as web proxy"
 	echo " o-- bootstrap management :"
 	echo " L     boot shell <uri> : launch an interactive new shell with all stella env var setted inside an <uri> (use 'local' for current host)"
-	echo " L     boot cmd <uri> -- <command> : execute a command with all stella env var setted inside an <uri> (use 'local' for current host)"
-	echo " L     boot script <uri> -- <script_path>"
+	echo " L     boot cmd <uri> -- <command> : execute a command inside an <uri> (use 'local' for current host)"
+	echo " L     boot script <uri> --script=<script_path> [-- script arg]"
 	echo " o-- system management : "
 	echo " L     sys install <package name> : install  a system package -- WARN This will affect your system"
 	echo " L     sys remove <package name> : remove a system package -- WARN This will affect your system"
@@ -82,6 +82,7 @@ CACHE=''                       	''    		''            		b     		0     		'1'     
 WORKSPACE=''                       	''    		''            		b     		0     		'1'           			Include workspace folder when deploying.
 HIDDEN=''                       	''    		''            		b     		0     		'1'           			Exclude hidden files.
 SUDO=''                       	''    		''            		b     		0     		'1'           			Execute as sudo.
+SCRIPT=''                   ''          'path'              s           0           ''                      Script path.
 "
 
 __argparse "$0" "$OPTIONS" "$PARAMETERS" "Stella" "$(usage)" "OTHERARG" "$@"
@@ -249,10 +250,14 @@ if [ "$DOMAIN" = "boot" ]; then
 		fi
 	fi
 	if [ "$ACTION" = "script" ]; then
+		if [ "$SCRIPT" = "" ]; then
+			__log "ERROR" "** ERROR : please specify a script path"
+			exit 1
+		fi
 		if [ "$STELLA_APP_IS_STELLA" = "1" ]; then
-			__boot_stella_script "$ID" "$OTHERARG" "$_options"
+			__boot_stella_script "$ID" "$SCRIPT" "$OTHERARG" "$_options"
 		else
-			__boot_app_script "$ID" "$OTHERARG" "$_options"
+			__boot_app_script "$ID" "$SCRIPT" "$OTHERARG" "$_options"
 		fi
 	fi
 fi

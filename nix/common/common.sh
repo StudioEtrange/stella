@@ -287,9 +287,24 @@ __url_decode() {
 }
 
 
+# Build path part of an uri
+# ./foo ==> /?foo
+# ../foo ==> /?../foo
+# /foo ==> /foo
+__uri_build_path() {
+	local __path="$1"
+
+	if [ "$(__is_abs "$__path")" = "FALSE" ]; then
+		echo "/?${__path}"
+	else
+		echo "${__path}"
+	fi
+}
+
 # __uri_get_path ssh://host/?foo ==> ./foo
 # __uri_get_path local://../foo  ==> ../foo
 # __uri_get_path local://?../foo  ==> ../foo
+#	__uri_get_path local:///?foo	==> ./foo
 # __uri_get_path ssh://host/foo  ==> /foo
 # __uri_get_path local:///foo  ==> /foo
 # __uri_get_path ssh://host ==> .
@@ -476,6 +491,7 @@ __transfer_file_rsync() {
 	local _uri="$2"
 	local _opt="$3"
 
+	__log "DEBUG" "** Transfer file $_file to $_uri"
 	__transfer_rsync "FILE" "$_file" "$_uri" "$_opt"
 }
 
@@ -500,6 +516,7 @@ __transfer_file_rsync() {
 # 		FOLDER_CONTENT will transfer folder content not folder itself
 # 		EXCLUDE_HIDDEN exclude hidden files
 #			SUDO use sudo while transfering to uri
+#			COPY_LINKS copy real file linked by a symlink
 __transfer_rsync() {
 	local _mode="$1"
 	local _source="$2"
@@ -513,7 +530,8 @@ __transfer_rsync() {
 	local _include=
 	local _opt_folder_content=OFF
 	local _opt_sudo=OFF
-	local _opt_exclude_hidden=
+	local _opt_exclude_hidden=OFF
+	local _opt_copy_links=OFF
 	for o in $_OPT; do
 		[ "$_flag_exclude" = "ON" ] && _exclude="$o $_exclude" && _flag_exclude=OFF
 		[ "$o" = "EXCLUDE" ] && _flag_exclude=ON
@@ -522,6 +540,7 @@ __transfer_rsync() {
 		[ "$o" = "FOLDER_CONTENT" ] && _opt_folder_content=ON
 		[ "$o" = "EXCLUDE_HIDDEN" ] && _opt_exclude_hidden=ON
 		[ "$o" = "SUDO" ] && _opt_sudo=ON
+		[ "$o" = "COPY_LINKS" ] && _opt_copy_links=ON
 	done
 
 	# NOTE : rsync needs to be present on both host (source AND target)
@@ -570,6 +589,9 @@ __transfer_rsync() {
 	local _base_folder=
 	local _opt_include=
 	local _opt_exclude=
+	local _opt_links=
+	[ "$_opt_copy_links" = "ON" ] && _opt_links="--copy-links"
+
 	case $_mode in
 		FOLDER )
 				# _source must not finish with / or only folder content will be transfered, not folder itself
@@ -604,15 +626,15 @@ __transfer_rsync() {
 	case $__stella_uri_schema in
 		ssh )
 			if [ "$_opt_sudo" = "ON" ]; then
-				rsync $_opt_include $_opt_exclude --rsync-path="stty raw -echo; sudo mkdir -p '$_target_path'; sudo rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh -t -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60 -p $_ssh_port" "$_source" "$_target"
+				rsync $_opt_links $_opt_include $_opt_exclude --rsync-path="stty raw -echo; sudo mkdir -p '$_target_path'; sudo rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh -t -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60 -p $_ssh_port" "$_source" "$_target"
 			fi
-			[ "$_opt_sudo" = "OFF" ] && rsync $_opt_include $_opt_exclude --rsync-path="mkdir -p '$(dirname $_target_path)' && rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60 -p $_ssh_port" "$_source" "$_target"
+			[ "$_opt_sudo" = "OFF" ] && rsync $_opt_links $_opt_include $_opt_exclude --rsync-path="mkdir -p '$(dirname $_target_path)' && rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60 -p $_ssh_port" "$_source" "$_target"
 			;;
 		vagrant )
 			if [ "$_opt_sudo" = "ON" ]; then
-				rsync $_opt_include $_opt_exclude --rsync-path="stty raw -echo; sudo mkdir -p '$_target_path'; sudo rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh -t -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60 $__vagrant_ssh_opt" "$_source" "$_target"
+				rsync $_opt_links $_opt_include $_opt_exclude --rsync-path="stty raw -echo; sudo mkdir -p '$_target_path'; sudo rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh -t -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60 $__vagrant_ssh_opt" "$_source" "$_target"
 			fi
-			[ "$_opt_sudo" = "OFF" ] && rsync $_opt_include $_opt_exclude --rsync-path="mkdir -p '$(dirname $_target_path)' && rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh $__vagrant_ssh_opt -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60" "$_source" "$_target"
+			[ "$_opt_sudo" = "OFF" ] && rsync $_opt_links $_opt_include $_opt_exclude --rsync-path="mkdir -p '$(dirname $_target_path)' && rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh $__vagrant_ssh_opt -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60" "$_source" "$_target"
 			;;
 		local )
 			if [ "$_source" = "$_target" ]; then
@@ -621,11 +643,11 @@ __transfer_rsync() {
 				# '--rsync-path' option seems to not work when we are on the same host (local)
 				if [ "$_opt_sudo" = "ON" ]; then
 					sudo mkdir -p "$(dirname $_target_path)"
-					sudo rsync $_opt_include $_opt_exclude --force --delete -avz "$_source" "$_target"
+					sudo rsync $_opt_links $_opt_include $_opt_exclude --force --delete -avz "$_source" "$_target"
 				fi
 				if [ "$_opt_sudo" = "OFF" ]; then
 					mkdir -p "$(dirname $_target_path)"
-					rsync $_opt_include $_opt_exclude --force --delete -avz "$_source" "$_target"
+					rsync $_opt_links $_opt_include $_opt_exclude --force --delete -avz "$_source" "$_target"
 				fi
 			fi
 			;;

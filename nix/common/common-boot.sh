@@ -82,8 +82,9 @@ __boot_stella_cmd() {
 __boot_stella_script() {
   local _uri="$1"
   local _script="$2"
-  local _opt="$3"
-  __boot "$_opt STELLA SCRIPT" "$_uri" "$_script"
+  local _arg="$3"
+  local _opt="$4"
+  __boot "$_opt STELLA SCRIPT" "$_uri" "$_script" "$_arg"
 }
 
 
@@ -101,8 +102,9 @@ __boot_app_cmd() {
 __boot_app_script() {
   local _uri="$1"
   local _script="$2"
-  local _opt="$3"
-  __boot "$_opt APP SCRIPT" "$_uri" "$_script"
+  local _arg="$3"
+  local _opt="$4"
+  __boot "$_opt APP SCRIPT" "$_uri" "$_script" "$_arg"
 }
 
 
@@ -114,16 +116,18 @@ __boot_app_script() {
 
 # ITEM : APP | STELLA
 # MODE : SHELL | CMD | SCRIPT
-# OTHER OPTIONS : SUDO
+# OTHER OPTIONS : SUDO COPY_LINKS
 # NOTE : boot commands when using ssh, use shared connection by default
 __boot() {
   local _opt="$1"
   local _uri="$2"
   local _arg="$3"
+  local _arg2="$4"
 
   local _mode=
   local _item=
   local _opt_sudo=
+  local _opt_copy_links=
   for o in $_opt; do
     [ "$o" = "SCRIPT" ] && _mode="SCRIPT"
     [ "$o" = "SHELL" ] && _mode="SHELL"
@@ -133,6 +137,7 @@ __boot() {
     [ "$o" = "STELLA" ] && _item="STELLA"
 
 		[ "$o" = "SUDO" ] && _opt_sudo="SUDO"
+    [ "$o" = "COPY_LINKS" ] && _opt_copy_links="COPY_LINKS"
 	done
 
   __log "INFO" "** ${_opt_sudo} Boot $_item $_mode to $_uri with '$_arg'"
@@ -183,7 +188,7 @@ __boot() {
 
     if [ "$_item" = "APP" ]; then
       # boot an app
-      __transfer_app "$_uri" "$_opt_sudo"
+      __transfer_app "$_uri" "$_opt_sudo $_opt_copy_links"
 
       __boot_folder="$__path"
       if [ "$__stella_uri_schema" = "local" ]; then
@@ -198,7 +203,7 @@ __boot() {
 
     if [ "$_mode" = "SCRIPT" ]; then
       __script_filename="$(__get_filename_from_string $_arg)"
-      __transfer_file_rsync "$_arg" "$_uri/$__script_filename" "$_opt_sudo"
+      __transfer_file_rsync "$_arg" "$_uri/$__script_filename" "$_opt_sudo $_opt_copy_links"
 
       __boot_folder="$__path"
       if [ "$__stella_uri_schema" = "local" ]; then
@@ -226,7 +231,7 @@ __boot() {
               eval "$_arg"
             ;;
           SCRIPT )
-              "$_arg"
+              "$_arg" $_arg2
             ;;
         esac
       else
@@ -263,7 +268,7 @@ __boot() {
                 $__stella_entrypoint stella install dep
                 $__script_path
               else
-               sudo -Es eval "cd $__boot_folder && $__stella_entrypoint stella install dep && $__script_path"
+               sudo -Es eval "cd $__boot_folder && $__stella_entrypoint stella install dep && $__script_path $_arg2"
               fi
               ;;
           esac
@@ -288,7 +293,7 @@ __boot() {
           [ "$_item" = "APP" ] && __ssh_execute "$_uri" "cd $__boot_folder; $__stella_entrypoint stella install dep; $_arg" "SHARED $_opt_sudo"
           ;;
         SCRIPT )
-          __ssh_execute "$_uri" "cd $__boot_folder; $__stella_entrypoint stella install dep; $__script_path" "SHARED $_opt_sudo"
+          __ssh_execute "$_uri" "cd $__boot_folder; $__stella_entrypoint stella install dep; $__script_path $_arg2" "SHARED $_opt_sudo"
           ;;
       esac
       [ ! "$_opt_sudo" = "" ] && __sudo_ssh_end_session "$_uri"
