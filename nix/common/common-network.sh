@@ -388,6 +388,7 @@ __ssh_execute() {
 
 # TODO : these function support only ipv4
 # TODO : give alternative to netstat et ifconfig
+#					https://unix.stackexchange.com/questions/20784/how-can-i-resolve-a-hostname-to-an-ip-address-in-a-bash-script
 __get_network_info() {
 	local _err=
 	type netstat &>/dev/null || _err=1
