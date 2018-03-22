@@ -1674,10 +1674,18 @@ __get_key() {
 	local _exp1="/\[$_SECTION\]/,/\[.*\]/p"
 	local _exp2="/$_KEY=/{print \$2}"
 
-	if [ "$_opt_section_prefix" = "ON" ]; then
-		eval "$_SECTION"_"$_KEY"='$(sed -n -e "$_win_endline" -e "$_exp1" "$_FILE" | awk -F= "$_exp2" )'
+	if [ -f "$_FILE" ]; then
+		if [ "$_opt_section_prefix" = "ON" ]; then
+			eval "$_SECTION"_"$_KEY"='$(sed -n -e "$_win_endline" -e "$_exp1" "$_FILE" | awk -F= "$_exp2" )'
+		else
+			eval $_KEY='$(sed -n -e "$_win_endline" -e "$_exp1" "$_FILE" | awk -F= "$_exp2" )'
+		fi
 	else
-		eval $_KEY='$(sed -n -e "$_win_endline" -e "$_exp1" "$_FILE" | awk -F= "$_exp2" )'
+		if [ "$_opt_section_prefix" = "ON" ]; then
+			eval "$_SECTION"_"$_KEY"=
+		else
+			eval $_KEY=
+		fi
 	fi
 
 }
@@ -1687,7 +1695,7 @@ __del_key() {
 	local _SECTION=$2
 	local _KEY=$3
 
-	__ini_file "DEL" "$_FILE" "$_SECTION" "$_KEY"
+	[ -f "$_FILE" ] && __ini_file "DEL" "$_FILE" "$_SECTION" "$_KEY"
 }
 
 __add_key() {
