@@ -1513,6 +1513,7 @@ __download() {
 		if [ ! -f "$STELLA_INTERNAL_CACHE_DIR/$FILE_NAME" ]; then
 			# NOTE : curl seems to be more compatible
 			if [[ -n `which curl 2> /dev/null` ]]; then
+				# TODO : why two curl call ?
 				curl -fkSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL" || \
 				curl -fkSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL" || \
 				rm -f "$STELLA_APP_CACHE_DIR/$FILE_NAME"

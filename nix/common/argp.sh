@@ -1196,9 +1196,17 @@ process_params() {
 }
 
 
+# NOTE : reset options value to EMPTY by default
+reset_opts() {
+    local OPT_NAME=
+    for OPT_NAME in $ARGP_OPTION_LIST; do
+        export $OPT_NAME=
+    done
+}
+
 process_opts() {
     [[ "$ARGP_DEBUG" ]] && debug_args "$@"
-    local SHIFT_NUM=0 OPTION OPT_NAME TYPE RANGE
+    local SHIFT_NUM=0 OPTION= OPT_NAME= TYPE= RANGE=
 
     while true; do
         OPTION="${1:-}"
@@ -1305,7 +1313,7 @@ output_values_param() {
 
 output_values() {
     [[ "$ARGP_DEBUG" ]] && debug_args "$@"
-    local OPT_NAME VALUE MANDATORY DEF
+    local OPT_NAME= VALUE= MANDATORY= DEF=
     # NOTE : use local OPT_NAME to not override option name which can be "NAME"
     for OPT_NAME in $ARGP_OPTION_LIST; do
         VALUE="${!OPT_NAME}"
@@ -1630,7 +1638,7 @@ main() {
     call_getopt "$@"
 
     [[ "$ARGP_DEBUG" ]] && debug_args "$@"
-
+    reset_opts
     process_opts "${ARGS[@]}"
     ARGP_NUM_SHIFT=$?
     set -- "${ARGS[@]}"
