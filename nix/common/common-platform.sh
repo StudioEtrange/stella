@@ -408,12 +408,15 @@ __yum_proxy_set() {
 	__yum_proxy_unset
 
 	__log "INFO" " * Set yum HTTP proxy with $_uri"
+
+	[ ! -f "/etc/yum.conf" ] && echo [main] | sudo -E tee /etc/yum.conf > /dev/null
 	echo proxy=${_uri} | sudo -E tee -a /etc/yum.conf > /dev/null
 }
 
 __yum_proxy_unset() {
 	__log "INFO" " * Unset any yum HTTP proxy"
-	sudo sed -ibak '/proxy=/d' /etc/yum.conf
+
+	[ -f "/etc/yum.conf" ] && sudo sed -i '/proxy=/d' /etc/yum.conf > /dev/null
 }
 
 # _version could be 6 or 7 (for RHEL/Centos 6.x or 7.x)
