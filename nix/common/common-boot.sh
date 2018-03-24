@@ -128,6 +128,7 @@ __boot() {
   local _item=
   local _opt_sudo=
   local _opt_copy_links=
+  local _opt_delete_excluded=
   for o in $_opt; do
     [ "$o" = "SCRIPT" ] && _mode="SCRIPT"
     [ "$o" = "SHELL" ] && _mode="SHELL"
@@ -138,6 +139,7 @@ __boot() {
 
 		[ "$o" = "SUDO" ] && _opt_sudo="SUDO"
     [ "$o" = "COPY_LINKS" ] && _opt_copy_links="COPY_LINKS"
+    [ "$o" = "DELETE_EXCLUDED" ] && _opt_delete_excluded="DELETE_EXCLUDED"
 	done
 
   __log "INFO" "** ${_opt_sudo} Boot $_item $_mode to $_uri with '$_arg'"
@@ -173,7 +175,7 @@ __boot() {
 
     # boot stella itself
     if [ "$_item" = "STELLA" ]; then
-      __transfer_stella "$_uri" "ENV $_opt_sudo"
+      __transfer_stella "$_uri" "ENV $_opt_sudo $_opt_delete_excluded"
 
       __boot_folder="$__path"
       if [ "$__stella_uri_schema" = "local" ]; then
@@ -188,7 +190,7 @@ __boot() {
 
     if [ "$_item" = "APP" ]; then
       # boot an app
-      __transfer_app "$_uri" "$_opt_sudo $_opt_copy_links"
+      __transfer_app "$_uri" "$_opt_sudo $_opt_copy_links $_opt_delete_excluded"
 
       __boot_folder="$__path"
       if [ "$__stella_uri_schema" = "local" ]; then
@@ -203,7 +205,7 @@ __boot() {
 
     if [ "$_mode" = "SCRIPT" ]; then
       __script_filename="$(__get_filename_from_string $_arg)"
-      __transfer_file_rsync "$_arg" "$_uri/$__script_filename" "$_opt_sudo $_opt_copy_links"
+      __transfer_file_rsync "$_arg" "$_uri/$__script_filename" "$_opt_sudo $_opt_copy_links $_opt_delete_excluded"
 
       __boot_folder="$__path"
       if [ "$__stella_uri_schema" = "local" ]; then

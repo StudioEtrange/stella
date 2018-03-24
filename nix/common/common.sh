@@ -433,6 +433,7 @@ __transfer_stella() {
 	_opt_sudo=
 	local _opt_folder_content
 	_opt_folder_content=
+	local _opt_delete_excluded=
 
 	for o in $_OPT; do
 		[ "$o" = "CACHE" ] && _opt_ex_cache=
@@ -443,9 +444,10 @@ __transfer_stella() {
 		[ "$o" = "APP" ] && _opt_ex_app="EXCLUDE /app/"
 		[ "$o" = "SUDO" ] && _opt_sudo="SUDO"
 		[ "$o" = "FOLDER_CONTENT" ] && _opt_folder_content="FOLDER_CONTENT"
+		[ "$o" = "DELETE_EXCLUDED" ] && _opt_delete_excluded="DELETE_EXCLUDED"
 	done
 	__log "DEBUG" "** ${_opt_sudo} Transfer stella to $_uri"
-	__transfer_folder_rsync "$STELLA_ROOT" "$_uri" "$_opt_ex_win $_opt_ex_app $_opt_ex_cache $_opt_ex_workspace $_opt_ex_env $_opt_ex_git $_opt_sudo $_opt_folder_content"
+	__transfer_folder_rsync "$STELLA_ROOT" "$_uri" "$_opt_delete_excluded $_opt_ex_win $_opt_ex_app $_opt_ex_cache $_opt_ex_workspace $_opt_ex_env $_opt_ex_git $_opt_sudo $_opt_folder_content"
 }
 
 
@@ -517,6 +519,7 @@ __transfer_file_rsync() {
 # 		EXCLUDE_HIDDEN exclude hidden files
 #			SUDO use sudo while transfering to uri
 #			COPY_LINKS copy real file linked by a symlink
+#			DELETE_EXCLUDED delete excluded files on the target
 __transfer_rsync() {
 	local _mode="$1"
 	local _source="$2"
@@ -532,6 +535,7 @@ __transfer_rsync() {
 	local _opt_sudo=OFF
 	local _opt_exclude_hidden=OFF
 	local _opt_copy_links=OFF
+	local _opt_delete_excluded=OFF
 	for o in $_OPT; do
 		[ "$_flag_exclude" = "ON" ] && _exclude="$o $_exclude" && _flag_exclude=OFF
 		[ "$o" = "EXCLUDE" ] && _flag_exclude=ON
@@ -541,6 +545,7 @@ __transfer_rsync() {
 		[ "$o" = "EXCLUDE_HIDDEN" ] && _opt_exclude_hidden=ON
 		[ "$o" = "SUDO" ] && _opt_sudo=ON
 		[ "$o" = "COPY_LINKS" ] && _opt_copy_links=ON
+		[ "$o" = "DELETE_EXCLUDED" ] && _opt_delete_excluded=ON
 	done
 
 	# NOTE : rsync needs to be present on both host (source AND target)
@@ -591,6 +596,7 @@ __transfer_rsync() {
 	local _opt_exclude=
 	local _opt_links=
 	[ "$_opt_copy_links" = "ON" ] && _opt_links="--copy-links"
+	[ "$_opt_delete_excluded" = "ON" ] && _opt_exclude="--delete-excluded $_opt_exclude"
 
 	case $_mode in
 		FOLDER )
