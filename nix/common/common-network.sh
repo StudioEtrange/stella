@@ -5,6 +5,11 @@ _STELLA_COMMON_NET_INCLUDED_=1
 
 # --------------- PROXY INIT ----------------
 
+__reset_proxy() {
+	__reset_proxy_values
+	__reset_system_proxy_values
+}
+
 __init_proxy() {
 	__reset_proxy_values
 	__read_proxy_values

@@ -75,6 +75,10 @@ use
 
 # TODO List
 
+[ ] binary bundle go+bash + busybox ?
+    https://github.com/progrium/go-basher
+    https://github.com/robxu9/bash-static
+
 [ ] nix : color & style https://odb.github.io/shml/
 [ ] nix : explore https://github.com/alebcay/awesome-shell
 [ ] nix : shell framework https://github.com/shellfire-dev/shellfire
@@ -94,6 +98,9 @@ http://applocator.blogspot.fr/2013/10/speed-up-bash-scripts-that-use-grep.html
 [ ] nix : common-platform if netstat or ifconfig not present (centos7/rhel7) provide alternative with ip addr to get IP & interface
 
 [ ] nix : make a flat distro of stella in one file https://github.com/shellfire-dev/fatten
+
+[ ] nix : test sourced https://stackoverflow.com/a/28776166
+source stella-link do not work well while exporting because it is a simple call which is made in stella-link
 
 [ ] REWORK :
     DEPRECATED STELLA_BUILD_RELOCATE
@@ -269,6 +276,7 @@ https://github.com/ansible/ansible-modules-core/blob/devel/system/service.py
                   # INCLUDE_FILTER is apply first, before EXCLUDE_FILTER
                   # BUILD_ACTION <action1> <action2>
 
+------
 
 # DEPLOY PROJECTS
 

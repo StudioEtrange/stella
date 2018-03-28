@@ -23,11 +23,6 @@ case $ACTION in
 		. "$STELLA_ROOT/conf.sh"
 		__init_stella_env
 		;;
-	env)
-		. "$STELLA_ROOT/conf.sh"
-		__init_stella_env
-		echo "** Current env is setted/refreshed with stella env"
-		;;
 	bootstrap)
 		cd "$_STELLA_LINK_CURRENT_FILE_DIR"
 		curl -sSL https://raw.githubusercontent.com/StudioEtrange/stella/master/nix/pool/stella-bridge.sh -o stella-bridge.sh
@@ -38,6 +33,11 @@ case $ACTION in
 	nothing|chaining)
 		;;
 	*)
-		$STELLA_ROOT/stella.sh $*
+		[[ "$0" != "$BASH_SOURCE" ]] && sourced=1 || sourced=0
+		if [ "$sourced" = "1" ]; then
+			. $STELLA_ROOT/stella.sh $*
+		else
+			$STELLA_ROOT/stella.sh $*
+		fi
 		;;
 esac

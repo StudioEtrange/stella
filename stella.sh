@@ -7,6 +7,13 @@ _STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # NOTE : use "env" with source (or .) command only
 # NOTE : warn : some env var (like PATH) are cumulative
 if [ "$1" = "env" ]; then
+	# https://stackoverflow.com/questions/2683279/how-to-detect-if-a-script-is-being-sourced
+	[[ "$0" != "$BASH_SOURCE" ]] && sourced=1 || sourced=0
+	if [ "$sourced" = "0" ]; then
+		echo "** use source"
+		echo ". <stella.sh|stella-link.sh> env"
+		exit 1
+	fi
 	__init_stella_env
 	echo "** Current env is setted/refreshed with stella env"
 else
@@ -36,7 +43,8 @@ usage() {
 	echo " L     stella deploy <[schema://]user@host:[/abs_path|?rel_path]> [--cache] [--workspace] [--sudo] : deploy current stella version to an uri. Could be to local filesystem, to ssh or to a vagrant machine. Vagrant use: vagrant://machine-name. [--cache] : include stella cache folder. [--workspace] : include stella workspace folder. [--sudo] : execute deploy as sudo."
 	echo " o-- network management :"
 	echo " L     proxy on <proxy name> : active a registered proxy"
-	echo " L     proxy off now : disable proxy"
+	echo " L     proxy off now : disable current proxy and deactivate registered proxy"
+	echo " L     proxy reset now : disable and set to none current proxy values"
 	echo " L     proxy register <proxy name> --proxy=<protocol://user:password@host:port> : register a web proxy"
 	echo " L     proxy bypass <host> : register a host that will not use proxy"
 	echo " L     proxy tunnel <proxy name> --bridge=<user:password@host> : set a ssh tunnel from localhost to registered proxy <name> through a bridge, and set web traffic to use this tunnel as web proxy"
@@ -51,8 +59,9 @@ usage() {
 	echo " L     sys info host : print current host info"
 	echo ""
 	echo "Special Usage"
-	echo " o-- env management :"
+	echo " o-- current shell env :"
 	echo " L     . <stella.sh|stella-link.sh> env : set the current shell env with all stella env var setted"
+	echo " L     . <stella.sh|stella-link.sh> <cmd> : execute any previous stella command inside current shell env"
 }
 
 
@@ -61,7 +70,7 @@ usage() {
 # arguments
 PARAMETERS="
 DOMAIN=                          'domain'     		a           'app feature stella proxy sys boot'         										   				Action domain.
-ACTION=                         'action'   					a           'info tunnel deploy script shell cmd version search remove on off register link vendor api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature install list'         	Action to compute.
+ACTION=                         'action'   					a           'reset info tunnel deploy script shell cmd version search remove on off register link vendor api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature install list'         	Action to compute.
 ID=							 								''								s 						''
 "
 OPTIONS="
@@ -84,8 +93,7 @@ HIDDEN=''                       	''    		''            		b     		0     		'1'    
 SUDO=''                       	''    		''            		b     		0     		'1'           			Execute as sudo.
 SCRIPT=''                   ''          'path'              s           0           ''                      Script path.
 "
-
-__argparse "$0" "$OPTIONS" "$PARAMETERS" "Stella" "$(usage)" "OTHERARG" "$@"
+__argparse "${BASH_SOURCE[0]}" "$OPTIONS" "$PARAMETERS" "Stella" "$(usage)" "OTHERARG" "$@"
 
 
 # --------------- APP ----------------------------
@@ -274,6 +282,9 @@ if [ "$DOMAIN" = "proxy" ]; then
 	fi
 	if [ "$ACTION" = "off" ]; then
 		__disable_proxy
+	fi
+	if [ "$ACTION" = "reset" ]; then
+		__reset_proxy
 	fi
 	if [ "$ACTION" = "bypass" ]; then
 		__register_no_proxy "$ID"

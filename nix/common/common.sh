@@ -23,6 +23,8 @@ __sudo_exec() {
 __sudo_ssh_begin_session() {
 	local _uri="$1"
 	__ssh_execute "$_uri" "sudo -v; echo 'Defaults !tty_tickets' | sudo tee /etc/sudoers.d/rsync_temp_hack_stella" "SHARED"
+	# NOTE : needs time before modification is used by sshd
+	sleep 2
 }
 
 __sudo_ssh_end_session() {
@@ -632,13 +634,17 @@ __transfer_rsync() {
 	case $__stella_uri_schema in
 		ssh )
 			if [ "$_opt_sudo" = "ON" ]; then
+				__sudo_ssh_begin_session "$_uri"
 				rsync $_opt_links $_opt_include $_opt_exclude --rsync-path="stty raw -echo; sudo mkdir -p '$_target_path'; sudo rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh -t -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60 -p $_ssh_port" "$_source" "$_target"
+				__sudo_ssh_end_session "$_uri"
 			fi
 			[ "$_opt_sudo" = "OFF" ] && rsync $_opt_links $_opt_include $_opt_exclude --rsync-path="mkdir -p '$(dirname $_target_path)' && rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60 -p $_ssh_port" "$_source" "$_target"
 			;;
 		vagrant )
 			if [ "$_opt_sudo" = "ON" ]; then
+				__sudo_ssh_begin_session "$_uri"
 				rsync $_opt_links $_opt_include $_opt_exclude --rsync-path="stty raw -echo; sudo mkdir -p '$_target_path'; sudo rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh -t -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60 $__vagrant_ssh_opt" "$_source" "$_target"
+				__sudo_ssh_end_session "$_uri"
 			fi
 			[ "$_opt_sudo" = "OFF" ] && rsync $_opt_links $_opt_include $_opt_exclude --rsync-path="mkdir -p '$(dirname $_target_path)' && rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh $__vagrant_ssh_opt -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60" "$_source" "$_target"
 			;;
@@ -1823,6 +1829,7 @@ __argparse(){
 	local LONG_DESCRIPTION="$5"
 	# this variable, if setted, will receive the rest of the command line not processed
 	local COMMAND_LINE_RESULT="$6"
+
 	shift 6
 
 	local COMMAND_LINE="$@"
