@@ -99,8 +99,9 @@ http://applocator.blogspot.fr/2013/10/speed-up-bash-scripts-that-use-grep.html
 
 [ ] nix : make a flat distro of stella in one file https://github.com/shellfire-dev/fatten
 
-[ ] nix : test sourced https://stackoverflow.com/a/28776166
-source stella-link do not work well while exporting because it is a simple call which is made in stella-link
+[X] nix : test sourced https://stackoverflow.com/a/28776166
+
+[ ] nix : zsh compatibility https://stackoverflow.com/questions/9901210/bash-source0-equivalent-in-zsh
 
 [ ] REWORK :
     DEPRECATED STELLA_BUILD_RELOCATE
@@ -295,11 +296,19 @@ https://github.com/ansible/ansible-modules-core/blob/devel/system/service.py
 * stacki
 ** https://github.com/StackIQ/stacki
 
+* terraform + packet : https://www.terraform.io/docs/providers/packet/index.html
+
+* matchbox https://github.com/coreos/matchbox
+https://coreos.com/blog/matchbox-with-terraform
+https://coreos.com/tectonic/docs/latest/install/bare-metal/metal-terraform.html
+
 ## hadoop deploy
 
 * from bare metal to hadoop : cobbler + ansible + cloudera manager
 ** https://blog.godatadriven.com/bare-metal-hadoop-provisioning-ansible-cobbler.html
 
+* structor
+  https://github.com/cartershanklin/structor (and forks)
 ## Kubernetes deploy
 
 * several contribution of kubernetes deploy techniques : https://github.com/kubernetes/kube-deploy
