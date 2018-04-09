@@ -63,7 +63,7 @@ usage() {
 	echo " L     . <stella.sh|stella-link.sh> env : set the current shell env with all stella env var setted"
 	echo " L     . <stella.sh|stella-link.sh> <cmd> : execute any previous stella command inside current shell env"
 	echo "URI"
-	echo "L     URI form is <[schema://][user@]host[:port][/abs_path|?rel_path]>"
+	echo "L     URI form is <[schema://][user[:password]@]host[:port][/abs_path|?rel_path]>"
 
 }
 
