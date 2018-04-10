@@ -409,7 +409,7 @@ __get_network_info() {
 		# contains default ip
 		STELLA_HOST_DEFAULT_IP="$(__get_ip_from_interface ${STELLA_DEFAULT_INTERFACE})"
 		# contains all available IP
-		STELLA_HOST_IP=$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*')
+		STELLA_HOST_IP=$(ifconfig | grep -Eo 'inet (adr:|addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*')
 	fi
 }
 
@@ -418,7 +418,7 @@ __get_ip_from_interface() {
 	local _err=
 	type ifconfig &>/dev/null || _err=1
 	if [ "$_err" = "" ]; then
-		echo "$(ifconfig ${_if} 2>/dev/null | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*')"
+		echo "$(ifconfig ${_if} 2>/dev/null | grep -Eo 'inet (adr:|addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*')"
 	fi
 }
 
