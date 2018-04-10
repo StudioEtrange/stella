@@ -1685,7 +1685,7 @@ __get_key() {
 
 	local _win_endline=$'s/\r//g'
 	local _exp1="/\[$_SECTION\]/,/\[.*\]/p"
-	local _exp2="/$_KEY=/{print \$2}"
+	local _exp2="/^$_KEY=/{print \$2}"
 
 	if [ -f "$_FILE" ]; then
 		if [ "$_opt_section_prefix" = "ON" ]; then
