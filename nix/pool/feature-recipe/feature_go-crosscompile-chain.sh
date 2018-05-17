@@ -2,7 +2,8 @@ if [ ! "$_GOCROSSCOMPILE_INCLUDED_" = "1" ]; then
 _GOCROSSCOMPILE_INCLUDED_=1
 
 
-# TODO review with https://github.com/StudioEtrange/ngrok-build
+# NOTE : deprecated cause gonative is deprecated and no longer usefull
+
 
 feature_go-crosscompile-chain() {
 	FEAT_NAME="go-crosscompile-chain"

@@ -347,6 +347,11 @@ __gcc_is_clang() {
 	fi
 }
 
+# NOTE apple-clang-llvm versions are not synchronized with clang-llvm versions
+__clang_version() {
+	clang --version | head -n 1 | grep -o -E "[[:digit:]].[[:digit:]].[[:digit:]]" | head -1
+}
+
 # RUNTIME specific --------------------------------------------------------
 
 

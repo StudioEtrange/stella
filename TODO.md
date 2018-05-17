@@ -11,6 +11,7 @@
 * rudix (http://rudix.org/)
 * appimage https://appimage.github.io/apps/
 
+
 ## WIN
 
 * bluego (https://bitbucket.org/Vertexwahn/bluego)
@@ -25,6 +26,7 @@
 ## both
 * cmake recipes
   * hunter https://github.com/ruslo/hunter
+* C++ package manager : conan https://conan.io/
 
 # Various
 
@@ -75,6 +77,8 @@ use
 
 # TODO List
 
+[ ] openssl and zlib binaries from conan.io https://bintray.com/conan-community/conan/OpenSSL%3Aconan https://github.com/conan-community/conan-openssl
+[ ] app vendor do not work with stella-link.sh with stellaroot option
 [ ] binary bundle go+bash + busybox ?
     https://github.com/progrium/go-basher
     https://github.com/robxu9/bash-static
@@ -189,6 +193,8 @@ http://applocator.blogspot.fr/2013/10/speed-up-bash-scripts-that-use-grep.html
 [ ] unit test : app/test/nix app/text/win
     nix : bats
     win : ?
+    - Tests using mbland/bats, an optimized version of Sam Stephenson's Bash Automated Testing System (BATS).
+    - Code coverage comes from Simon Kagstrom's kcov code coverage tool, which not only provides code coverage for Bash scripts (!!!) but can push the results to Coveralls!
 
 [ ] ryzom nix : openal, libgnu_regex (?), libmysql, lua51, lua52, luabind, stlport (?)
  https://github.com/Shopify/homebrew-shopify/blob/master/mysql-client.rb

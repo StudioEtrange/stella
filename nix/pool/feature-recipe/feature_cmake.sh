@@ -4,12 +4,39 @@ _CMAKE_INCLUDED_=1
 feature_cmake() {
 
 	FEAT_NAME=cmake
-	FEAT_LIST_SCHEMA="3_6_2:source 3_6_2:binary 2_8_12:source 2_8_12:binary 3_2_3:binary 3_2_3:source 3_3_1:binary 3_3_1:source"
+	FEAT_LIST_SCHEMA="3_11_1:source 3_11_1:binary 3_6_2:source 3_6_2:binary 2_8_12:source 2_8_12:binary 3_2_3:binary 3_2_3:source 3_3_1:binary 3_3_1:source"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
 
+feature_cmake_3_11_1() {
+	FEAT_VERSION=3_11_1
+	# TODO  ** NEED : cURL, libarchive and expat
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL=https://cmake.org/files/v3.11/cmake-3.11.1.tar.gz
+	FEAT_SOURCE_URL_FILENAME=cmake-3.11.1.tar.gz
+	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		FEAT_BINARY_URL="https://cmake.org/files/v3.11/cmake-3.11.1-Darwin-x86_64.tar.gz"
+		FEAT_BINARY_URL_FILENAME=cmake-3.11.1-Darwin-x86_64.tar.gz
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		FEAT_BINARY_URL="https://cmake.org/files/v3.11/cmake-3.11.1-Linux-x86_64.tar.gz"
+		FEAT_BINARY_URL_FILENAME=cmake-3.11.1-Linux-x86_64.tar.gz
+	fi
+	FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/cmake
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		CMAKE_FILE_APP="CMake.app"
+	fi
+}
 
 feature_cmake_3_6_2() {
 	FEAT_VERSION=3_6_2
