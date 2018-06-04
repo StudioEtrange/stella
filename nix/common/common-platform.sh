@@ -592,6 +592,10 @@ __sys_install_docker() {
 	# NOTE install with ansible : https://medium.com/@tedchength/installing-docker-using-ansible-script-c182787f2fa1
 	# NOTE install specific version : https://forums.docker.com/t/how-can-i-install-a-specific-version-of-the-docker-engine/1993/6
 	#																	http://www.hashjoin.com/t/upgrade-docker-engine-specific-version.html
+	#																	https://github.com/StudioEtrange/install-docker
+	# NOTE dockerd service is not always auto started
+	#					sudo systemctl enable docker
+	#					sudo systemctl start docker
 	local _version=$1
 	echo " ** Install Docker $_version on your system"
 	if [ "$STELLA_CURRENT_OS" = "macos" ]; then

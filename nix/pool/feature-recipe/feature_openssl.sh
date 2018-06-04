@@ -25,7 +25,7 @@ _OPENSSL_INCLUDED_=1
 # Get info and dependencies
 #				conan info OpenSSL/1.0.2o@conan/stable -r conan-center
 # Create a default profile depending on the current platform
-#			conan profile new default --detect
+#				conan profile new default --detect
 
 # To identify URL of the tar.gz use search :
 #			conan search OpenSSL/1.0.2o@conan/stable -r=conan-center -q 'shared=True AND build_type=Release AND arch=x86_64 AND os=Macos'
@@ -54,9 +54,11 @@ _OPENSSL_INCLUDED_=1
 # no_des=False
 # no_mdc2=False
 
+# 1_0_2o@x64:binary 1_0_2o@x86:binary
+
 feature_openssl() {
 	FEAT_NAME=openssl
-	FEAT_LIST_SCHEMA="1_0_2o@x64:binary 1_0_2o@x86:binary 1_0_2k:source 1_0_2d:source"
+	FEAT_LIST_SCHEMA="1_0_2k:source 1_0_2d:source"
 	FEAT_DEFAULT_ARCH=x64
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
