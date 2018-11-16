@@ -5,7 +5,7 @@ _ELASTICSEARCH_INCLUDED_=1
 
 feature_elasticsearch() {
 	FEAT_NAME=elasticsearch
-	FEAT_LIST_SCHEMA="5_6_4:binary 5_6_2:binary 5_6_0:binary 5_2_0:binary 2_3_5:binary 1_4_4:binary 1_5_0:binary 1_5_2:binary 1_6_0:binary 1_6_2:binary 1_7_3:binary 2_0_0:binary 2_0_2:binary 2_1_1:binary"
+	FEAT_LIST_SCHEMA="6_5_0:binary 5_6_4:binary 5_6_2:binary 5_6_0:binary 5_2_0:binary 2_3_5:binary 1_4_4:binary 1_5_0:binary 1_5_2:binary 1_6_0:binary 1_6_2:binary 1_7_3:binary 2_0_0:binary 2_0_2:binary 2_1_1:binary"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
@@ -15,6 +15,31 @@ feature_elasticsearch_env() {
 	ES_HOME=$FEAT_INSTALL_ROOT
 	export ES_HOME=$FEAT_INSTALL_ROOT
 }
+
+
+feature_elasticsearch_6_5_0() {
+	FEAT_VERSION=6_5_0
+
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL=
+	FEAT_SOURCE_URL_FILENAME=
+	FEAT_SOURCE_URL_PROTOCOL=
+
+	FEAT_BINARY_URL=https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.5.0.tar.gz
+	FEAT_BINARY_URL_FILENAME=elasticsearch-6.5.0.tar.gz
+	FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
+
+	FEAT_SOURCE_CALLBACK=
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=feature_elasticsearch_env
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/elasticsearch
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+
+}
+
 
 
 feature_elasticsearch_5_6_4() {

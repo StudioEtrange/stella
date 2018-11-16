@@ -10,7 +10,7 @@
 * 0install (http://0install.net/)
 * rudix (http://rudix.org/)
 * appimage https://appimage.github.io/apps/
-
+* snapcraft - snapd
 
 ## WIN
 
@@ -77,6 +77,7 @@ use
 
 # TODO List
 
+[ ] bash formatter https://github.com/mvdan/sh
 [ ] openssl and zlib binaries from conan.io https://bintray.com/conan-community/conan/OpenSSL%3Aconan https://github.com/conan-community/conan-openssl
 [ ] app vendor do not work with stella-link.sh with stellaroot option
 [ ] binary bundle go+bash + busybox ?

@@ -574,6 +574,52 @@ __use_package_manager() {
 	fi
 
 }
+# ----------- ANSIBLE -----------------------------------------------------
+
+
+# ARG1 playbook yml file
+# ARG2 roles root folder
+# ARG3 inventory file
+# ARG4 limit execution to some host
+__ansible_play() {
+  local __playbook="$1"
+  local __roles="$2"
+	local __inventory_file="$3"
+	local __limit="$4"
+	[ -z $__limit ] && __limit=all
+
+  #ANSIBLE_EXTRA_VARS=\{\"infra_name\":\"$INFRA_NAME\"}
+	#--extra-vars=$ANSIBLE_EXTRA_VARS
+	ANSIBLE_ROLES_PATH="$__roles" PYTHONUNBUFFERED=1 ANSIBLE_FORCE_COLOR=true ansible-playbook --inventory-file="$__inventory_file" --limit="$__limit" -v "$__playbook"
+}
+
+# ARG1 playbook yml file
+# ARG2 roles root folder
+__ansible_play_localhost() {
+  local __playbook="$1"
+	local __roles="$2"
+
+  #ANSIBLE_EXTRA_VARS=\{\"infra_name\":\"$INFRA_NAME\"}
+		#--extra-vars=$ANSIBLE_EXTRA_VARS
+  ANSIBLE_ROLES_PATH="$__roles" PYTHONUNBUFFERED=1 ANSIBLE_FORCE_COLOR=true ansible-playbook --connection local --inventory 'localhost,' -v "$__playbook"
+
+
+}
+
+#
+# __ansible_play_vagrant() {
+#   INFRA_NAME="$1"
+#   PLAYBOOK="$2"
+#   LIMIT="$3"
+#   [ -z $LIMIT ] && LIMIT=all
+#
+#   ANSIBLE_INVENTORY_FILE=$STELLA_APP_ROOT/infra/$INFRA_NAME/.vagrant/provisioners/ansible/inventory
+#   ANSIBLE_PLAYBOOK=$STELLA_APP_ROOT/infra/playbook/$PLAYBOOK.yml
+#
+#   ANSIBLE_EXTRA_VARS=\{\"infra_name\":\"$INFRA_NAME\",\"proxy_name\":\"sesame\"\}
+#   ANSIBLE_ROLES_PATH=$STELLA_APP_ROOT/infra/roles PYTHONUNBUFFERED=1 ANSIBLE_FORCE_COLOR=true ANSIBLE_HOST_KEY_CHECKING=false ANSIBLE_SSH_ARGS='-o UserKnownHostsFile=/dev/null -o IdentitiesOnly=yes -o ControlMaster=auto -o ControlPersist=60s' ansible-playbook --connection=ssh --timeout=30 --inventory-file=$ANSIBLE_INVENTORY_FILE --limit=$LIMIT --extra-vars=$ANSIBLE_EXTRA_VARS -v $ANSIBLE_PLAYBOOK
+# }
+
 
 # --------- SYSTEM INSTALL/REMOVE RECIPES------------------------------------
 __sys_install() {

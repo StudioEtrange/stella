@@ -9,12 +9,42 @@ _KIBANA_INCLUDED_=1
 #		KIBANA 4.1.2 NEED ES 1.4.4 - 1.7
 feature_kibana() {
 	FEAT_NAME=kibana
-	FEAT_LIST_SCHEMA="5_6_4:binary 5_6_2:binary 5_6_0:binary 5_2_0:binary 4_3_3:binary 4_5_4:binary 4_0_0:binary 3_1_2:source 4_0_1:binary 4_0_3:binary 4_1_0:binary 4_1_2:binary 4_2_0:binary 4_2_2:binary 4_3_1:binary"
+	FEAT_LIST_SCHEMA="6_5_0:binary 5_6_4:binary 5_6_2:binary 5_6_0:binary 5_2_0:binary 4_3_3:binary 4_5_4:binary 4_0_0:binary 3_1_2:source 4_0_1:binary 4_0_3:binary 4_1_0:binary 4_1_2:binary 4_2_0:binary 4_2_2:binary 4_3_1:binary"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
 
+feature_kibana_6_5_0() {
+	FEAT_VERSION=6_5_0
+
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL=
+	FEAT_SOURCE_URL_FILENAME=
+	FEAT_SOURCE_URL_PROTOCOL=
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		FEAT_BINARY_URL=https://artifacts.elastic.co/downloads/kibana/kibana-6.5.0-darwin-x86_64.tar.gz
+		FEAT_BINARY_URL_FILENAME=kibana-6.5.0-darwin-x86_64.tar.gz
+		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
+	fi
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		FEAT_BINARY_URL=https://artifacts.elastic.co/downloads/kibana/kibana-6.5.0-linux-x86_64.tar.gz
+		FEAT_BINARY_URL_FILENAME=kibana-6.5.0-linux-x86_64.tar.gz
+		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
+	fi
+
+	FEAT_SOURCE_CALLBACK=
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/kibana
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+
+}
 
 feature_kibana_5_6_4() {
 	FEAT_VERSION=5_6_4

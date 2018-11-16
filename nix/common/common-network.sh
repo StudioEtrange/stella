@@ -272,9 +272,27 @@ __proxy_override() {
 	#			WARN : it will set 'no_proxy' env var, not 'NO_PROXY' env var. And if 'NO_PROXY' is setted, 'no_proxy' is not used
 	#						so use instead : __no_proxy_for $(docker-machine ip <machine-id>)
 	#
-	# DOCKER FILE
-	# into docker file, env var should be setted with ENV
-	#		ENV http_proxy http://<proxy_host>:<proxy_port>
+	# DOCKER CONTAINER
+	# docker <= 17.06
+	# you must set appropriate environment variables within the container.
+	# You can do this when you build the image or when you create or run the container.
+	# into docker file : env var should be setted with ENV
+	#			ENV http_proxy http://<proxy_host>:<proxy_port>
+	# with docker run :
+	#			docker run --env HTTP_PROXY="http://127.0.0.1:3001" --env NO_PROXY="*.test.example.com,.example2.com"
+	# docker >= 17.07
+	# In Docker 17.07 and higher, you can configure the Docker client to pass proxy information to containers automatically.
+	# ~/.docker/config.json
+	# {
+	#  "proxies":
+	#  {
+	#    "default":
+	#    {
+	#      "httpProxy": "http://127.0.0.1:3001",
+	#      "noProxy": "*.test.example.com,.example2.com"
+	#    }
+	#  }
+	# }
 
 	function docker-machine() {
 		if [ "$1" = "create" ]; then
@@ -370,8 +388,8 @@ __ssh_execute() {
 	fi
 
 	if [ "$__stella_uri_schema" = "vagrant" ]; then
-		__require "vagrant" "vagrant"
-		__vagrant_ssh_opt="$(vagrant ssh-config $__stella_uri_host | sed '/^[[:space:]]*$/d' |  awk '/^Host .*$/ { detected=1; }  { if(start) {print " -o "$1"="$2}; if(detected) start=1; }')"
+		__vagrant_ssh_opt="$(__vagrant_get_ssh_options "$__stella_uri_host")"
+		#__vagrant_ssh_opt="$(vagrant ssh-config $__stella_uri_host | sed '/^[[:space:]]*$/d' |  awk '/^Host .*$/ { detected=1; }  { if(start) {print " -o "$1"="$2}; if(detected) start=1; }')"
 		__stella_uri_host="localhost"
 	fi
 
@@ -389,6 +407,14 @@ __ssh_execute() {
 
 }
 
+
+# Get vagrant ssh option for connection
+# vagrant machine name
+__vagrant_get_ssh_options() {
+	local __name="$1"
+	__require "vagrant" "vagrant"
+	echo "$(vagrant ssh-config $__name | sed '/^[[:space:]]*$/d' |  awk '/^Host .*$/ { detected=1; }  { if(start) {print " -o "$1"="$2}; if(detected) start=1; }')"
+}
 
 
 # TODO : these function support only ipv4

@@ -569,8 +569,8 @@ __transfer_rsync() {
 	fi
 
 	if [ "$__stella_uri_schema" = "vagrant" ]; then
-		__require "vagrant" "vagrant"
-		__vagrant_ssh_opt="$(vagrant ssh-config $__stella_uri_host | sed '/^[[:space:]]*$/d' |  awk '/^Host .*$/ { detected=1; }  { if(start) {print " -o "$1"="$2}; if(detected) start=1; }')"
+		__vagrant_ssh_opt="$(__vagrant_get_ssh_options "$__stella_uri_host")"
+		#__vagrant_ssh_opt="$(vagrant ssh-config $__stella_uri_host | sed '/^[[:space:]]*$/d' |  awk '/^Host .*$/ { detected=1; }  { if(start) {print " -o "$1"="$2}; if(detected) start=1; }')"
 		__stella_uri_host="localhost"
 	fi
 
