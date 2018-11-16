@@ -3,7 +3,6 @@ _ansible_INCLUDED_=1
 
 
 # https://github.com/ansible/ansible
-# https://stackoverflow.com/questions/41535915/python-pip-install-from-local-dir
 
 feature_ansible() {
 	FEAT_NAME=ansible
@@ -20,7 +19,7 @@ feature_ansible_2_7_2() {
 	FEAT_VERSION=2_7_2
 
 
-	FEAT_SOURCE_DEPENDENCIES="miniconda"
+	FEAT_SOURCE_DEPENDENCIES="miniconda3"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://releases.ansible.com/ansible/ansible-2.7.2.tar.gz
@@ -45,7 +44,7 @@ feature_ansible_2_4_0_0() {
 	FEAT_VERSION=2_4_0_0
 
 
-	FEAT_SOURCE_DEPENDENCIES="miniconda"
+	FEAT_SOURCE_DEPENDENCIES="miniconda3"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://releases.ansible.com/ansible/ansible-2.4.0.0.tar.gz

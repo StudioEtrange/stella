@@ -1,6 +1,8 @@
 if [ ! "$_miniconda_INCLUDED_" = "1" ]; then
 _miniconda_INCLUDED_=1
 
+# TODO : DEPRECATED USE miniconda2 or miniconda3 recipe
+
 # NOTE :
 # to install full anaconda distribution use :
 # conda install anaconda
