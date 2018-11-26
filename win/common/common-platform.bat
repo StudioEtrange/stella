@@ -394,6 +394,23 @@ goto :eof
 goto :eof
 
 
+:sys_install_vs2017community
+	REM NOTE : by default some visual studio tools are not installed
+	call :use_package_manager "INSTALL" "vs2017community" "chocolatey visualstudio2017community"
+	call :use_package_manager "INSTALL" "vs2017community" "chocolatey visualstudio2017buildtools"
+	call :use_package_manager "INSTALL" "vs2017community" "chocolatey visualstudio2017-workload-vctools"
+	call :use_package_manager "INSTALL" "vs2017community" "chocolatey visualstudio2017-workload-netcorebuildtools"
+	REM call :use_package_manager "INSTALL" "vs2017community" "chocolatey visualstudio2017-workload-webbuildtools"
+goto :eof
+
+:sys_remove_vs2017community
+	call :use_package_manager "REMOVE" "vs2017community" "chocolatey visualstudio2017-workload-netcorebuildtools"
+	call :use_package_manager "REMOVE" "vs2017community" "chocolatey visualstudio2017-workload-vctools"
+	call :use_package_manager "REMOVE" "vs2017community" "chocolatey visualstudio2017buildtools"
+	call :use_package_manager "REMOVE" "vs2017community" "chocolatey visualstudio2017community"
+goto :eof
+
+
 :sys_install_vs2015community
 	REM NOTE : by default some visual studio tools are not installed
 	REM https://social.msdn.microsoft.com/Forums/en-US/1071be0e-2a46-4c30-9546-ea9d7c4755fa/where-is-vcvarsallbat-file?forum=visualstudiogeneral
