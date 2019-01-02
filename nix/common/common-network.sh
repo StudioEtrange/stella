@@ -400,8 +400,10 @@ __ssh_execute() {
 
 	# https://stackoverflow.com/questions/5560442/how-to-run-two-commands-in-sudo
 	if [ "$__opt_sudo" = "1" ]; then
+		__log "DEBUG" "ssh -tt $__ssh_opt $__opt_shared $__vagrant_ssh_opt $__ssh_user$__stella_uri_host sudo -Es eval ${__cmd}"
 		ssh -tt $__ssh_opt $__opt_shared $__vagrant_ssh_opt "$__ssh_user$__stella_uri_host" "sudo -Es eval '${__cmd}'"
 	else
+		__log "DEBUG" "ssh -tt $__ssh_opt $__opt_shared $__vagrant_ssh_opt $__ssh_user$__stella_uri_host ${__cmd}"
 		ssh -tt $__ssh_opt $__opt_shared $__vagrant_ssh_opt "$__ssh_user$__stella_uri_host" "${__cmd}"
 	fi
 
@@ -412,7 +414,6 @@ __ssh_execute() {
 # vagrant machine name
 __vagrant_get_ssh_options() {
 	local __name="$1"
-	__require "vagrant" "vagrant"
 	echo "$(vagrant ssh-config $__name | sed '/^[[:space:]]*$/d' |  awk '/^Host .*$/ { detected=1; }  { if(start) {print " -o "$1"="$2}; if(detected) start=1; }')"
 }
 

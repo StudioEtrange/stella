@@ -37,5 +37,6 @@ http://stackoverflow.com/questions/733824/how-to-run-a-shell-script-on-a-unix-co
 * Best practices
 
 https://github.com/progrium/bashstyle ==> for bash
+https://github.com/bahamas10/bash-style-guide ==> for bash
 https://github.com/openstack-dev/bashate ==> for shell
 http://www.etalabs.net/sh_tricks.html ==> POSIX shell tricks
