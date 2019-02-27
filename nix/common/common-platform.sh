@@ -208,9 +208,11 @@ __override_platform_command() {
 	fi
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		GETOPT_CMD=PURE_BASH
+		#GETOPT_CMD=PURE_BASH
+		STELLA_ARGPARSE_GETOPT_DEFAULT=PURE_BASH
 	else
-		GETOPT_CMD=getopt
+		#GETOPT_CMD=getopt
+		STELLA_ARGPARSE_GETOPT_DEFAULT=getopt
 	fi
 
 

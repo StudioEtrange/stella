@@ -48,7 +48,7 @@ __transfer_app(){
 
 	__transfer_folder_rsync "$STELLA_APP_ROOT" "$_uri" "$__standard_include $_opt_delete_excluded $_opt_ex_cache $_opt_ex_workspace $_opt_ex_hidden $_opt_ex_git $_opt_sudo $_opt_folder_content $_opt_copy_links"
 
-	if [ "$(__is_logical_subfolder "$STELLA_APP_ROOT" "$STELLA_ROOT")" = "FALSE" ]; then
+	if [ "$(__is_logical_subpath "$STELLA_APP_ROOT" "$STELLA_ROOT")" = "FALSE" ]; then
 		__path="$(__uri_get_path "$_uri")"
 		[ "$_opt_folder_content" = "" ] && __app_path="$__path/$(basename "$STELLA_APP_ROOT")" \
 																			|| __app_path="$__path"
@@ -239,7 +239,7 @@ __init_app() {
 }
 
 # extract APP properties
-# STELLA_APP_PROPERTIES are all evaluated
+# some properties are all evaluated (you can use bash expression)
 __get_all_properties() {
 	local _properties_file=$1
 
@@ -260,6 +260,9 @@ __get_all_properties() {
 		__get_key "$_properties_file" "STELLA" "APP_ENV_FILE" "PREFIX"
 		STELLA_APP_ENV_FILE=$(eval echo "$STELLA_APP_ENV_FILE")
 
+		# STELLA ARGPARSE options
+		__get_key "$_properties_file" "STELLA" "ARGPARSE_GETOPT" "PREFIX"
+		STELLA_ARGPARSE_GETOPT=$(eval echo "$STELLA_ARGPARSE_GETOPT")
 	fi
 }
 

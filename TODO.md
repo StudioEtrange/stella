@@ -277,13 +277,28 @@ https://github.com/ansible/ansible-modules-core/blob/devel/system/service.py
     chruby : manage ruby env
     rvm : download ruby source and build ruby. Manage dependencies. Manage ruby env
 
-[ ] nix : review boost recipes (still using __prepare_build)
+[ ] nix : review boost recipes (still using "prepare_build")
 [ ] win build :
   * auto_build launch_configure : implements autotools (mingw or msys)
   * auto_build :  # INCLUDE_FILTER <expr> -- include these files for inspect and fix
                   # EXCLUDE_FILTER <expr> -- exclude these files for inspect and fix
                   # INCLUDE_FILTER is apply first, before EXCLUDE_FILTER
                   # BUILD_ACTION <action1> <action2>
+------
+# RECIPE TO WRITE
+
+[ ] PWMAngband - multiplayer angband
+http://powerwyrm.monsite-orange.fr
+http://angband.online/
+http://tangar.info/en/p
+[ ] Mangband - another multiplayer version of angband
+https://mangband.org/
+https://github.com/mangband/mangband
+http://tangar.info/en/m
+[ ] TomeNet - indeep online roguelike game which include both MMORPG genre features and roguelike gameplay
+https://www.tomenet.eu/
+http://tangar.info/en/t
+
 
 ------
 
@@ -326,7 +341,7 @@ https://coreos.com/tectonic/docs/latest/install/bare-metal/metal-terraform.html
 *
 
 
-## VM :
+## VM
     terraform agnostic IaaS management : https://www.terraform.io/
     libvirt : VM management library (qemu, lxc, virtualbox, vmware ...)
         https://github.com/Homebrew/homebrew-core/blob/master/Formula/libvirt.rb

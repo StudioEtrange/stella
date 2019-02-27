@@ -24,6 +24,7 @@ __sudo_ssh_begin_session() {
 	local _uri="$1"
 	__ssh_execute "$_uri" "sudo -v; echo 'Defaults !tty_tickets' | sudo tee /etc/sudoers.d/rsync_temp_hack_stella" "SHARED"
 	# NOTE : needs time before modification is used by sshd
+	# TODO ; try this fix https://www.shell-tips.com/2014/09/08/sudo-sorry-you-must-have-a-tty-to-run-sudo/ (!requiretty)
 	sleep 2
 }
 
@@ -354,7 +355,9 @@ __uri_parse() {
 	local count
 	local query
 	# top level parsing
-	local pattern='^(([a-z]+)://)?((([^:\/]+)(:([^@\/]*))?@)?([^:\/?]*)(:([0-9]+))?)(\/[^?#]*)?(\?[^#]*)?(#.*)?$'
+	# TODO : warning test this !
+	local pattern='^(([a-z0-9]+)://)?((([^:\/]+)(:([^@\/]*))?@)?([^:\/?]*)(:([0-9]+))?)(\/[^?#]*)?(\?[^#]*)?(#.*)?$'
+	#local pattern='^(([a-z]+)://)?((([^:\/]+)(:([^@\/]*))?@)?([^:\/?]*)(:([0-9]+))?)(\/[^?#]*)?(\?[^#]*)?(#.*)?$'
 
 	__stella_uri_schema=
 	__stella_uri_address=
@@ -868,10 +871,14 @@ __find_folder_up() {
 }
 
 # NOTE : paths do not have to exist
-# is path are relative, they are resolved accordingly to current path
-__is_logical_subfolder() {
+# if path are relative, they are resolved accordingly to current path
+# __is_logical_subpath /folder1 /folder1/folder2 ==> TRUE
+# __is_logical_subpath /folder /folder ==> FALSE
+# __is_logical_subpath /folder /folder/ ==> FALSE
+# __is_logical_subpath /folder /folder/file ==> TRUE
+__is_logical_subpath() {
 	local _root="$1"
-	local _subfolder="$2"
+	local _subpath="$2"
 
 	local _result
 
@@ -879,14 +886,18 @@ __is_logical_subfolder() {
 		_result="TRUE"
 	else
 		_root="$(__rel_to_abs_path "$_root")"
-		_subfolder="$(__rel_to_abs_path "$_subfolder")"
-		if [ "${_subfolder}" = "${_root}" ]; then
+		_subpath="$(__rel_to_abs_path "$_subpath")"
+		if [ "${_subpath}" = "${_root}" ]; then
 			_result="FALSE"
 		else
-			if [ ! "${_subfolder##$_root/}" = "$_subfolder" ]; then
-				_result="TRUE"
-			else
+			if [ "${_subpath}" = "${_root}/" ]; then
 				_result="FALSE"
+			else
+				if [ ! "${_subpath##$_root/}" = "$_subpath" ]; then
+					_result="TRUE"
+				else
+					_result="FALSE"
+				fi
 			fi
 		fi
 	fi
@@ -1821,6 +1832,7 @@ __ini_file() {
 #		https://code.google.com/p/opts-go/
 #		https://godoc.org/code.google.com/p/getopt
 #		https://github.com/kesselborn/go-getopt
+#		STELLA_ARGPARSE_GETOPT : getopt command instead of "getopt"
 __argparse(){
 	local PROGNAME=$(__get_filename_from_string "$1")
 	local OPTIONS="$2"
@@ -1850,8 +1862,6 @@ __argparse(){
 	$PARAMETERS
 	"
 
-	#GETOPT_CMD is an env variable we can choose a getopt command instead of default "getopt"
-
 	# Debug mode
 	# for debug :
 	#export ARGP_DEBUG=1
@@ -1859,7 +1869,7 @@ __argparse(){
 	#export ARGP_HELP_FMT="rmargin=$(tput cols)"
 	#echo $ARGP
 	exec 4>&1 # fd4 is now a copy of fd1 ie stdout
-	RES=$( echo "$ARGP" | GETOPT_CMD=$GETOPT_CMD $STELLA_COMMON/argp.sh $COMMAND_LINE 3>&1 1>&4 || echo exit $? )
+	RES=$( echo "$ARGP" | GETOPT_CMD=$STELLA_ARGPARSE_GETOPT $STELLA_COMMON/argp.sh $COMMAND_LINE 3>&1 1>&4 || echo exit $? )
 	exec 4>&-
 
 	# $@ now contains not parsed argument, options and identified parameters have been processed and removed:

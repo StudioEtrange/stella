@@ -2,6 +2,7 @@ if [ ! "$_unixodbc_INCLUDED_" = "1" ]; then
 _unixodbc_INCLUDED_=1
 
 # https://github.com/Homebrew/homebrew-core/blob/master/Formula/unixodbc.rb
+# with odbc_config binary, you can request build flags, include flags, ... for unixODBC
 
 feature_unixodbc() {
 	FEAT_NAME=unixodbc

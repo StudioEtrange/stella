@@ -3,9 +3,35 @@ _libevent_INCLUDED_=1
 
 feature_libevent() {
 	FEAT_NAME=libevent
-	FEAT_LIST_SCHEMA="2_0_22:source"
+	FEAT_LIST_SCHEMA="2_1_8:source 2_0_22:source"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
+}
+
+
+
+feature_libevent_2_1_8() {
+	FEAT_VERSION=2_1_8
+
+
+	FEAT_SOURCE_DEPENDENCIES="openssl#1_0_2d"
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL=https://github.com/libevent/libevent/releases/download/release-2.1.8-stable/libevent-2.1.8-stable.tar.gz
+	FEAT_SOURCE_URL_FILENAME=libevent-2.1.8-stable.tar.gz
+	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
+
+	FEAT_BINARY_URL=
+	FEAT_BINARY_URL_FILENAME=
+	FEAT_BINARY_URL_PROTOCOL=
+
+	FEAT_SOURCE_CALLBACK=feature_libevent_link
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libevent.a
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+
 }
 
 feature_libevent_2_0_22() {

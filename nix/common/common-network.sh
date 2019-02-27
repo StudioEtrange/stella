@@ -417,37 +417,80 @@ __vagrant_get_ssh_options() {
 	echo "$(vagrant ssh-config $__name | sed '/^[[:space:]]*$/d' |  awk '/^Host .*$/ { detected=1; }  { if(start) {print " -o "$1"="$2}; if(detected) start=1; }')"
 }
 
+# TODO
+# https://unix.stackexchange.com/a/165067
+# find an interface used to reach a given ip
+# __get_interface_used_for()
 
-# TODO : these function support only ipv4
-# TODO : give alternative to netstat et ifconfig
-#					https://unix.stackexchange.com/questions/20784/how-can-i-resolve-a-hostname-to-an-ip-address-in-a-bash-script
-#					https://unix.stackexchange.com/questions/14961/how-to-find-out-which-interface-am-i-using-for-connecting-to-the-internet
+
+# TODO : these functions support only ipv4
 __get_network_info() {
-	local _err=
-	type netstat &>/dev/null || _err=1
-	if [ "$_err" = "" ]; then
+	#local _err=
+	type netstat &>/dev/null
+	if [ $? = 0 ]; then
 		# NOTE : we pick the first default interface if we have more than one
 		STELLA_DEFAULT_INTERFACE=$(netstat -rn | awk '/^0.0.0.0/ {thif=substr($0,74,10); print thif;} /^default.*UG/ {thif=substr($0,65,10); print thif;}' | head -1)
+	else
+		type ip &>/dev/null
+		[ $? = 0 ] && STELLA_DEFAULT_INTERFACE=$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1)
 	fi
 
-	_err=
-	type ifconfig &>/dev/null || _err=1
-	if [ "$_err" = "" ]; then
-		# contains default ip
-		STELLA_HOST_DEFAULT_IP="$(__get_ip_from_interface ${STELLA_DEFAULT_INTERFACE})"
+	# contains default ip
+	STELLA_HOST_DEFAULT_IP="$(__get_ip_from_interface ${STELLA_DEFAULT_INTERFACE})"
+
+	type ifconfig &>/dev/null
+	if [ $? = 0 ]; then
 		# contains all available IP
 		STELLA_HOST_IP=$(ifconfig | grep -Eo 'inet (adr:|addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*')
+	else
+		type ip &>/dev/null
+		[ $? = 0 ] && STELLA_HOST_IP="$(ip -o -4 addr | awk '{split($4, a, "/"); print a[1]}')"
 	fi
 }
 
 __get_ip_from_interface() {
 	local _if="$1"
-	local _err=
-	type ifconfig &>/dev/null || _err=1
-	if [ "$_err" = "" ]; then
+	type ifconfig &>/dev/null
+	if [ $? = 0 ]; then
 		echo "$(ifconfig ${_if} 2>/dev/null | grep -Eo 'inet (adr:|addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*')"
+	else
+		#https://unix.stackexchange.com/a/407128
+		type ip &>/dev/null
+		[ $? = 0 ] && echo "$(ip -4 -o addr show dev ${_if} | awk '{split($4, a, "/"); print a[1]}')"
 	fi
 }
+
+# TODO : do an equivalent without "ip" command
+#
+#__print_ip_info() {
+#	type ip &>/dev/null
+#	if [ $? = 0 ]; then
+#		PROBLEM : this command show only interface wich have an ip
+#		ip -o addr | awk '{split($4, a, "/"); print $2" : "a[1]}'
+#	fi
+#}
+
+# https://unix.stackexchange.com/questions/20784/how-can-i-resolve-a-hostname-to-an-ip-address-in-a-bash-script
+# NOTE : host, dig, nslookup only request dns and do not look for ip in /etc/hosts
+# NOTE on getent :
+#					ipv4 adress
+#						getent ahostsv4 www.google.de | grep STREAM | head -n 1 | cut -d ' ' -f 1
+#					ipv6 adress
+#						getent ahostsv6 www.google.de | grep STREAM | head -n 1 | cut -d ' ' -f 1
+# 				give owners preferred address what may IPv4 or IPv6 address.
+#						getent hosts google.de | head -n 1 | cut -d ' ' -f 1
+#					list all resolved address
+#						getent ahosts google.de
+# 					getent ahosts google.de | head -n 1 | cut -d ' ' -f 1
+__get_ip_from_hostname() {
+	type getent &>/dev/null
+	if [ $? = 0 ]; then
+		echo "$(getent ahostsv4 $1 | grep STREAM | head -n 1 | cut -d ' ' -f 1)"
+	else
+		echo "$(ping -q -c 1 -t 1 $1 2>/dev/null | grep -m 1 PING | cut -d "(" -f2 | cut -d ")" -f1)"
+	fi
+}
+
 
 __proxy_tunnel() {
 	local _target_proxy_name="$1"

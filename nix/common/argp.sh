@@ -34,6 +34,7 @@
 #                and could be a pure bash implementation  if we choose "PURE_BASH"
 #                from Aron Griffis https://github.com/agriffis/pure-getopt
 # TODO : refactoring of read_xml
+#       ARGP_OPTION_SEP have no puropose, multiple values separator is defined with type (in example : 's:' or 's#')
 ARGP_argp_sh_usage() {
     cat <<"EOF"
 Usage: argp.sh
