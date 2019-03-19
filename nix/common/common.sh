@@ -872,6 +872,8 @@ __find_folder_up() {
 
 # NOTE : paths do not have to exist
 # if path are relative, they are resolved accordingly to current path
+# __is_logical_subpath / / ==> FALSE
+# __is_logical_subpath / /folder ==> TRUE
 # __is_logical_subpath /folder1 /folder1/folder2 ==> TRUE
 # __is_logical_subpath /folder /folder ==> FALSE
 # __is_logical_subpath /folder /folder/ ==> FALSE
@@ -883,7 +885,11 @@ __is_logical_subpath() {
 	local _result
 
 	if [ "$_root" = "/" ]; then
-		_result="TRUE"
+		if [ "$_subpath" = "/" ]; then
+			_result="FALSE"
+		else
+			_result="TRUE"
+		fi
 	else
 		_root="$(__rel_to_abs_path "$_root")"
 		_subpath="$(__rel_to_abs_path "$_subpath")"
