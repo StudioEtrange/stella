@@ -872,14 +872,14 @@ __find_folder_up() {
 
 # NOTE : paths do not have to exist
 # if path are relative, they are resolved accordingly to current path
-# __is_equal_path / / ==> TRUE
-# __is_equal_path / /folder ==> FALSE
-# __is_equal_path /folder1 /folder1/folder2 ==> FALSE
-# __is_equal_path /folder /folder ==> TRUE
-# __is_equal_path /folder /folder/ ==> FALSE
-# __is_equal_path /folder/ /folder ==> FALSE
-# __is_equal_path /folder/ /folder/ ==> TRUE
-# __is_equal_path /folder /folder/file ==> FALSE
+# __is_logical_equalpath / / ==> TRUE
+# __is_logical_equalpath / /foo ==> FALSE
+# __is_logical_equalpath /foo1 /foo1/foo2 ==> FALSE
+# __is_logical_equalpath /foo /foo ==> TRUE
+# __is_logical_equalpath /foo /foo/ ==> FALSE
+# __is_logical_equalpath /foo/ /foo ==> FALSE
+# __is_logical_equalpath /foo/ /foo/ ==> TRUE
+# __is_logical_equalpath /foo /foo/file ==> FALSE
 __is_logical_equalpath() {
 	local _path1="$1"
 	local _path2="$2"
@@ -903,13 +903,13 @@ __is_logical_equalpath() {
 # NOTE : paths do not have to exist
 # if path are relative, they are resolved accordingly to current path
 # __is_logical_subpath / / ==> FALSE
-# __is_logical_subpath / /folder ==> TRUE
-# __is_logical_subpath /folder1 /folder1/folder2 ==> TRUE
-# __is_logical_subpath /folder /folder ==> FALSE
-# __is_logical_subpath /folder /folder/ ==> FALSE
-# __is_logical_subpath /folder/ /folder ==> FALSE
-# __is_logical_subpath /folder/ /folder/ ==> FALSE
-# __is_logical_subpath /folder /folder/file ==> TRUE
+# __is_logical_subpath / /foo ==> TRUE
+# __is_logical_subpath /foo1 /foo1/foo2 ==> TRUE
+# __is_logical_subpath /foo /foo ==> FALSE
+# __is_logical_subpath /foo /foo/ ==> TRUE
+# __is_logical_subpath /foo/ /foo ==> FALSE
+# __is_logical_subpath /foo/ /foo/ ==> FALSE
+# __is_logical_subpath /foo /foo/file ==> TRUE
 __is_logical_subpath() {
 	local _root="$1"
 	local _subpath="$2"
@@ -929,7 +929,7 @@ __is_logical_subpath() {
 			_result="FALSE"
 		else
 			if [ "${_subpath}" = "${_root}/" ]; then
-				_result="FALSE"
+				_result="TRUE"
 			else
 				if [ ! "${_subpath##$_root/}" = "$_subpath" ]; then
 					_result="TRUE"
