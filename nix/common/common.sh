@@ -872,11 +872,43 @@ __find_folder_up() {
 
 # NOTE : paths do not have to exist
 # if path are relative, they are resolved accordingly to current path
+# __is_equal_path / / ==> TRUE
+# __is_equal_path / /folder ==> FALSE
+# __is_equal_path /folder1 /folder1/folder2 ==> FALSE
+# __is_equal_path /folder /folder ==> TRUE
+# __is_equal_path /folder /folder/ ==> FALSE
+# __is_equal_path /folder/ /folder ==> FALSE
+# __is_equal_path /folder/ /folder/ ==> TRUE
+# __is_equal_path /folder /folder/file ==> FALSE
+__is_logical_equalpath() {
+	local _path1="$1"
+	local _path2="$2"
+
+	local _result
+
+	if [ "$_path1" = "$_path2" ]; then
+		_result="TRUE"
+	else
+		_path1="$(__rel_to_abs_path "$_path1")"
+		_path2="$(__rel_to_abs_path "$_path2")"
+		if [ "${_path1}" = "${_path2}" ]; then
+			_result="TRUE"
+		else
+			_result="FALSE"
+		fi
+	fi
+	echo "$_result"
+}
+
+# NOTE : paths do not have to exist
+# if path are relative, they are resolved accordingly to current path
 # __is_logical_subpath / / ==> FALSE
 # __is_logical_subpath / /folder ==> TRUE
 # __is_logical_subpath /folder1 /folder1/folder2 ==> TRUE
 # __is_logical_subpath /folder /folder ==> FALSE
 # __is_logical_subpath /folder /folder/ ==> FALSE
+# __is_logical_subpath /folder/ /folder ==> FALSE
+# __is_logical_subpath /folder/ /folder/ ==> FALSE
 # __is_logical_subpath /folder /folder/file ==> TRUE
 __is_logical_subpath() {
 	local _root="$1"
