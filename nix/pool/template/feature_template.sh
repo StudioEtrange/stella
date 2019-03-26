@@ -4,7 +4,7 @@ _TEMPLATE_INCLUDED_=1
 
 feature_template() {
 	FEAT_NAME=template
-	FEAT_LIST_SCHEMA="1_0_0@x64:binary 1_0_0@x86:binary"
+	FEAT_LIST_SCHEMA="1_0_0@x64:binary 1_0_0@x86:binary 1_0_0:source"
 	FEAT_DEFAULT_ARCH=x64
 	FEAT_DEFAULT_FLAVOUR="binary"
 
@@ -31,7 +31,7 @@ feature_template_1_0_0() {
 
 	# Properties for SOURCE flavour
 	FEAT_SOURCE_URL="http://foo.com/template-1_0_0-src.zip"
-	FEAT_SOURCE_URL_FILENAME=
+	FEAT_SOURCE_URL_FILENAME="template-1_0_0-src.zip"
 	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
 
 	# Properties for BINARY flavour
@@ -138,7 +138,7 @@ feature_template_install_source() {
 	__set_toolset "STANDARD"
 	__check_toolset "C++"
 
-	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
+	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP FORCE_NAME $FEAT_SOURCE_URL_FILENAME"
 
 	__feature_callback
 
