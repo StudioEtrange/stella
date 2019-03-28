@@ -340,5 +340,5 @@ if [ "$DOMAIN" = "stella" ]; then
 fi
 
 
-echo "** END **"
+__log "INFO" "** END **"
 fi
