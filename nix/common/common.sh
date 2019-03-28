@@ -13,9 +13,11 @@ _STELLA_COMMON_INCLUDED_=1
 # On some systems, sudo do not exist, and we may already exec cmd as root
 #		sample : __sudo_exec apt-get update
 __sudo_exec() {
-	type sudo &>/dev/null && \
-		sudo -E "$@" || \
+	if $(type sudo &>/dev/null); then
+		sudo -E "$@"
+	else
 		"$@"
+	fi
 }
 
 
