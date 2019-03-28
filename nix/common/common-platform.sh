@@ -549,43 +549,32 @@ __use_package_manager() {
 	local _packages=
 	for o in $_packages_list; do
 		[ "$o" = "|" ] && _flag_package_manager=OFF
-		[ "$_flag_package_manager" = "ON" ] && _packages="$_packages $o"
+		[ "$_flag_package_manager" = "ON" ] && _packages="${_packages} $o"
 		# NOTE : exception here for "brew-cask", because the package manager name is always just "brew"
 		[ "$o" = "$_package_manager"-cask ] && _flag_package_manager=ON && _package_manager="brew-cask"
 		[ "$o" = "$_package_manager" ] && _flag_package_manager=ON
 	done
 
-	[ "$_packages" = "" ] && echo " ** WARN : we do not find any configured package for $_id with $_package_manager"
+	[ "${_packages}" = "" ] && echo " ** WARN : we do not find any configured package for $_id with $_package_manager"
 
 	if [ "$_action" = "INSTALL" ]; then
 		case $_package_manager in
 			apt-get)
 				__sudo_exec apt-get update
-				__sudo_exec apt-get -y install
-				#type sudo &>/dev/null && \
-				#	sudo -E apt-get update && \
-				#	sudo -E apt-get -y install $_packages || \
-				#	apt-get update && \
-				#	apt-get -y install $_packages
+				__sudo_exec apt-get -y install ${_packages}
 				;;
 			brew)
-				brew install $_packages
+				brew install ${_packages}
 				;;
 			brew-cask)
-				brew cask install $_packages
+				brew cask install ${_packages}
 				;;
 			yum)
-				__sudo_exec yum install -y $_packages
-				#sudo -E yum install -y $_packages
+				__sudo_exec yum install -y ${_packages}
 				;;
 			apk)
 				__sudo_exec apk update
-				__sudo_exec apk add $_packages
-				#type sudo &>/dev/null && \
-				#	sudo -E apk update && \
-				#	sudo -E apk add $_packages || \
-				#	apk update && \
-				#	apk add $_packages
+				__sudo_exec apk add ${_packages}
 				;;
 			*)	echo " ** WARN : dont know how to install $_id"
 				;;
@@ -597,25 +586,25 @@ __use_package_manager() {
 				# TODO use __sudo_exec
 				type sudo &>/dev/null && \
 					sudo -E apt-get update && \
-					sudo -E apt-get -y autoremove --purge $_packages || \
+					sudo -E apt-get -y autoremove --purge ${_packages} || \
 						apt-get update && \
-						apt-get -y autoremove --purge $_packages
+						apt-get -y autoremove --purge ${_packages}
 				;;
 			brew)
-				brew uninstall $_packages
+				brew uninstall ${_packages}
 				;;
 			brew-cask)
-				brew cask uninstall $_packages
+				brew cask uninstall ${_packages}
 				;;
 			yum)
 				# TODO use __sudo_exec
-				sudo -E yum remove -y $_packages
+				sudo -E yum remove -y ${_packages}
 				;;
 			apk)
 				# TODO use __sudo_exec
 					type sudo &>/dev/null && \
-					sudo -E apk del $_packages || \
-						apk del $_packages
+					sudo -E apk del ${_packages} || \
+						apk del ${_packages}
 				;;
 			*)	echo " ** WARN : dont know how to remove $_id"
 				;;
