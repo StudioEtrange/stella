@@ -11,14 +11,39 @@ feature_pkgconfig() {
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 
+
+
+feature_pkgconfig_0_29_2() {
+	FEAT_VERSION=0_29_2
+
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL=https://pkg-config.freedesktop.org/releases/pkg-config-0.29.2.tar.gz
+	FEAT_SOURCE_URL_FILENAME=pkg-config-0.29.2.tar.gz
+	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
+
+	FEAT_BINARY_URL=
+	FEAT_BINARY_URL_FILENAME=
+	FEAT_BINARY_URL_PROTOCOL=
+
+	FEAT_SOURCE_CALLBACK=
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=feature_pkgconfig_env
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/pkg-config
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+
+}
+
 feature_pkgconfig_0_29() {
 	FEAT_VERSION=0_29
 
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
-	FEAT_SOURCE_URL=http://pkgconfig.freedesktop.org/releases/pkg-config-0.29.tar.gz
-	FEAT_SOURCE_URL_FILENAME=fpkg-config-0.29.tar.gz
+	FEAT_SOURCE_URL=https://pkg-config.freedesktop.org/releases/pkg-config-0.29.tar.gz
+	FEAT_SOURCE_URL_FILENAME=pkg-config-0.29.tar.gz
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
 	FEAT_BINARY_URL=
