@@ -206,9 +206,14 @@ __prepare_build() {
 	echo "====> Build arch directive : $STELLA_BUILD_ARCH"
 	echo "====> Parallelized (if supported) : $STELLA_BUILD_PARALLELIZE"
 	echo " (soon DEPRECATED) Relocatable : $STELLA_BUILD_RELOCATE"
+	echo "** LINKED LIB"
 	echo "====> Feature link path mode : $STELLA_FEATURE_LINK_PATH"
 	echo "====> Build Link path mode : $STELLA_BUILD_LINK_PATH"
-	echo "====> Linked lib from stella features : $STELLA_LINKED_LIBS_LIST"
+	echo "====> Linked libs from stella features : $STELLA_LINKED_LIBS_LIST"
+	echo "====> Linked libs from system : $STELLA_LINKED_LIBS_SYSTEM_LIST"
+	echo "====> pkg-config tool : $(which pkg-config)"
+	echo "====> env PKG_CONFIG_PATH (additional search path for pkg-config): $PKG_CONFIG_PATH"
+	echo "====> pkg-config full search path : $(__pkgconfig_search_path)"
 	echo "** FOLDERS"
 	echo "====> Install directory : $INSTALL_DIR"
 	echo "====> Source directory : $SOURCE_DIR"
@@ -226,9 +231,7 @@ __prepare_build() {
 	echo "====> LIBRARY_PATH (search path at link time) : $LIBRARY_PATH"
 	echo "====> LD_LIBRARY_PATH (search path at run time linux): $LD_LIBRARY_PATH"
 	echo "====> DYLD_LIBRARY_PATH (search path at run time darwin): $DYLD_LIBRARY_PATH"
-	echo "** PKG-CONFIG"
-	echo "====> PKG_CONFIG_PATH (additional search path for pkg-config): $PKG_CONFIG_PATH"
-	echo "====> pkg-config full search path : $(__pkgconfig_search_path)"
+
 
 }
 
@@ -613,6 +616,7 @@ __reset_build_env() {
 
 	# LINKED LIBRARIES
 	STELLA_LINKED_LIBS_LIST=
+	STELLA_LINKED_LIBS_SYSTEM_LIST=
 	STELLA_LINKED_LIBS_C_CXX_FLAGS=
 	STELLA_LINKED_LIBS_CPP_FLAGS=
 	STELLA_LINKED_LIBS_LINK_FLAGS=

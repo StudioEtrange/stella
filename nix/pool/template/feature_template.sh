@@ -174,8 +174,8 @@ feature_template_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
-
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "AUTOTOOLS autogen"
+	# often AUTOTOOLS is paired with NO_OUT_OF_TREE_BUILD
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD AUTOTOOLS autogen"
 
 
 }
