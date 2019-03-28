@@ -4,10 +4,6 @@ _pkgconfig_INCLUDED_=1
 # http://www.linuxfromscratch.org/lfs/view/development/chapter06/pkg-config.html
 # https://github.com/Homebrew/homebrew/blob/master/Library/Formula/pkg-config.rb
 
-# BUG VERSION 0_29  bug in glib
-#		gdate.c:2497:7: error: format not a string literal, format string not checked [-Werror=format-nonliteral]
-       tmplen = strftime (tmpbuf, tmpbufsize, locale_format, &tm);
-#  	DESC https://bugs.freedesktop.org/show_bug.cgi?id=95326
 
 feature_pkgconfig() {
 	FEAT_NAME=pkgconfig
