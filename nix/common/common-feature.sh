@@ -903,7 +903,6 @@ __select_official_schema() {
  	# __translate_schema "$_SCHEMA" "$_VAR_FEATURE_NAME" "$_VAR_FEATURE_VER" "$_VAR_FEATURE_ARCH" "$_VAR_FEATURE_FLAVOUR" "$_VAR_FEATURE_OS_RESTRICTION" "$_VAR_FEATURE_OS_EXCLUSION"
 	__translate_schema "$_SCHEMA" "$3" "$4" "$5" "$6" "$7" "$8"
 
-
 	local _TR_FEATURE_NAME=${!_VAR_FEATURE_NAME}
 	local _TR_FEATURE_VER=${!_VAR_FEATURE_VER}
 	local _TR_FEATURE_ARCH=${!_VAR_FEATURE_ARCH}
@@ -940,7 +939,7 @@ __select_official_schema() {
 			local list_version=
 			local k
 			for k in $FEAT_LIST_SCHEMA; do
-				__translate_schema "_TR_FEATURE_NAME#$k" "NONE" "_TMP_V"
+				__translate_schema "${_TR_FEATURE_NAME}#${k}" "NONE" "_TMP_V"
 				list_version="$list_version $_TMP_V"
 			done
 			# TODO use ENDING_CHAR_REVERSE for some feature in a new FIELD (like FEAT_VERSION_ORDER)
@@ -950,7 +949,7 @@ __select_official_schema() {
 			#[ ! "$_VAR_FEATURE_VER" = "" ] && eval $_VAR_FEATURE_VER=$FEAT_DEFAULT_VERSION
 		fi
 
-		_FILLED_SCHEMA="$_TR_FEATURE_NAME"#"$_TR_FEATURE_VER"
+		_FILLED_SCHEMA="${_TR_FEATURE_NAME}#${_TR_FEATURE_VER}"
 
 		# ADDING OS restriction and OS exclusion
 		_OS_OPTION=
@@ -959,14 +958,15 @@ __select_official_schema() {
 
 
 
-
 		# check schema exists
 		# we already know which version to find
-		# now we are looking for different arch and flavour
+		# we are looking for different arch and flavour
+		# if we are looking for a bundle, only arch is used. There is no flavour support for bundle
 		# starting with specified ones, then with default ones, then with possible ones
 		# NOTE : version must exist and take precedence on flavour which take precedence on arch
 		local _looking_arch
 		local _looking_flavour
+
 		if [ "$_TR_FEATURE_ARCH" = "" ]; then
 			# arch could have absolute no info specified in default value and FEAT_LIST_SCHEMA
 			# so we do not have to look for any value
@@ -974,51 +974,77 @@ __select_official_schema() {
 		else
 			_looking_arch="$_TR_FEATURE_ARCH"
 		fi
-		if [ "$_TR_FEATURE_FLAVOUR" = "" ]; then
-			_looking_flavour="$FEAT_DEFAULT_FLAVOUR binary source"
-		else
-			_looking_flavour="$_TR_FEATURE_FLAVOUR"
-		fi
 
 		local l
 		local a
 		local f
 
-		# flavour is always presents in FEAT_LIST_SCHEMA
-		for f in $_looking_flavour; do
-			# we do not look for any arch while searching source flavour
-			# arch is not used when schema contains source,
-			# only used for binary flavour
-			if [ "$f" = "source" ]; then
+		# bundle might have arch, but no flavour
+		if [ ! "$FEAT_BUNDLE" = "" ]; then
+			# arch is not always presents in FEAT_LIST_SCHEMA and could not have default value
+			if [ "$_looking_arch" = "" ]; then
 				for l in $FEAT_LIST_SCHEMA; do
-					if [ "$_TR_FEATURE_NAME"#"$l" = "$_FILLED_SCHEMA":"$f" ]; then
+					if [ "${_TR_FEATURE_NAME}#${l}" = "$_FILLED_SCHEMA" ]; then
 						[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
 					fi
 					[ "$_official" = "1" ] && break
 				done
 			else
-				# arch is not always presents in FEAT_LIST_SCHEMA and could not have default value
-				if [ "$_looking_arch" = "" ]; then
+				for a in $_looking_arch; do
 					for l in $FEAT_LIST_SCHEMA; do
-						if [ "$_TR_FEATURE_NAME"#"$l" = "$_FILLED_SCHEMA":"$f" ]; then
+						if [ "${_TR_FEATURE_NAME}#${l}" = "$_FILLED_SCHEMA"@"$a" ]; then
+							[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
+						fi
+						[ "$_official" = "1" ] && break
+					done
+					[ "$_official" = "1" ] && break
+				done
+			fi
+		else
+
+
+			# flavour is always presents in FEAT_LIST_SCHEMA but not for bundle
+			if [ "$_TR_FEATURE_FLAVOUR" = "" ]; then
+				_looking_flavour="$FEAT_DEFAULT_FLAVOUR binary source"
+			else
+				_looking_flavour="$_TR_FEATURE_FLAVOUR"
+			fi
+
+			for f in $_looking_flavour; do
+				# we do not look for any arch while searching source flavour
+				# arch is not used when schema contains source,
+				# only used for binary flavour
+				if [ "$f" = "source" ]; then
+					for l in $FEAT_LIST_SCHEMA; do
+						if [ "${_TR_FEATURE_NAME}#${l}" = "$_FILLED_SCHEMA":"$f" ]; then
 							[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
 						fi
 						[ "$_official" = "1" ] && break
 					done
 				else
-					for a in $_looking_arch; do
+					# arch is not always presents in FEAT_LIST_SCHEMA and could not have default value
+					if [ "$_looking_arch" = "" ]; then
 						for l in $FEAT_LIST_SCHEMA; do
-							if [ "$_TR_FEATURE_NAME"#"$l" = "$_FILLED_SCHEMA"@"$a":"$f" ]; then
+							if [ "${_TR_FEATURE_NAME}#${l}" = "$_FILLED_SCHEMA":"$f" ]; then
 								[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
 							fi
 							[ "$_official" = "1" ] && break
 						done
-						[ "$_official" = "1" ] && break
-					done
+					else
+						for a in $_looking_arch; do
+							for l in $FEAT_LIST_SCHEMA; do
+								if [ "${_TR_FEATURE_NAME}#${l}" = "$_FILLED_SCHEMA"@"$a":"$f" ]; then
+									[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
+								fi
+								[ "$_official" = "1" ] && break
+							done
+							[ "$_official" = "1" ] && break
+						done
+					fi
 				fi
-			fi
-			[ "$_official" = "1" ] && break
-		done
+				[ "$_official" = "1" ] && break
+			done
+		fi
 
 		if 	[ "$_official" = "1" ]; then
 			[ ! "$a" = "" ] && _FILLED_SCHEMA="$_FILLED_SCHEMA"@"$a"
@@ -1110,7 +1136,7 @@ __translate_schema() {
 	if [ ! "$_VAR_FEATURE_NAME" = "" ]; then eval $_VAR_FEATURE_NAME="$(echo $_tr_schema | sed 's,^\([^:/\\#@]*\).*$,\1,')"; fi
 
 	# Debug log
-	#echo TRANSLATE RESULT N: $_VAR_FEATURE_NAME = $(eval echo \$${_VAR_FEATURE_NAME})  V: $_VAR_FEATURE_VER = $(eval echo \$${_VAR_FEATURE_VER}) OSR: $_VAR_FEATURE_OS_RESTRICTION = $(eval echo \$${_VAR_FEATURE_OS_RESTRICTION})
+	#echo TRANSLATE RESULT NAME: $_VAR_FEATURE_NAME = $(eval echo \$${_VAR_FEATURE_NAME})  VERSION: $_VAR_FEATURE_VER = $(eval echo \$${_VAR_FEATURE_VER}) ARCH: $_VAR_FEATURE_ARCH = $(eval echo \$${_VAR_FEATURE_ARCH}) FLAVOUR: $_VAR_FEATURE_FLAVOUR = $(eval echo \$${_VAR_FEATURE_FLAVOUR}) OSR: $_VAR_FEATURE_OS_RESTRICTION = $(eval echo \$${_VAR_FEATURE_OS_RESTRICTION})
 }
 
 

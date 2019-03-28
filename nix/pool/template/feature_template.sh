@@ -155,6 +155,29 @@ feature_template_install_source() {
 }
 
 
+feature_template_install_source() {
+	INSTALL_DIR="$FEAT_INSTALL_ROOT"
+	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
+
+	__set_toolset "STANDARD"
+	__add_toolset "autotools"
+
+	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP FORCE_NAME $FEAT_SOURCE_URL_FILENAME"
+
+	__feature_callback
+
+	AUTO_INSTALL_CONF_FLAG_PREFIX=
+	AUTO_INSTALL_CONF_FLAG_POSTFIX=
+	AUTO_INSTALL_BUILD_FLAG_PREFIX=
+	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
+
+
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "AUTOTOOLS autogen"
+
+
+}
+
+
 
 
 fi

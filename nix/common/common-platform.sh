@@ -447,6 +447,7 @@ __yum_add_extra_repositories() {
 	__get_resource "epel" "https://dl.fedoraproject.org/pub/epel/epel-release-latest-${_version}.noarch.rpm" "HTTP" "$STELLA_APP_WORK_ROOT" "FORCE_NAME epel-release-latest-${_version}.noarch.rpm"
 	__sudo_exec rpm -Uvh "$STELLA_APP_WORK_ROOT/epel-release-latest-${_version}.noarch.rpm"
 
+	__sudo_exec yum-config-manager --enable epel
 	__sudo_exec yum clean all
 }
 
