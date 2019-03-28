@@ -295,7 +295,7 @@ __enable_current_toolset() {
 
 
 
-	echo "** Check toolset feature availability: $STELLA_BUILD_CHECK_TOOLSET"
+	echo "** Check from build toolset feature availability: $STELLA_BUILD_CHECK_TOOLSET"
 	for c in $STELLA_BUILD_CHECK_TOOLSET; do
 		case "$c" in
 			"C++")
@@ -330,19 +330,20 @@ __enable_current_toolset() {
 	echo "** Some informations about toolset"
 	case $STELLA_BUILD_COMPIL_FRONTEND_BIN_FAMILY in
 		gcc)
+			echo "===> default linker search path"
+			# TODO could depend on arch
+			__default_linker_search_path
 			if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-				# TODO REVIEW : https://stackoverflow.com/questions/9922949/how-to-print-the-ldlinker-search-path
-				echo "===> gcc hardcoded search path during linking (-L flag)"
-				#gcc -m64 -Xlinker --verbose  2>/dev/null | grep SEARCH | sed 's/SEARCH_DIR("=\?\([^"]\+\)"); */\1\n/g'  | grep -vE '^$'
-				gcc -print-search-dirs | sed '/^lib/b 1;d;:1;s,/[^/.][^/]*/\.\./,/,;t 1;s,:[^=]*=,:;,;s,;,;  ,g' | tr \; \\012
-				if $(type ld &>/dev/null); then
-					echo "===> ld search path during linking (-L flag)"
-					ld --verbose | grep SEARCH_DIR | tr -s ' ;' \\012
-				fi
+				echo "===> gcc hardcoded libraries search (-L flag)"
+				__gcc_lib_search_path
 			fi
 	esac
+	if $(type pkg-config &>/dev/null); then
+		echo "===> pkg-config default search path"
+		__pkgconfig_search_path
+	fi
 
-	
+
 
 
 	echo "** Init specific toolset env var"

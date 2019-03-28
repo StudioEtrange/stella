@@ -2,6 +2,8 @@ if [ ! "$_bindfs_INCLUDED_" = "1" ]; then
 _bindfs_INCLUDED_=1
 
 # NOTE : require fuse
+# 			apt-get install libfuse-dev
+
 
 feature_bindfs() {
 	FEAT_NAME=bindfs
@@ -19,7 +21,7 @@ feature_bindfs_1_13_10() {
 	FEAT_VERSION=1_13_10
 
 
-	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_SOURCE_DEPENDENCIES="FORCE_ORIGIN_SYSTEM fuse"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://github.com/mpartel/bindfs/archive/1.13.10.tar.gz
@@ -30,7 +32,7 @@ feature_bindfs_1_13_10() {
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
 
-	FEAT_SOURCE_CALLBACK=
+	FEAT_SOURCE_CALLBACK=feature_bindfs_link
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
@@ -40,13 +42,16 @@ feature_bindfs_1_13_10() {
 }
 
 
+feature_bindfs_link() {
+	__link_feature_library "FORCE_ORIGIN_SYSTEM fuse" "USE_PKG_CONFIG"
+}
+
 feature_bindfs_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 
 	__set_toolset "STANDARD"
 	__add_toolset "autotools"
-	__add_toolset "pkgconfig"
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP FORCE_NAME $FEAT_SOURCE_URL_FILENAME"
 

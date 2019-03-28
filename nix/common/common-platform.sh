@@ -349,6 +349,52 @@ __gcc_is_clang() {
 	fi
 }
 
+# linker search path
+# arch : x64|x86
+#				if empty the default system current arch will be used
+# LINUX https://stackoverflow.com/questions/9922949/how-to-print-the-ldlinker-search-path
+# NOTE ON MACOS
+#			 https://opensource.apple.com/source/dyld/dyld-519.2.1/src/dyld.cpp.auto.html
+#			 hardcoded values https://opensource.apple.com/source/dyld/dyld-519.2.1/src/dyld.cpp.auto.html
+#												can be checked with : gcc  -Xlinker -v
+__default_linker_search_path() {
+	local __arch="$1"
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		[ "$__arch" = "x64" ] && $__arch="-m64"
+		[ "$__arch" = "x86" ] && $__arch="-m32"
+		gcc $__arch -Xlinker --verbose  2>/dev/null | grep SEARCH | sed 's/SEARCH_DIR("=\?\([^"]\+\)"); */\1\n/g'  | grep -vE '^$'
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		echo "/usr/local/lib:/usr/lib"
+	fi
+}
+
+# gcc hardcoded libraries search path
+# https://stackoverflow.com/questions/9922949/how-to-print-the-ldlinker-search-path
+__gcc_lib_search_path() {
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		gcc -print-search-dirs | sed '/^lib/b 1;d;:1;s,/[^/.][^/]*/\.\./,/,;t 1;s,:[^=]*=,:;,;s,;,;  ,g' | tr \; \\012
+	fi
+}
+
+# ld search path during linking (-L flag)"
+# see __default_linker_search_path
+# ld not used on macos
+# https://stackoverflow.com/questions/9922949/how-to-print-the-ldlinker-search-path
+__ld_link_search_path() {
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		ld --verbose 2>/dev/null | grep SEARCH | sed 's/SEARCH_DIR("=\?\([^"]\+\)"); */\1\n/g'  | grep -vE '^$'
+	fi
+}
+
+# pkg-config full search path
+# https://linux.die.net/man/1/pkg-config
+__pkgconfig_search_path() {
+	if $(type pkg-config &>/dev/null); then
+		echo ${PKG_CONFIG_PATH}:$(pkg-config --variable pc_path pkg-config)
+	fi
+}
+
 # NOTE apple-clang-llvm versions are not synchronized with clang-llvm versions
 __clang_version() {
 	clang --version | head -n 1 | grep -o -E "[[:digit:]].[[:digit:]].[[:digit:]]" | head -1

@@ -93,8 +93,21 @@ __link_feature_library() {
 				;;
 	esac
 
+	# NOTE when linking to a system lib, we do not have control over things and all options are disabled
 	if [ "$_origin" = "SYSTEM" ]; then
 		echo "We do not link against STELLA version of $SCHEMA, but from SYSTEM."
+		if [ "$_opt_use_pkg_config" = "ON" ]; then
+			__add_toolset "pkgconfig"
+			# we need to add some defaut seach into path, because pkgconfig have default values from its install path
+			# pkgconfig is installed inside stella and do not have correct default values when we want to link against SYSTEM libraries
+			echo "** WARN : adding some system lib search path for pkg-config, because we use pkg-config for a SYSTEM lib"
+			# TODO __default_linker_search_path should receive arch, because linker search path depend on arch
+			__def_path=$(__default_linker_search_path)
+			__def_path="${__def_path//:/ }"
+			for _p in $__def_path; do
+				STELLA_BUILD_PKG_CONFIG_PATH="${STELLA_BUILD_PKG_CONFIG_PATH}:${_p}/pkgconfig"
+			done
+		fi
 		return
 	fi
 

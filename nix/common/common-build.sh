@@ -226,7 +226,9 @@ __prepare_build() {
 	echo "====> LIBRARY_PATH (search path at link time) : $LIBRARY_PATH"
 	echo "====> LD_LIBRARY_PATH (search path at run time linux): $LD_LIBRARY_PATH"
 	echo "====> DYLD_LIBRARY_PATH (search path at run time darwin): $DYLD_LIBRARY_PATH"
-	echo "====> PKG_CONFIG_PATH (search path for pkg-config): $PKG_CONFIG_PATH"
+	echo "** PKG-CONFIG"
+	echo "====> PKG_CONFIG_PATH (additional search path for pkg-config): $PKG_CONFIG_PATH"
+	echo "====> pkg-config full search path : $(__pkgconfig_search_path)"
 
 }
 
