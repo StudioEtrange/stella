@@ -9,6 +9,19 @@ _STELLA_COMMON_INCLUDED_=1
 
 # VARIOUS-----------------------------
 
+# generate a random password
+# NOTE on macos : need LC_CTYPE=C http://nerdbynature.de/s9y/2010/04/11/tr-Illegal-byte-sequence
+# https://www.howtogeek.com/howto/30184/10-ways-to-generate-a-random-password-from-the-command-line/
+# expression possibles values are in man tr
+#		class examples : __generate_password 8 "[:alnum:]"
+__generate_password() {
+	local __length="$1"
+	local __expression="$2"
+	[ "${__length}" = "" ] && __length=8
+	[ "${__expression}" = "" ] && __expression="_A-Z-a-z-0-9"
+	LC_CTYPE=C tr -dc  "${__expression}" < /dev/urandom | fold -w${__length} | head -n1;
+}
+
 # Try to sudo - if not exec without sudo
 # On some systems, sudo do not exist, and we may already exec cmd as root
 #		sample : __sudo_exec apt-get update

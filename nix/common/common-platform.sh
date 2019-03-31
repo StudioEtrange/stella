@@ -402,6 +402,8 @@ __clang_version() {
 
 # RUNTIME specific --------------------------------------------------------
 
+# python path
+# https://stackoverflow.com/questions/122327/how-do-i-find-the-location-of-my-python-site-packages-directory
 
 # retrieve current pyconfig.h
 __python_get_pyconfig() {
@@ -415,6 +417,19 @@ __python_get_lib_path() {
 	python -c 'import sysconfig;print(sysconfig.get_path("stdlib"));'
 }
 
+# get python global site-packages path
+# https://stackoverflow.com/a/46071447
+__python_get_site_packages_global_path() {
+	# /Library/Python/2.7/site-packages
+	python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
+}
+
+# get python current user	site-packages path
+# https://stackoverflow.com/a/46071447
+__python_get_site_packages_user_path() {
+	# /Library/Python/2.7/site-packages
+	python -m site --user-site
+}
 
 # get python version on 1 digits (2, 3, ...)
 __python_major_version() {
