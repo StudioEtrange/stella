@@ -2,9 +2,9 @@
 
 getopt() {
   # pure-getopt, a drop-in replacement for GNU getopt in pure Bash.
-  # version 1.4.1
+  # version 1.4.3
   #
-  # Copyright 2012-2017 Aron Griffis <aron@scampersand.com>
+  # Copyright 2012-2018 Aron Griffis <aron@scampersand.com>
   #
   # Permission is hereby granted, free of charge, to any person obtaining
   # a copy of this software and associated documentation files (the
@@ -60,7 +60,7 @@ getopt() {
     # First parse always uses flags=p since getopt always parses its own
     # arguments effectively in this mode.
     parsed=$(_getopt_parse getopt ahl:n:o:qQs:TuV \
-      alternative,help,longoptions:,name,options:,quiet,quiet-output,shell:,test,version \
+      alternative,help,longoptions:,name:,options:,quiet,quiet-output,shell:,test,version \
       p "$@")
     status=$?
     if [[ $status != 0 ]]; then
@@ -122,7 +122,7 @@ getopt() {
           return 4 ;;
 
         (-V|--version)
-          echo "pure-getopt 1.4.1"
+          echo "pure-getopt 1.4.3"
           return 0 ;;
 
         (--)
@@ -211,14 +211,8 @@ getopt() {
           elif [[ ,"$long", == *,"${o#--}":,* ]]; then
             opts=( "${opts[@]}" "$o" "${1#*=}" )
           elif [[ ,"$long", == *,"${o#--}",* ]]; then
-            if $alt_recycled; then
-              # GNU getopt isn't self-consistent about whether it reports
-              # errors with a single dash or double dash in alternative
-              # mode, but in this case it reports with a single dash.
-              _getopt_err "$name: option '${o#-}' doesn't allow an argument"
-            else
-              _getopt_err "$name: option '$o' doesn't allow an argument"
-            fi
+            if $alt_recycled; then o=${o#-}; fi
+            _getopt_err "$name: option '$o' doesn't allow an argument"
             error=1
           else
             echo "getopt: assertion failed (1)" >&2
@@ -240,6 +234,7 @@ getopt() {
               shift
               opts=( "${opts[@]}" "$o" "$1" )
             else
+              if $alt_recycled; then o=${o#-}; fi
               _getopt_err "$name: option '$o' requires an argument"
               error=1
             fi
@@ -267,7 +262,7 @@ getopt() {
                 (0)
                   # Unambiguous match. Let the long options parser handle
                   # it, with a flag to get the right error message.
-                  set -- "-$@"
+                  set -- "-$1" "${@:2}"
                   alt_recycled=true
                   continue ;;
                 (1)
@@ -388,20 +383,20 @@ getopt() {
         matches=( "${matches[@]}" "$a" )
       elif [[ $flags == *a* && $q == -[^-]* && $a == -"$q"* ]]; then
         # Abbreviated alternative match.
-        matches=( "${matches[@]}" "$a" )
+        matches=( "${matches[@]}" "${a#-}" )
       fi
     done
     case ${#matches[@]} in
       (0)
         [[ $flags == *q* ]] || \
-        printf "$name: unrecognized option %s\n" >&2 \
+        printf "$name: unrecognized option %s\\n" >&2 \
           "$(_getopt_quote "$q")"
         return 2 ;;
       (1)
-        printf '%s' "$matches"; return 0 ;;
+        printf '%s' "${matches[0]}"; return 0 ;;
       (*)
         [[ $flags == *q* ]] || \
-        printf "$name: option %s is ambiguous; possibilities: %s\n" >&2 \
+        printf "$name: option %s is ambiguous; possibilities: %s\\n" >&2 \
           "$(_getopt_quote "$q")" "$(_getopt_quote "${matches[@]}")"
         return 1 ;;
     esac

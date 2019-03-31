@@ -11,6 +11,7 @@ evalbash() {
 }
 
 evalcsh() {
+  # shellcheck disable=SC2016
   ARGS=$1 tcsh -c '
     eval set argv = \( $ARGS:q \)
     echo $1:q
@@ -28,6 +29,7 @@ test() {
   declare myout myerr mynorm mystatus
   declare refout referr refnorm refstatus
   declare q=\' nl=$'\n' evalnorm=evalbash
+  declare tmp
 
   if [[ -z $want || $want -eq $num ]]; then
     declare t="$*"
@@ -68,13 +70,26 @@ test() {
     # gnu:  getopt: option '--x=foo' is ambiguous; possibilities: '--xy' '--xz'
     # pure: getopt: option '--x' is ambiguous; possibilities: '--xy' '--xz'
     echo PASS
+  elif [[ "$1" == -a && \
+        "$mystatus" == "$refstatus" && \
+        "$mynorm" == "$refnorm" && \
+        ( "$myerr" == *ambiguous* || "$myerr" == *requires* ) ]] && \
+        tmp=${referr/=* is /$q is } && tmp=${tmp//--/-} && \
+        [[ "$myerr" == "$tmp" ]]; then
+    # GNU getopt reports errors inconsistently for alternative mode,
+    # sometimes with one dash, sometimes with two. It seems to depend on
+    # system libraries rather than the version of util-linux. We report
+    # with a single dash (since it's alternative mode), for example:
+    # gnu:  getopt: option '-de' is ambiguous; possibilities: '--def' '--dez'
+    # pure: getopt: option '-de' is ambiguous; possibilities: '-def' '-dez'
+    echo PASS
   else
     echo FAIL
     diff -u \
       --label reference \
-      <(printf "EXIT: %s\nOUT: %s\nERR: %s\n" "$refstatus" "$refout" "$referr") \
+      <(printf 'EXIT: %s\nOUT: %s\nERR: %s\n' "$refstatus" "$refout" "$referr") \
       --label mine \
-      <(printf "EXIT: %s\nOUT: %s\nERR: %s\n" "$mystatus" "$myout" "$myerr")
+      <(printf 'EXIT: %s\nOUT: %s\nERR: %s\n' "$mystatus" "$myout" "$myerr")
     status=1
   fi
 
@@ -163,6 +178,11 @@ title "Quoting long arguments"
 
 test -o xy:z:: --long=abc,def:,dez:: -- -y "$(head -n 200 getopt.bash)"
 
+title "Passing custom program name with -n or --name"
+
+test -o xy:z:: --long=abc,def:,dez:: -n custom -- -y
+test -o xy:z:: --long=abc,def:,dez:: --name custom -- -y
+
 title "GETOPT_COMPATIBLE and POSIXLY_CORRECT"
 
 # Baseline reorders options before non-option params: -x -y -- foo
@@ -170,15 +190,15 @@ test -o xy -- -x foo -y
 # Leading dash doesn't reorder: -x foo -y
 test -o -xy -- -x foo -y
 # ..except in compatibility mode: -x -y -- foo
-GETOPT_COMPATIBLE= test -xy -x foo -y
+GETOPT_COMPATIBLE='' test -xy -x foo -y
 # Leading plus does POSIXLY_CORRECT: -x -- foo -y
 test -o +xy -- -x foo -y
-POSIXLY_CORRECT= test -o xy -- -x foo -y
-POSIXLY_CORRECT= test -o +xy -- -x foo -y
+POSIXLY_CORRECT='' test -o xy -- -x foo -y
+POSIXLY_CORRECT='' test -o +xy -- -x foo -y
 # ..except in compatibility mode: -x -y -- foo
-GETOPT_COMPATIBLE= test +xy -x foo -y
+GETOPT_COMPATIBLE='' test +xy -x foo -y
 # and POSIXLY_CORRECT overrides GETOPT_COMPATIBLE: -x -- foo -y
-GETOPT_COMPATIBLE= POSIXLY_CORRECT= test xy -x foo -y
+GETOPT_COMPATIBLE='' POSIXLY_CORRECT='' test xy -x foo -y
 
 title "Error getopt invocations"
 
@@ -197,7 +217,7 @@ title "Getopt version with -T"
 test -T
 GETOPT_COMPATIBLE=1 test -T
 # GETOPT_COMPATIBLE empty string should work too
-GETOPT_COMPATIBLE= test -T
+GETOPT_COMPATIBLE='' test -T
 
 title "Setting shell with -s"
 
