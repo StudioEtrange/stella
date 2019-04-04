@@ -37,9 +37,8 @@ __sudo_exec() {
 # Share sudo authentification between ssh sessions until __sudo_ssh_end_session is called
 __sudo_ssh_begin_session() {
 	local _uri="$1"
-	__ssh_execute "$_uri" "sudo -v; echo 'Defaults !tty_tickets' | sudo tee /etc/sudoers.d/rsync_temp_hack_stella" "SHARED"
+	__ssh_execute "$_uri"  '_save_tty=$(stty -g);stty raw -echo; echo "Defaults !tty_tickets" | sudo -Es tee /etc/sudoers.d/rsync_temp_hack_stella; sudo -v;stty ${_save_tty};' 'SHARED'
 	# NOTE : needs time before modification is used by sshd
-	# TODO ; try this fix https://www.shell-tips.com/2014/09/08/sudo-sorry-you-must-have-a-tty-to-run-sudo/ (!requiretty)
 	sleep 2
 }
 
@@ -652,19 +651,21 @@ __transfer_rsync() {
 	case $__stella_uri_schema in
 		ssh )
 			if [ "$_opt_sudo" = "ON" ]; then
+				__log "DEBUG" "__sudo_ssh_begin_session $_uri"
 				__sudo_ssh_begin_session "$_uri"
-				rsync $_opt_links $_opt_include $_opt_exclude --rsync-path="stty raw -echo; sudo mkdir -p '$_target_path'; sudo rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh -t -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60 -p $_ssh_port" "$_source" "$_target"
+				rsync $_opt_links $_opt_include $_opt_exclude --rsync-path='sudo -Es mkdir -p '$_target_path'; sudo -Es rsync' --no-owner --no-group --force --delete -prltD -vz -e "ssh -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60 -p $_ssh_port" "$_source" "$_target"
+				__log "DEBUG" "__sudo_ssh_end_session $_uri"
 				__sudo_ssh_end_session "$_uri"
 			fi
-			[ "$_opt_sudo" = "OFF" ] && rsync $_opt_links $_opt_include $_opt_exclude --rsync-path="mkdir -p '$(dirname $_target_path)' && rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60 -p $_ssh_port" "$_source" "$_target"
+			[ "$_opt_sudo" = "OFF" ] && rsync $_opt_links $_opt_include $_opt_exclude --rsync-path="mkdir -p '$(dirname $_target_path)'; rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60 -p $_ssh_port" "$_source" "$_target"
 			;;
 		vagrant )
 			if [ "$_opt_sudo" = "ON" ]; then
 				__sudo_ssh_begin_session "$_uri"
-				rsync $_opt_links $_opt_include $_opt_exclude --rsync-path="stty raw -echo; sudo mkdir -p '$_target_path'; sudo rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh -t -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60 $__vagrant_ssh_opt" "$_source" "$_target"
+				rsync $_opt_links $_opt_include $_opt_exclude --rsync-path="sudo -Es mkdir -p '$_target_path'; sudo -Es rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60 $__vagrant_ssh_opt" "$_source" "$_target"
 				__sudo_ssh_end_session "$_uri"
 			fi
-			[ "$_opt_sudo" = "OFF" ] && rsync $_opt_links $_opt_include $_opt_exclude --rsync-path="mkdir -p '$(dirname $_target_path)' && rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh $__vagrant_ssh_opt -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60" "$_source" "$_target"
+			[ "$_opt_sudo" = "OFF" ] && rsync $_opt_links $_opt_include $_opt_exclude --rsync-path="mkdir -p '$(dirname $_target_path)'; rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh $__vagrant_ssh_opt -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60" "$_source" "$_target"
 			;;
 		local )
 			if [ "$_source" = "$_target" ]; then
@@ -672,8 +673,8 @@ __transfer_rsync() {
 			else
 				# '--rsync-path' option seems to not work when we are on the same host (local)
 				if [ "$_opt_sudo" = "ON" ]; then
-					sudo mkdir -p "$(dirname $_target_path)"
-					sudo rsync $_opt_links $_opt_include $_opt_exclude --force --delete -avz "$_source" "$_target"
+					sudo -E mkdir -p "$(dirname $_target_path)"
+					sudo -E rsync $_opt_links $_opt_include $_opt_exclude --force --delete -avz "$_source" "$_target"
 				fi
 				if [ "$_opt_sudo" = "OFF" ]; then
 					mkdir -p "$(dirname $_target_path)"
@@ -685,8 +686,6 @@ __transfer_rsync() {
 			echo "** ERROR protocol unknown"
 			;;
 	esac
-
-
 }
 
 
