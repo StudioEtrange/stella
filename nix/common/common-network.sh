@@ -404,7 +404,7 @@ __ssh_execute() {
 		#ssh -tt $__ssh_opt $__opt_shared $__vagrant_ssh_opt "$__ssh_user$__stella_uri_host" "sudo -Es eval '${__cmd}'"
 		ssh -t $__ssh_opt $__opt_shared $__vagrant_ssh_opt "$__ssh_user$__stella_uri_host" "sudo -Es eval '${__cmd}'"
 	else
-		__log "DEBUG" "ssh -tt $__ssh_opt $__opt_shared $__vagrant_ssh_opt $__ssh_user$__stella_uri_host ${__cmd}"
+		__log "DEBUG" "ssh -t $__ssh_opt $__opt_shared $__vagrant_ssh_opt $__ssh_user$__stella_uri_host ${__cmd}"
 		#ssh -tt $__ssh_opt $__opt_shared $__vagrant_ssh_opt "$__ssh_user$__stella_uri_host" "${__cmd}"
 		ssh -t $__ssh_opt $__opt_shared $__vagrant_ssh_opt "$__ssh_user$__stella_uri_host" "${__cmd}"
 	fi
