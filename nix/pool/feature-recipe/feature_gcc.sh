@@ -43,6 +43,35 @@ feature_gcc_4_8_5() {
 }
 #http://llvm.org/releases/3.9.0/test-suite-3.9.0.src.tar.xz \
 
+feature_gcc_7_3_0() {
+	FEAT_VERSION=7_3_0
+
+
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL="https://ftp.gnu.org/gnu/gcc/gcc-7.3.0/gcc-7.3.0.tar.gz"
+	FEAT_SOURCE_URL_FILENAME=
+	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
+
+	FEAT_BINARY_URL=
+	FEAT_BINARY_URL_FILENAME=
+	FEAT_BINARY_URL_PROTOCOL=
+
+	FEAT_SOURCE_CALLBACK=feature_gcc_add_resource
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/gcc
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+
+	# from contrib/download_prerequisites file
+	FEAT_ADD_RESOURCES="mpfr https://ftp.gnu.org/gnu/mpfr/mpfr-3.1.4.tar.bz2 \
+	gmp https://ftp.gnu.org/gnu/gmp/gmp-6.1.0.tar.bz2 \
+	mpc https://ftp.gnu.org/gnu/mpc//mpc-1.0.3.tar.gz \
+	isl http://ftp.vim.org/languages/gcc/infrastructure/isl-0.16.1.tar.bz2"
+}
+
 feature_gcc_add_resource() {
 	local _target_folder=
 	for t in $FEAT_ADD_RESOURCES; do
