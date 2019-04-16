@@ -264,7 +264,7 @@ STELLA_BINARY_DEFAULT_LIB_IGNORED='^/System/Library|^/usr/lib|^/lib'
 # API ---------------------------------------------
 STELLA_API_COMMON_PUBLIC="is_logical_equalpath is_logical_subpath sort_version transfer_stella filter_list uri_build_path uri_get_path uri_parse find_folder_up get_active_path uncompress daemonize rel_to_abs_path is_abs argparse get_filename_from_string \
 get_resource delete_resource update_resource revert_resource download_uncompress copy_folder_content_into del_folder \
-get_key add_key del_key mercurial_project_version git_project_version get_stella_version \
+get_key get_keys add_key del_key mercurial_project_version git_project_version get_stella_version \
 make_sevenzip_sfx_bin make_targz_sfx_shell compress trim transfer_stella transfer_folder_rsync transfer_file_rsync"
 STELLA_API_API_PUBLIC="api_connect api_disconnect"
 STELLA_API_APP_PUBLIC="transfer_app get_app_property link_app get_data get_assets get_data_pack get_assets_pack delete_data delete_assets delete_data_pack delete_assets_pack update_data update_assets revert_data revert_assets update_data_pack update_assets_pack revert_data_pack revert_assets_pack get_feature get_features"
