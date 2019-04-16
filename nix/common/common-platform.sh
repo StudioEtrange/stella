@@ -333,10 +333,10 @@ __gcc_version_int() {
 
 # check if current gcc version hit the minimal version required
 # first param : X_Y_Z (or X_Y)
-# return 1 if required minimal version is fullfilled
+# return 1 if required minimal version is fullfilled by the current gcc version
 __gcc_check_min_version() {
 	local _required_ver=$1
-	expr $(__gcc_version_int) \<= $(echo $_required_ver | sed -e 's/_\([0-9][0-9]\)/\1/g' -e 's/_\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$/&00/')
+	expr $(__gcc_version_int) \>= $(echo $_required_ver | sed -e 's/_\([0-9][0-9]\)/\1/g' -e 's/_\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$/&00/')
 }
 
 # detect if current gcc binary is in fact clang (mainly for MacOS)
@@ -353,7 +353,7 @@ __gcc_is_clang() {
 # arch : x64|x86
 #				if empty the default system current arch will be used
 # LINUX https://stackoverflow.com/questions/9922949/how-to-print-the-ldlinker-search-path
-# NOTE ON MACOS
+# NOTE ON MACOS :
 #			 https://opensource.apple.com/source/dyld/dyld-519.2.1/src/dyld.cpp.auto.html
 #			 hardcoded values https://opensource.apple.com/source/dyld/dyld-519.2.1/src/dyld.cpp.auto.html
 #												can be checked with : gcc  -Xlinker -v
@@ -402,21 +402,21 @@ __clang_version() {
 
 # RUNTIME specific --------------------------------------------------------
 
-# python path
-# https://stackoverflow.com/questions/122327/how-do-i-find-the-location-of-my-python-site-packages-directory
-
-# retrieve current pyconfig.h
-__python_get_pyconfig() {
-	# /Library/Frameworks/Python.framework/Versions/2.7/include/python2.7/pyconfig.h
-	python -c 'import sysconfig;print(sysconfig.get_config_h_filename());'
+# PYTHON VERSION
+# get python version on 1 digits (2, 3, ...)
+__python_major_version() {
+	# 2
+	python -c 'import sys;print(str(sys.version_info.major));'
 }
 
-# get python lib folder
-__python_get_lib_path() {
-	# /Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7
-	python -c 'import sysconfig;print(sysconfig.get_path("stdlib"));'
+# get python version on 2 digits (2.7, 3.4, ...)
+__python_short_version() {
+	# 2.7
+	python -c 'import sys;print(str(sys.version_info.major) + "." + str(sys.version_info.minor));'
 }
 
+
+# PYTHON PACKAGE INSTALL PATH
 # get python global site-packages path
 # https://stackoverflow.com/a/46071447
 __python_get_site_packages_global_path() {
@@ -431,42 +431,62 @@ __python_get_site_packages_user_path() {
 	python -m site --user-site
 }
 
-# get python version on 1 digits (2, 3, ...)
-__python_major_version() {
-	# 2.7
-	python -c 'import sys;print(str(sys.version_info.major));'
+# get standard python libraries install dir
+__python_get_standard_packages_path() {
+	# /Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7
+	python -c 'import sysconfig;print(sysconfig.get_path("stdlib"));'
 }
 
-# get python version on 2 digits (2.7, 3.4, ...)
-__python_short_version() {
-	# 2.7
-	python -c 'import sys;print(str(sys.version_info.major) + "." + str(sys.version_info.minor));'
+
+
+# LIBRARIES INSTALL DIRECTORIES inside python
+# get library install dir within python environment
+__python_get_lib_dir() {
+		python -c 'import sysconfig;print(sysconfig.get_config_var("LIBDIR"));'
+}
+# get include install dir within python environment
+__python_get_include_dir() {
+		python -c 'import sysconfig;print(sysconfig.get_config_var("INCLUDEDIR"));'
+}
+# get binary install dir within python environment
+__python_get_bin_dir() {
+		python -c 'import sysconfig;print(sysconfig.get_config_var("BINDIR"));'
 }
 
-# NOTE python-config symbolic link do not exist on python 3.x
-__python_get_libs() {
+
+# BUILD USE CASE
+# python build functions using python-config for build use case
+# python-config : output  build  options for python C/C++ extensions or embedding
+# http://manpages.ubuntu.com/manpages/xenial/en/man1/i386-linux-gnu-python2.7-config.1.html
+__python_build_get_libs() {
 	# -lpython2.7 -ldl -framework CoreFoundation
 	python$(__python_short_version)-config --libs
 }
-
-__python_get_ldflags() {
+__python_build_get_ldflags() {
 	#-L/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/config -lpython2.7 -ldl -framework CoreFoundation
 	python$(__python_short_version)-config --ldflags
 }
-
-__python_get_clags() {
+__python_build_get_clags() {
 	#-I/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7 -I/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7 -fno-strict-aliasing -fno-common -dynamic -arch i386 -arch x86_64 -g -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes
 	python$(__python_short_version)-config --cflags
 }
-
-__python_get_prefix() {
+__python_build_get_prefix() {
 	# /Library/Frameworks/Python.framework/Versions/2.7
 	python$(__python_short_version)-config --prefix
 }
-__python_get_includes() {
+__python_build_get_includes() {
 	#-I/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7 -I/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7
 	python$(__python_short_version)-config --includes
 }
+
+# VARIOUS
+# retrieve current pyconfig.h
+__python_get_pyconfig() {
+	# /Library/Frameworks/Python.framework/Versions/2.7/include/python2.7/pyconfig.h
+	python -c 'import sysconfig;print(sysconfig.get_config_h_filename());'
+}
+
+
 
 # PACKAGE SYSTEM ----------------------------
 # sample : __yum_proxy_set $STELLA_HTTP_PROXY
@@ -598,12 +618,8 @@ __use_package_manager() {
 	if [ "$_action" = "REMOVE" ]; then
 		case $_package_manager in
 			apt-get)
-				# TODO use __sudo_exec
-				type sudo &>/dev/null && \
-					sudo -E apt-get update && \
-					sudo -E apt-get -y autoremove --purge ${_packages} || \
-						apt-get update && \
-						apt-get -y autoremove --purge ${_packages}
+				__sudo_exec apt-get update
+				__sudo_exec apt-get -y autoremove --purge ${_packages}
 				;;
 			brew)
 				brew uninstall ${_packages}
@@ -612,14 +628,10 @@ __use_package_manager() {
 				brew cask uninstall ${_packages}
 				;;
 			yum)
-				# TODO use __sudo_exec
-				sudo -E yum remove -y ${_packages}
+				__sudo_exec yum remove -y ${_packages}
 				;;
 			apk)
-				# TODO use __sudo_exec
-					type sudo &>/dev/null && \
-					sudo -E apk del ${_packages} || \
-						apk del ${_packages}
+				__sudo_exec apk del ${_packages}
 				;;
 			*)	echo " ** WARN : dont know how to remove $_id"
 				;;
@@ -652,7 +664,7 @@ __ansible_play_localhost() {
   local __playbook="$1"
 	local __roles="$2"
 
-  #ANSIBLE_EXTRA_VARS=\{\"infra_name\":\"$INFRA_NAME\"}
+  #ANSIBLE_EXTRA_VARS=\{\"infra_name\"=\"$INFRA_NAME\"}
 		#--extra-vars=$ANSIBLE_EXTRA_VARS
   ANSIBLE_ROLES_PATH="$__roles" PYTHONUNBUFFERED=1 ANSIBLE_FORCE_COLOR=true ansible-playbook --connection local --inventory 'localhost,' -v "$__playbook"
 

@@ -39,7 +39,7 @@ __sudo_ssh_begin_session() {
 	local _uri="$1"
 	__ssh_execute "$_uri"  '_save_tty=$(stty -g);stty raw -echo; echo "Defaults !tty_tickets" | sudo -Es tee /etc/sudoers.d/rsync_temp_hack_stella; sudo -v;stty ${_save_tty};' 'SHARED'
 	# NOTE : needs time before modification is used by sshd
-	sleep 2
+	sleep 3
 }
 
 __sudo_ssh_end_session() {
@@ -1732,39 +1732,225 @@ __git_project_version() {
 
 
 # INI FILE MANAGEMENT---------------------------------------------------
+# eval a specific key from a specific SECTION
 __get_key() {
 	local _FILE=$1
 	local _SECTION=$2
 	local _KEY=$3
 	local _OPT=$4
 
-	_opt_section_prefix=OFF
-	for o in $_OPT; do
-		[ "$o" = "PREFIX" ] && _opt_section_prefix=ON
-	done
-
-	# trim whitespace
-	_SECTION=$(__trim "$_SECTION")
-
-	local _win_endline=$'s/\r//g'
-	local _exp1="/\[$_SECTION\]/,/\[.*\]/p"
-	local _exp2="/^$_KEY=/{print \$2}"
-
-	if [ -f "$_FILE" ]; then
-		if [ "$_opt_section_prefix" = "ON" ]; then
-			eval "$_SECTION"_"$_KEY"='$(sed -n -e "$_win_endline" -e "$_exp1" "$_FILE" | awk -F= "$_exp2" )'
-		else
-			eval $_KEY='$(sed -n -e "$_win_endline" -e "$_exp1" "$_FILE" | awk -F= "$_exp2" )'
-		fi
-	else
-		if [ "$_opt_section_prefix" = "ON" ]; then
-			eval "$_SECTION"_"$_KEY"=
-		else
-			eval $_KEY=
-		fi
-	fi
+	__get_keys "$_FILE" "EVAL ${_OPT} KEY ${_KEY} SECTION ${_SECTION}"
+	#
+	# _opt_section_prefix=OFF
+	# for o in $_OPT; do
+	# 	[ "$o" = "PREFIX" ] && _opt_section_prefix=ON
+	# done
+	#
+	# # trim whitespace
+	# _SECTION=$(__trim "$_SECTION")
+	#
+	# local _win_endline=$'s/\r//g'
+	# local _exp1="/\[$_SECTION\]/,/\[.*\]/p"
+	# local _exp2="/^$_KEY=/{print \$2}"
+	#
+	# if [ -f "$_FILE" ]; then
+	# 	if [ "$_opt_section_prefix" = "ON" ]; then
+	# 		eval "$_SECTION"_"$_KEY"='$(sed -n -e "$_win_endline" -e "$_exp1" "$_FILE" | awk -F= "$_exp2" )'
+	# 	else
+	# 		eval $_KEY='$(sed -n -e "$_win_endline" -e "$_exp1" "$_FILE" | awk -F= "$_exp2" )'
+	# 	fi
+	# else
+	# 	if [ "$_opt_section_prefix" = "ON" ]; then
+	# 		eval "$_SECTION"_"$_KEY"=
+	# 	else
+	# 		eval $_KEY=
+	# 	fi
+	# fi
 
 }
+
+
+
+
+# get all keys from an ini file
+# or get all keys from a specific section
+# or get a specific key (which may be from a specitic section or not)
+# OPTION
+# EVAL will eval each key with its own value as bash variable OR will only print values
+# PREFIX will add section name to key name
+# KEY | SECTION : will look up for a KEY | SECTION
+# TEST
+# a1 = 12
+# abcd=22
+# az = 4
+#
+# abab=AA
+# u =
+# foo=3=4=
+# [bar]
+# zer=2
+__get_keys() {
+	local _FILE=$1
+	local _OPT=$2
+
+	_opt_section_prefix=OFF
+	_flag_section=
+	_opt_section=
+	_flag_key=
+	_opt_key=
+	_opt_eval=OFF
+	for o in $_OPT; do
+		[ "$o" = "PREFIX" ] && _opt_section_prefix=ON
+		[ "$o" = "EVAL" ] && _opt_eval=ON
+		[ "$_flag_section" = "ON" ] && _opt_section="${o}" && _flag_section=OFF
+		[ "$o" = "SECTION" ] && _flag_section=ON
+		[ "$_flag_key" = "ON" ] && _opt_key="${o}" && _flag_key=OFF
+		[ "$o" = "KEY" ] && _flag_key=ON
+	done
+
+	# escape regexp special characters
+	# http://stackoverflow.com/questions/407523/escape-a-string-for-a-sed-replace-pattern
+	_section_name="${_opt_section}"
+	_opt_section=$(echo ${_opt_section} | sed -e 's/[]\/$*.^|[]/\\&/g')
+	_opt_key=$(echo "$_opt_key" | sed -e 's/\\/\\\\/g')
+	_prefix=""
+	[ "${_opt_section_prefix}" = "ON" ] && _prefix="PREFIX"
+	_eval=""
+	[ "${_opt_eval}" = "ON" ] && _eval="EVAL"
+
+	for _instruction in $(awk -v prefix="$_prefix" -v eval="$_eval" -v section_search="${_opt_section}" -v key_search="${_opt_key}" '
+	# Clear the flags
+	BEGIN {
+		FS="=";
+		section="";
+		key="";
+		val="";
+		processing = 1;
+		if (section_search != "") {
+			processing = 0;
+			section_found = 0;
+		}
+		if (key_search != "") {
+			processing = 0;
+			key_found = 0;
+		}
+	}
+
+	# Entering a section
+	/^\[/ {
+		key = "";
+		val = "";
+		if (key_search != "") {
+			processing = 0;
+			key_found = 0;
+		}
+		if (section_search != "") {
+			# we leaving the wanted section
+			if (section_found) {
+				processing = 0;
+				section_found = 0;
+			}
+		} else {
+			section = "";
+			m = match($0, /[^\[](.*)[^\]]/);
+			if(m) {
+				section=substr($0, RSTART,RLENGTH);
+				#printf("sectiondetected:--%s--\n",section);
+			}
+		}
+	}
+
+
+		# Entering the wanted section
+	/^\['$_opt_section']/ {
+		if (section_search != "") {
+			if (key_search != "") {
+				processing = 0;
+			} else {
+				processing = 1;
+			}
+			section_found = 1;
+			section = "'$_section_name'";
+			#printf("sectionfound:--%s--\n",section);
+		}
+	}
+
+	# Entering a key value pair
+	/^[^=]*=.*$/ {
+		if (key_search != "") {
+			# we leaving the wanted key
+			if (key_found) {
+				processing = 0;
+				key_found = 0;
+			}
+		}
+		key=$1;
+		# trim key
+		sub(/^[ \t\r\n]+|[ \t\r\n]+$/,"",key);
+		#printf("keyfound:--%s--\n",key);
+
+		m = match($0, /=/);
+		after_sep="";
+		if(m) {
+			after_sep=substr($0,RSTART+1);
+		}
+		val=after_sep;
+		# trim val
+		sub(/^[ \t\r\n]+|[ \t\r\n]+$/,"",val);
+		#printf("valfound:--%s--\n",val);
+	}
+
+	/^'$_opt_key'[^=]*=.*$/ {
+		if (key_search != "") {
+			if (section_search != "") {
+				if (section_found) {
+					processing = 1;
+					key_found = 1;
+					key = "'$_opt_key'"
+				}
+			} else {
+				processing = 1;
+				key_found = 1;
+				key = "'$_opt_key'"
+			}
+		}
+	}
+
+	/.*/ {
+		if (processing) {
+			if (eval=="EVAL") {
+				# trim key name
+				sub(/^[ \t\r\n]+|[ \t\r\n]+$/,"",key);
+
+				if (key!="") {
+					if (prefix=="PREFIX") {
+						if (section!="") {
+							# trim section name
+							sub(/^[ \t\r\n]+|[ \t\r\n]+$/,"",section);
+							printf("%s\_%s=\"%s\"\n", section, key, val);
+						} else printf("%s=\"%s\"\n", key, val);
+					} else {
+						printf("%s=\"%s\"\n", key, val);
+					}
+				}
+			} else {
+				printf("%s\n",val);
+			}
+		}
+		key="";
+		val="";
+	}
+
+	' ${_FILE}); do
+		if [ "${_eval}" = "EVAL" ]; then
+			eval ${_instruction}
+		else
+			echo "${_instruction}"
+		fi
+	done
+}
+
+
 
 __del_key() {
 	local _FILE=$1
@@ -1806,7 +1992,7 @@ __ini_file() {
 	tp=$(mktmp)
 
 	awk -F= -v mode="$_MODE" -v val="$_VALUE" '
-	# Clear the flag
+	# Clear the flags
 	BEGIN {
 		processing = 0;
 		skip = 0;
@@ -1866,7 +2052,7 @@ __ini_file() {
 			if(!processing) print "['$_SECTION_NAME']"
 			if("'$_KEY'" != "") {
 				print "'$_KEY'="val;
-		   	}
+			}
 		}
 
 	}
