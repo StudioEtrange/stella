@@ -1830,7 +1830,8 @@ __get_keys() {
 			fi
 		fi
 	fi
-
+	[ ! -f "${_FILE}" ] && return
+	
 	for _instruction in $(awk -v prefix="$_prefix" -v eval="$_eval" -v section_search="${_opt_section}" -v key_search="${_opt_key}" '
 	# Clear the flags
 	BEGIN {
