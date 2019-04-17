@@ -1816,7 +1816,20 @@ __get_keys() {
 	_prefix=""
 	[ "${_opt_section_prefix}" = "ON" ] && _prefix="PREFIX"
 	_eval=""
-	[ "${_opt_eval}" = "ON" ] && _eval="EVAL"
+	if [ "${_opt_eval}" = "ON" ]; then
+		_eval="EVAL"
+		if [ ! "${_opt_key}" = "" ]; then
+			if [ "${_prefix}" = "" ]; then
+				if [ ! "${_opt_section}" = "" ]; then
+						eval "${_opt_section}"_"${_opt_key}"=
+				else
+						eval "${_opt_key}"=
+				fi
+			else
+				eval "${_opt_key}"=
+			fi
+		fi
+	fi
 
 	for _instruction in $(awk -v prefix="$_prefix" -v eval="$_eval" -v section_search="${_opt_section}" -v key_search="${_opt_key}" '
 	# Clear the flags
