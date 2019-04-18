@@ -1733,6 +1733,8 @@ __git_project_version() {
 
 # INI FILE MANAGEMENT---------------------------------------------------
 # eval a specific key from a specific SECTION
+# OPT :
+# PREFIX add section name as prefix for variable name
 __get_key() {
 	local _FILE=$1
 	local _SECTION=$2
@@ -2016,9 +2018,11 @@ __ini_file() {
 
 	}
 
-	' "$_FILE" > $tp
-
-	mv -f $tp "$_FILE"
+	' "${_FILE}" > $tp
+	cat "${tp}" > "${_FILE}"
+	rm -f "${tp}"
+	# mv change permission on file
+	#mv -f $tp "$_FILE"
 }
 
 
