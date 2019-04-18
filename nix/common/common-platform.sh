@@ -121,7 +121,7 @@ __get_os_env_from_kernel() {
 
 __set_current_platform_info() {
 
-	# call screenFetch
+	# call screenFetch once by setting/unsetting  exit function and sourcing screenfetch
 	# https://github.com/KittyKatt/screenFetch
 	exit() {
 	:

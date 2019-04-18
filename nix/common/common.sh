@@ -1739,7 +1739,7 @@ __get_key() {
 	local _KEY=$3
 	local _OPT=$4
 
-	__get_keys "$_FILE" "EVAL ${_OPT} KEY ${_KEY} SECTION ${_SECTION}"
+	__get_keys "${_FILE}" "ASSIGN EVAL ${_OPT} KEY ${_KEY} SECTION ${_SECTION}"
 	#
 	# _opt_section_prefix=OFF
 	# for o in $_OPT; do
@@ -1776,19 +1776,26 @@ __get_key() {
 # or get all keys from a specific section
 # or get a specific key (which may be from a specitic section or not)
 # OPTION
-# EVAL will eval each key with its own value as bash variable OR will only print values
+# ASSIGN|PRINT will assign to each key with its own value OR will only print values (PRINT is default mode)
+# EVAL will eval each key value before AFFECT it or PRINT it
 # PREFIX will add section name to key name
 # KEY | SECTION : will look up for a KEY | SECTION
-# TEST
+# TEST SAMPLE :
 # a1 = 12
 # abcd=22
 # az = 4
-#
 # abab=AA
 # u =
 # foo=3=4=
+# A=3
+# bar_A=1
 # [bar]
+# A=2
 # zer=2
+# S="a b c d AB# ED="
+# H1=$HOME $USER
+# H2="$HOME"
+# H3='$HOME $USER'
 __get_keys() {
 	local _FILE=$1
 	local _OPT=$2
@@ -1799,27 +1806,28 @@ __get_keys() {
 	_flag_key=
 	_opt_key=
 	_opt_eval=OFF
+  _opt_assign=OFF
 	for o in $_OPT; do
 		[ "$o" = "PREFIX" ] && _opt_section_prefix=ON
 		[ "$o" = "EVAL" ] && _opt_eval=ON
+    [ "$o" = "ASSIGN" ] && _opt_assign=ON
+    [ "$o" = "PRINT" ] && _opt_assign=OFF
 		[ "$_flag_section" = "ON" ] && _opt_section="${o}" && _flag_section=OFF
 		[ "$o" = "SECTION" ] && _flag_section=ON
 		[ "$_flag_key" = "ON" ] && _opt_key="${o}" && _flag_key=OFF
 		[ "$o" = "KEY" ] && _flag_key=ON
 	done
 
-	# escape regexp special characters
+  # escape regexp special characters
 	# http://stackoverflow.com/questions/407523/escape-a-string-for-a-sed-replace-pattern
-	_section_name="${_opt_section}"
-	_opt_section=$(echo ${_opt_section} | sed -e 's/[]\/$*.^|[]/\\&/g')
-	_opt_key=$(echo "$_opt_key" | sed -e 's/\\/\\\\/g')
-	_prefix=""
-	[ "${_opt_section_prefix}" = "ON" ] && _prefix="PREFIX"
-	_eval=""
-	if [ "${_opt_eval}" = "ON" ]; then
-		_eval="EVAL"
+  # TODO do we need this ?
+	#_opt_section=$(echo ${_opt_section} | sed -e 's/[]\/$*.^|[]/\\&/g')
+	#_opt_key=$(echo "$_opt_key" | sed -e 's/\\/\\\\/g')
+
+  # unset some specific asked key
+	if [ "${_opt_assign}" = "ON" ]; then
 		if [ ! "${_opt_key}" = "" ]; then
-			if [ "${_prefix}" = "" ]; then
+			if [ "${_opt_section_prefix}" = "ON" ]; then
 				if [ ! "${_opt_section}" = "" ]; then
 						eval "${_opt_section}"_"${_opt_key}"=
 				else
@@ -1831,139 +1839,76 @@ __get_keys() {
 		fi
 	fi
 	[ ! -f "${_FILE}" ] && return
-	
-	for _instruction in $(awk -v prefix="$_prefix" -v eval="$_eval" -v section_search="${_opt_section}" -v key_search="${_opt_key}" '
-	# Clear the flags
-	BEGIN {
-		FS="=";
-		section="";
-		key="";
-		val="";
-		processing = 1;
-		if (section_search != "") {
-			processing = 0;
-			section_found = 0;
-		}
-		if (key_search != "") {
-			processing = 0;
-			key_found = 0;
-		}
-	}
-
-	# Entering a section
-	/^\[/ {
-		key = "";
-		val = "";
-		if (key_search != "") {
-			processing = 0;
-			key_found = 0;
-		}
-		if (section_search != "") {
-			# we leaving the wanted section
-			if (section_found) {
-				processing = 0;
-				section_found = 0;
-			}
-		} else {
-			section = "";
-			m = match($0, /[^\[](.*)[^\]]/);
-			if(m) {
-				section=substr($0, RSTART,RLENGTH);
-				#printf("sectiondetected:--%s--\n",section);
-			}
-		}
-	}
 
 
-		# Entering the wanted section
-	/^\['$_opt_section']/ {
-		if (section_search != "") {
-			if (key_search != "") {
-				processing = 0;
-			} else {
-				processing = 1;
-			}
-			section_found = 1;
-			section = "'$_section_name'";
-			#printf("sectionfound:--%s--\n",section);
-		}
-	}
+  # NOTE read_ini : Dots are converted to underscores in all variable names.
+  read_ini ${_FILE} ${_opt_section} --prefix "INTERNAL__INI" --booleans 0
 
-	# Entering a key value pair
-	/^[^=]*=.*$/ {
-		if (key_search != "") {
-			# we leaving the wanted key
-			if (key_found) {
-				processing = 0;
-				key_found = 0;
-			}
-		}
-		key=$1;
-		# trim key
-		sub(/^[ \t\r\n]+|[ \t\r\n]+$/,"",key);
-		#printf("keyfound:--%s--\n",key);
 
-		m = match($0, /=/);
-		after_sep="";
-		if(m) {
-			after_sep=substr($0,RSTART+1);
-		}
-		val=after_sep;
-		# trim val
-		sub(/^[ \t\r\n]+|[ \t\r\n]+$/,"",val);
-		#printf("valfound:--%s--\n",val);
-	}
+  _list_var="${INTERNAL__INI__ALL_VARS}"
+  for s in ${INTERNAL__INI__ALL_SECTIONS}; do
+    _t="INTERNAL__INI__${s}__"
+    # parse all variable of current section
+    for v in $(compgen -v "${_t}"); do
+      key="${v/$_t/}"
+      if [ ! "${_opt_key}" = "" ]; then
+        [ ! "$key" = "${_opt_key}" ] && continue
+      fi
+      [ "$_opt_section_prefix" = "ON" ] && key="${s}_${key}"
+      if [ "$_opt_assign" = "ON" ]; then
+        if [ "$_opt_eval" = "ON" ]; then
+          eval $(echo $key=\"${!v}\")
+        else
+          # NOTE affectation to variable name but without value evaluation
+          eval "$key='$(echo "${!v}")'"
+        fi
+      else
+        if [ "$_opt_eval" = "ON" ]; then
+          # NOTE : just print out evaluated variable value
+          eval echo \"${!v}\"
+        else
+          # NOTE : just print out variable value
+          eval "echo '$(echo "${!v}")'"
+        fi
+      fi
+      # remove already parsed variable
+      _list_var=${_list_var/$v/}
+    done
+  done
 
-	/^'$_opt_key'[^=]*=.*$/ {
-		if (key_search != "") {
-			if (section_search != "") {
-				if (section_found) {
-					processing = 1;
-					key_found = 1;
-					key = "'$_opt_key'"
-				}
-			} else {
-				processing = 1;
-				key_found = 1;
-				key = "'$_opt_key'"
-			}
-		}
-	}
+  # parse not already parsed variable, the ones wich are not inside section
+  # these variable override already defined variable
+  # BAR_A=1
+  # [BAR]
+  # A=2
+  # ==> if PREFIX mode is active then BAR_A will be 1
+  for v in ${_list_var}; do
+    key="${v/INTERNAL__INI__/}"
+    if [ ! "${_opt_key}" = "" ]; then
+      [ ! "$key" = "${_opt_key}" ] && continue
+    fi
+    if [ "$_opt_assign" = "ON" ]; then
+      if [ "$_opt_eval" = "ON" ]; then
+        eval $(echo $key=\"${!v}\")
+      else
+        # NOTE affectation to variable name but without value evaluation
+        eval "$key='$(echo "${!v}")'"
+      fi
+    else
+      if [ "$_opt_eval" = "ON" ]; then
+        # NOTE : just print out evaluated variable value
+        eval echo \"${!v}\"
+      else
+        # NOTE : just print out variable value
+        eval "echo '$(echo "${!v}")'"
+      fi
+    fi
+  done
 
-	/.*/ {
-		if (processing) {
-			if (eval=="EVAL") {
-				# trim key name
-				sub(/^[ \t\r\n]+|[ \t\r\n]+$/,"",key);
+  # delete all read_ini initialized variable
+  unset "${!INTERNAL__INI__@}"
 
-				if (key!="") {
-					if (prefix=="PREFIX") {
-						if (section!="") {
-							# trim section name
-							sub(/^[ \t\r\n]+|[ \t\r\n]+$/,"",section);
-							printf("%s\_%s=\"%s\"\n", section, key, val);
-						} else printf("%s=\"%s\"\n", key, val);
-					} else {
-						printf("%s=\"%s\"\n", key, val);
-					}
-				}
-			} else {
-				printf("%s\n",val);
-			}
-		}
-		key="";
-		val="";
-	}
-
-	' ${_FILE}); do
-		if [ "${_eval}" = "EVAL" ]; then
-			eval ${_instruction}
-		else
-			echo "${_instruction}"
-		fi
-	done
 }
-
 
 
 __del_key() {

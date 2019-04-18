@@ -78,6 +78,9 @@ STELLA_DIST_URL="$STELLA_URL/dist"
 #shellcheck source=nix/common/common-boot.sh
 . $STELLA_COMMON/common-boot.sh
 
+# STELLA ARTEFACT INCLUDE ---------------------------------------------
+
+. $STELLA_ARTEFACT/bash_ini_parser/read_ini.sh
 
 # LOG ---------------------------
 # Before include stella-link.sh, you can override log state

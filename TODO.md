@@ -33,10 +33,6 @@
 * NOTE : homebrew flag setting system https://github.com/Homebrew/homebrew/blob/master/Library/Homebrew/extend/ENV/super.rb
 
 
-* NOTE How to update screenFetch
-    rm -Rf nix/pool/artefact/screenFetch
-    cd nix/pool/artefact
-    git clone https://github.com/KittyKatt/screenFetch
 
 * NOTE history : FIRST PUSH OF stella pre version : https://bitbucket.org/StudioEtrange/ryzomcore-script/src/1308706a1dc3f1dde7d65b048e9b16f2a2f2f518
 
@@ -77,39 +73,117 @@ use
 
 # TODO List
 
-[ ] bash formatter https://github.com/mvdan/sh
-[ ] openssl and zlib binaries from conan.io https://bintray.com/conan-community/conan/OpenSSL%3Aconan https://github.com/conan-community/conan-openssl
-[ ] app vendor do not work with stella-link.sh with stellaroot option
-[ ] binary bundle go+bash + busybox ?
+- [X] replace ini management
+  - [-] https://github.com/albfan/bash-ini-parser do not work on MacOS (https://github.com/albfan/bash-ini-parser/issues/8)
+  - [X] https://github.com/rudimeier/bash_ini_parser
+- [ ] bash formatter https://github.com/mvdan/sh
+- [ ] openssl and zlib binaries from conan.io https://bintray.com/conan-community/conan/OpenSSL%3Aconan https://github.com/conan-community/conan-openssl
+- [ ] app vendor do not work with stella-link.sh with stellaroot option
+- [ ] binary bundle go+bash + busybox ?
     https://github.com/progrium/go-basher
     https://github.com/robxu9/bash-static
 
 
-[ ] nix : color & style https://odb.github.io/shml/
-[ ] nix : explore https://github.com/alebcay/awesome-shell
-[ ] nix : shell framework https://github.com/shellfire-dev/shellfire
+- [ ] nix : color & style https://odb.github.io/shml/
+- [ ] nix : explore https://github.com/alebcay/awesome-shell
+- [ ] nix : shell framework https://github.com/shellfire-dev/shellfire
 
-[ ] nix : bash-lib : https://github.com/aks/bash-lib
-[ ] COMMENTS code
-[ ] Format output (log system)
-[ ] Test and remove DEST_ERASE in each feature_recipe : cause problem when bundled in merge mode. But only for binary ? keep it for source? only when get binary
+- [ ] nix : bash-lib : https://github.com/aks/bash-lib
+- [ ] COMMENTS code
+- [ ] Format output (log system)
+- [ ] Test and remove DEST_ERASE in each feature_recipe : cause problem when bundled in merge mode. But only for binary ? keep it for source? only when get binary
 
-[ ] nix : review speed and optimization
+- [ ] nix : review speed and optimization
 https://stackoverflow.com/questions/5014823/how-to-profile-a-bash-shell-script-slow-startup
 https://stackoverflow.com/a/20855353
 https://github.com/F-Hauri/bashProfiler
 https://github.com/paypal/gnomon
 http://applocator.blogspot.fr/2013/10/speed-up-bash-scripts-that-use-grep.html
 
-[ ] nix : common-platform if netstat or ifconfig not present (centos7/rhel7) provide alternative with ip addr to get IP & interface
+- [ ] nix : common-platform if netstat or ifconfig not present (centos7/rhel7) provide alternative with ip addr to get IP & interface
 
-[ ] nix : make a flat distro of stella in one file https://github.com/shellfire-dev/fatten
+- [ ] nix : make a flat distro of stella in one file https://github.com/shellfire-dev/fatten
 
-[X] nix : test sourced https://stackoverflow.com/a/28776166
+- [X] nix : test sourced https://stackoverflow.com/a/28776166
 
-[ ] nix : zsh compatibility https://stackoverflow.com/questions/9901210/bash-source0-equivalent-in-zsh
+- [ ] nix : zsh compatibility https://stackoverflow.com/questions/9901210/bash-source0-equivalent-in-zsh
 
-[ ] REWORK :
+- [ ] win : review 'select_official_schema' function, like in nix, to take care of all arch/flavour possibility
+- [ ] nix : use busybox to get binaries small unix tool without building them (i.e unzip) https://busybox.net/
+- [ ] nix : embedded ssh server/client : https://matt.ucc.asn.au/dropbear/dropbear.html
+- [ ] Test and fix path with space
+- [ ] win : function require
+- [ ] function get_resource : change option STRIP to option NO_STRIP. STRIP will be by default if possible
+- [ ] win : review link feature library and lib isolation
+- [ ] win : portable mode review copy dependencies
+- [ ] win add recipes for these libs :
+ https://ryzomcore.atlassian.net/wiki/display/RC/MinGW+External+Libraries
+ https://ryzomcore.atlassian.net/wiki/display/RC/Create+External+Libs
+- [ ] win : build mingw-w64 compiler from source https://github.com/niXman/mingw-builds
+- [ ] nix : replace each echo informative message (not return string function) with log() call
+- [ ] Default build arch equivalent to current cpu arch ? (and change option name buildarch with forcearch) (set STELLA_BUILD_ARCH_DEFAULT)
+- [ ] win : sort version : http://stackoverflow.com/questions/34417346/how-to-sort-lines-of-a-text-file-containing-version-numbers-in-format-major-mino
+- [ ] feature system : FEAT_DEFAULT_ARCH must be fill with current cpu arch
+- [X] feature system nix : FEAT_DEFAULT_VERSION should be the last version available
+- [ ] feature system win : FEAT_DEFAULT_VERSION should be the last version available
+- [ ] feature built from source must pick an arch and be installed in a folder with version@arch -- buildarch option should be remove -- by default built arch should be current cpu arch
+- [ ] win : replace patch from gnuwin32 (pb with UAC)
+- [ ] nix : FORCE_RENAME on link_feature_library (see windows implementation)
+- [X] win : check library dynamic dependencies - use dependencywalker in console mode ? use dumpbin http://stackoverflow.com/a/475323 ? use CMAKE GetPrerequisites. FINISH check_linked_lib.cmake use it with cmake -P check_linked_lib.cmake -DMY_BINARY_LOCATION=<path>
+- [ ] nix : when ckecking dependencies dynamic -- print all libs
+- [ ] add possibility of a last step before/after install, to do some test like make test or make check (i.e : for gmp lib)
+- [ ] win : sys_install_vs2015community => this chocolatey recipe do not install all VC Tools by default
+- [ ] stella-env file : make it local or global with an option ?
+- [X] "no_proxy" should be in stella-env file
+- [ ] proxy values in stella-env should be local or global
+- [X] win : link-app : add option to align workspace/cache path (like on nix)
+- [ ] ssh : launch stella app through ssh
+ https://thornelabs.net/2013/08/21/simple-ways-to-send-multiple-line-commands-over-ssh.html
+ http://stackoverflow.com/questions/4412238/whats-the-cleanest-way-to-ssh-and-run-multiple-commands-in-bash
+ http://tldp.org/LDP/abs/html/here-docs.html
+ http://stackoverflow.com/questions/305035/how-to-use-ssh-to-run-shell-script-on-a-remote-machine
+ SSHFS ? cache delivering only via HTTP ?
+
+- [ ] win : harmonization of internal recipe (patch, unzip, wget, ...)
+- [ ] configuration step for each feature recipe
+    nix : use augeas https://github.com/hercules-team/augeas ? -- see ryba ? (nodejs) -- use simple sed ?
+    win : ?
+- [ ] turn stella/nix/common/* folder into module ?
+    module/core
+    module/feature
+    module/app
+    module/boot
+- [ ] unit test : app/test/nix app/text/win
+    nix :
+      - bats
+      - sharness : https://github.com/chriscool/sharness
+    win : ?
+    - Tests using mbland/bats, an optimized version of Sam Stephenson's Bash Automated Testing System (BATS).
+    - Code coverage comes from Simon Kagstrom's kcov code coverage tool, which not only provides code coverage for Bash scripts (!!!) but can push the results to Coveralls!
+
+- [ ] ryzom nix : openal, libgnu_regex (?), libmysql, lua51, lua52, luabind, stlport (?)
+ https://github.com/Shopify/homebrew-shopify/blob/master/mysql-client.rb
+ https://github.com/Homebrew/homebrew-core/blob/master/Formula/mysql.rb
+- [ ] macos : capacity to download homebrew binary (but special build and should depend on brew installed library ?) (i.e : https://homebrew.bintray.com/bottles/libzip-1.0.1.el_capitan.bottle.tar.gz)
+
+- [ ] distinguish PATH env for current stella app with PATH from stella in 2 variable, and give the possibility to retrieve them in a separate way
+
+- [ ] win/nix : remove FORCE global option, add it as option for each function
+
+- [X] win : change proxyport, proxyhost, proxyuser, proxypassword in stella.sh command line as a unique arg --proxy=uri, and use  function uri_parse
+
+- [ ] download cache folder : first lookup in APP CACHE FOLDER, then in STELLA CACHE FOLDER. Linux [X] Win [ ]
+
+- [ ] shadow features : rename temporary some folder to deactivate features ? (for example, different build tools, to select the right one) or use symlink in case of build tools
+
+- [X] win : remove bin/ folder
+
+- [ ] nix : when using link_feature_library with option FORCE_STATIC, there should be no rpath setted path, because lib is statically linked - no need of an internal registerd search path (=rpath)
+
+- [ ] lib parse binary https://github.com/soluwalana/pefile-go
+
+
+- [ ] REWORK :
     DEPRECATED STELLA_BUILD_RELOCATE
 
 
@@ -147,79 +221,8 @@ http://applocator.blogspot.fr/2013/10/speed-up-bash-scripts-that-use-grep.html
       DEFAULT
           do not change anything while building OR installing feature
 
-[ ] win : review 'select_official_schema' function, like in nix, to take care of all arch/flavour possibility
-[ ] nix : use busybox to get binaries small unix tool without building them (i.e unzip) https://busybox.net/
-[ ] nix : embedded ssh server/client : https://matt.ucc.asn.au/dropbear/dropbear.html
-[ ] Test and fix path with space
-[ ] win : function require
-[ ] function get_resource : change option STRIP to option NO_STRIP. STRIP will be by default if possible
-[ ] win : review link feature library and lib isolation
-[ ] win : portable mode review copy dependencies
-[ ] win add recipes for these libs :
- https://ryzomcore.atlassian.net/wiki/display/RC/MinGW+External+Libraries
- https://ryzomcore.atlassian.net/wiki/display/RC/Create+External+Libs
-[ ] win : build mingw-w64 compiler from source https://github.com/niXman/mingw-builds
-[ ] nix : replace each echo informative message (not return string function) with log() call
-[ ] Default build arch equivalent to current cpu arch ? (and change option name buildarch with forcearch) (set STELLA_BUILD_ARCH_DEFAULT)
-[ ] win : sort version : http://stackoverflow.com/questions/34417346/how-to-sort-lines-of-a-text-file-containing-version-numbers-in-format-major-mino
-[ ] feature system : FEAT_DEFAULT_ARCH must be fill with current cpu arch
-[X] feature system nix : FEAT_DEFAULT_VERSION should be the last version available
-[ ] feature system win : FEAT_DEFAULT_VERSION should be the last version available
-[ ] feature built from source must pick an arch and be installed in a folder with version@arch -- buildarch option should be remove -- by default built arch should be current cpu arch
-[ ] win : replace patch from gnuwin32 (pb with UAC)
-[ ] nix : FORCE_RENAME on link_feature_library (see windows implementation)
-[X] win : check library dynamic dependencies - use dependencywalker in console mode ? use dumpbin http://stackoverflow.com/a/475323 ? use CMAKE GetPrerequisites. FINISH check_linked_lib.cmake use it with cmake -P check_linked_lib.cmake -DMY_BINARY_LOCATION=<path>
-[ ] nix : when ckecking dependencies dynamic -- print all libs
-[ ] add possibility of a last step before/after install, to do some test like make test or make check (i.e : for gmp lib)
-[ ] win : sys_install_vs2015community => this chocolatey recipe do not install all VC Tools by default
-[ ] stella-env file : make it local or global with an option ?
-[X] "no_proxy" should be in stella-env file
-[ ] proxy values in stella-env should be local or global
-[X] win : link-app : add option to align workspace/cache path (like on nix)
-[ ] ssh : launch stella app through ssh
- https://thornelabs.net/2013/08/21/simple-ways-to-send-multiple-line-commands-over-ssh.html
- http://stackoverflow.com/questions/4412238/whats-the-cleanest-way-to-ssh-and-run-multiple-commands-in-bash
- http://tldp.org/LDP/abs/html/here-docs.html
- http://stackoverflow.com/questions/305035/how-to-use-ssh-to-run-shell-script-on-a-remote-machine
- SSHFS ? cache delivering only via HTTP ?
 
-[ ] win : harmonization of internal recipe (patch, unzip, wget, ...)
-[ ] configuration step for each feature recipe
-    nix : use augeas https://github.com/hercules-team/augeas ? -- see ryba ? (nodejs) -- use simple sed ?
-    win : ?
-[ ] turn stella/nix/common/* folder into module ?
-    module/core
-    module/feature
-    module/app
-    module/boot
-[ ] unit test : app/test/nix app/text/win
-    nix : bats
-    win : ?
-    - Tests using mbland/bats, an optimized version of Sam Stephenson's Bash Automated Testing System (BATS).
-    - Code coverage comes from Simon Kagstrom's kcov code coverage tool, which not only provides code coverage for Bash scripts (!!!) but can push the results to Coveralls!
-
-[ ] ryzom nix : openal, libgnu_regex (?), libmysql, lua51, lua52, luabind, stlport (?)
- https://github.com/Shopify/homebrew-shopify/blob/master/mysql-client.rb
- https://github.com/Homebrew/homebrew-core/blob/master/Formula/mysql.rb
-[ ] macos : capacity to download homebrew binary (but special build and should depend on brew installed library ?) (i.e : https://homebrew.bintray.com/bottles/libzip-1.0.1.el_capitan.bottle.tar.gz)
-
-[ ] distinguish PATH env for current stella app with PATH from stella in 2 variable, and give the possibility to retrieve them in a separate way
-
-[ ] win/nix : remove FORCE global option, add it as option for each function
-
-[X] win : change proxyport, proxyhost, proxyuser, proxypassword in stella.sh command line as a unique arg --proxy=uri, and use  function uri_parse
-
-[ ] download cache folder : first lookup in APP CACHE FOLDER, then in STELLA CACHE FOLDER. Linux [X] Win [ ]
-
-[ ] shadow features : rename temporary some folder to deactivate features ? (for example, different build tools, to select the right one) or use symlink in case of build tools
-
-[X] win : remove bin/ folder
-
-[ ] nix : when using link_feature_library with option FORCE_STATIC, there should be no rpath setted path, because lib is statically linked - no need of an internal registerd search path (=rpath)
-
-[ ] lib parse binary https://github.com/soluwalana/pefile-go
-
-[ ] waiting loader
+- [ ] waiting loader
  progress bar :
  http://stackoverflow.com/questions/238073/how-to-add-a-progress-bar-to-a-shell-script
  https://github.com/dspinellis/pmonitor
@@ -232,9 +235,9 @@ http://applocator.blogspot.fr/2013/10/speed-up-bash-scripts-that-use-grep.html
  http://stackoverflow.com/a/3330834/5027535
  https://github.com/marascio/bash-tips-and-tricks/tree/master/showing-progress-with-a-bash-spinner
 
-[ ] git do not support always all options see function git_project_version
+- [ ] git do not support always all options see function git_project_version
 
-[ ] note on bootstrap applications
+- [ ] note on bootstrap applications
 Bootstrap a brand new application and use stella as a library or tools collection inside your project
 NIX :
 	cd your_project
@@ -244,32 +247,32 @@ WIN:
   cd your_project
 	powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/StudioEtrange/stella/master/win/pool/stella-bridge.bat', 'stella-bridge.bat')" && stella-bridge.bat bootstrap & del /q stella-bridge.bat
 
-[ ] note on bootstrap a standalone stable stella
+- [ ] note on bootstrap a standalone stable stella
 NIX
 curl -sSL https://raw.githubusercontent.com/StudioEtrange/stella/master/nix/pool/stella-bridge.sh | bash -s -- standalone stella
 
 WIN
 powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/StudioEtrange/stella/master/win/pool/stella-bridge.bat', 'stella-bridge.bat')" && stella-bridge.bat standalone & del /q stella-bridge.bat
 
-[ ] openal
+- [ ] openal
 http://repo.or.cz/openal-soft.git
 https://github.com/kcat/openal-soft
 
-[ ] nix : init management detection (systemd, upstart, sysV(=init))
+- [ ] nix : init management detection (systemd, upstart, sysV(=init))
 http://unix.stackexchange.com/questions/196166/how-to-find-out-if-a-system-uses-sysv-upstart-or-systemd-initsystem
 http://unix.stackexchange.com/questions/18209/detect-init-system-using-the-shell
 http://unix.stackexchange.com/questions/138994/init-systems-and-service-management-on-different-distributions
 https://github.com/ansible/ansible-modules-core/blob/devel/system/service.py
 
-[ ] nix : review boost recipes (replace prepare_build with start_manual_build)
+- [ ] nix : review boost recipes (replace prepare_build with start_manual_build)
 
-[X] nix : add "vendor" command to embed a minimal stella inside app
-[ ] win : add "vendor" command to embed a minimal stella inside app
+- [X] nix : add "vendor" command to embed a minimal stella inside app
+- [ ] win : add "vendor" command to embed a minimal stella inside app
 
-[ ] win : visual c++ build tools 2015 et 2017 http://landinghub.visualstudio.com/visual-cpp-build-tools
+- [ ] win : visual c++ build tools 2015 et 2017 http://landinghub.visualstudio.com/visual-cpp-build-tools
 
 
-[ ] ruby :
+- [ ] ruby :
     uru : manage ruby environnement https://bitbucket.org/jonforums/uru
     ruby-build : download ruby source and build ruby. Do not manage dependencies. Do not manage ruby env https://github.com/rbenv/ruby-build
     ruby-install : download ruby source and build ruby. Manage dependencies. Do not manage ruby env.
@@ -277,8 +280,8 @@ https://github.com/ansible/ansible-modules-core/blob/devel/system/service.py
     chruby : manage ruby env
     rvm : download ruby source and build ruby. Manage dependencies. Manage ruby env
 
-[ ] nix : review boost recipes (still using "prepare_build")
-[ ] win build :
+- [ ] nix : review boost recipes (still using "prepare_build")
+- [ ] win build :
   * auto_build launch_configure : implements autotools (mingw or msys)
   * auto_build :  # INCLUDE_FILTER <expr> -- include these files for inspect and fix
                   # EXCLUDE_FILTER <expr> -- exclude these files for inspect and fix
@@ -287,15 +290,15 @@ https://github.com/ansible/ansible-modules-core/blob/devel/system/service.py
 ------
 # RECIPE TO WRITE
 
-[ ] PWMAngband - multiplayer angband
+- [ ] PWMAngband - multiplayer angband
 http://powerwyrm.monsite-orange.fr
 http://angband.online/
 http://tangar.info/en/p
-[ ] Mangband - another multiplayer version of angband
+- [ ] Mangband - another multiplayer version of angband
 https://mangband.org/
 https://github.com/mangband/mangband
 http://tangar.info/en/m
-[ ] TomeNet - indeep online roguelike game which include both MMORPG genre features and roguelike gameplay
+- [ ] TomeNet - indeep online roguelike game which include both MMORPG genre features and roguelike gameplay
 https://www.tomenet.eu/
 http://tangar.info/en/t
 
