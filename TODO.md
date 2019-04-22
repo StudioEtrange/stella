@@ -11,6 +11,7 @@
 * rudix (http://rudix.org/)
 * appimage https://appimage.github.io/apps/
 * snapcraft - snapd
+* flatpak https://flatpak.org/
 
 ## WIN
 
@@ -27,6 +28,38 @@
 * cmake recipes
   * hunter https://github.com/ruslo/hunter
 * C++ package manager : conan https://conan.io/
+
+# games
+https://ttygames.wordpress.com/
+https://github.com/herrbischoff/awesome-command-line-apps#games
+
+- [ ] PWMAngband - multiplayer angband
+http://powerwyrm.monsite-orange.fr
+http://angband.online/
+http://tangar.info/en/p
+- [ ] Mangband - another multiplayer version of angband
+https://mangband.org/
+https://github.com/mangband/mangband
+http://tangar.info/en/m
+- [ ] TomeNet - indeep online roguelike game which include both MMORPG genre features and roguelike gameplay
+https://www.tomenet.eu/
+http://tangar.info/en/t
+
+
+# command line tools list
+https://github.com/agarrharr/awesome-cli-apps
+https://terminalsare.sexy/
+https://github.com/herrbischoff/awesome-command-line-apps
+https://hackernoon.com/macbook-my-command-line-utilities-f8a121c3b019
+
+# various recipe to write
+* [ ] https://github.com/ivanilves/lstags
+* [X] https://nicolargo.github.io/glances/
+* [X] cointop https://github.com/miguelmota/cointop
+
+
+
+
 
 # Various
 
@@ -73,7 +106,10 @@ use
 
 # TODO List
 
-- [X] replace ini management
+- [ ] win : add FEATURE_LIST_ENABLED_VISIBLE
+- [ ] win : feat_install() split HIDDEN into HIDDEN and NON_DECLARED
+- [ ] win : while feat_init() pre init dependencies
+- [X] nix : replace ini management
   - [-] https://github.com/albfan/bash-ini-parser do not work on MacOS (https://github.com/albfan/bash-ini-parser/issues/8)
   - [X] https://github.com/rudimeier/bash_ini_parser
 - [ ] bash formatter https://github.com/mvdan/sh
@@ -107,6 +143,7 @@ http://applocator.blogspot.fr/2013/10/speed-up-bash-scripts-that-use-grep.html
 - [X] nix : test sourced https://stackoverflow.com/a/28776166
 
 - [ ] nix : zsh compatibility https://stackoverflow.com/questions/9901210/bash-source0-equivalent-in-zsh
+
 
 - [ ] win : review 'select_official_schema' function, like in nix, to take care of all arch/flavour possibility
 - [ ] nix : use busybox to get binaries small unix tool without building them (i.e unzip) https://busybox.net/
@@ -180,7 +217,7 @@ http://applocator.blogspot.fr/2013/10/speed-up-bash-scripts-that-use-grep.html
 
 - [ ] nix : when using link_feature_library with option FORCE_STATIC, there should be no rpath setted path, because lib is statically linked - no need of an internal registerd search path (=rpath)
 
-- [ ] lib parse binary https://github.com/soluwalana/pefile-go
+- [ ] nix/win : lib parse windows binary (PE File) https://github.com/soluwalana/pefile-go
 
 
 - [ ] REWORK :
@@ -264,7 +301,7 @@ http://unix.stackexchange.com/questions/18209/detect-init-system-using-the-shell
 http://unix.stackexchange.com/questions/138994/init-systems-and-service-management-on-different-distributions
 https://github.com/ansible/ansible-modules-core/blob/devel/system/service.py
 
-- [ ] nix : review boost recipes (replace prepare_build with start_manual_build)
+
 
 - [X] nix : add "vendor" command to embed a minimal stella inside app
 - [ ] win : add "vendor" command to embed a minimal stella inside app
@@ -280,27 +317,15 @@ https://github.com/ansible/ansible-modules-core/blob/devel/system/service.py
     chruby : manage ruby env
     rvm : download ruby source and build ruby. Manage dependencies. Manage ruby env
 
-- [ ] nix : review boost recipes (still using "prepare_build")
+
+- [X] nix : review boost recipes (replace prepare_build with start_manual_build)
+- [ ] win  : review all recipes (replace prepare_build with start_manual_build)
 - [ ] win build :
   * auto_build launch_configure : implements autotools (mingw or msys)
   * auto_build :  # INCLUDE_FILTER <expr> -- include these files for inspect and fix
                   # EXCLUDE_FILTER <expr> -- exclude these files for inspect and fix
                   # INCLUDE_FILTER is apply first, before EXCLUDE_FILTER
                   # BUILD_ACTION <action1> <action2>
-------
-# RECIPE TO WRITE
-
-- [ ] PWMAngband - multiplayer angband
-http://powerwyrm.monsite-orange.fr
-http://angband.online/
-http://tangar.info/en/p
-- [ ] Mangband - another multiplayer version of angband
-https://mangband.org/
-https://github.com/mangband/mangband
-http://tangar.info/en/m
-- [ ] TomeNet - indeep online roguelike game which include both MMORPG genre features and roguelike gameplay
-https://www.tomenet.eu/
-http://tangar.info/en/t
 
 
 ------

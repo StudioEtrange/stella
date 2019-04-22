@@ -220,7 +220,8 @@ feature_cmake_install_source() {
 
 	__set_toolset "STANDARD"
 
-	__prepare_build "$INSTALL_DIR"
+	__start_manual_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
+	#__prepare_build "$INSTALL_DIR"
 
 	__del_folder "$BUILD_DIR"
 	mkdir -p "$BUILD_DIR"
@@ -240,6 +241,7 @@ feature_cmake_install_source() {
 
 	__inspect_and_fix_build "$INSTALL_DIR" "EXCLUDE_FILTER /share/"
 
+	__end_manual_build
 }
 
 
