@@ -363,12 +363,13 @@ __launch_configure() {
 	cd "$AUTO_BUILD_DIR"
 
 	if [ "$_opt_autotools" = "ON" ]; then
+		echo "** Using Autotools : ${_autotools}"
 		case $_autotools in
 			bootstrap)
-				[ -f "$AUTO_SOURCE_DIR/bootstrap" ] && "$AUTO_SOURCE_DIR/bootstrap"
+				[ -f "$AUTO_SOURCE_DIR/bootstrap" ] && "$AUTO_SOURCE_DIR/bootstrap" || echo "** WARN : bootstrap not found or error"
 			;;
 			autogen)
-				[ -f "$AUTO_SOURCE_DIR/autogen.sh" ] && "$AUTO_SOURCE_DIR/autogen.sh"
+				[ -f "$AUTO_SOURCE_DIR/autogen.sh" ] && "$AUTO_SOURCE_DIR/autogen.sh" || echo "** WARN : autogen not found or error"
 			;;
 			autoreconf)
 				autoreconf --force --verbose --install $AUTO_SOURCE_DIR
@@ -460,7 +461,7 @@ __launch_build() {
 		[ "$o" = "DEBUG" ] && _debug=ON && _flag_opt_post_build_step=OFF
 		[ "$o" = "NO_CONFIG" ] && _opt_configure=OFF && _flag_opt_post_build_step=OFF
 		[ "$o" = "NO_INSTALL" ] && _opt_install=OFF && _flag_opt_post_build_step=OFF
-		[ "$_flag_opt_post_build_step" = "ON" ] && _post_build_step="$o $_post_build_step"
+		[ "$_flag_opt_post_build_step" = "ON" ] && _post_build_step="$_post_build_step $o"
 		[ "$o" = "POST_BUILD_STEP" ] && _flag_opt_post_build_step=ON
 	done
 

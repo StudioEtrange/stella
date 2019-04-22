@@ -170,6 +170,7 @@ fi
 
 # OTHERS ---------------------------------------------
 FEATURE_LIST_ENABLED=
+FEATURE_LIST_ENABLED_VISIBLE=
 STELLA_DEFAULT_NO_PROXY="localhost,127.0.0.1,localaddress,.localdomain.com"
 
 

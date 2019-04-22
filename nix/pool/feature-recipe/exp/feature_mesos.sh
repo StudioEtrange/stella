@@ -79,7 +79,7 @@ feature_mesos_install_source() {
 
 	#__set_build_mode "LINK_FLAGS_DEFAULT" "OFF"
 	__set_build_mode "OPTIMIZATION" ""
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP BUILD_KEEP POST_BUILD_STEP check install"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP BUILD_KEEP POST_BUILD_STEP install check"
 
 	__copy_folder_content_into "$SRC_DIR/src/examples" "$INSTALL_DIR/examples"
 

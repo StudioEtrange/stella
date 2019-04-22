@@ -4,10 +4,15 @@ _STELLA_COMMON_FEATURE_INCLUDED_=1
 
 # --------- API -------------------
 
+# list enabled and visible features
 __list_active_features() {
-	echo "$FEATURE_LIST_ENABLED"
+	echo "$FEATURE_LIST_ENABLED_VISIBLE"
 }
 
+# list all current enabled features
+__list_active_features_full() {
+	echo "$FEATURE_LIST_ENABLED"
+}
 
 __list_feature_version() {
 	local _SCHEMA=$1
@@ -21,6 +26,7 @@ __feature_init() {
 	local _SCHEMA=$1
 	local _OPT="$2"
 	local _opt_hidden_feature=OFF
+
 	local o
 	for o in $_OPT; do
 		[ "$o" = "HIDDEN" ] && _opt_hidden_feature=ON
@@ -28,34 +34,77 @@ __feature_init() {
 
 	__internal_feature_context "$_SCHEMA"
 
+	# check if feature is not already enabled
 	if [[ ! " ${FEATURE_LIST_ENABLED[@]} " =~ " $FEAT_NAME#$FEAT_VERSION " ]]; then
 		__feature_inspect "$FEAT_SCHEMA_SELECTED"
 
 		if [ "$TEST_FEATURE" = "1" ]; then
+
+			# parse dependencies to init them first
+			local dep
+			local _origin=
+			local _force_origin=
+			local _dependencies=
+			# NOTE : we init all dependencies (not relying on feature flavour)
+			_dependencies="${FEAT_BINARY_DEPENDENCIES} ${FEAT_SOURCE_DEPENDENCIES}"
+			local _current_feat=${FEAT_SCHEMA_SELECTED}
+			__push_schema_context
+
+			for dep in $_dependencies; do
+				if [ "$dep" = "FORCE_ORIGIN_STELLA" ]; then
+					_force_origin="STELLA"
+					continue
+				fi
+				if [ "$dep" = "FORCE_ORIGIN_SYSTEM" ]; then
+					_force_origin="SYSTEM"
+					continue
+				fi
+
+				if [ "$_force_origin" = "" ]; then
+					_origin="$(__feature_choose_origin $dep)"
+				else
+					_origin="$_force_origin"
+				fi
+
+				if [ "$_origin" = "STELLA" ]; then
+					__feature_init ${dep}
+					# if some deps are missing, this might not be an error, because we have merged FEAT_SOURCE_DEPENDENCIES and FEAT_BINARY_DEPENDENCIES
+					#if [ "$TEST_FEATURE" = "0" ]; then
+					#	__log "DEBUG" "** ${_current_feat} dependency $dep seems can not be initialized or is not installed."
+					#fi
+				fi
+			done
+			__pop_schema_context
+
+
+			FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $FEAT_NAME#$FEAT_VERSION"
+			if [ ! "$_opt_hidden_feature" = "ON" ]; then
+				FEATURE_LIST_ENABLED_VISIBLE="$FEATURE_LIST_ENABLED_VISIBLE $FEAT_NAME#$FEAT_VERSION"
+			fi
 
 			if [ ! "$FEAT_BUNDLE" = "" ]; then
 				local p
 				__push_schema_context
 
 				FEAT_BUNDLE_MODE=$FEAT_BUNDLE
+				FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED [ BUNDLE:<${FEAT_BUNDLE_MODE}> "
 				for p in $FEAT_BUNDLE_ITEM; do
-					#__feature_init $p "HIDDEN"
 					__internal_feature_context $p
 					if [ ! "$FEAT_SEARCH_PATH" = "" ]; then
 						PATH="$FEAT_SEARCH_PATH:$PATH"
 					fi
+					# call env call back of each bundle item
 					for c in $FEAT_ENV_CALLBACK; do
 						$c
 					done
+					FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $FEAT_NAME#$FEAT_VERSION"
 				done
+				FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED ]"
 				FEAT_BUNDLE_MODE=
 
 				__pop_schema_context
 			fi
 
-			if [ ! "$_opt_hidden_feature" = "ON" ]; then
-				FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $FEAT_NAME#$FEAT_VERSION"
-			fi
 
 
 			if [ ! "$FEAT_SEARCH_PATH" = "" ]; then
@@ -227,7 +276,7 @@ __feature_info() {
 
 # test if a feature is installed
 # AND retrieve informations based on actually installed feature
-# OR from feature recipe if not installed
+# OR retrieve informations from feature recipe if not installed
 __feature_inspect() {
 	local _SCHEMA="$1"
 	TEST_FEATURE=0
@@ -278,17 +327,19 @@ __feature_inspect() {
 
 
 
-# TODO : update FEATURE_LIST_ENABLED ?
+# TODO : update FEATURE_LIST_ENABLED and FEATURE_LIST_ENABLED_VISIBLE ?
 __feature_remove() {
 	local _SCHEMA=$1
 	local _OPT="$2"
 
 	local o
 	local _opt_internal_feature=OFF
-	local _opt_hidden_feature=OFF
+	#local _opt_hidden_feature=OFF
+	local _opt_non_declared_feature=OFF
 	for o in $_OPT; do
 		[ "$o" = "INTERNAL" ] && _opt_internal_feature=ON
-		[ "$o" = "HIDDEN" ] && _opt_hidden_feature=ON
+		#[ "$o" = "HIDDEN" ] && _opt_hidden_feature=ON
+		[ "$o" = "NON_DECLARED" ] && _opt_non_declared_feature=ON
 	done
 
 	__feature_inspect "$_SCHEMA"
@@ -316,7 +367,8 @@ __feature_remove() {
 		STELLA_APP_TEMP_DIR=$STELLA_INTERNAL_TEMP_DIR
 	fi
 
-	if [ ! "$_opt_hidden_feature" = "ON" ]; then
+	if [ ! "$_opt_non_declared_feature" = "ON" ]; then
+	#if [ ! "$_opt_hidden_feature" = "ON" ]; then
 		__remove_app_feature $_SCHEMA
 	fi
 
@@ -328,9 +380,17 @@ __feature_remove() {
 
 			__push_schema_context
 
+
 			FEAT_BUNDLE_MODE="$FEAT_BUNDLE"
+			local _flags=
+			case $FEAT_BUNDLE_MODE in
+				LIST|MERGE_LIST|NESTED|MERGE )
+					_flags="HIDDEN NON_DECLARED"
+					;;
+			esac
+
 			for p in $FEAT_BUNDLE_ITEM; do
-				__feature_remove $p "HIDDEN"
+				__feature_remove $p "$_flags"
 			done
 			FEAT_BUNDLE_MODE=
 			__pop_schema_context
@@ -378,6 +438,7 @@ __feature_install() {
 	local o
 	local _opt_internal_feature=OFF
 	local _opt_hidden_feature=OFF
+	local _opt_non_declared_feature=OFF
 	local _opt_ignore_dep=OFF
 	local _opt_force_reinstall_dep=0
 	local _flag_export=OFF
@@ -388,10 +449,12 @@ __feature_install() {
 	local _portable_mode=OFF
 
 	for o in $_OPT; do
-		# INTERNAL : install feature inside stella root
+		# INTERNAL : install feature inside stella root instead of current stella app workspace
 		[ "$o" = "INTERNAL" ] && _opt_internal_feature=ON && _export_mode=OFF
-		# HIDDEN : this feature will not be seen in list of active features and not added to current app properties
+		# HIDDEN : this feature will not be seen in list of active features
 		[ "$o" = "HIDDEN" ] && _opt_hidden_feature=ON
+		# NON_DECLARED : this feature will not been auto added added to current app properties
+		[ "$o" = "NON_DECLARED" ] && _opt_non_declared_feature=ON
 		# DEP_FORCE : force reinstall all dependencies
 		[ "$o" = "DEP_FORCE" ] && _opt_force_reinstall_dep=1
 		# DEP_IGNORE : ignore installation step of all dependencies
@@ -411,6 +474,7 @@ __feature_install() {
 	if [ "$_export_mode" = "ON" ]; then
 		_opt_internal_feature=OFF
 		_opt_hidden_feature=ON
+		_opt_non_declared_feature=ON
 
 		FEAT_MODE_EXPORT_SCHEMA="$_SCHEMA"
 		_SCHEMA="mode-export"
@@ -424,6 +488,7 @@ __feature_install() {
 	if [ "$_portable_mode" = "ON" ]; then
 		_opt_internal_feature=OFF
 		_opt_hidden_feature=ON
+		_opt_non_declared_feature=ON
 
 		FEAT_MODE_EXPORT_SCHEMA="$_SCHEMA"
 		_SCHEMA="mode-export"
@@ -471,7 +536,7 @@ __feature_install() {
 			STELLA_APP_TEMP_DIR=$STELLA_INTERNAL_TEMP_DIR
 		fi
 
-		if [ ! "$_opt_hidden_feature" = "ON" ]; then
+		if [ ! "$_opt_non_declared_feature" = "ON" ]; then
 			__add_app_feature $_SCHEMA
 		fi
 
@@ -531,8 +596,8 @@ __feature_install() {
 					if [ "$_origin" = "STELLA" ]; then
 						__log "INFO" "Installing dependency $dep"
 
-
-						__feature_install $dep "$_OPT HIDDEN"
+						# a dependency is not added to current app properties
+						__feature_install $dep "$_OPT NON_DECLARED"
 						if [ "$TEST_FEATURE" = "0" ]; then
 							__log "INFO" "** Error while installing dependency feature $FEAT_SCHEMA_SELECTED"
 						fi
@@ -548,7 +613,6 @@ __feature_install() {
 
 			# bundle -----------------
 			if [ ! "$FEAT_BUNDLE" = "" ]; then
-
 
 				# save export/portable mode
 				__stack_push "$_export_mode"
@@ -569,17 +633,17 @@ __feature_install() {
 					# MERGE : each item will be installed in the bundle path (without each feature name/version)
 					# LIST : this bundle is just a list of items that will be installed normally (without bundle name nor version in path: item_name/item_version )
 					# MERGE_LIST : this bundle is a list of items that will be installed in a MERGED way (without bundle name nor version AND without each feature name/version)
+					local _flags
+					case $FEAT_BUNDLE_MODE in
+						LIST|MERGE_LIST|NESTED|MERGE )
+							_flags="HIDDEN NON_DECLARED"
+							;;
+					esac
 
-					local _flag_hidden
-					if [ "$FEAT_BUNDLE_MODE" = "LIST" ]; then
-						_flag_hidden=
-					else
-						_flag_hidden="HIDDEN"
-					fi
 
 					local _item=
 					for _item in $FEAT_BUNDLE_ITEM; do
-						__feature_install $_item "$_OPT $_flag_hidden"
+						__feature_install $_item "$_OPT $_flags"
 					done
 
 					if [ ! "$FEAT_BUNDLE_MODE" = "LIST" ]; then
@@ -667,7 +731,7 @@ __feature_init_installed() {
 	local _tested_feat_name=
 	local _tested_feat_ver=
 	# init internal features
-	# internal feature are not prioritary over app features
+	# internal feature are not prioritary over app features so we init them first
 	if [ ! "$STELLA_APP_FEATURE_ROOT" = "$STELLA_INTERNAL_FEATURE_ROOT" ]; then
 
 		_save_app_feature_root_init_installed=$STELLA_APP_FEATURE_ROOT
@@ -683,7 +747,9 @@ __feature_init_installed() {
 					for v in  "$f"/*; do
 						if [ -d "$v" ]; then
 							_tested_feat_ver="$(__get_filename_from_string $v)"
-							__feature_init "$_tested_feat_name#$_tested_feat_ver" "INTERNAL HIDDEN"
+							# TODO : internal feature (installed in stella root) should be hidden in active feature list or not ?
+							#__feature_init "$_tested_feat_name#$_tested_feat_ver" "HIDDEN"
+							__feature_init "$_tested_feat_name#$_tested_feat_ver"
 						fi
 					done
 				fi
@@ -711,7 +777,7 @@ __feature_init_installed() {
 		fi
 	done
 
-	__log "INFO" "** Features initialized : $FEATURE_LIST_ENABLED"
+	__log "INFO" "** Features initialized : $FEATURE_LIST_ENABLED_VISIBLE"
 }
 
 
@@ -719,6 +785,7 @@ __feature_init_installed() {
 
 __feature_reinit_installed() {
 	FEATURE_LIST_ENABLED=
+	FEATURE_LIST_ENABLED_VISIBLE=
 	__feature_init_installed
 }
 

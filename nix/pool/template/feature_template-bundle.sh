@@ -14,6 +14,7 @@ feature_template-bundle() {
 	# NESTED : each item will be installed inside the bundle path in a separate directory (with each feature name but without version)
 	# MERGE : each item will be installed in the bundle path (without each feature name/version)
 	# LIST : this bundle is just a list of item that will be installed normally
+	# MERGE_LIST : this bundle is a list of items that will be installed in a MERGED way (without bundle name nor version AND without each feature name/version)
 	FEAT_BUNDLE=NESTED
 }
 

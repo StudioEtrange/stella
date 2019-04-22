@@ -9,7 +9,7 @@ __toolset_install() {
 	local _save_FORCE=$FORCE
 	FORCE=
 	STELLA_APP_FEATURE_ROOT=$STELLA_INTERNAL_TOOLSET_ROOT
-	(__feature_install "$1" "HIDDEN")
+	(__feature_install "$1" "NON_DECLARED")
 	STELLA_APP_FEATURE_ROOT=$_save_STELLA_APP_FEATURE_ROOT
 	FORCE=$_save_FORCE
 }

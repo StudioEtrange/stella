@@ -63,7 +63,7 @@ feature_vowpal_wabbit_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP NO_OUT_OF_TREE_BUILD POST_BUILD_STEP test install"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP NO_OUT_OF_TREE_BUILD POST_BUILD_STEP install test"
 
 	__copy_folder_content_into "$SRC_DIR/python" "$INSTALL_DIR/samples/python"
 	__copy_folder_content_into "$SRC_DIR/R" "$INSTALL_DIR/samples/R"

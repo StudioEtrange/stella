@@ -1,11 +1,13 @@
 if [ ! "$_TEMPLATE_INCLUDED_" = "1" ]; then
 _TEMPLATE_INCLUDED_=1
 
-# https://stackoverflow.com/questions/41535915/python-pip-install-from-local-dir
-
+# NOTE : this kind of recipe is based on minicondaX and do not check specific python version
+# if a feature needs a very specific python version (3.4.1), this may not work
 
 # FLAVOUR source : install from python source (see other template)
 # FLAVOUR binary : install from pip or conda
+
+
 
 # NOTE on install package in a specific folder
 # https://stackoverflow.com/questions/2915471/install-a-python-package-into-a-different-directory-using-pip
@@ -14,6 +16,8 @@ feature_template() {
 	FEAT_LIST_SCHEMA="1_0_0:binary"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
+
+	FEAT_ENV_CALLBACK="feature_template_env"
 
 	FEAT_DESC="template is foo"
 	FEAT_LINK="https://github.com/bar/template"
@@ -49,7 +53,7 @@ feature_template_1_0_0() {
 }
 
 
-feature_xkcdpass_install_binary() {
+feature_template_install_binary() {
 	INSTALL_DIR="${FEAT_INSTALL_ROOT}"
 
 	PYTHONUSERBASE="${FEAT_INSTALL_ROOT}" pip install --no-warn-script-location --ignore-installed --upgrade --user "${FEAT_NAME}"=="$(echo ${FEAT_VERSION} |tr '_' '.')"

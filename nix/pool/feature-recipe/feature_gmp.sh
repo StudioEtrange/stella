@@ -39,7 +39,7 @@ feature_gmp_install_source() {
 
 	__feature_callback
 
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "POST_BUILD_STEP check install"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "POST_BUILD_STEP install check"
 
 }
 

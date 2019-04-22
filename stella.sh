@@ -34,7 +34,7 @@ usage() {
 	echo " L     feature install <feature schema> [--depforce] [--depignore] [--buildarch=x86|x64] [--export=<path>] [--portable=<path>] : install a feature. [--depforce] will force to reinstall all dependencies. [--depignore] will ignore dependencies. schema = feature_name[#version][@arch][:binary|source][/os_restriction][\\os_exclusion]"
 	echo " L     feature remove <feature schema> : remove a feature"
 	echo " L     feature info <feature schema> : show some feature informations"
-	echo " L     feature list <all|feature name|active> : list all available feature OR available versions of a feature OR current active features"
+	echo " L     feature list <all|feature name|active|full-active> : list all available feature OR available versions of a feature OR current active features OR full list of active features even hidden ones"
 	echo " o-- various :"
 	echo " L     stella api list : list public functions of stella api"
 	echo " L     stella install dep : install all features and systems requirements if any, for the current OS ($STELLA_CURRENT_OS)"
@@ -211,6 +211,9 @@ if [ "$DOMAIN" = "feature" ]; then
 				active)
 					#echo "$(__list_active_features)"
 					__list_active_features
+					;;
+				full-active)
+					__list_active_features_full
 					;;
 				*)
 					#echo "$(__list_feature_version $ID)"
