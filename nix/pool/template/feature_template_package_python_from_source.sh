@@ -8,8 +8,10 @@ _TEMPLATE_INCLUDED_=1
 
 # NOTE : https://stackoverflow.com/questions/41535915/python-pip-install-from-local-dir
 
+
 # FLAVOUR source : install from python source
-# FLAVOUR binary : install from pip or conda (see other template)
+# FLAVOUR binary : install from pip or conda (see other template) ==> TODO : but pip (but not conda?) may need gcc and other toolset, so this might not been a binary flavour ?
+
 feature_template() {
 	FEAT_NAME=template
 	FEAT_LIST_SCHEMA="1_0_0:source"

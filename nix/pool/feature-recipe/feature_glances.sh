@@ -5,8 +5,6 @@ _glances_INCLUDED_=1
 # glances have plugins, they can be installed with
 # pip install 'glances[action,browser,cloud,cpuinfo,docker,export,folders,gpu,graph,ip,raid,snmp,web,wifi]'
 
-# TODO not finished
-# there is a pb because FEAT_BINARY_DEPENDENCIES may be initialized too late and feature_glances_env is broken using wrong python version
 
 feature_glances() {
 	FEAT_NAME=glances

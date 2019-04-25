@@ -489,6 +489,7 @@ __python_get_pyconfig() {
 
 
 # PACKAGE SYSTEM ----------------------------
+# set a global proxy for yum
 # sample : __yum_proxy_set $STELLA_HTTP_PROXY
 __yum_proxy_set() {
 	local _uri="$1"
@@ -501,11 +502,35 @@ __yum_proxy_set() {
 	echo proxy=${_uri} | sudo -E tee -a /etc/yum.conf > /dev/null
 }
 
+# unset global proxy for yum
 __yum_proxy_unset() {
 	__log "INFO" " * Unset any yum HTTP proxy"
 
 	[ -f "/etc/yum.conf" ] && sudo sed -i '/proxy=/d' /etc/yum.conf > /dev/null
 }
+
+# set a proxy only for a soecific repo
+# __yum_proxy_set_repo "epel" "$STELLA_HTTP_PROXY"
+__yum_proxy_set_repo() {
+	local _repo_name="$1"
+	local _uri="$2"
+
+	[ "${_uri}" = "" ] && _uri="_none_"
+
+	__log "INFO" " * Set yum HTTP proxy with $_uri for repo ${_repo_name}"
+
+	__sudo_exec yum-config-manager --setopt=${_repo_name}.proxy=${_uri} --save
+}
+
+# unset proxy only for a soecific repo
+# __yum_proxy_set_repo "epel" "$STELLA_HTTP_PROXY"
+__yum_proxy_unset_repo() {
+	local _repo_name="$1"
+	__log "INFO" " * Unset yum HTTP proxy for repo ${_repo_name}"
+
+	__sudo_exec yum-config-manager --setopt=${_repo_name}.proxy=_none_ --save
+}
+
 
 # _version could be 6 or 7 (for RHEL/Centos 6.x or 7.x)
 __yum_add_extra_repositories() {
@@ -528,6 +553,7 @@ __yum_add_extra_repositories() {
 	__get_resource "epel" "https://dl.fedoraproject.org/pub/epel/epel-release-latest-${_version}.noarch.rpm" "HTTP" "$STELLA_APP_WORK_ROOT" "FORCE_NAME epel-release-latest-${_version}.noarch.rpm"
 	__sudo_exec rpm -Uvh "$STELLA_APP_WORK_ROOT/epel-release-latest-${_version}.noarch.rpm"
 
+	__yum_proxy_set_repo "epel" "${STELLA_HTTP_PROXY}"
 	__sudo_exec yum-config-manager --enable epel
 	__sudo_exec yum clean all
 }
@@ -729,7 +755,17 @@ __sys_install_docker() {
 }
 
 
-
+# NOTE: The following new directories will be created:
+# /usr/local/etc
+# /usr/local/sbin
+# /usr/local/var
+# /usr/local/opt
+# /usr/local/var/homebrew
+# /usr/local/var/homebrew/linked
+# /usr/local/Cellar
+# /usr/local/Caskroom
+# /usr/local/Homebrew
+# /usr/local/Frameworks
 __sys_install_brew() {
 	echo " ** Install Homebrew on your system"
 	echo " ** As of December 2015, Cask comes installed with Homebrew"

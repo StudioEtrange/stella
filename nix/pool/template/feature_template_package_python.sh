@@ -4,13 +4,16 @@ _TEMPLATE_INCLUDED_=1
 # NOTE : this kind of recipe is based on minicondaX and do not check specific python version
 # if a feature needs a very specific python version (3.4.1), this may not work
 
-# FLAVOUR source : install from python source (see other template)
-# FLAVOUR binary : install from pip or conda
-
 
 
 # NOTE on install package in a specific folder
 # https://stackoverflow.com/questions/2915471/install-a-python-package-into-a-different-directory-using-pip
+
+
+
+# FLAVOUR source : install from python source (see other template) 
+# FLAVOUR binary : install from pip or conda ==> TODO : but pip (but not conda?) may need gcc and other toolset, so this might not been a binary flavour ?
+
 feature_template() {
 	FEAT_NAME=template
 	FEAT_LIST_SCHEMA="1_0_0:binary"

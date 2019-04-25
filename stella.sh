@@ -72,9 +72,9 @@ usage() {
 
 # arguments
 PARAMETERS="
-DOMAIN=                          'domain'     		a           'app feature stella proxy sys boot'         										   				Action domain.
-ACTION=                         'action'   					a           'reset info tunnel deploy script shell cmd version search remove on off register link vendor api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature install list'         	Action to compute.
-ID=							 								''								s 						''
+DOMAIN=                          'domain'     		a           'app feature stella proxy sys boot' '1'    										   				Action domain.
+ACTION=                         'action'   					a           'reset info tunnel deploy script shell cmd version search remove on off register link vendor api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature install list'  '1'       	Action to compute.
+ID=							 								''								s 						''	'1' 			A parameter
 "
 OPTIONS="
 FORCE=''                       	'f'    		''            		b     		0     		'1'           			Force operation.

@@ -25,9 +25,8 @@
 # Certainly would not work on plain old sh, csh, ksh ... .
 
 # Modified by StudioEtrange
-#          * modification of the way to declare option and
-#          * adding parameter
-#          * support mandatory option AND parameter
+#          * modification of the way to declare option and parameter
+#          * support mandatory option
 #          * check validity of parameter (foo.sh parameter -option)
 #          * remove generation of man page
 #          * lot of tweaks
@@ -133,8 +132,8 @@ QUAINT=''       'q'      ''         s   0   ''                  a quaint descrip
 
 
 --PARAMETERS--
-#NAME=                 'LABEL'      TYPE     'RANGE'           MANDATORY      DESCRIPTION
-ACTION=                 ''          a       'build run'         '1'          Action to compute.
+#NAME=                 'LABEL'      TYPE     'RANGE'           DESCRIPTION
+ACTION=                 ''          a       'build run'        Action to compute.
 "
 
 exec 4>&1
@@ -306,11 +305,9 @@ add_param() {
     ORIGINAL_NAME="$1" # original name of the param
     LABEL="${2:-}" # argument label - optional
     TYPE="${3:-}" # type of the argument - optional
+    MANDATORY=1
     RANGE="${4:-}" # range for the argument - optional
-    MANDATORY="${5:-}" # mandatory for the argument - optional - default 1
-    [[ "$MANDATORY" = "" ]] && MANDATORY=1
-    DESC="${6:-}"
-
+    DESC="${5:-}"
     local ALLOWED_CHARS='[a-zA-Z0-9_][a-zA-Z0-9_]*'
     local PARAM
     local OPT
@@ -583,10 +580,6 @@ get_opt_mandatory() {
 
 }
 
-get_param_mandatory() {
-  get_opt_mandatory "$@"
-}
-
 get_param_range() {
 	get_opt_range "$@"
 }
@@ -631,8 +624,7 @@ get_param_desc() {
     printf %s "${!L:-}"
   local TYPE=$(get_param_type "$NAME")
   local RANGE=$(get_param_range "$NAME")
-#local MANDATORY=1
-local MANDATORY=$(get_param_mandatory "$NAME")
+local MANDATORY=1
 
 if [[ "$MANDATORY" == "1" ]]; then
 	echo -n " Mandatory."
@@ -1177,7 +1169,8 @@ process_params() {
 
     for PARAM_NAME in $ARGP_PARAM_LIST; do
         VALUE="${1:-}"
-        MANDATORY=$(get_param_mandatory "$PARAM_NAME")
+        MANDATORY=1
+
         TYPE=$(get_param_type "$PARAM_NAME")
         [[ "$TYPE" ]] || {
             abend 1 "$ARGP_PROG: argp.sh: no type for param \"$PARAM_NAME\""
@@ -1301,7 +1294,7 @@ output_values_param() {
   # NOTE : use local PARAM_NAME to not override param name which can be "NAME"
   for PARAM_NAME in $ARGP_PARAM_LIST; do
         VALUE="${!PARAM_NAME}"
-        MANDATORY=$(get_param_mandatory $PARAM_NAME)
+        MANDATORY=1
 
         [[ "$VALUE" ]] || {
           [[ "$MANDATORY" == "1" ]] && abend 1 "$PARAM_NAME is mandatory"
@@ -1573,7 +1566,7 @@ read_config() {
                   fi
 
                   if [[ "$READING_PARAM" == "1" ]]; then
-                    local NAME= REGEX= TYPE= RANGE= DESC= VAR= ORIGINAL_NAME= LABEL= MANDATORY=
+                    local NAME= REGEX= TYPE= RANGE= DESC= VAR= ORIGINAL_NAME= LABEL=
                     NAME="${LINE%%=*}"
                     LINE="${LINE#$NAME=}"
                     ORIGINAL_NAME="$NAME"
@@ -1581,7 +1574,7 @@ read_config() {
                     # initial value could contain spaces, quotes, anything -
                     # but I don't think we need to support escaped quotes:
                     REGEX="^[[:space:]]*('[^']*'|[^[:space:]]+)[[:space:]]*(.*)"
-                    for VAR in LABEL TYPE RANGE MANDATORY; do
+                    for VAR in LABEL TYPE RANGE; do
                         [[ "$LINE" =~ $REGEX ]] || break
                         V="${BASH_REMATCH[1]}"
                         V="${V%\'}"
@@ -1597,7 +1590,7 @@ read_config() {
                         DESC+="$LINE"
                         [[ "$ARGP_DEBUG" ]] && echo "read for DESC: $LINE" >&2
                     done
-                    add_param "$ORIGINAL_NAME" "$LABEL" "$TYPE" "$RANGE" "$MANDATORY" "$DESC"
+                    add_param "$ORIGINAL_NAME" "$LABEL" "$TYPE" "$RANGE" "$DESC"
                   fi
 
                   if [[ "$READING_OPT" == "1" ]]; then

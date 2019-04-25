@@ -32,6 +32,7 @@
 # games
 https://ttygames.wordpress.com/
 https://github.com/herrbischoff/awesome-command-line-apps#games
+https://www.ubuntupit.com/top-20-best-linux-terminal-console-games-that-you-can-play-right-now/
 
 - [ ] PWMAngband - multiplayer angband
 http://powerwyrm.monsite-orange.fr
