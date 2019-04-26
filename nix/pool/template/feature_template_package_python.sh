@@ -11,8 +11,10 @@ _TEMPLATE_INCLUDED_=1
 
 
 
-# FLAVOUR source : install from python source (see other template) 
-# FLAVOUR binary : install from pip or conda ==> TODO : but pip (but not conda?) may need gcc and other toolset, so this might not been a binary flavour ?
+# FLAVOUR source : install from python source (see other template)
+# FLAVOUR binary : install from pip or conda
+
+# ==> TODO : pip (but not conda?) may need gcc and other toolset, so this might not be a binary flavour ?
 
 feature_template() {
 	FEAT_NAME=template

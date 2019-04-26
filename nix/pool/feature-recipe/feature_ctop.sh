@@ -10,6 +10,9 @@ feature_ctop() {
 	FEAT_LIST_SCHEMA="0_7_2:binary 0_7_1:binary 0_6_1:binary"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
+
+	FEAT_DESC="Top-like interface for container metrics"
+	FEAT_LINK="https://ctop.sh"
 }
 
 

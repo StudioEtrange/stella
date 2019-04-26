@@ -1173,7 +1173,7 @@ get_opt_name() {
 
 process_params() {
     [[ "$ARGP_DEBUG" ]] && debug_args "$@"
-    local SHIFT_NUM=0 PARAM PARAM_NAME TYPE RANGE MANDATORY VALUE
+    local SHIFT_NUM=0 PARAM PARAM_NAME TYPE RANGE MANDATORY VALUE STOP_PARAMETERS
 
     for PARAM_NAME in $ARGP_PARAM_LIST; do
         VALUE="${1:-}"
@@ -1186,6 +1186,7 @@ process_params() {
 
         ((SHIFT_NUM++))
         shift
+
 
         [[ "$VALUE" ]] || {
               [[ "$MANDATORY" == "1" ]] && abend 1 "$PARAM_NAME is mandatory"
@@ -1201,6 +1202,14 @@ process_params() {
     done
 
     return $SHIFT_NUM
+}
+
+# NOTE : reset options value to EMPTY by default
+reset_params() {
+    local PARAM_NAME=
+    for PARAM_NAME in $ARGP_PARAM_LIST; do
+        export $PARAM_NAME=
+    done
 }
 
 
@@ -1310,13 +1319,19 @@ output_values_param() {
         echo -n "export $PARAM_NAME='$VALUE'; "
     done
 
-    echo -n "set -- "
-    for VALUE in "$@"; do
-        [[ "$VALUE" == *\'* ]] && VALUE=$(echo "${VALUE}" |sed -e "s/'/'\\\''/g")
-        echo -n " '$VALUE'" ; done
-    echo
 
 
+}
+
+
+output_values_otherarg() {
+  local VALUE
+
+  echo -n "set -- "
+  for VALUE in "$@"; do
+      [[ "$VALUE" == *\'* ]] && VALUE=$(echo "${VALUE}" |sed -e "s/'/'\\\''/g")
+      echo -n " '$VALUE'" ; done
+  echo
 }
 
 output_values() {
@@ -1337,12 +1352,6 @@ output_values() {
         [[ "$VALUE" == *\'* ]] && VALUE=$(echo "${VALUE}" |sed -e "s/'/'\\\''/g")
         echo -n "export $OPT_NAME='$VALUE'; "
     done
-
-    #echo -n "set -- "
-    #for VALUE in "$@"; do
-    #    [[ "$VALUE" == *\'* ]] && VALUE=$(echo "${VALUE}" |sed -e "s/'/'\\\''/g")
-    #    echo -n " '$VALUE'" ; done
-    #echo
 
 
 }
@@ -1643,8 +1652,16 @@ main() {
 
     sort_option_names_by_key
 
-    call_getopt "$@"
+    local OTHERARG CMDLINE FULLCMDLINE
+    FULLCMDLINE="$@"
+    # capture characters after first -- (to capture after last -- : ${@##* -- })
+    OTHERARG="${FULLCMDLINE#* -- }"
+    # capture characters before first -- (to capture before last -- : ${@%* -- })
+    CMDLINE="${FULLCMDLINE%% -- *}"
+    [[ "$CMDLINE" == "$OTHERARG" ]] && OTHERARG=""
+    eval set -- "$CMDLINE"
 
+    call_getopt "$@"
     [[ "$ARGP_DEBUG" ]] && debug_args "$@"
     reset_opts
     process_opts "${ARGS[@]}"
@@ -1654,12 +1671,15 @@ main() {
     [[ "$ARGP_DEBUG" ]] && debug_args "$@"
     output_values "$@" >&3
 
-
+    reset_params
     process_params "$@"
     ARGP_NUM_SHIFT=$?
     shift $ARGP_NUM_SHIFT
     [[ "$ARGP_DEBUG" ]] && debug_args "$@"
     output_values_param "$@" >&3
+
+    output_values_otherarg "$OTHERARG" >&3
+
 }
 
 check_bash() {
