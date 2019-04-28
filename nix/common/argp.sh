@@ -1167,8 +1167,7 @@ process_params() {
         }
         RANGE=$(get_param_range "$PARAM_NAME")
 
-        ((SHIFT_NUM++))
-        shift
+
 
         [[ "$VALUE" ]] && {
           TMP="${#VALUE}"
@@ -1188,6 +1187,9 @@ process_params() {
         check_type_and_value "$PARAM_NAME" "$VALUE" "$TYPE" "$RANGE"
 
         [[ $END_OF_DEFINED_PARAM ]] && break;
+
+        ((SHIFT_NUM++))
+        shift
 
         [[ "$ARGP_DEBUG" ]] &&
         echo "process_params: param='$PARAM_NAME' value='$VALUE' type='$TYPE' range='$RANGE'"
@@ -1225,11 +1227,11 @@ process_opts() {
         fi
 
 
-
         ((SHIFT_NUM++))
         shift
 
         [[ "$OPTION" = "--" ]] && break
+        [[ "$OPTION" = "" ]] && break
 
         # here is where all the user options get done:
         OPT_NAME=$(get_opt_name "$OPTION")
@@ -1366,7 +1368,6 @@ parse_options_and_params() {
     [[ ${#TMP} -eq 0 ]] && something_to_parse=
     # if there is only extra arg
     [[ ${#TMP} -eq $((ENDING_ARG_SIZE + 3)) ]] && something_to_parse=
-
 
     [[ $something_to_parse ]] && {
       # reorder @ and put options at the beginning of ${ARGS[@]}

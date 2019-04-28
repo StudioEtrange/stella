@@ -2062,8 +2062,10 @@ __argparse(){
 	for o in $OPT; do
 		[ "$_flag_extra_parameter_var" = "ON" ] && _extra_parameter_var="$o" && _flag_extra_parameter_var=
 		[ "$o" = "EXTRA_PARAMETER" ] && _flag_extra_parameter_var="ON"
+
 		[ "$_flag_extra_arg_eval_var" = "ON" ] && _extra_arg_eval_var="$o" && _flag_extra_arg_eval_var=
 		[ "$o" = "EXTRA_ARG_EVAL" ] && _flag_extra_arg_eval_var="ON"
+
 		[ "$_flag_extra_arg_var" = "ON" ] && _extra_arg_var="$o" && _flag_extra_arg_var=
 		[ "$o" = "EXTRA_ARG" ] && _flag_extra_arg_var="ON"
 	done

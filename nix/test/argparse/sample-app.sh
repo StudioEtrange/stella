@@ -4,10 +4,16 @@ _CURRENT_RUNNING_DIR="$( cd "$( dirname "." )" && pwd )"
 . $_CURRENT_FILE_DIR/stella-link.sh include
 
 # TEST with
+# ./nix/test/argparse/sample-app.sh
+# ./nix/test/argparse/sample-app.sh "foo bar" run
+# ./nix/test/argparse/sample-app.sh "foo bar" --opt1="'a b'" --opt2 "a b" run "'target'"
+# ./nix/test/argparse/sample-app.sh "foo bar" --opt1="'a b'" --opt2 "a b" run "'target'" source "other param" '"another"'
+# ./nix/test/argparse/sample-app.sh "foo bar" run --  bash -c "'a b'" 'd e' '"c ee"' f
 # ./nix/test/argparse/sample-app.sh "foo bar" --opt1="'a b'" --opt2 "a b" run "'target'" --  bash -c "'a b'" 'd e' '"c ee"' f
 # ./nix/test/argparse/sample-app.sh "foo bar" --opt1="'a b'" --opt2 "a b" run "'target'" source "other param" '"another"' --  bash -c "'a b'" 'd e' '"c ee"' f
 # ./nix/test/argparse/sample-app.sh --  bash -c "'a b'" 'd e' '"c ee"' f
-# ./nix/test/argparse/sample-app.sh "foo bar" --opt1="'a b'" --opt2 "a b" run "'target'" source "other param" '"another"'
+
+
 usage() {
 	echo "USAGE :"
 	echo "----------------"
@@ -26,6 +32,7 @@ OPTIONS="
 FORCE=''				   'f'		  ''					b			0		'1'					  Force.
 OPT1='default_val1' 						'' 			'string'				s 			0			''		  Sample option.
 OPT2='default_val2' 						'' 			'string'				s 			0			''		  Sample option.
+OPT3='' 						'' 			'string'				s 			0			''		  Sample option.
 "
 
 echo ORIGINAL ARGUMENTS LINE :
@@ -49,6 +56,7 @@ if [ "$DOMAIN" = "foo bar" ]; then
 		echo --OPTIONS--
 		echo OPT1 : $OPT1
 		echo OPT2 : $OPT2
+		echo OPT3 : $OPT3
 
 		echo --EXTRA ARG end PARAMETERS--
 		echo extra_parameter : $extra_parameter
