@@ -15,14 +15,14 @@ usage() {
 
 # COMMAND LINE -----------------------------------------------------------------------------------
 PARAMETERS="
-DOMAIN=											'domain' 			a				'foo env'
-ID=												'' 					a				'install uninstall run'
+DOMAIN=											'domain' 			a				'1' 	'foo env' 		'Action domain.'
+ID=												'' 					a				'1' 		'install uninstall run'	'Action ID.'
 "
 OPTIONS="
 FORCE=''				   'f'		  ''					b			0		'1'					  Force.
 OPT='default_val' 						'' 			'string'				s 			0			''		  Sample option.
 "
-$STELLA_API argparse "$0" "$OPTIONS" "$PARAMETERS" "$STELLA_APP_NAME" "$(usage)" "APPARG" "$@"
+$STELLA_API argparse "$0" "$OPTIONS" "$PARAMETERS" "$STELLA_APP_NAME" "$(usage)" "EXTRA_ARG ARG" "$@"
 
 #-------------------------------------------------------------------------------------------
 

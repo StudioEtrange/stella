@@ -34,7 +34,7 @@
 #          * getopt command is now a parameter,
 #                and could be a pure bash implementation  if we choose "PURE_BASH"
 #                from Aron Griffis https://github.com/agriffis/pure-getopt
-# TODO : refactoring of read_xml
+#          * remove read/print xml conf
 #       ARGP_OPTION_SEP have no puropose, multiple values separator is defined with type (in example : 's:' or 's#')
 ARGP_argp_sh_usage() {
     cat <<"EOF"
@@ -203,41 +203,16 @@ desc         : long description of this parameter. long description could use '\
 ###############################################################################
 
 
-XML can also be instead of the above (provided xmlstarlet is available):
-
-<?xml version="1.0" encoding="UTF-8"?>
-<argp>
-  <prog>fs</prog>
-  <short>Search for filenames in sub-directories (short description)</short>
-  <delete>quiet</delete>
-  <version>1.2</version>
-  <usage>long description</usage>
-  <parameter name="ACTION" type="s" mandatory="1" label="" range="build run">command</parameter>
-  <option name="EXCLUDE" sname="x" type="s" mandatory="0" arg="directory">exclude directory</option>
-  <option name="DIR"     sname="d" type="b" mandatory="0" default="f" range="d">search for a directory rather than a file</option>
-  <option name="SECRET" type="b"/>
-</argp>
-
-Note that the attribute 'name' is required - the others are all
-optional. Also the option value should be on a single line (the
-program usage can be on multiple lines).
-
-###############################################################################
-
 Note that --verbose, --help, --quiet and --version options will be
 added automatically.
 Use ARGP_DELETE to disable them.
 
-Also, a hidden option '--print-xml' prints out the XML equivalent of the argp input.
 
 If POSIXLY_CORRECT is set, then option parsing will end on the first
 non-option argument (eg like ssh(1)).
 
 GETOPT_CMD is an env variable we can choose a getopt command instead of default getopt
 if GETOPT_CMD equal PURE_BASH, then a pure bash getopt implementation from Aron Griffis is used (https://github.com/agriffis/pure-getopt)
-
-
-###############################################################################
 
 
 
@@ -631,8 +606,7 @@ get_param_desc() {
     printf %s "${!L:-}"
   local TYPE=$(get_param_type "$NAME")
   local RANGE=$(get_param_range "$NAME")
-#local MANDATORY=1
-local MANDATORY=$(get_param_mandatory "$NAME")
+  local MANDATORY=$(get_param_mandatory "$NAME")
 
 if [[ "$MANDATORY" == "1" ]]; then
 	echo -n " Mandatory."
@@ -728,9 +702,6 @@ del_opt() {
         }
         [[ "$OPT_NAME" == "$GARGP_PRINTMAN_loption" ]] && {
             GARGP_PRINTMAN_loption=
-        }
-        [[ "$OPT_NAME" == "$GARGP_PRINTXML_loption" ]] && {
-            GARGP_PRINTXML_loption=
         }
     done
 }
@@ -840,47 +811,6 @@ print_full_params() {
 
 
 
-print_xml() {
-    local NAME
-
-    echo '<?xml version="1.0" encoding="UTF-8"?>'
-    echo "<argp><prog>$ARGP_PROG</prog>"
-    echo "<version>$GARGP_VERSION</version>"
-    echo "<short_desc>$SHORT_DESC</short_desc>"
-    echo "<long_desc>$LONG_DESC</long_desc>"
-    echo "<delete_default_opt>$ARGP_DELETE</delete_default_opt>"
-    for NAME in ${ARGP_PARAM_LIST:-}; do
-        echo "<parameter name='$(get_param_original_name $NAME)' type='$(get_param_type $NAME)' mandatory='1' label='$(get_param_label $NAME)' range='$(get_param_range $NAME)'><short_desc>$(get_param_short_desc $NAME)</short_desc><long_desc>$(get_param_desc $NAME)</long_desc></parameter>"
-    done
-    for NAME in ${ARGP_OPTION_LIST:-}; do
-        case $(convert_to_option_name $NAME) in
-            $GARGP_PRINTXML_loption| \
-            $GARGP_ENDOPTS_loption)
-                continue;
-        esac
-        echo "<option name='$(get_opt_original_name $NAME)' sname='$(get_opt_letter $NAME)' type='$(get_opt_type $NAME)' mandatory='$(get_opt_mandatory $NAME)' label='$(get_opt_label $NAME)' default='$(get_opt_default $NAME)' range='$(get_opt_range $NAME)'><short_desc>$(get_opt_short_desc $NAME)</short_desc><long_desc>$(get_opt_desc $NAME)</long_desc></option>"
-    done
-    echo "</argp>"
-}
-
-#NAME=DEFAULT  'SHORT_NAME'  'LABEL'   TYPE  MANDATORY  'RANGE'  DESCRIPTION
-#NAME                 'LABEL'      TYPE     'RANGE'           DESCRIPTION
-#TODO
-read_xml_format() {
-    type xmlstarlet &>/dev/null || abend 1 "Please install xmlstarlet"
-    xmlstarlet sel --text -t -m '/argp' \
-        -v "concat('ARGP_PROG=', prog)" -n \
-        -v "concat('ARGP_VERSION=',version)" -n \
-        -v "concat('ARGP_SHORT=', short_desc)" -n \
-        -v "concat('ARGP_LONG_DESC=', long_desc)" -n \
-        -v "concat('ARGP_DELETE=', delete_default_opt)" -n \
-        -t -m '/argp/parameter' \
-        -t -m '/argp/option' \
-        -v "concat(@name, \"='\", @default, \"' '\", @sname, \"' '\", @label, \"' \", @type, \" \", @mandatory, \" '\",  @range, \"' \", self::option)" -n
-
-
-}
-
 add_std_opts() {
     get_opt_name -$GARGP_HELP_option >/dev/null && GARGP_HELP_option=
     get_opt_name --$GARGP_HELP_loption  >/dev/null && GARGP_HELP_loption=
@@ -906,7 +836,6 @@ add_std_opts() {
         add_opt "$GARGP_QUIET_loption" "" "$GARGP_QUIET_option" "" b 0 "" "do it quietly"
     fi
 
-    add_opt "$GARGP_PRINTXML_loption" "" "" "" b 0 ""
     add_opt "$GARGP_ENDOPTS_loption" "" "-" "" b 0 "" "explicitly ends the options"
 }
 
@@ -1170,40 +1099,6 @@ get_opt_name() {
 }
 
 
-
-process_params() {
-    [[ "$ARGP_DEBUG" ]] && debug_args "$@"
-    local SHIFT_NUM=0 PARAM PARAM_NAME TYPE RANGE MANDATORY VALUE STOP_PARAMETERS
-
-    for PARAM_NAME in $ARGP_PARAM_LIST; do
-        VALUE="${1:-}"
-        MANDATORY=$(get_param_mandatory "$PARAM_NAME")
-        TYPE=$(get_param_type "$PARAM_NAME")
-        [[ "$TYPE" ]] || {
-            abend 1 "$ARGP_PROG: argp.sh: no type for param \"$PARAM_NAME\""
-        }
-        RANGE=$(get_param_range "$PARAM_NAME")
-
-        ((SHIFT_NUM++))
-        shift
-
-
-        [[ "$VALUE" ]] || {
-              [[ "$MANDATORY" == "1" ]] && abend 1 "$PARAM_NAME is mandatory"
-        }
-
-        [[ "$ARGP_DEBUG" ]] &&
-        echo "process_params: param='$PARAM_NAME' value='$VALUE' type='$TYPE' range='$RANGE'"
-
-        check_type_and_value "$PARAM_NAME" "$VALUE" "$TYPE" "$RANGE"
-
-        export $PARAM_NAME="$VALUE"
-        set +x
-    done
-
-    return $SHIFT_NUM
-}
-
 # NOTE : reset options value to EMPTY by default
 reset_params() {
     local PARAM_NAME=
@@ -1219,6 +1114,95 @@ reset_opts() {
     for OPT_NAME in $ARGP_OPTION_LIST; do
         export $OPT_NAME=
     done
+}
+
+
+
+process_extra_params() {
+    [[ "$ARGP_DEBUG" ]] && debug_args "$@"
+    local SHIFT_NUM=0 VALUE TOTAL_SIZE=0 TMP COUNT=0
+
+    TMP="$@"
+    # total size of parameters + arg after ending options (@ do not contains ' -- ' here)
+    TOTAL_SIZE="${#TMP}"
+    [[ $ENDING_ARG_SIZE -gt 0 ]] && TOTAL_SIZE=$(( TOTAL_SIZE - ENDING_ARG_SIZE ))
+
+    while true; do
+        VALUE="${1:-}"
+
+        ((SHIFT_NUM++))
+        shift
+
+        [[ "$VALUE" ]] && {
+          TMP="${#VALUE}"
+          COUNT=$(( COUNT + TMP ))
+        }
+        [[ $COUNT -gt $TOTAL_SIZE ]] && {
+          # we have reached the ending option arg (the ones after --)
+          break;
+        }
+
+        COUNT=$(( COUNT + 1 ))
+        EXTRA_PARAM="$EXTRA_PARAM '$VALUE'"
+    done
+    return $SHIFT_NUM
+}
+
+process_params() {
+    [[ "$ARGP_DEBUG" ]] && debug_args "$@"
+    local SHIFT_NUM=0 PARAM PARAM_NAME TYPE RANGE MANDATORY VALUE TOTAL_SIZE=0 TMP COUNT=0 END_OF_DEFINED_PARAM=
+
+    TMP="$@"
+    # total size of parameters + arg after ending options (@ do not contains ' -- ' here)
+    TOTAL_SIZE="${#TMP}"
+
+    [[ $ENDING_ARG_SIZE -gt 0 ]] && TOTAL_SIZE=$(( TOTAL_SIZE - ENDING_ARG_SIZE ))
+
+    for PARAM_NAME in $ARGP_PARAM_LIST; do
+        VALUE="${1:-}"
+        MANDATORY=$(get_param_mandatory "$PARAM_NAME")
+        TYPE=$(get_param_type "$PARAM_NAME")
+        [[ "$TYPE" ]] || {
+            abend 1 "$ARGP_PROG: argp.sh: no type for param \"$PARAM_NAME\""
+        }
+        RANGE=$(get_param_range "$PARAM_NAME")
+
+        ((SHIFT_NUM++))
+        shift
+
+        [[ "$VALUE" ]] && {
+          TMP="${#VALUE}"
+          COUNT=$(( COUNT + TMP ))
+        }
+
+        [[ $COUNT -gt $TOTAL_SIZE ]] && {
+          # we have reached the ending option arg (the ones after --)
+          END_OF_DEFINED_PARAM=1
+          VALUE=
+        }
+        COUNT=$(( COUNT + 1 ))
+
+        [[ "$VALUE" ]] || {
+              [[ "$MANDATORY" == "1" ]] && abend 1 "$PARAM_NAME is mandatory"
+        }
+        check_type_and_value "$PARAM_NAME" "$VALUE" "$TYPE" "$RANGE"
+
+        [[ $END_OF_DEFINED_PARAM ]] && break;
+
+        [[ "$ARGP_DEBUG" ]] &&
+        echo "process_params: param='$PARAM_NAME' value='$VALUE' type='$TYPE' range='$RANGE'"
+
+        export $PARAM_NAME="$VALUE"
+        set +x
+    done
+
+    [[ "$ARGP_DEBUG" ]]  && {
+      [[ $COUNT -lt $TOTAL_SIZE ]] && {
+          echo "process_params: there is extra parameter not treated"
+      }
+    }
+
+    return $SHIFT_NUM
 }
 
 process_opts() {
@@ -1240,16 +1224,12 @@ process_opts() {
             exit 0
         fi
 
-        if [[ "$GARGP_PRINTXML_loption" && --$GARGP_PRINTXML_loption == "$OPTION" ]]; then
-            print_xml
-            echo "exit 0;" >&3
-            exit 0
-        fi
+
 
         ((SHIFT_NUM++))
         shift
 
-        [[ "$OPTION" == "--" ]] && break
+        [[ "$OPTION" = "--" ]] && break
 
         # here is where all the user options get done:
         OPT_NAME=$(get_opt_name "$OPTION")
@@ -1319,22 +1299,118 @@ output_values_param() {
         echo -n "export $PARAM_NAME='$VALUE'; "
     done
 
+}
 
+output_values_extra_param() {
+  [[ "$EXTRA_PARAM" == *\'* ]] && EXTRA_PARAM=$(echo "${EXTRA_PARAM}" |sed -e "s/'/'\\\''/g")
+  echo -n "export $ARGP_EXTRA_PARAMETER_VAR='$EXTRA_PARAM'; "
+}
 
+parse_after_end_options() {
+  local i s
+  i=0
+  for s in "$@"; do
+    ((i++))
+    [ "$s" = "--" ] && break
+  done
+  shift $i
+
+  output_values_after_end_options "$@" >&3
+  # nb char of after end options
+  local TMP="$@"
+  return "${#TMP}"
+}
+
+# https://stackoverflow.com/a/45449744
+shell_quote()
+{
+    local result=''
+    local arg
+    for arg in "$@" ; do
+
+        # Append a space to our result, if necessary
+        #
+        result=${result}${result:+ }
+
+        # Convert each embedded ' to \' , then insert ' at the
+        # beginning of the line, and append ' at the end of
+        # the line.
+        #
+        result=${result}$(printf "%s\n" "$arg" | \
+          sed -e "s/'/'\\\\''/g" -e "1s/^/'/" -e "\$s/\$/'/")
+    done
+
+    # use printf(1) instead of echo to avoid weird "echo"
+    # implementations.
+    #
+    printf "%s\n" "$result"
 }
 
 
-output_values_otherarg() {
-  local VALUE
-
-  echo -n "set -- "
-  for VALUE in "$@"; do
-      [[ "$VALUE" == *\'* ]] && VALUE=$(echo "${VALUE}" |sed -e "s/'/'\\\''/g")
-      echo -n " '$VALUE'" ; done
-  echo
+# https://stackoverflow.com/a/45449744
+output_values_after_end_options() {
+  # inject instructions to set @
+  printf "set -- %s;\n" "$(shell_quote "$@")"
+  # save values of @ into a variable DO NOT WORK
+  #[[ "$ARGP_EXTRA_ARG_VAR" ]] && printf "export $ARGP_EXTRA_ARG_VAR=%s\n;" "$(shell_quote "$@")"
+  # save instructions to set @ into a variable to evaluate
+  [[ "$ARGP_EXTRA_ARG_EVAL_VAR" ]] && printf "export $ARGP_EXTRA_ARG_EVAL_VAR=%s\n;" "$(shell_quote "set --  $(shell_quote "$@")")"
 }
 
-output_values() {
+
+parse_options_and_params() {
+    local shift_option=0 shift_param=0 TMP= something_to_parse=1
+
+    TMP="$@"
+    # if there is nothing
+    [[ ${#TMP} -eq 0 ]] && something_to_parse=
+    # if there is only extra arg
+    [[ ${#TMP} -eq $((ENDING_ARG_SIZE + 3)) ]] && something_to_parse=
+
+
+    [[ $something_to_parse ]] && {
+      # reorder @ and put options at the beginning of ${ARGS[@]}
+      call_getopt "$@"
+      set -- "${ARGS[@]}"
+      [[ "$ARGP_DEBUG" ]] && debug_args "$@"
+    }
+
+    # PARSE OPTIONS ARG
+    reset_opts
+    process_opts "$@"
+    # nb option shifted
+    shift_option=$?
+    shift $shift_option
+    [[ $something_to_parse ]] && {
+      [[ "$ARGP_DEBUG" ]] && debug_args "$@"
+      output_values_options "$@" >&3
+    }
+
+    # PROCESS PARAMETERS ARG
+    reset_params
+    process_params "$@"
+    # nb param shifted
+    shift_param=$?
+    shift $shift_param
+    [[ $something_to_parse ]] && {
+      [[ "$ARGP_DEBUG" ]] && debug_args "$@"
+      output_values_param "$@" >&3
+    }
+
+    [[ $something_to_parse ]] && {
+      [[ "$ARGP_EXTRA_PARAMETER_VAR" ]] && {
+        # PROCESS EXTRA PARAMETERS
+        process_extra_params "$@"
+        # nb param shifted
+        shift_param=$?
+        shift $shift_param
+        output_values_extra_param "$@" >&3
+      }
+    }
+}
+
+
+output_values_options() {
     [[ "$ARGP_DEBUG" ]] && debug_args "$@"
     local OPT_NAME= VALUE= MANDATORY= DEF=
     # NOTE : use local OPT_NAME to not override option name which can be "NAME"
@@ -1352,7 +1428,6 @@ output_values() {
         [[ "$VALUE" == *\'* ]] && VALUE=$(echo "${VALUE}" |sed -e "s/'/'\\\''/g")
         echo -n "export $OPT_NAME='$VALUE'; "
     done
-
 
 }
 
@@ -1460,7 +1535,6 @@ initialise() {
     QUIET=
     GARGP_VERSION_loption="version"
     GARGP_VERSION_option="V"
-    GARGP_PRINTXML_loption="print-xml"
     GARGP_ENDOPTS_loption="end-all-options"
 
     GARGP_SHORT_OPT_COL=2
@@ -1507,10 +1581,10 @@ read_config() {
     trap "rm -f $TMP" EXIT
 
     local FILE_TYPE= LINE=
-	local READING_OPT=0
-	local READING_PARAM=0
-  local READING_HEADER=0
-  local READING_LONG_DESC=0
+    local READING_OPT=0
+    local READING_PARAM=0
+    local READING_HEADER=0
+    local READING_LONG_DESC=0
 
     while read LINE; do
 
@@ -1561,6 +1635,15 @@ read_config() {
                 ;;
             "ARGP_OPTION_SEP="*)
                 ARGP_OPTION_SEP="${LINE#ARGP_OPTION_SEP=}"
+                ;;
+            "ARGP_EXTRA_PARAMETER_VAR="*)
+                ARGP_EXTRA_PARAMETER_VAR="${LINE#ARGP_EXTRA_PARAMETER_VAR=}"
+                ;;
+            #"ARGP_EXTRA_ARG_VAR="*)
+            #    ARGP_EXTRA_ARG_VAR="${LINE#ARGP_EXTRA_ARG_VAR=}"
+            #    ;;
+            "ARGP_EXTRA_ARG_EVAL_VAR="*)
+                ARGP_EXTRA_ARG_EVAL_VAR="${LINE#ARGP_EXTRA_ARG_EVAL_VAR=}"
                 ;;
             "ARGP_LONG_DESC="*)
                 READING_HEADER=1
@@ -1647,39 +1730,16 @@ read_config() {
 
 main() {
     add_std_opts
-
     read_config
-
     sort_option_names_by_key
 
-    local OTHERARG CMDLINE FULLCMDLINE
-    FULLCMDLINE="$@"
-    # capture characters after first -- (to capture after last -- : ${@##* -- })
-    OTHERARG="${FULLCMDLINE#* -- }"
-    # capture characters before first -- (to capture before last -- : ${@%* -- })
-    CMDLINE="${FULLCMDLINE%% -- *}"
-    [[ "$CMDLINE" == "$OTHERARG" ]] && OTHERARG=""
-    eval set -- "$CMDLINE"
 
-    call_getopt "$@"
-    [[ "$ARGP_DEBUG" ]] && debug_args "$@"
-    reset_opts
-    process_opts "${ARGS[@]}"
-    ARGP_NUM_SHIFT=$?
-    set -- "${ARGS[@]}"
-    shift $ARGP_NUM_SHIFT
-    [[ "$ARGP_DEBUG" ]] && debug_args "$@"
-    output_values "$@" >&3
+    # PROCESS ARG AFTER END OPTIONS
+    parse_after_end_options "$@"
+    ENDING_ARG_SIZE=$?
 
-    reset_params
-    process_params "$@"
-    ARGP_NUM_SHIFT=$?
-    shift $ARGP_NUM_SHIFT
-    [[ "$ARGP_DEBUG" ]] && debug_args "$@"
-    output_values_param "$@" >&3
-
-    output_values_otherarg "$OTHERARG" >&3
-
+    # PROCESS OPTIONS ARG, PARAMETERS ARG, AND EXTRA PARAMETERS ARG
+    parse_options_and_params "$@"
 }
 
 check_bash() {

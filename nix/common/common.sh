@@ -2034,18 +2034,40 @@ __ini_file() {
 #		https://godoc.org/code.google.com/p/getopt
 #		https://github.com/kesselborn/go-getopt
 #		STELLA_ARGPARSE_GETOPT : getopt command instead of "getopt"
+# DEFINITIONS :
+#				OPTION : an option begin with - or --
+#				PARAMETER : a parameter do not have -
+#				EXTRA PARAMETER : non parsed parameter are non defined parameter passed to command line
+#				EXTRA ARG : end of options arg are arguments after '--'
 __argparse(){
 	local PROGNAME=$(__get_filename_from_string "$1")
 	local OPTIONS="$2"
 	local PARAMETERS="$3"
 	local SHORT_DESCRIPTION="$4"
 	local LONG_DESCRIPTION="$5"
-	# this variable, if setted, will receive the rest of the command line not processed
-	local COMMAND_LINE_RESULT="$6"
+	local OPT="$6"
+	# available options
+	#		EXTRA_PARAMETER : a variable name which will contains non parsed parameter
+	#		EXTRA_ARG : a variable name which will contains a string with EXTRA ARG (arguments after --)
+	#		EXTRA_ARG_EVAL : a variable name which will contains a string to evalute, that will fix @ with EXTRA ARG (arguments after --)
 
 	shift 6
 
-	local COMMAND_LINE="$@"
+	local _flag_extra_arg_eval_var=
+	local _extra_arg_eval_var=
+	local _flag_extra_arg_var=
+	local _extra_arg_var=
+	local _flag_extra_parameter_var=
+	local _extra_parameter_var=
+	for o in $OPT; do
+		[ "$_flag_extra_parameter_var" = "ON" ] && _extra_parameter_var="$o" && _flag_extra_parameter_var=
+		[ "$o" = "EXTRA_PARAMETER" ] && _flag_extra_parameter_var="ON"
+		[ "$_flag_extra_arg_eval_var" = "ON" ] && _extra_arg_eval_var="$o" && _flag_extra_arg_eval_var=
+		[ "$o" = "EXTRA_ARG_EVAL" ] && _flag_extra_arg_eval_var="ON"
+		[ "$_flag_extra_arg_var" = "ON" ] && _extra_arg_var="$o" && _flag_extra_arg_var=
+		[ "$o" = "EXTRA_ARG" ] && _flag_extra_arg_var="ON"
+	done
+
 
 	ARGP="
 	--HEADER--
@@ -2054,7 +2076,10 @@ __argparse(){
 	ARGP_VERSION=$STELLA_APP_NAME
 	ARGP_OPTION_SEP=:
 	ARGP_SHORT=$SHORT_DESCRIPTION
-	ARGP_LONG_DESC=$LONG_DESCRIPTION"
+	ARGP_LONG_DESC=$LONG_DESCRIPTION
+	ARGP_EXTRA_PARAMETER_VAR=$_extra_parameter_var
+	ARGP_EXTRA_ARG_EVAL_VAR=$_extra_arg_eval_var
+	"
 
 	ARGP=$ARGP"
 	--OPTIONS--
@@ -2064,26 +2089,25 @@ __argparse(){
 	"
 
 	# Debug mode
-	# for debug :
+	# for DEBUG :
 	#export ARGP_DEBUG=1
 	export ARGP_HELP_FMT=
 	#export ARGP_HELP_FMT="rmargin=$(tput cols)"
 	#echo $ARGP
 	exec 4>&1 # fd4 is now a copy of fd1 ie stdout
-	RES=$( echo "$ARGP" | GETOPT_CMD=$STELLA_ARGPARSE_GETOPT $STELLA_COMMON/argp.sh $COMMAND_LINE 3>&1 1>&4 || echo exit $? )
+	RES=$( echo "$ARGP" | GETOPT_CMD=$STELLA_ARGPARSE_GETOPT $STELLA_COMMON/argp.sh "$@" 3>&1 1>&4 || echo exit $? )
 	exec 4>&-
 
-	# $@ now contains not parsed argument, options and identified parameters have been processed and removed:
-	# echo "argp returned this for us to eval: '$RES'"
+
 	[ "$RES" ] || exit 0
 
-	# for debug :
+	# for DEBUG :
 	#echo $RES
 	eval $RES
 
-	if [ "$COMMAND_LINE_RESULT" ]; then
-		# Store rest of the command line not processed in COMMAND_LINE_RESULT
-		eval "$COMMAND_LINE_RESULT=\$@"
+	# NOTE : here @ contains now EXTRA ARG
+	if [ ! "$_extra_arg_var" = "" ]; then
+		eval "export $_extra_arg_var=\$@"
 	fi
 
 
