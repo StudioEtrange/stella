@@ -559,6 +559,13 @@ __yum_add_extra_repositories() {
 }
 
 
+__yum_remove_extra_repositories() {
+	__log "INFO" "** Disable EPEL repositories"
+
+	__sudo_exec yum-config-manager --disable epel
+	__sudo_exec yum clean all
+}
+
 
 
 __get_current_package_manager() {

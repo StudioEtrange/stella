@@ -96,7 +96,7 @@ HIDDEN=''                       	''    		''            		b     		0     		'1'    
 SUDO=''                       	''    		''            		b     		0     		'1'           			Execute as sudo.
 SCRIPT=''                   ''          'path'              s           0           ''                      Script path.
 "
-__argparse "${BASH_SOURCE[0]}" "$OPTIONS" "$PARAMETERS" "Stella" "$(usage)" "OTHERARG" "$@"
+__argparse "${BASH_SOURCE[0]}" "$OPTIONS" "$PARAMETERS" "Stella" "$(usage)" "EXTRA_ARG OTHERARG" "$@"
 
 
 # --------------- APP ----------------------------
