@@ -5,12 +5,54 @@ _reg_INCLUDED_=1
 
 feature_reg() {
 	FEAT_NAME=reg
-	FEAT_LIST_SCHEMA="0_16_0@x64:binary 0_16_0@x86:binary 0_13_0@x64:binary 0_13_0@x86:binary 0_9_0@x64:binary 0_9_0@x86:binary"
+	FEAT_LIST_SCHEMA="studioetrange:source 0_16_0@x64:binary 0_16_0@x86:binary 0_13_0@x64:binary 0_13_0@x86:binary 0_9_0@x64:binary 0_9_0@x86:binary"
 	FEAT_DEFAULT_ARCH=x64
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="docker registry client"
 	FEAT_LINK="https://github.com/genuinetools/reg"
+}
+
+
+feature_reg_studioetrange() {
+	FEAT_VERSION="studioetrange"
+
+
+	FEAT_SOURCE_URL="https://github.com/StudioEtrange/reg/archive/master.zip"
+	FEAT_SOURCE_URL_FILENAME="reg-source-studioetrange-$(date +%s).zip"
+	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
+
+	FEAT_SOURCE_CALLBACK=
+		FEAT_ENV_CALLBACK=
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/reg"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
+
+}
+
+
+feature_reg_install_source() {
+	INSTALL_DIR="$FEAT_INSTALL_ROOT"
+	SRC_DIR="$FEAT_INSTALL_ROOT/src/reg"
+	BUILD_DIR=
+
+	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP FORCE_NAME $FEAT_SOURCE_URL_FILENAME"
+
+	__add_toolset "go-build-chain#1_11_2"
+
+	__start_manual_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
+
+
+
+	# replace github references to build from local
+	cd "$SRC_DIR"
+	# https://unix.stackexchange.com/a/112024
+	find . -type f -name "*.go" -exec sed -i 's,github.com/genuinetools/reg/,reg/,g' {} +
+	
+	PREFIX="$INSTALL_DIR" GOPATH="$INSTALL_DIR" make build install
+
+	__end_manual_build
+
 }
 
 
