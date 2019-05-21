@@ -9,10 +9,10 @@ _TEMPLATE_INCLUDED_=1
 # NOTE on install package in a specific folder
 # https://stackoverflow.com/questions/2915471/install-a-python-package-into-a-different-directory-using-pip
 
+# EXAMPLE : see feature_xkcdpass
 
-
-# FLAVOUR source : install from python source (see other template)
-# FLAVOUR binary : install from pip or conda
+# template_package_python_from_source : FLAVOUR source : install from python source
+# template_package_python : FLAVOUR binary : install from pip or conda ==> TODO : but pip (but not conda?) may need gcc and other toolset, so this might not been a binary flavour ?
 
 # ==> TODO : pip (but not conda?) may need gcc and other toolset, so this might not be a binary flavour ?
 

@@ -1,4 +1,4 @@
-#!sh
+#!/usr/bin/env bash
 if [ ! "$_STELLA_COMMON_INCLUDED_" = "1" ]; then
 _STELLA_COMMON_INCLUDED_=1
 
@@ -129,7 +129,7 @@ __sort_version() {
 		[ "$o" = "SEP" ] && flag_sep=ON
 	done
 
-	local internal_separator=}
+	local internal_separator="}"
 	local new_list=
 	local match_list=
 	local max_number_of_block=0
@@ -1652,7 +1652,7 @@ __untar-strip() {
 	rm -Rf "$temp"
 }
 
-__unzip-strip() (
+__unzip-strip() {
     local zip=$1
     local dest=${2:-.}
     local temp=$(mktmpdir)
@@ -1667,9 +1667,9 @@ __unzip-strip() (
         mv "$temp"/* "$dest"
     fi
     rm -Rf "$temp"
-)
+}
 
-__sevenzip-strip() (
+__sevenzip-strip() {
     local zip=$1
     local dest=${2:-.}
     local temp=$(mktmpdir)
@@ -1683,7 +1683,7 @@ __sevenzip-strip() (
         mv "$temp"/* "$dest"
     fi
     rm -Rf "$temp"
-)
+}
 
 # SCM ---------------------------------------------
 # https://vcversioner.readthedocs.org/en/latest/
@@ -1742,32 +1742,6 @@ __get_key() {
 	local _OPT=$4
 
 	__get_keys "${_FILE}" "ASSIGN EVAL ${_OPT} KEY ${_KEY} SECTION ${_SECTION}"
-	#
-	# _opt_section_prefix=OFF
-	# for o in $_OPT; do
-	# 	[ "$o" = "PREFIX" ] && _opt_section_prefix=ON
-	# done
-	#
-	# # trim whitespace
-	# _SECTION=$(__trim "$_SECTION")
-	#
-	# local _win_endline=$'s/\r//g'
-	# local _exp1="/\[$_SECTION\]/,/\[.*\]/p"
-	# local _exp2="/^$_KEY=/{print \$2}"
-	#
-	# if [ -f "$_FILE" ]; then
-	# 	if [ "$_opt_section_prefix" = "ON" ]; then
-	# 		eval "$_SECTION"_"$_KEY"='$(sed -n -e "$_win_endline" -e "$_exp1" "$_FILE" | awk -F= "$_exp2" )'
-	# 	else
-	# 		eval $_KEY='$(sed -n -e "$_win_endline" -e "$_exp1" "$_FILE" | awk -F= "$_exp2" )'
-	# 	fi
-	# else
-	# 	if [ "$_opt_section_prefix" = "ON" ]; then
-	# 		eval "$_SECTION"_"$_KEY"=
-	# 	else
-	# 		eval $_KEY=
-	# 	fi
-	# fi
 
 }
 
@@ -1822,7 +1796,7 @@ __get_keys() {
 
   # escape regexp special characters
 	# http://stackoverflow.com/questions/407523/escape-a-string-for-a-sed-replace-pattern
-  # TODO do we need this ?
+  # TODO do we need this two lines below ?
 	#_opt_section=$(echo ${_opt_section} | sed -e 's/[]\/$*.^|[]/\\&/g')
 	#_opt_key=$(echo "$_opt_key" | sed -e 's/\\/\\\\/g')
 
@@ -2040,16 +2014,18 @@ __ini_file() {
 #				EXTRA PARAMETER : non parsed parameter are non defined parameter passed to command line
 #				EXTRA ARG : end of options arg are arguments after '--'
 __argparse(){
-	local PROGNAME=$(__get_filename_from_string "$1")
+	local PROGNAME
+	PROGNAME="$(__get_filename_from_string "$1")"
 	local OPTIONS="$2"
 	local PARAMETERS="$3"
 	local SHORT_DESCRIPTION="$4"
 	local LONG_DESCRIPTION="$5"
 	local OPT="$6"
 	# available options
-	#		EXTRA_PARAMETER : a variable name which will contains non parsed parameter
+	#		EXTRA_PARAMETER : a variable name which will contains non parsed parameter (parameter before -- which are not defined)
 	#		EXTRA_ARG : a variable name which will contains a string with EXTRA ARG (arguments after --)
-	#		EXTRA_ARG_EVAL : a variable name which will contains a string to evalute, that will fix @ with EXTRA ARG (arguments after --)
+	#		EXTRA_ARG_EVAL : a variable name which will contains a string to evalute, that will set variable '$@' with EXTRA ARG (arguments after --)
+	#		see samples in test/argparse/sample-app.sh
 
 	shift 6
 

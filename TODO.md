@@ -1,6 +1,7 @@
 *TODO & NOTES*
 
 
+
 # Recipe, package manager inspiration
 
 ## Nix
@@ -82,8 +83,8 @@ in Atom Editor
     apm install linter-shellcheck
   ```
 
-use
-  `spellcheck stella.sh`
+then use
+  `shellcheck stella.sh`
 
 * checkbashisms
 
@@ -107,6 +108,7 @@ use
 
 # TODO List
 
+- [ ] Test and remove DEST_ERASE in each feature_recipe : cause problem when bundled in merge mode. But only for binary ? keep it for source? only when get binary
 - [ ] win : add FEATURE_LIST_ENABLED_VISIBLE
 - [ ] win : feat_install() split HIDDEN into HIDDEN and NON_DECLARED
 - [ ] win : while feat_init() pre init dependencies
@@ -128,7 +130,7 @@ use
 - [ ] nix : bash-lib : https://github.com/aks/bash-lib
 - [ ] COMMENTS code
 - [ ] Format output (log system)
-- [ ] Test and remove DEST_ERASE in each feature_recipe : cause problem when bundled in merge mode. But only for binary ? keep it for source? only when get binary
+
 
 - [ ] nix : review speed and optimization
 https://stackoverflow.com/questions/5014823/how-to-profile-a-bash-shell-script-slow-startup
@@ -359,15 +361,24 @@ https://coreos.com/tectonic/docs/latest/install/bare-metal/metal-terraform.html
 * from bare metal to hadoop : cobbler + ansible + cloudera manager
 ** https://blog.godatadriven.com/bare-metal-hadoop-provisioning-ansible-cobbler.html
 
-* structor
+* structor for VM deploy
   https://github.com/cartershanklin/structor (and forks)
+
+* 3 nodes HDFS Yarn MapReduce :
+  https://www.linode.com/docs/databases/hadoop/how-to-install-and-set-up-hadoop-cluster/
+  add spark :
+  https://www.linode.com/docs/databases/hadoop/install-configure-run-spark-on-top-of-hadoop-yarn-cluster/
+
+* http://hadoop.apache.org/docs/r2.7.2/hadoop-project-dist/hadoop-common/SingleCluster.html
+  http://hadoop.apache.org/docs/r2.7.2/hadoop-project-dist/hadoop-common/ClusterSetup.html
+
 ## Kubernetes deploy
 
 * several contribution of kubernetes deploy techniques : https://github.com/kubernetes/kube-deploy
 * kops : https://github.com/kubernetes/kops
 * kubernetes-everywhere : https://github.com/kubernetes/kubernetes-anywhere
 * ansible : http://blog.jameskyle.org/2014/08/deploying-baremetal-kubernetes-cluster/
-*
+* quickstart kubernetes https://www.linode.com/docs/applications/containers/manage-a-docker-cluster-with-kubernetes/
 
 
 ## VM

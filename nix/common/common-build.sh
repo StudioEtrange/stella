@@ -1,4 +1,4 @@
-#!sh
+#!/usr/bin/env bash
 if [ ! "$_STELLA_COMMON_BUILD_INCLUDED_" = "1" ]; then
 _STELLA_COMMON_BUILD_INCLUDED_=1
 

@@ -532,6 +532,7 @@ __yum_proxy_unset_repo() {
 }
 
 
+# add epel
 # _version could be 6 or 7 (for RHEL/Centos 6.x or 7.x)
 __yum_add_extra_repositories() {
 	local _version="$1"
