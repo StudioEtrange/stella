@@ -5,7 +5,7 @@ _GO_INCLUDED_=1
 feature_go() {
 
 	FEAT_NAME=go
-	FEAT_LIST_SCHEMA="1_11_2:binary 1_11_2:source 1_10_2:binary 1_10_1:binary 1_9_2:binary 1_8_1:binary 1_6_3:binary 1_6_3:source 1_4_2:source 1_4_2:binary 1_4_3:source 1_4_3:binary 1_5_3:source 1_5_3:binary"
+	FEAT_LIST_SCHEMA="1_12_4:binary 1_12_4:source 1_11_2:binary 1_11_2:source 1_10_2:binary 1_10_1:binary 1_9_2:binary 1_8_1:binary 1_6_3:binary 1_6_3:source 1_4_2:source 1_4_2:binary 1_4_3:source 1_4_3:binary 1_5_3:source 1_5_3:binary"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
@@ -13,6 +13,33 @@ feature_go() {
 feature_go_set_env() {
 	GOROOT="$FEAT_INSTALL_ROOT"
 	export GOROOT="$FEAT_INSTALL_ROOT"
+}
+
+
+feature_go_1_12_4() {
+	FEAT_VERSION="1_12_4"
+
+
+	FEAT_SOURCE_URL="https://dl.google.com/go/go1.12.4.src.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="go1.12.4.src.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		FEAT_BINARY_URL="https://dl.google.com/go/go1.12.4.linux-amd64.tar.gz"
+		FEAT_BINARY_URL_FILENAME="go1.12.4.linux-amd64.tar.gz"
+		FEAT_BINARY_URL_PROTOCOL="HTTP_ZIP"
+	fi
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		FEAT_BINARY_URL="https://dl.google.com/go/go1.12.4.linux-amd64.tar.gz"
+		FEAT_BINARY_URL_FILENAME="go1.12.4.linux-amd64.tar.gz"
+		FEAT_BINARY_URL_PROTOCOL="HTTP_ZIP"
+	fi
+
+	FEAT_ENV_CALLBACK="feature_go_set_env"
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/go
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 }
 
 

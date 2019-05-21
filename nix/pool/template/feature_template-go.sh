@@ -2,6 +2,8 @@ if [ ! "$_TEMPLATEGO_INCLUDED_" = "1" ]; then
 _TEMPLATEGO_INCLUDED_=1
 
 
+# note : see other example with feature_reg
+
 feature_template-go() {
 	FEAT_NAME="template-go"
 	FEAT_LIST_SCHEMA="snapshot:source"
@@ -15,7 +17,7 @@ feature_template-go() {
 
 feature_template-go_snapshot() {
 	FEAT_VERSION="snapshot"
-	FEAT_SOURCE_DEPENDENCIES="go-build-chain#1_4_2"
+	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL="https://github.com/pborman/getopt/archive/master.zip"
