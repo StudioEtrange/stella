@@ -13,6 +13,7 @@ _STELLA_COMMON_APP_INCLUDED_=1
 # EXCLUDE_HIDDEN use this option to exclude hidden files
 # SUDO use sudo on the target
 # FOLDER_CONTENT use this option to transfer content of the app folder only (not folder itself)
+# EXCLUDE some file or folder, repeat this option if multiple, / is the root of app (/file is a file at the root of the app)
 __transfer_app(){
 	local _uri="$1"
 	local _OPT="$2"
@@ -31,6 +32,10 @@ __transfer_app(){
 	local _opt_copy_links
 	_opt_copy_links=
 	local _opt_delete_excluded=
+	local _opt_exclude
+	_opt_exclude=
+	local _flag_exclude
+	_flag_exclude=OFF
 	for o in $_OPT; do
 		[ "$o" = "CACHE" ] && _opt_ex_cache=
 		[ "$o" = "WORKSPACE" ] && _opt_ex_workspace=
@@ -40,13 +45,15 @@ __transfer_app(){
 		[ "$o" = "FOLDER_CONTENT" ] && _opt_folder_content="FOLDER_CONTENT"
 		[ "$o" = "COPY_LINKS" ] && _opt_copy_links="COPY_LINKS"
 		[ "$o" = "DELETE_EXCLUDED" ] && _opt_delete_excluded="DELETE_EXCLUDED"
+		[ "$_flag_exclude" = "ON" ] && _opt_exclude="EXCLUDE $o $_opt_exclude" && _flag_exclude=OFF
+		[ "$o" = "EXCLUDE" ] && _flag_exclude=ON
 	done
 
 	__standard_include="INCLUDE /.stella-id"
 
 	__log "DEBUG" "** ${_opt_sudo} Transfer app $STELLA_APP_NAME to $_uri"
 
-	__transfer_folder_rsync "$STELLA_APP_ROOT" "$_uri" "$__standard_include $_opt_delete_excluded $_opt_ex_cache $_opt_ex_workspace $_opt_ex_hidden $_opt_ex_git $_opt_sudo $_opt_folder_content $_opt_copy_links"
+	__transfer_folder_rsync "$STELLA_APP_ROOT" "$_uri" "$__standard_include $_opt_delete_excluded $_opt_ex_cache $_opt_ex_workspace $_opt_ex_hidden $_opt_exclude $_opt_ex_git $_opt_sudo $_opt_folder_content $_opt_copy_links"
 
 	if [ "$(__is_logical_subpath "$STELLA_APP_ROOT" "$STELLA_ROOT")" = "FALSE" ]; then
 		__path="$(__uri_get_path "$_uri")"

@@ -5,13 +5,41 @@ _PATCHELF_INCLUDED_=1
 feature_patchelf() {
 	FEAT_NAME=patchelf
 
-	FEAT_LIST_SCHEMA="0_9:source 0_8:source"
+	FEAT_LIST_SCHEMA="0_10:source 0_9:source 0_8:source"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 
+	FEAT_DESC="A small utility to modify the dynamic linker and RPATH of ELF executables"
+	FEAT_LINK="http://nixos.org/patchelf.html"
 
 }
 
+
+
+
+feature_patchelf_0_10() {
+	FEAT_VERSION=0_10
+
+
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL=https://nixos.org/releases/patchelf/patchelf-0.10/patchelf-0.10.tar.gz
+	FEAT_SOURCE_URL_FILENAME=patchelf-0.10.tar.gz
+	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
+
+	FEAT_BINARY_URL=
+	FEAT_BINARY_URL_FILENAME=
+	FEAT_BINARY_URL_PROTOCOL=
+
+	FEAT_SOURCE_CALLBACK=
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/patchelf
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+
+}
 
 feature_patchelf_0_9() {
 	FEAT_VERSION=0_9
@@ -20,7 +48,7 @@ feature_patchelf_0_9() {
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
-	FEAT_SOURCE_URL=http://nixos.org/releases/patchelf/patchelf-0.9/patchelf-0.9.tar.gz
+	FEAT_SOURCE_URL=https://nixos.org/releases/patchelf/patchelf-0.9/patchelf-0.9.tar.gz
 	FEAT_SOURCE_URL_FILENAME=patchelf-0.9.tar.gz
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
@@ -44,7 +72,7 @@ feature_patchelf_0_8() {
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
-	FEAT_SOURCE_URL=http://nixos.org/releases/patchelf/patchelf-0.8/patchelf-0.8.tar.gz
+	FEAT_SOURCE_URL=https://nixos.org/releases/patchelf/patchelf-0.8/patchelf-0.8.tar.gz
 	FEAT_SOURCE_URL_FILENAME=patchelf-0.8.tar.gz
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
