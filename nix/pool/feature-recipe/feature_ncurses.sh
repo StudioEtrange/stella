@@ -2,12 +2,34 @@ if [ ! "$_NCURSES_INCLUDED_" = "1" ]; then
 _NCURSES_INCLUDED_=1
 
 
+# https://www.gnu.org/software/ncurses/
+
 feature_ncurses() {
-	FEAT_NAME=ncurses
-	FEAT_LIST_SCHEMA="6_0:source 5_9:source"
+	FEAT_NAME="ncurses"
+	FEAT_LIST_SCHEMA="6_1:source 6_0:source 5_9:source"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
+
+	FEAT_DESC="ncurses is a programming library providing an API that allows the programmer to write text-based user interfaces in a terminal-independent manner."
+	FEAT_LINK="https://invisible-island.net/ncurses/"
 }
+
+
+feature_ncurses_6_1() {
+	FEAT_VERSION="6_1"
+
+
+
+	FEAT_SOURCE_URL="http://ftp.gnu.org/gnu/ncurses/ncurses-6.0.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="ncurses-6.1.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
+
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libncursesw.a
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+
+}
+
 
 feature_ncurses_6_0() {
 	FEAT_VERSION=6_0
@@ -85,7 +107,7 @@ feature_ncurses_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP NO_INSPECT"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP NO_FIX NO_CHECK"
 
 	# standard build
 	AUTO_INSTALL_CONF_FLAG_PREFIX=

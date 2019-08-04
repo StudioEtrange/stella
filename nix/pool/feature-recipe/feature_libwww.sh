@@ -13,7 +13,7 @@ feature_libwww() {
 
 feature_libwww_5_4_1() {
 	FEAT_VERSION=5_4_1
-	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 openssl#1_0_2k"
+	FEAT_SOURCE_DEPENDENCIES="zlib#^1_2 openssl#1_0_2k"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://github.com/w3c/libwww/releases/download/5.4.1/w3c-libwww-5.4.1.tgz
@@ -33,7 +33,7 @@ feature_libwww_5_4_1() {
 }
 
 feature_libwww_link() {
-	__link_feature_library "zlib#1_2_8"
+	__link_feature_library "zlib#^1_2"
 	__link_feature_library "openssl#1_0_2k"
 }
 

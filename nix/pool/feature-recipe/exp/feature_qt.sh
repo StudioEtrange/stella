@@ -20,7 +20,7 @@ feature_qt() {
 feature_qt_4_8_7() {
 	FEAT_VERSION=4_8_7
 
-	FEAT_SOURCE_DEPENDENCIES="openssl#1_0_2k zlib#1_2_8"
+	FEAT_SOURCE_DEPENDENCIES="openssl#1_0_2k zlib#^1_2"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://download.qt.io/official_releases/qt/4.8/4.8.7/qt-everywhere-opensource-src-4.8.7.tar.gz
@@ -45,7 +45,7 @@ feature_qt_4_8_7() {
 feature_qt_link() {
 	__link_feature_library "openssl#1_0_2k" "NO_SET_FLAGS GET_FLAGS _openssl"
 	#__link_feature_library "freetype"
-	__link_feature_library "zlib#1_2_8" "NO_SET_FLAGS GET_FLAGS _zlib"
+	__link_feature_library "zlib#^1_2" "NO_SET_FLAGS GET_FLAGS _zlib"
 	#__link_feature_library "jpeg"
 
 	#__link_feature_library "libpng" "NO_SET_FLAGS GET_FLAGS _libpng"

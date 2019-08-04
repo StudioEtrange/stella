@@ -147,9 +147,13 @@ __feature_catalog_info() {
 __feature_match_installed() {
 	local _SCHEMA="$1"
 
-	local _tested=
-	local _found=
-
+	#local _tested=
+	local _version_selector=
+	local _version_matched=
+	#local _found=
+	local _found_internal=
+	local _list_installed=
+	local _dirname=
 	if [ "$_SCHEMA" = "" ]; then
 		__internal_feature_context
 		return
@@ -157,66 +161,135 @@ __feature_match_installed() {
 	# we are NOT inside a bundle, because FEAT_BUNDLE_MODE is NOT set
 	if [ "$FEAT_BUNDLE_MODE" = "" ]; then
 		__translate_schema "$_SCHEMA" "__VAR_FEATURE_NAME" "__VAR_FEATURE_VER" "__VAR_FEATURE_ARCH" "__VAR_FEATURE_FLAVOUR"
-		[ ! "$__VAR_FEATURE_VER" = "" ] && _tested="$__VAR_FEATURE_VER"
+		#[ ! "$__VAR_FEATURE_VER" = "" ] && _tested="$__VAR_FEATURE_VER"
+		[ ! "$__VAR_FEATURE_VER" = "" ] && _version_selector="$__VAR_FEATURE_VER"
 		[ ! "$__VAR_FEATURE_ARCH" = "" ] && _tested="$_tested"@"$__VAR_FEATURE_ARCH"
 
 		# first lookup inside app feature root
 		if [ -d "$STELLA_APP_FEATURE_ROOT/$__VAR_FEATURE_NAME" ]; then
-			# for each detected version
+			_list_installed=
+			# list all installed version
 			for _f in "$STELLA_APP_FEATURE_ROOT"/"$__VAR_FEATURE_NAME"/*; do
 				if [ -d "$_f" ]; then
-					if [ "$_tested" = "" ]; then
-						_found="$_f"
-					else
-						case $_f in
-							*"$_tested"*)
-								_found="$_f"
-							;;
-							*)
-							;;
-						esac
-					fi
+					_dirname="$(__get_filename_from_string "$_f")"
+					_list_installed="${_list_installed} ${_dirname%%@*}"
 				fi
 			done
-		fi
-		# second lookup inside internal feature root
-		if [ "$_found" = "" ]; then
-			if [ ! "$STELLA_APP_FEATURE_ROOT" = "$STELLA_INTERNAL_FEATURE_ROOT" ]; then
-				if [ -d "$STELLA_INTERNAL_FEATURE_ROOT/$__VAR_FEATURE_NAME" ]; then
-					# for each detected version
-					for _f in  "$STELLA_INTERNAL_FEATURE_ROOT"/"$__VAR_FEATURE_NAME"/*; do
-						if [ -d "$_f" ]; then
-							if [ "$_tested" = "" ]; then
-								_found="$_f"
-							else
-								case $_f in
-									*"$_tested"*)
-										_found="$_f"
-									;;
-									*)
-									;;
-								esac
-							fi
-						fi
-					done
+
+			if [ ! "${_list_installed}" = "" ]; then
+				if [ "${_version_selector}" = "" ]; then
+					_version_matched="$(__get_last_version "${_list_installed}" "SEP _")"
+				else
+					_version_matched="$(__select_version_from_list "${_version_selector}" "${_list_installed}" "SEP _")"
 				fi
 			fi
-			if [ ! "$_found" = "" ]; then
+		fi
+
+		# second lookup inside internal feature root
+		if [ "$_version_matched" = "" ]; then
+			if [ ! "$STELLA_APP_FEATURE_ROOT" = "$STELLA_INTERNAL_FEATURE_ROOT" ]; then
+				if [ -d "$STELLA_INTERNAL_FEATURE_ROOT/$__VAR_FEATURE_NAME" ]; then
+					_list_installed=
+					# list all installed version
+					for _f in  "$STELLA_INTERNAL_FEATURE_ROOT"/"$__VAR_FEATURE_NAME"/*; do
+						if [ -d "$_f" ]; then
+							_dirname="$(__get_filename_from_string "$_f")"
+							_list_installed="${_list_installed} ${_dirname%%@*}"
+						fi
+					done
+					if [ ! "${_list_installed}" = "" ]; then
+						if [ "${_version_selector}" = "" ]; then
+							_version_matched="$(__get_last_version "${_list_installed}" "SEP _")"
+						else
+							_version_matched="$(__select_version_from_list "${_version_selector}" "${_list_installed}" "SEP _")"
+						fi
+					fi
+				fi
+			fi
+
+			if [ ! "$_version_matched" = "" ]; then
 				_found_internal=1
 				_save_app_feature_root=$STELLA_APP_FEATURE_ROOT
 				STELLA_APP_FEATURE_ROOT=$STELLA_INTERNAL_FEATURE_ROOT
 			fi
-
 		fi
 
 
+		# # first lookup inside app feature root
+		# if [ -d "$STELLA_APP_FEATURE_ROOT/$__VAR_FEATURE_NAME" ]; then
+		# 	# for each detected version
+		# 	for _f in "$STELLA_APP_FEATURE_ROOT"/"$__VAR_FEATURE_NAME"/*; do
+		# 		if [ -d "$_f" ]; then
+		# 			if [ "$_tested" = "" ]; then
+		# 				# we match any installed version
+		# 				_found="$_f"
+		# 			else
+		# 				case $_f in
+		# 					*"$_tested"*)
+		# 						_found="$_f"
+		# 					;;
+		# 					*)
+		# 					;;
+		# 				esac
+		# 			fi
+		# 		fi
+		# 	done
+		# fi
+		# # second lookup inside internal feature root
+		# if [ "$_found" = "" ]; then
+		# 	if [ ! "$STELLA_APP_FEATURE_ROOT" = "$STELLA_INTERNAL_FEATURE_ROOT" ]; then
+		# 		if [ -d "$STELLA_INTERNAL_FEATURE_ROOT/$__VAR_FEATURE_NAME" ]; then
+		# 			# for each detected version
+		# 			for _f in  "$STELLA_INTERNAL_FEATURE_ROOT"/"$__VAR_FEATURE_NAME"/*; do
+		# 				if [ -d "$_f" ]; then
+		# 					if [ "$_tested" = "" ]; then
+		# 						_found="$_f"
+		# 					else
+		# 						case $_f in
+		# 							*"$_tested"*)
+		# 								_found="$_f"
+		# 							;;
+		# 							*)
+		# 							;;
+		# 						esac
+		# 					fi
+		# 				fi
+		# 			done
+		# 		fi
+		# 	fi
+		# 	if [ ! "$_found" = "" ]; then
+		# 		_found_internal=1
+		# 		_save_app_feature_root=$STELLA_APP_FEATURE_ROOT
+		# 		STELLA_APP_FEATURE_ROOT=$STELLA_INTERNAL_FEATURE_ROOT
+		# 	fi
+		#
+		# fi
 
-		if [ ! "$_found" = "" ]; then
+
+
+		# if [ ! "$_found" = "" ]; then
+		# 	# we fix the found version with the flavour of the requested schema
+		# 	if [ ! "$__VAR_FEATURE_FLAVOUR" = "" ]; then
+		# 		__internal_feature_context "$__VAR_FEATURE_NAME"#"$(__get_filename_from_string $_found)":"$__VAR_FEATURE_FLAVOUR"
+		# 	else
+		# 		__internal_feature_context "$__VAR_FEATURE_NAME"#"$(__get_filename_from_string $_found)"
+		# 	fi
+		# 	if [ "$_found_internal" = "1" ];then
+		# 		STELLA_APP_FEATURE_ROOT=$_save_app_feature_root
+		# 		_found_internal=0
+		# 	fi
+		# else
+		# 	# empty info values
+		# 	__internal_feature_context
+		# fi
+
+
+		if [ ! "${_version_matched}" = "" ]; then
 			# we fix the found version with the flavour of the requested schema
 			if [ ! "$__VAR_FEATURE_FLAVOUR" = "" ]; then
-				__internal_feature_context "$__VAR_FEATURE_NAME"#"$(__get_filename_from_string $_found)":"$__VAR_FEATURE_FLAVOUR"
+				__internal_feature_context "${__VAR_FEATURE_NAME}#${_version_matched}:${__VAR_FEATURE_FLAVOUR}"
 			else
-				__internal_feature_context "$__VAR_FEATURE_NAME"#"$(__get_filename_from_string $_found)"
+				__internal_feature_context "${__VAR_FEATURE_NAME}#${_version_matched}"
 			fi
 			if [ "$_found_internal" = "1" ];then
 				STELLA_APP_FEATURE_ROOT=$_save_app_feature_root
@@ -508,7 +581,6 @@ __feature_install() {
 	local a
 
 	__internal_feature_context "$_SCHEMA"
-
 	if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" = "" ]; then
 		if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" = "$STELLA_CURRENT_OS" ]; then
 			__log "INFO" " $_SCHEMA not installed on $STELLA_CURRENT_OS"
@@ -731,7 +803,7 @@ __feature_init_installed() {
 	local _tested_feat_name=
 	local _tested_feat_ver=
 	# init internal features
-	# internal feature are not prioritary over app features so we init them first
+	# internal features are not prioritary over app features so we init them first
 	if [ ! "$STELLA_APP_FEATURE_ROOT" = "$STELLA_INTERNAL_FEATURE_ROOT" ]; then
 
 		_save_app_feature_root_init_installed=$STELLA_APP_FEATURE_ROOT
@@ -859,6 +931,7 @@ __internal_feature_context() {
 	fi
 
 	if [ ! "$_SCHEMA" = "" ]; then
+		#__select_official_schema_old "$_SCHEMA" "FEAT_SCHEMA_SELECTED" "TMP_FEAT_SCHEMA_NAME" "TMP_FEAT_SCHEMA_VERSION" "FEAT_ARCH" "FEAT_SCHEMA_FLAVOUR" "FEAT_SCHEMA_OS_RESTRICTION" "FEAT_SCHEMA_OS_EXCLUSION"
 		__select_official_schema "$_SCHEMA" "FEAT_SCHEMA_SELECTED" "TMP_FEAT_SCHEMA_NAME" "TMP_FEAT_SCHEMA_VERSION" "FEAT_ARCH" "FEAT_SCHEMA_FLAVOUR" "FEAT_SCHEMA_OS_RESTRICTION" "FEAT_SCHEMA_OS_EXCLUSION"
 	fi
 
@@ -892,21 +965,21 @@ __internal_feature_context() {
 		fi
 
 		# grab feature info
-		local _feat_found=0
+		local _feat_found="0"
 		if [ ! -z "$STELLA_FEATURE_RECIPE_EXTRA" ]; then
 			if [ -f "$STELLA_FEATURE_RECIPE_EXTRA/feature_$TMP_FEAT_SCHEMA_NAME.sh" ]; then
 				. "$STELLA_FEATURE_RECIPE_EXTRA/feature_$TMP_FEAT_SCHEMA_NAME.sh"
-				_feat_found=1
+				_feat_found="1"
 			fi
 		fi
 		if [ "$_feat_found" = "0" ]; then
 			if [ -f "$STELLA_FEATURE_RECIPE/feature_$TMP_FEAT_SCHEMA_NAME.sh" ]; then
 				. "$STELLA_FEATURE_RECIPE/feature_$TMP_FEAT_SCHEMA_NAME.sh"
-				_feat_found=1
+				_feat_found="1"
 			else
 				if [ -f "$STELLA_FEATURE_RECIPE_EXPERIMENTAL/feature_$TMP_FEAT_SCHEMA_NAME.sh" ]; then
 					. "$STELLA_FEATURE_RECIPE_EXPERIMENTAL/feature_$TMP_FEAT_SCHEMA_NAME.sh"
-					_feat_found=1
+					_feat_found="1"
 				fi
 			fi
 		fi
@@ -949,6 +1022,201 @@ __internal_feature_context() {
 # select an official schema
 # pick a feature schema by filling some values with default one
 # and may return split schema properties
+# __select_official_schema_old() {
+# 	local _SCHEMA="$1"
+# 	local _RESULT_SCHEMA="$2"
+#
+# 	local _VAR_FEATURE_NAME="$3"
+# 	local _VAR_FEATURE_VER="$4"
+# 	local _VAR_FEATURE_ARCH="$5"
+# 	local _VAR_FEATURE_FLAVOUR="$6"
+# 	local _VAR_FEATURE_OS_RESTRICTION="$7"
+# 	local _VAR_FEATURE_OS_EXCLUSION="$8"
+#
+# 	local _FILLED_SCHEMA=
+#
+#
+#  	if [ ! "$_RESULT_SCHEMA" = "" ]; then
+# 		eval $_RESULT_SCHEMA=
+# 	fi
+#
+#  	# __translate_schema "$_SCHEMA" "$_VAR_FEATURE_NAME" "$_VAR_FEATURE_VER" "$_VAR_FEATURE_ARCH" "$_VAR_FEATURE_FLAVOUR" "$_VAR_FEATURE_OS_RESTRICTION" "$_VAR_FEATURE_OS_EXCLUSION"
+# 	__translate_schema "$_SCHEMA" "$3" "$4" "$5" "$6" "$7" "$8"
+#
+# 	local _TR_FEATURE_NAME=${!_VAR_FEATURE_NAME}
+# 	local _TR_FEATURE_VER=${!_VAR_FEATURE_VER}
+# 	local _TR_FEATURE_ARCH=${!_VAR_FEATURE_ARCH}
+# 	local _TR_FEATURE_FLAVOUR=${!_VAR_FEATURE_FLAVOUR}
+# 	local _TR_FEATURE_OS_RESTRICTION=${!_VAR_FEATURE_OS_RESTRICTION}
+# 	local _TR_FEATURE_OS_EXCLUSION=${!_VAR_FEATURE_OS_EXCLUSION}
+# 	local _official=0
+# 	if [[ " ${__STELLA_FEATURE_LIST[@]} " =~ " ${_TR_FEATURE_NAME} " ]]; then
+# 		# grab feature info
+# 		local _feat_found=0
+# 		if [ ! -z "$STELLA_FEATURE_RECIPE_EXTRA" ]; then
+# 			if [ -f "$STELLA_FEATURE_RECIPE_EXTRA/feature_$_TR_FEATURE_NAME.sh" ]; then
+# 				. "$STELLA_FEATURE_RECIPE_EXTRA/feature_$_TR_FEATURE_NAME.sh"
+# 				_feat_found=1
+# 			fi
+# 		fi
+# 		if [ "$_feat_found" = "0" ]; then
+# 			if [ -f "$STELLA_FEATURE_RECIPE/feature_$_TR_FEATURE_NAME.sh" ]; then
+# 				. "$STELLA_FEATURE_RECIPE/feature_$_TR_FEATURE_NAME.sh"
+# 				_feat_found=1
+# 			else
+# 				if [ -f "$STELLA_FEATURE_RECIPE_EXPERIMENTAL/feature_$_TR_FEATURE_NAME.sh" ]; then
+# 					. "$STELLA_FEATURE_RECIPE_EXPERIMENTAL/feature_$_TR_FEATURE_NAME.sh"
+# 					_feat_found=1
+# 				fi
+# 			fi
+# 		fi
+# 		if [ "$_feat_found" = "1" ]; then
+# 			# load feature properties
+# 			feature_$_TR_FEATURE_NAME
+# 		fi
+#
+#
+# 		local list_version=
+# 		local k
+# 		for k in $FEAT_LIST_SCHEMA; do
+# 			__translate_schema "${_TR_FEATURE_NAME}#${k}" "NONE" "_TMP_V"
+# 			list_version="$list_version $_TMP_V"
+# 		done
+# 		# select last available version by default
+# 		if [ "${_TR_FEATURE_VER}" = "" ]; then
+# 			# TODO use ENDING_CHAR_REVERSE for some feature in a new FIELD (like FEAT_VERSION_ORDER)
+# 			_TR_FEATURE_VER="$(__get_last_version "$list_version" "SEP _")"
+# 			[ ! "$_VAR_FEATURE_VER" = "" ] && eval $_VAR_FEATURE_VER=$_TR_FEATURE_VER
+# 		else
+# 			# find version from the list
+# 			_TR_FEATURE_VER="$(__select_version_from_list "${_TR_FEATURE_VER}" "${list_version}" "SEP _")"
+# 			# NOTE : if _TR_FEATURE_VER is empty here, its because we cannot find a matching version
+# 			[ ! "$_VAR_FEATURE_VER" = "" ] && eval $_VAR_FEATURE_VER=$_TR_FEATURE_VER
+# 		fi
+#
+# 		_FILLED_SCHEMA="${_TR_FEATURE_NAME}#${_TR_FEATURE_VER}"
+#
+# 		# ADDING OS restriction and OS exclusion
+# 		_OS_OPTION=
+# 		[ ! "$_TR_FEATURE_OS_RESTRICTION" = "" ] && _OS_OPTION="$_OS_OPTION/$_TR_FEATURE_OS_RESTRICTION"
+# 		[ ! "$_TR_FEATURE_OS_EXCLUSION" = "" ] && _OS_OPTION="$_OS_OPTION"\\\\"$_TR_FEATURE_OS_EXCLUSION"
+#
+#
+#
+# 		# check schema exists
+# 		# we already know which version to find
+# 		# we are looking for different arch and flavour
+# 		# if we are looking for a bundle, only arch is used. There is no flavour support for bundle
+# 		# starting with specified ones, then with default ones, then with possible ones
+# 		# NOTE : version must exist and take precedence on flavour which take precedence on arch
+# 		local _looking_arch
+# 		local _looking_flavour
+#
+# 		if [ "$_TR_FEATURE_ARCH" = "" ]; then
+# 			# arch could have absolutely no info specified in default value and FEAT_LIST_SCHEMA
+# 			# so we do not have to look for any value
+# 			[ ! "$FEAT_DEFAULT_ARCH" = "" ] && _looking_arch="$FEAT_DEFAULT_ARCH x64 x86"
+# 		else
+# 			_looking_arch="$_TR_FEATURE_ARCH"
+# 		fi
+#
+# 		local l
+# 		local a
+# 		local f
+#
+# 		# bundle might have arch, but no flavour
+# 		if [ ! "$FEAT_BUNDLE" = "" ]; then
+# 			# arch is not always presents in FEAT_LIST_SCHEMA and could not have default value
+# 			if [ "$_looking_arch" = "" ]; then
+# 				for l in $FEAT_LIST_SCHEMA; do
+# 					if [ "${_TR_FEATURE_NAME}#${l}" = "$_FILLED_SCHEMA" ]; then
+# 						[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
+# 					fi
+# 					[ "$_official" = "1" ] && break
+# 				done
+# 			else
+# 				for a in $_looking_arch; do
+# 					for l in $FEAT_LIST_SCHEMA; do
+# 						if [ "${_TR_FEATURE_NAME}#${l}" = "$_FILLED_SCHEMA"@"$a" ]; then
+# 							[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
+# 						fi
+# 						[ "$_official" = "1" ] && break
+# 					done
+# 					[ "$_official" = "1" ] && break
+# 				done
+# 			fi
+# 		else
+#
+#
+# 			# flavour is always presents in FEAT_LIST_SCHEMA but not for bundle
+# 			if [ "$_TR_FEATURE_FLAVOUR" = "" ]; then
+# 				_looking_flavour="$FEAT_DEFAULT_FLAVOUR binary source"
+# 			else
+# 				_looking_flavour="$_TR_FEATURE_FLAVOUR"
+# 			fi
+#
+# 			for f in $_looking_flavour; do
+# 				# we do not look for any arch while searching source flavour
+# 				# arch is not used when schema contains source,
+# 				# only used for binary flavour
+# 				if [ "$f" = "source" ]; then
+# 					for l in $FEAT_LIST_SCHEMA; do
+# 						if [ "${_TR_FEATURE_NAME}#${l}" = "$_FILLED_SCHEMA":"$f" ]; then
+# 							[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
+# 						fi
+# 						[ "$_official" = "1" ] && break
+# 					done
+# 				else
+# 					# arch is not always presents in FEAT_LIST_SCHEMA and could not have default value
+# 					if [ "$_looking_arch" = "" ]; then
+# 						for l in $FEAT_LIST_SCHEMA; do
+# 							if [ "${_TR_FEATURE_NAME}#${l}" = "$_FILLED_SCHEMA":"$f" ]; then
+# 								[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
+# 							fi
+# 							[ "$_official" = "1" ] && break
+# 						done
+# 					else
+# 						for a in $_looking_arch; do
+# 							for l in $FEAT_LIST_SCHEMA; do
+# 								if [ "${_TR_FEATURE_NAME}#${l}" = "$_FILLED_SCHEMA"@"$a":"$f" ]; then
+# 									[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
+# 								fi
+# 								[ "$_official" = "1" ] && break
+# 							done
+# 							[ "$_official" = "1" ] && break
+# 						done
+# 					fi
+# 				fi
+# 				[ "$_official" = "1" ] && break
+# 			done
+# 		fi
+#
+# 		if 	[ "$_official" = "1" ]; then
+# 			[ ! "$a" = "" ] && _FILLED_SCHEMA="$_FILLED_SCHEMA"@"$a"
+# 			[ ! "$f" = "" ] && _FILLED_SCHEMA="$_FILLED_SCHEMA":"$f"
+#
+# 			[ ! "$_VAR_FEATURE_ARCH" = "" ] && eval $_VAR_FEATURE_ARCH="$a"
+# 			[ ! "$_VAR_FEATURE_FLAVOUR" = "" ] && eval $_VAR_FEATURE_FLAVOUR="$f"
+# 		fi
+# 	fi
+#
+# 	if [ "$_official" = "1" ]; then
+# 		eval $_RESULT_SCHEMA=$_FILLED_SCHEMA$_OS_OPTION
+# 	else
+# 		# not official so empty split values
+# 		[ ! "$_VAR_FEATURE_NAME" = "" ] && eval $_VAR_FEATURE_NAME=
+# 		[ ! "$_VAR_FEATURE_VER" = "" ] && eval $_VAR_FEATURE_VER=
+# 		[ ! "$_VAR_FEATURE_ARCH" = "" ] && eval $_VAR_FEATURE_ARCH=
+# 		[ ! "$_VAR_FEATURE_FLAVOUR" = "" ] && eval $_VAR_FEATURE_FLAVOUR=
+# 		[ ! "$_VAR_FEATURE_OS_RESTRICTION" = "" ] && eval $_VAR_FEATURE_OS_RESTRICTION=
+# 		[ ! "$_VAR_FEATURE_OS_EXCLUSION" = "" ] && eval $_VAR_FEATURE_OS_EXCLUSION=
+# 	fi
+#
+# }
+
+# select an official schema
+# pick a feature schema by filling some values with default one
+# and may return split schema properties
 __select_official_schema() {
 	local _SCHEMA="$1"
 	local _RESULT_SCHEMA="$2"
@@ -968,14 +1236,17 @@ __select_official_schema() {
 	fi
 
  	# __translate_schema "$_SCHEMA" "$_VAR_FEATURE_NAME" "$_VAR_FEATURE_VER" "$_VAR_FEATURE_ARCH" "$_VAR_FEATURE_FLAVOUR" "$_VAR_FEATURE_OS_RESTRICTION" "$_VAR_FEATURE_OS_EXCLUSION"
-	__translate_schema "$_SCHEMA" "$3" "$4" "$5" "$6" "$7" "$8"
+	#__translate_schema "$_SCHEMA" "$3" "$4" "$5" "$6" "$7" "$8"
+	__translate_schema "$_SCHEMA" "_TR_FEATURE_NAME" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR" "_TR_FEATURE_OS_RESTRICTION" "_TR_FEATURE_OS_EXCLUSION"
 
-	local _TR_FEATURE_NAME=${!_VAR_FEATURE_NAME}
-	local _TR_FEATURE_VER=${!_VAR_FEATURE_VER}
-	local _TR_FEATURE_ARCH=${!_VAR_FEATURE_ARCH}
-	local _TR_FEATURE_FLAVOUR=${!_VAR_FEATURE_FLAVOUR}
-	local _TR_FEATURE_OS_RESTRICTION=${!_VAR_FEATURE_OS_RESTRICTION}
-	local _TR_FEATURE_OS_EXCLUSION=${!_VAR_FEATURE_OS_EXCLUSION}
+	# local _TR_FEATURE_NAME=${!_VAR_FEATURE_NAME}
+	# local _TR_FEATURE_VER=${!_VAR_FEATURE_VER}
+	# local _TR_FEATURE_ARCH=${!_VAR_FEATURE_ARCH}
+	# local _TR_FEATURE_FLAVOUR=${!_VAR_FEATURE_FLAVOUR}
+	# local _TR_FEATURE_OS_RESTRICTION=${!_VAR_FEATURE_OS_RESTRICTION}
+	# local _TR_FEATURE_OS_EXCLUSION=${!_VAR_FEATURE_OS_EXCLUSION}
+
+
 	local _official=0
 	if [[ " ${__STELLA_FEATURE_LIST[@]} " =~ " ${_TR_FEATURE_NAME} " ]]; then
 		# grab feature info
@@ -998,30 +1269,63 @@ __select_official_schema() {
 			fi
 		fi
 		if [ "$_feat_found" = "1" ]; then
+			# load feature properties
 			feature_$_TR_FEATURE_NAME
+			[ ! "$_VAR_FEATURE_NAME" = "" ] && eval $_VAR_FEATURE_NAME=${_TR_FEATURE_NAME}
+		fi
+
+
+		local list_version=
+		local k
+		local _TMP_V=
+		local _TMP_A=
+		local _TMP_F=
+
+		for k in $FEAT_LIST_SCHEMA; do
+			__translate_schema "${_TR_FEATURE_NAME}#${k}" "NONE" "_TMP_V" "_TMP_A" "_TMP_F"
+			# there is a flavour costraint so we filter list with it
+			# NOTE : we cannot use arch as constraint
+			if [ ! "${_TR_FEATURE_FLAVOUR}" = "" ]; then
+				[ "${_TMP_F}" = "${_TR_FEATURE_FLAVOUR}" ] && list_version="$list_version ${_TMP_V}"
+			else
+				list_version="$list_version ${_TMP_V}"
+			fi
+		done
+
+		# there is a flavour costraint
+		if [ ! "${_TR_FEATURE_FLAVOUR}" = "" ]; then
+			for v in ${list}; do
+				case ${v} in
+					# matching version in list starting with ${selector}
+					${selector}*) filtered_list="${filtered_list} ${v}";;
+				esac
+			done
 		fi
 
 		# select last available version by default
-		if [ "$_TR_FEATURE_VER" = "" ]; then
-			local list_version=
-			local k
-			for k in $FEAT_LIST_SCHEMA; do
-				__translate_schema "${_TR_FEATURE_NAME}#${k}" "NONE" "_TMP_V"
-				list_version="$list_version $_TMP_V"
-			done
+		if [ "${_TR_FEATURE_VER}" = "" ]; then
 			# TODO use ENDING_CHAR_REVERSE for some feature in a new FIELD (like FEAT_VERSION_ORDER)
 			_TR_FEATURE_VER="$(__get_last_version "$list_version" "SEP _")"
 			[ ! "$_VAR_FEATURE_VER" = "" ] && eval $_VAR_FEATURE_VER=$_TR_FEATURE_VER
-			#_TR_FEATURE_VER=$FEAT_DEFAULT_VERSION
-			#[ ! "$_VAR_FEATURE_VER" = "" ] && eval $_VAR_FEATURE_VER=$FEAT_DEFAULT_VERSION
+		else
+			# find version from the list
+			_TR_FEATURE_VER="$(__select_version_from_list "${_TR_FEATURE_VER}" "${list_version}" "SEP _")"
+			# NOTE : if _TR_FEATURE_VER is empty here, its because we cannot find a matching version
+			[ ! "$_VAR_FEATURE_VER" = "" ] && eval $_VAR_FEATURE_VER=$_TR_FEATURE_VER
 		fi
 
 		_FILLED_SCHEMA="${_TR_FEATURE_NAME}#${_TR_FEATURE_VER}"
 
 		# ADDING OS restriction and OS exclusion
 		_OS_OPTION=
-		[ ! "$_TR_FEATURE_OS_RESTRICTION" = "" ] && _OS_OPTION="$_OS_OPTION/$_TR_FEATURE_OS_RESTRICTION"
-		[ ! "$_TR_FEATURE_OS_EXCLUSION" = "" ] && _OS_OPTION="$_OS_OPTION"\\\\"$_TR_FEATURE_OS_EXCLUSION"
+		if [ ! "$_TR_FEATURE_OS_RESTRICTION" = "" ]; then
+			_OS_OPTION="$_OS_OPTION/$_TR_FEATURE_OS_RESTRICTION"
+			[ ! "$_VAR_FEATURE_OS_RESTRICTION" = "" ] && eval $_VAR_FEATURE_OS_RESTRICTION=$_TR_FEATURE_OS_RESTRICTION
+		fi
+		if [ ! "$_TR_FEATURE_OS_EXCLUSION" = "" ]; then
+			_OS_OPTION="$_OS_OPTION"\\\\"$_TR_FEATURE_OS_EXCLUSION"
+			[ ! "$_VAR_FEATURE_OS_EXCLUSION" = "" ] && eval $_VAR_FEATURE_OS_EXCLUSION=$_TR_FEATURE_OS_EXCLUSION
+		fi
 
 
 
@@ -1030,12 +1334,11 @@ __select_official_schema() {
 		# we are looking for different arch and flavour
 		# if we are looking for a bundle, only arch is used. There is no flavour support for bundle
 		# starting with specified ones, then with default ones, then with possible ones
-		# NOTE : version must exist and take precedence on flavour which take precedence on arch
 		local _looking_arch
 		local _looking_flavour
 
 		if [ "$_TR_FEATURE_ARCH" = "" ]; then
-			# arch could have absolute no info specified in default value and FEAT_LIST_SCHEMA
+			# arch could have absolutely no info specified in default value and FEAT_LIST_SCHEMA
 			# so we do not have to look for any value
 			[ ! "$FEAT_DEFAULT_ARCH" = "" ] && _looking_arch="$FEAT_DEFAULT_ARCH x64 x86"
 		else
@@ -1052,7 +1355,8 @@ __select_official_schema() {
 			if [ "$_looking_arch" = "" ]; then
 				for l in $FEAT_LIST_SCHEMA; do
 					if [ "${_TR_FEATURE_NAME}#${l}" = "$_FILLED_SCHEMA" ]; then
-						[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
+						#[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
+						_official=1
 					fi
 					[ "$_official" = "1" ] && break
 				done
@@ -1060,7 +1364,8 @@ __select_official_schema() {
 				for a in $_looking_arch; do
 					for l in $FEAT_LIST_SCHEMA; do
 						if [ "${_TR_FEATURE_NAME}#${l}" = "$_FILLED_SCHEMA"@"$a" ]; then
-							[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
+							#[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
+							_official=1
 						fi
 						[ "$_official" = "1" ] && break
 					done
@@ -1084,7 +1389,8 @@ __select_official_schema() {
 				if [ "$f" = "source" ]; then
 					for l in $FEAT_LIST_SCHEMA; do
 						if [ "${_TR_FEATURE_NAME}#${l}" = "$_FILLED_SCHEMA":"$f" ]; then
-							[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
+							#[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
+							_official=1
 						fi
 						[ "$_official" = "1" ] && break
 					done
@@ -1093,7 +1399,8 @@ __select_official_schema() {
 					if [ "$_looking_arch" = "" ]; then
 						for l in $FEAT_LIST_SCHEMA; do
 							if [ "${_TR_FEATURE_NAME}#${l}" = "$_FILLED_SCHEMA":"$f" ]; then
-								[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
+								#[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
+								_official=1
 							fi
 							[ "$_official" = "1" ] && break
 						done
@@ -1101,7 +1408,8 @@ __select_official_schema() {
 						for a in $_looking_arch; do
 							for l in $FEAT_LIST_SCHEMA; do
 								if [ "${_TR_FEATURE_NAME}#${l}" = "$_FILLED_SCHEMA"@"$a":"$f" ]; then
-									[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
+									#[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
+									_official=1
 								fi
 								[ "$_official" = "1" ] && break
 							done
@@ -1124,7 +1432,10 @@ __select_official_schema() {
 
 	if [ "$_official" = "1" ]; then
 		eval $_RESULT_SCHEMA=$_FILLED_SCHEMA$_OS_OPTION
+		__translate_schema "$_SCHEMA" "" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR" "_TR_FEATURE_OS_RESTRICTION" "_TR_FEATURE_OS_EXCLUSION"
+
 	else
+		[ ! "$_RESULT_SCHEMA" = "" ] && eval $_RESULT_SCHEMA=
 		# not official so empty split values
 		[ ! "$_VAR_FEATURE_NAME" = "" ] && eval $_VAR_FEATURE_NAME=
 		[ ! "$_VAR_FEATURE_VER" = "" ] && eval $_VAR_FEATURE_VER=
@@ -1143,7 +1454,6 @@ __select_official_schema() {
 #				:flavour could be binary or source
 # example: wget/ubuntu#1_2@x86:source wget/ubuntu#1_2@x86:source\macos
 __translate_schema() {
-
 	local _tr_schema="$1"
 
 	local _VAR_FEATURE_NAME="$2"
@@ -1191,7 +1501,8 @@ __translate_schema() {
 
 	_char="#"
 	if [ -z "${_tr_schema##*$_char*}" ]; then
-		if [ ! "$_VAR_FEATURE_VER" = "" ]; then eval $_VAR_FEATURE_VER="$(echo $_tr_schema | sed 's,^.*#\([^:/\\@]*\).*$,\1,')"; fi
+		# NOTE : we escape < char while eval
+		if [ ! "$_VAR_FEATURE_VER" = "" ]; then eval $_VAR_FEATURE_VER="$(echo $_tr_schema | sed -e 's,^.*#\([^:/\\@]*\).*$,\1,'  -e 's,<,\\<,')"; fi
 	fi
 
 	_char="@"

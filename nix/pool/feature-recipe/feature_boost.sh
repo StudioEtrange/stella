@@ -21,7 +21,7 @@ feature_boost_1_61_0() {
 
 
 
-	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 bzip2 openmpi#1_10_3 icu4c FORCE_ORIGIN_SYSTEM python"
+	FEAT_SOURCE_DEPENDENCIES="zlib#^1_2 bzip2 openmpi#1_10_3 icu4c FORCE_ORIGIN_SYSTEM python"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://downloads.sourceforge.net/project/boost/boost/1.61.0/boost_1_61_0.tar.gz
@@ -45,7 +45,7 @@ feature_boost_1_59_0() {
 	FEAT_VERSION=1_59_0
 
 
-	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 bzip2 icu4c openmpi#1_10_3 FORCE_ORIGIN_SYSTEM python"
+	FEAT_SOURCE_DEPENDENCIES="zlib#^1_2 bzip2 icu4c openmpi#1_10_3 FORCE_ORIGIN_SYSTEM python"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://downloads.sourceforge.net/project/boost/boost/1.59.0/boost_1_59_0.tar.gz
@@ -79,7 +79,7 @@ feature_boost_dep() {
 	BZIP2_LIBPATH="$_bzip2_LIB"
 	BZIP2_INCLUDE="$_bzip2_INCLUDE"
 
-	__link_feature_library "zlib#1_2_8" "GET_FOLDER _zlib NO_SET_FLAGS LIBS_NAME z"
+	__link_feature_library "zlib#^1_2" "GET_FOLDER _zlib NO_SET_FLAGS LIBS_NAME z"
 
 	ZLIB_LIBPATH="$_zlib_LIB"
 	ZLIB_INCLUDE="$_zlib_INCLUDE"

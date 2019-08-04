@@ -19,7 +19,7 @@ feature_libxml2_2_9_1() {
 	FEAT_VERSION=2_9_1
 
 
-	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 libiconv#1_14"
+	FEAT_SOURCE_DEPENDENCIES="zlib#^1_2 libiconv#1_14"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://xmlsoft.org/sources/libxml2-2.9.1.tar.gz
@@ -41,7 +41,7 @@ feature_libxml2_2_9_1() {
 
 feature_libxml2_link() {
 	__link_feature_library "libiconv#1_14"
-	__link_feature_library "zlib#1_2_8" "FORCE_DYNAMIC"
+	__link_feature_library "zlib#^1_2" "FORCE_DYNAMIC"
 }
 
 feature_libxml2_2_9_1_patch() {

@@ -16,7 +16,7 @@ feature_physfs() {
 feature_physfs_2_0_3() {
 	FEAT_VERSION=2_0_3
 
-	FEAT_SOURCE_DEPENDENCIES="readline zlib#1_2_8"
+	FEAT_SOURCE_DEPENDENCIES="readline zlib#^1_2"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://icculus.org/physfs/downloads/physfs-2.0.3.tar.bz2
@@ -38,7 +38,7 @@ feature_physfs_2_0_3() {
 
 
 feature_physfs_link() {
-	__link_feature_library "zlib#1_2_8"
+	__link_feature_library "zlib#^1_2"
 	__link_feature_library "readline"
 }
 

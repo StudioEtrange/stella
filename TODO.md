@@ -72,6 +72,7 @@ https://hackernoon.com/macbook-my-command-line-utilities-f8a121c3b019
 
 * NOTE history : FIRST PUSH OF stella pre version : https://bitbucket.org/StudioEtrange/ryzomcore-script/src/1308706a1dc3f1dde7d65b048e9b16f2a2f2f518
 
+
 # Development environment
 
 * Shellcheck -- https://github.com/koalaman/shellcheck
@@ -109,6 +110,7 @@ use
 
 # TODO List
 
+- [ ] implement version constraint number like npm (https://github.com/npm/node-semver) instead of only  get_last_version() function
 - [ ] Test and remove DEST_ERASE in each feature_recipe : cause problem when bundled in merge mode. But only for binary ? keep it for source? only when get binary
 - [ ] win : add FEATURE_LIST_ENABLED_VISIBLE
 - [ ] win : feat_install() split HIDDEN into HIDDEN and NON_DECLARED

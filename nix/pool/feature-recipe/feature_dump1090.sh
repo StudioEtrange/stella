@@ -63,7 +63,7 @@ feature_dump1090_install_source() {
 
 	__feature_callback
 
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD SOURCE_KEEP NO_INSTALL NO_CONFIG NO_INSPECT"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD SOURCE_KEEP NO_INSTALL NO_CONFIG NO_FIX NO_CHECK"
 
 	__copy_folder_content_into "$SRC_DIR/" "$INSTALL_DIR/"
 

@@ -1,56 +1,61 @@
 if [ ! "$_SDL_INCLUDED_" = "1" ]; then
 _SDL_INCLUDED_=1
 
+
+# freeciv openttd angband
 feature_sdl() {
 	FEAT_NAME=sdl
-	FEAT_LIST_SCHEMA="2_0_3:source 1_2_15:source"
+	FEAT_LIST_SCHEMA="2_0_10:source 2_0_3:source 1_2_15:source"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
+
+	FEAT_DESC="Simple DirectMedia Layer is a cross-platform development library designed to provide low level access to audio, keyboard, mouse, joystick, and graphics hardware via OpenGL and Direct3D."
+	FEAT_LINK="https://www.libsdl.org/"
 }
 
 
-
-
-feature_sdl_2_0_3() {
-	FEAT_VERSION=2_0_3
+feature_sdl_2_0_10() {
+	FEAT_VERSION="2_0_10"
 
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
-	FEAT_SOURCE_URL=https://www.libsdl.org/release/SDL2-2.0.3.tar.gz
-	FEAT_SOURCE_URL_FILENAME=SDL2-2.0.3.tar.gz
-	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
-
-	FEAT_BINARY_URL=
-	FEAT_BINARY_URL_FILENAME=
-	FEAT_BINARY_URL_PROTOCOL=
-
-	FEAT_SOURCE_CALLBACK=
-	FEAT_BINARY_CALLBACK=
-	FEAT_ENV_CALLBACK=
+	FEAT_SOURCE_URL="https://www.libsdl.org/release/SDL2-2.0.10.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="SDL2-2.0.10.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libSDL2.a
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 
 }
 
+
+
+feature_sdl_2_0_3() {
+	FEAT_VERSION="2_0_3"
+
+
+	FEAT_SOURCE_URL="https://www.libsdl.org/release/SDL2-2.0.3.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="SDL2-2.0.3.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
+
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libSDL2.a
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+
+}
+
+
+
 feature_sdl_1_2_15() {
-	FEAT_VERSION=1_2_15
+	FEAT_VERSION="1_2_15"
 
-	FEAT_SOURCE_DEPENDENCIES=
-	FEAT_BINARY_DEPENDENCIES=
 
-	FEAT_SOURCE_URL=https://www.libsdl.org/release/SDL-1.2.15.tar.gz
-	FEAT_SOURCE_URL_FILENAME=SDL-1.2.15.tar.gz
-	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
+	FEAT_SOURCE_URL="https://www.libsdl.org/release/SDL-1.2.15.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="SDL-1.2.15.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
 
-	FEAT_BINARY_URL=
-	FEAT_BINARY_URL_FILENAME=
-	FEAT_BINARY_URL_PROTOCOL=
-
-	FEAT_SOURCE_CALLBACK=feature_sdl_1_2_15_callback
-	FEAT_BINARY_CALLBACK=
-	FEAT_ENV_CALLBACK=
+	FEAT_SOURCE_CALLBACK="feature_sdl_1_2_15_callback"
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libSDL.a
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
@@ -76,6 +81,8 @@ feature_sdl_1_2_15_callback() {
 
 
 }
+
+
 
 
 feature_sdl_install_source() {

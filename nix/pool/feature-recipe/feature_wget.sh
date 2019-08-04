@@ -14,7 +14,7 @@ feature_wget() {
 feature_wget_1_15() {
 	FEAT_VERSION=1_15
 
-	FEAT_SOURCE_DEPENDENCIES="openssl#1_0_2d zlib#1_2_8"
+	FEAT_SOURCE_DEPENDENCIES="openssl#1_0_2d zlib#^1_2"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://ftp.gnu.org/gnu/wget/wget-1.15.tar.gz
@@ -36,7 +36,7 @@ feature_wget_1_15() {
 
 feature_wget_link() {
 	__link_feature_library "openssl#1_0_2d"
-	__link_feature_library "zlib#1_2_8" "LIBS_NAME z"
+	__link_feature_library "zlib#^1_2" "LIBS_NAME z"
 }
 
 feature_wget_install_source() {

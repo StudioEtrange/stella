@@ -17,7 +17,7 @@ feature_graphviz_2_40_1() {
 	FEAT_VERSION=2_40_1
 
 
-	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 libpng#1_6_17 freetype#2_6_1"
+	FEAT_SOURCE_DEPENDENCIES="zlib#^1_2 libpng#1_6_17 freetype#2_6_1"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://www.graphviz.org/pub/graphviz/stable/SOURCES/graphviz-2.40.1.tar.gz
@@ -38,7 +38,7 @@ feature_graphviz_2_40_1() {
 }
 
 feature_graphviz_link() {
-	__link_feature_library "zlib#1_2_8"
+	__link_feature_library "zlib#^1_2"
 	__link_feature_library "libpng#1_6_17"
 	__link_feature_library "freetype#2_6_1" "GET_FOLDER _freetype NO_SET_FLAGS"
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="$AUTO_INSTALL_CONF_FLAG_POSTFIX --with-freetypeincludedir=$_freetype_INCLUDE --with-freetypelibdir=$_freetype_LIB"

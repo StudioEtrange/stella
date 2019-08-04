@@ -13,7 +13,7 @@ feature_hfst() {
 feature_hfst_3_9_2() {
 	FEAT_VERSION=3_9_2
 
-	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8"
+	FEAT_SOURCE_DEPENDENCIES="zlib#^1_2"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://github.com/hfst/hfst/releases/download/v3.9.2/hfst-3.9.2.tar.gz
@@ -35,7 +35,7 @@ feature_hfst_3_9_2() {
 
 feature_hfst_link() {
 	#__link_feature_library "icu4c#55_1"
-	__link_feature_library "zlib#1_2_8"
+	__link_feature_library "zlib#^1_2"
 }
 
 

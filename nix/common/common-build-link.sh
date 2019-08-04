@@ -120,7 +120,7 @@ __link_feature_library() {
 
 	# INSPECT required lib through schema
 	__push_schema_context
-	__feature_inspect $SCHEMA
+	__feature_inspect "${SCHEMA}"
 	if [ "$TEST_FEATURE" = "0" ]; then
 		echo " ** ERROR : depend on lib $SCHEMA but not installed - you may add it to FEAT_SOURCE_DEPENDENCIES"
 		__pop_schema_context

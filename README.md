@@ -12,7 +12,7 @@ Main idea is to provide a simple way to create an isolated environment for you a
 
 Just declare your dependencies, from stella recipes, and stella will download, build and/or install them. Stella set also your environment right for each dependencies. Stella act as a package manager.
 
-All you need is internet and git.
+All you need is internet, git and bash `3.2`.
 
 Work on Nix/Macos (bash scripts) and Windows systems (bat scripts).
 

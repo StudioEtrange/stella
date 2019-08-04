@@ -258,6 +258,8 @@ __auto_build() {
 	# NO_OUT_OF_TREE_BUILD
 	# NO_INSPECT
 	# NO_INSTALL
+	# NO_FIX
+	# NO_CHECK
 	# POST_BUILD_STEP
 	# INCLUDE_FILTER <expr> -- include these files for inspect and fix
 	# EXCLUDE_FILTER <expr> -- exclude these files for inspect and fix
@@ -273,15 +275,12 @@ __auto_build() {
 	local _opt_build=ON
 	# build from another folder (default : TRUE)
 	local _opt_out_of_tree_build=ON
-	# disable fix & check build (default : ON)
-	local _opt_inspect_and_fix_build=ON
 	for o in $OPT; do
 		[ "$o" = "SOURCE_KEEP" ] && _opt_source_keep=ON
 		[ "$o" = "BUILD_KEEP" ] && _opt_build_keep=ON
 		[ "$o" = "NO_CONFIG" ] && _opt_configure=OFF
 		[ "$o" = "NO_BUILD" ] && _opt_build=OFF
 		[ "$o" = "NO_OUT_OF_TREE_BUILD" ] && _opt_out_of_tree_build=OFF
-		[ "$o" = "NO_INSPECT" ] && _opt_inspect_and_fix_build=OFF
 	done
 
 	# can not build out of tree without configure first
@@ -328,7 +327,7 @@ __auto_build() {
 		[ ! "$_opt_build_keep" = "ON" ] && rm -Rf "$BUILD_DIR"
 	fi
 
-	[ "$_opt_inspect_and_fix_build" = "ON" ] && __inspect_and_fix_build "$INSTALL_DIR" "$OPT"
+	__inspect_and_fix_build "$INSTALL_DIR" "$OPT"
 
 	__disable_current_toolset
 	echo " ** Done"
@@ -766,17 +765,35 @@ __inspect_and_fix_build() {
 	local path="$1"
 	local OPT="$2"
 	local _result=0
-
+	local o=
 	# INCLUDE_LINKED_LIB <expr> -- include these linked libs
 	# EXCLUDE_LINKED_LIB <expr> -- exclude these linked libs
 	# INCLUDE_LINKED_LIB is apply first, before EXCLUDE_LINKED_LIB
 	# INCLUDE_FILTER <expr> -- include these files
 	# EXCLUDE_FILTER <expr> -- exclude these files
 	# INCLUDE_FILTER is apply first, before EXCLUDE_FILTER
+	# NO_FIX do not fix files
+	# NO_CHECK do not check files
 
 	[ "$1" = "" ] && return
 
+	# fix files (default : ON)
+	local _opt_fix_files=ON
+	# check build (default : ON)
+	local _opt_check_files=ON
+	for o in $OPT; do
+		[ "$o" = "NO_FIX" ] && _opt_fix_files=OFF
+		[ "$o" = "NO_CHECK" ] && _opt_check_files=OFF
+	done
+
+	# nothing to do
+	if [ "${_opt_fix_files}" = "OFF" ]; then
+		[ "${_opt_check_files}" = "OFF" ] && return
+	fi
+
+
 	[ -z "$(__filter_list "$path/*" "INCLUDE_TAG INCLUDE_FILTER EXCLUDE_TAG EXCLUDE_FILTER $OPT")" ] && return $_result
+
 
 
 	local f=
@@ -788,9 +805,11 @@ __inspect_and_fix_build() {
 
 	if [ -f "$path" ]; then
 		# fixing built files
-		__fix_built_files "$path" "$OPT"
+		[ "${_opt_fix_files}" = "ON" ] && __fix_built_files "$path" "$OPT"
 		# checking built files
-		__check_built_files "$path" "$OPT" || _result=1
+		if [ "${_opt_check_files}" = "ON" ]; then
+			__check_built_files "$path" "$OPT" || _result=1
+		fi
 	fi
 
 	return $_result

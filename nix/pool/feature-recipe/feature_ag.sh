@@ -14,7 +14,7 @@ feature_ag_1_0_2() {
 	FEAT_VERSION=1_0_2
 
 
-	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 pcre#8_36 xzutils#5_2_1"
+	FEAT_SOURCE_DEPENDENCIES="zlib#^1_2 pcre#8_36 xzutils#5_2_1"
 	FEAT_BINARY_DEPENDENCIES=
 	FEAT_SOURCE_URL=https://geoff.greer.fm/ag/releases/the_silver_searcher-1.0.2.tar.gz
 	FEAT_SOURCE_URL_FILENAME=the_silver_searcher-1.0.2.tar.gz

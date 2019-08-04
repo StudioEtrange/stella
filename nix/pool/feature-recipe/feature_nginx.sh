@@ -16,7 +16,7 @@ feature_nginx() {
 feature_nginx_1_7_11() {
 	FEAT_VERSION=1_7_11
 
-	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 openssl#1_0_2d"
+	FEAT_SOURCE_DEPENDENCIES="zlib#^1_2 openssl#1_0_2d"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://nginx.org/download/nginx-1.7.11.tar.gz
@@ -38,7 +38,7 @@ feature_nginx_1_7_11() {
 
 feature_nginx_link() {
 	__link_feature_library "openssl#1_0_2d"
-	__link_feature_library "zlib#1_2_8"
+	__link_feature_library "zlib#^1_2"
 }
 
 

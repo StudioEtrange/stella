@@ -113,7 +113,7 @@ feature_openssl_1_0_2o() {
 feature_openssl_1_0_2k() {
 	FEAT_VERSION=1_0_2k
 
-	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8"
+	FEAT_SOURCE_DEPENDENCIES="zlib#^1_2"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://www.openssl.org/source/openssl-1.0.2k.tar.gz
@@ -137,7 +137,7 @@ feature_openssl_1_0_2k() {
 feature_openssl_1_0_2d() {
 	FEAT_VERSION=1_0_2d
 
-	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8"
+	FEAT_SOURCE_DEPENDENCIES="zlib#^1_2"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://www.openssl.org/source/openssl-1.0.2d.tar.gz
@@ -159,7 +159,7 @@ feature_openssl_1_0_2d() {
 
 feature_openssl_link() {
 	# zlib dependencies
-	__link_feature_library "zlib#1_2_8" "LIBS_NAME z GET_FLAGS _zlib FORCE_DYNAMIC NO_SET_FLAGS"
+	__link_feature_library "zlib#^1_2" "LIBS_NAME z GET_FLAGS _zlib FORCE_DYNAMIC NO_SET_FLAGS"
 }
 
 

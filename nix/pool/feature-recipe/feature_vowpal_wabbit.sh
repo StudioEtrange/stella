@@ -15,7 +15,7 @@ feature_vowpal_wabbit_8_2_0() {
 	FEAT_VERSION=8_2_0
 
 	#  boost +no_single +no_static +openmpi +python27
-	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 boost#1_61_0 openmpi#1_10_3 FORCE_ORIGIN_SYSTEM python"
+	FEAT_SOURCE_DEPENDENCIES="zlib#^1_2 boost#1_61_0 openmpi#1_10_3 FORCE_ORIGIN_SYSTEM python"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://github.com/JohnLangford/vowpal_wabbit/archive/8.2.0.tar.gz
@@ -38,7 +38,7 @@ feature_vowpal_wabbit_8_2_0() {
 
 feature_vowpal_wabbit_link() {
 	__link_feature_library "openmpi#1_10_3"
-	__link_feature_library "zlib#1_2_8" "GET_FOLDER _zlib NO_SET_FLAGS LIBS_NAME z"
+	__link_feature_library "zlib#^1_2" "GET_FOLDER _zlib NO_SET_FLAGS LIBS_NAME z"
 	__link_feature_library "boost#1_61_0" "NO_SET_FLAGS"
 }
 

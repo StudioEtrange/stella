@@ -9,17 +9,20 @@ feature_zlib() {
 	FEAT_LIST_SCHEMA="1_2_8:source 1_2_11:source"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
+
+	FEAT_DESC="A massively spiffy yet delicately unobtrusive compression library."
+	FEAT_LINK="http://zlib.net/"
 }
 
 
 feature_zlib_1_2_11() {
-	FEAT_VERSION=1_2_11
+	FEAT_VERSION="1_2_11"
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
-	FEAT_SOURCE_URL=https://github.com/madler/zlib/archive/v1.2.11.tar.gz
-	FEAT_SOURCE_URL_FILENAME=zlib-v1.2.11.tar.gz
-	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
+	FEAT_SOURCE_URL="https://github.com/madler/zlib/archive/v1.2.11.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="zlib-v1.2.11.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
 
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=

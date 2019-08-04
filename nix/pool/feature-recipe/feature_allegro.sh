@@ -31,7 +31,7 @@ feature_allegro() {
 
 feature_allegro_5_0_11() {
 	FEAT_VERSION=5_0_11
-	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 freetype#2_6_0 libpng#1_6_17 jpeg#9_0_0 vorbis#1_3_5 libogg#DEV20150926 physfs#2_0_3 dumb#0_9_3 flac#1_3_1"
+	FEAT_SOURCE_DEPENDENCIES="zlib#^1_2 freetype#2_6_0 libpng#1_6_17 jpeg#9_0_0 vorbis#1_3_5 libogg#DEV20150926 physfs#2_0_3 dumb#0_9_3 flac#1_3_1"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://sourceforge.net/projects/alleg/files/allegro/5.0.11/allegro-5.0.11.tar.gz
@@ -53,7 +53,7 @@ feature_allegro_5_0_11() {
 
 feature_allegro_link() {
 	__link_feature_library "freetype#2_6_0"
-	__link_feature_library "zlib#1_2_8" "FORCE_DYNAMIC"
+	__link_feature_library "zlib#^1_2" "FORCE_DYNAMIC"
 	__link_feature_library "libpng#1_6_17"
 	__link_feature_library "jpeg#9_0_0"
 	__link_feature_library "vorbis#1_3_5"

@@ -13,7 +13,7 @@ feature_upx() {
 feature_upx_3_91() {
 	FEAT_VERSION=3_91
 
-	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 ucl#1_03"
+	FEAT_SOURCE_DEPENDENCIES="zlib#^1_2 ucl#1_03"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://upx.sourceforge.net/download/upx-3.91-src.tar.bz2
@@ -37,7 +37,7 @@ feature_upx_3_91() {
 feature_ucl_link() {
 
 	__link_feature_library "ucl#1_03" "LIBS_NAME ucl FORCE_STATIC"
-	__link_feature_library "zlib#1_2_8" "LIBS_NAME z FORCE_DYNAMIC"
+	__link_feature_library "zlib#^1_2" "LIBS_NAME z FORCE_DYNAMIC"
 
 }
 

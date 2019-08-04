@@ -426,6 +426,7 @@ __vagrant_get_ssh_options() {
 
 
 # TODO : these functions support only ipv4
+# https://stackoverflow.com/a/33550399
 __get_network_info() {
 	#local _err=
 	type netstat &>/dev/null
@@ -446,8 +447,15 @@ __get_network_info() {
 		STELLA_HOST_IP=$(ifconfig | grep -Eo 'inet (adr:|addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*')
 	else
 		type ip &>/dev/null
-		[ $? = 0 ] && STELLA_HOST_IP="$(ip -o -4 addr | awk '{split($4, a, "/"); print a[1]}')"
+		if [ $? = 0 ]; then
+			STELLA_HOST_IP="$(ip -o -4 addr | awk '{split($4, a, "/"); print a[1]}')"
+		else
+			# do not work on macos
+			type hostname &>/dev/null
+			[ $? = 0 ] && STELLA_HOST_IP="$(hostname -I 2>/dev/null)"
+		fi
 	fi
+
 }
 
 __get_ip_from_interface() {

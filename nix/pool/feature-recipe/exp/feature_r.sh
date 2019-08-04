@@ -23,7 +23,7 @@ feature_r() {
 feature_r_3_2_2() {
 	FEAT_VERSION=3_2_2
 
-	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 bzip2#1_0_6 gmp#6_0_0a"
+	FEAT_SOURCE_DEPENDENCIES="zlib#^1_2 bzip2#1_0_6 gmp#6_0_0a"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://cran.r-project.org/src/base/R-3/R-3.2.2.tar.gz

@@ -14,7 +14,7 @@ feature_pcre() {
 feature_pcre_8_36() {
 	FEAT_VERSION=8_36
 
-	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 bzip2"
+	FEAT_SOURCE_DEPENDENCIES="zlib#^1_2 bzip2"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://downloads.sourceforge.net/project/pcre/pcre/8.36/pcre-8.36.tar.bz2
@@ -35,7 +35,7 @@ feature_pcre_8_36() {
 }
 
 feature_pcre_link() {
-	__link_feature_library "zlib#1_2_8"
+	__link_feature_library "zlib#^1_2"
 	__link_feature_library "bzip2"
 }
 

@@ -73,16 +73,179 @@ __sudo_end_session() {
 
 
 
+# get the most recent version of a list
 # option :
 # ENDING_CHAR_REVERSE
 # SEP .
 __get_last_version() {
-	local list=$1
+	local list="$1"
 	local opt="$2"
 
 	echo $(__sort_version "$list" "$opt DESC") | cut -d' ' -f 1
 }
 
+# pick a version from a list according to constraint
+# selector could be
+#				a specific version number
+#				or a version number with a constraint symbol >, >=, <, <=, ^
+#				>version : most recent after version
+#					>1.0 select the latest version after 1.0, which is not 1.0 (like 2.3.4)
+#				>=version : most recent including version
+#					>=1.0 select the latest version after 1.0, which may be 1.0
+#				<version : most recent just before version
+#					<1.0 select the latest just before 1.0, which is not 1.0 (like 0.3.4)
+#				<=version : most recent just before version including version itself
+#					<=1.0 select the latest version just before 1.0, which may be 1.0
+#				^version : pin version and select most recent version with same version part (not exactly like npm)
+#					^1.0 select the latest 1.0.* version (like 1.0.0 or 1.0.4)
+#					^1 select the latest 1.* version (like 1.0.0 or 1.2.4)
+# option :
+# ENDING_CHAR_REVERSE
+# SEP .
+#		__select_version_from_list ">1.1.1a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
+# desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
+# select_version result is : 1.1.1b
+#		__select_version_from_list ">1.1.1b" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
+# desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
+# select_version result is : <none>
+#		__select_version_from_list "<=1.1.1c" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
+# desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
+# select_version result is : 1.1.1b
+#		__select_version_from_list "<1.1" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
+# desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
+# select_version result is : 1.1.0
+#		__select_version_from_list "<1.1.0a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
+# desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
+# select_version result is : 1.1.0
+#		__select_version_from_list "<=1.1.1a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
+# desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
+# select_version result is : 1.1.0
+#		__select_version_from_list "^1.1.1a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
+# desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
+# select_version result is : 1.1.1b
+#		__select_version_from_list "^1.0" "1.0.0 1.0.1 1.1.1 1.1.1a 1.1.1b" "SEP ."
+# desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0 1.0.1 1.0.8
+# select_version result is : 1.0.1
+__select_version_from_list() {
+	local selector="$1"
+	local list="$2"
+	local opt="$3"
+	local result=""
+
+	local v
+	local sorted_list=
+	local flag
+	flag=0
+	case ${selector} in
+		\>=*)
+			selector="${selector:2}"
+			sorted_list="$(__sort_version "${selector} ${list}" "DESC ${opt}")"
+			result="$(echo $sorted_list | cut -d' ' -f 1)"
+			# if selector is the result (equal), we must check if selector exist as is in the orignal list
+			if [ "${result}" = "${selector}" ]; then
+				result=
+				for v in ${list}; do
+					if [ "${v}" = "${selector}" ]; then
+						result="${selector}"
+						break;
+					fi
+				done
+			fi
+			;;
+
+
+		\>* )
+			selector="${selector:1}"
+			sorted_list="$(__sort_version "${selector} ${list}" "DESC ${opt}")"
+			result="$(echo $sorted_list | cut -d' ' -f 1)"
+			# if most recent version is equal to selector, so there is no greater version than selector
+			[ "${result}" = "${selector}" ] && result=""
+			;;
+
+
+		\<=* )
+			selector="${selector:2}"
+			local selector_value_exist=0
+			# we must check if selector exist as is in the orignal list
+			for v in ${list}; do
+				if [ "${v}" = "${selector}" ]; then
+					selector_value_exist=1
+					break;
+				fi
+			done
+
+			sorted_list="$(__sort_version "${selector} ${list}" "DESC ${opt}")"
+			for v in ${sorted_list}; do
+				# we reach the selector, result is the selector itself only if it exist in original list, or the next value
+				if [ "${v}" = "${selector}" ]; then
+					if [ "${selector_value_exist}" = "1" ]; then
+						result="${v}"
+						break
+					else
+						flag=1
+					fi
+				else
+					if [ "${flag}" = "1" ]; then
+						result="${v}"
+						break
+					fi
+				fi
+			done
+			;;
+
+		\<* )
+			selector="${selector:1}"
+			list="${selector} ${list}"
+			sorted_list="$(__sort_version "${list}" "DESC ${opt}")"
+			for v in ${sorted_list}; do
+				# NOTE : because selector version might exist in original list, we may have duplicate version in list
+				# so while v is selector we do not record value as result
+				if [ "${v}" = "${selector}" ]; then
+					flag=1
+				else
+					# the result is the next desc value just after selector
+					if [ "${flag}" = "1" ]; then
+						result="${v}"
+						break
+					fi
+				fi
+			done
+			;;
+
+
+
+		^* )
+			selector="${selector:1}"
+			# filter list only starting with selector AND check if selector exist as is in the orignal list
+			filtered_list=
+			for v in ${list}; do
+				case ${v} in
+					# selector exist in list
+					${selector}) 	flag=1;;
+					# matching version in list starting with ${selector}
+					${selector}*) filtered_list="${filtered_list} ${v}";;
+				esac
+			done
+			sorted_list="$(__sort_version "${selector} ${filtered_list}" "DESC ${opt}")"
+			result="$(echo $sorted_list | cut -d' ' -f 1)"
+			# if selector is the result (equal), we use it onlfy if selector exist as is in the orignal list
+			if [ "${result}" = "${selector}" ]; then
+				[ ! "${flag}" = "1" ] && result=
+			fi
+			;;
+
+		* )
+			# check if exact version exist
+			for v in ${list}; do
+				if [ "${v}" = "${selector}" ]; then
+					result="${v}"
+					break;
+				fi
+			done
+			;;
+	esac
+	echo "${result}"
+}
 
 # sort a list of version
 
@@ -106,15 +269,15 @@ __get_last_version() {
 # > 1.10.2.2 1.10.2.1 1.10.2 1.10.1.1 1.10.1 1.10.1beta2 1.10.1beta1 1.10.1alpha1 1.10.0 1.10.0RC2 1.10.0RC1 1.9.0
 
 
-# NOTE : ending characters in a version number may be ordered in the opposite way example :
-# 1.0.1 is more recent than 1.0.1beta so in ASC : 1.0.1beta 1.0.1 and in DESC : 1.0.1 1.0.1beta
-# To activate this behaviour use "ENDING_CHAR_REVERSE" option
-# we also need to indicate separator only if we use ENDING_CHAR_REVERSE and if there is any separator (obviously)
+# NOTE : ending characters in a version number can be ordered in the opposite way example :
+# 			1.0.1 is more recent than 1.0.1beta so in ASC : 1.0.1beta 1.0.1 and in DESC : 1.0.1 1.0.1beta
+# 			To activate this behaviour use "ENDING_CHAR_REVERSE" option
+# 			we must indicate separator with SEP if we use ENDING_CHAR_REVERSE and if there is any separator (obviously)
 __sort_version() {
 	local list=$1
 	local opt="$2"
 
-	local opposite_order_for_ending_chars=OFF
+	local opposite_order_for_ending_chars="OFF"
 	local mode="ASC"
 
 	local separator=
@@ -1120,7 +1283,7 @@ __abs_to_rel_path() {
 	if [ "${result:(-1)}" = "/" ]; then
 		result=${result%?}
 	fi
-	echo "$result"
+	echo "${result}"
 
 }
 
@@ -1310,12 +1473,12 @@ __resource() {
 	if [ "$_opt_delete" = "OFF" ]; then
 		# strip root folder mode
 		_STRIP=
-		[ "$_opt_strip" = "ON" ] && _STRIP=STRIP
+		[ "$_opt_strip" = "ON" ] && _STRIP="STRIP"
 
 
 		_FLAG=1
-		case $PROTOCOL in
-			HTTP_ZIP|FILE_ZIP)
+		case ${PROTOCOL} in
+			HTTP_ZIP|FILE_ZIP )
 				[ "$_opt_revert" = "ON" ] && __log "INFO" "REVERT Not supported with this protocol" && _FLAG=0
 				[ "$_opt_update" = "ON" ] && __log "INFO" "UPDATE Not supported with this protocol" && _FLAG=0
 				if [ -d "$FINAL_DESTINATION" ]; then
@@ -1334,7 +1497,7 @@ __resource() {
 					fi
 				fi
 				;;
-			HTTP|FILE)
+			HTTP|FILE )
 				[ "$_opt_strip" = "ON" ] && __log "INFO" "STRIP option not in use"
 				[ "$_opt_revert" = "ON" ] && __log "INFO" "REVERT Not supported with this protocol" && _FLAG=0
 				[ "$_opt_update" = "ON" ] && __log "INFO" "UPDATE Not supported with this protocol" && _FLAG=0
@@ -1350,7 +1513,7 @@ __resource() {
 					fi
 				fi
 				;;
-			HG|GIT)
+			HG|GIT )
 				[ "$_opt_strip" = "ON" ] && __log "INFO" "STRIP option not supported with this protocol"
 				[ "$_opt_merge" = "ON" ] && __log "INFO" "MERGE option not supported with this protocol"
 				if [ -d "$FINAL_DESTINATION" ]; then
@@ -1369,46 +1532,46 @@ __resource() {
 	if [ "$_FLAG" = "1" ]; then
 		[ ! -d $FINAL_DESTINATION ] && mkdir -p $FINAL_DESTINATION
 
-		case $PROTOCOL in
-			HTTP_ZIP)
+		case ${PROTOCOL} in
+			HTTP_ZIP )
 				if [ "$_opt_get" = "ON" ]; then __download_uncompress "$URI" "$_download_filename" "$FINAL_DESTINATION" "$_STRIP"; fi
 				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
 				;;
-			HTTP)
+			HTTP )
 				# HTTP protocol use always merge by default : because it never erase destination folder
 				# but the 'merged' flag file will be created only if we pass the option MERGE
 				if [ "$_opt_get" = "ON" ]; then __download "$URI" "$_download_filename" "$FINAL_DESTINATION"; fi
 				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
 				;;
-			HG)
+			HG )
 				if [ "$_opt_revert" = "ON" ]; then cd "$FINAL_DESTINATION"; hg revert --all -C; fi
 				if [ "$_opt_update" = "ON" ]; then cd "$FINAL_DESTINATION"; hg pull; hg update $_checkout_version; fi
 				if [ "$_opt_get" = "ON" ]; then hg clone $URI "$FINAL_DESTINATION"; if [ ! "$_checkout_version" = "" ]; then cd "$FINAL_DESTINATION"; hg update $_checkout_version; fi; fi
 				# [ "$_opt_merge" = "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
-			GIT)
+			GIT )
 				__require "git" "git" "SYSTEM"
 				if [ "$_opt_revert" = "ON" ]; then cd "$FINAL_DESTINATION"; git reset --hard; fi
 				if [ "$_opt_update" = "ON" ]; then cd "$FINAL_DESTINATION"; git pull;if [ ! "$_checkout_version" = "" ]; then git checkout $_checkout_version; fi; fi
 				if [ "$_opt_get" = "ON" ]; then git clone --recursive $URI "$FINAL_DESTINATION"; if [ ! "$_checkout_version" = "" ]; then cd "$FINAL_DESTINATION"; git checkout $_checkout_version; fi; fi
 				# [ "$_opt_merge" = "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
-			FILE)
+			FILE )
 				if [ "$_opt_get" = "ON" ]; then __copy_folder_content_into "$URI" "$FINAL_DESTINATION"; fi
 				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
 				;;
-			FILE_ZIP)
-				__uncompress "$URI" "$FINAL_DESTINATION%" "$_STRIP"
+			FILE_ZIP )
+				__uncompress "$URI" "$FINAL_DESTINATION" "$_STRIP"
 				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
 				;;
-			*)
+			* )
 				__log "INFO" " ** ERROR Unknow protocol"
 				;;
 		esac
 	fi
 }
 
-#DOWNLOAD AND ZIP FUNCTIONS---------------------------------------------------
+# DOWNLOAD AND ZIP FUNCTIONS---------------------------------------------------
 __download_uncompress() {
 	local URL
 	local FILE_NAME
@@ -1423,7 +1586,7 @@ __download_uncompress() {
 	OPT="$4"
 
 
-	if [ "$FILE_NAME" = "_AUTO_" ]; then
+	if [ "${FILE_NAME}" = "_AUTO_" ]; then
 		#_AFTER_SLASH=${URL##*/}
 		FILE_NAME=$(__get_filename_from_url "$URL")
 		__log "INFO" "** Guessed file name is $FILE_NAME"

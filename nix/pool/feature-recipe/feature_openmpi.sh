@@ -18,7 +18,7 @@ feature_openmpi_1_10_3() {
 	FEAT_VERSION=1_10_3
 
 
-	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 libevent#2_0_22 oracle-jdk#8u91"
+	FEAT_SOURCE_DEPENDENCIES="zlib#^1_2 libevent#2_0_22 oracle-jdk#8u91"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://www.open-mpi.org/software/ompi/v1.10/downloads/openmpi-1.10.3.tar.gz
@@ -40,7 +40,7 @@ feature_openmpi_1_10_3() {
 
 
 feature_openmpi_link() {
-	__link_feature_library "zlib#1_2_8"
+	__link_feature_library "zlib#^1_2"
   __link_feature_library "libevent#2_0_22" "GET_FOLDER _libevent NO_SET_FLAGS"
 	__link_feature_library "oracle-jdk#8u91" "GET_FOLDER _jdk NO_SET_FLAGS"
 }

@@ -19,7 +19,7 @@ feature_dumb() {
 feature_dumb_0_9_3() {
 	FEAT_VERSION=0_9_3
 
-	FEAT_SOURCE_DEPENDENCIES="readline zlib#1_2_8"
+	FEAT_SOURCE_DEPENDENCIES="readline zlib#^1_2"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://downloads.sourceforge.net/project/dumb/dumb/0.9.3/dumb-0.9.3.tar.gz

@@ -17,7 +17,7 @@ feature_curl_7_36_0() {
 	FEAT_VERSION=7_36_0
 
 
-	FEAT_SOURCE_DEPENDENCIES="zlib#1_2_8 openssl#1_0_2d krb5#1_15"
+	FEAT_SOURCE_DEPENDENCIES="zlib#^1_2 openssl#1_0_2d krb5#1_15"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://github.com/bagder/curl/archive/curl-7_36_0.tar.gz
@@ -40,7 +40,7 @@ feature_curl_7_36_0() {
 
 feature_curl_link() {
 	__link_feature_library "openssl#1_0_2d"
-	__link_feature_library "zlib#1_2_8" "LIBS_NAME z"
+	__link_feature_library "zlib#^1_2" "LIBS_NAME z"
 	__link_feature_library "krb5"
 }
 

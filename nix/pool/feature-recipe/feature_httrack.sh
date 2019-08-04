@@ -14,7 +14,7 @@ feature_httrack() {
 feature_httrack_3_48_22() {
 	FEAT_VERSION=3_48_22
 
-	FEAT_SOURCE_DEPENDENCIES="openssl#1_0_2d zlib#1_2_8 libiconv#1_14"
+	FEAT_SOURCE_DEPENDENCIES="openssl#1_0_2d zlib#^1_2 libiconv#1_14"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://mirror.httrack.com/historical/httrack-3.48.22.tar.gz
@@ -35,8 +35,8 @@ feature_httrack_3_48_22() {
 
 feature_httrack_link() {
 	__link_feature_library "openssl#1_0_2d"
-	#__link_feature_library "zlib#1_2_8" "GET_FOLDER _zlib FORCE_DYNAMIC"
-	__link_feature_library "zlib#1_2_8" "FORCE_STATIC"
+	#__link_feature_library "zlib#^1_2" "GET_FOLDER _zlib FORCE_DYNAMIC"
+	__link_feature_library "zlib#^1_2" "FORCE_STATIC"
 	__link_feature_library "libiconv#1_14" "FORCE_STATIC"
 }
 

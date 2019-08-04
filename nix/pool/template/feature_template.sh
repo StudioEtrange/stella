@@ -101,7 +101,7 @@ feature_template_1_0_0_source_callback() {
 	__link_feature_library "libxml2#2_9_1" "GET_FLAGS _libxml2 LIBS_NAME xml2 FORCE_INCLUDE_FOLDER include/libxml2"
 	AUTO_INSTALL_CONF_FLAG_PREFIX="LIBXML_CFLAGS=\"$_libxml2_C_CXX_FLAGS $_libxml2_CPP_FLAGS\" LIBXML_LIBS=\"$_libxml2_LINK_FLAGS\""
 
-	__link_feature_library "zlib#1_2_8" "LIBS_NAME z"
+	__link_feature_library "zlib#^1_2" "LIBS_NAME z"
 
 	__link_feature_library "FORCE_ORIGIN_SYSTEM fuse" "USE_PKG_CONFIG"
 }
@@ -138,7 +138,7 @@ feature_template_install_source() {
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP"
 
 	__feature_callback
-	__link_feature_library "zlib#1_2_8" "FORCE_DYNAMIC"
+	__link_feature_library "zlib#^1_2" "FORCE_DYNAMIC"
 
 	__set_build_mode "OPTIMIZATION" "2"
 

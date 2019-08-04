@@ -6,39 +6,50 @@ _angband_INCLUDED_=1
 # http://rephial.org/
 # https://github.com/angband/angband/
 
-# TODO On MacOS, SDL version do not play well, should build instead with src/Makefile.osx ? or do not provide SDL version MacOS ?
-
 # launch curses based : angband -mgcu
-# launch sdl based : angband -msdl -ssdl
 
 feature_angband() {
 	FEAT_NAME=angband
 
-	FEAT_LIST_SCHEMA="4_0_4:source"
+	FEAT_LIST_SCHEMA="4_1_3:source 4_0_5:source"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 
+	FEAT_DESC="A free, single-player roguelike dungeon exploration game"
+	FEAT_LINK="http://rephial.org/"
 
 }
 
-feature_angband_4_0_4() {
-	FEAT_VERSION=4_0_4
 
 
-	FEAT_SOURCE_DEPENDENCIES="sdl#1_2_15 ncurses#5_9 sdl-mixer#1_2_12 sdl-image#1_2_12 sdl-ttf#2_0_11"
-	FEAT_BINARY_DEPENDENCIES=
 
-	FEAT_SOURCE_URL=https://github.com/angband/angband/archive/4.0.4.tar.gz
-	FEAT_SOURCE_URL_FILENAME=angband-4.0.4.tar.gz
+feature_angband_4_1_3() {
+	FEAT_VERSION=4_1_3
+
+	FEAT_SOURCE_DEPENDENCIES="ncurses#6_1"
+
+	FEAT_SOURCE_URL=https://github.com/angband/angband/archive/4.1.3.tar.gz
+	FEAT_SOURCE_URL_FILENAME=angband-4.1.3.tar.gz
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
-	FEAT_BINARY_URL=
-	FEAT_BINARY_URL_FILENAME=
-	FEAT_BINARY_URL_PROTOCOL=
+	FEAT_SOURCE_CALLBACK=feature_angband_link
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/games/angband
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/games
+
+}
+
+
+feature_angband_4_0_5() {
+	FEAT_VERSION=4_0_5
+
+	FEAT_SOURCE_DEPENDENCIES="ncurses#5_9"
+
+	FEAT_SOURCE_URL=https://github.com/angband/angband/archive/4.0.5.tar.gz
+	FEAT_SOURCE_URL_FILENAME=angband-4.0.5.tar.gz
+	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
 	FEAT_SOURCE_CALLBACK=feature_angband_link
-	FEAT_BINARY_CALLBACK=
-	FEAT_ENV_CALLBACK=
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/games/angband
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/games
@@ -46,14 +57,9 @@ feature_angband_4_0_4() {
 }
 
 feature_angband_link() {
-	__link_feature_library "ncurses#5_9"
+	__link_feature_library "ncurses"
 
-	__link_feature_library "sdl#1_2_15" "GET_FOLDER _sdl FORCE_INCLUDE_FOLDER include/SDL NO_SET_FLAGS LIBS_NAME SDL"
-	AUTO_INSTALL_CONF_FLAG_POSTFIX="$AUTO_INSTALL_CONF_FLAG_POSTFIX --with-sdl-prefix=$_sdl_ROOT"
 
-	__link_feature_library "sdl-mixer#1_2_12" "FORCE_INCLUDE_FOLDER include/SDL"
-	__link_feature_library "sdl-image#1_2_12" "FORCE_INCLUDE_FOLDER include/SDL"
-	__link_feature_library "sdl-ttf#2_0_11" "FORCE_INCLUDE_FOLDER include/SDL"
 }
 
 
@@ -69,7 +75,7 @@ feature_angband_install_source() {
 
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
-	AUTO_INSTALL_CONF_FLAG_POSTFIX="--enable-sdl --enable-curses --disable-x11"
+	AUTO_INSTALL_CONF_FLAG_POSTFIX="--enable-curses --disable-x11"
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
