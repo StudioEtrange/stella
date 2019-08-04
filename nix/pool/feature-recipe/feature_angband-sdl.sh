@@ -8,7 +8,7 @@ _angbandsdl_INCLUDED_=1
 
 # TODO On MacOS, SDL version do not play well, should build instead with src/Makefile.osx ? or do not provide SDL version MacOS ?
 
-# launch curses based : angband -mgcu
+
 # launch sdl based : angband -msdl -ssdl
 
 . "${STELLA_FEATURE_RECIPE}/feature_angband.sh"
@@ -17,7 +17,7 @@ feature_angband-sdl() {
 	feature_angband
 	FEAT_NAME=angband-sdl
 
-	FEAT_DESC="${FEAT_DESC} - NCurses and SDL version"
+	FEAT_DESC="${FEAT_DESC} - SDL version"
 
 }
 
@@ -42,8 +42,8 @@ feature_angband-sdl_4_0_4() {
 }
 
 feature_angband-sdl_link() {
-	AUTO_INSTALL_CONF_FLAG_POSTFIX="--enable-sdl --enable-curses --disable-x11"
-	#AUTO_INSTALL_CONF_FLAG_POSTFIX="--enable-sdl --disable-x11"
+	#AUTO_INSTALL_CONF_FLAG_POSTFIX="--enable-sdl --enable-curses --disable-x11"
+	AUTO_INSTALL_CONF_FLAG_POSTFIX="--enable-sdl --disable-x11"
 
 	__link_feature_library "ncurses"
 

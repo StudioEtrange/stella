@@ -15,7 +15,7 @@ feature_angband() {
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 
-	FEAT_DESC="A free, single-player roguelike dungeon exploration game"
+	FEAT_DESC="A free, single-player roguelike dungeon exploration game - NCurses only"
 	FEAT_LINK="http://rephial.org/"
 
 }
