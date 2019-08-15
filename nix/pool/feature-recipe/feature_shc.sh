@@ -4,7 +4,7 @@ _SHC_INCLUDED_=1
 
 feature_shc() {
 	FEAT_NAME=shc
-	FEAT_LIST_SCHEMA="4_0_1:source"
+	FEAT_LIST_SCHEMA="4_0_3:source 4_0_1:source studioetrange-fork:source"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 
@@ -12,6 +12,39 @@ feature_shc() {
 	FEAT_LINK="https://github.com/neurobin/shc"
 }
 
+
+
+feature_shc_studioetrange-fork() {
+
+	FEAT_VERSION=studioetrange-fork
+
+	FEAT_SOURCE_DEPENDENCIES=
+
+	FEAT_SOURCE_URL="https://github.com/StudioEtrange/shc/archive/release.zip"
+	FEAT_SOURCE_URL_FILENAME="shc-studioetrange-fork.zip"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
+
+
+	FEAT_INSTALL_TEST=$FEAT_INSTALL_ROOT/bin/shc
+	FEAT_SEARCH_PATH=$FEAT_INSTALL_ROOT/bin
+
+}
+
+feature_shc_4_0_3() {
+
+	FEAT_VERSION=4_0_3
+
+	FEAT_SOURCE_DEPENDENCIES=
+
+	FEAT_SOURCE_URL="https://github.com/neurobin/shc/archive/4.0.3.zip"
+	FEAT_SOURCE_URL_FILENAME="shc-v4.0.3.zip"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
+
+
+	FEAT_INSTALL_TEST=$FEAT_INSTALL_ROOT/bin/shc
+	FEAT_SEARCH_PATH=$FEAT_INSTALL_ROOT/bin
+
+}
 
 
 
