@@ -14,7 +14,7 @@ feature_nsnake() {
 
 
 feature_nsnake_3_0_1() {
-	FEAT_VERSION=0
+	FEAT_VERSION=3_0_1
 	FEAT_SOURCE_DEPENDENCIES="ncurses#^6_0"
 	FEAT_BINARY_DEPENDENCIES=
 
