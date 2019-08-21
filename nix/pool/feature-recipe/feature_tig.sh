@@ -7,12 +7,15 @@ feature_tig() {
 	FEAT_LIST_SCHEMA="2_2:source"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
+	
+	FEAT_DESC="Tig: text-mode interface for Git."
+	FEAT_LINK="https://jonas.github.io/tig/"
 }
 
 
 feature_tig_2_2() {
 	FEAT_VERSION=2_2
-	FEAT_SOURCE_DEPENDENCIES="ncurses#6_0"
+	FEAT_SOURCE_DEPENDENCIES="ncurses#^6_0"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=http://jonas.nitro.dk/tig/releases/tig-2.2.tar.gz
@@ -55,7 +58,7 @@ feature_tig_install_source() {
 
 	__feature_callback
 
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
 
 }
 
