@@ -123,14 +123,15 @@ __feature_init() {
 
 __feature_add_repo() {
 	local _path="$1"
-	STELLA_FEATURE_RECIPE_EXTRA="$_path"
+	local _var_list="$2"
+	
 	for recipe in "$_path"/*.sh; do
 		recipe=$(basename "$recipe")
 		recipe=${recipe#feature_}
 		recipe=${recipe%.sh}
-		__STELLA_FEATURE_LIST_EXTRA="$__STELLA_FEATURE_LIST_EXTRA $recipe"
+		[ ! "$_var_list" = "" ] && eval "$_var_list=\"${!_var_list} ${recipe}\""
+		eval "__STELLA_FEATURE_LIST=\"${recipe} ${__STELLA_FEATURE_LIST}\""
 	done
-	__STELLA_FEATURE_LIST="$__STELLA_FEATURE_LIST_EXTRA $__STELLA_FEATURE_LIST"
 }
 
 
