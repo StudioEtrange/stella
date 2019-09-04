@@ -4,6 +4,7 @@ _STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 #shellcheck source=conf.sh
 . "$_STELLA_CURRENT_FILE_DIR"/conf.sh
 
+
 # NOTE : use "env" with source (or .) command only
 # NOTE : warn : some env var (like PATH) are cumulative
 if [ "$1" = "env" ]; then
