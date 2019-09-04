@@ -2,6 +2,8 @@ if [ ! "$_ORACLEJDK_INCLUDED_" = "1" ]; then
 _ORACLEJDK_INCLUDED_=1
 
 
+# NOTE : cant use this recipe cause we cant download oracle jdk
+
 # Recipe for Oracle Java SE Development Kit (=JDK)
 
 # NOTE : Java Runtime Environment (=JRE) is only a java runtime
@@ -17,7 +19,7 @@ feature_oracle-jdk() {
 	FEAT_DEFAULT_FLAVOUR=binary
 }
 
-feature_oraclesejdk_env() {
+feature_oracle-jdk_env() {
 	export JAVA_HOME=$FEAT_INSTALL_ROOT
 }
 
@@ -58,7 +60,7 @@ feature_oracle-jdk_8u152() {
 
 	FEAT_SOURCE_CALLBACK=
 	FEAT_BINARY_CALLBACK=feature_oracle-jdk_fix_jni_header
-	FEAT_ENV_CALLBACK=feature_oraclesejdk_env
+	FEAT_ENV_CALLBACK=feature_oracle-jdk_env
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/java"
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
@@ -100,7 +102,7 @@ feature_oracle-jdk_8u91() {
 
 	FEAT_SOURCE_CALLBACK=
 	FEAT_BINARY_CALLBACK=feature_oracle-jdk_fix_jni_header
-	FEAT_ENV_CALLBACK=feature_oraclesejdk_env
+	FEAT_ENV_CALLBACK=feature_oracle-jdk_env
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/java"
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
@@ -144,13 +146,13 @@ feature_oracle-jdk_8u45() {
 
 	FEAT_SOURCE_CALLBACK=
 	FEAT_BINARY_CALLBACK=feature_oracle-jdk_fix_jni_header
-	FEAT_ENV_CALLBACK=feature_oraclesejdk_env
+	FEAT_ENV_CALLBACK=feature_oracle-jdk_env
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/java"
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 }
 
-# 
+#
 feature_oracle-jdk_7u80() {
 	FEAT_VERSION=7u80
 
@@ -188,7 +190,7 @@ feature_oracle-jdk_7u80() {
 
 	FEAT_SOURCE_CALLBACK=
 	FEAT_BINARY_CALLBACK=feature_oracle-jdk_fix_jni_header
-	FEAT_ENV_CALLBACK=feature_oraclesejdk_env
+	FEAT_ENV_CALLBACK=feature_oracle-jdk_env
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/java"
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"

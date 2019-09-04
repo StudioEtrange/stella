@@ -31,9 +31,9 @@
 * C++ package manager : conan https://conan.io/
 
 # games
-https://ttygames.wordpress.com/
-https://github.com/herrbischoff/awesome-command-line-apps#games
-https://www.ubuntupit.com/top-20-best-linux-terminal-console-games-that-you-can-play-right-now/
+* https://ttygames.wordpress.com/
+* https://github.com/herrbischoff/awesome-command-line-apps#games
+* https://www.ubuntupit.com/top-20-best-linux-terminal-console-games-that-you-can-play-right-now/
 
 - [ ] https://github.com/vaniacer/piu-piu-SH
 - [ ] PWMAngband - multiplayer angband
@@ -109,6 +109,18 @@ use
 
 
 # TODO List
+
+- [ ] bug recipe m4 (and maybe bison, automake, autoconf, ...) build is broken with glibc 2.28
+* https://www.reddit.com/r/archlinux/comments/97gsb1/glibc_update_breaks_buildroot/
+* https://bugs.archlinux.org/task/59562
+* https://github.com/coreutils/gnulib/commit/4af4a4a71827c0bc5e0ec67af23edef4f15cee8e#diff-5bcce8ce55246264586c4aed2a45ff89
+* https://github.com/buildroot/buildroot/commit/c48f8a64626c60bd1b46804b7cf1a699ff53cdf3
+
+- various cross compiler https://blog.filippo.io/easy-windows-and-linux-cross-compilers-for-macos/
+ - [ ] use of mingw-w64 for target : windows https://github.com/Homebrew/homebrew-core/blob/master/Formula/mingw-w64.rb
+ - [ ] target : linux musl based system OR any linux if we static link musl
+  * https://github.com/richfelker/musl-cross-make (works on linux and macos)
+  * https://github.com/FiloSottile/homebrew-musl-cross (same thing than previous but in homebrew style)
 
 - [ ] implement version constraint number like npm (https://github.com/npm/node-semver) instead of only  get_last_version() function
 - [ ] Test and remove DEST_ERASE in each feature_recipe : cause problem when bundled in merge mode. But only for binary ? keep it for source? only when get binary

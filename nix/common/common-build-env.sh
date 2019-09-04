@@ -29,7 +29,7 @@ __link_flags_gcc() {
 	for l in $_libs_name; do
 		_LINK_FLAGS="$_LINK_FLAGS -l$l"
 	done
-
+	
 	eval "$_var_flags"_C_CXX_FLAGS=\"$_C_CXX_FLAGS\"
 	eval "$_var_flags"_CPP_FLAGS=\"$_CPP_FLAGS\"
 	eval "$_var_flags"_LINK_FLAGS=\"$_LINK_FLAGS\"

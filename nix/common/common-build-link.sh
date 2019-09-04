@@ -15,7 +15,7 @@ __link_feature_library() {
 	# FORCE_INCLUDE_FOLDER <path> -- folder prefix where include resides, default "/include"
 	# GET_FLAGS <prefix> -- get prefix_C_CXX_FLAGS, prefix_CPP_FLAGS, prefix_LINK_FLAGS with correct flags
 	# GET_FOLDER <prefix> -- get prefix_ROOT, prefix_LIB, prefix_BIN, prefix_INCLUDE with correct path
-	# NO_SET_FLAGS -- do not set stella build system flags (by default, flags will be generated) and do not add RPATH values
+	# NO_SET_FLAGS -- do not set stella build system flags (by default, flags will be generated) AND do not add RPATH values
 	# LIBS_NAME -- libraries name to use with -l arg -- you can specify several libraries. If you do not use LIBS_NAME -l flag will not be setted, only -L will be setted. If you use LIBS_NAME both -l and -L flags will be setted
   # USE_PKG_CONFIG -- use of pkg-config
 

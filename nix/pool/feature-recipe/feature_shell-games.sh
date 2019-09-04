@@ -2,6 +2,8 @@ if [ ! "$_shellgames_INCLUDED_" = "1" ]; then
 _shellgames_INCLUDED_=1
 
 # https://www.tecmint.com/best-linux-terminal-console-games/
+# https://www.fossmint.com/linux-terminal-console-games/
+# https://linoxide.com/linux-how-to/linux-command-line-games/
 
 feature_shell-games() {
 	FEAT_NAME="shell-games"
