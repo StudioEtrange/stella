@@ -8,8 +8,8 @@ feature_vitetris() {
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 	
-	FEAT_DESC="Description"
-	FEAT_LINK="lien"
+	FEAT_DESC="Classic multiplayer tetris for the terminal "
+	FEAT_LINK="https://github.com/vicgeralds/vitetris/"
 }
 
 
@@ -30,7 +30,7 @@ feature_vitetris_0_58_0() {
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/vitetris
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/tetris
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
 
 }
@@ -45,9 +45,9 @@ feature_vitetris_install_source() {
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
-	
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
+	AUTO_INSTALL_BUILD_FLAG_POSTFIX="INSTALL=install"
 
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD"
 
 }
 
