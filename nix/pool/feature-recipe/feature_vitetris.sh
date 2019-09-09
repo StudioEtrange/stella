@@ -9,7 +9,7 @@ feature_vitetris() {
 	FEAT_DEFAULT_FLAVOUR="source"
 	
 	FEAT_DESC="Classic multiplayer tetris for the terminal "
-	FEAT_LINK="https://github.com/vicgeralds/vitetris/"
+	FEAT_LINK="http://victornils.net/tetris/"
 }
 
 
