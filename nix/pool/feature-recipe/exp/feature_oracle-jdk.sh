@@ -214,7 +214,9 @@ feature_oracle-jdk_install_binary() {
 	mkdir -p "$STELLA_APP_CACHE_DIR"
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		if [ ! -f "$STELLA_APP_CACHE_DIR/$FEAT_BINARY_URL_FILENAME" ]; then
-			wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "$FEAT_BINARY_URL" -O "$STELLA_APP_CACHE_DIR/$FEAT_BINARY_URL_FILENAME"
+			type wget &>/dev/null && wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "$FEAT_BINARY_URL" -O "$STELLA_APP_CACHE_DIR/$FEAT_BINARY_URL_FILENAME" \
+			    ||  curl -j -k -S -L -H "gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" -o "$STELLA_APP_CACHE_DIR/$FEAT_BINARY_URL_FILENAME" "$FEAT_BINARY_URL"
+			
 		fi
 		__uncompress "$STELLA_APP_CACHE_DIR/$FEAT_BINARY_URL_FILENAME" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP"
 	fi
@@ -227,8 +229,7 @@ feature_oracle-jdk_install_binary() {
 
 		# download
 		if [ ! -f "$STELLA_APP_CACHE_DIR/$FEAT_BINARY_URL_FILENAME" ]; then
-			# TODO : check cookie (twice the same)
-			curl -j -k -S -L -H "Cookie: oraclelicense=accept-securebackup-cookie; oraclelicense=accept-securebackup-cookie" -o "$STELLA_APP_CACHE_DIR/$FEAT_BINARY_URL_FILENAME" "$FEAT_BINARY_URL"
+			curl -j -k -S -L -H "gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" -o "$STELLA_APP_CACHE_DIR/$FEAT_BINARY_URL_FILENAME" "$FEAT_BINARY_URL"
 		fi
 
 

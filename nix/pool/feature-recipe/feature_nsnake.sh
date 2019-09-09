@@ -7,15 +7,15 @@ feature_nsnake() {
 	FEAT_LIST_SCHEMA="3_0_1:source"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
-	
+
 	FEAT_DESC="Nsnake: The classic snake game with textual interface."
-	FEAT_LINK="https://github.com/alexdantas/nSnake"
+	FEAT_LINK="http://nsnake.alexdantas.net"
 }
 
 
 feature_nsnake_3_0_1() {
-	FEAT_VERSION=0
-	FEAT_SOURCE_DEPENDENCIES="ncurses#^6_0"
+	FEAT_VERSION=3_0_1
+	FEAT_SOURCE_DEPENDENCIES="ncurses#^5"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL=https://github.com/alexdantas/nSnake/archive/v3.0.1.tar.gz
@@ -37,7 +37,10 @@ feature_nsnake_3_0_1() {
 
 
 feature_nsnake_link() {
-	__link_feature_library "ncurses#^6_0"
+
+	__link_feature_library "ncurses#^5" "GET_FLAGS _ncurses NO_SET_FLAGS"
+	export ncurses_CFLAGS="$(__trim $_ncurses_C_CXX_FLAGS $_ncurses_CPP_FLAGS)"
+	export ncurses_LIBS="$_ncurses_LINK_FLAGS"
 }
 
 
@@ -51,14 +54,18 @@ feature_nsnake_install_source() {
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
-	AUTO_INSTALL_CONF_FLAG_PREFIX=
-	AUTO_INSTALL_CONF_FLAG_POSTFIX=
-	AUTO_INSTALL_BUILD_FLAG_PREFIX=
-	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
-
 	__feature_callback
 
+	AUTO_INSTALL_CONF_FLAG_PREFIX=
+	AUTO_INSTALL_CONF_FLAG_POSTFIX=
+	AUTO_INSTALL_BUILD_FLAG_PREFIX="CFLAGS_PLATFORM=$ncurses_CFLAGS LDFLAGS_PLATFORM=$ncurses_LIBS"
+	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
+
+
+
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_CONFIG"
+
+
 
 }
 

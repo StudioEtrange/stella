@@ -179,25 +179,16 @@ __STELLA_FEATURE_LIST=
 __STELLA_FEATURE_LIST_STABLE=
 __STELLA_FEATURE_LIST_EXP=
 
-for recipe in "$STELLA_FEATURE_RECIPE"/*.sh; do
-	recipe=$(basename "$recipe")
-	recipe=${recipe#feature_}
-	recipe=${recipe%.sh}
-	__STELLA_FEATURE_LIST_STABLE="$__STELLA_FEATURE_LIST_STABLE $recipe"
-done
-for recipe in "$STELLA_FEATURE_RECIPE_EXPERIMENTAL"/*.sh; do
-	recipe=$(basename "$recipe")
-	recipe=${recipe#feature_}
-	recipe=${recipe%.sh}
-	__STELLA_FEATURE_LIST_EXP="$__STELLA_FEATURE_LIST_EXP $recipe"
-done
-__STELLA_FEATURE_LIST="$__STELLA_FEATURE_LIST_STABLE $__STELLA_FEATURE_LIST_EXP"
+# add standard repo
+__feature_add_repo "$STELLA_FEATURE_RECIPE" "__STELLA_FEATURE_LIST_STABLE"
+# add experimental repo
+__feature_add_repo "$STELLA_FEATURE_RECIPE_EXPERIMENTAL" "__STELLA_FEATURE_LIST_EXP"
 
 # Before include stella-link.sh
 # 	STELLA_FEATURE_RECIPE_EXTRA=/foo/recipe ==> add a recipe folder
 __STELLA_FEATURE_LIST_EXTRA=
 if [ ! "$STELLA_FEATURE_RECIPE_EXTRA" = "" ]; then
-	__feature_add_repo "$STELLA_FEATURE_RECIPE_EXTRA"
+	__feature_add_repo "$STELLA_FEATURE_RECIPE_EXTRA" "__STELLA_FEATURE_LIST_EXTRA"
 fi
 
 
