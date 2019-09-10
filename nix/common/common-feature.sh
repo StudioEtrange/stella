@@ -45,7 +45,8 @@ __feature_init() {
 			local _origin=
 			local _force_origin=
 			local _dependencies=
-			# NOTE : we init all dependencies (not relying on feature flavour)
+			# TODO : we init all dependencies (not relying on feature flavour)
+			#	but it should be better to have FEAT_RUNTIME_DEPENDENCIES different from DEPENDENCIES while BUILDING (FEAT_SOURCE_DEPENDENCIES)
 			_dependencies="${FEAT_BINARY_DEPENDENCIES} ${FEAT_SOURCE_DEPENDENCIES}"
 			local _current_feat=${FEAT_SCHEMA_SELECTED}
 			__push_schema_context
