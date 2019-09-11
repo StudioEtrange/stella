@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+# shellcheck shell=bash
 if [ ! "$_STELLA_COMMON_INCLUDED_" = "1" ]; then
 _STELLA_COMMON_INCLUDED_=1
 
@@ -979,7 +979,21 @@ __trim() {
 # http://stackoverflow.com/a/20460402
 __string_contains() { [ -z "${1##*$2*}" ] && [ -n "$1" -o -z "$2" ]; }
 
-
+# return 0 if list contains items, else 1
+# __list_contains "aa bb xx" "bb" 
+# echo $? ==> 0
+# __list_contains "aa bb xx" "b" 
+# echo $? ==> 1
+# __list_contains "aa bb xx" "bb xx" 
+# echo $? ==> 0
+# __list_contains "aa bb xx" "aa xx" 
+# echo $? ==> 1
+# https://stackoverflow.com/a/20473191/5027535
+__list_contains() {
+  local _list="$1"
+  local _item="$2"
+  [[ "$_list" =~ (^|[[:space:]])"$_item"($|[[:space:]]) ]]
+}
 
 __get_stella_version() {
 	local _stella_root_="$1"
