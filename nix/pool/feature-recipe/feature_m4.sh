@@ -14,9 +14,6 @@ feature_m4() {
 
 
 
-sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c
-echo "#define _IO_IN_BACKUP 0x100" >> lib/stdio-impl.h
-
 feature_m4_1_4_18() {
 	FEAT_VERSION=1_4_18
 
@@ -25,7 +22,7 @@ feature_m4_1_4_18() {
 	FEAT_SOURCE_URL_FILENAME=m4-1.4.18.tar.gz
 	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
 
-	FEAT_SOURCE_CALLBACK=__patch_for_glibc2_28
+	FEAT_SOURCE_CALLBACK=feature_m4_patch_for_glibc2_28
 
 	FEAT_TEST="m4"
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/"$FEAT_TEST"
