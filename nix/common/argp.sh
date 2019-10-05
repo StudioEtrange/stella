@@ -133,8 +133,8 @@ QUAINT=''       'q'      ''         s   0   ''                  a quaint descrip
 
 
 --PARAMETERS--
-#NAME=                 'LABEL'      TYPE     'RANGE'           MANDATORY      DESCRIPTION
-ACTION=                 ''          a       'build run'         '1'          Action to compute.
+#NAME=                 'LABEL'      TYPE     'RANGE'           DESCRIPTION          MANDATORY
+ACTION=                 ''          a       'build run'         Action to compute.      '1'  
 "
 
 exec 4>&1
@@ -200,6 +200,9 @@ range        : for numeric parameters (type i, d): min-max eg 1.2-4.5
                for url parameters : do not use. argp use an internal fixed regexp
 
 desc         : long description of this parameter. long description could use '\' at the end of each line
+
+mandatory    : 1 for mandatory parameter
+               0 for non mandatory parameter
 ###############################################################################
 
 

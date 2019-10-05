@@ -3,7 +3,8 @@ if [ ! "$_STELLA_PLATFORM_INCLUDED_" = "1" ]; then
 _STELLA_PLATFORM_INCLUDED_=1
 
 # NOTE :
-#			This file contains specific code depending of the OS
+#			This file contains specific code depending on the system
+
 
 # DISTRIB/OS/PLATFORM INFO ---------------------------
 
@@ -149,6 +150,8 @@ __set_current_platform_info() {
 	# http://stackoverflow.com/a/10140985
 	# http://unix.stackexchange.com/a/24772
 	# http://www.cyberciti.biz/faq/linux-how-to-find-if-processor-is-64-bit-or-not/
+	# https://www.sysadmit.com/2016/02/linux-como-saber-si-es-32-o-64-bits.html
+	# https://superuser.com/questions/208301/linux-command-to-return-number-of-bits-32-or-64/208306#208306
 
 	# CPU 64Bits capable
 	STELLA_CPU_ARCH=
@@ -162,6 +165,8 @@ __set_current_platform_info() {
 		[ "$_cpu" = "1" ] && STELLA_CPU_ARCH=64
 	fi
 
+	#  Note that on several architectures, a 64-bit kernel can run 32-bit userland programs,
+	#  so even if the uname -m shows a 64-bit kernel, there is no guarantee that 64-bit libraries will be available.
 	if [ "$(uname -m | grep 64)" = "" ]; then
 		STELLA_KERNEL_ARCH=32
 	else

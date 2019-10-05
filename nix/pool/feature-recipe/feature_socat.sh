@@ -1,7 +1,27 @@
 if [ ! "$_SOCAT_INCLUDED_" = "1" ]; then
 _SOCAT_INCLUDED_=1
 
-# OK
+# TODO
+# problems with readline ?
+# problems link with openssl ?
+# problem missing libwrap ?
+# probleme with netpacket ?
+
+# configure: WARNING: no suitable version of readline found; perhaps you need to install a newer version
+
+# checking whether to include openssl support... yes
+# configure: checking for components of OpenSSL
+# configure: checked for openssl/ssl.h... no
+# configure: WARNING: not all components of OpenSSL found, disabling it
+# checking whether to include openssl fips support... no
+
+# checking for components of libwrap... configure: checked for tcpd.h... no
+# configure: WARNING: not all components of tcp wrappers found, disabling it
+
+# checking netpacket/packet.h usability... no
+# checking netpacket/packet.h presence... no
+# checking for netpacket/packet.h... no
+# configure: WARNING: include file netpacket/packet.h not found, disabling interface
 
 feature_socat() {
 	FEAT_NAME=socat

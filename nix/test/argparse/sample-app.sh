@@ -11,7 +11,9 @@ _CURRENT_RUNNING_DIR="$( cd "$( dirname "." )" && pwd )"
 # ./nix/test/argparse/sample-app.sh "foo bar" run --  bash -c "'a b'" 'd e' '"c ee"' f
 # ./nix/test/argparse/sample-app.sh "foo bar" --opt1="'a b'" --opt2 "a b" run "'target'" --  bash -c "'a b'" 'd e' '"c ee"' f
 # ./nix/test/argparse/sample-app.sh "foo bar" --opt1="'a b'" --opt2 "a b" run "'target'" source "other param" '"another"' --  bash -c "'a b'" 'd e' '"c ee"' f
-# ./nix/test/argparse/sample-app.sh --  bash -c "'a b'" 'd e' '"c ee"' f
+# ./nix/test/argparse/sample-app.sh "foo bar" --  bash -c "'a b'" 'd e' '"c ee"' f
+# ./nix/test/argparse/sample-app.sh "foo bar" "run" --  echo "'a b'" 'd e' '"c ee"' f
+# ./nix/test/argparse/sample-app.sh "foo bar" "run" --opt1="exec" --  echo "'a b'" 'd e' '"c ee"' f
 
 
 usage() {
@@ -68,5 +70,14 @@ if [ "$DOMAIN" = "foo bar" ]; then
 			echo $i $a
 			((i++))
 		done
+
+		if [ "$OPT1" = "exec" ]; then
+			echo Try to exec extra arg : $extra_arg
+			echo using extra arg eval before
+			eval "${extra_arg_eval}"
+			"$@"
+		fi
 	fi
+
+
 fi

@@ -356,6 +356,40 @@ $(command minikube "$@");
 }
 
 # -------------------- FUNCTIONS-----------------
+
+
+# https://stackoverflow.com/a/14701003/5027535
+# return TRUE if port is open
+# return FALSE if port is unreachable
+#	return nothing if we cannot test
+__check_tcp_port_open() {
+	local __host="$1"
+	local __port="$2"
+	# timeout time for check, default 3 sec
+	local __timeout="$3"
+
+	[ "${__timeout}" = "" ] && __timeout=3
+
+	# NOTE : nc is present by default on MacOS
+	type nc &>/dev/null
+	if [ $? = 0 ]; then
+		nc -w ${__timeout} -v ${__host} ${__port} </dev/null 2>/dev/null
+		[ $? = 0 ] && echo "TRUE" || echo "FALSE"
+	else
+		type timeout &>/dev/null
+		if [ $? = 0 ]; then
+			 timeout ${__timeout} bash -c "</dev/tcp/${__host}/${__port}"
+			 [ $? = 0 ] && echo "TRUE" || echo "FALSE"
+		else
+			# TODO : timeout nor nc are present we cannot check tcp port is open or not
+			echo ""
+		fi
+
+	fi
+
+}
+
+
 # support ssh:// and vagrant://
 # OPTIONS :
 #			SHARED : create a shared ssh connection for targeted host for a few time

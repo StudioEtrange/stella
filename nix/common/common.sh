@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+# shellcheck shell=bash
 if [ ! "$_STELLA_COMMON_INCLUDED_" = "1" ]; then
 _STELLA_COMMON_INCLUDED_=1
 
@@ -8,6 +8,49 @@ _STELLA_COMMON_INCLUDED_=1
 
 
 # VARIOUS-----------------------------
+
+# check if a user is member of group name
+# __is_group_member <UID|user name> <group name>
+# return 0 if user is a member
+# https://stackoverflow.com/a/28926650/5027535
+__is_group_member() {
+	[[ " "$(id -Gn $2)" " == *" $1 "* ]]
+}
+
+# HASH string with sha256
+# https://stackoverflow.com/questions/3358420/generating-a-sha256-from-the-linux-command-line
+__sha256() {
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		printf "$*" | shasum -a 256 | tr -dc '[:alnum:]'
+	else
+		type sha256sum &>/dev/null && printf "$*" | sha256sum | tr -dc '[:alnum:]'
+	fi
+}
+
+# generate an unique id for a machine
+# MACHINE_ID use /etc/machine-id https://unix.stackexchange.com/a/144915
+# PRODUCT_UUID use product_uuid -- need sudo -- https://unix.stackexchange.com/a/144892
+# SEED is a way to salt result with a constant
+__generate_machine_id() {
+	local _OPT="$1"
+
+	local _flag_puuid=
+	local _flag_mid=
+	for o in $_OPT; do
+		[ "$o" = "PRODUCT_UUID" ] && _flag_puuid="1" &&
+		[ "$o" = "MACHINE_ID" ] && _flag_mid="1"
+		[ $_flag_seed = "1" ] && _seed="$o" && _flag_seed=
+		[ "$o" = "SEED" ] && _flag_seed="1"
+	done
+
+	# NOTE : order is important
+	local _file_list
+	[ "${_flag_mid}" ] && _file_list="${_file_list} /etc/machine-id"
+	[ "${_flag_puuid}" ] && _file_list="${_file_list} /sys/class/dmi/id/product_uuid"
+
+
+	awk '{printf "'${_seed}'%s",$0}' ${_file_list} | sha256sum | tr -dc '[:alnum:]'
+}
 
 # generate a random password
 # NOTE on macos : need LC_CTYPE=C http://nerdbynature.de/s9y/2010/04/11/tr-Illegal-byte-sequence
@@ -936,7 +979,21 @@ __trim() {
 # http://stackoverflow.com/a/20460402
 __string_contains() { [ -z "${1##*$2*}" ] && [ -n "$1" -o -z "$2" ]; }
 
-
+# return 0 if list contains items, else 1
+# __list_contains "aa bb xx" "bb" 
+# echo $? ==> 0
+# __list_contains "aa bb xx" "b" 
+# echo $? ==> 1
+# __list_contains "aa bb xx" "bb xx" 
+# echo $? ==> 0
+# __list_contains "aa bb xx" "aa xx" 
+# echo $? ==> 1
+# https://stackoverflow.com/a/20473191/5027535
+__list_contains() {
+  local _list="$1"
+  local _item="$2"
+  [[ "$_list" =~ (^|[[:space:]])"$_item"($|[[:space:]]) ]]
+}
 
 __get_stella_version() {
 	local _stella_root_="$1"
@@ -1280,8 +1337,8 @@ __abs_to_rel_path() {
 		esac
 	fi
 
-	if [ "${result:(-1)}" = "/" ]; then
-		result=${result%?}
+	if [ ${result:(-1)} = "/" ]; then
+		result="${result%?}"
 	fi
 	echo "${result}"
 
@@ -1872,8 +1929,9 @@ __mercurial_project_version() {
 	fi
 }
 
+# NOTE git "--first-parent" option needs git version >= 1.8.4
 __git_project_version() {
-	local _PATH=$1
+	local _path=$1
 	local _OPT=$2
 
 	_opt_version_short=ON
@@ -1883,12 +1941,14 @@ __git_project_version() {
 		[ "$o" = "LONG" ] && _opt_version_long=ON && _opt_version_short=OFF
 	done
 
-	if [[ -n `which git 2> /dev/null` ]]; then
-		if [ "$_opt_version_long" = "ON" ]; then
-			echo "$(git --git-dir "$_PATH/.git" describe --tags --long --always --first-parent)"
-		fi
-		if [ "$_opt_version_short" = "ON" ]; then
-			echo "$(git --git-dir "$_PATH/.git" describe --tags --abbrev=0 --always --first-parent)"
+	if [ -d "${_path}/.git" ]; then
+		if [[ -n `which git 2> /dev/null` ]]; then
+			if [ "$_opt_version_long" = "ON" ]; then
+				echo "$(git --git-dir "${_path}/.git" describe --tags --long --always --first-parent)"
+			fi
+			if [ "$_opt_version_short" = "ON" ]; then
+				echo "$(git --git-dir "${_path}/.git" describe --tags --abbrev=0 --always --first-parent)"
+			fi
 		fi
 	fi
 }
@@ -2185,9 +2245,9 @@ __argparse(){
 	local LONG_DESCRIPTION="$5"
 	local OPT="$6"
 	# available options
-	#		EXTRA_PARAMETER : a variable name which will contains non parsed parameter (parameter before -- which are not defined)
-	#		EXTRA_ARG : a variable name which will contains a string with EXTRA ARG (arguments after --)
-	#		EXTRA_ARG_EVAL : a variable name which will contains a string to evalute, that will set variable '$@' with EXTRA ARG (arguments after --)
+	#		EXTRA_PARAMETER : a variable name which will contains non parsed parameter (parameter BEFORE -- which are not defined)
+	#		EXTRA_ARG : a variable name which will contains a string with EXTRA ARG (arguments AFTER --)
+	#		EXTRA_ARG_EVAL : a variable name which will contains a string (arguments AFTER --) to be evaluted, that will set variable '$@' with EXTRA ARG
 	#		see samples in test/argparse/sample-app.sh
 
 	shift 6

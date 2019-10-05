@@ -7,6 +7,7 @@ _STELLA_COMMON_APP_INCLUDED_=1
 
 # APP RESSOURCES & ENV MANAGEMENT ---------------
 
+# Transfert current app to an uri
 # [schema://][user[:password]@][host][:port][/abs_path|?rel_path]
 # By default
 # CACHE, WORKSPACE, GIT are excluded ==> use theses options to not exclude
