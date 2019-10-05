@@ -17,14 +17,15 @@ OPENJDK_PROVIDER="adoptopenjdk"
 
 
 feature_openjdk() {
-	__feature_catalog_info "$OPENJDK_PROVIDER"
-	feature_$OPENJDK_PROVIDER
-	for s in $FEAT_LIST_SCHEMA; do
-		__translate_schema "openjdk#${s}" "__temp_name" "__temp_ver"
-		eval "feature_openjdk_${__temp_ver}() { feature_${OPENJDK_PROVIDER}_${__temp_ver}; }"
-		echo "feature_openjdk_${__temp_ver}() { feature_${OPENJDK_PROVIDER}_${__temp_ver}; }"
-	done
-	FEAT_NAME=openjdk
+	#__feature_catalog_info "$OPENJDK_PROVIDER"
+	#feature_$OPENJDK_PROVIDER
+	#for s in $FEAT_LIST_SCHEMA; do
+	#	__translate_schema "openjdk#${s}" "__temp_name" "__temp_ver"
+	#	eval "feature_openjdk_${__temp_ver}() { feature_${OPENJDK_PROVIDER}_${__temp_ver}; }"
+		#echo "feature_openjdk_${__temp_ver}() { feature_${OPENJDK_PROVIDER}_${__temp_ver}; }"
+	#done
+	#FEAT_NAME=openjdk
+	return
 }
 
 
