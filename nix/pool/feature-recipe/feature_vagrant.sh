@@ -4,6 +4,8 @@ _vagrant_INCLUDED_=1
 # for linux, the downloaded .deb file contains compiled libraries but these libraries may not work on some linux distro
 # https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/tools/vagrant/default.nix
 
+# NOTE : for source may use this : https://p8952.info/2014/12/08/installing-vagrant-in-non-supported-environments/
+
 feature_vagrant() {
 	FEAT_NAME=vagrant
 
