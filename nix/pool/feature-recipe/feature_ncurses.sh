@@ -1,7 +1,10 @@
+# shellcheck shell=bash
+# shellcheck disable=SC2034
 if [ ! "$_NCURSES_INCLUDED_" = "1" ]; then
 _NCURSES_INCLUDED_=1
 
 
+# note : 'w' in ncursesw means wide encoding
 # https://www.gnu.org/software/ncurses/
 
 feature_ncurses() {
@@ -18,65 +21,41 @@ feature_ncurses() {
 feature_ncurses_6_1() {
 	FEAT_VERSION="6_1"
 
-
-
-	FEAT_SOURCE_URL="http://ftp.gnu.org/gnu/ncurses/ncurses-6.0.tar.gz"
+	FEAT_SOURCE_URL="http://ftp.gnu.org/gnu/ncurses/ncurses-6.1.tar.gz"
 	FEAT_SOURCE_URL_FILENAME="ncurses-6.1.tar.gz"
 	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
 
-
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libncursesw.a
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+	FEAT_TEST="ncurses6-config"
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/$FEAT_TEST"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 
 }
 
 
 feature_ncurses_6_0() {
-	FEAT_VERSION=6_0
+	FEAT_VERSION="6_0"
 
+	FEAT_SOURCE_URL="http://ftp.gnu.org/gnu/ncurses/ncurses-6.0.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="ncurses-6.0.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
 
-	FEAT_SOURCE_DEPENDENCIES=
-	FEAT_BINARY_DEPENDENCIES=
-
-	FEAT_SOURCE_URL=http://ftp.gnu.org/gnu/ncurses/ncurses-6.0.tar.gz
-	FEAT_SOURCE_URL_FILENAME=ncurses-6.0.tar.gz
-	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
-
-	FEAT_BINARY_URL=
-	FEAT_BINARY_URL_FILENAME=
-	FEAT_BINARY_URL_PROTOCOL=
-
-	FEAT_SOURCE_CALLBACK=
-	FEAT_BINARY_CALLBACK=
-	FEAT_ENV_CALLBACK=
-
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libncursesw.a
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+	FEAT_TEST="ncurses6-config"
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/$FEAT_TEST"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 
 }
 
 
 feature_ncurses_5_9() {
-	FEAT_VERSION=5_9
+	FEAT_VERSION="5_9"
 
+	FEAT_SOURCE_URL="http://ftp.gnu.org/gnu/ncurses/ncurses-5.9.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="ncurses-5.9.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
 
-	FEAT_SOURCE_DEPENDENCIES=
-	FEAT_BINARY_DEPENDENCIES=
-
-	FEAT_SOURCE_URL=http://ftp.gnu.org/gnu/ncurses/ncurses-5.9.tar.gz
-	FEAT_SOURCE_URL_FILENAME=ncurses-5.9.tar.gz
-	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
-
-	FEAT_BINARY_URL=
-	FEAT_BINARY_URL_FILENAME=
-	FEAT_BINARY_URL_PROTOCOL=
-
-	FEAT_SOURCE_CALLBACK=
-	FEAT_BINARY_CALLBACK=
-	FEAT_ENV_CALLBACK=
-
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lib/libncursesw.a
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+	FEAT_TEST="ncurses5-config"
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/$FEAT_TEST"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 
 }
 

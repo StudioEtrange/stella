@@ -335,7 +335,7 @@ __enable_current_toolset() {
 			__default_linker_search_path
 			if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 				echo "===> gcc hardcoded libraries search (-L flag)"
-				__gcc_lib_search_path
+				__gcc_linker_search_path
 			fi
 	esac
 	if $(type pkg-config &>/dev/null); then

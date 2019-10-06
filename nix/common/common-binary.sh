@@ -5,6 +5,7 @@ _STELLA_COMMON_BINARY_INCLUDED_=1
 # GENERIC
 # __is_multi_arch		# TEST FILE IS BIN - NON RECURSIVE -- [RETURN ERROR CODE]
 # __get_arch				# TEST FILE IS BIN - NON RECURSIVE
+# __get_elf_interpreter_linux # TEST FILE IS BIN - NON RECURSIVE
 # __check_arch			# TEST FILE IS BIN - RECURSIVE -- [RETURN ERROR CODE]
 # __check_binary_file # TEST FILE IS BIN - RECURSIVE -- OPTIONAL FILTER -- [RETURN ERROR CODE]
 # __tweak_binary_file # TEST FILE IS BIN - RECURSIVE -- OPTIONAL FILTER AND OPTIONAL FILTER FOR LIB
@@ -31,7 +32,7 @@ _STELLA_COMMON_BINARY_INCLUDED_=1
 
 # NOTE
 #			LINUX ELF TOOLS
-#					objdump (needed to analysis) -- in sys package gnu binutils
+#					objdump (needed to analysis) -- in sys package gnu binutils (WARN : objdump not always present on linux system / prefer readelf ? see lddtree to change objdump to readelf)
 #					ldd (needed for linked lib analys) -- present by default => security warning
 #					patchelf (needed to analysis AND modify rpath) -- in stella recipe 'patchelf'
 #					scanelf (needed to analysis) -- in stella recipe pax-utils
@@ -43,7 +44,7 @@ _STELLA_COMMON_BINARY_INCLUDED_=1
 # 					https://mikeash.com/pyblog/friday-qa-2009-11-06-linking-and-install-names.html
 #
 #			LINKED LIBS
-#						LINUX : Dynamic libs will be searched in the following directories in the given order:
+#						LINUX : Dynamic libs will be searched at runtime in the following directories in the given order:
 #							1. DT_RPATH - a list of directories which is linked into the executable, supported on most UNIX systems.
 #														The DT_RPATH entries are ignored if DT_RUNPATH entries exist.
 #							2. LD_LIBRARY_PATH - an environment variable which holds a list of directories
@@ -82,6 +83,14 @@ _STELLA_COMMON_BINARY_INCLUDED_=1
 
 
 # GENERIC -------------------------------------------------------------------
+
+__get_elf_interpreter_linux() {
+	local _file="$1"
+	if __is_bin "$_file"; then
+		readelf  -p ".interp" "$_file" | sed -E -n '/\[\s*[0-9]\]/s/^\s*\[.*\]\s*(.*)/\1/p'
+	fi
+}
+
 __is_multi_arch() {
 	local _file="$1"
 	local _result=1

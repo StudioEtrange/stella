@@ -5,7 +5,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 argv0=${0##*/}
-version=1.25-CURRENT
+version=1.26-CURRENT
 
 : ${ROOT:=/}
 
@@ -69,11 +69,12 @@ elf_specs_scanelf() {
 
 
 
+# WARN : readelf output depend on local language
 # functions for readelf backend
 elf_rpath_readelf() {
-	#readelf -d "$1" | awk '$2 == "(RPATH)" || $2 == "(RUNPATH)" { print $5 }' | cut -d '[' -f 2 | sed 's/]//'
-	readelf -d "$1" | awk '$2 == "(RUNPATH)" { if($5!="") {runpath=$5;} }  $2 == "(RPATH)" { if($5!="") {rpath=$5;} } END { if(runpath!="") {print runpath;} else {print rpath;} }' | cut -d '[' -f 2 | sed 's/]//'
-	# objdump -x "$1" | awk '$1 == "RUNPATH" { if($2!="") {runpath=$2;} }  $1 == "RPATH" { if($2!="") {rpath=$2;} } END { if(runpath!="") {print runpath;} else {print rpath;} }'
+	local rpath="$(readelf -d "$1" | grep "RPATH" | grep -o -E "\[[^]]*\]" | grep -o -E "[^][]*" | tr '\n' ',' | sed 's/,$//')"
+	local runpath="$(readelf -d "$1" | grep "RUNPATH" | grep -o -E "\[[^]]*\]" | grep -o -E "[^][]*" | tr '\n' ',' | sed 's/,$//')"
+	[ -z "${runpath}" ] && echo "$rpath" || echo "$runpath"
 }
 
 elf_interp_readelf() {
@@ -115,7 +116,7 @@ c_ldso_paths_loaded='false'
 find_elf() {
 	_find_elf=''
 
-	local elf="$1" needed_by="$2"
+	local interp elf=$1 needed_by=$2
 	if [ "${elf}" != "${elf##*/}" ] && [ -e "${elf}" ] ; then
 		_find_elf=${elf}
 		return 0
@@ -165,28 +166,36 @@ find_elf() {
 		if ! ${c_ldso_paths_loaded} ; then
 			c_ldso_paths_loaded='true'
 			c_ldso_paths=
-			if [ -r ${ROOT}etc/ld.so.conf ] ; then
-				read_ldso_conf() {
-					local line p
-					for p ; do
-						# if the glob didnt match anything #360041,
-						# or the files arent readable, skip it
-						[ -r "${p}" ] || continue
-						while read line ; do
-							case ${line} in
-								"#"*) ;;
-								"include "*) read_ldso_conf ${line#* } ;;
-								*) c_ldso_paths="$c_ldso_paths:${ROOT}${line#/}";;
-							esac
-						done <"${p}"
-					done
-				}
-				# the 'include' command is relative
-				local _oldpwd="$PWD"
-				cd "$ROOT"etc >/dev/null
+			read_ldso_conf() {
+				local line p
+				for p ; do
+					# if the glob didnt match anything #360041,
+					# or the files arent readable, skip it
+					[ -r "${p}" ] || continue
+					while read line ; do
+						case ${line} in
+							"#"*) ;;
+							"include "*) read_ldso_conf ${line#* } ;;
+							*) c_ldso_paths="$c_ldso_paths:${ROOT}${line#/}";;
+						esac
+					done <"${p}"
+				done
+			}
+			# the 'include' command is relative
+			local _oldpwd="$PWD"
+			cd "$ROOT"etc >/dev/null
+			interp=$(elf_interp "${needed_by}")
+			case "$interp" in
+			*/ld-musl-*)
+				musl_arch=${interp%.so*}
+				musl_arch=${musl_arch##*-}
+				read_ldso_conf "${ROOT}"etc/ld-musl-${musl_arch}.path
+				;;
+			*/ld-linux*|*/ld.so*) # glibc
 				read_ldso_conf "${ROOT}"etc/ld.so.conf
-				cd "$_oldpwd"
-			fi
+				;;
+			esac
+			cd "$_oldpwd"
 		fi
 		if [ -n "${c_ldso_paths}" ] ; then
 			check_paths "${elf}" "${c_ldso_paths}" && return 0
@@ -373,9 +382,9 @@ shift $(( $OPTIND - 1))
 ${SET_X} && set -x
 
 if [ -z "${BACKEND}" ]; then
-	if which scanelf >/dev/null; then
+	if which scanelf >/dev/null 2>&1; then
 		BACKEND=scanelf
-	elif which readelf >/dev/null; then
+	elif which readelf >/dev/null 2>&1; then
 		BACKEND=readelf
 	else
 		error "This tool needs either scanelf or readelf"

@@ -354,7 +354,69 @@ __gcc_is_clang() {
 	fi
 }
 
+
+# return the target triplet
+#			Name of CPU family/model (eg. x86_64)
+#			The vendor (eg. linux)
+#			Operating system name (eg. gnu)
+__default_target_triplet() {
+	gcc -dumpmachine
+}
+
+
+# LIBRARIES SEARCH PATH -------
+# https://stackoverflow.com/questions/9922949/how-to-print-the-ldlinker-search-path
+
+
+# SEARCH PATH AT RUNTIME - WHILE RUNNING PROGRAM override with LD_LIBRARY_PATH enn var
+
+# https://github.com/StudioEtrange/lddtree/blob/579ebe449b76ed9d22f116a6f30b87b1f2ded2ca/lddtree.sh#L169
+__default_runtime_search_path() {
+	local c_ldso_paths=
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+
+		if [ -r /etc/ld.so.conf ] ; then
+			read_ldso_conf() {
+				local line p
+				for p ; do
+					# if the glob didnt match anything #360041,
+					# or the files arent readable, skip it
+					[ -r "${p}" ] || continue
+					while read line ; do
+						case ${line} in
+							"#"*) ;;
+							"include "*) read_ldso_conf ${line#* } ;;
+							*) c_ldso_paths="$c_ldso_paths:/${line#/}";;
+						esac
+					done <"${p}"
+				done
+			}
+			# the 'include' command is relative
+			local _oldpwd="$PWD"
+			cd "/etc" >/dev/null
+			interp=$(__get_elf_interpreter_linux "$(which ls)")
+			echo $interp
+			case "$interp" in
+			*/ld-musl-*)
+				musl_arch=${interp%.so*}
+				musl_arch=${musl_arch##*-}
+				read_ldso_conf /etc/ld-musl-${musl_arch}.path
+				;;
+			*/ld-linux*|*/ld.so*) # glibc
+				read_ldso_conf /etc/ld.so.conf
+				;;
+			esac
+			cd "$_oldpwd"
+		fi
+	fi
+	echo "${c_ldso_paths}"
+}
+
+
+# SEARCH PATH AT LINKING - WHILE BUILDING override with LIBRARY_PATH enn var
+
 # linker search path
+# library search path during linking
 # arch : x64|x86
 #				if empty the default system current arch will be used
 # LINUX https://stackoverflow.com/questions/9922949/how-to-print-the-ldlinker-search-path
@@ -374,19 +436,22 @@ __default_linker_search_path() {
 	fi
 }
 
-# gcc hardcoded libraries search path
-# https://stackoverflow.com/questions/9922949/how-to-print-the-ldlinker-search-path
-__gcc_lib_search_path() {
+
+# gcc hardcoded libraries search path when linking
+# gcc passes a few extra -L paths to the linker, which you can list with the following command:
+# https://stackoverflow.com/a/21610523/5027535
+__gcc_linker_search_path() {
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		gcc -print-search-dirs | sed '/^lib/b 1;d;:1;s,/[^/.][^/]*/\.\./,/,;t 1;s,:[^=]*=,:;,;s,;,;  ,g' | tr \; \\012
 	fi
 }
 
-# ld search path during linking (-L flag)"
+# library search path during linking (-L flag) 
+# NOT AT RUNTIME ==> parse ld.so.conf to see search path at runtime
 # see __default_linker_search_path
 # ld not used on macos
-# https://stackoverflow.com/questions/9922949/how-to-print-the-ldlinker-search-path
-__ld_link_search_path() {
+# https://stackoverflow.com/a/21610523/5027535
+__ld_linker_search_path() {
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		ld --verbose 2>/dev/null | grep SEARCH | sed 's/SEARCH_DIR("=\?\([^"]\+\)"); */\1\n/g'  | grep -vE '^$'
 	fi
