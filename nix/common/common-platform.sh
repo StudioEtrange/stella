@@ -370,6 +370,7 @@ __default_target_triplet() {
 
 # SEARCH PATH AT RUNTIME - WHILE RUNNING PROGRAM override with LD_LIBRARY_PATH enn var
 
+# dynamic libraries search path at runtime
 # https://github.com/StudioEtrange/lddtree/blob/579ebe449b76ed9d22f116a6f30b87b1f2ded2ca/lddtree.sh#L169
 __default_runtime_search_path() {
 	local c_ldso_paths=
