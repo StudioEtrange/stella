@@ -230,11 +230,11 @@ __boot() {
             ;;
           CMD )
               eval "$_arg"
-              "$@"
+              eval "$@"
             ;;
           SCRIPT )
               eval "$_arg2"
-              "$_arg" $@
+              eval "$_arg" "$@"
             ;;
         esac
       else
@@ -255,9 +255,9 @@ __boot() {
                  cd $__boot_folder
                  $__stella_entrypoint stella install dep
                  # cmd as is, without a bootstraped env
-                 [ "$_item" = "STELLA" ] && $__stella_entrypoint boot cmd local -- $@
+                 [ "$_item" = "STELLA" ] && eval $__stella_entrypoint boot cmd local -- "$@"
                  # cmd as is, without a bootstraped env
-                 [ "$_item" = "APP" ] && "$@"
+                 [ "$_item" = "APP" ] && eval "$@"
               else
                 # cmd is run into a bootstraped env
                 [ "$_item" = "STELLA" ] && sudo -Es eval "cd $__boot_folder && $__stella_entrypoint stella install dep && $__stella_entrypoint boot cmd local -- $@"
