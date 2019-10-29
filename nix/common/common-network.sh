@@ -1,4 +1,4 @@
-#!sh
+# shellcheck shell=bash
 if [ ! "$_STELLA_COMMON_NET_INCLUDED_" = "1" ]; then
 _STELLA_COMMON_NET_INCLUDED_=1
 
@@ -357,6 +357,87 @@ $(command minikube "$@");
 
 # -------------------- FUNCTIONS-----------------
 
+
+# https://unix.stackexchange.com/questions/55913/whats-the-easiest-way-to-find-an-unused-local-port
+# return a list separated by space of free tcp ports
+# PARAMETERS
+# nb port to find
+# OPTIONS :
+# RANGE_BEGIN - range of port begin
+# RANGE_END - range of port end
+# EXCLUDE_LIST_BEGIN - begin of a list of port to exclude
+# EXCLUDE_LIST_END - begin of a list of port to exclude
+# On unix, to find authorized plage and use it as RANGE_BEGIN and RANGE_END value use
+#			read range_begin range_end < /proc/sys/net/ipv4/ip_local_port_range
+__find_free_tcp_port() {
+	local ports="${1:-1}" 
+	local __opt="$2"
+
+	local range_begin="2048"
+	local range_end="65535"
+	local __flag_begin=
+	local __flag_end=
+	local __exclude_list=
+	local __flag_exclude=
+	for o in $__opt; do
+		[ "$__flag_begin" = "ON" ] && range_begin="$o" && __flag_begin=
+		[ "$o" = "RANGE_BEGIN" ] && __flag_begin="ON"
+		[ "$__flag_end" = "ON" ] && range_end="$o" && __flag_end=
+		[ "$o" = "RANGE_END" ] && __flag_end="ON"
+
+		[ "$o" = "EXCLUDE_LIST_END" ] && __flag_exclude=
+		[ "$__flag_exclude" = "ON" ] && __exclude_list="$__exclude_list $o"
+		[ "$o" = "EXCLUDE_LIST_BEGIN" ] && __flag_exclude="ON"
+	done
+
+	local free_ports=( )
+	local taken_ports=( $( netstat -aln | egrep ^tcp | fgrep LISTEN |
+							awk '{print $4}' | egrep -o '[0-9]+$' ) )
+	taken_ports=( ${taken_ports[@]} $__exclude_list )
+	taken_ports=($(printf '%s\n' "${taken_ports[@]}"|sort -n|uniq))
+
+	local nb_taken_port_in_range=0
+	for taken in "${taken_ports[@]}"
+	do
+		if [[ $taken -ge $range_begin && $taken -le $range_end ]]; then
+			nb_taken_port_in_range=$(( nb_taken_port_in_range + 1 ))
+		fi
+	done
+
+	local nb_available_ports=$(( range_end - range_begin + 1 - nb_taken_port_in_range ))
+	# not enough available ports
+	[[ $nb_available_ports -ge $ports ]] || return 2
+	local max_spacing=$(( nb_available_ports / ports ))
+
+	local spacing=0
+	local selector=$range_begin
+	local selector_end=$(( range_end + 1 ))
+	local nb_free_ports=0
+
+	for taken in "${taken_ports[@]}" $selector_end
+	do
+		while [[ $selector -lt $taken && ${#free_ports[@]} -lt $ports ]]
+		do
+			spacing=$(( RANDOM % max_spacing ))
+			selector=$(( selector + spacing))
+			free_ports+=( $selector )
+			nb_free_ports=$(( nb_free_ports + 1 ))
+			selector=$(( selector + 1 ))
+		done
+		[[ $nb_free_ports -eq $ports ]] && break
+		if [ $selector -eq $taken ]; then
+			# bypass taken port
+			selector=$(( selector + 1 ))
+			nb_taken_port_in_range=$(( nb_taken_port_in_range - 1 ))
+			nb_available_ports=$(( range_end - selector + 1 - nb_taken_port_in_range ))
+			max_spacing=$(( nb_available_ports / ( ports - nb_free_ports ) ))
+		fi
+	done
+
+	[[ ${#free_ports[@]} -eq $ports ]] || return 2
+
+	printf '%d ' "${free_ports[@]}"
+}
 
 # https://stackoverflow.com/a/14701003/5027535
 # return TRUE if port is open

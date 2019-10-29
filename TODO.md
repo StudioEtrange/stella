@@ -1,6 +1,6 @@
 *TODO & NOTES*
 
-
+# trasnpiler to batch and bash : https://github.com/BYVoid/Batsh
 
 # Recipe, package manager inspiration
 
@@ -122,7 +122,7 @@ use
   * https://github.com/richfelker/musl-cross-make (works on linux and macos)
   * https://github.com/FiloSottile/homebrew-musl-cross (same thing than previous but in homebrew style)
 
-- [ ] implement version constraint number like npm (https://github.com/npm/node-semver) instead of only  get_last_version() function
+- [ ] win : implement version constraint number like npm (https://github.com/npm/node-semver) instead of only  get_last_version() function
 - [ ] Test and remove DEST_ERASE in each feature_recipe : cause problem when bundled in merge mode. But only for binary ? keep it for source? only when get binary
 - [ ] win : add FEATURE_LIST_ENABLED_VISIBLE
 - [ ] win : feat_install() split HIDDEN into HIDDEN and NON_DECLARED
