@@ -9,6 +9,185 @@ _STELLA_COMMON_INCLUDED_=1
 
 # VARIOUS-----------------------------
 
+
+
+# return a randomly number list separated by space
+# PARAMETERS
+# nb of requested number to pick
+# range begin - default 0
+# range end - default 65535
+# OPTIONS :
+# CONSECUTIVE - return a list of consecutive number
+# EXCLUDE_LIST_BEGIN - begin of a list of number to exclude
+# EXCLUDE_LIST_END - begin of a list of number to exclude
+# SAMPLE :
+#	__random_number_list_from_range "2" "0" "100"
+#	__random_number_list_from_range "2" "0" "100" "CONSECUTIVE"
+#	__random_number_list_from_range "2" "640" "650" "EXCLUDE_LIST_BEGIN 602 603 645 642 641 644 646 650 EXCLUDE_LIST_END CONSECUTIVE"
+__random_number_list_from_range() {
+	local requested_nb="${1:-1}"
+	# authorized number start range (included)
+	local range_begin="${2:-0}"
+	# authorized number end range (included)
+	local range_end="${3:-65535}"
+
+	local opt="$4"
+	local excluded_opt=
+	local flag_exclude=
+	local opt_consecutive=
+
+	for o in $opt; do
+		[ "$o" = "CONSECUTIVE" ] && flag_exclude= && opt_consecutive="CONSECUTIVE"
+		[ "$o" = "EXCLUDE_LIST_END" ] && flag_exclude=
+		[ "$flag_exclude" = "ON" ] && excluded_opt="$excluded_opt $o"
+		[ "$o" = "EXCLUDE_LIST_BEGIN" ] && flag_exclude="ON"
+	done
+
+	# result list of number
+	local result_list=( )
+	# excluded number lists
+	local original_exclude_list=( )
+	local exclude_list=( )
+
+	original_exclude_list=( $excluded_opt )
+	original_exclude_list=( $(printf '%s\n' "${original_exclude_list[@]}" | sort -n | uniq ))
+	#echo original_exclude_list : "${original_exclude_list[@]}"
+	
+	# size of authorized number range
+	local range_size=$(( range_end - range_begin + 1 ))
+	# CONSECUTIVE MODE : end of the range (included) of authorized number as first value of serie
+	local range_end_valid=$range_end
+	# CONSECUTIVE MODE : how many number are excluded from the end of the range of authorized number as first value of serie
+	local nb_non_valid_from_range_end_valid
+	# total of non authorized number in range (including the whole range, even last number excluded in CONSECUTIVE MODE)
+	local nb_non_valid_in_range=0
+	# total of available authorized number (as first value of serie in case of CONSECUTIVE mode)
+	local nb_available=0
+
+	local excluded
+	local current
+	local selector
+	
+	
+	if [ "$opt_consecutive" = "CONSECUTIVE" ]; then
+		# determine last valid number
+		range_end_valid=$(( range_end - requested_nb ))
+
+		nb_non_valid_from_range_end_valid=$(( range_end - range_end_valid ))
+		nb_non_valid_in_range=$(( nb_non_valid_in_range + nb_non_valid_from_range_end_valid ))
+	
+		local temp_array=( )
+		# tag all excluded number as non valid as first selected consecutive number and number preceding them
+		for excluded in "${original_exclude_list[@]}"
+		do
+			#echo analyse excluded number : $excluded
+			if [[ $excluded -ge $range_begin && $excluded -le $range_end_valid ]]; then
+				
+				for i in $(seq 0 $(( requested_nb - 1)) ); do
+					current=$((excluded - i))
+					if [ "${temp_array[$current]}" = "" ]; then
+						if [[ $current -ge $range_begin ]]; then
+							temp_array[$current]="1"
+							exclude_list+=( $current)
+							nb_non_valid_in_range=$(( nb_non_valid_in_range + 1 ))
+						fi
+					fi
+				done
+			fi
+		done
+	else
+		for excluded in "${original_exclude_list[@]}"
+		do
+			#echo analyse excluded number : $excluded
+			if [[ $excluded -ge $range_begin && $excluded -le $range_end ]]; then
+				exclude_list+=( $excluded )
+				nb_non_valid_in_range=$(( nb_non_valid_in_range + 1 ))
+			fi
+		done
+	fi
+
+	exclude_list=( $(printf '%s\n' "${exclude_list[@]}" | sort -n) )
+	nb_available=$(( range_size - nb_non_valid_in_range ))
+
+	# echo range_begin : $range_begin
+	# echo range_end_valid : $range_end_valid
+	# echo range_end : $range_end
+	# echo computed exclude list : "${exclude_list[@]}"
+	# echo range_size : $range_size
+	# echo nb_non_valid_in_range : $nb_non_valid_in_range
+	# echo nb_non_valid_from_range_end_valid : $nb_non_valid_from_range_end_valid
+	# echo nb_available : $nb_available
+
+	if [ "$opt_consecutive" = "CONSECUTIVE" ]; then
+		# not enough available first number of a consecutive series
+		[ $nb_available -gt 0 ] || return 1
+	else
+		# not enough available number
+		[ $nb_available -ge $requested_nb ] || return 1
+	fi
+
+
+	if [ "$opt_consecutive" = "CONSECUTIVE" ]; then
+
+		selector=$(( RANDOM % nb_available ))
+		# echo --- try the position of available list as first selected number : $(( selector + 1 ))th
+
+		selector=$(( range_begin + selector ))
+		# echo this should be number : $selector
+
+		for excluded in "${exclude_list[@]}"; do
+			[ $excluded -le $selector ] && selector=$(( selector + 1))
+		done
+
+		# echo selected first number : $selector
+		for i in $(seq 0 $(( requested_nb - 1)) ); do
+			current=$(( selector + i ))
+			result_list+=( $current )
+			exclude_list+=( $current )
+		done
+
+		exclude_list=( $(printf '%s\n' "${exclude_list[@]}" | sort -n ))
+		nb_available=$(( nb_available - 1 ))	
+		# echo new excluded list : "${exclude_list[@]}"
+		# echo there is still nb available number as first selected : $nb_available	
+
+	else
+
+		while [[ $nb_available -gt 0 ]]; do
+			
+			selector=$(( RANDOM % nb_available ))
+			# echo --- try the position of available list as selected number : $(( selector + 1 ))th
+
+			selector=$(( range_begin + selector ))
+			# echo this should be number : $selector
+			
+			for excluded in "${exclude_list[@]}"; do
+				[ $excluded -le $selector ] && selector=$(( selector + 1))
+			done
+
+			
+			result_list+=( $selector )
+			exclude_list+=( $selector )
+			exclude_list=( $(printf '%s\n' "${exclude_list[@]}" | sort -n ))
+			nb_available=$(( nb_available - 1 ))
+
+			# echo selected number : $selector
+			# echo new excluded list : "${exclude_list[@]}"
+			# echo there is still nb_available : $nb_available	
+
+			[ ${#result_list[@]} -eq $requested_nb ] && break;
+
+		done
+	fi
+
+	[ ${#result_list[@]} -eq $requested_nb ] || return 1
+
+	printf '%d ' "${result_list[@]}" | sort -n
+}
+
+
+
+
 # check if a user is member of group name
 # __is_group_member <UID|user name> <group name>
 # return 0 if user is a member
