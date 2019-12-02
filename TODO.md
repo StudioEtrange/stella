@@ -110,7 +110,8 @@ use
 
 # TODO List
 
-- [ ] bug recipe m4 (and maybe bison, automake, autoconf, ...) build is broken with glibc 2.28
+- [ ] use https://github.com/icy/bocker to turn stella app into docker
+- [X] bug recipe m4 (and maybe bison, automake, autoconf, ...) build is broken with glibc 2.28
 * https://www.reddit.com/r/archlinux/comments/97gsb1/glibc_update_breaks_buildroot/
 * https://bugs.archlinux.org/task/59562
 * https://github.com/coreutils/gnulib/commit/4af4a4a71827c0bc5e0ec67af23edef4f15cee8e#diff-5bcce8ce55246264586c4aed2a45ff89
