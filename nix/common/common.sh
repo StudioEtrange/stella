@@ -207,25 +207,26 @@ __sha256() {
 }
 
 # generate an unique id for a machine
-# MACHINE_ID use /etc/machine-id https://unix.stackexchange.com/a/144915
+# MACHINE_ID (default) use /etc/machine-id https://unix.stackexchange.com/a/144915
 # PRODUCT_UUID use product_uuid -- need sudo -- https://unix.stackexchange.com/a/144892
 # SEED is a way to salt result with a constant
 __generate_machine_id() {
 	local _OPT="$1"
 
 	local _flag_puuid=
-	local _flag_mid=
+	local _flag_mid=1
+	local _seed=
 	for o in $_OPT; do
-		[ "$o" = "PRODUCT_UUID" ] && _flag_puuid="1" &&
+		[ "$o" = "PRODUCT_UUID" ] && _flag_puuid="1"
 		[ "$o" = "MACHINE_ID" ] && _flag_mid="1"
-		[ $_flag_seed = "1" ] && _seed="$o" && _flag_seed=
+		[ "$_flag_seed" = "1" ] && _seed="$o" && _flag_seed=
 		[ "$o" = "SEED" ] && _flag_seed="1"
 	done
 
 	# NOTE : order is important
-	local _file_list
-	[ "${_flag_mid}" ] && _file_list="${_file_list} /etc/machine-id"
-	[ "${_flag_puuid}" ] && _file_list="${_file_list} /sys/class/dmi/id/product_uuid"
+	local _file_list=
+	[ "${_flag_mid}" = "1" ] && _file_list="${_file_list} /etc/machine-id"
+	[ "${_flag_puuid}" = "1" ] && _file_list="${_file_list} /sys/class/dmi/id/product_uuid"
 
 
 	awk '{printf "'${_seed}'%s",$0}' ${_file_list} | sha256sum | tr -dc '[:alnum:]'
