@@ -263,8 +263,9 @@ __get_all_properties() {
 		__get_key "$_properties_file" "STELLA" "APP_CACHE_DIR" "PREFIX"
 		STELLA_APP_CACHE_DIR=$(eval echo "$STELLA_APP_CACHE_DIR")
 
+		# NOTE : exception we parse constraint symbol in APP_FEATURE_LIST
 		__get_key "$_properties_file" "STELLA" "APP_FEATURE_LIST" "PREFIX"
-		STELLA_APP_FEATURE_LIST=$(eval echo "$STELLA_APP_FEATURE_LIST")
+		STELLA_APP_FEATURE_LIST=$(eval echo $(echo "$STELLA_APP_FEATURE_LIST" | sed -e 's/>/\\>/g' -e 's/</\\</g'))
 		__get_key "$_properties_file" "STELLA" "APP_ENV_FILE" "PREFIX"
 		STELLA_APP_ENV_FILE=$(eval echo "$STELLA_APP_ENV_FILE")
 
@@ -274,9 +275,11 @@ __get_all_properties() {
 	fi
 }
 
+# NOTE : __get_app_property do NOT eval property key which is a different behavior from __get_all_properties
 __get_app_property() {
 	local _SECTION=$1
 	local _KEY=$2
+	
 	__get_key "$_STELLA_APP_PROPERTIES_FILE" "$_SECTION" "$_KEY" "PREFIX"
 }
 

@@ -110,6 +110,7 @@ use
 
 # TODO List
 
+- [ ] common-app : different behavior between __get_all_properties and __get_app_property. The first evaluate property with eval not the second.
 - [ ] use https://github.com/icy/bocker to turn stella app into docker
 - [X] bug recipe m4 (and maybe bison, automake, autoconf, ...) build is broken with glibc 2.28
 * https://www.reddit.com/r/archlinux/comments/97gsb1/glibc_update_breaks_buildroot/
