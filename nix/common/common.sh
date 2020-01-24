@@ -2405,11 +2405,6 @@ __ini_file() {
 
 
 # ARG COMMAND LINE MANAGEMENT---------------------------------------------------
-# TODO : MacOS alternative in go of getopt or brew gnu-getopt?
-#		https://github.com/droundy/goopt
-#		https://code.google.com/p/opts-go/
-#		https://godoc.org/code.google.com/p/getopt
-#		https://github.com/kesselborn/go-getopt
 #		STELLA_ARGPARSE_GETOPT : getopt command instead of "getopt"
 # DEFINITIONS :
 #				OPTION : an option begin with - or --

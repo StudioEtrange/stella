@@ -109,7 +109,15 @@ use
 
 
 # TODO List
-
+- [ ] review argparse : too long !
+  - getopt alternatives implementation
+      https://github.com/droundy/goopt
+      https://code.google.com/p/opts-go/
+      https://godoc.org/code.google.com/p/getopt
+      https://github.com/kesselborn/go-getopt
+  - generate argument parser 
+      https://argbash.io/
+      https://github.com/matejak/argbash
 - [ ] use https://github.com/icy/bocker to turn stella app into docker
 - [X] bug recipe m4 (and maybe bison, automake, autoconf, ...) build is broken with glibc 2.28
 * https://www.reddit.com/r/archlinux/comments/97gsb1/glibc_update_breaks_buildroot/
