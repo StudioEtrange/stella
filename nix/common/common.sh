@@ -11,6 +11,54 @@ _STELLA_COMMON_INCLUDED_=1
 
 
 
+
+# output a formated table
+# input :
+#               pass string to parse with a pipe
+# options :
+#		ALIGN_RIGHT : align all column text to right
+#		CELL_DELIMITER : use a char to separate column when printing the table
+#		SEPARATOR : define a separator which separate column in input text. default is TAB. For special character use a special notation like this
+#                       __format_table "SEPARATOR "$'\t'""
+# sample :
+#               printf "head_1 "$'\t'" head_2\n val_1 "$'\t'" val_2" | __format_table "ALIGN_RIGHT CELL_DELIMITER |"
+__format_table() {
+        declare __str
+        __str=$(</dev/stdin);
+        local __opt="$1"
+
+        local __align_right
+        local __cell_delim
+        local __flag_cel_delim=OFF
+        local __separator=$'\t'
+        local __flag_separator=OFF
+        for o in ${__opt}; do
+                [ "$o" = "ALIGN_RIGHT" ] && __align_right="1"
+                [ "$__flag_cel_delim" = "ON" ] && __cell_delim="$o" && __flag_cel_delim="OFF"
+                [ "$o" = "CELL_DELIMITER" ] && __flag_cel_delim="ON"
+                [ "$__flag_separator" = "ON" ] && __separator="$o" && __flag_separator="OFF"
+                [ "$o" = "SEPARATOR" ] && __flag_separator="ON"
+        done
+       
+        if [ "${__cell_delim}" = "" ]; then
+                if [ "${__align_right}" = "1" ]; then
+                        # NOTE : To work around the requirement entries in the leftmost column must be of equal width« insert a dummy column and remove it later
+                        #       https://stackoverflow.com/a/18022947/5027535
+                        echo "${__str}" | sed -e s/^/FOO"${__separator}"/ | rev | column -s "${__separator}" -t | rev | cut -c4-
+                else
+                        echo "${__str}" | column -s "${__separator}" -t
+                fi
+        else
+                if [ "${__align_right}" = "1" ]; then
+                        echo "${__str}" | sed -e s/"${__separator}/${__separator}${__cell_delim}${__separator}"/g | sed -e s/^/FOO"${__separator}"/  | rev | column -s "${__separator}" -t | rev | cut -c4- 
+                else
+                        echo "${__str}" | sed -e s/"${__separator}/${__separator}${__cell_delim}${__separator}"/g | column -s "${__separator}" -t
+                fi
+        fi
+
+}
+
+
 # return a randomly number list separated by space
 # PARAMETERS
 # nb of requested number to pick
