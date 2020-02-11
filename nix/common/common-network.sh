@@ -472,7 +472,7 @@ __check_tcp_port_open() {
 	else
 		type timeout &>/dev/null
 		if [ $? = 0 ]; then
-			 timeout ${__timeout} bash -c "</dev/tcp/${__host}/${__port}"
+			 timeout ${__timeout} bash -c "</dev/tcp/${__host}/${__port}" 2>/dev/null
 			 [ $? = 0 ] && echo "TRUE" || echo "FALSE"
 		else
 			# TODO : timeout nor nc are present we cannot check tcp port is open or not
