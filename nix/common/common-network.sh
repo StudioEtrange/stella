@@ -370,6 +370,7 @@ $(command minikube "$@");
 # RANGE_END - range of port end
 # EXCLUDE_LIST_BEGIN - begin of a list of port to exclude
 # EXCLUDE_LIST_END - begin of a list of port to exclude
+# NOTE : if RANGE_BEGIN/RANGE_END empty will try to populate them with /proc/sys/net/ipv4/ip_local_port_range
 # SAMPLE :
 #	__find_free_port "2"
 #	__find_free_port "2" "UDP"
@@ -379,8 +380,8 @@ __find_free_port() {
 	local ports="${1:-1}"
 	local __opt="$2"
 
-	local range_begin="2048"
-	local range_end="65535"
+	local range_begin
+	local range_end
 	local __flag_begin=
 	local __flag_end=
 	local __exclude_list=
@@ -426,10 +427,25 @@ __find_free_port() {
 
 	# TODO : implement netstat alternatives : https://linuxize.com/post/check-listening-ports-linux/
 	local taken_ports
-	if [ "$__protocol" = "tcp" ]; then
-		taken_ports=( $( netstat -aln | egrep ^$__protocol | fgrep LISTEN | awk '{print $4}' | egrep -o '[0-9]+$' ) )
+
+	local __network_cmd
+	type ss &>/dev/null
+	if [ $? = 0 ]; then
+		__network_cmd="ss"
 	else
-		taken_ports=( $( netstat -aln | egrep ^$__protocol | awk '{print $4}' | egrep -o '[0-9]+$' ) )
+		type netstat &>/dev/null
+		if [ $? = 0 ]; then
+			__network_cmd="netstat"
+		else
+			# we cannot list occupied port
+			return
+		fi
+	fi
+
+	if [ "$__protocol" = "tcp" ]; then
+		taken_ports=( $( $__network_cmd -aln | egrep ^$__protocol | fgrep LISTEN | awk '{print $4}' | egrep -o '[0-9]+$' ) )
+	else
+		taken_ports=( $( $__network_cmd -aln | egrep ^$__protocol | awk '{print $4}' | egrep -o '[0-9]+$' ) )
 	fi
 
 	__random_number_list_from_range "$ports" "$range_begin" "$range_end" "$__flag_consecutive EXCLUDE_LIST_BEGIN ${taken_ports[@]} $__exclude_list EXCLUDE_LIST_END"
