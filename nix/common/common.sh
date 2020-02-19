@@ -1584,6 +1584,38 @@ __rel_to_abs_path_alternative_3() {
 	echo "$(cd "$_abs_root_path/$_rel_path" && pwd -P)"
 }
 
+
+# This function transform any absolute symlink into a relative symlink
+# ARG _target convert this - could be a folder or a symlink
+# OPTIONS
+#       ONLY_SUBPATH_OF <path> : convert only absolute link which point to a subpath of a path given as option arg, do not convert the others link.
+# NOTE : some other implementation use readlink --relative-to which is not portable
+__symlink_abs_ro_rel_path() {
+        local _target="$1"
+        local _opt="$2"
+
+        local _linked_target
+        local _linked_target_abs
+        local _symlink
+        local _only_subpath_link=OFF
+        local _path=
+        for o in ${_opt}; do
+                [ "$_only_subpath_link" = "ON" ] && _path="$o"
+                [ "$o" = "ONLY_SUBPATH_OF" ] && _only_subpath_link="ON"
+        done
+
+        _target="$(__rel_to_abs_path "${_target}")"
+        find "${_target}" -lname "/*" 2>/dev/null | while read _symlink; do \
+			_linked_target_abs="$(readlink ${_symlink})"; \
+			_result1="TRUE"; _result2="TRUE"; \
+			[ "${_only_subpath_link}" = "ON" ] && _result1=$(__is_logical_subpath "${_path}" "${_linked_target_abs}"); \
+			[ "${_result1}" = "FALSE" ] && _result2=$(__is_logical_equalpath "${_path}" "${_linked_target_abs}"); \
+			[ "${_result2}" = "TRUE" ] && _linked_target="$(__abs_to_rel_path $(readlink ${_symlink}) ${_symlink})" || continue; \
+			echo "* CONVERT ${_symlink} LINKED to ${_linked_target_abs} INTO ${_linked_target}"; ln -sf "${_symlink}" "${_linked_target}"; done
+}
+
+
+
 # init stella environment
 __init_stella_env() {
 	__feature_init_installed
