@@ -971,7 +971,7 @@ __transfer_file_rsync() {
 # 		FOLDER_CONTENT will transfer folder content not folder itself
 # 		EXCLUDE_HIDDEN exclude hidden files
 #			SUDO use sudo while transfering to uri
-#			COPY_LINKS copy real file linked by a symlink
+#			COPY_LINKS copy real files linked by a symlink instead of the symlink
 #			DELETE_EXCLUDED delete excluded files on the target
 __transfer_rsync() {
 	local _mode="$1"
@@ -1048,7 +1048,7 @@ __transfer_rsync() {
 	local _opt_include=
 	local _opt_exclude=
 	local _opt_links=
-	[ "$_opt_copy_links" = "ON" ] && _opt_links="--copy-links"
+	[ "$_opt_copy_links" = "ON" ] && _opt_links="--copy-links  --keep-dirlinks"
 	[ "$_opt_delete_excluded" = "ON" ] && _opt_exclude="--delete-excluded $_opt_exclude"
 
 	case $_mode in
@@ -1082,6 +1082,8 @@ __transfer_rsync() {
 	# NOTE : rsync + ssh + sudo
 	#				https://serverfault.com/questions/534683/rsync-over-ssh-getting-no-tty-present
 	#				https://superuser.com/questions/270911/run-rsync-with-root-permission-on-remote-machine
+	# NOTE : rsync -l (--links) option keep symlink as is
+	#	 rsync -a option include -l (--links)
 	case $__stella_uri_schema in
 		ssh )
 			if [ "$_opt_sudo" = "ON" ]; then
