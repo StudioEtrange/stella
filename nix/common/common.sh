@@ -1590,7 +1590,7 @@ __rel_to_abs_path_alternative_3() {
 # OPTIONS
 #       ONLY_LINKED_TO_SUBPATH_OF <path> : convert only absolute link which point to a subpath of a path given as option arg, do not convert the others link.
 # NOTE : some other implementation use readlink --relative-to which is not portable
-__symlink_abs_ro_rel_path() {
+__symlink_abs_to_rel_path() {
         local _target="$1"
         local _opt="$2"
 
