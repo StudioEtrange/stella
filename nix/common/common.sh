@@ -1609,13 +1609,15 @@ __symlink_abs_to_rel_path() {
 
         _target="$(__rel_to_abs_path "${_target}")"
         find "${_target}" -lname "/*" 2>/dev/null | while read _symlink; do \
-			_linked_target_abs="$(readlink "${_symlink}")"; \
-			_result1="TRUE"; _result2="TRUE"; \
-			[ "${_only_subpath_link}" = "ON" ] && _result1=$(__is_logical_subpath "${_path}" "${_linked_target_abs}"); \
-			[ "${_result1}" = "FALSE" ] && _result2=$(__is_logical_equalpath "${_path}" "${_linked_target_abs}"); \
-			[ "${_result2}" = "TRUE" ] && _linked_target="$(__abs_to_rel_path $(readlink "${_symlink}") $(dirname "${_symlink}"))" || continue; \
-			echo "* CONVERT ${_symlink} LINKED to ${_linked_target_abs} INTO ${_linked_target}"; rm "${_symlink}"; ln -sf "${_linked_target}" "${_symlink}"; done
+                        _linked_target_abs="$(readlink "${_symlink}")"; \
+                        _result1="TRUE"; _result2="TRUE"; \
+                        [ "${_only_subpath_link}" = "ON" ] && _result1=$(__is_logical_subpath "${_path}" "${_linked_target_abs}"); \
+                        [ "${_result1}" = "FALSE" ] && _result2=$(__is_logical_equalpath "${_path}" "${_linked_target_abs}"); \
+                        [ "${_result2}" = "TRUE" ] && _linked_target="$(__abs_to_rel_path "$(readlink "${_symlink}")" "$(dirname "${_symlink}")")" || continue; \
+                        echo "* CONVERT ${_symlink} LINKED to ${_linked_target_abs} INTO ${_linked_target}"; rm "${_symlink}"; ln -sf "${_linked_target}" "${_symlink}"; done
 }
+
+
 
 
 
