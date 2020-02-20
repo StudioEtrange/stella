@@ -1093,7 +1093,7 @@ __transfer_rsync() {
 				__log "DEBUG" "__sudo_ssh_end_session $_uri"
 				__sudo_ssh_end_session "$_uri"
 			fi
-			[ "$_opt_sudo" = "OFF" ] && rsync $_opt_links $_opt_include $_opt_exclude --rsync-path="mkdir -p '$(dirname $_target_path)'; rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60 -p $_ssh_port" "$_source" "$_target"
+			[ "$_opt_sudo" = "OFF" ] && rsync $_opt_links $_opt_include $_opt_exclude --rsync-path="mkdir -p '$(dirname "${_target_path}")'; rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60 -p $_ssh_port" "$_source" "$_target"
 			;;
 		vagrant )
 			if [ "$_opt_sudo" = "ON" ]; then
@@ -1101,7 +1101,7 @@ __transfer_rsync() {
 				rsync $_opt_links $_opt_include $_opt_exclude --rsync-path="sudo -Es mkdir -p '$_target_path'; sudo -Es rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60 $__vagrant_ssh_opt" "$_source" "$_target"
 				__sudo_ssh_end_session "$_uri"
 			fi
-			[ "$_opt_sudo" = "OFF" ] && rsync $_opt_links $_opt_include $_opt_exclude --rsync-path="mkdir -p '$(dirname $_target_path)'; rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh $__vagrant_ssh_opt -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60" "$_source" "$_target"
+			[ "$_opt_sudo" = "OFF" ] && rsync $_opt_links $_opt_include $_opt_exclude --rsync-path="mkdir -p '$(dirname "${_target_path}")'; rsync" --no-owner --no-group --force --delete -prltD -vz -e "ssh $__vagrant_ssh_opt -o ControlPath=~/.ssh/%r@%h-%p -o ControlMaster=auto -o ControlPersist=60" "$_source" "$_target"
 			;;
 		local )
 			if [ "$_source" = "$_target" ]; then
@@ -1109,11 +1109,11 @@ __transfer_rsync() {
 			else
 				# '--rsync-path' option seems to not work when we are on the same host (local)
 				if [ "$_opt_sudo" = "ON" ]; then
-					sudo -E mkdir -p "$(dirname $_target_path)"
+					sudo -E mkdir -p "$(dirname "${_target_path}")"
 					sudo -E rsync $_opt_links $_opt_include $_opt_exclude --force --delete -avz "$_source" "$_target"
 				fi
 				if [ "$_opt_sudo" = "OFF" ]; then
-					mkdir -p "$(dirname $_target_path)"
+					mkdir -p "$(dirname "${_target_path}")"
 					rsync $_opt_links $_opt_include $_opt_exclude --force --delete -avz "$_source" "$_target"
 				fi
 			fi
@@ -1454,7 +1454,7 @@ __rel_to_abs_path_alternative_1(){
 		local _rel_path=$1
 		local _abs_root_path=$2
 
-	  local thePath=$_abs_root_path/$_rel_path
+	  local thePath="$_abs_root_path/$_rel_path"
 	  # if [[ ! "$1" =~ ^/ ]];then
 	  #   thePath="$PWD/$1"
 	  # else
@@ -1494,10 +1494,22 @@ __rel_to_abs_path_alternative_2(){
 
 	local F="$_abs_root_path/$_rel_path"
 
-	#echo "$(dirname $(readlink -e $F))/$(basename $F)"
+	#echo "$(dirname "$(readlink -e $F))"/$(basename $F)"
 	echo "$(readlink -m $F)"
 
 }
+
+
+# NOTE use a subprocess, cd and pwd
+# NOTE resolve symlinks
+# NOTE but all paths must exist !
+__rel_to_abs_path_alternative_3() {
+	local _rel_path=$1
+	local _abs_root_path=$2
+
+	echo "$(cd "$_abs_root_path/$_rel_path" && pwd -P)"
+}
+
 
 # How to go from _abs_path_root (ARG2) to _abs_path_to_translate (ARG1)
 # example :
@@ -1512,77 +1524,68 @@ __abs_to_rel_path() {
 
 	local result=""
 
-	if [ "$_abs_path_root" = "" ]; then
-		_abs_path_root=$STELLA_CURRENT_RUNNING_DIR
+	if [ "${_abs_path_root}" = "" ]; then
+		_abs_path_root="${STELLA_CURRENT_RUNNING_DIR}"
 	fi
 
-	_abs_path_root="$_abs_path_root"/
+	_abs_path_root="${_abs_path_root}"/
 
-	local common_part="$_abs_path_root" # for now
+	local common_part="${_abs_path_root}" # for now
 
-	if [ "$(__is_abs $_abs_path_to_translate)" = "FALSE" ]; then
-		result="$_abs_path_to_translate"
+	if [ "$(__is_abs ${_abs_path_to_translate})" = "FALSE" ]; then
+		result="${_abs_path_to_translate}"
 	else
 
-		case $_abs_path_root in
+		case ${_abs_path_root} in
 			/*)
 				while [ "${_abs_path_to_translate#$common_part}" = "${_abs_path_to_translate}" ]; do
 					# no match, means that candidate common part is not correct
 					# go up one level (reduce common part)
-					common_part="$(dirname $common_part)"
+					common_part="$(dirname "${common_part}")"
 
 					# and record that we went back
-					if [ -z "$result" ]; then
+					if [ -z "${result}" ]; then
 						result=".."
 					else
-						result="../$result"
+						result="../${result}"
 					fi
 
 				done
 
-				if [ "$common_part" = "/" ]; then
+				if [ "${common_part}" = "/" ]; then
 					# special case for root (no common path)
-					result="$result/"
+					result="${result}/"
 				fi
 
 
 				# since we now have identified the common part,
 				# compute the non-common part
 				forward_part="${_abs_path_to_translate#$common_part}"
-				if [[ -n $result ]] && [[ -n $forward_part ]]; then
-					result="$result$forward_part"
-				elif [[ -n $forward_part ]]; then
+				if [[ -n ${result} ]] && [[ -n ${forward_part} ]]; then
+					result="${result}${forward_part}"
+				elif [[ -n ${forward_part} ]]; then
 					result="${forward_part}"
 
 				else
-					if [[ ! -n $result ]] && [[ $common_part == "$_abs_path_to_translate" ]]; then
+					if [[ ! -n ${result} ]] && [[ "${common_part}" == "${_abs_path_to_translate}" ]]; then
 						result="."
 					fi
 				fi
 				;;
 
 			*)
-				result="$_abs_path_to_translate"
+				result="${_abs_path_to_translate}"
 				;;
 		esac
 	fi
 
-	if [ ${result:(-1)} = "/" ]; then
+	if [ "${result:(-1)}" = "/" ]; then
 		result="${result%?}"
 	fi
 	echo "${result}"
 
 }
 
-# NOTE use a subprocess, cd and pwd
-# NOTE resolve symlinks
-# NOTE but all paths must exist !
-__rel_to_abs_path_alternative_3() {
-	local _rel_path=$1
-	local _abs_root_path=$2
-
-	echo "$(cd "$_abs_root_path/$_rel_path" && pwd -P)"
-}
 
 
 # This function transform any absolute symlink into a relative symlink
@@ -1610,7 +1613,7 @@ __symlink_abs_to_rel_path() {
 			_result1="TRUE"; _result2="TRUE"; \
 			[ "${_only_subpath_link}" = "ON" ] && _result1=$(__is_logical_subpath "${_path}" "${_linked_target_abs}"); \
 			[ "${_result1}" = "FALSE" ] && _result2=$(__is_logical_equalpath "${_path}" "${_linked_target_abs}"); \
-			[ "${_result2}" = "TRUE" ] && _linked_target="$(__abs_to_rel_path $(readlink ${_symlink}) $(dirname ${_symlink}))" || continue; \
+			[ "${_result2}" = "TRUE" ] && _linked_target="$(__abs_to_rel_path $(readlink ${_symlink}) $(dirname "${_symlink}"))" || continue; \
 			echo "* CONVERT ${_symlink} LINKED to ${_linked_target_abs} INTO ${_linked_target}"; rm "${_symlink}"; ln -sf "${_linked_target}" "${_symlink}"; done
 }
 
@@ -1948,12 +1951,12 @@ __compress() {
 		7Z)
 			if [ -d "$_target" ]; then
 				cd "$_target/.."
-				7z a -t7z "$_output_archive" "$(basename $_target)"
+				7z a -t7z "$_output_archive" "$(basename "${_target}")"
 				mv "$_output_archive" "$_output_archive"
 			fi
 			if [ -f "$_target" ]; then
-				cd "$(dirname $_target)"
-				7z a -t7z "$_output_archive" "$(basename $_target)"
+				cd "$(dirname "${_target}")"
+				7z a -t7z "$_output_archive" "$(basename "${_target}")"
 				mv "$_output_archive" "$_output_archive"
 			fi
 			;;
@@ -1961,8 +1964,8 @@ __compress() {
 			__log "DEBUG" "TODO: *********** ZIP NOT IMPLEMENTED"
 			;;
 		TAR*)
-				[ -d "$_target" ] && tar -c -v $_tar_flag -f "$_output_archive" -C "$_target/.." "$(basename $_target)"
-				[ -f "$_target" ] && tar -c -v $_tar_flag -f "$_output_archive" -C "$(dirname $_target)" "$(basename $_target)"
+				[ -d "$_target" ] && tar -c -v $_tar_flag -f "$_output_archive" -C "$_target/.." "$(basename "${_target}")"
+				[ -f "$_target" ] && tar -c -v $_tar_flag -f "$_output_archive" -C "$(dirname "${_target}")" "$(basename "${_target}")"
 			;;
 	esac
 
