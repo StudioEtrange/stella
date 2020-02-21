@@ -15,8 +15,8 @@ usage() {
 
 # COMMAND LINE -----------------------------------------------------------------------------------
 PARAMETERS="
-DOMAIN=											'domain' 			a				'1' 	'foo env' 		'Action domain.'
-ID=												'' 					a				'1' 		'install uninstall run'	'Action ID.'
+DOMAIN=											'domain' 			a				'foo env' '1' Action domain.
+ID=												'' 					a				'install uninstall run'	'1' Action ID.
 "
 OPTIONS="
 FORCE=''				   'f'		  ''					b			0		'1'					  Force.
