@@ -9,7 +9,7 @@ feature_template() {
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="template is foo"
-	FEAT_LINK="https://github.com/bar/template"
+	FEAT_LINK="https://github.com/bar/template https://mikefarah.gitbook.io/yq/"
 }
 
 
