@@ -1184,11 +1184,12 @@ process_params() {
         }
         COUNT=$(( COUNT + 1 ))
 
-        [[ "$VALUE" ]] || {
-              [[ "$MANDATORY" == "1" ]] && abend 1 "$PARAM_NAME is mandatory"
+        [[ "$VALUE" ]] && {
+            check_type_and_value "$PARAM_NAME" "$VALUE" "$TYPE" "$RANGE"
+        } || {
+            [[ "$MANDATORY" == "1" ]] && abend 1 "$PARAM_NAME is mandatory"
         }
-        check_type_and_value "$PARAM_NAME" "$VALUE" "$TYPE" "$RANGE"
-
+        
         [[ $END_OF_DEFINED_PARAM ]] && break;
 
         ((SHIFT_NUM++))
