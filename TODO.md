@@ -1,6 +1,5 @@
-*TODO & NOTES*
+# *TODO & NOTES*
 
-# trasnpiler to batch and bash : https://github.com/BYVoid/Batsh
 
 # Recipe, package manager inspiration
 
@@ -61,6 +60,9 @@ https://hackernoon.com/macbook-my-command-line-utilities-f8a121c3b019
 * [X] cointop https://github.com/miguelmota/cointop
 
 
+# transpiler 
+
+* to batch and bash : https://github.com/BYVoid/Batsh
 
 
 
@@ -109,6 +111,7 @@ use
 
 
 # TODO List
+- [ ] path management (absolute, relative, ...) use https://github.com/bashup/realpaths ?
 - [ ] review argparse : too long !
   - getopt alternatives implementation
       https://github.com/droundy/goopt
