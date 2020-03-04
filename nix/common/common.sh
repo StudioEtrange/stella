@@ -755,15 +755,23 @@ __uri_build_path() {
 # __uri_get_path ssh://host/?foo ==> ./foo
 # __uri_get_path local://../foo  ==> ../foo
 # __uri_get_path local://?../foo  ==> ../foo
-#	__uri_get_path local:///?foo	==> ./foo
+# __uri_get_path local:///?foo	==> ./foo
 # __uri_get_path ssh://host/foo  ==> /foo
 # __uri_get_path local:///foo  ==> /foo
 # __uri_get_path ssh://host ==> .
+# NOTE : without schema, we use local as default 
+#	../foo ==>	local://../foo  ==> ../foo
 __uri_get_path() {
 	local _uri="$@"
 	local __path
 
 	__uri_parse "$_uri"
+
+	# if there is not schema specified, we are in local
+	if [ "$__stella_uri_schema" = "" ]; then
+		__stella_uri_schema="local"
+		_uri="local://${_uri}"
+	fi
 
 	# we may have use absolute path or relative path.
 	# if relative path is used, it is specify with local://../foo OR local://?../foo
@@ -923,6 +931,7 @@ __transfer_stella() {
 #			transfert /foo/folder to host 'ip' into absolute path '/path'
 # __transfer_folder_rsync /foo/folder vagrant://default
 #			use ssh configuration of vagrant to connect to machine named 'default'
+# __transfer_folder_rsync /foo/folder local://../path OR __transfer_folder_rsync /foo/folder ../path
 __transfer_folder_rsync() {
 	local _folder="$1"
 	local _uri="$2"
@@ -1006,7 +1015,7 @@ __transfer_rsync() {
 
 	__uri_parse "$_uri"
 
-	[ "$__stella_uri_schema" = "" ] && __stella_uri_schema=local
+	[ "$__stella_uri_schema" = "" ] && __stella_uri_schema="local"
 
 	local _local_filesystem="OFF"
 	if [ "$__stella_uri_schema" = "local" ]; then
