@@ -254,6 +254,17 @@ __sha256() {
 	fi
 }
 
+# HASH string with md5
+__md5() {
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		# both methods works
+		#printf "$*" | md5 | tr -dc '[:alnum:]'
+		md5 -qs "$*" | tr -dc '[:alnum:]'
+	else
+		type md5sum &>/dev/null && printf '%s' "$*" | md5sum | tr -dc '[:alnum:]'
+	fi
+}
+
 # generate an unique id for a machine
 # MACHINE_ID (default) use /etc/machine-id https://unix.stackexchange.com/a/144915
 # PRODUCT_UUID use product_uuid -- need sudo -- https://unix.stackexchange.com/a/144892
