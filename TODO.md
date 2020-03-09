@@ -60,10 +60,10 @@ https://hackernoon.com/macbook-my-command-line-utilities-f8a121c3b019
 * [X] cointop https://github.com/miguelmota/cointop
 
 
-# transpiler 
+# bash : builder - transpiler 
 
 * to batch and bash : https://github.com/BYVoid/Batsh
-
+* bash static linked : https://github.com/robxu9/bash-static
 
 
 # Various
