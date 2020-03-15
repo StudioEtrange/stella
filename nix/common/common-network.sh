@@ -560,10 +560,10 @@ __get_network_info() {
 	type netstat &>/dev/null
 	if [ $? = 0 ]; then
 		# NOTE : we pick the first default interface if we have more than one
-		STELLA_DEFAULT_INTERFACE=$(netstat -rn | awk '/^0.0.0.0/ {thif=substr($0,74,10); print thif;} /^default.*UG/ {thif=substr($0,65,10); print thif;}' | head -1)
+		STELLA_DEFAULT_INTERFACE="$(netstat -rn | awk '/^0.0.0.0/ {thif=substr($0,74,10); print thif;} /^default.*UG/ {thif=substr($0,65,10); print thif;}' | head -1)"
 	else
 		type ip &>/dev/null
-		[ $? = 0 ] && STELLA_DEFAULT_INTERFACE=$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1)
+		[ $? = 0 ] && STELLA_DEFAULT_INTERFACE="$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1)"
 	fi
 
 	# contains default ip
@@ -572,11 +572,11 @@ __get_network_info() {
 	type ifconfig &>/dev/null
 	if [ $? = 0 ]; then
 		# contains all available IP
-		STELLA_HOST_IP=$(ifconfig | grep -Eo 'inet (adr:|addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*')
+		STELLA_HOST_IP="$(ifconfig | grep -Eo 'inet (adr:|addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | tr '\n' ' ')"
 	else
 		type ip &>/dev/null
 		if [ $? = 0 ]; then
-			STELLA_HOST_IP="$(ip -o -4 addr | awk '{split($4, a, "/"); print a[1]}')"
+			STELLA_HOST_IP="$(ip -o -4 addr | awk '{split($4, a, "/"); print a[1]}' | tr '\n' ' ')"
 		else
 			# do not work on macos
 			type hostname &>/dev/null
