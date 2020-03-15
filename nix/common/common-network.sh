@@ -629,6 +629,22 @@ __get_ip_from_hostname() {
 	fi
 }
 
+# determine external IP
+# https://unix.stackexchange.com/a/194136
+# TODO : work only ipv4
+__get_ip_external() {
+	
+	type dig &>/dev/null
+	if [ $? = 0 ]; then
+		__result="$(dig @resolver1.opendns.com A myip.opendns.com +short -4)"
+		#__result="$(dig @resolver1.opendns.com AAAA myip.opendns.com +short -6)"
+	else
+		__result="$(curl -s ipinfo.io/ip)"
+	fi
+
+	echo "${__result}"
+}
+
 
 __proxy_tunnel() {
 	local _target_proxy_name="$1"
