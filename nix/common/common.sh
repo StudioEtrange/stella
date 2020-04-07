@@ -1245,6 +1245,16 @@ __list_contains() {
   [[ "$_list" =~ (^|[[:space:]])"$_item"($|[[:space:]]) ]]
 }
 
+# remove duplicate values in list and return it sorted
+# result="$(__list_filter_duplicate "aa b bb aa ddd aaa cc bb aa")"
+# echo $result
+# aa aaa b bb cc ddd
+__list_filter_duplicate() {
+	local _list="$1"
+	_list="$(printf '%s\n' $a | sort | uniq)"
+	echo "${_list}"
+}
+
 __get_stella_version() {
 	local _stella_root_="$1"
 
