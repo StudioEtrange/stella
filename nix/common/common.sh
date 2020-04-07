@@ -1251,8 +1251,10 @@ __list_contains() {
 # aa aaa b bb cc ddd
 __list_filter_duplicate() {
 	local _list="$1"
-	_list="$(printf '%s\n' $a | sort | uniq)"
-	echo "${_list}"
+	_list="$(printf '%s\n' ${_list} | sort | uniq | tr '\n' ' ')"
+
+	# remove trailing whitespace and return list
+	echo -n "${_list%"${_list##*[![:space:]]}"}"
 }
 
 __get_stella_version() {
