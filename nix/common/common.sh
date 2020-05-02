@@ -1294,9 +1294,9 @@ __get_stella_flavour() {
 	echo $_s_flavour
 }
 
-# return 0 if empty, 1 otherwize
+# return 0 if empty or dont exist, 1 otherwize
 __is_dir_empty() {
-	return [ -z "$(ls -A $1 2>/dev/null)" ]
+	return $([ -z "$(ls -A $1 2>/dev/null)" ])
 }
 
 # To get: /tmp/my.dir (like dirname)

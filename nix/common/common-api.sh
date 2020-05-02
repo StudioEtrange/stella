@@ -12,15 +12,8 @@ __api_proxy() {
 
 	for f in $STELLA_API_COMMON_PUBLIC $STELLA_API_LOG_PUBLIC $STELLA_API_BOOT_PUBLIC $STELLA_API_BINARY_PUBLIC $STELLA_API_BUILD_PUBLIC $STELLA_API_APP_PUBLIC $STELLA_API_API_PUBLIC $STELLA_API_FEATURE_PUBLIC $STELLA_API_NETWORK_PUBLIC $STELLA_API_PLATFORM_PUBLIC; do
 		if [ "$f" = "$FUNC_NAME" ]; then
-			for j in $STELLA_API_RETURN_FUNCTION; do
-				if [ "$j" = "$FUNC_NAME" ]; then
-					_result=$(__$FUNC_NAME "$@")
-					echo $_result
-					return
-				fi
-			done
 			__$FUNC_NAME "$@"
-			return
+			return $?
 		fi
 	done
 
