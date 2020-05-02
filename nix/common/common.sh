@@ -1294,14 +1294,9 @@ __get_stella_flavour() {
 	echo $_s_flavour
 }
 
-
+# return 0 if empty, 1 otherwize
 __is_dir_empty() {
-	if [ $(find "$1" -prune -empty -type d) ]; then
-		# dir is empty
-		echo "TRUE"
-	else
-		echo "FALSE"
-	fi
+	return [ -z "$(ls -A $1 2>/dev/null)" ]
 }
 
 # To get: /tmp/my.dir (like dirname)
