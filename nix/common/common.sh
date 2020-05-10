@@ -1222,8 +1222,8 @@ __filter_list_with_list() {
 
 	local __opt_keep=
 	for o in ${__opt}; do
-		[ "$o" = "FILTER_REMOVE"] && __opt_keep=
-		[ "$o" = "FILTER_KEEP"] && __opt_keep="ON"
+		[ "$o" = "FILTER_REMOVE" ] && __opt_keep=
+		[ "$o" = "FILTER_KEEP" ] && __opt_keep="ON"
 	done
 
 	[ -z "${__list_src}" ] && return
