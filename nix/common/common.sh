@@ -1162,7 +1162,8 @@ __get_active_path() {
 }
 
 
-
+# filter a list with include and exclude elements
+# alternative : __filter_list_with_list 
 __filter_list() {
 	local _list="$1"
 	local _opt="$2"
@@ -1206,6 +1207,46 @@ __filter_list() {
 		done
 		echo "$_result_list"
 	fi
+}
+
+
+
+# filter a list with items of another list
+# FILTER_REMOVE option (by default) :  will remove from __list_src items present in __list_filter
+# FILTER_KEEP option : will remove from __list_src items not present in __list_filter
+# alternative : __filter_list
+__filter_list_with_list() {
+	local __list_src="$1"
+	local __list_filter="$2"
+	local __opt="$3"
+
+	local __opt_keep=
+	for o in ${__opt}; do
+		[ "$o" = "FILTER_REMOVE"] && __opt_keep=
+		[ "$o" = "FILTER_KEEP"] && __opt_keep="ON"
+	done
+
+	[ -z "${__list_src}" ] && return
+
+	if [ "$__opt_keep" = "ON" ]; then
+		[ -z "${__list_filter}" ] && return
+	else
+		[ -z "${__list_filter}" ] && echo -n "${__list_src}" && return
+	fi
+
+	local __result_list=
+	if [ "$__opt_keep" = "ON" ]; then
+		for s in ${__list_src}; do
+			[[ " ${__list_filter} " =~ .*\ ${s}\ .* ]] && __result_list="${__result_list} ${s}"
+		done
+	else
+		for s in ${__list_src}; do
+			[[ " ${__list_filter} " =~ .*\ ${s}\ .* ]] || __result_list="${__result_list} ${s}"
+		done
+	fi
+
+	# remove trailing whitespace and return list
+	echo -n "${__result_list%"${__result_list##*[![:space:]]}"}"
 }
 
 
