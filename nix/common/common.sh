@@ -254,6 +254,15 @@ __sha256() {
 	fi
 }
 
+__sha1() {
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		printf "$*" | shasum -a 1 | tr -dc '[:alnum:]'
+	else
+		type sha1sum &>/dev/null && printf "$*" | sha1sum | tr -dc '[:alnum:]'
+	fi
+}
+
+
 # HASH string with md5
 __md5() {
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
@@ -264,6 +273,21 @@ __md5() {
 		type md5sum &>/dev/null && printf '%s' "$*" | md5sum | tr -dc '[:alnum:]'
 	fi
 }
+
+# https://github.com/rroutsong/bash-htpasswd/blob/master/htpasswd
+# md5 is used by default to generate password with htpasswd
+__htpasswd_md5() {
+	openssl passwd -apr1 "$1"
+}
+
+__htpasswd_sha1() {
+	__sha1 "$1"
+}
+
+__htpasswd_sha1() {
+	openssl passwd -crypt "$1"
+}
+
 
 # generate an unique id for a machine
 # MACHINE_ID (default) use /etc/machine-id https://unix.stackexchange.com/a/144915
