@@ -279,12 +279,10 @@ __md5() {
 __htpasswd_md5() {
 	openssl passwd -apr1 "$1"
 }
-
 __htpasswd_sha1() {
 	__sha1 "$1"
 }
-
-__htpasswd_sha1() {
+__htpasswd_crypt() {
 	openssl passwd -crypt "$1"
 }
 
