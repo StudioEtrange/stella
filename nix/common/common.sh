@@ -385,7 +385,7 @@ __get_last_version() {
 	local list="$1"
 	local opt="$2"
 
-	echo $(__sort_version "$list" "$opt DESC") | cut -d' ' -f 1
+	echo $(__sort_version "$list" "$opt DESC LIMIT 1")
 }
 
 # pick a version from a list according to constraint
@@ -403,9 +403,9 @@ __get_last_version() {
 #				^version : pin version and select most recent version with same version part (not exactly like npm)
 #					^1.0 select the latest 1.0.* version (like 1.0.0 or 1.0.4)
 #					^1 select the latest 1.* version (like 1.0.0 or 1.2.4)
-# option :
-# ENDING_CHAR_REVERSE
-# SEP .
+
+# 	options LIMIT n, ENDING_CHAR_REVERSE, SEP c : see __sort_version
+
 #		__select_version_from_list ">1.1.1a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
 # desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
 # select_version result is : 1.1.1b
@@ -580,6 +580,7 @@ __select_version_from_list() {
 
 # __filter_version_list filter versions list with a constraint and return a filtered ASC sorted list
 # 	same as __select_version_from_list but return a matching list of versions instead of one picked version
+# 	options LIMIT n, ENDING_CHAR_REVERSE, SEP c : see __sort_version
 # __filter_version_list ">=1.1.0" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
 #		1.1.0 1.1.1 1.1.1a 1.1.1b
 # __filter_version_list ">=1.1.1" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
@@ -742,17 +743,7 @@ __filter_version_list() {
 
 
 
-# sort a list of version
-
-# echo "1}507 1}510 1}403 1}4000" | tr ' ' '\n' | LC_COLLATE=C sort -t'}' -k 1n -k 2n
-# echo "1}507 1}510 1}403 1}4000" | tr ' ' '\n' | LC_COLLATE=C sort -t'}' -k 1 -k 2n #dont work
-# echo "}build}507 }build}510 }build}403 }build}4000" | tr ' ' '\n' | LC_COLLATE=C sort -b -t} -k 1n -k 2n #dont work
-# echo "507 510 403 4000" | tr ' ' '\n' | LC_COLLATE=C sort -b -t} -k 1n -k 2n OK
-# echo "507 510 403 4000" | tr ' ' '\n' | LC_COLLATE=C sort -b -t} -k 1n OK
-# echo "507 510 403 4000" | tr ' ' '\n' | LC_COLLATE=C sort -b -t} -k 1 OK
-# echo "A.507 A.510 A.403 A.4000" | tr ' ' '\n' | LC_COLLATE=C sort -b -t. -k 1 OK
-# echo "A.507 A.510 A.403 A.4000" | tr ' ' '\n' | LC_COLLATE=C sort -b -t. -k 1 -k 2n KO
-# echo "A.507 A.510 A.403 A.4000" | tr ' ' '\n' | LC_COLLATE=C sort -b -t. -k 1n -k 2n OK
+# sort a list of versions
 
 #__sort_version "build507 build510 build403 build4000 build" "ASC"
 #  build build403 build507 build510 build4000
@@ -775,11 +766,17 @@ __filter_version_list() {
 #__sort_version "1.9.0 1.10.0 1.10.1.1 1.10.1 1.10.1alpha1 1.10.1beta1 1.10.1beta2 1.10.2 1.10.2.1 1.10.2.2 1.10.0RC1 1.10.0RC2" "DESC ENDING_CHAR_REVERSE SEP ."
 #  1.10.2.2 1.10.2.1 1.10.2 1.10.1.1 1.10.1 1.10.1beta2 1.10.1beta1 1.10.1alpha1 1.10.0 1.10.0RC2 1.10.0RC1 1.9.0
 
-# NOTE : ending characters in a version number can be ordered in the opposite way example :
+# options :
+#		ASC : ascending order
+#		DESC : decresacing order
+#  		ENDING_CHAR_REVERSE ending characters in a version number can be ordered in the opposite way example :
 # 			1.0.1 is more recent than 1.0.1beta so in ASC : 1.0.1beta 1.0.1 and in DESC : 1.0.1 1.0.1beta
 # 			To activate this behaviour use "ENDING_CHAR_REVERSE" option
 # 			we must indicate separator with SEP if we use ENDING_CHAR_REVERSE and if there is any separator (obviously)
+#		LIMIT n : limit to a number of result
 # NOTE : characters "}", "!" and "{" may pose problem if they are used in versions strings
+
+
 __sort_version() {
 	local list=$1
 	local opt="$2"
@@ -788,8 +785,9 @@ __sort_version() {
 	local mode="ASC"
 
 	local separator=
-
+	local limit=
 	local flag_sep="OFF"
+	local flag_limit="OFF"
 	for o in $opt; do
 		[ "$o" = "ASC" ] && mode="$o"
 		[ "$o" = "DESC" ] && mode="$o"
@@ -797,6 +795,8 @@ __sort_version() {
 		# we need separator only if we use ENDING_CHAR_REVERSE and if there is any separator (obviously)
 		[ "$flag_sep" = "ON" ] && separator="$o" && flag_sep="OFF"
 		[ "$o" = "SEP" ] && flag_sep="ON"
+		[ "$flag_limit" = "ON" ] && limit="$o" && flag_limit="OFF"
+		[ "$o" = "LIMIT" ] && flag_limit="ON"
 	done
 
 	local internal_separator="}"
@@ -908,8 +908,9 @@ __sort_version() {
 		done
 	done
 
-	echo "$result_list" | sed -e 's/^ *//' -e 's/ *$//'
 
+	[ ! "${limit}" = "" ] && echo "${result_list}" | sed -e 's/^ *//' -e 's/ *$//' | cut -d' ' -f "-${limit}" \
+	 	|| echo "${result_list}" | sed -e 's/^ *//' -e 's/ *$//'
 }
 
 
