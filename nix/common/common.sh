@@ -774,7 +774,7 @@ __filter_version_list() {
 # 			To activate this behaviour use "ENDING_CHAR_REVERSE" option
 # 			we must indicate separator with SEP if we use ENDING_CHAR_REVERSE and if there is any separator (obviously)
 #		LIMIT n : limit to a number of result
-# NOTE : characters "}", "!" and "{" may pose problem if they are used in versions strings
+# NOTE : characters "}", "!" and "{" may cause problem if they are used in versions strings
 
 
 __sort_version() {
