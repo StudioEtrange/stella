@@ -613,12 +613,21 @@ __filter_version_list() {
 	local opt="$3"
 	local result=""
 
+	local limit=
 	local __result_order="ASC"
-	if __list_contains "${opt}" "DESC"; then
-		__result_order="DESC"
-	fi
+	local flag_sep="OFF"
+	local flag_limit="OFF"
+	local __sort_opt=
+	for o in $opt; do
+		[ "$o" = "ASC" ] && __result_order="$o"
+		[ "$o" = "DESC" ] && __result_order="$o"
+		[ "$o" = "ENDING_CHAR_REVERSE" ] && __sort_opt="${__sort_opt} ENDING_CHAR_REVERSE"
+		[ "$flag_sep" = "ON" ] && __sort_opt="${__sort_opt} $o" && flag_sep="OFF"
+		[ "$o" = "SEP" ] && flag_sep="ON" && __sort_opt="${__sort_opt} SEP"
+		[ "$flag_limit" = "ON" ] && limit="$o" && flag_limit="OFF"
+		[ "$o" = "LIMIT" ] && flag_limit="ON"
+	done
 
-	opt="$(__filter_list_with_list "${opt}" "DESC ASC")"
 
 	local v
 	local sorted_list=
@@ -631,9 +640,9 @@ __filter_version_list() {
 			selector="${selector:2}"
 			if __list_contains "${list}" "${selector}"; then
 				exist=1
-				sorted_list="$(__sort_version "${list}" "ASC ${opt}")"
+				sorted_list="$(__sort_version "${list}" "ASC ${__sort_opt}")"
 			else
-				sorted_list="$(__sort_version "${selector} ${list}" "ASC ${opt}")"
+				sorted_list="$(__sort_version "${selector} ${list}" "ASC ${__sort_opt}")"
 			fi
 			for v in ${sorted_list}; do
 				if [ "${flag}" = "1" ]; then
@@ -656,9 +665,9 @@ __filter_version_list() {
 		\>* )
 			selector="${selector:1}"
 			if __list_contains "${list}" "${selector}"; then
-				sorted_list="$(__sort_version "${list}" "ASC ${opt}")"
+				sorted_list="$(__sort_version "${list}" "ASC ${__sort_opt}")"
 			else
-				sorted_list="$(__sort_version "${selector} ${list}" "ASC ${opt}")"
+				sorted_list="$(__sort_version "${selector} ${list}" "ASC ${__sort_opt}")"
 			fi
 			
 			for v in ${sorted_list}; do
@@ -678,9 +687,9 @@ __filter_version_list() {
 			selector="${selector:2}"
 			if __list_contains "${list}" "${selector}"; then
 				exist=1
-				sorted_list="$(__sort_version "${list}" "DESC ${opt}")"
+				sorted_list="$(__sort_version "${list}" "DESC ${__sort_opt}")"
 			else
-				sorted_list="$(__sort_version "${selector} ${list}" "DESC ${opt}")"
+				sorted_list="$(__sort_version "${selector} ${list}" "DESC ${__sort_opt}")"
 			fi
 			for v in ${sorted_list}; do
 				if [ "${flag}" = "1" ]; then
@@ -702,9 +711,9 @@ __filter_version_list() {
 		\<* )
 			selector="${selector:1}"
 			if __list_contains "${list}" "${selector}"; then
-				sorted_list="$(__sort_version "${list}" "DESC ${opt}")"
+				sorted_list="$(__sort_version "${list}" "DESC ${__sort_opt}")"
 			else
-				sorted_list="$(__sort_version "${selector} ${list}" "DESC ${opt}")"
+				sorted_list="$(__sort_version "${selector} ${list}" "DESC ${__sort_opt}")"
 			fi
 			
 			for v in ${sorted_list}; do
@@ -733,11 +742,11 @@ __filter_version_list() {
 					${selector}*) filtered_list="${filtered_list} ${v}";;
 				esac
 			done
-			result="$(__sort_version "${filtered_list}" "${__result_order} ${opt}")"
+			result="$(__sort_version "${filtered_list}" "${__result_order} ${__sort_opt}")"
 			;;
 
 		"" )
-			result="$(__sort_version "${list}" "${__result_order} ${opt}")"
+			result="$(__sort_version "${list}" "${__result_order} ${__sort_opt}")"
 			;;
 		* )
 			# check if exact version exist
@@ -749,7 +758,10 @@ __filter_version_list() {
 			done
 			;;
 	esac
-	echo "$(__trim ${result})"
+
+	[ ! "${limit}" = "" ] && echo "${result}" | sed -e 's/^ *//' -e 's/ *$//' | cut -d' ' -f "-${limit}" \
+	 	|| echo "${result}" | sed -e 's/^ *//' -e 's/ *$//'
+
 }
 
 
