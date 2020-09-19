@@ -578,9 +578,10 @@ __select_version_from_list() {
 	echo "${result}"
 }
 
-# __filter_version_list filter versions list with a constraint and return a filtered ASC sorted list
+# __filter_version_list filter versions list with a constraint and return a filtered sorted list in ASC (by default)
 # 	same as __select_version_from_list but return a matching list of versions instead of one picked version
 # 	options LIMIT n, ENDING_CHAR_REVERSE, SEP c : see __sort_version
+#					ASC (default), DESC : will return result filtered list in this order
 # __filter_version_list ">=1.1.0" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
 #		1.1.0 1.1.1 1.1.1a 1.1.1b
 # __filter_version_list ">=1.1.1" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
@@ -599,15 +600,25 @@ __select_version_from_list() {
 #		1.1.1a
 # __filter_version_list "^1.1" "1.1.0 1.1.1 1.1.1a 1.1.1b 1.1" "SEP ."
 #		1.1 1.1.0 1.1.1 1.1.1a 1.1.1b
+# __filter_version_list "^1.1" "1.1.0 1.1.1 1.1.1a 1.1.1b 1.1" "DESC SEP ." 
+#		1.1.1b 1.1.1a 1.1.1 1.1.0 1.1
 # __filter_version_list "1.1" "1.1.0 1.1.1 1.1.1a 1.1.1b 1.1" "SEP ." 
 #		1.1
 # __filter_version_list "" "1.1.0 1.1.1 1.1.1a 1.1.1b 1.1" "SEP ." 
 #		1.1.0 1.1.1 1.1.1a 1.1.1b 1.1
+
 __filter_version_list() {
 	local selector="$1"
 	local list="$2"
 	local opt="$3"
 	local result=""
+
+	local __result_order="ASC"
+	if __list_contains "${opt}" "DESC"; then
+		__result_order="DESC"
+	fi
+
+	opt="$(__filter_list_with_list "${opt}" "DESC ASC")"
 
 	local v
 	local sorted_list=
@@ -626,13 +637,13 @@ __filter_version_list() {
 			fi
 			for v in ${sorted_list}; do
 				if [ "${flag}" = "1" ]; then
-					result="${result} ${v}"
+					[ "${__result_order}" = "DESC" ] && result="${v} ${result}" || result="${result} ${v}"
 					continue;
 				fi
 				# if selector is the result (equal), we must check if selector exist as is in the orignal list
 				if [ "${v}" = "${selector}" ]; then
 					if [ "${exist}" = "1" ]; then
-						result="${result} ${selector}"
+						[ "${__result_order}" = "DESC" ] && result="${selector} ${result}" || result="${result} ${selector}"
 						flag=1
 					else
 						flag=1
@@ -654,7 +665,7 @@ __filter_version_list() {
 				if [ "${flag}" = "1" ]; then
 					# in case of duplicate element
 					[ "${v}" = "${selector}" ] && continue
-					result="${result} ${v}"
+					[ "${__result_order}" = "DESC" ] && result="${v} ${result}" || result="${result} ${v}"
 				fi
 				if [ "${v}" = "${selector}" ]; then
 					flag=1
@@ -673,13 +684,13 @@ __filter_version_list() {
 			fi
 			for v in ${sorted_list}; do
 				if [ "${flag}" = "1" ]; then
-					result="${v} ${result}"
+					[ "${__result_order}" = "DESC" ] && result="${result} ${v}" || result="${v} ${result}"
 					continue
 				fi
 				# if selector is the result (equal), we must check if selector exist as is in the orignal list
 				if [ "${v}" = "${selector}" ]; then
 					if [ "${exist}" = "1" ]; then
-						result="${selector} ${result}"
+						[ "${__result_order}" = "DESC" ] && result="${result} ${selector}" || result="${selector} ${result}"
 						flag=1
 					else
 						flag=1
@@ -700,7 +711,7 @@ __filter_version_list() {
 				if [ "${flag}" = "1" ]; then
 					# in case of duplicate element
 					[ "${v}" = "${selector}" ] && continue
-					result="${v} ${result}"
+					[ "${__result_order}" = "DESC" ] && result="${result} ${v}" || result="${v} ${result}"
 				fi
 				if [ "${v}" = "${selector}" ]; then
 					flag=1
@@ -722,11 +733,11 @@ __filter_version_list() {
 					${selector}*) filtered_list="${filtered_list} ${v}";;
 				esac
 			done
-			result="$(__sort_version "${filtered_list}" "ASC ${opt}")"
+			result="$(__sort_version "${filtered_list}" "${__result_order} ${opt}")"
 			;;
 
 		"" )
-			result="${list}"
+			result="$(__sort_version "${list}" "${__result_order} ${opt}")"
 			;;
 		* )
 			# check if exact version exist
