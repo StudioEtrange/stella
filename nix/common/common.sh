@@ -58,7 +58,7 @@ __format_table() {
                         echo "${__str}" | sed -e s/"${__separator}${__separator}"/"${__separator} ${__separator}"/g -e s/"${__separator}${__separator}"/"${__separator} ${__separator}"/g | sed -e s/"${__separator}/${__separator}${__cell_delim}${__separator}"/g | column -s "${__separator}" -t
                 fi
         fi
-
+		echo -n
 }
 
 # return a randomly number list separated by space
