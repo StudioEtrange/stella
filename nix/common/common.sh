@@ -22,6 +22,7 @@ _STELLA_COMMON_INCLUDED_=1
 #                       __format_table "SEPARATOR "$'\t'""
 # sample :
 #               printf "head_1 "$'\t'" head_2\n val_1 "$'\t'" val_2" | __format_table "ALIGN_RIGHT CELL_DELIMITER |"
+#				printf "head_1 | head_2 | head_3 \n val_1 || val_3" | __format_table "SEPARATOR |"
 __format_table() {
         declare __str
         __str=$(</dev/stdin);
@@ -40,24 +41,25 @@ __format_table() {
                 [ "$o" = "SEPARATOR" ] && __flag_separator="ON"
         done
        
+		# NOTE : -e s/"${__separator}${__separator}"/"${__separator} ${__separator}"/g
+		#		add a blank character for an empty cell because column command have a bug with empty column
         if [ "${__cell_delim}" = "" ]; then
                 if [ "${__align_right}" = "1" ]; then
-                        # NOTE : To work around the requirement entries in the leftmost column must be of equal width« insert a dummy column and remove it later
+                        # NOTE : To work around the requirement entries in the leftmost column must be of equal width insert a dummy column and remove it later
                         #       https://stackoverflow.com/a/18022947/5027535
-                        echo "${__str}" | sed -e s/^/FOO"${__separator}"/ | rev | column -s "${__separator}" -t | rev | cut -c4-
+                        echo "${__str}" | sed -e s/"${__separator}${__separator}"/"${__separator} ${__separator}"/g -e s/"${__separator}${__separator}"/"${__separator} ${__separator}"/g | sed -e s/^/FOO"${__separator}"/ | rev | column -s "${__separator}" -t | rev | cut -c4-
                 else
-                        echo "${__str}" | column -s "${__separator}" -t
+                        echo "${__str}" | sed -e s/"${__separator}${__separator}"/"${__separator} ${__separator}"/g -e s/"${__separator}${__separator}"/"${__separator} ${__separator}"/g | column -s "${__separator}" -t
                 fi
         else
                 if [ "${__align_right}" = "1" ]; then
-                        echo "${__str}" | sed -e s/"${__separator}/${__separator}${__cell_delim}${__separator}"/g | sed -e s/^/FOO"${__separator}"/  | rev | column -s "${__separator}" -t | rev | cut -c4- 
+                        echo "${__str}" | sed -e s/"${__separator}${__separator}"/"${__separator} ${__separator}"/g -e s/"${__separator}${__separator}"/"${__separator} ${__separator}"/g | sed -e s/"${__separator}/${__separator}${__cell_delim}${__separator}"/g | sed -e s/^/FOO"${__separator}"/  | rev | column -s "${__separator}" -t | rev | cut -c4- 
                 else
-                        echo "${__str}" | sed -e s/"${__separator}/${__separator}${__cell_delim}${__separator}"/g | column -s "${__separator}" -t
+                        echo "${__str}" | sed -e s/"${__separator}${__separator}"/"${__separator} ${__separator}"/g -e s/"${__separator}${__separator}"/"${__separator} ${__separator}"/g | sed -e s/"${__separator}/${__separator}${__cell_delim}${__separator}"/g | column -s "${__separator}" -t
                 fi
         fi
 
 }
-
 
 # return a randomly number list separated by space
 # PARAMETERS
