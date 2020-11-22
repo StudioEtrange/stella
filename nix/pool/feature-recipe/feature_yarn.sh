@@ -4,7 +4,7 @@ _yarn_INCLUDED_=1
 
 feature_yarn() {
 	FEAT_NAME=yarn
-	FEAT_LIST_SCHEMA="1_16_0:binary"
+	FEAT_LIST_SCHEMA="1_16_0:binary 1_22_10:binary"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 
@@ -12,7 +12,19 @@ feature_yarn() {
 	FEAT_LINK="https://yarnpkg.com"
 }
 
+feature_yarn_1_22_10() {
 
+	FEAT_VERSION=1_22_10
+
+
+	FEAT_BINARY_URL="https://github.com/yarnpkg/yarn/releases/download/v1.22.10/yarn-v1.22.10.tar.gz"
+	FEAT_BINARY_URL_FILENAME="yarn-v1.22.10.tar.gz"
+	FEAT_BINARY_URL_PROTOCOL="HTTP_ZIP"
+
+	FEAT_INSTALL_TEST=$FEAT_INSTALL_ROOT/bin/yarn
+	FEAT_SEARCH_PATH=$FEAT_INSTALL_ROOT/bin
+
+}
 
 
 feature_yarn_1_16_0() {
@@ -28,6 +40,8 @@ feature_yarn_1_16_0() {
 	FEAT_SEARCH_PATH=$FEAT_INSTALL_ROOT/bin
 
 }
+
+
 
 feature_yarn_install_binary() {
 
