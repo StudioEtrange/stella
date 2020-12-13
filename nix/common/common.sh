@@ -10,7 +10,30 @@ _STELLA_COMMON_INCLUDED_=1
 # VARIOUS-----------------------------
 
 
+# https://stackoverflow.com/a/17975418
+# https://stackoverflow.com/a/49886076
+# add a scheduled command without duplication
+__crontab_add() {
+	local __cmd="$1"
+	local __username="$2"
+	if [ "${__username}" = "" ]; then
+		( crontab -l 2>/dev/null || : ; echo "${__cmd}" ) | sort - | uniq - | crontab -
+	else
+		( crontab -u ${__username} -l 2>/dev/null || : ; echo "${__cmd}" ) | sort - | uniq - | crontab -u ${__username} -
+	fi
+}
 
+# remove scheduled command without duplication
+# __crontab_remove '0 * * * * /home/me/myfunction myargs > /home/me/myfunction.log 2>&1' "$(id -un)"
+__crontab_remove() {
+	local __cmd="$1"
+	local __username="$2"
+	if [ "${__username}" = "" ]; then
+		( crontab -l 2>/dev/null | grep -v -F "${__cmd}" || : ) | crontab -
+	else
+		( crontab -u ${__username} -l 2>/dev/null | grep -v -F "${__cmd}" || : ) | crontab -u ${__username} -
+	fi
+}
 
 # output a formated table
 # input :
