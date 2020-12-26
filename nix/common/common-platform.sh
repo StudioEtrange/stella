@@ -750,28 +750,49 @@ __use_package_manager() {
 # ARG1 playbook yml file
 # ARG2 roles root folder
 # ARG3 inventory file
-# ARG4 limit execution to some host
+# OPTION
+#	LIMIT restrict execution to some host
+#	TAGS execute tasks tagged by one of these tags, separated by comma
 __ansible_play() {
-  local __playbook="$1"
-  local __roles="$2"
+	local __playbook="$1"
+	local __roles="$2"
 	local __inventory_file="$3"
-	local __limit="$4"
+	local __opt="$4"
+
+	local __limit=
+	local __tags=
+	for o in ${__opt}; do
+		[ "$__limit" = "1" ] && __limit="--limit=$o"
+		[ "$o" = "LIMIT" ] && __limit="1"
+		[ "$__tags" = "1" ] && __tags="--tags= $o"
+		[ "$o" = "TAGS" ] && __tags="1"
+	done
+	
 	[ -z $__limit ] && __limit=all
 
-  #ANSIBLE_EXTRA_VARS=\{\"infra_name\":\"$INFRA_NAME\"}
+	#ANSIBLE_EXTRA_VARS=\{\"infra_name\":\"$INFRA_NAME\"}
 	#--extra-vars=$ANSIBLE_EXTRA_VARS
-	ANSIBLE_ROLES_PATH="$__roles" PYTHONUNBUFFERED=1 ANSIBLE_FORCE_COLOR=true ansible-playbook --inventory-file="$__inventory_file" --limit="$__limit" -v "$__playbook"
+	ANSIBLE_ROLES_PATH="$__roles" PYTHONUNBUFFERED=1 ANSIBLE_FORCE_COLOR=true ansible-playbook --inventory-file="$__inventory_file" $__limit -v "$__playbook" $__tags
 }
 
 # ARG1 playbook yml file
 # ARG2 roles root folder
+# OPTION
+#	TAGS execute tasks tagged by one of these tags, separated by comma
 __ansible_play_localhost() {
-  local __playbook="$1"
+	local __playbook="$1"
 	local __roles="$2"
+	local __opt="$3"
 
-  #ANSIBLE_EXTRA_VARS=\{\"infra_name\"=\"$INFRA_NAME\"}
+	local __tags=
+	for o in ${__opt}; do
+		[ "$__tags" = "1" ] && __tags="--tags= $o"
+		[ "$o" = "TAGS" ] && __tags="1"
+	done
+
+	#ANSIBLE_EXTRA_VARS=\{\"infra_name\"=\"$INFRA_NAME\"}
 		#--extra-vars=$ANSIBLE_EXTRA_VARS
-  ANSIBLE_ROLES_PATH="$__roles" PYTHONUNBUFFERED=1 ANSIBLE_FORCE_COLOR=true ansible-playbook --connection local --inventory 'localhost,' -v "$__playbook"
+	ANSIBLE_ROLES_PATH="$__roles" PYTHONUNBUFFERED=1 ANSIBLE_FORCE_COLOR=true ansible-playbook --connection local --inventory 'localhost,' -v "$__playbook" $__tags
 
 
 }
