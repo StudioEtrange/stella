@@ -764,7 +764,7 @@ __ansible_play() {
 	for o in ${__opt}; do
 		[ "$__limit" = "1" ] && __limit="--limit=$o"
 		[ "$o" = "LIMIT" ] && __limit="1"
-		[ "$__tags" = "1" ] && __tags="--tags= $o"
+		[ "$__tags" = "1" ] && __tags="--tags=$o"
 		[ "$o" = "TAGS" ] && __tags="1"
 	done
 	
@@ -786,7 +786,7 @@ __ansible_play_localhost() {
 
 	local __tags=
 	for o in ${__opt}; do
-		[ "$__tags" = "1" ] && __tags="--tags= $o"
+		[ "$__tags" = "1" ] && __tags="--tags=$o"
 		[ "$o" = "TAGS" ] && __tags="1"
 	done
 
