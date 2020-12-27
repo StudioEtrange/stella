@@ -2597,6 +2597,8 @@ __get_key() {
 # get all keys from an ini file
 # or get all keys from a specific section
 # or get a specific key (which may be from a specitic section or not)
+# TODO : do not support section name like [[radarr]]
+# TODO : do not support other character than [a-zA-Z0-9._]{1,}[[:space:]]*= in key/value pair (see line 208 in read_ini.sh)
 # OPTION
 # ASSIGN|PRINT will assign to each key with its own value OR will only print values (PRINT is default mode)
 # EVAL will eval each key value before AFFECT it or PRINT it
@@ -2628,25 +2630,25 @@ __get_keys() {
 	_flag_key=
 	_opt_key=
 	_opt_eval=OFF
-  _opt_assign=OFF
+  	_opt_assign=OFF
 	for o in $_OPT; do
 		[ "$o" = "PREFIX" ] && _opt_section_prefix=ON
 		[ "$o" = "EVAL" ] && _opt_eval=ON
-    [ "$o" = "ASSIGN" ] && _opt_assign=ON
-    [ "$o" = "PRINT" ] && _opt_assign=OFF
+    	[ "$o" = "ASSIGN" ] && _opt_assign=ON
+    	[ "$o" = "PRINT" ] && _opt_assign=OFF
 		[ "$_flag_section" = "ON" ] && _opt_section="${o}" && _flag_section=OFF
 		[ "$o" = "SECTION" ] && _flag_section=ON
 		[ "$_flag_key" = "ON" ] && _opt_key="${o}" && _flag_key=OFF
 		[ "$o" = "KEY" ] && _flag_key=ON
 	done
 
-  # escape regexp special characters
+  	# escape regexp special characters
 	# http://stackoverflow.com/questions/407523/escape-a-string-for-a-sed-replace-pattern
-  # TODO do we need this two lines below ?
+  	# TODO do we need this two lines below ?
 	#_opt_section=$(echo ${_opt_section} | sed -e 's/[]\/$*.^|[]/\\&/g')
 	#_opt_key=$(echo "$_opt_key" | sed -e 's/\\/\\\\/g')
 
-  # unset some specific asked key
+  	# unset some specific asked key
 	if [ "${_opt_assign}" = "ON" ]; then
 		if [ ! "${_opt_key}" = "" ]; then
 			if [ "${_opt_section_prefix}" = "ON" ]; then

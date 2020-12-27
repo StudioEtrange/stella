@@ -753,6 +753,8 @@ __use_package_manager() {
 # OPTION
 #	LIMIT restrict execution to some host
 #	TAGS execute tasks tagged by one of these tags, separated by comma
+#	PYTHON path to python interpreter
+#	DEBUG enable more debug output
 __ansible_play() {
 	local __playbook="$1"
 	local __roles="$2"
@@ -761,38 +763,57 @@ __ansible_play() {
 
 	local __limit=
 	local __tags=
+	local __python=
+	local __debug="-v"
 	for o in ${__opt}; do
 		[ "$__limit" = "1" ] && __limit="--limit=$o"
 		[ "$o" = "LIMIT" ] && __limit="1"
 		[ "$__tags" = "1" ] && __tags="--tags=$o"
 		[ "$o" = "TAGS" ] && __tags="1"
+		[ "$__python" = "1" ] && __python="-e ansible_python_interpreter=$o"
+		[ "$o" = "PYTHON" ] && __python="1"
+		[ "$o" = "DEBUG" ] && __debug="-vvv"
 	done
 	
 	[ -z $__limit ] && __limit=all
 
-	#ANSIBLE_EXTRA_VARS=\{\"infra_name\":\"$INFRA_NAME\"}
-	#--extra-vars=$ANSIBLE_EXTRA_VARS
-	ANSIBLE_ROLES_PATH="$__roles" PYTHONUNBUFFERED=1 ANSIBLE_FORCE_COLOR=true ansible-playbook --inventory-file="$__inventory_file" $__limit -v "$__playbook" $__tags
+	ANSIBLE_ROLES_PATH="$__roles" PYTHONUNBUFFERED=1 ANSIBLE_FORCE_COLOR=true ansible-playbook --inventory-file="$__inventory_file" $__limit $__debug "$__playbook" $__tags $__python
 }
 
 # ARG1 playbook yml file
 # ARG2 roles root folder
 # OPTION
 #	TAGS execute tasks tagged by one of these tags, separated by comma
+#	PYTHON path to python interpreter (by default use python found in PATH)
 __ansible_play_localhost() {
 	local __playbook="$1"
 	local __roles="$2"
 	local __opt="$3"
 
 	local __tags=
+	local __python="-e ansible_python_interpreter=$(which python)"
+	local __debug="-v"
 	for o in ${__opt}; do
 		[ "$__tags" = "1" ] && __tags="--tags=$o"
 		[ "$o" = "TAGS" ] && __tags="1"
+		[ "$__python" = "1" ] && __python="-e ansible_python_interpreter=$o"
+		[ "$o" = "PYTHON" ] && __python="1"
+		[ "$o" = "DEBUG" ] && __debug="-vvv"
 	done
 
-	#ANSIBLE_EXTRA_VARS=\{\"infra_name\"=\"$INFRA_NAME\"}
-		#--extra-vars=$ANSIBLE_EXTRA_VARS
-	ANSIBLE_ROLES_PATH="$__roles" PYTHONUNBUFFERED=1 ANSIBLE_FORCE_COLOR=true ansible-playbook --connection local --inventory 'localhost,' -v "$__playbook" $__tags
+	# https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#defining-variables-at-runtime
+	# --extra-vars "version=1.23.45 other_variable=foo"
+	# --extra-vars '{"version":"1.23.45","other_variable":"foo"}'
+	# ansible-playbook arcade.yml --extra-vars "{\"name\":\"Conan O\'Brien\"}"
+	# ansible-playbook arcade.yml --extra-vars '{"name":"Conan O'\\\''Brien"}'
+	# ansible-playbook script.yml --extra-vars "{\"dialog\":\"He said \\\"I just can\'t get enough of those single and double-quotes"\!"\\\"\"}"
+	# EXTRA_VARS=\{\"infra_name\":\"$INFRA_NAME\",\"proxy_name\":\"sesame\"\}
+	#--extra-vars=$EXTRA_VARS
+
+	# use same python interpreter than the one which launch ansible
+	# by default, ansible will lookup python in some default place like /usr/bin/python not in PATH
+	# https://github.com/ansible/ansible/issues/6345
+	ANSIBLE_ROLES_PATH="$__roles" PYTHONUNBUFFERED=1 ANSIBLE_FORCE_COLOR=true ansible-playbook --connection local --inventory 'localhost,' $__debug "$__playbook" $__tags $__python
 
 
 }
