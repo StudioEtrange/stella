@@ -1,6 +1,9 @@
 if [ ! "$_yq_INCLUDED_" = "1" ]; then
 _yq_INCLUDED_=1
 
+# This is the go tool 'yq'
+# This is not the same than python tool named 'yq'  https://github.com/kislyuk/yq
+
 feature_yq() {
 	FEAT_NAME="yq"
 	FEAT_LIST_SCHEMA="3_3_0@x64:binary 3_1_2@x64:binary 3_1_2@x86:binary"
