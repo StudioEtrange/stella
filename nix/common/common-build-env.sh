@@ -60,17 +60,17 @@ __link_rpath_flags_gcc() {
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		# to avoid problem with $$ORIGIN -- only usefull with standard build tools (do not need this with cmake)
 		# relative to /lib or /root folder
-		_rpath='$ORIGIN/../'$p
+		_rpath='$ORIGIN/../'$_p
 		_rpath=${_rpath/\$ORIGIN/\$\$ORIGIN}
 		_LINK_RPATH_FLAGS="-Wl,-rpath='"$_rpath"'"
 		# relative to root folder
-		_rpath='$ORIGIN/'$p
+		_rpath='$ORIGIN/'$_p
 		_rpath=${_rpath/\$ORIGIN/\$\$ORIGIN}
 		_LINK_RPATH_FLAGS="$_LINK_RPATH_FLAGS -Wl,-rpath='"$_rpath"'"
 	fi
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		# NOTE : if we use ' or " around $r, it will be used as rpath value
-		_LINK_RPATH_FLAGS="-Wl,-rpath,@loader_path/$p -Wl,-rpath,@loader_path/../$p"
+		# NOTE : if we use ' or " around $_p, it will be used as rpath value
+		_LINK_RPATH_FLAGS="-Wl,-rpath,@loader_path/$_p -Wl,-rpath,@loader_path/../$_p"
 	fi
 
 	eval "$_var_flags"_LINK_RPATH_FLAGS=\"$_LINK_RPATH_FLAGS\"

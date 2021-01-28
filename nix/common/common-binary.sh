@@ -42,6 +42,8 @@ _STELLA_COMMON_BINARY_INCLUDED_=1
 #					install_name_tool (needed to modify rpath, install_name and already linked lib. Cannot add or remove linked lib) -- in ??
 #			MACOS : install_name, rpath, loader_path, executable_path
 # 					https://mikeash.com/pyblog/friday-qa-2009-11-06-linking-and-install-names.html
+#					http://jorgen.tjer.no/post/2014/05/20/dt-rpath-ld-and-at-rpath-dyld/
+#					https://wincent.com/wiki/@executable_path,_@load_path_and_@rpath
 #
 #			LINKED LIBS
 #						LINUX : Dynamic libs will be searched at RUNTINE in the following directories in the given order:
