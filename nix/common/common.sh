@@ -2376,11 +2376,20 @@ __uncompress() {
 				tar xzf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-strip "$FILE_PATH" "$UNZIP_DIR"
 			fi
 			;;
-		*.xz | *.bz2)
+		*.xz | *.tar.bz2 | *.tbz2 | *.tbz)
 			if [ "$_opt_strip" = "OFF" ]; then
 				tar xf "$FILE_PATH"
 			else
 				tar xf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-strip "$FILE_PATH" "$UNZIP_DIR"
+			fi
+			;;
+		*.bz2|*.bz)
+			if [ "$_opt_strip" = "OFF" ]; then
+				cp -f "$FILE_PATH" .
+				bzip2 -d *
+			else
+				# NOTE : maybe not needed because a bz2 file contains always only one files and not a directory ?
+				__bzip2-strip "$FILE_PATH" "$UNZIP_DIR"
 			fi
 			;;
 		*.7z)
@@ -2396,6 +2405,7 @@ __uncompress() {
 			;;
 		*)
 			__log "INFO" " ** ERROR : Unknown archive format"
+			;;
 	esac
 }
 
@@ -2517,6 +2527,28 @@ __sevenzip-strip() {
     local dest=${2:-.}
     local temp=$(mktmpdir)
     7z x "$zip" -y -o"$temp"
+    shopt -s dotglob
+    local f=("$temp"/*)
+
+    if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
+        mv "$temp"/*/* "$dest"
+    else
+        mv "$temp"/* "$dest"
+    fi
+    rm -Rf "$temp"
+}
+
+
+
+__bzip2-strip() {
+    local zip=$1
+    local dest=${2:-.}
+    local temp=$(mktmpdir)
+
+	cp -f $zip $temp/
+	cd $temp
+    bzip2 -d *
+
     shopt -s dotglob
     local f=("$temp"/*)
 

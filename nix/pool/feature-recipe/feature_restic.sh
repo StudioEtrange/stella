@@ -52,6 +52,7 @@ feature_restic_0_12_0() {
 feature_restic_install_binary() {
 
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "STRIP FORCE_NAME $FEAT_BINARY_URL_FILENAME"
+	mv "$FEAT_INSTALL_ROOT"/restic* "$FEAT_INSTALL_ROOT"/restic
 }
 
 fi
