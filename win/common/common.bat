@@ -88,8 +88,8 @@ goto :eof
 	if exist "%~1" (
 		echo ** Deleting %~1 folder
 		REM call :timecount_start timecount_id
-		del /f/q %~1 >nul 2>&1
-		rmdir /s/q %~1 >nul 2>&1
+		del /f/q "%~1" >nul 2>&1
+		rmdir /s/q "%~1" >nul 2>&1
 		REM call :timecount_stop !timecount_id!
 		REM echo ** Folder deleted in !STELLA_TIMECOUNT_ELAPSED!
 
@@ -110,7 +110,7 @@ goto :eof
 :: copy content of folder ARG1 into folder ARG2 (with an optional filter ARG3)
 :copy_folder_content_into
 	set "_filter=%~3"
-	if not exist %~2 mkdir %~2
+	if not exist "%~2" mkdir "%~2"
 	if "%_filter%"=="" (
 		xcopy /q /y /e /i "%~1" "%~2"
 	) else (
@@ -189,8 +189,8 @@ goto :eof
 REM http://www.dostips.com/DtCodeCmdLib.php#Function.MakeRelative
 :abs_to_rel_path
 	set "_result_var_abs_to_rel_path=%~1"
-	set _abs_path=%~2
-	if defined %2 set _abs_path=!%~2!
+	set "_abs_path=%~2"
+	if defined %2 set "_abs_path=!%~2!"
 	set _base_path=%~3
 
 	REM adding \ may this function working either arg1 is a folder or a file path
