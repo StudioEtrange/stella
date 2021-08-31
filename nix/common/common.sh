@@ -1558,15 +1558,18 @@ __trim() {
 __string_contains() { [ -z "${1##*$2*}" ] && [ -n "$1" -o -z "$2" ]; }
 
 # return 0 if list contains items, else 1
-# __list_contains "aa bb xx" "bb" 
+# __list_contains "aa bb xx" "bb"
 # echo $? ==> 0
-# __list_contains "aa bb xx" "b" 
+# __list_contains "aa bb xx" "b"
 # echo $? ==> 1
-# __list_contains "aa bb xx" "bb xx" 
+# __list_contains "aa bb xx" "bb xx"
 # echo $? ==> 0
-# __list_contains "aa bb xx" "aa xx" 
+# __list_contains "aa bb xx" "aa xx"
 # echo $? ==> 1
 # https://stackoverflow.com/a/20473191/5027535
+# in a test : 
+# if $STELLA_API list_contains "aa bb xx" "bb"; then
+# fi
 __list_contains() {
   local _list="$1"
   local _item="$2"
