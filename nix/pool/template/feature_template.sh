@@ -3,9 +3,9 @@ _TEMPLATE_INCLUDED_=1
 
 
 feature_template() {
-	FEAT_NAME=template
+	FEAT_NAME="template"
 	FEAT_LIST_SCHEMA="1_0_0@x64:binary 1_0_0@x86:binary 1_0_0:source\macos"
-	FEAT_DEFAULT_ARCH=x64
+	FEAT_DEFAULT_ARCH="x64"
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="template is foo"
@@ -19,7 +19,7 @@ feature_template_1_0_0() {
 	# if FEAT_ARCH (ie:FEAT_BINARY_URL_x86) is not not null, properties FOO_ARCH=BAR will be selected and setted as FOO=BAR (ie:FEAT_BINARY_URL)
 	# if FOO_ARCH is empty, FOO will not be changed
 
-	FEAT_VERSION=1_0_0
+	FEAT_VERSION="1_0_0"
 
 	# Dependencies
 	FEAT_SOURCE_DEPENDENCIES="zlib#^1_2 FORCE_ORIGIN_SYSTEM fuse"
@@ -65,23 +65,22 @@ feature_template_1_0_0() {
 
 	# callback are list of functions
 	# manual callback (with feature_callback)
-	FEAT_SOURCE_CALLBACK=feature_template_1_0_0_source_callback
+	FEAT_SOURCE_CALLBACK="feature_template_1_0_0_source_callback"
 	FEAT_BINARY_CALLBACK=
 	# automatic callback each time feature is initialized, to init env var
-	FEAT_ENV_CALLBACK=feature_template_setenv
+	FEAT_ENV_CALLBACK="feature_template_setenv"
 
 	# List of files to test if feature is installed
-	FEAT_INSTALL_TEST=$FEAT_INSTALL_ROOT/bin/template
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/template"
 	# PATH to add to system PATH
-	FEAT_SEARCH_PATH=$FEAT_INSTALL_ROOT/bin
-
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 }
 
 
 
 
 feature_template_setenv()  {
-	TEMPLATE_HOME=$FEAT_INSTALL_ROOT
+	TEMPLATE_HOME="$FEAT_INSTALL_ROOT"
 	export TEMPLATE_HOME
 }
 
@@ -214,7 +213,7 @@ feature_template_install_source() {
 	cd "$SRC_DIR"
 
 	make -j$STELLA_NB_CPU
-	make install && __del_folder $SRC_DIR
+	make install && __del_folder "$SRC_DIR"
 
 	__end_manual_build
 }
@@ -239,7 +238,7 @@ feature_template_install_source() {
 	cd "$SRC_DIR"
 
 	make -j$STELLA_NB_CPU
-	make install && __del_folder $SRC_DIR
+	make install && __del_folder "$SRC_DIR"
 
 	__inspect_and_fix_build "$INSTALL_DIR"
 
