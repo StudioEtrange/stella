@@ -1524,11 +1524,11 @@ __filter_list_with_list() {
 	local __result_list=
 	if [ "$__opt_keep" = "ON" ]; then
 		for s in ${__list_src}; do
-			[[ " ${__list_filter} " =~ .*\ ${s}\ .* ]] && __result_list="${__result_list} ${s}"
+			[[ " ${__list_filter} " =~ .*\ "${s}"\ .* ]] && __result_list="${__result_list} ${s}"
 		done
 	else
 		for s in ${__list_src}; do
-			[[ " ${__list_filter} " =~ .*\ ${s}\ .* ]] || __result_list="${__result_list} ${s}"
+			[[ " ${__list_filter} " =~ .*\ "${s}"\ .* ]] || __result_list="${__result_list} ${s}"
 		done
 	fi
 
