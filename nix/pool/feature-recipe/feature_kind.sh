@@ -12,6 +12,12 @@ _KIND_INCLUDED_=1
 # kubectl config use-context kind-kind
 # kubectl run hello --image=gcr.io/google_containers/echoserver:1.4 --port=8080
 
+# add dashboard
+# kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended.yaml
+# launch proxy to access to dashboard
+# kubectl proxy
+# see http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#/login
+
 feature_kind() {
 	FEAT_NAME=kind
 	FEAT_LIST_SCHEMA="0_11_1@x64:binary"
