@@ -95,6 +95,20 @@ feature_template_install_binary() {
 
 
 
+# when feature is only a standalone binary and protocol used is HTTP : FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
+feature_kind_install_binary() {
+
+	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP FORCE_NAME $FEAT_BINARY_URL_FILENAME"
+
+	
+	if [ -f "${FEAT_INSTALL_ROOT}/${FEAT_BINARY_URL_FILENAME}" ]; then
+		mv "${FEAT_INSTALL_ROOT}/${FEAT_BINARY_URL_FILENAME}" "${FEAT_INSTALL_ROOT}/template"
+		chmod +x "${FEAT_INSTALL_ROOT}/template"
+	fi
+}
+
+
+
 # ---------------------------------------------------------------------------------------------------------------------------
 feature_template_1_0_0_source_callback() {
 	__link_feature_library "libxml2#2_9_1" "GET_FLAGS _libxml2 LIBS_NAME xml2 FORCE_INCLUDE_FOLDER include/libxml2"
