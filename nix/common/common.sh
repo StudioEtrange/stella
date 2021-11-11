@@ -1582,7 +1582,10 @@ __list_contains() {
 # aa aaa b bb cc ddd
 __list_filter_duplicate() {
 	local _list="$1"
-	_list="$(printf '%s\n' ${_list} | sort | uniq | tr '\n' ' ')"
+	# this alter order do not use :s
+	#_list="$(printf '%s\n' ${_list} | sort | uniq | tr '\n' ' ')"
+
+	_list="$(printf '%s\n' ${_list} | awk '!tab[$0]++' | tr '\n' ' ')"
 
 	# remove trailing whitespace and return list
 	echo -n "${_list%"${_list##*[![:space:]]}"}"
