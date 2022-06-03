@@ -9,8 +9,6 @@ _minikube_INCLUDED_=1
 # minikube start --vm-driver=virtualbox
 # minikube dashboard
 
-# download kubectl with minikube
-# 	minikube kubectl -- get po -A
 # use kubectl from minikube
 #	minikube kubectl -- help
 
