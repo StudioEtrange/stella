@@ -34,7 +34,7 @@ _minikube_INCLUDED_=1
 
 feature_minikube() {
 	FEAT_NAME="minikube"
-	FEAT_LIST_SCHEMA="1_23_2:binary 0_25_0:binary 0_11_0:binary"
+	FEAT_LIST_SCHEMA="1_25_2:binary 1_23_2:binary 0_25_0:binary 0_11_0:binary"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 
@@ -42,6 +42,27 @@ feature_minikube() {
 	FEAT_LINK="https://github.com/kubernetes/minikube https://minikube.sigs.k8s.io/"
 }
 
+
+feature_minikube_1_25_2() {
+	FEAT_VERSION="1_25_2"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		FEAT_BINARY_URL="https://github.com/kubernetes/minikube/releases/download/v1.25.2/minikube-linux-amd64"
+		FEAT_BINARY_URL_FILENAME="minikube-${FEAT_VERSION}-linux-amd64"
+		FEAT_BINARY_URL_PROTOCOL="HTTP"
+
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		FEAT_BINARY_URL="https://github.com/kubernetes/minikube/releases/download/v1.25.2/minikube-darwin-amd64"
+		FEAT_BINARY_URL_FILENAME="minikube-${FEAT_VERSION}-darwin-amd64"
+		FEAT_BINARY_URL_PROTOCOL="HTTP"
+	fi
+
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/minikube"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
+
+}
 
 feature_minikube_1_23_2() {
 	FEAT_VERSION="1_23_2"
