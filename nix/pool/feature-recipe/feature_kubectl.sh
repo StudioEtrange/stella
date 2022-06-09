@@ -6,8 +6,8 @@ _kubectl_INCLUDED_=1
 # versions : https://kubernetes.io/releases/
 
 feature_kubectl() {
-	FEAT_NAME=kubectl
-	FEAT_LIST_SCHEMA="1_24_1 1_23_7 1_22_10:binary"
+	FEAT_NAME="kubectl"
+	FEAT_LIST_SCHEMA="1_24_1:binary 1_23_7:binary 1_22_10:binary"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 
@@ -31,9 +31,8 @@ feature_kubectl_1_24_1() {
 		FEAT_BINARY_URL_PROTOCOL="HTTP"
 	fi
 
-
-	FEAT_INSTALL_TEST="${FEAT_INSTALL_ROOT}/client/bin/kubectl"
-	FEAT_SEARCH_PATH="${FEAT_INSTALL_ROOT}/client/bin"
+	FEAT_INSTALL_TEST="${FEAT_INSTALL_ROOT}/kubectl"
+	FEAT_SEARCH_PATH="${FEAT_INSTALL_ROOT}/"
 
 }
 
@@ -53,17 +52,15 @@ feature_kubectl_1_23_7() {
 		FEAT_BINARY_URL_PROTOCOL="HTTP"
 	fi
 
-
-	FEAT_INSTALL_TEST="${FEAT_INSTALL_ROOT}/client/bin/kubectl"
-	FEAT_SEARCH_PATH="${FEAT_INSTALL_ROOT}/client/bin"
+	FEAT_INSTALL_TEST="${FEAT_INSTALL_ROOT}/kubectl"
+	FEAT_SEARCH_PATH="${FEAT_INSTALL_ROOT}/"
 
 }
 
 
 
 
-
-1_22_10() {
+feature_kubectl_1_22_10() {
 	FEAT_VERSION="1_22_10"
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
@@ -79,15 +76,18 @@ feature_kubectl_1_23_7() {
 	fi
 
 
-	FEAT_INSTALL_TEST="${FEAT_INSTALL_ROOT}/client/bin/kubectl"
-	FEAT_SEARCH_PATH="${FEAT_INSTALL_ROOT}/client/bin"
+	FEAT_INSTALL_TEST="${FEAT_INSTALL_ROOT}/kubectl"
+	FEAT_SEARCH_PATH="${FEAT_INSTALL_ROOT}/"
 
 }
 
 
 
 feature_kubectl_install_binary() {
-	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "STRIP FORCE_NAME $FEAT_BINARY_URL_FILENAME"
+	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "FORCE_NAME $FEAT_BINARY_URL_FILENAME"
+	
+	mv "${FEAT_INSTALL_ROOT}/${FEAT_BINARY_URL_FILENAME}" "${FEAT_INSTALL_ROOT}/kubectl"
+	chmod +x "${FEAT_INSTALL_ROOT}/kubectl"
 }
 
 
