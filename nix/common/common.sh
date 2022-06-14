@@ -1093,6 +1093,195 @@ __uri_get_path() {
 	echo "$__path"
 }
 
+
+
+#   find uri inside a stream of strings
+# 		available options
+# 			[schema://][user[:password]@][host][:port][/path][?[arg1=val1]...][#fragment]
+#			filter options : -will select uri based on condition- NULL : uri part is empty, NON_NULL : uri part must be non empty, VALUE : uri part must match regexp
+#				SCHEMA_NULL, SCHEMA_NON_NULL, SCHEMA_VALUE, ADDRESS_NULL, ADDRESS_NON_NULL, ADDRESS_VALUE, USER_NULL, USER_NON_NULL, USER_VALUE, PASSWORD_NULL, PASSWORD_NON_NULL, PASSWORD_VALUE
+#				HOST_NULL, HOST_NON_NULL, HOST_VALUE, PORT_NULL, PORT_NON_NULL, PORT_VALUE, PATH_NULL, PATH_NON_NULL, PATH_VALUE, QUERY_NULL, QUERY_NON_NULL, QUERY_VALUE, FRAGMENT_NULL, FRAGMENT_NON_NULL, FRAGMENT_VALUE
+#			output options : -will output one of these uri part-
+#				OUTPUT_URI (output by default) , OUTPUT_SCHEMA, OUTPUT_ADDRESS, OUTPUT_USER, OUTPUT_PASSWORD, OUTPUT_HOST, OUTPUT_PORT, OUTPUT_PATH, OUTPUT_QUERY, OUTPUT_FRAGMENT
+#		samples
+#			echo "string http://url" | __uri_parse_stream 
+#			echo "string http://url" | __uri_parse_stream "OUTPUT_ADDRESS ADDRESS_NON_NULL SCHEMA_VALUE https?"
+__uri_parse_stream() {
+
+	local __opt="$1"
+
+	local SCHEMA_NULL=
+	local SCHEMA_NON_NULL=
+	local SCHEMA_VALUE=
+	local _SCHEMA_VALUE=
+	local ADDRESS_NULL=
+	local ADDRESS_NON_NULL=
+	local ADDRESS_VALUE=
+	local _ADDRESS_VALUE=
+	local USER_NULL=
+	local USER_NON_NULL=
+	local USER_VALUE=
+	local _USER_VALUE=
+	local PASSWORD_NULL=
+	local PASSWORD_NON_NULL=
+	local PASSWORD_VALUE=
+	local _PASSWORD_VALUE=
+	local HOST_NULL=
+	local HOST_NON_NULL=
+	local HOST_VALUE=
+	local _HOST_VALUE=
+	local PORT_NULL=
+	local PORT_NON_NULL=
+	local PORT_VALUE=
+	local _PORT_VALUE=
+	local PATH_NULL=
+	local PATH_NON_NULL=
+	local PATH_VALUE=
+	local _PATH_VALUE=
+	local QUERY_NULL=
+	local QUERY_NON_NULL=
+	local QUERY_VALUE=
+	local _QUERY_VALUE=
+	local FRAGMENT_NULL=
+	local FRAGMENT_NON_NULL=
+	local FRAGMENT_VALUE=
+	local _FRAGMENT_VALUE=
+
+	local OUTPUT_URI=
+	local OUTPUT_SCHEMA=
+	local OUTPUT_ADDRESS=
+	local OUTPUT_USER=
+	local OUTPUT_PASSWORD=
+	local OUTPUT_HOST=
+	local OUTPUT_PORT=
+	local OUTPUT_PATH=
+	local OUTPUT_QUERY=
+	local OUTPUT_FRAGMENT=
+	for o in ${__opt}; do
+			[ "$o" = "OUTPUT_URI" ] && OUTPUT_URI="ON"
+			[ "$o" = "OUTPUT_SCHEMA" ] && OUTPUT_SCHEMA="ON"
+			[ "$o" = "OUTPUT_ADDRESS" ] && OUTPUT_ADDRESS="ON"
+			[ "$o" = "OUTPUT_USER" ] && OUTPUT_USER="ON"
+			[ "$o" = "OUTPUT_PASSWORD" ] && OUTPUT_PASSWORD="ON"
+			[ "$o" = "OUTPUT_HOST" ] && OUTPUT_HOST="ON"
+			[ "$o" = "OUTPUT_PORT" ] && OUTPUT_PORT="ON"
+			[ "$o" = "OUTPUT_PATH" ] && OUTPUT_PATH="ON"
+			[ "$o" = "OUTPUT_QUERY" ] && OUTPUT_QUERY="ON"
+			[ "$o" = "OUTPUT_FRAGMENT" ] && OUTPUT_FRAGMENT="ON"
+
+			[ "$o" = "SCHEMA_NULL" ] && SCHEMA_NULL="ON"
+			[ "$o" = "SCHEMA_NON_NULL" ] && SCHEMA_NON_NULL="ON"
+			[ "$_SCHEMA_VALUE" = "ON" ] && SCHEMA_VALUE="$o" && _SCHEMA_VALUE=
+			[ "$o" = "SCHEMA_VALUE" ] && _SCHEMA_VALUE="ON"
+
+			[ "$o" = "ADDRESS_NULL" ] && ADDRESS_NULL="ON"
+			[ "$o" = "ADDRESS_NON_NULL" ] && ADDRESS_NON_NULL="ON"
+			[ "$_ADDRESS_VALUE" = "ON" ] && ADDRESS_VALUE="$o" && _ADDRESS_VALUE=
+			[ "$o" = "ADDRESS_VALUE" ] && _ADDRESS_VALUE="ON"
+
+			[ "$o" = "USER_NULL" ] && USER_NULL="ON"
+			[ "$o" = "USER_NON_NULL" ] && USER_NON_NULL="ON"
+			[ "$_USER_VALUE" = "ON" ] && USER_VALUE="$o" && _USER_VALUE=
+			[ "$o" = "USER_VALUE" ] && _USER_VALUE="ON"
+
+			[ "$o" = "PASSWORD_NULL" ] && PASSWORD_NULL="ON"
+			[ "$o" = "PASSWORD_NON_NULL" ] && PASSWORD_NON_NULL="ON"
+			[ "$_PASSWORD_VALUE" = "ON" ] && PASSWORD_VALUE="$o" && _PASSWORD_VALUE=
+			[ "$o" = "PASSWORD_VALUE" ] && _PASSWORD_VALUE="ON"
+
+			[ "$o" = "HOST_NULL" ] && HOST_NULL="ON"
+			[ "$o" = "HOST_NON_NULL" ] && HOST_NON_NULL="ON"
+			[ "$_HOST_VALUE" = "ON" ] && HOST_VALUE="$o" && _HOST_VALUE=
+			[ "$o" = "HOST_VALUE" ] && _HOST_VALUE="ON"
+
+			[ "$o" = "PORT_NULL" ] && PORT_NULL="ON"
+			[ "$o" = "PORT_NON_NULL" ] && PORT_NON_NULL="ON"
+			[ "$_PORT_VALUE" = "ON" ] && PORT_VALUE="$o" && _PORT_VALUE=
+			[ "$o" = "PORT_VALUE" ] && _PORT_VALUE="ON"
+
+			[ "$o" = "PATH_NULL" ] && PATH_NULL="ON"
+			[ "$o" = "PATH_NON_NULL" ] && PATH_NON_NULL="ON"
+			[ "$_PATH_VALUE" = "ON" ] && PATH_VALUE="$o" && _PATH_VALUE=
+			[ "$o" = "PATH_VALUE" ] && _PATH_VALUE="ON"
+
+			[ "$o" = "QUERY_NULL" ] && QUERY_NULL="ON"
+			[ "$o" = "QUERY_NON_NULL" ] && QUERY_NON_NULL="ON"
+			[ "$_QUERY_VALUE" = "ON" ] && QUERY_VALUE="$o" && _QUERY_VALUE=
+			[ "$o" = "QUERY_VALUE" ] && _QUERY_VALUE="ON"
+
+			[ "$o" = "FRAGMENT_NULL" ] && FRAGMENT_NULL="ON"
+			[ "$o" = "FRAGMENT_NON_NULL" ] && FRAGMENT_NON_NULL="ON"
+			[ "$_FRAGMENT_VALUE" = "ON" ] && FRAGMENT_VALUE="$o" && _FRAGMENT_VALUE=
+			[ "$o" = "FRAGMENT_VALUE" ] && _FRAGMENT_VALUE="ON"
+	done
+	
+	local __printed=
+	local __valid="1"
+	while read line; do
+		echo $line | awk '{ for (i = 1; i <= NF; i++) print $i }' | while read word; do
+			__uri_parse "$word"
+			# an uri is detected
+			if [ $? -eq 0 ]; then 
+				__valid="1"
+				[ $__valid ] && [ "$SCHEMA_NULL" = "ON" ] && [ ! "$__stella_uri_schema" = "" ] && __valid=
+				[ $__valid ] && [ "$SCHEMA_NON_NULL" = "ON" ] && [ "$__stella_uri_schema" = "" ] && __valid=
+				[ $__valid ] && [ ! "$SCHEMA_VALUE" = "" ] && [[ ! "$__stella_uri_schema" =~ $SCHEMA_VALUE ]] && __valid=
+
+				[ $__valid ] && [ "$ADDRESS_NULL" = "ON" ] && [ ! "$__stella_uri_address" = "" ] && __valid=
+				[ $__valid ] && [ "$ADDRESS_NON_NULL" = "ON" ] && [ "$__stella_uri_address" = "" ] && __valid=
+				[ $__valid ] && [ ! "$ADDRESS_VALUE" = "" ] && [[ ! "$__stella_uri_address" =~ $ADDRESS_VALUE ]] && __valid=
+
+				[ $__valid ] && [ "$USER_NULL" = "ON" ] && [ ! "$__stella_uri_user" = "" ] && __valid=
+				[ $__valid ] && [ "$USER_NON_NULL" = "ON" ] && [ "$__stella_uri_user" = "" ] && __valid=
+				[ $__valid ] && [ ! "$USER_VALUE" = "" ] && [[ ! "$__stella_uri_user" =~ $USER_VALUE ]] && __valid=
+
+				[ $__valid ] && [ "$PASSWORD_NULL" = "ON" ] && [ ! "$__stella_uri_password" = "" ] && __valid=
+				[ $__valid ] && [ "$PASSWORD_NON_NULL" = "ON" ] && [ "$__stella_uri_password" = "" ] && __valid=
+				[ $__valid ] && [ ! "$PASSWORD_VALUE" = "" ] && [[ ! "$__stella_uri_password" =~ $PASSWORD_VALUE ]] && __valid=
+
+				[ $__valid ] && [ "$HOST_NULL" = "ON" ] && [ ! "$__stella_uri_host" = "" ] && __valid=
+				[ $__valid ] && [ "$HOST_NON_NULL" = "ON" ] && [ "$__stella_uri_host" = "" ] && __valid=
+				[ $__valid ] && [ ! "$HOST_VALUE" = "" ] && [[ ! "$__stella_uri_host" =~ $HOST_VALUE ]] && __valid=
+
+				[ $__valid ] && [ "$PORT_NULL" = "ON" ] && [ ! "$__stella_uri_port" = "" ] && __valid=
+				[ $__valid ] && [ "$PORT_NON_NULL" = "ON" ] && [ "$__stella_uri_port" = "" ] && __valid=
+				[ $__valid ] && [ ! "$PORT_VALUE" = "" ] && [[ ! "$__stella_uri_port" =~ $PORT_VALUE ]] && __valid=
+				
+				[ $__valid ] && [ "$PATH_NULL" = "ON" ] && [ ! "$__stella_uri_path" = "" ] && __valid=
+				[ $__valid ] && [ "$PATH_NON_NULL" = "ON" ] && [ "$__stella_uri_path" = "" ] && __valid=
+				[ $__valid ] && [ ! "$PATH_VALUE" = "" ] && [[ ! "$__stella_uri_path" =~ $PATH_VALUE ]] && __valid=
+
+				[ $__valid ] && [ "$QUERY_NULL" = "ON" ] && [ ! "$__stella_uri_query" = "" ] && __valid=
+				[ $__valid ] && [ "$QUERY_NON_NULL" = "ON" ] && [ "$__stella_uri_query" = "" ] && __valid=
+				[ $__valid ] && [ ! "$QUERY_VALUE" = "" ] && [[ ! "$__stella_uri_query" =~ $QUERY_VALUE ]] && __valid=
+
+				[ $__valid ] && [ "$FRAGMENT_NULL" = "ON" ] && [ ! "$__stella_uri_fragment" = "" ] && __valid=
+				[ $__valid ] && [ "$FRAGMENT_NON_NULL" = "ON" ] && [ "$__stella_uri_fragment" = "" ] && __valid=
+				[ $__valid ] && [ ! "$FRAGMENT_VALUE" = "" ] && [[ ! "$__stella_uri_fragment" =~ $FRAGMENT_VALUE ]] && __valid=
+
+				__printed=
+				if [ $__valid ]; then
+					[ "ON" = "$OUTPUT_URI" ] && echo "$__stella_uri" && __printed="1"
+					[ "ON" = "$OUTPUT_SCHEMA" ] && echo "$__stella_uri_schema" && __printed="1"
+					[ "ON" = "$OUTPUT_ADDRESS" ] && echo "$__stella_uri_address" && __printed="1"
+					[ "ON" = "$OUTPUT_USER" ] && echo "$__stella_uri_user" && __printed="1"
+					[ "ON" = "$OUTPUT_PASSWORD" ] && echo "$__stella_uri_password" && __printed="1"
+					[ "ON" = "$OUTPUT_HOST" ] && echo "$__stella_uri_host" && __printed="1"
+					[ "ON" = "$OUTPUT_PORT" ] && echo "$__stella_uri_port" && __printed="1"
+					[ "ON" = "$OUTPUT_PATH" ] && echo "$__stella_uri_path" && __printed="1"
+					[ "ON" = "$OUTPUT_QUERY" ] && echo "$__stella_uri_query" && __printed="1"
+					[ "ON" = "$OUTPUT_FRAGMENT" ] && echo "$__stella_uri_fragment" && __printed="1"
+					
+					# at least by default print uri
+					[ "$__printed" = "" ] && echo "$__stella_uri" && __printed="1"
+				fi
+			fi
+		done
+	done < /dev/stdin;
+}
+
+
+
 # http://wp.vpalos.com/537/uri-parsing-using-bash-built-in-features/ (customized)
 # https://tools.ietf.org/html/rfc3986
 # URI parsing function
