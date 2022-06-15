@@ -1290,8 +1290,33 @@ __uri_parse_stream() {
 # It returns 0 if parsing was successful or non-zero otherwise.
 #
 # [schema://][user[:password]@][host][:port][/path][?[arg1=val1]...][#fragment]
+#
+#  EXPRESSIONS
+#
+#  GENERIC type
+#  pct-encoded = "%" HEXDIG HEXDIG
+#  reserved    = gen-delims / sub-delims
+#  gen-delims  = ":" / "/" / "?" / "#" / "[" / "]" / "@"
+#  sub-delims  = "!" / "$" / "&" / "'" / "(" / ")"
+#                  / "*" / "+" / "," / ";" / "="
+#  unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"
+#  IP-literal = "[" ( IPv6address / IPvFuture  ) "]"
+#  IPvFuture  = "v" 1*HEXDIG "." 1*( unreserved / sub-delims / ":" )
+#  pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
+#
+#  URI EXPRESSION
+#  URI         = scheme ":" hier-part [ "?" query ] [ "#" fragment ]
+#  scheme      = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
+#  authority   = [ userinfo "@" ] host [ ":" port ]
+#  userinfo    = *( unreserved / pct-encoded / sub-delims / ":" )
+#  host        = IP-literal / IPv4address / reg-name
+#  reg-name    = *( unreserved / pct-encoded / sub-delims )
+#  port        = *DIGIT
+#  path        = *( "/" segment )
+#  segment     = *pchar
+#  query       = *( pchar / "/" / "?" )
+#  fragment    = *( pchar / "/" / "?" )
 __uri_parse() {
-	# uri capture
 	__stella_uri="$@"
 
 	local path
@@ -1299,7 +1324,22 @@ __uri_parse() {
 	local query
 	# top level parsing
 	# TODO : warning test this !
-	local pattern='^(([a-z0-9]+)://)?((([^:\/]+)(:([^@\/]*))?@)?([^:\/?]*)(:([0-9]+))?)(\/[^?#]*)?(\?[^#]*)?(#.*)?$'
+	local class_ipv4='([0-9]{1,3}.){3}.([0-9]{1,3})'
+	# see https://datatracker.ietf.org/doc/html/rfc2732 for ipv6 usage inside URI
+	local class_ipv6="\[[a-fA-F0-9.:]*\]"
+	local class_scheme='a-zA-Z0-9+.\-'
+	local class_unreserved='a-zA-Z0-9._~\-'
+	local class_subdelims="!$&'\(\)*+,;="
+	local class_pctencoded="\%a-fA-F0-9"
+	local class_port='0-9'
+	local class_pchar="${class_unreserved}${class_pctencoded}${class_subdelims}:@"
+	local class_host="${class_ipv6}|${class_ipv4}|[${class_unreserved}${class_pctencoded}${class_subdelims}]+"
+	local class_path_segment="\/[${class_pchar}]*"
+	local class_query="\?[${class_pchar}\/?]*"
+	local class_fragment="\#[${class_pchar}\/?]*"
+
+	local pattern='^((['${class_scheme}']+):\/\/)?((([^:\/]+)(:([^@\/]*))?@)?('${class_host}')(:(['${class_port}']+))?)(('${class_path_segment}')*)('${class_query}')?('${class_fragment}')?$'
+	#local pattern='^(([a-zA-Z0-9]+)://)?((([^:\/]+)(:([^@\/]*))?@)?([^:\/?]*)(:([0-9]+))?)(\/[^?#]*)?(\?[^#]*)?(#.*)?$'
 	#local pattern='^(([a-z]+)://)?((([^:\/]+)(:([^@\/]*))?@)?([^:\/?]*)(:([0-9]+))?)(\/[^?#]*)?(\?[^#]*)?(#.*)?$'
 
 	__stella_uri_schema=
@@ -1312,7 +1352,7 @@ __uri_parse() {
 	__stella_uri_query=
 	__stella_uri_fragment=
 
-	if [[ ! "$__stella_uri" =~ $pattern ]]; then
+	if [[ ! ${__stella_uri} =~ ${pattern} ]]; then
 		__stella_uri=
 		return 1;
 	fi
@@ -1320,14 +1360,15 @@ __uri_parse() {
 	# component extraction
 	__stella_uri=${BASH_REMATCH[0]}
 	__stella_uri_schema=${BASH_REMATCH[2]}
+	# in rfc it is called : authority
 	__stella_uri_address=${BASH_REMATCH[3]}
 	__stella_uri_user=${BASH_REMATCH[5]}
 	__stella_uri_password=${BASH_REMATCH[7]}
 	__stella_uri_host=${BASH_REMATCH[8]}
-	__stella_uri_port=${BASH_REMATCH[10]}
-	__stella_uri_path=${BASH_REMATCH[11]}
-	__stella_uri_query=${BASH_REMATCH[12]}
-	__stella_uri_fragment=${BASH_REMATCH[13]}
+	__stella_uri_port=${BASH_REMATCH[12]}
+	__stella_uri_path=${BASH_REMATCH[13]}
+	__stella_uri_query=${BASH_REMATCH[15]}
+	__stella_uri_fragment=${BASH_REMATCH[16]}
 
 	# path parsing
 	count=0
