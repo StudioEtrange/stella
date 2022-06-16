@@ -10,18 +10,30 @@ feature_template-bundle() {
 	FEAT_DESC="template is foo"
 	FEAT_LINK="https://github.com/bar/template"
 
-	# should be MERGE or NESTED or LIST
+	# should be MERGE or NESTED or LIST or MERGE_LIST
 	# NESTED : each item will be installed inside the bundle path in a separate directory (with each feature name but without version)
+	#		 sample :	bundle#1 is nested features featA#1_0 featB#2_0
+	#				feature_folder/bundle/1/featA/<featA_files>
+	#									   /featB/<featB_files>
 	# MERGE : each item will be installed in the bundle path (without each feature name/version)
+	#		 sample :	bundle#1 is merged features featA#1_0 featB#2_0
+	#				feature_folder/bundle/1/<featA_files>
+	#									   /<featB_files>
 	# LIST : this bundle is just a list of item that will be installed normally
-	# MERGE_LIST : this bundle is a list of items that will be installed in a MERGED way (without bundle name nor version AND without each feature name/version)
-	FEAT_BUNDLE=NESTED
+	#		 sample :	bundle#1 is a list of features featA#1_0 featB#2_0
+	#				feature_folder/bundle/1/<empty>
+	#							  /featA/1_0/<featA_files>
+	#							  /featB/2_0/<featB_files>
+	# MERGE_LIST : this bundle is a list of items that will be installed in a MERGED way (without bundle name nor version in path AND without each feature name/version)
+	#				feature_folder/<featA_files>
+	#							  /<featB_files>
+	FEAT_BUNDLE="NESTED"
 }
 
 
 
 feature_template-bundle_1_0_0() {
-	#if FEAT_ARCH is not not null, properties FOO_ARCH=BAR will be selected and setted as FOO=BAR
+	# if FEAT_ARCH is not not null, properties FOO_ARCH=BAR will be selected and setted as FOO=BAR
 	# if FOO_ARCH is empty, FOO will not be changed
 
 	FEAT_VERSION=1_0_0
@@ -38,7 +50,7 @@ feature_template-bundle_1_0_0() {
 	FEAT_BUNDLE_ITEM_x84="foo#1_0_0@x64 bar#1_0_0@x64"
 
 	# callback are list of functions
-	# automatic callback each time feature is initialized
+	# automatic callback each time this bundle is initialized
 	FEAT_ENV_CALLBACK=feature_template-bundle_setenv
 	# automatic callback after all items in bundle list are installed
 	FEAT_BUNDLE_CALLBACK=

@@ -1324,8 +1324,9 @@ __uri_parse() {
 	local query
 	# top level parsing
 	# TODO : warning test this !
+	# more restrictive ipv4 regexp https://stackoverflow.com/a/36760050
 	local class_ipv4='([0-9]{1,3}.){3}.([0-9]{1,3})'
-	# see https://datatracker.ietf.org/doc/html/rfc2732 for ipv6 usage inside URI
+	# see https://datatracker.ietf.org/doc/html/rfc2732 for ipv6 usage inside an URI
 	local class_ipv6="\[[a-fA-F0-9.:]*\]"
 	local class_scheme='a-zA-Z0-9+.\-'
 	local class_unreserved='a-zA-Z0-9._~\-'
@@ -1333,15 +1334,16 @@ __uri_parse() {
 	local class_pctencoded="\%a-fA-F0-9"
 	local class_port='0-9'
 	local class_pchar="${class_unreserved}${class_pctencoded}${class_subdelims}:@"
-	local class_host="${class_ipv6}|${class_ipv4}|[${class_unreserved}${class_pctencoded}${class_subdelims}]+"
+	local class_host="${class_ipv6}|${class_ipv4}|[${class_unreserved}${class_pctencoded}${class_subdelims}]*"
+	#local class_host="${class_ipv6}|${class_ipv4}|[${class_unreserved}${class_subdelims}]*"
 	local class_path_segment="\/[${class_pchar}]*"
 	local class_query="\?[${class_pchar}\/?]*"
 	local class_fragment="\#[${class_pchar}\/?]*"
-
+echo ${class_host}
 	local pattern='^((['${class_scheme}']+):\/\/)?((([^:\/]+)(:([^@\/]*))?@)?('${class_host}')(:(['${class_port}']+))?)(('${class_path_segment}')*)('${class_query}')?('${class_fragment}')?$'
 	#local pattern='^(([a-zA-Z0-9]+)://)?((([^:\/]+)(:([^@\/]*))?@)?([^:\/?]*)(:([0-9]+))?)(\/[^?#]*)?(\?[^#]*)?(#.*)?$'
 	#local pattern='^(([a-z]+)://)?((([^:\/]+)(:([^@\/]*))?@)?([^:\/?]*)(:([0-9]+))?)(\/[^?#]*)?(\?[^#]*)?(#.*)?$'
-
+echo "${pattern}"
 	__stella_uri_schema=
 	__stella_uri_address=
 	__stella_uri_user=

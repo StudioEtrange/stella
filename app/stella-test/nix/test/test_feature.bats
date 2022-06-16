@@ -85,7 +85,7 @@ teardown() {
 	local def_ver=$FEAT_VERSION
 	local def_arch=$FEAT_ARCH
 
-  local old_feature_list="$(__list_active_features)"
+  	local old_feature_list="$(__list_active_features)"
 
 	__feature_install $_test
 	assert_output_not_contains "ERROR"
@@ -99,7 +99,7 @@ teardown() {
 	assert_equal "$def_arch" "$FEAT_ARCH"
 	assert_equal "$STELLA_APP_FEATURE_ROOT/$FEAT_NAME/$FEAT_VERSION" "$FEAT_INSTALL_ROOT"
 
-  run __list_active_features
+  	run __list_active_features
 	assert_output "$old_feature_list $FEAT_NAME#$def_ver"
 
 
@@ -108,7 +108,7 @@ teardown() {
 
 @test "__feature_remove" {
 
-  local _test="sbt"
+	local _test="sbt"
 	__feature_catalog_info $_test
 	local def_ver=$FEAT_VERSION
 	local def_arch=$FEAT_ARCH
@@ -118,7 +118,7 @@ teardown() {
 	__feature_install $_test
 	assert_output_not_contains "ERROR"
 
-  __feature_remove $_test
+	__feature_remove $_test
 
 	# empty feature informations values
 	#__internal_feature_context
@@ -130,7 +130,7 @@ teardown() {
 	assert_equal "$def_arch" "$FEAT_ARCH"
 	assert_equal "$STELLA_APP_FEATURE_ROOT/$FEAT_NAME/$FEAT_VERSION" "$FEAT_INSTALL_ROOT"
 
-  run __list_active_features
+	run __list_active_features
 	assert_output "$old_feature_list"
 
 }
@@ -139,7 +139,7 @@ teardown() {
 
 
 @test "__feature_install build from source" {
-  skip
+	skip
 	local _test="cmatrix:source"
 	__feature_catalog_info $_test
 	local def_ver=$FEAT_VERSION
@@ -150,7 +150,7 @@ teardown() {
 	__feature_install $_test
 	assert_output_not_contains "ERROR"
 
-  # empty feature informations values
+	# empty feature informations values
 	#__internal_feature_context
 
 	run __feature_inspect $_test
@@ -160,7 +160,7 @@ teardown() {
 	assert_equal "$def_arch" "$FEAT_ARCH"
 	assert_equal "$STELLA_APP_FEATURE_ROOT/$FEAT_NAME/$FEAT_VERSION" "$FEAT_INSTALL_ROOT"
 
-  run __list_active_features
-  assert_output "$old_feature_list $FEAT_NAME#$def_ver"
+	run __list_active_features
+	assert_output "$old_feature_list $FEAT_NAME#$def_ver"
 
 }

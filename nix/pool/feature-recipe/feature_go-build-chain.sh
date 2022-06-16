@@ -12,7 +12,7 @@ feature_go-build-chain() {
 	FEAT_BUNDLE=NESTED
 }
 
-feature_go-build-chain_1_11_2() {
+feature_go-build-chain_1_12_4() {
 	FEAT_VERSION="1_12_4"
 
 	# need gcc
@@ -27,6 +27,23 @@ feature_go-build-chain_1_11_2() {
 
 	BUILDCHAIN_GO_VERSION="1.12.4"
 }
+
+feature_go-build-chain_1_11_2() {
+	FEAT_VERSION="1_11_2"
+
+	# need gcc
+
+	FEAT_BUNDLE_ITEM="go#1_11_2:binary"
+
+	FEAT_ENV_CALLBACK=feature_go_buildchain_setenv
+	FEAT_BUNDLE_CALLBACK="feature_go_buildchain_setenv feature_go_prepare_buildchain"
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/_WORKSPACE_/bin/godep"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/_WORKSPACE_/bin"
+
+	BUILDCHAIN_GO_VERSION="1.11.2"
+}
+
 
 
 
@@ -78,7 +95,7 @@ feature_go-build-chain_1_4_3() {
 
 	FEAT_BUNDLE_ITEM="go#1_4_3:binary"
 
-	FEAT_ENV_CALLBACK=feature_go_buildchain_setenv
+	FEAT_ENV_CALLBACK="feature_go_buildchain_setenv"
 	FEAT_BUNDLE_CALLBACK="feature_go_buildchain_setenv feature_go_prepare_buildchain"
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/_WORKSPACE_/bin/godep"

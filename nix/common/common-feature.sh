@@ -361,11 +361,10 @@ __feature_inspect() {
 
 	if [ ! "$FEAT_SCHEMA_SELECTED" = "" ]; then
 		if [ ! "$FEAT_BUNDLE" = "" ]; then
-
 			local p
 			local _t=1
 			__push_schema_context
-
+		
 			FEAT_BUNDLE_MODE="$FEAT_BUNDLE"
 			for p in $FEAT_BUNDLE_ITEM; do
 				TEST_FEATURE=0
@@ -735,7 +734,6 @@ __feature_install() {
 
 				# automatic call of bundle's callback after installation of all items
 				__feature_callback
-
 
 			else
 
