@@ -10,7 +10,7 @@ feature_bats-assert() {
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="bats-assert is a helper library providing common assertions for bats"
-	FEAT_LINK="https://github.com/bats-assert/bats-assert https://bats-assert.readthedocs.io/"
+	FEAT_LINK="https://github.com/bats-assert/bats-assert"
 }
 
 
@@ -39,9 +39,8 @@ feature_bats-assert_install_source() {
 
 
 feature_bats-assert_setenv() {
-		echo "CALLL feature_bats-assert_setenv $BATS_LIB_PATH ------------ $FEAT_INSTALL_ROOT "
 	# https://bats-core.readthedocs.io/en/stable/writing-tests.html#bats-load-library-load-system-wide-libraries
-	export BATS_LIB_PATH="${BATS_LIB_PATH}:${FEAT_INSTALL_ROOT}"
+	export BATS_LIB_PATH="${BATS_LIB_PATH}:${FEAT_INSTALL_ROOT}/.."
 }
 
 

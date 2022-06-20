@@ -1101,6 +1101,7 @@ __uri_get_path() {
 #			filter options : -will select uri based on condition- NULL : uri part is empty, NON_NULL : uri part must be non empty, VALUE : uri part must match regexp
 #				SCHEMA_NULL, SCHEMA_NON_NULL, SCHEMA_VALUE, ADDRESS_NULL, ADDRESS_NON_NULL, ADDRESS_VALUE, USER_NULL, USER_NON_NULL, USER_VALUE, PASSWORD_NULL, PASSWORD_NON_NULL, PASSWORD_VALUE
 #				HOST_NULL, HOST_NON_NULL, HOST_VALUE, PORT_NULL, PORT_NON_NULL, PORT_VALUE, PATH_NULL, PATH_NON_NULL, PATH_VALUE, QUERY_NULL, QUERY_NON_NULL, QUERY_VALUE, FRAGMENT_NULL, FRAGMENT_NON_NULL, FRAGMENT_VALUE
+#			URI validation option : STRICT_VALIDATION : will detect only URI which respect rfc3986
 #			output options : -will output one of these uri part-
 #				OUTPUT_URI (output by default) , OUTPUT_SCHEMA, OUTPUT_ADDRESS, OUTPUT_USER, OUTPUT_PASSWORD, OUTPUT_HOST, OUTPUT_PORT, OUTPUT_PATH, OUTPUT_QUERY, OUTPUT_FRAGMENT
 #		samples
@@ -1157,7 +1158,11 @@ __uri_parse_stream() {
 	local OUTPUT_PATH=
 	local OUTPUT_QUERY=
 	local OUTPUT_FRAGMENT=
+	local VALIDATION=
 	for o in ${__opt}; do
+			[ "$o" = "STRICT_VALIDATION" ] && VALIDATION="$o"
+			[ "$o" = "MATCH_ONLY_STRICT_VALIDATION" ] && VALIDATION="$o"
+			[ "$o" = "SIMPLE_VALIDATION" ] && VALIDATION="$o"
 			[ "$o" = "OUTPUT_URI" ] && OUTPUT_URI="ON"
 			[ "$o" = "OUTPUT_SCHEMA" ] && OUTPUT_SCHEMA="ON"
 			[ "$o" = "OUTPUT_ADDRESS" ] && OUTPUT_ADDRESS="ON"
@@ -1219,7 +1224,8 @@ __uri_parse_stream() {
 	local __valid="1"
 	while read line; do
 		echo $line | awk '{ for (i = 1; i <= NF; i++) print $i }' | while read word; do
-			__uri_parse "$word"
+		
+			__uri_parse "$word" "$VALIDATION"
 			# an uri is detected
 			if [ $? -eq 0 ]; then 
 				__valid="1"
@@ -1291,6 +1297,10 @@ __uri_parse_stream() {
 #
 # [schema://][user[:password]@][host][:port][/path][?[arg1=val1]...][#fragment]
 #
+#  AVAILABLE OPTIONS
+#		MODE :  * SIMPLE_VALIDATION : (default mode) will try to match each URI part from a simple regex by parsing input string
+#				* STRICT_VALIDATION : will valid the input string against strict rules from rfc3986 and match each URI part (need url encoding for most of special characters to be an URI valid)
+#				* MATCH_ONLY_STRICT_VALIDATION : will try to match URI parts with rules from rfc3986 from an input string. parts of the string illegals for an URI are cut
 #  EXPRESSIONS
 #
 #  GENERIC type
@@ -1317,19 +1327,21 @@ __uri_parse_stream() {
 #  query       = *( pchar / "/" / "?" )
 #  fragment    = *( pchar / "/" / "?" )
 __uri_parse() {
-	__stella_uri="$@"
+	__stella_uri="$1"
+
+	local __mode="SIMPLE_VALIDATION"
+	[ ! "$2" = "" ] && __mode="$2"
 
 	local path
 	local count
 	local query
-	# top level parsing
-	# TODO : warning test this !
-	# more restrictive ipv4 regexp https://stackoverflow.com/a/36760050
+
+	# for a more restrictive ipv4 regexp see https://stackoverflow.com/a/36760050
 	local class_ipv4='([0-9]{1,3}.){3}.([0-9]{1,3})'
 	# see https://datatracker.ietf.org/doc/html/rfc2732 for ipv6 usage inside an URI
 	local class_ipv6="\[[a-fA-F0-9.:]*\]"
-	local class_scheme='a-zA-Z0-9+.\-'
-	local class_unreserved='a-zA-Z0-9._~\-'
+	local class_scheme='-a-zA-Z0-9+.'
+	local class_unreserved='-a-zA-Z0-9._~'
 	local class_subdelims="!$&'\(\)*+,;="
 	local class_pctencoded="\%a-fA-F0-9"
 	local class_port='0-9'
@@ -1338,12 +1350,23 @@ __uri_parse() {
 	#local class_host="${class_ipv6}|${class_ipv4}|[${class_unreserved}${class_subdelims}]*"
 	local class_path_segment="\/[${class_pchar}]*"
 	local class_query="\?[${class_pchar}\/?]*"
-	local class_fragment="\#[${class_pchar}\/?]*"
-echo ${class_host}
-	local pattern='^((['${class_scheme}']+):\/\/)?((([^:\/]+)(:([^@\/]*))?@)?('${class_host}')(:(['${class_port}']+))?)(('${class_path_segment}')*)('${class_query}')?('${class_fragment}')?$'
-	#local pattern='^(([a-zA-Z0-9]+)://)?((([^:\/]+)(:([^@\/]*))?@)?([^:\/?]*)(:([0-9]+))?)(\/[^?#]*)?(\?[^#]*)?(#.*)?$'
-	#local pattern='^(([a-z]+)://)?((([^:\/]+)(:([^@\/]*))?@)?([^:\/?]*)(:([0-9]+))?)(\/[^?#]*)?(\?[^#]*)?(#.*)?$'
-echo "${pattern}"
+	local class_fragment="#[${class_pchar}\/?]*"
+
+
+	local pattern
+	case $__mode in
+		SIMPLE_VALIDATION )
+			pattern='^((['${class_scheme}']+):\/\/)?((([^:\/]+)(:([^@\/]*))?@)?([^:\/?]*)(:([0-9]+))?)(\/[^?#]*)?(\?[^#]*)?(#.*)?$'
+			# computed value : ^(([-a-zA-Z0-9+.]+):\/\/)?((([^:\/]+)(:([^@\/]*))?@)?([^:\/?]*)(:([0-9]+))?)(\/[^?#]*)?(\?[^#]*)?(#.*)?$
+		;;
+		STRICT_VALIDATION )
+			pattern='^((['${class_scheme}']+):\/\/)?((([^:\/]+)(:([^@\/]*))?@)?('${class_host}')(:(['${class_port}']+))?)(('${class_path_segment}')*)('${class_query}')?('${class_fragment}')?$'
+		;;
+		MATCH_ONLY_STRICT_VALIDATION )
+			pattern='((['${class_scheme}']+):\/\/)?((([^:\/]+)(:([^@\/]*))?@)?('${class_host}')(:(['${class_port}']+))?)(('${class_path_segment}')*)('${class_query}')?('${class_fragment}')?'
+		;;
+	esac
+
 	__stella_uri_schema=
 	__stella_uri_address=
 	__stella_uri_user=
@@ -1354,23 +1377,48 @@ echo "${pattern}"
 	__stella_uri_query=
 	__stella_uri_fragment=
 
+	unset __stella_uri_parts[@]
+	unset __stella_uri_args[@]
+	for v in $(compgen -A variable | grep ^__stella_uri_arg_); do
+			unset $v
+	done
+
+
 	if [[ ! ${__stella_uri} =~ ${pattern} ]]; then
 		__stella_uri=
 		return 1;
 	fi
 
-	# component extraction
-	__stella_uri=${BASH_REMATCH[0]}
-	__stella_uri_schema=${BASH_REMATCH[2]}
-	# in rfc it is called : authority
-	__stella_uri_address=${BASH_REMATCH[3]}
-	__stella_uri_user=${BASH_REMATCH[5]}
-	__stella_uri_password=${BASH_REMATCH[7]}
-	__stella_uri_host=${BASH_REMATCH[8]}
-	__stella_uri_port=${BASH_REMATCH[12]}
-	__stella_uri_path=${BASH_REMATCH[13]}
-	__stella_uri_query=${BASH_REMATCH[15]}
-	__stella_uri_fragment=${BASH_REMATCH[16]}
+	case $__mode in
+		SIMPLE_VALIDATION )
+			__stella_uri=${BASH_REMATCH[0]}
+			__stella_uri_schema=${BASH_REMATCH[2]}
+			# in rfc it is called : authority
+			__stella_uri_address=${BASH_REMATCH[3]}
+			__stella_uri_user=${BASH_REMATCH[5]}
+			__stella_uri_password=${BASH_REMATCH[7]}
+			__stella_uri_host=${BASH_REMATCH[8]}
+			__stella_uri_port=${BASH_REMATCH[10]}
+			__stella_uri_path=${BASH_REMATCH[11]}
+			__stella_uri_query=${BASH_REMATCH[12]}
+			__stella_uri_fragment=${BASH_REMATCH[13]}
+			;;
+		MATCH_ONLY_STRICT_VALIDATION|STRICT_VALIDATION )
+			# component extraction
+			__stella_uri=${BASH_REMATCH[0]}
+			__stella_uri_schema=${BASH_REMATCH[2]}
+			# in rfc it is called : authority
+			__stella_uri_address=${BASH_REMATCH[3]}
+			__stella_uri_user=${BASH_REMATCH[5]}
+			__stella_uri_password=${BASH_REMATCH[7]}
+			__stella_uri_host=${BASH_REMATCH[8]}
+			__stella_uri_port=${BASH_REMATCH[12]}
+			__stella_uri_path=${BASH_REMATCH[13]}
+			__stella_uri_query=${BASH_REMATCH[15]}
+			__stella_uri_fragment=${BASH_REMATCH[16]}
+			;;
+	esac
+
 
 	# path parsing
 	count=0

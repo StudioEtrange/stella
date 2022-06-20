@@ -1,4 +1,16 @@
-load test_bats_helper
+
+bats_load_library 'bats-assert'
+bats_load_library 'bats-support'
+
+
+setup() {
+	load 'stella_bats_helper.bash'
+}
+
+teardown() {
+    true
+}
+
 
 # GENERIC -------------------------------------------------------------------
 @test "__trim" {
@@ -32,66 +44,280 @@ load test_bats_helper
 	assert_output '你好世界'
 }
 
-@test "__uri_parse" {
-	__uri_parse 'http://www.example.com'
-	assert_equal 'http://www.example.com' "$__stella_uri"
+@test "__uri_parse_strict_validation" {
+	run __uri_parse 'http://www.example.com' "STRICT_VALIDATION"
+	assert_success
+	__uri_parse 'http://www.example.com' "STRICT_VALIDATION"
+	assert_equal "$__stella_uri" 'http://www.example.com'
+
+	run __uri_parse 'http://127.0.0.1/foo' "STRICT_VALIDATION"
+	assert_success
+	__uri_parse 'http://127.0.0.1/foo' "STRICT_VALIDATION"
+	assert_equal "$__stella_uri" 'http://127.0.0.1/foo'
+	assert_equal "$__stella_uri_address" '127.0.0.1'
+	assert_equal "$__stella_uri_host" '127.0.0.1'
+	assert_equal "$__stella_uri_port" ''
+	assert_equal "$__stella_uri_path" '/foo'
 
 
-	__uri_parse 'http://user:pass@www.example.com:19741/dir1/dir2/file.php?param=some_value&array[0]="123"&param2=\`cat /etc/passwd\`#bottom-left'
-	assert_equal 'http://user:pass@www.example.com:19741/dir1/dir2/file.php?param=some_value&array[0]="123"&param2=\`cat /etc/passwd\`#bottom-left' "$__stella_uri"
-	assert_equal 'http' "$__stella_uri_schema"
-	assert_equal 'user:pass@www.example.com:19741' "$__stella_uri_address"
-	assert_equal 'user' "$__stella_uri_user"
-	assert_equal 'pass' "$__stella_uri_password"
-	assert_equal 'www.example.com' "$__stella_uri_host"
-	assert_equal '19741' "$__stella_uri_port"
-	assert_equal '/dir1/dir2/file.php' "$__stella_uri_path"
-	assert_equal '?param=some_value&array[0]="123"&param2=\`cat /etc/passwd\`' "$__stella_uri_query"
-	assert_equal '#bottom-left' "$__stella_uri_fragment"
-	assert_equal 'dir1' "${__stella_uri_parts[0]}"
-	assert_equal 'dir2' "${__stella_uri_parts[1]}"
-	assert_equal 'file.php' "${__stella_uri_parts[2]}"
-	assert_equal 'param' "${__stella_uri_args[0]}"
-	assert_equal 'array[0]' "${__stella_uri_args[1]}"
-	assert_equal 'param2' "${__stella_uri_args[2]}"
-	assert_equal 'some_value' "$__stella_uri_arg_param"
-	assert_equal '"123"' "${__stella_uri_arg_array[0]}"
-	assert_equal '\`cat /etc/passwd\`' "$__stella_uri_arg_param2"
+	run __uri_parse 'http://user:pass@www.example.com:19741/dir1/dir2/file.php' "STRICT_VALIDATION"
+	assert_success
+	__uri_parse 'http://user:pass@www.example.com:19741/dir1/dir2/file.php' "STRICT_VALIDATION"
+	assert_equal "$__stella_uri" 'http://user:pass@www.example.com:19741/dir1/dir2/file.php'
+
+	run __uri_parse 'http://user:pass@www.example.com:19741/dir1/dir2/file.php?param=some_value&array0=123&param2=3#bottomleft' "STRICT_VALIDATION"
+	assert_success
+	__uri_parse 'http://user:pass@www.example.com:19741/dir1/dir2/file.php?param=some_value&array0=123&param2=3#bottomleft' "STRICT_VALIDATION"
+	assert_equal "$__stella_uri"  'http://user:pass@www.example.com:19741/dir1/dir2/file.php?param=some_value&array0=123&param2=3#bottomleft'
+
+	run __uri_parse 'http://user:pass@www.example.com:19741/#bottom-left' "STRICT_VALIDATION"
+	assert_success
+	__uri_parse 'http://user:pass@www.example.com:19741/#bottom-left' "STRICT_VALIDATION"
+	assert_equal "$__stella_uri" 'http://user:pass@www.example.com:19741/#bottom-left'
 
 
-	__uri_parse 'file:///root/foo'
+	
+	run __uri_parse 'http://user:pass@www.example.com:19741/dir1/dir2/file.php?param=some_value&array0=123&param2=#bottom-left' "STRICT_VALIDATION"
+	assert_success
+	__uri_parse 'http://user:pass@www.example.com:19741/dir1/dir2/file.php?param=some_value&array0=123&param2=#bottom-left' "STRICT_VALIDATION"
+	assert_equal 'http://user:pass@www.example.com:19741/dir1/dir2/file.php?param=some_value&array0=123&param2=#bottom-left' "$__stella_uri"
+	assert_equal "$__stella_uri_schema" 'http' 
+	assert_equal "$__stella_uri_address" 'user:pass@www.example.com:19741'
+	assert_equal "$__stella_uri_user" 'user'
+	assert_equal "$__stella_uri_password" 'pass'
+	assert_equal "$__stella_uri_host" 'www.example.com'
+	assert_equal "$__stella_uri_port" '19741'
+	assert_equal "$__stella_uri_path" '/dir1/dir2/file.php'
+	assert_equal "$__stella_uri_query" '?param=some_value&array0=123&param2='
+	assert_equal "$__stella_uri_fragment" '#bottom-left'
+
+	assert_equal "${__stella_uri_parts[0]}" 'dir1'
+	assert_equal "${__stella_uri_parts[1]}" 'dir2'
+	assert_equal "${__stella_uri_parts[2]}" 'file.php'
+	assert_equal "${__stella_uri_args[0]}" 'param'
+	assert_equal "${__stella_uri_args[1]}" 'array0'
+	assert_equal "${__stella_uri_args[2]}" 'param2'
+	assert_equal "$__stella_uri_arg_param" 'some_value'
+	assert_equal "${__stella_uri_arg_array0}" '123'
+	assert_equal "${__stella_uri_arg_param2}" ''
+
+
+	run __uri_parse 'http://user:pass@www.example.com:19741/dir1/dir2/file.php?param=some_value&array[0]="123"&param2=`cat /etc/passwd`#bottom-left' "STRICT_VALIDATION"
+	assert_failure
+
+	run __uri_parse 'https://acme-staging-v02.api.letsencrypt.org/acme/authz-v3/2697133184' "STRICT_VALIDATION"
+	assert_success
+	__uri_parse 'https://acme-staging-v02.api.letsencrypt.org/acme/authz-v3/2697133184' "STRICT_VALIDATION"
+	assert_equal 'https://acme-staging-v02.api.letsencrypt.org/acme/authz-v3/2697133184' "$__stella_uri"
+	assert_equal "$__stella_uri_host" 'acme-staging-v02.api.letsencrypt.org'
+	assert_equal "$__stella_uri_path" '/acme/authz-v3/2697133184'
+
+	__uri_parse 'file:///root/foo' "STRICT_VALIDATION"
 	assert_equal 'file:///root/foo' "$__stella_uri"
 	assert_equal 'file' "$__stella_uri_schema"
-	assert_equal '' "$__stella_uri_address"
-	assert_equal '' "$__stella_uri_user"
-	assert_equal '' "$__stella_uri_password"
-	assert_equal '' "$__stella_uri_host"
-	assert_equal '' "$__stella_uri_port"
-	assert_equal '/root/foo' "$__stella_uri_path"
-	assert_equal '' "$__stella_uri_query"
-	assert_equal '' "$__stella_uri_fragment"
-	assert_equal 'root' "${__stella_uri_parts[0]}"
-	assert_equal 'foo' "${__stella_uri_parts[1]}"
+	assert_equal "$__stella_uri_address" ''
+	assert_equal "$__stella_uri_user" ''
+	assert_equal "$__stella_uri_password" ''
+	assert_equal "$__stella_uri_host" ''
+	assert_equal "$__stella_uri_port" ''
+	assert_equal "$__stella_uri_path" '/root/foo'
+	assert_equal "$__stella_uri_query" ''
+	assert_equal "$__stella_uri_fragment" ''
+	assert_equal "${__stella_uri_parts[0]}" 'root'
+	assert_equal "${__stella_uri_parts[1]}" 'foo'
 
-	__uri_parse '/root/foo'
+	__uri_parse '/root/foo' "STRICT_VALIDATION"
 	assert_equal '/root/foo' "$__stella_uri"
 	assert_equal '' "$__stella_uri_schema"
 	assert_equal 'root' "${__stella_uri_parts[0]}"
 	assert_equal 'foo' "${__stella_uri_parts[1]}"
 
-	__uri_parse 'docker:///id'
+	__uri_parse 'docker:///id' "STRICT_VALIDATION"
 	assert_equal 'docker:///id' "$__stella_uri"
 	assert_equal 'docker' "$__stella_uri_schema"
 	assert_equal 'id' "${__stella_uri_parts[0]}"
 
-	__uri_parse 'docker:///id1/id2#/frag/frag'
-	assert_equal 'docker:///id1/id2#/frag/frag' "$__stella_uri"
-	assert_equal 'docker' "$__stella_uri_schema"
-	assert_equal 'id1' "${__stella_uri_parts[0]}"
-	assert_equal 'id2' "${__stella_uri_parts[1]}"
-	assert_equal '#/frag/frag' "$__stella_uri_fragment"
+	__uri_parse 'docker:///id1/id2#/frag/frag' "STRICT_VALIDATION"
+	assert_equal "$__stella_uri" 'docker:///id1/id2#/frag/frag'
+	assert_equal "$__stella_uri_schema" 'docker'
+	assert_equal "${__stella_uri_parts[0]}" 'id1'
+	assert_equal "${__stella_uri_parts[1]}" 'id2'
+	assert_equal "$__stella_uri_fragment" '#/frag/frag'
 
 }
+
+
+@test "__uri_parse_match_strict_validation" {
+	run __uri_parse 'http://www.example.com' "MATCH_ONLY_STRICT_VALIDATION"
+	assert_success
+	__uri_parse 'http://www.example.com' "MATCH_ONLY_STRICT_VALIDATION"
+	assert_equal "$__stella_uri" 'http://www.example.com'
+
+	run __uri_parse 'http://127.0.0.1/foo' "MATCH_ONLY_STRICT_VALIDATION"
+	assert_success
+	__uri_parse 'http://127.0.0.1/foo' "MATCH_ONLY_STRICT_VALIDATION"
+	assert_equal "$__stella_uri" 'http://127.0.0.1/foo'
+	assert_equal "$__stella_uri_address" '127.0.0.1'
+	assert_equal "$__stella_uri_host" '127.0.0.1'
+	assert_equal "$__stella_uri_port" ''
+	assert_equal "$__stella_uri_path" '/foo'
+
+
+	run __uri_parse 'http://user:pass@www.example.com:19741/dir1/dir2/file.php' "MATCH_ONLY_STRICT_VALIDATION"
+	assert_success
+	__uri_parse 'http://user:pass@www.example.com:19741/dir1/dir2/file.php' "MATCH_ONLY_STRICT_VALIDATION"
+	assert_equal "$__stella_uri" 'http://user:pass@www.example.com:19741/dir1/dir2/file.php'
+
+	
+	run __uri_parse 'http://user:pass@www.example.com:19741/dir1/dir2/file.php?param=some_value&array[0]=123&param2=#bottom-left' "MATCH_ONLY_STRICT_VALIDATION"
+	assert_success
+	__uri_parse 'http://user:pass@www.example.com:19741/dir1/dir2/file.php?param=some_value&array[0]=123&param2=#bottom-left' "MATCH_ONLY_STRICT_VALIDATION"
+	assert_equal 'http://user:pass@www.example.com:19741/dir1/dir2/file.php?param=some_value&array' "$__stella_uri"
+	assert_equal "$__stella_uri_schema" 'http' 
+	assert_equal "$__stella_uri_address" 'user:pass@www.example.com:19741'
+	assert_equal "$__stella_uri_user" 'user'
+	assert_equal "$__stella_uri_password" 'pass'
+	assert_equal "$__stella_uri_host" 'www.example.com'
+	assert_equal "$__stella_uri_port" '19741'
+	assert_equal "$__stella_uri_path" '/dir1/dir2/file.php'
+	assert_equal "$__stella_uri_query" '?param=some_value&array'
+	assert_equal "$__stella_uri_fragment" ''
+
+	assert_equal "${__stella_uri_parts[0]}" 'dir1'
+	assert_equal "${__stella_uri_parts[1]}" 'dir2'
+	assert_equal "${__stella_uri_parts[2]}" 'file.php'
+	assert_equal "${__stella_uri_args[0]}" 'param'
+	assert_equal "${__stella_uri_args[1]}" 'array'
+	assert_equal "${__stella_uri_args[2]}" ''
+	assert_equal "$__stella_uri_arg_param" 'some_value'
+	assert_equal "${__stella_uri_arg_array}" ''
+	assert_equal "${__stella_uri_arg_param2}" ''
+
+}
+
+@test "__uri_parse_simple_validation" {
+	run __uri_parse 'http://www.example.com' "SIMPLE_VALIDATION"
+	assert_success
+	__uri_parse 'http://www.example.com' "SIMPLE_VALIDATION"
+	assert_equal "$__stella_uri" 'http://www.example.com'
+
+	run __uri_parse 'http://127.0.0.1/foo' "SIMPLE_VALIDATION"
+	assert_success
+	__uri_parse 'http://127.0.0.1/foo' "SIMPLE_VALIDATION"
+	assert_equal "$__stella_uri" 'http://127.0.0.1/foo'
+	assert_equal "$__stella_uri_address" '127.0.0.1'
+	assert_equal "$__stella_uri_host" '127.0.0.1'
+	assert_equal "$__stella_uri_port" ''
+	assert_equal "$__stella_uri_path" '/foo'
+
+
+	run __uri_parse 'http://user:pass@www.example.com:19741/dir1/dir2/file.php' "SIMPLE_VALIDATION"
+	assert_success
+	__uri_parse 'http://user:pass@www.example.com:19741/dir1/dir2/file.php' "SIMPLE_VALIDATION"
+	assert_equal "$__stella_uri" 'http://user:pass@www.example.com:19741/dir1/dir2/file.php'
+
+	run __uri_parse 'http://user:pass@www.example.com:19741/dir1/dir2/file.php?param=some_value&array0=123&param2=3#bottomleft' "SIMPLE_VALIDATION"
+	assert_success
+	__uri_parse 'http://user:pass@www.example.com:19741/dir1/dir2/file.php?param=some_value&array0=123&param2=3#bottomleft' "SIMPLE_VALIDATION"
+	assert_equal "$__stella_uri"  'http://user:pass@www.example.com:19741/dir1/dir2/file.php?param=some_value&array0=123&param2=3#bottomleft'
+
+	run __uri_parse 'http://user:pass@www.example.com:19741/#bottom-left' "SIMPLE_VALIDATION"
+	assert_success
+	__uri_parse 'http://user:pass@www.example.com:19741/#bottom-left' "SIMPLE_VALIDATION"
+	assert_equal "$__stella_uri" 'http://user:pass@www.example.com:19741/#bottom-left'
+
+
+	
+	run __uri_parse 'http://user:pass@www.example.com:19741/dir1/dir2/file.php?param=some_value&array0=123&param2=#bottom-left' "SIMPLE_VALIDATION"
+	assert_success
+	__uri_parse 'http://user:pass@www.example.com:19741/dir1/dir2/file.php?param=some_value&array0=123&param2=#bottom-left' "SIMPLE_VALIDATION"
+	assert_equal 'http://user:pass@www.example.com:19741/dir1/dir2/file.php?param=some_value&array0=123&param2=#bottom-left' "$__stella_uri"
+	assert_equal "$__stella_uri_schema" 'http' 
+	assert_equal "$__stella_uri_address" 'user:pass@www.example.com:19741'
+	assert_equal "$__stella_uri_user" 'user'
+	assert_equal "$__stella_uri_password" 'pass'
+	assert_equal "$__stella_uri_host" 'www.example.com'
+	assert_equal "$__stella_uri_port" '19741'
+	assert_equal "$__stella_uri_path" '/dir1/dir2/file.php'
+	assert_equal "$__stella_uri_query" '?param=some_value&array0=123&param2='
+	assert_equal "$__stella_uri_fragment" '#bottom-left'
+
+	assert_equal "${__stella_uri_parts[0]}" 'dir1'
+	assert_equal "${__stella_uri_parts[1]}" 'dir2'
+	assert_equal "${__stella_uri_parts[2]}" 'file.php'
+	assert_equal "${__stella_uri_args[0]}" 'param'
+	assert_equal "${__stella_uri_args[1]}" 'array0'
+	assert_equal "${__stella_uri_args[2]}" 'param2'
+	assert_equal "$__stella_uri_arg_param" 'some_value'
+	assert_equal "${__stella_uri_arg_array0}" '123'
+	assert_equal "${__stella_uri_arg_param2}" ''
+
+	run __uri_parse 'https://acme-staging-v02.api.letsencrypt.org/acme/authz-v3/2697133184' "SIMPLE_VALIDATION"
+	assert_success
+	__uri_parse 'https://acme-staging-v02.api.letsencrypt.org/acme/authz-v3/2697133184' "SIMPLE_VALIDATION"
+	assert_equal 'https://acme-staging-v02.api.letsencrypt.org/acme/authz-v3/2697133184' "$__stella_uri"
+	assert_equal "$__stella_uri_host" 'acme-staging-v02.api.letsencrypt.org'
+	assert_equal "$__stella_uri_path" '/acme/authz-v3/2697133184'
+
+	run __uri_parse 'http://user:pass@www.example.com:19741/dir1/dir2/file.php?param=some_value&array[0]="123"&param2=`cat /etc/passwd`#bottom-left' "SIMPLE_VALIDATION"
+	assert_success
+	__uri_parse 'http://user:pass@www.example.com:19741/dir1/dir2/file.php?param=some_value&array[0]="123"&param2=`cat /etc/passwd`#bottom-left' "SIMPLE_VALIDATION"
+	assert_equal 'http://user:pass@www.example.com:19741/dir1/dir2/file.php?param=some_value&array[0]="123"&param2=`cat /etc/passwd`#bottom-left' "$__stella_uri"
+	assert_equal "$__stella_uri_schema" 'http' 
+	assert_equal "$__stella_uri_address" 'user:pass@www.example.com:19741'
+	assert_equal "$__stella_uri_user" 'user'
+	assert_equal "$__stella_uri_password" 'pass'
+	assert_equal "$__stella_uri_host" 'www.example.com'
+	assert_equal "$__stella_uri_port" '19741'
+	assert_equal "$__stella_uri_path" '/dir1/dir2/file.php'
+	assert_equal "$__stella_uri_query" '?param=some_value&array[0]="123"&param2=`cat /etc/passwd`'
+	assert_equal "$__stella_uri_fragment" '#bottom-left'
+
+	assert_equal "${__stella_uri_parts[0]}" 'dir1'
+	assert_equal "${__stella_uri_parts[1]}" 'dir2'
+	assert_equal "${__stella_uri_parts[2]}" 'file.php'
+	assert_equal "${__stella_uri_args[0]}" 'param'
+	assert_equal "${__stella_uri_args[1]}" 'array[0]'
+	assert_equal "${__stella_uri_args[2]}" 'param2'
+	assert_equal "$__stella_uri_arg_param" 'some_value'
+	assert_equal "${__stella_uri_arg_array[0]}" '"123"'
+	assert_equal "${__stella_uri_arg_param2}" '`cat /etc/passwd`'
+
+
+	__uri_parse 'file:///root/foo' "SIMPLE_VALIDATION"
+	assert_equal 'file:///root/foo' "$__stella_uri"
+	assert_equal 'file' "$__stella_uri_schema"
+	assert_equal "$__stella_uri_address" ''
+	assert_equal "$__stella_uri_user" ''
+	assert_equal "$__stella_uri_password" ''
+	assert_equal "$__stella_uri_host" ''
+	assert_equal "$__stella_uri_port" ''
+	assert_equal "$__stella_uri_path" '/root/foo'
+	assert_equal "$__stella_uri_query" ''
+	assert_equal "$__stella_uri_fragment" ''
+	assert_equal "${__stella_uri_parts[0]}" 'root'
+	assert_equal "${__stella_uri_parts[1]}" 'foo'
+
+	__uri_parse '/root/foo' "SIMPLE_VALIDATION"
+	assert_equal '/root/foo' "$__stella_uri"
+	assert_equal '' "$__stella_uri_schema"
+	assert_equal 'root' "${__stella_uri_parts[0]}"
+	assert_equal 'foo' "${__stella_uri_parts[1]}"
+
+	__uri_parse 'docker:///id' "SIMPLE_VALIDATION"
+	assert_equal 'docker:///id' "$__stella_uri"
+	assert_equal 'docker' "$__stella_uri_schema"
+	assert_equal 'id' "${__stella_uri_parts[0]}"
+
+	__uri_parse 'docker:///id1/id2#/frag/frag' "SIMPLE_VALIDATION"
+	assert_equal "$__stella_uri" 'docker:///id1/id2#/frag/frag'
+	assert_equal "$__stella_uri_schema" 'docker'
+	assert_equal "${__stella_uri_parts[0]}" 'id1'
+	assert_equal "${__stella_uri_parts[1]}" 'id2'
+	assert_equal "$__stella_uri_fragment" '#/frag/frag'
+
+}
+
 
 # PATH -------------------------------------------------------------------
 

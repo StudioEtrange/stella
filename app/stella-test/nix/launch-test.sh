@@ -12,8 +12,8 @@ function test_launch_bats() {
   declare >"$_v"
   declare -f >>"$_v"
 
-	#bats --verbose test_binary.bats
-	__BATS_STELLA_DECLARE="$_v" bats "$STELLA_APP_ROOT/test/test_$domain.bats"
+	#bats --verbose-run test_binary.bats
+	__BATS_STELLA_DECLARE="$_v" bats --verbose-run "$STELLA_APP_ROOT/test/test_$domain.bats"
 
   rm -f "$_v"
 }

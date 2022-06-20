@@ -39,9 +39,8 @@ feature_bats-support_install_source() {
 
 
 feature_bats-support_setenv() {
-	echo "CALLL feature_bats-support_setenv $BATS_LIB_PATH ------------ $FEAT_INSTALL_ROOT "
 	# https://bats-core.readthedocs.io/en/stable/writing-tests.html#bats-load-library-load-system-wide-libraries
-	export BATS_LIB_PATH="${BATS_LIB_PATH}:${FEAT_INSTALL_ROOT}"
+	export BATS_LIB_PATH="${BATS_LIB_PATH}:${FEAT_INSTALL_ROOT}/.."
 }
 
 

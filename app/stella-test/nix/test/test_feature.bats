@@ -1,18 +1,19 @@
-load test_bats_helper
+bats_load_library 'bats-assert'
+bats_load_library 'bats-support'
 
 
 setup() {
-    rm -Rf "$STELLA_APP_FEATURE_ROOT"
+	load 'stella_bats_helper.bash'
+
+	rm -Rf "$STELLA_APP_FEATURE_ROOT"
 
     # remove feature from app properties file
 	__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" ""
 	__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" "PREFIX"
-
-   #set +e; source "$__BATS_STELLA_DECLARE" &>/dev/null; set -e;
 }
 
 teardown() {
-   	rm -Rf "$STELLA_APP_FEATURE_ROOT"
+    rm -Rf "$STELLA_APP_FEATURE_ROOT"
 
    	# remove feature from app properties file
 	__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" ""
