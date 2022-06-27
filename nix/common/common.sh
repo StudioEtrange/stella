@@ -1107,6 +1107,7 @@ __uri_get_path() {
 #		samples
 #			echo "string http://url" | __uri_parse_stream 
 #			echo "string http://url" | __uri_parse_stream "OUTPUT_ADDRESS ADDRESS_NON_NULL SCHEMA_VALUE https?"
+#			docker logs <container> | $STELLA_API uri_parse_stream 'SCHEMA_VALUE https? MATCH_ONLY_STRICT_VALIDATION' | while read u; do echo "Calling HTTP request to $l"; curl -sLSk $u; done
 __uri_parse_stream() {
 
 	local __opt="$1"
