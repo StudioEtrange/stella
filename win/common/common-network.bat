@@ -15,6 +15,7 @@ REM --------------- PROXY INIT ----------------
 		)
 		call :proxy_override
 	)
+
 goto :eof
 
 
@@ -53,14 +54,24 @@ goto :eof
 
 			for %%I in (STELLA_PROXY_!STELLA_PROXY_ACTIVE!_PROXY_USER) do set "STELLA_PROXY_USER=!%%I!"
 			if "!STELLA_PROXY_USER!"=="" (
-				set "STELLA_HTTP_PROXY=!STELLA_PROXY_SCHEMA!://!STELLA_PROXY_HOST!:!STELLA_PROXY_PORT!"
-				set "STELLA_HTTPS_PROXY=!STELLA_PROXY_SCHEMA!://!STELLA_PROXY_HOST!:!STELLA_PROXY_PORT!"
+				if "!STELLA_PROXY_PORT!"=="" (
+					set "STELLA_HTTP_PROXY=!STELLA_PROXY_SCHEMA!://!STELLA_PROXY_HOST!"
+					set "STELLA_HTTPS_PROXY=!STELLA_PROXY_SCHEMA!://!STELLA_PROXY_HOST!"
+				) else (
+					set "STELLA_HTTP_PROXY=!STELLA_PROXY_SCHEMA!://!STELLA_PROXY_HOST!:!STELLA_PROXY_PORT!"
+					set "STELLA_HTTPS_PROXY=!STELLA_PROXY_SCHEMA!://!STELLA_PROXY_HOST!:!STELLA_PROXY_PORT!"
+				)
 			) else (
 				for %%I in (STELLA_PROXY_!STELLA_PROXY_ACTIVE!_PROXY_PASS) do set "STELLA_PROXY_PASS=!%%I!"
-				set "STELLA_HTTP_PROXY=!STELLA_PROXY_SCHEMA!://!STELLA_PROXY_USER!:!STELLA_PROXY_PASS!@!STELLA_PROXY_HOST!:!STELLA_PROXY_PORT!"
-				set "STELLA_HTTPS_PROXY=!STELLA_PROXY_SCHEMA!://!STELLA_PROXY_USER!:!STELLA_PROXY_PASS!@!STELLA_PROXY_HOST!:!STELLA_PROXY_PORT!"
+				if "!STELLA_PROXY_PORT!"=="" (
+					set "STELLA_HTTP_PROXY=!STELLA_PROXY_SCHEMA!://!STELLA_PROXY_USER!:!STELLA_PROXY_PASS!@!STELLA_PROXY_HOST!"
+					set "STELLA_HTTPS_PROXY=!STELLA_PROXY_SCHEMA!://!STELLA_PROXY_USER!:!STELLA_PROXY_PASS!@!STELLA_PROXY_HOST!"
+				) else (
+					set "STELLA_HTTP_PROXY=!STELLA_PROXY_SCHEMA!://!STELLA_PROXY_USER!:!STELLA_PROXY_PASS!@!STELLA_PROXY_HOST!:!STELLA_PROXY_PORT!"
+					set "STELLA_HTTPS_PROXY=!STELLA_PROXY_SCHEMA!://!STELLA_PROXY_USER!:!STELLA_PROXY_PASS!@!STELLA_PROXY_HOST!:!STELLA_PROXY_PORT!"
+				)
 			)
-			REM echo STELLA Proxy Active : !STELLA_PROXY_ACTIVE! [ !STELLA_PROXY_HOST!:!STELLA_PROXY_PORT! ]
+			
 		) else (
 			set "use_system_proxy_setting=ON"
 		)
@@ -111,31 +122,43 @@ goto :eof
 
 		call %STELLA_COMMON%\common.bat :uri_parse "parseproxy" "!STELLA_HTTP_PROXY!"
 		set "STELLA_PROXY_SCHEMA=!parseproxy_SCHEMA!"
-		set "STELLA_PROXY_USER="!parseproxy_USER!"
-		set "STELLA_PROXY_PASS="!parseproxy_PASSWORD!"
-		set "STELLA_PROXY_HOST="!parseproxy_HOST!"
-		set "STELLA_PROXY_PORT="!parseproxy_PORT!"
+		set "STELLA_PROXY_USER=!parseproxy_USER!"
+		set "STELLA_PROXY_PASS=!parseproxy_PASSWORD!"
+		set "STELLA_PROXY_HOST=!parseproxy_HOST!"
+		set "STELLA_PROXY_PORT=!parseproxy_PORT!"
 	)
 goto :eof
 
 
 :set_system_proxy_values
 	:: override already existing system proxy env var only if stella proxy is active
-	if "!STELLA_PROXY_ACTIVE!"=="" (
+	if not "!STELLA_PROXY_ACTIVE!"=="" (
 		set "http_proxy=!STELLA_HTTP_PROXY!"
 		set "HTTP_PROXY=!STELLA_HTTP_PROXY!"
 		set "https_proxy=!STELLA_HTTPS_PROXY!"
 		set "HTTPS_PROXY=!STELLA_HTTPS_PROXY!"
 
+		echo STELLA HTTP Proxy=!STELLA_HTTP_PROXY! STELLA HTTPS Proxy=!STELLA_HTTPS_PROXY!
 		if not "!STELLA_NO_PROXY!"=="" (
 			set "no_proxy=!STELLA_NO_PROXY!"
 			set "NO_PROXY=!STELLA_NO_PROXY!"
 
-			REM echo STELLA Proxy : bypass for !STELLA_NO_PROXY!
+			REM echo STELLA NO Proxy : !STELLA_NO_PROXY!
 		)
 	)
 goto :eof
 
+
+:show_current_proxy_values
+	echo ** Current active registered proxy : !STELLA_PROXY_ACTIVE!
+	echo ** Current env variable for http proxy :
+	echo http_proxy=!http_proxy!
+	echo HTTP_PROXY=!HTTP_PROXY!
+	echo https_proxy=!https_proxy!
+	echo HTTPS_PROXY=!HTTPS_PROXY!
+	echo no_proxy=!no_proxy!
+	echo NO_PROXY=!NO_PROXY!
+goto :eof
 
 :reset_system_proxy_values
 	set http_proxy=
@@ -156,13 +179,13 @@ if "!STELLA_PROXY_USER!"=="" set "CURL=!CURL! -x !STELLA_PROXY_HOST!:!STELLA_PRO
 if not "!STELLA_PROXY_USER!"=="" set "CURL=!CURL! -x !STELLA_PROXY_HOST!:!STELLA_PROXY_PORT! --proxy-user !STELLA_PROXY_USER!:!STELLA_PROXY_PASS!"
 
 REM wget
-REM use of http_proxy env var
+REM wget use itself http_proxy env var
 
 REM hg
 set "HG=!HG! --config http_proxy.host=!STELLA_PROXY_HOST!:!STELLA_PROXY_PORT! --config http_proxy.user=!STELLA_PROXY_USER! --config http_proxy.passwd=!STELLA_PROXY_PASS!"
 
 REM git
-REM use of http_proxy env var
+REM git use ifselt of http_proxy env var
 REM configuration file .gitconfig in home directory override http_proxy env
 
 REM mvn
