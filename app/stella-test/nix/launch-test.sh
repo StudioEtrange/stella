@@ -22,7 +22,7 @@ function test_launch_bats() {
 
 
 case $1 in
-  all )
+  all|"" )
     test_launch_bats common
     test_launch_bats binary
     test_launch_bats feature

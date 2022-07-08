@@ -264,8 +264,8 @@ __require() {
 	# SYSTEM
 	# STELLA_FEATURE
 	local _opt_optional=OFF
-	local _opt_system=ON
-	local _opt_stella_feature=OFF
+	local _opt_system=OFF
+	local _opt_stella_feature=ON
 
 
 	for o in $_OPT; do
