@@ -122,6 +122,14 @@ __get_os_env_from_kernel() {
 
 __set_current_platform_info() {
 
+
+	__override_platform_command
+	
+	# some old configurations forgive to set sbin folders as PATH values
+	# mainly on centos
+	# https://forums.centos.org/viewtopic.php?t=53983
+	PATH="${PATH}:/usr/local/sbin:/usr/sbin:/sbin"
+
 	# call screenFetch once by setting/unsetting  exit function and sourcing screenfetch
 	# https://github.com/KittyKatt/screenFetch
 	exit() {
@@ -137,9 +145,9 @@ __set_current_platform_info() {
 	STELLA_CURRENT_PLATFORM_SUFFIX=$(__get_platform_suffix "$STELLA_CURRENT_PLATFORM")
 
 
-	if [[ -n `which nproc 2> /dev/null` ]]; then
-		STELLA_NB_CPU=`nproc`
-	elif [[ -n `which sysctl 2> /dev/null` ]]; then
+	if type nproc &>/dev/null; then
+		STELLA_NB_CPU=$(nproc)
+	elif type sysctl &>/dev/null; then
 		STELLA_NB_CPU=`sysctl hw.ncpu 2> /dev/null | awk '{print $NF}'`
 	else
 		STELLA_NB_CPU=1
@@ -179,7 +187,7 @@ __set_current_platform_info() {
 
 	__get_network_info
 
-	__override_platform_command
+	
 
 }
 
