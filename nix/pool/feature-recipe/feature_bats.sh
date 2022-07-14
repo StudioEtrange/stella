@@ -4,59 +4,38 @@ _bats_INCLUDED_=1
 
 
 feature_bats() {
-	FEAT_NAME=bats
-	FEAT_LIST_SCHEMA="SNAPSHOT:source"
+	FEAT_NAME="bats"
+	FEAT_LIST_SCHEMA="1"
 	FEAT_DEFAULT_ARCH=
-	FEAT_DEFAULT_FLAVOUR="source"
+
+	FEAT_BUNDLE="NESTED"
+
+	FEAT_DESC="Bash Automated Testing System and its helper"
+	FEAT_LINK="https://github.com/bats-core/bats-core https://bats.readthedocs.io/"
+}
+
+
+feature_bats_1() {
+	FEAT_VERSION="1"
+	
+	FEAT_BUNDLE_ITEM="bats-core#1_7_0 bats-assert#2_0_0 bats-support#0_3_0 bats-file#0_3_0"
+
+	FEAT_ENV_CALLBACK="feature_bats_setenv"
+	FEAT_BUNDLE_CALLBACK=
+
+	FEAT_INSTALL_TEST=
+	FEAT_SEARCH_PATH=
+
 }
 
 
 
-bats_internal_test() {
-	cp -R "$SRC_DIR/test" "$INSTALL_DIR/test"
-}
-
-
-feature_bats_SNAPSHOT() {
-	FEAT_VERSION=SNAPSHOT
-
-	FEAT_SOURCE_DEPENDENCIES=
-	FEAT_BINARY_DEPENDENCIES=
-
-	FEAT_SOURCE_URL=https://github.com/sstephenson/bats
-	FEAT_SOURCE_URL_FILENAME=
-	FEAT_SOURCE_URL_PROTOCOL=GIT
-
-	FEAT_BINARY_URL=
-	FEAT_BINARY_URL_FILENAME=
-	FEAT_BINARY_URL_PROTOCOL=
-
-	FEAT_SOURCE_CALLBACK=bats_internal_test
-	FEAT_BINARY_CALLBACK=
-	FEAT_ENV_CALLBACK=
-
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/bats
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-
-}
-
-
-feature_bats_install_source() {
-	INSTALL_DIR="$FEAT_INSTALL_ROOT"
-	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-
-	#__set_toolset "STANDARD"
-
-
-	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE"
-
-	cd "$SRC_DIR"
-	./install.sh "$INSTALL_DIR"
-
-	__feature_callback
-
-	rm -Rf "$SRC_DIR"
-
+feature_bats_setenv() {
+	export BATS_BUNDLE_HOME="${FEAT_INSTALL_ROOT}"
+	echo "-- Bats is installed in [$BATS_BUNDLE_HOME] (see BATS_BUNDLE_HOME env var)."
+	echo "-- Bats helper are installed in folders listed in [$BATS_LIB_PATH] (see BATS_LIB_PATH env var)."
+	echo "-- To load an installed helper use bats_load_library 'bats-assert', it will search bats-assert folder inside those folders list"
+	echo "-- see https://bats-core.readthedocs.io/en/stable/writing-tests.html#bats-load-library-load-system-wide-libraries"
 }
 
 

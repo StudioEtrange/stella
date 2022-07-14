@@ -33,7 +33,6 @@ __feature_init() {
 	done
 
 	__internal_feature_context "$_SCHEMA"
-
 	# check if feature is not already enabled
 	if [[ ! " ${FEATURE_LIST_ENABLED[@]} " =~ " $FEAT_NAME#$FEAT_VERSION " ]]; then
 		__feature_inspect "$FEAT_SCHEMA_SELECTED"
@@ -77,7 +76,6 @@ __feature_init() {
 			done
 			__pop_schema_context
 
-
 			FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $FEAT_NAME#$FEAT_VERSION"
 			if [ ! "$_opt_hidden_feature" = "ON" ]; then
 				FEATURE_LIST_ENABLED_VISIBLE="$FEATURE_LIST_ENABLED_VISIBLE $FEAT_NAME#$FEAT_VERSION"
@@ -95,9 +93,12 @@ __feature_init() {
 						PATH="$FEAT_SEARCH_PATH:$PATH"
 					fi
 					# call env call back of each bundle item
-					for c in $FEAT_ENV_CALLBACK; do
-						$c
-					done
+					# only uf call back have not been called just before (when a bundle is just installed each bundle items have already been initialized and env callback already called)
+					if [[ ! " ${FEATURE_LIST_ENABLED[@]} " =~ " $p " ]]; then
+						for c in $FEAT_ENV_CALLBACK; do
+							$c
+						done
+					fi
 					FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $FEAT_NAME#$FEAT_VERSION"
 				done
 				FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED ]"
@@ -105,8 +106,6 @@ __feature_init() {
 
 				__pop_schema_context
 			fi
-
-
 
 			if [ ! "$FEAT_SEARCH_PATH" = "" ]; then
 				PATH="$FEAT_SEARCH_PATH:$PATH"
@@ -361,11 +360,10 @@ __feature_inspect() {
 
 	if [ ! "$FEAT_SCHEMA_SELECTED" = "" ]; then
 		if [ ! "$FEAT_BUNDLE" = "" ]; then
-
 			local p
 			local _t=1
 			__push_schema_context
-
+		
 			FEAT_BUNDLE_MODE="$FEAT_BUNDLE"
 			for p in $FEAT_BUNDLE_ITEM; do
 				TEST_FEATURE=0
@@ -735,7 +733,6 @@ __feature_install() {
 
 				# automatic call of bundle's callback after installation of all items
 				__feature_callback
-
 
 			else
 

@@ -199,11 +199,15 @@ if "%DOMAIN%"=="proxy" (
 		goto :end
 	)
 	if "%ACTION%"=="bypass" (
-		call %STELLA_COMMON%\common-network.bat :register_no_proxy %id%
+		call %STELLA_COMMON%\common-network.bat :register_no_proxy "%id%"
 		goto :end
 	)
 	if "%ACTION%"=="register" (
 		call %STELLA_COMMON%\common-network.bat :register_proxy %id% %-proxy%
+		goto :end
+	)
+	if "%ACTION%"=="list" (
+		call %STELLA_COMMON%\common-network.bat :show_current_proxy_values
 		goto :end
 	)
 
@@ -281,8 +285,9 @@ if "%DOMAIN%"=="stella" goto :end
 	echo	* network management :
 	echo 		proxy on ^<name^> : active this proxy
 	echo 		proxy off now : active this proxy
-	echo 		proxy register ^<name^> --proxy=^<protocol://user:password@host:port^> : register a web proxy
+	echo 		proxy register ^<name^> -proxy=^<protocol://user:password@host:port^> : register a web proxy
 	echo 		proxy bypass ^<host^> : register a host that will not use proxy
+	echo		proxy list all : show all current proxy information
 	echo	* bootstrap management :
 	echo 		boot shell local : launch a shell with all stella env var setted
 	echo	* system package management : WARN This will affect your system

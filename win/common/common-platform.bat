@@ -376,23 +376,6 @@ goto :eof
 	call :sys_install_vs2015community
 goto :eof
 
-:sys_install_chocolatey
-	echo  ** Install Chocolatey on your system
-	call %STELLA_COMMON%\common.bat :download "https://chocolatey.org/install.ps1" "chocolatey.ps1" "!STELLA_APP_TEMP_DIR!"
-	REM TODO manage web proxy
-	REM $env:chocolateyProxyLocation=!STELLA_PROXY_HOST!
-	REM $env:chocolateyProxyUser=!STELLA_PROXY_PORT!
-	!POWERSHELL! -NoProfile -ExecutionPolicy Bypass -Command "& '!STELLA_APP_TEMP_DIR!\chocolatey.ps1' %*"
-	set "PATH=!PATH!;C:\ProgramData\chocolatey\bin"
-	del /q "!STELLA_APP_CACHE_DIR!\chocolatey.ps1"
-	del /q "!STELLA_APP_TEMP_DIR!\chocolatey.ps1"
-goto :eof
-
-:sys_remove_chocolatey
-	echo  ** Remove Chocolatey from your system
-	call %STELLA_COMMON%\common.bat :del_folder "C:\ProgramData\chocolatey"
-goto :eof
-
 
 :sys_install_vs2017community
 	REM NOTE : by default some visual studio tools are not installed

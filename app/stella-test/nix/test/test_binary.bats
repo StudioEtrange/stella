@@ -1,4 +1,14 @@
-load test_bats_helper
+bats_load_library 'bats-assert'
+bats_load_library 'bats-support'
+
+
+setup() {
+	load 'stella_bats_helper.bash'
+}
+
+teardown() {
+    true
+}
 
 
 # COMMON FILES -------------------------------------------------------------------
@@ -49,12 +59,12 @@ __test_prepare_dynamic_lib_file_darwin() {
 }
 
 # DARWIN ----------------------------------------------------------------
-@test "__is_object_bin" {
+@test "__is_bin" {
 	_test_file="$(__test_prepare_bin_file)"
 
-	run __is_object_bin "$_test_file"
-	assert_output "TRUE"
-
+	run __is_bin "$_test_file"
+	assert_success
+	
 	__test_clean_file "$_test_file"
 }
 
