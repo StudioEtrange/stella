@@ -2,6 +2,13 @@
 if [ ! "$_STELLA_CONF_INCLUDED_" = "1" ]; then
 _STELLA_CONF_INCLUDED_=1
 
+# https://stackoverflow.com/a/11097703
+STELLA_CURRENT_SHELL="$(ps -p $$ -ocomm=)"
+case $(basename $STELLA_CURRENT_SHELL) in
+	bash);;
+	*) echo "** WARN your are using stella with $STELLA_CURRENT_SHELL instead of bash";;
+esac
+
 # disable PATH lookup command cache
 set -h
 
@@ -80,6 +87,7 @@ STELLA_DIST_URL="$STELLA_URL/dist"
 
 # STELLA ARTEFACT INCLUDE ---------------------------------------------
 
+#. $STELLA_ARTEFACT/bash_ini_parser/read_ini_next.sh
 . $STELLA_ARTEFACT/bash_ini_parser/read_ini.sh
 
 # LOG ---------------------------

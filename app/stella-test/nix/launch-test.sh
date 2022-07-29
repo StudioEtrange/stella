@@ -1,6 +1,8 @@
 #!/bin/bash
 _CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 _CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
+
+STELLA_LOG_STATE=OFF
 . "$_CURRENT_FILE_DIR/stella-link.sh" include
 
 $STELLA_API require "bats" "bats"
@@ -16,10 +18,6 @@ function test_launch_bats() {
 
   rm -f "$_v"
 }
-
-
-
-
 
 case $1 in
   all|"" )

@@ -12,6 +12,7 @@ teardown() {
 
 
 # COMMON FILES -------------------------------------------------------------------
+# NOTE WARN : ${BATS_TMPDIR} finish with an ending '/'
 __test_clean_file() {
 	local _test_file="$1"
 	rm -Rf "$_test_file"
@@ -19,7 +20,7 @@ __test_clean_file() {
 
 __test_prepare_bin_file() {
 	local _origin_test_file="$(which cat)"
-	local _test_file="$BATS_TMPDIR/cat"
+	local _test_file="${BATS_TMPDIR}cat"
 	cp -f "$_origin_test_file" "$_test_file"
 
 	echo $_test_file
@@ -27,7 +28,7 @@ __test_prepare_bin_file() {
 
 __test_prepare_bin_file_linked() {
 	local _origin_test_file="$(which ssh)"
-	local _test_file="$BATS_TMPDIR/ssh"
+	local _test_file="${BATS_TMPDIR}ssh"
 	cp -f "$_origin_test_file" "$_test_file"
 
 	echo $_test_file
@@ -36,7 +37,7 @@ __test_prepare_bin_file_linked() {
 
 __test_prepare_dynamic_lib_file_darwin() {
 	local _origin_test_file="/usr/lib/libz.1.dylib"
-	local _test_file="$BATS_TMPDIR/libz.1.dylib"
+	local _test_file="${BATS_TMPDIR}libz.1.dylib"
 	cp -f "$_origin_test_file" "$_test_file"
 	echo $_test_file
 }
@@ -45,16 +46,16 @@ __test_prepare_dynamic_lib_file_darwin() {
 # GENERIC -------------------------------------------------------------------
 @test "__get_arch" {
 	run __get_arch "$(which cat)"
-	assert_output_not_empty
+	refute_output ""
 }
 
 @test "__check_arch" {
 	run __check_arch "$(which cat)"
-	assert_output_not_empty
+	refute_output ""
 	assert_success
 
 	run __check_arch "$(which cat)" "FOO"
-	assert_output_not_empty
+	refute_output ""
 	assert_failure
 }
 
@@ -130,8 +131,7 @@ __test_prepare_dynamic_lib_file_darwin() {
 	__test_clean_file "$_test_file"
 }
 
-
-@test "__tweak_rpath" {
+@test "__tweak_rpath_1" {
 	[ "$STELLA_CURRENT_PLATFORM" != "darwin" ] && skip
 	_test_file="$(__test_prepare_bin_file)"
 	_root_path="$(__get_path_from_string $_test_file)"
@@ -145,17 +145,48 @@ __test_prepare_dynamic_lib_file_darwin() {
 	run __get_rpath "$_test_file"
 	assert_output "test/rpath1 ./rpath2"
 
+	__test_clean_file "$_test_file"
+}
+
+@test "__tweak_rpath_2" {
+	[ "$STELLA_CURRENT_PLATFORM" != "darwin" ] && skip
+	_test_file="$(__test_prepare_bin_file)"
+	_root_path="$(__get_path_from_string $_test_file)"
+
+
+	run __add_rpath "$_test_file" "test/rpath1 ./rpath2"
+	assert_success
+	run __get_rpath "$_test_file"
+	assert_output "test/rpath1 ./rpath2"
+
 
 	run __tweak_rpath "$_test_file" "ABS_RPATH"
 	assert_success
 	run __get_rpath "$_test_file"
-	assert_output "$_root_path/test/rpath1 $_root_path/rpath2"
+	assert_output "${_root_path}/test/rpath1 ${_root_path}/rpath2"
 
 
+	__test_clean_file "$_test_file"
+}
+
+
+@test "__tweak_rpath_3" {
+	[ "$STELLA_CURRENT_PLATFORM" != "darwin" ] && skip
+	_test_file="$(__test_prepare_bin_file)"
+	_root_path="$(__get_path_from_string $_test_file)"
+
+	run __remove_all_rpath "$_test_file"
+	run __get_rpath "$_test_file"
+	assert_output ""
+
+	run __add_rpath "$_test_file" "test/rpath1 ./rpath2"
+	assert_success
+	run __tweak_rpath "$_test_file" "ABS_RPATH"
+	assert_success
 	run __add_rpath "$_test_file" "test/rpath3"
 	assert_success
 	run __get_rpath "$_test_file"
-	assert_output "test/rpath3 $_root_path/test/rpath1 $_root_path/rpath2"
+	assert_output "test/rpath3 ${_root_path}/test/rpath1 ${_root_path}/rpath2"
 
 	run __tweak_rpath "$_test_file" "REL_RPATH"
 	assert_success
@@ -172,7 +203,7 @@ __test_prepare_dynamic_lib_file_darwin() {
 	_test_file="$(__test_prepare_bin_file_linked)"
 
 	run __get_linked_lib "$_test_file"
-	assert_output ""
+	refute_output ""
 
 	__test_clean_file "$_test_file"
 }
@@ -183,7 +214,7 @@ __test_prepare_dynamic_lib_file_darwin() {
 	_test_file="$(__test_prepare_bin_file_linked)"
 
 	run __check_linked_lib "$_test_file"
-	assert_output_not_contains "WARN"
+	refute_output -p "WARN"
 	assert_success
 
 	__test_clean_file "$_test_file"
