@@ -526,7 +526,7 @@ __feature_install() {
 		[ "$o" = "INTERNAL" ] && _opt_internal_feature=ON && _export_mode=OFF
 		# HIDDEN : this feature will not be seen in list of active features
 		[ "$o" = "HIDDEN" ] && _opt_hidden_feature=ON
-		# NON_DECLARED : this feature will not been auto added added to current app properties
+		# NON_DECLARED : this feature will not been auto added to current app properties
 		[ "$o" = "NON_DECLARED" ] && _opt_non_declared_feature=ON
 		# DEP_FORCE : force reinstall all dependencies
 		[ "$o" = "DEP_FORCE" ] && _opt_force_reinstall_dep=1

@@ -123,7 +123,7 @@ __get_os_env_from_kernel() {
 __set_current_platform_info() {
 
 
-	__override_platform_command
+	
 	
 	# some old configurations forgive to set sbin folders as PATH values
 	# mainly on centos
@@ -187,6 +187,7 @@ __set_current_platform_info() {
 
 	__get_network_info
 
+	__platform_specifity
 	
 
 }
@@ -198,7 +199,7 @@ __get_macos_version() {
 }
 
 
-__override_platform_command() {
+__platform_specifity() {
 	#http://unix.stackexchange.com/questions/30091/fix-or-alternative-for-mktemp-in-os-x
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		function mktmp() {
@@ -221,11 +222,9 @@ __override_platform_command() {
 	fi
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		#GETOPT_CMD=PURE_BASH
-		STELLA_ARGPARSE_GETOPT_DEFAULT=PURE_BASH
+		STELLA_ARGPARSE_GETOPT_DEFAULT="PURE_BASH"
 	else
-		#GETOPT_CMD=getopt
-		STELLA_ARGPARSE_GETOPT_DEFAULT=getopt
+		STELLA_ARGPARSE_GETOPT_DEFAULT="getopt"
 	fi
 
 
@@ -313,12 +312,12 @@ __require() {
 			else
 				if [ "$_opt_stella_feature" = "ON" ]; then
 					echo "** REQUIRE $_id : installing it from stella"
-					(__feature_install "$_id" "INTERNAL NON_DECLARED")
+					(__feature_install "$_id" "NON_DECLARED")
 					__feature_init "$_id" "NON_DECLARED"
 				else
 					echo "** ERROR -- Please install $_artefact"
 					echo "-- For a system install : try stella.sh sys install $_id OR your regular OS package manager"
-					echo "-- For an install from Stella : try stella.sh feature install $_id"
+					echo "-- For an install as a stella feature : try stella.sh feature install $_id"
 					_result=1
 					exit 1
 				fi

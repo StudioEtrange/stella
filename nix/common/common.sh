@@ -2906,7 +2906,8 @@ __get_key() {
 	local _KEY=$3
 	local _OPT=$4
 
-	__get_keys "${_FILE}" "ASSIGN EVAL ${_OPT} KEY ${_KEY} SECTION ${_SECTION}"
+	# NOTE : by default we activate the EOL compatibility mode for reading keys in ini files
+	__get_keys "${_FILE}" "ASSIGN EVAL ${_OPT} KEY ${_KEY} SECTION ${_SECTION} COMPATIBLE_EOL"
 
 }
 
@@ -2923,6 +2924,7 @@ __get_key() {
 # EVAL will eval each key value before AFFECT it or PRINT it
 # PREFIX will add section name to key name
 # KEY | SECTION : will look up for a KEY | SECTION
+# COMPATIBLE_EOL : treat any EOL (windows \r\n, mac or linux) as an eol
 # TEST SAMPLE :
 # a1 = 12
 # abcd=22
@@ -2950,7 +2952,9 @@ __get_keys() {
 	_opt_key=
 	_opt_eval=OFF
   	_opt_assign=OFF
+	_opt_eol=OFF
 	for o in $_OPT; do
+		[ "$o" = "COMPATIBLE_EOL" ] && _opt_eol=ON
 		[ "$o" = "PREFIX" ] && _opt_section_prefix=ON
 		[ "$o" = "EVAL" ] && _opt_eval=ON
     	[ "$o" = "ASSIGN" ] && _opt_assign=ON
@@ -2983,9 +2987,16 @@ __get_keys() {
 	fi
 	[ ! -f "${_FILE}" ] && return
 
+	local __file=${_FILE}
+	if [ "${_opt_eol}" = "ON" ]; then
+		__file="$(mktmp)"
+		# win : remove CRLF and write LF
+		# old mac : replace CR with LF
+		awk '{ sub("\r$", ""); print }' ${_FILE} | tr '\r' '\n' > ${__file}
+	fi
 
-  # NOTE read_ini : Dots are converted to underscores in all variable names.
-  read_ini ${_FILE} ${_opt_section} --prefix "INTERNAL__INI" --booleans 0
+	# NOTE read_ini : Dots are converted to underscores in all variable names.
+	read_ini ${__file} ${_opt_section} --prefix "INTERNAL__INI" --booleans 0
 
 
   _list_var="${INTERNAL__INI__ALL_VARS}"

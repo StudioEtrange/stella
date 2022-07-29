@@ -2,38 +2,31 @@ if [ ! "$_pkgconfig_INCLUDED_" = "1" ]; then
 _pkgconfig_INCLUDED_=1
 
 # http://www.linuxfromscratch.org/lfs/view/development/chapter06/pkg-config.html
-# https://github.com/Homebrew/homebrew/blob/master/Library/Formula/pkg-config.rb
-
+# https://github.com/Homebrew/homebrew-core/blob/master/Formula/pkg-config.rb
 
 feature_pkgconfig() {
-	FEAT_NAME=pkgconfig
+	FEAT_NAME="pkgconfig"
 	FEAT_LIST_SCHEMA="0_29_2:source"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
+
+	FEAT_DESC="pkg-config is a helper tool used when compiling applications and libraries"
+	FEAT_LINK="https://www.freedesktop.org/wiki/Software/pkg-config/"
 }
 
 
 
 feature_pkgconfig_0_29_2() {
-	FEAT_VERSION=0_29_2
+	FEAT_VERSION="0_29_2"
 
-	FEAT_SOURCE_DEPENDENCIES=
-	FEAT_BINARY_DEPENDENCIES=
+	FEAT_SOURCE_URL="https://pkg-config.freedesktop.org/releases/pkg-config-0.29.2.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="pkg-config-0.29.2.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
 
-	FEAT_SOURCE_URL=https://pkg-config.freedesktop.org/releases/pkg-config-0.29.2.tar.gz
-	FEAT_SOURCE_URL_FILENAME=pkg-config-0.29.2.tar.gz
-	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
+	FEAT_ENV_CALLBACK="feature_pkgconfig_env"
 
-	FEAT_BINARY_URL=
-	FEAT_BINARY_URL_FILENAME=
-	FEAT_BINARY_URL_PROTOCOL=
-
-	FEAT_SOURCE_CALLBACK=
-	FEAT_BINARY_CALLBACK=
-	FEAT_ENV_CALLBACK=feature_pkgconfig_env
-
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/pkg-config
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/pkg-config"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 
 }
 
