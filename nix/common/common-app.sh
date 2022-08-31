@@ -396,6 +396,12 @@ __get_features() {
 	__feature_install_list "$STELLA_APP_FEATURE_LIST"
 }
 
+
+__remove_features() {
+	__feature_install_list "$STELLA_APP_FEATURE_LIST"
+}
+
+
 # install a feature listed in app feature list. Look for matching version in app feature list, so could match several version
 __get_feature() {
 	local _SCHEMA=$1

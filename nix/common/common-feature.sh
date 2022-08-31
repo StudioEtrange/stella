@@ -491,6 +491,14 @@ __feature_install_list() {
 	done
 }
 
+__feature_remove_list() {
+	local _list=$1
+
+	for f in $_list; do
+		__feature_remove $f
+	done
+}
+
 
 __feature_choose_origin() {
 	local _SCHEMA="$1"
