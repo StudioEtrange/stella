@@ -1852,9 +1852,10 @@ __string_contains() { [ -z "${1##*$2*}" ] && [ -n "$1" -o -z "$2" ]; }
 # if $STELLA_API list_contains "aa bb xx" "bb"; then
 # fi
 __list_contains() {
-  local _list="$1"
-  local _item="$2"
-  [[ "$_list" =~ (^|[[:space:]])"$_item"($|[[:space:]]) ]]
+	local _list="$1"
+	local _item="$2"
+	[ "$_list" = "" ] && return 1
+	[[ "$_list" =~ (^|[[:space:]])"$_item"($|[[:space:]]) ]]
 }
 
 # remove duplicate values in list and return it sorted

@@ -408,7 +408,7 @@ teardown() {
 	run __list_contains "aa bb xx" ""
 	assert_failure
 
-	run __list_contains "" "dd"
+	run __list_contains "" ""
 	assert_failure
 
 }
