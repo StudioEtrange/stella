@@ -17,9 +17,9 @@ function test_launch_bats() {
   declare -f >>"$_v"
 
   if [ "$filter" = "" ]; then
-    __BATS_STELLA_DECLARE="$_v" bats --verbose-run "$STELLA_APP_ROOT/test_$domain.bats"
+    __BATS_STELLA_DECLARE="$_v" bats --verbose-run "$STELLA_APP_ROOT/test/test_$domain.bats"
   else
-    __BATS_STELLA_DECLARE="$_v" bats --verbose-run "$STELLA_APP_ROOT/test_$domain.bats" -f ${filter}
+    __BATS_STELLA_DECLARE="$_v" bats --verbose-run "$STELLA_APP_ROOT/test/test_$domain.bats" -f ${filter}
   fi
   rm -f "$_v"
 }

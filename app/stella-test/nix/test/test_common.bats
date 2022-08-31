@@ -388,3 +388,27 @@ teardown() {
 	assert_output "/test2work"
 
 }
+
+
+# LIST  -------------------------------------------------------------------
+@test "__list_contains" {
+
+	run __list_contains "aa bb xx" "bb"
+	assert_success
+ 
+	run __list_contains "aa bb xx" "b"
+	assert_failure
+
+	run __list_contains "aa bb xx" "bb xx"
+	assert_success
+
+	run __list_contains "aa bb xx" "aa xx"
+	assert_failure
+
+	run __list_contains "aa bb xx" ""
+	assert_failure
+
+	run __list_contains "" "dd"
+	assert_failure
+
+}
