@@ -637,7 +637,6 @@ __filter_version_list() {
 	local list="$2"
 	local opt="$3"
 	local result=""
-
 	local limit=
 	local __result_order="ASC"
 	local flag_sep="OFF"

@@ -13,36 +13,126 @@ _miniconda3_INCLUDED_=1
 # to desactivate new python env :
 # deactivate test_env
 
+
+# list of conda version : https://github.com/conda/conda/tags
+
 feature_miniconda3() {
-	FEAT_NAME=miniconda3
-	FEAT_LIST_SCHEMA="4_7_10@x64:binary 4_7_10@x86:binary 4_6_14@x64:binary 4_6_14@x86:binary 4_5_12@x64:binary 4_5_12@x86:binary 4_5_11@x64:binary 4_5_11@x86:binary 4_2_12@x64:binary 4_2_12@x86:binary 4_1_11@x64:binary 4_1_11@x86:binary"
-	FEAT_DEFAULT_ARCH=x64
+	FEAT_NAME="miniconda3"
+	FEAT_LIST_SCHEMA="23_1_0_py3_10@x64:binary 23_1_0_py3_9@x64:binary 4_12_0_py3_9@x64:binary 4_12_0_py3_7@x64:binary 4_7_10@x64:binary 4_7_10@x86:binary 4_6_14@x64:binary 4_6_14@x86:binary 4_5_12@x64:binary 4_5_12@x86:binary 4_5_11@x64:binary 4_5_11@x86:binary 4_2_12@x64:binary 4_2_12@x86:binary 4_1_11@x64:binary 4_1_11@x86:binary"
+	FEAT_DEFAULT_ARCH="x64"
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
 
 
-feature_miniconda3_4_7_10() {
-	FEAT_VERSION=4_7_10
+feature_miniconda3_23_1_0_py3_10() {
+	FEAT_VERSION="23_1_0_py3_10"
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		FEAT_BINARY_URL_x64=https://repo.continuum.io/miniconda/Miniconda3-4.7.10-MacOSX-x86_64.sh
-		FEAT_BINARY_URL_FILENAME_x64=Miniconda3-4.7.10-MacOSX-x86_64.sh
-		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
+		FEAT_BINARY_URL_x64="https://repo.anaconda.com/miniconda/Miniconda3-py310_23.1.0-1-MacOSX-x86_64.sh"
+		FEAT_BINARY_URL_FILENAME_x64="Miniconda3-py310_23.1.0-1-MacOSX-x86_64.sh"
+		FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
 	fi
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		FEAT_BINARY_URL_x86=https://repo.continuum.io/miniconda/Miniconda3-4.7.10-Linux-x86.sh
-		FEAT_BINARY_URL_FILENAME_x86=Miniconda3-4.7.10-Linux-x86.sh
-		FEAT_BINARY_URL_PROTOCOL_x86=HTTP
-
-		FEAT_BINARY_URL_x64=https://repo.continuum.io/miniconda/Miniconda3-4.7.10-Linux-x86_64.sh
-		FEAT_BINARY_URL_FILENAME_x64=Miniconda3-4.7.10-Linux-x86_64.sh
-		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
+		FEAT_BINARY_URL_x64="https://repo.anaconda.com/miniconda/Miniconda3-py310_23.1.0-1-Linux-x86_64.sh"
+		FEAT_BINARY_URL_FILENAME_x64="Miniconda3-py310_23.1.0-1-Linux-x86_64.sh"
+		FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
 	fi
 
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/conda
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/conda"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
+
+}
+
+
+feature_miniconda3_23_1_0_py3_9() {
+	FEAT_VERSION="23_1_0_py3_9"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		FEAT_BINARY_URL_x64="https://repo.anaconda.com/miniconda/Miniconda3-py39_23.1.0-1-MacOSX-x86_64.sh"
+		FEAT_BINARY_URL_FILENAME_x64="Miniconda3-py39_23.1.0-1-MacOSX-x86_64.sh"
+		FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
+	fi
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		FEAT_BINARY_URL_x64="https://repo.anaconda.com/miniconda/Miniconda3-py39_23.1.0-1-Linux-x86_64.sh"
+		FEAT_BINARY_URL_FILENAME_x64="Miniconda3-py39_23.1.0-1-Linux-x86_64.sh"
+		FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
+	fi
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/conda"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
+
+}
+
+
+
+feature_miniconda3_4_12_0_py3_9() {
+	FEAT_VERSION="4_12_0_py3_9"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		FEAT_BINARY_URL_x64="https://repo.anaconda.com/miniconda/Miniconda3-py39_4.12.0-MacOSX-x86_64.sh"
+		FEAT_BINARY_URL_FILENAME_x64="Miniconda3-py39_4.12.0-MacOSX-x86_64.sh"
+		FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
+	fi
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		FEAT_BINARY_URL_x64="https://repo.anaconda.com/miniconda/Miniconda3-py39_4.12.0-Linux-x86_64.sh"
+		FEAT_BINARY_URL_FILENAME_x64="Miniconda3-py39_4.12.0-Linux-x86_64.sh"
+		FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
+	fi
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/conda"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
+
+}
+
+
+feature_miniconda3_4_12_0_py3_7() {
+	FEAT_VERSION="4_12_0_py3_7"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		FEAT_BINARY_URL_x64="https://repo.anaconda.com/miniconda/Miniconda3-py37_4.12.0-MacOSX-x86_64.sh"
+		FEAT_BINARY_URL_FILENAME_x64="Miniconda3-py37_4.12.0-MacOSX-x86_64.sh"
+		FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
+	fi
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		FEAT_BINARY_URL_x64="https://repo.anaconda.com/miniconda/Miniconda3-py37_4.12.0-Linux-x86_64.sh"
+		FEAT_BINARY_URL_FILENAME_x64="Miniconda3-py37_4.12.0-Linux-x86_64.sh"
+		FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
+	fi
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/conda"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
+
+}
+
+
+
+
+feature_miniconda3_4_7_10() {
+	FEAT_VERSION="4_7_10"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		FEAT_BINARY_URL_x64="https://repo.anaconda.com/miniconda/Miniconda3-4.7.10-MacOSX-x86_64.sh"
+		FEAT_BINARY_URL_FILENAME_x64="Miniconda3-4.7.10-MacOSX-x86_64.sh"
+		FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
+	fi
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		FEAT_BINARY_URL_x86="https://repo.anaconda.com/miniconda/Miniconda3-4.7.10-Linux-x86.sh"
+		FEAT_BINARY_URL_FILENAME_x86="Miniconda3-4.7.10-Linux-x86.sh"
+		FEAT_BINARY_URL_PROTOCOL_x86="HTTP"
+
+		FEAT_BINARY_URL_x64="https://repo.anaconda.com/miniconda/Miniconda3-4.7.10-Linux-x86_64.sh"
+		FEAT_BINARY_URL_FILENAME_x64="Miniconda3-4.7.10-Linux-x86_64.sh"
+		FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
+	fi
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/conda"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 
 }
 
@@ -52,23 +142,23 @@ feature_miniconda3_4_6_14() {
 	FEAT_VERSION=4_6_14
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		FEAT_BINARY_URL_x64=https://repo.continuum.io/miniconda/Miniconda3-4.6.14-MacOSX-x86_64.sh
-		FEAT_BINARY_URL_FILENAME_x64=Miniconda3-4.6.14-MacOSX-x86_64.sh
-		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
+		FEAT_BINARY_URL_x64="https://repo.anaconda.com/miniconda/Miniconda3-4.6.14-MacOSX-x86_64.sh"
+		FEAT_BINARY_URL_FILENAME_x64="Miniconda3-4.6.14-MacOSX-x86_64.sh"
+		FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
 	fi
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		FEAT_BINARY_URL_x86=https://repo.continuum.io/miniconda/Miniconda3-4.6.14-Linux-x86.sh
-		FEAT_BINARY_URL_FILENAME_x86=Miniconda3-4.6.14-Linux-x86.sh
-		FEAT_BINARY_URL_PROTOCOL_x86=HTTP
+		FEAT_BINARY_URL_x86="https://repo.anaconda.com/miniconda/Miniconda3-4.6.14-Linux-x86.sh"
+		FEAT_BINARY_URL_FILENAME_x86="Miniconda3-4.6.14-Linux-x86.sh"
+		FEAT_BINARY_URL_PROTOCOL_x86="HTTP"
 
-		FEAT_BINARY_URL_x64=https://repo.continuum.io/miniconda/Miniconda3-4.6.14-Linux-x86_64.sh
-		FEAT_BINARY_URL_FILENAME_x64=Miniconda3-4.6.14-Linux-x86_64.sh
-		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
+		FEAT_BINARY_URL_x64="https://repo.anaconda.com/miniconda/Miniconda3-4.6.14-Linux-x86_64.sh"
+		FEAT_BINARY_URL_FILENAME_x64="Miniconda3-4.6.14-Linux-x86_64.sh"
+		FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
 	fi
 
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/conda
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/conda"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 
 }
 
@@ -79,23 +169,23 @@ feature_miniconda3_4_5_12() {
 	FEAT_VERSION=4_5_12
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		FEAT_BINARY_URL_x64=https://repo.continuum.io/miniconda/Miniconda3-4.5.12-MacOSX-x86_64.sh
-		FEAT_BINARY_URL_FILENAME_x64=Miniconda3-4.5.12-MacOSX-x86_64.sh
-		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
+		FEAT_BINARY_URL_x64="https://repo.anaconda.com/miniconda/Miniconda3-4.5.12-MacOSX-x86_64.sh"
+		FEAT_BINARY_URL_FILENAME_x64="Miniconda3-4.5.12-MacOSX-x86_64.sh"
+		FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
 	fi
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		FEAT_BINARY_URL_x86=https://repo.continuum.io/miniconda/Miniconda3-4.5.12-Linux-x86.sh
-		FEAT_BINARY_URL_FILENAME_x86=Miniconda3-4.5.12-Linux-x86.sh
-		FEAT_BINARY_URL_PROTOCOL_x86=HTTP
+		FEAT_BINARY_URL_x86="https://repo.anaconda.com/miniconda/Miniconda3-4.5.12-Linux-x86.sh"
+		FEAT_BINARY_URL_FILENAME_x86="Miniconda3-4.5.12-Linux-x86.sh"
+		FEAT_BINARY_URL_PROTOCOL_x86="HTTP"
 
-		FEAT_BINARY_URL_x64=https://repo.continuum.io/miniconda/Miniconda3-4.5.12-Linux-x86_64.sh
-		FEAT_BINARY_URL_FILENAME_x64=Miniconda3-4.5.12-Linux-x86_64.sh
-		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
+		FEAT_BINARY_URL_x64="https://repo.anaconda.com/miniconda/Miniconda3-4.5.12-Linux-x86_64.sh"
+		FEAT_BINARY_URL_FILENAME_x64="Miniconda3-4.5.12-Linux-x86_64.sh"
+		FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
 	fi
 
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/conda
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/conda"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 
 }
 
@@ -104,23 +194,23 @@ feature_miniconda3_4_5_11() {
 	FEAT_VERSION=4_5_11
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		FEAT_BINARY_URL_x64=https://repo.continuum.io/miniconda/Miniconda3-4.5.11-MacOSX-x86_64.sh
-		FEAT_BINARY_URL_FILENAME_x64=Miniconda3-4.5.11-MacOSX-x86_64.sh
-		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
+		FEAT_BINARY_URL_x64="https://repo.anaconda.com/miniconda/Miniconda3-4.5.11-MacOSX-x86_64.sh"
+		FEAT_BINARY_URL_FILENAME_x64="Miniconda3-4.5.11-MacOSX-x86_64.sh"
+		FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
 	fi
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		FEAT_BINARY_URL_x86=https://repo.continuum.io/miniconda/Miniconda3-4.5.11-Linux-x86.sh
-		FEAT_BINARY_URL_FILENAME_x86=Miniconda3-4.5.11-Linux-x86.sh
-		FEAT_BINARY_URL_PROTOCOL_x86=HTTP
+		FEAT_BINARY_URL_x86="https://repo.anaconda.com/miniconda/Miniconda3-4.5.11-Linux-x86.sh"
+		FEAT_BINARY_URL_FILENAME_x86="Miniconda3-4.5.11-Linux-x86.sh"
+		FEAT_BINARY_URL_PROTOCOL_x86="HTTP"
 
-		FEAT_BINARY_URL_x64=https://repo.continuum.io/miniconda/Miniconda3-4.5.11-Linux-x86_64.sh
-		FEAT_BINARY_URL_FILENAME_x64=Miniconda3-4.5.11-Linux-x86_64.sh
-		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
+		FEAT_BINARY_URL_x64="https://repo.anaconda.com/miniconda/Miniconda3-4.5.11-Linux-x86_64.sh"
+		FEAT_BINARY_URL_FILENAME_x64="Miniconda3-4.5.11-Linux-x86_64.sh"
+		FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
 	fi
 
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/conda
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/conda"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 
 }
 
@@ -130,23 +220,23 @@ feature_miniconda3_4_2_12() {
 
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		FEAT_BINARY_URL_x64=https://repo.continuum.io/miniconda/Miniconda3-4.2.12-MacOSX-x86_64.sh
-		FEAT_BINARY_URL_FILENAME_x64=Miniconda3-4.2.12-MacOSX-x86_64.sh
-		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
+		FEAT_BINARY_URL_x64="https://repo.anaconda.com/miniconda/Miniconda3-4.2.12-MacOSX-x86_64.sh"
+		FEAT_BINARY_URL_FILENAME_x64="Miniconda3-4.2.12-MacOSX-x86_64.sh"
+		FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
 	fi
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		FEAT_BINARY_URL_x86=https://repo.continuum.io/miniconda/Miniconda3-4.2.12-Linux-x86.sh
-		FEAT_BINARY_URL_FILENAME_x86=Miniconda3-4.2.12-Linux-x86.sh
-		FEAT_BINARY_URL_PROTOCOL_x86=HTTP
+		FEAT_BINARY_URL_x86="https://repo.anaconda.com/miniconda/Miniconda3-4.2.12-Linux-x86.sh"
+		FEAT_BINARY_URL_FILENAME_x86="Miniconda3-4.2.12-Linux-x86.sh"
+		FEAT_BINARY_URL_PROTOCOL_x86="HTTP"
 
-		FEAT_BINARY_URL_x64=https://repo.continuum.io/miniconda/Miniconda3-4.2.12-Linux-x86_64.sh
-		FEAT_BINARY_URL_FILENAME_x64=Miniconda3-4.2.12-Linux-x86_64.sh
-		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
+		FEAT_BINARY_URL_x64="https://repo.anaconda.com/miniconda/Miniconda3-4.2.12-Linux-x86_64.sh"
+		FEAT_BINARY_URL_FILENAME_x64="Miniconda3-4.2.12-Linux-x86_64.sh"
+		FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
 	fi
 
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/conda
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/conda"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 
 }
 
@@ -155,23 +245,23 @@ feature_miniconda3_4_1_11() {
 	FEAT_VERSION=4_1_11
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		FEAT_BINARY_URL_x64=https://repo.continuum.io/miniconda/Miniconda3-4.1.11-MacOSX-x86_64.sh
-		FEAT_BINARY_URL_FILENAME_x64=Miniconda3-4.1.11-MacOSX-x86_64.sh
-		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
+		FEAT_BINARY_URL_x64="https://repo.anaconda.com/miniconda/Miniconda3-4.1.11-MacOSX-x86_64.sh"
+		FEAT_BINARY_URL_FILENAME_x64="Miniconda3-4.1.11-MacOSX-x86_64.sh"
+		FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
 	fi
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		FEAT_BINARY_URL_x86=https://repo.continuum.io/miniconda/Miniconda3-4.1.11-Linux-x86.sh
-		FEAT_BINARY_URL_FILENAME_x86=Miniconda3-4.1.11-Linux-x86.sh
-		FEAT_BINARY_URL_PROTOCOL_x86=HTTP
+		FEAT_BINARY_URL_x86="https://repo.anaconda.com/miniconda/Miniconda3-4.1.11-Linux-x86.sh"
+		FEAT_BINARY_URL_FILENAME_x86="Miniconda3-4.1.11-Linux-x86.sh"
+		FEAT_BINARY_URL_PROTOCOL_x86="HTTP"
 
-		FEAT_BINARY_URL_x64=https://repo.continuum.io/miniconda/Miniconda3-4.1.11-Linux-x86_64.sh
-		FEAT_BINARY_URL_FILENAME_x64=Miniconda3-4.1.11-Linux-x86_64.sh
-		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
+		FEAT_BINARY_URL_x64="https://repo.anaconda.com/miniconda/Miniconda3-4.1.11-Linux-x86_64.sh"
+		FEAT_BINARY_URL_FILENAME_x64="Miniconda3-4.1.11-Linux-x86_64.sh"
+		FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
 	fi
 
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/conda
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/conda"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 
 }
 
