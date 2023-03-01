@@ -10,7 +10,7 @@ _bindfs_INCLUDED_=1
 feature_bindfs() {
 	FEAT_NAME=bindfs
 
-	FEAT_LIST_SCHEMA="1_14_1:source 1_13_11:source 1_13_10:source"
+	FEAT_LIST_SCHEMA="1_17_2:source 1_16_1:source 1_15_1:source 1_14_9:source 1_14_1:source 1_13_11:source 1_13_10:source"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 
@@ -19,6 +19,88 @@ feature_bindfs() {
 	FEAT_LINK="https://bindfs.org"
 }
 
+
+
+
+feature_bindfs_1_17_2() {
+	FEAT_VERSION="1_17_2"
+
+
+	FEAT_SOURCE_DEPENDENCIES="FORCE_ORIGIN_SYSTEM fuse"
+
+	FEAT_SOURCE_URL="https://github.com/mpartel/bindfs/archive/1.17.2.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="bindfs-1.17.2.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
+
+	FEAT_SOURCE_CALLBACK="feature_bindfs_link"
+
+	FEAT_TEST="bindfs"
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/$FEAT_TEST"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
+
+}
+
+
+feature_bindfs_1_16_1() {
+	FEAT_VERSION="1_16_1"
+
+
+	FEAT_SOURCE_DEPENDENCIES="FORCE_ORIGIN_SYSTEM fuse"
+
+	FEAT_SOURCE_URL="https://github.com/mpartel/bindfs/archive/1.16.1.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="bindfs-1.16.1.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
+
+	FEAT_SOURCE_CALLBACK="feature_bindfs_link"
+
+	FEAT_TEST="bindfs"
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/$FEAT_TEST"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
+
+}
+
+
+
+
+
+feature_bindfs_1_15_1() {
+	FEAT_VERSION="1_15_1"
+
+
+	FEAT_SOURCE_DEPENDENCIES="FORCE_ORIGIN_SYSTEM fuse"
+
+	FEAT_SOURCE_URL="https://github.com/mpartel/bindfs/archive/1.15.1.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="bindfs-1.15.1.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
+
+	FEAT_SOURCE_CALLBACK="feature_bindfs_link"
+
+	FEAT_TEST="bindfs"
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/$FEAT_TEST"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
+
+}
+
+
+
+
+feature_bindfs_1_14_9() {
+	FEAT_VERSION="1_14_9"
+
+
+	FEAT_SOURCE_DEPENDENCIES="FORCE_ORIGIN_SYSTEM fuse"
+
+	FEAT_SOURCE_URL="https://github.com/mpartel/bindfs/archive/1.14.9.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="bindfs-1.14.9.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
+
+	FEAT_SOURCE_CALLBACK="feature_bindfs_link"
+
+	FEAT_TEST="bindfs"
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/$FEAT_TEST"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
+
+}
 
 
 feature_bindfs_1_14_1() {
