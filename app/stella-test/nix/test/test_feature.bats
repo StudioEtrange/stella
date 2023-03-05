@@ -1,23 +1,24 @@
 bats_load_library 'bats-assert'
 bats_load_library 'bats-support'
 
-
+# TODO use a copy of properties file and another app work root to run test on them
 setup() {
 	load 'stella_bats_helper.bash'
 
-	rm -Rf "$STELLA_APP_FEATURE_ROOT"
+	#rm -Rf "$STELLA_APP_FEATURE_ROOT"
+	cp -f $_STELLA_APP_PROPERTIES_FILE $STELLA_APP_WORK_ROOT/
 
     # remove feature from app properties file
-	__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" ""
-	__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" "PREFIX"
+	#__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" ""
+	#__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" "PREFIX"
 }
 
 teardown() {
-    rm -Rf "$STELLA_APP_FEATURE_ROOT"
-
+    #rm -Rf "$STELLA_APP_FEATURE_ROOT"
+cp -f $STELLA_APP_WORK_ROOT/$STELLA_APP_PROPERTIES_FILENAME $_STELLA_APP_PROPERTIES_FILE
    	# remove feature from app properties file
-	__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" ""
-	__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" "PREFIX"
+	#__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" ""
+	#__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" "PREFIX"
 }
 
 
