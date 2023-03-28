@@ -113,7 +113,9 @@ feature_bindfs_1_14_1() {
 	FEAT_SOURCE_URL_FILENAME="bindfs-1.14.1.tar.gz"
 	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
 
-	FEAT_SOURCE_CALLBACK="feature_bindfs_link"
+	# use feature_gcc_common_flag because bindfs was fixed only starting version 14.3
+	# https://github.com/mpartel/bindfs/commit/9ad6363e9c1ee463bff7f28454283dd49d0d2e20#diff-e256f784f2dbf09663e201ca14a3bfebda1aa6161d65b195fcfb729758af17cd
+	FEAT_SOURCE_CALLBACK="feature_bindfs_link feature_gcc_common_flag"
 
 	FEAT_TEST="bindfs"
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/$FEAT_TEST"
@@ -146,8 +148,7 @@ feature_gcc_common_flag() {
 	# gcc10 change its default behavior from -fcommon to -fno-commo
 	# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=85678
 	# use this flag to force old behavior
-	 
-	STELLA_C_CXX_FLAGS-"-fcommon"
+	STELLA_C_CXX_FLAGS="-fcommon"
 }
 
 feature_bindfs_link() {
