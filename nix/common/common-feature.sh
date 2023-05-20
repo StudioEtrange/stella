@@ -491,11 +491,13 @@ __feature_install_list() {
 	done
 }
 
+# option NON_DECLARED : do not remove features from properties file
 __feature_remove_list() {
 	local _list=$1
+	local _OPT="$2"
 
 	for f in $_list; do
-		__feature_remove $f
+		__feature_remove "$f" "$_OPT"
 	done
 }
 
