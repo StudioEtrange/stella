@@ -396,9 +396,11 @@ __get_features() {
 	__feature_install_list "$STELLA_APP_FEATURE_LIST"
 }
 
-
+# option NON_DECLARED : do not remove features from properties file
 __remove_features() {
-	__feature_install_list "$STELLA_APP_FEATURE_LIST"
+	local _OPT="$1"
+
+	__feature_remove_list "$STELLA_APP_FEATURE_LIST" "$_OPT"
 }
 
 
