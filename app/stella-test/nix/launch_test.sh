@@ -24,6 +24,7 @@ function test_launch_bats() {
   rm -f "$_v"
 }
 
+STELLA_LOG_STATE=ON
 case $1 in
   all|"" )
     test_launch_bats common $2

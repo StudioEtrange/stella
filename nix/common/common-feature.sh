@@ -307,14 +307,14 @@ __feature_match_installed() {
 
 # save context before calling __feature_inspect, in case we use it inside a schema context
 __push_schema_context() {
-	__stack_push "$TEST_FEATURE"
-	__stack_push "$FEAT_SCHEMA_SELECTED"
+	__stack_push "STELLA" "$TEST_FEATURE"
+	__stack_push "STELLA" "$FEAT_SCHEMA_SELECTED"
 }
 # load context before calling __feature_inspect, in case we use it inside a schema context
 __pop_schema_context() {
-	__stack_pop FEAT_SCHEMA_SELECTED
+	__stack_pop "STELLA" "FEAT_SCHEMA_SELECTED"
 	__internal_feature_context $FEAT_SCHEMA_SELECTED
-	__stack_pop TEST_FEATURE
+	__stack_pop "STELLA" TEST_FEATURE
 }
 
 
@@ -697,8 +697,8 @@ __feature_install() {
 			if [ ! "$FEAT_BUNDLE" = "" ]; then
 
 				# save export/portable mode
-				__stack_push "$_export_mode"
-				__stack_push "$_portable_mode"
+				__stack_push "STELLA" "$_export_mode"
+				__stack_push "STELLA" "$_portable_mode"
 
 				if [ ! "$FEAT_BUNDLE_ITEM" = "" ]; then
 
@@ -738,8 +738,8 @@ __feature_install() {
 
 
 				# restore export/portable mode
-				__stack_pop "_portable_mode"
-				__stack_pop "_export_mode"
+				__stack_pop "STELLA" "_portable_mode"
+				__stack_pop "STELLA" "_export_mode"
 
 				# automatic call of bundle's callback after installation of all items
 				__feature_callback

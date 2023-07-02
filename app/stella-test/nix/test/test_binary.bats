@@ -4,6 +4,8 @@ bats_load_library 'bats-support'
 
 setup() {
 	load 'stella_bats_helper.bash'
+
+	mkdir -p "$STELLA_APP_WORK_ROOT"
 }
 
 teardown() {
@@ -20,7 +22,7 @@ __test_clean_file() {
 
 __test_prepare_bin_file() {
 	local _origin_test_file="$(which cat)"
-	local _test_file="${BATS_TMPDIR}cat"
+	local _test_file="${BATS_TMPDIR}/cat"
 	cp -f "$_origin_test_file" "$_test_file"
 
 	echo $_test_file
@@ -28,7 +30,7 @@ __test_prepare_bin_file() {
 
 __test_prepare_bin_file_linked() {
 	local _origin_test_file="$(which ssh)"
-	local _test_file="${BATS_TMPDIR}ssh"
+	local _test_file="${BATS_TMPDIR}/ssh"
 	cp -f "$_origin_test_file" "$_test_file"
 
 	echo $_test_file

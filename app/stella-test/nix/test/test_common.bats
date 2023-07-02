@@ -5,6 +5,7 @@ bats_load_library 'bats-support'
 
 setup() {
 	load 'stella_bats_helper.bash'
+	mkdir -p "$STELLA_APP_WORK_ROOT"
 }
 
 teardown() {

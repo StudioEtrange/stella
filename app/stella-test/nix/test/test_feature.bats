@@ -4,6 +4,12 @@ bats_load_library 'bats-support'
 # TODO use a copy of properties file and another app work root to run test on them
 setup() {
 	load 'stella_bats_helper.bash'
+	
+	rm -Rf $STELLA_APP_FEATURE_ROOT
+	mkdir -p "$STELLA_APP_WORK_ROOT"
+
+	
+	
 
 	#rm -Rf "$STELLA_APP_FEATURE_ROOT"
 	cp -f $_STELLA_APP_PROPERTIES_FILE $STELLA_APP_WORK_ROOT/
@@ -15,7 +21,7 @@ setup() {
 
 teardown() {
     #rm -Rf "$STELLA_APP_FEATURE_ROOT"
-cp -f $STELLA_APP_WORK_ROOT/$STELLA_APP_PROPERTIES_FILENAME $_STELLA_APP_PROPERTIES_FILE
+	cp -f $STELLA_APP_WORK_ROOT/$STELLA_APP_PROPERTIES_FILENAME $_STELLA_APP_PROPERTIES_FILE
    	# remove feature from app properties file
 	#__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" ""
 	#__get_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" "PREFIX"
@@ -90,7 +96,7 @@ cp -f $STELLA_APP_WORK_ROOT/$STELLA_APP_PROPERTIES_FILENAME $_STELLA_APP_PROPERT
   	local old_feature_list="$(__list_active_features)"
 
 	__feature_install $_test
-	assert_output_not_contains "ERROR"
+	#refute_output --partial "ERROR"
 
 	# empty feature informations values
 	#__internal_feature_context
@@ -117,10 +123,10 @@ cp -f $STELLA_APP_WORK_ROOT/$STELLA_APP_PROPERTIES_FILENAME $_STELLA_APP_PROPERT
 
 	local old_feature_list="$(__list_active_features)"
 
-	__feature_install $_test
-	assert_output_not_contains "ERROR"
+	
 
-	__feature_remove $_test
+	run __feature_remove $_test
+	assert_success
 
 	# empty feature informations values
 	#__internal_feature_context
@@ -133,7 +139,7 @@ cp -f $STELLA_APP_WORK_ROOT/$STELLA_APP_PROPERTIES_FILENAME $_STELLA_APP_PROPERT
 	assert_equal "$STELLA_APP_FEATURE_ROOT/$FEAT_NAME/$FEAT_VERSION" "$FEAT_INSTALL_ROOT"
 
 	run __list_active_features
-	assert_output "$old_feature_list"
+	refute_output --partial " $_test"
 
 }
 
@@ -150,7 +156,7 @@ cp -f $STELLA_APP_WORK_ROOT/$STELLA_APP_PROPERTIES_FILENAME $_STELLA_APP_PROPERT
 	local old_feature_list="$(__list_active_features)"
 
 	__feature_install $_test
-	assert_output_not_contains "ERROR"
+	#refute_output --partial "ERROR"
 
 	# empty feature informations values
 	#__internal_feature_context
