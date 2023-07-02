@@ -45,8 +45,8 @@ STELLA_DIST_URL="$STELLA_URL/dist"
 
 # STELLA INCLUDE ---------------------------------------------
 
-#shellcheck source=nix/common/stack.sh
-. $STELLA_COMMON/stack.sh
+#shellcheck source=nix/common/common-algorithm.sh
+. $STELLA_COMMON/common-algorithm.sh
 #shellcheck source=nix/common/common-log.sh
 . $STELLA_COMMON/common-log.sh
 #shellcheck source=nix/common/common-platform.sh
@@ -271,6 +271,7 @@ STELLA_API_PLATFORM_PUBLIC="ansible_play ansible_play_localhost python_get_lib_d
 STELLA_API_NETWORK_PUBLIC="find_free_port get_ip_external check_tcp_port_open ssh_execute get_ip_from_hostname get_ip_from_interface proxy_tunnel enable_proxy disable_proxy no_proxy_for register_proxy register_no_proxy"
 STELLA_API_BOOT_PUBLIC="boot_stella_shell boot_stella_cmd boot_stella_script boot_app_shell boot_app_cmd boot_app_script"
 STELLA_API_LOG_PUBLIC="log set_log_level set_log_state"
+STELLA_API_ALGORITHM_PUBLIC="stack_init stack_push stack_pop"
 
 # SAMPLE : to test a function that return an exit code :
 # 		if $($STELLA_API "is_dir_empty" "/bin"); then
