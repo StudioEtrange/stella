@@ -21,10 +21,7 @@ __stack_push() {
 	eval "${__ptr}=\$(( ${__ptr} + 1 ))"
 	eval "${__stack}[${!__ptr}]=\$2"
 	
-	#_STELLA_STACK_SP=$(( _STELLA_STACK_SP + 1 ))
-	#_STELLA_STACK_[$_STELLA_STACK_SP]="$2"
 
-	return
 }
 
 __stack_pop() {
@@ -44,11 +41,12 @@ __stack_pop() {
 		# stack is empty
 	 	return
 	else
+
 		eval "__data=\${${__stack}[${!__ptr}]}"
+		eval "unset ${__stack}[${!__ptr}]"
+
 		eval "${__ptr}=\$(( ${__ptr} - 1 ))"
-		#__data="${_STELLA_STACK_[$_STELLA_STACK_SP]}"
-		#_STELLA_STACK_SP=$(( _STELLA_STACK_SP - 1 ))
-		
+
 		if [ -z "${__var}" ]; then
 			echo "${__data}"
 		else
@@ -66,11 +64,35 @@ __stack_init() {
 	local __ptr="_STELLA_STACK_SP_${__name}"
 	local __stack="_STELLA_STACK_${__name}"
 	eval "unset ${__stack}"
-	eval "declare -a ${__stack}"
+	#eval "declare -a ${__stack}"
 	# NOTE : position 0 on stack is always empty
 	eval "${__ptr}=0"
+
+
 }
 
+__stack_size() {
+	local __name="$1"
+	if [ -z "$__name" ]; then
+		return
+	fi
+
+	local __ptr="_STELLA_STACK_SP_${__name}"
+	echo ${!__ptr}
+}
+
+
+__stack_print() {
+	local __name="$1"
+	if [ -z "$__name" ]; then
+		return
+	fi
+
+	local __stack="_STELLA_STACK_${__name}"
+
+	eval echo "\${$__stack[@]}"
+
+}
 
 # init a default stella stack
 __stack_init "STELLA"

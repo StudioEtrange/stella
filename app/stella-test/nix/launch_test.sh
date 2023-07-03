@@ -2,10 +2,10 @@
 _CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 _CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
 
-STELLA_LOG_STATE=OFF
+#STELLA_LOG_STATE=OFF
 . "$_CURRENT_FILE_DIR/stella-link.sh" include
 
-$STELLA_API require "bats" "bats"
+$STELLA_API require "bats" "bats" "INTERNAL"
 
 function test_launch_bats() {
 	local domain="$1"
@@ -30,6 +30,7 @@ case $1 in
     test_launch_bats common $2
     test_launch_bats binary $2
     test_launch_bats feature $2
+    test_launch_bats algorithm $2
     ;;
   * )
     test_launch_bats $1 $2
