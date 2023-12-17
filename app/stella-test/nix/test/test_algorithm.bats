@@ -2,7 +2,6 @@
 bats_load_library 'bats-assert'
 bats_load_library 'bats-support'
 
-
 setup() {
 	load 'stella_bats_helper.bash'
 	mkdir -p "$STELLA_APP_WORK_ROOT"
@@ -15,10 +14,12 @@ teardown() {
 
 # STACK -------------------------------------------------------------------
 
+# NOTE : we can not use run function from bats, because run launch a subshell and stack variable are not propagated to parent shell
+
 @test "__stack_1" {
 
+	
 	__stack_init "STACK1"
-	assert_success
 
 	run __stack_size "STACK1"
 	assert_output "0"
@@ -55,3 +56,33 @@ teardown() {
 }
 
 
+
+@test "__stack_3" {
+
+	__stack_init "STACK3"
+
+	__stack_push "STACK3" "AA"
+	__stack_push "STACK3" "BB"
+
+	run __stack_print "STACK3"
+	assert_output "AA BB"
+
+	run __stack_size "STACK3"
+ 	assert_output "2"
+
+	__stack_pop "STACK3" "VAR"
+	assert_equal "$VAR" "BB"
+
+	run echo $VAR
+	assert_output "BB"
+
+	__stack_pop "STACK3"
+	__stack_pop "STACK3"
+
+	run __stack_size "STACK3"
+ 	assert_output "0"
+
+	run __stack_print "STACK3"
+	assert_output ""
+
+}
