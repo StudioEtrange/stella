@@ -26,6 +26,9 @@ function test_launch_bats() {
 
 STELLA_LOG_STATE=ON
 case $1 in
+  h|help|--help|-h)
+    echo " * Usage $0 common|binary|feature|algorithm|all"
+    ;;
   all|"" )
     test_launch_bats common $2
     test_launch_bats binary $2
