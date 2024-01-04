@@ -1,5 +1,5 @@
-if [ ! "$_container-diff_INCLUDED_" = "1" ]; then
-_container-diff_INCLUDED_=1
+if [ ! "$_containerdiff_INCLUDED_" = "1" ]; then
+_containerdiff_INCLUDED_=1
 
 feature_container-diff() {
 	FEAT_NAME=container-diff
