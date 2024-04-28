@@ -156,7 +156,13 @@ goto :eof
 :: TODO : TO FINISH see nix version
 :set_current_platform_info
 
-	REM alternative https://support.microsoft.com/fr-fr/kb/556009
+	REM https://learn.microsoft.com/fr-fr/windows/win32/winprog64/wow64-implementation-details
+	REM PROCESSOR_ARCHITECTURE=AMD64 ou PROCESSOR_ARCHITECTURE=IA64 ou PROCESSOR_ARCHITECTURE=ARM64 or x86
+	set "STELLA_CURRENT_ARCH=!PROCESSOR_ARCHITECTURE!"
+	if "!STELLA_CURRENT_ARCH!"=="" (
+		set "STELLA_CURRENT_ARCH=unknown-arch"
+	)
+
 	if "!PROCESSOR_ARCHITECTURE!"=="x86" (
 		set "STELLA_CPU_ARCH=32"
 		set "STELLA_KERNEL_ARCH=32"
@@ -169,6 +175,7 @@ goto :eof
 
 
 	set "STELLA_NB_CPU=!NUMBER_OF_PROCESSORS!"
+
 
 	call :get_os_from_distro "STELLA_CURRENT_OS" "windows"
 	call :get_platform_from_os "STELLA_CURRENT_PLATFORM" "%STELLA_CURRENT_OS%"

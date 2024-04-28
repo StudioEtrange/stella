@@ -23,39 +23,59 @@ _STELLA_PLATFORM_INCLUDED_=1
 
 __get_os_from_distro() {
 	local _distro=$1
-
+	
 	case $_distro in
-		"Red Hat Enterprise Linux")
-			echo "rhel"
-			;;
-		Ubuntu|ubuntu*)
-			echo "ubuntu"
-			;;
-		Debian|debian*)
-			echo "debian"
-			;;
-		CentOS*|centos*)
-			echo "centos"
-			;;
-		archlinux*)
-			echo "archlinux"
-			;;
-		boot2docker*)
-			echo "linuxgeneric"
-			;;
-		Alpine*|alpine*)
-			echo "alpine"
-			;;
 		"Mac OS X"|macos)
-			echo "macos"
-			;;
-		*Windows*|*windows*)
-			echo "windows"
-			;;
-		*)
-			echo "linuxgeneric"
-			;;
+	 		_distro="macos"
+	 		;;
 	esac
+
+	# minimize
+	_distro=$(echo "${_distro}" | tr '[:upper:]' '[:lower:]')
+
+	
+
+	# remove spaces
+	_distro="${_distro// /_}"
+
+	if [[ "${_distro}" = "unknown" ]] && [[ "${OSTYPE}" =~ "linux" ]]; then
+		_distro="linuxgeneric"
+	fi
+
+	echo $_distro
+
+	# case $_distro in
+	# 	"Red Hat Enterprise Linux")
+	# 		echo "rhel"
+	# 		;;
+	# 	Ubuntu|ubuntu*)
+	# 		echo "ubuntu"
+	# 		;;
+	# 	Debian|debian*)
+	# 		echo "debian"
+	# 		;;
+	# 	CentOS*|centos*)
+	# 		echo "centos"
+	# 		;;
+	# 	archlinux*)
+	# 		echo "archlinux"
+	# 		;;
+	# 	boot2docker*)
+	# 		echo "linuxgeneric"
+	# 		;;
+	# 	Alpine*|alpine*)
+	# 		echo "alpine"
+	# 		;;
+	# 	"Mac OS X"|macos)
+	# 		echo "macos"
+	# 		;;
+	# 	*Windows*|*windows*)
+	# 		echo "windows"
+	# 		;;
+	# 	*)
+	# 		echo "linuxgeneric"
+	# 		;;
+	# esac
 }
 
 
@@ -65,20 +85,43 @@ __get_os_from_distro() {
 __get_platform_from_os() {
 	local _os=$1
 
-	case $_os in
-		centos|archlinux|ubuntu|debian|linuxgeneric|rhel|alpine)
-			echo "linux"
-			;;
-		macos)
-			echo "darwin"
-			;;
+	if [[ "${OSTYPE}" =~ "linux" ]]; then
+		echo "linux"
+		return
+	fi
+
+	if [[ "${OSTYPE}" =~ "darwin" ]]; then
+		echo "darwin"
+		return
+	fi
+
+	case ${_os} in
 		windows)
 			echo "windows"
+			;;
+		unknown)
+			echo "unknown"
 			;;
 		*)
 			echo "unknown"
 			;;
 	esac
+
+
+	# case $_os in
+	# 	centos|archlinux|ubuntu|debian|linuxgeneric|rhel|alpine)
+	# 		echo "linux"
+	# 		;;
+	# 	macos)
+	# 		echo "darwin"
+	# 		;;
+	# 	windows)
+	# 		echo "windows"
+	# 		;;
+	# 	*)
+	# 		echo "unknown"
+	# 		;;
+	# esac
 }
 
 __get_platform_suffix() {
@@ -140,12 +183,14 @@ __set_current_platform_info() {
 
 
 	STELLA_CURRENT_OS=$(__get_os_from_distro "$distro")
+	# TODO do not know what is the purpose of STELLA_CURRENT_OS_ENV
 	STELLA_CURRENT_OS_ENV=$(__get_os_env_from_kernel "$kernel")
 	STELLA_CURRENT_PLATFORM=$(__get_platform_from_os "$STELLA_CURRENT_OS")
 	STELLA_CURRENT_PLATFORM_SUFFIX=$(__get_platform_suffix "$STELLA_CURRENT_PLATFORM")
 
-	# x86_64, aarch64 ...
-	STELLA_CURRENT_ARCH=$(uname -m)
+	# current running arch of the os : x86_64, aarch64 ...
+	STELLA_CURRENT_ARCH=$(uname -m | tr '[:upper:]' '[:lower:]')
+	[ "$STELLA_CURRENT_ARCH " = "" ] && STELLA_CURRENT_ARCH="unknown-arch"
 
 	if type nproc &>/dev/null; then
 		STELLA_NB_CPU=$(nproc)
