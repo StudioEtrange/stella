@@ -383,6 +383,19 @@ goto :eof
 	call :sys_install_vs2015community
 goto :eof
 
+:sys_install_vs2022community
+	REM NOTE : by default some visual studio tools are not installed
+	call :use_package_manager "INSTALL" "vs2022community" "chocolatey visualstudio2022community"
+	call :use_package_manager "INSTALL" "vs2022community" "chocolatey visualstudio2022buildtools"
+	call :use_package_manager "INSTALL" "vs2022community" "chocolatey visualstudio2022-workload-vctools"
+goto :eof
+
+:sys_remove_vs2022community
+	call :use_package_manager "REMOVE" "vs2022community" "chocolatey visualstudio2022-workload-vctools"
+	call :use_package_manager "REMOVE" "vs2022community" "chocolatey visualstudio2022buildtools"
+	call :use_package_manager "REMOVE" "vs2022community" "chocolatey visualstudio2022community"
+goto :eof
+
 
 :sys_install_vs2017community
 	REM NOTE : by default some visual studio tools are not installed
