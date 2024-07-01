@@ -723,7 +723,7 @@ __get_current_package_manager() {
 	esac
 
 	for p in $plist; do
-		if [[ -n `which $p 2> /dev/null` ]]; then
+		if type -P $p > /dev/null; then
 			_package_manager="$p"
 			break
 		fi
