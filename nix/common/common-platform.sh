@@ -192,9 +192,9 @@ __set_current_platform_info() {
 	STELLA_CURRENT_ARCH=$(uname -m | tr '[:upper:]' '[:lower:]')
 	[ "$STELLA_CURRENT_ARCH " = "" ] && STELLA_CURRENT_ARCH="unknown-arch"
 
-	if type nproc &>/dev/null; then
+	if type -P nproc &>/dev/null; then
 		STELLA_NB_CPU=$(nproc)
-	elif type sysctl &>/dev/null; then
+	elif type -P sysctl &>/dev/null; then
 		STELLA_NB_CPU=`sysctl hw.ncpu 2> /dev/null | awk '{print $NF}'`
 	else
 		STELLA_NB_CPU=1
