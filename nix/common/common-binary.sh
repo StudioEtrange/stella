@@ -71,14 +71,16 @@ _STELLA_COMMON_BINARY_INCLUDED_=1
 #								https://github.com/ncopa/lddtree
 #
 #						MACOS :
-#								Use DYLD_LIBRARY_PATH instead of LD_LIBRARY_PATH
+#								Environment variable is DYLD_LIBRARY_PATH instead of LD_LIBRARY_PATH
 #
 #						LINUX DEBUG :
 #								LD_TRACE_LOADED_OBJECTS=1 LD_DEBUG=libs ./program
 #								LD_DEBUG values http://www.bnikolic.co.uk/blog/linux-ld-debug.html
 #
 #						MACOS DEBUG :
-#								DYLD_PRINT_LIBRARIES=y ./program
+#								DYLD_PRINT_LIBRARIES=1 : print loaded libraries
+#								DYLD_PRINT_SEARCHING=1 : print search libraries result 
+#								DYLD_PRINT_LIBRARIES=1 DYLD_PRINT_SEARCHING=1 ./program
 #
 # 	 	LINUX RPATH : PATCHELF
 #							using patchelf  "--set-rpath, --shrink-rpath and --print-rpath now prefer DT_RUNPATH over DT_RPATH,
