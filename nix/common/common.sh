@@ -2889,13 +2889,27 @@ __git_project_version() {
 		[ "$o" = "LONG" ] && _opt_version_long=ON && _opt_version_short=OFF
 	done
 
+	if [ "$_opt_version_short" = "ON" ]; then
+		_git_options="--abbrev=0"
+	else
+		_git_options="--long"
+	fi
+
 	if [ -d "${_path}/.git" ]; then
-		if [[ -n `which git 2> /dev/null` ]]; then
-			if [ "$_opt_version_long" = "ON" ]; then
-				echo "$(git --git-dir "${_path}/.git" describe --tags --long --always --first-parent)"
-			fi
-			if [ "$_opt_version_short" = "ON" ]; then
-				echo "$(git --git-dir "${_path}/.git" describe --tags --abbrev=0 --always --first-parent)"
+		if type -P git &>/dev/null; then
+			# TODO NOTE : --first-parent option needs git version >= 1.8.4 but for fast execution purpose we test only >2
+			if [ "$(git --version | awk '{print $3}' | cut -d. -f1)" -ge 2 ]; then			
+				echo "$(git --git-dir "${_path}/.git" describe --tags ${_git_options} --always --first-parent)"
+			else
+				commit=$(git --git-dir "${_path}/.git" rev-parse HEAD)
+				while [ -n "$commit" ]; do
+					tag=$(git --git-dir "${_path}/.git" describe --tags ${_git_options} --always $commit 2>/dev/null)
+					if [ -n "$tag" ]; then
+						echo $tag
+						break
+					fi
+					commit=$(git --git-dir "${_path}/.git" rev-parse "${commit}^1" 2>/dev/null || echo "")
+				done
 			fi
 		fi
 	fi
