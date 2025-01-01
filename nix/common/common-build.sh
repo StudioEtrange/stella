@@ -211,7 +211,7 @@ __prepare_build() {
 	echo "====> Build Link path mode : $STELLA_BUILD_LINK_PATH"
 	echo "====> Linked libs from stella features : $STELLA_LINKED_LIBS_LIST"
 	echo "====> Linked libs from system : $STELLA_LINKED_LIBS_SYSTEM_LIST"
-	echo "====> pkg-config tool : $(which pkg-config)"
+	echo "====> pkg-config tool : $(type -P pkg-config 2>/dev/null)"
 	echo "====> env PKG_CONFIG_PATH (additional search path for pkg-config): $PKG_CONFIG_PATH"
 	echo "====> pkg-config full search path : $(__pkgconfig_search_path)"
 	echo "** FOLDERS"

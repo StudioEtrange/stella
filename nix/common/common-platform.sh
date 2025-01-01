@@ -462,7 +462,7 @@ __default_runtime_search_path() {
 			# the 'include' command is relative
 			local _oldpwd="$PWD"
 			cd "/etc" >/dev/null
-			interp=$(__get_elf_interpreter_linux "$(which ls)")
+			interp=$(__get_elf_interpreter_linux "$(type -P ls 2>/dev/null)")
 			echo $interp
 			case "$interp" in
 			*/ld-musl-*)
@@ -723,7 +723,7 @@ __get_current_package_manager() {
 	esac
 
 	for p in $plist; do
-		if type -P $p > /dev/null; then
+		if type -P "${p}" &>/dev/null; then
 			_package_manager="$p"
 			break
 		fi
@@ -858,7 +858,7 @@ __ansible_play_localhost() {
 	local __opt="$3"
 
 	local __tags=
-	local __python="-e ansible_python_interpreter=$(which python)"
+	local __python="-e ansible_python_interpreter=$(type -P python 2>/dev/null)"
 	local __debug="-v"
 	for o in ${__opt}; do
 		[ "$__tags" = "1" ] && __tags="--tags=$o"
@@ -965,11 +965,12 @@ __sys_install_brew() {
 
 
 	echo " ** Check Homebrew"
-	if [[ -n `which brew 2> /dev/null` ]]; then
+	#if [[ -n `which brew 2> /dev/null` ]]; then
+	if type -P brew &>/dev/null; then
 		echo " ** brew doctor"
 		brew doctor
-		local _brewLocation=`which brew`
-		local _appLocation=`brew --prefix`
+		local _brewLocation="$(type -P brew 2>/dev/null)"
+		local _appLocation="$(brew --prefix)"
 		echo " ** -------------- **"
 		echo "Homebrew is installed in $_brewLocation"
 		echo "Homebrew apps are run from $_appLocation"

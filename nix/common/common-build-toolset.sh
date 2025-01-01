@@ -197,7 +197,8 @@ __enable_current_toolset() {
 		;;
 		cmake)
 			# if no version specified, prefer cmake already present on system
-			if [ "$(which cmake 2>/dev/null)" = "" ]; then
+			#if [ "$(which cmake 2>/dev/null)" = "" ]; then
+			if ! type -P cmake &>/dev/null; then
 				__toolset_install "$STELLA_BUILD_CONFIG_TOOL_SCHEMA"
 				__toolset_init "$STELLA_BUILD_CONFIG_TOOL_SCHEMA"
 			fi
@@ -301,20 +302,23 @@ __enable_current_toolset() {
 			"C++")
 				case $STELLA_BUILD_COMPIL_FRONTEND in
 					default)
-						if [ "$(which g++ 2>/dev/null)" = "" ] && [ "$(which clang++ 2>/dev/null)" = "" ]; then
+						#if [ "$(which g++ 2>/dev/null)" = "" ] && [ "$(which clang++ 2>/dev/null)" = "" ]; then				
+						if ! type -P "g++" &>/dev/null || ! type -P "clang++" &>/dev/null; then
 							echo "** ERROR : missing g++ or clang++"
 							echo "** Try stella.sh sys install build-chain-standard OR your regular OS package manager"
 							exit 1
 						fi
 					;;
 					clang-omp)
-						if [ "$(which clang++-omp 2>/dev/null)" = "" ]; then
+						#if [ "$(which clang++-omp 2>/dev/null)" = "" ]; then
+						if ! type -P "clang++-omp" &>/dev/null; then
 							echo "** ERROR : missing clang++ for clang-omp"
 							exit 1
 						fi
 					;;
 					gcc)
-						if [ "$(which g++ 2>/dev/null)" = "" ]; then
+						#if [ "$(which g++ 2>/dev/null)" = "" ]; then
+						if ! type -P "g++" &>/dev/null; then
 							echo "** ERROR : missing g++ for gcc"
 							__toolset_install "$STELLA_BUILD_COMPIL_FRONTEND_SCHEMA"
 							__toolset_init "$STELLA_BUILD_COMPIL_FRONTEND_SCHEMA"

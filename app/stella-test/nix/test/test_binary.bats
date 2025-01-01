@@ -21,7 +21,7 @@ __test_clean_file() {
 }
 
 __test_prepare_bin_file() {
-	local _origin_test_file="$(which cat)"
+	local _origin_test_file="$(type -P cat 2>/dev/null)"
 	local _test_file="${BATS_TMPDIR}/cat"
 	cp -f "$_origin_test_file" "$_test_file"
 
@@ -29,7 +29,7 @@ __test_prepare_bin_file() {
 }
 
 __test_prepare_bin_file_linked() {
-	local _origin_test_file="$(which ssh)"
+	local _origin_test_file="$(type -P ssh 2>/dev/null)"
 	local _test_file="${BATS_TMPDIR}/ssh"
 	cp -f "$_origin_test_file" "$_test_file"
 
@@ -47,16 +47,16 @@ __test_prepare_dynamic_lib_file_darwin() {
 
 # GENERIC -------------------------------------------------------------------
 @test "__get_arch" {
-	run __get_arch "$(which cat)"
+	run __get_arch "$(type -P cat 2>/dev/null)"
 	refute_output ""
 }
 
 @test "__check_arch" {
-	run __check_arch "$(which cat)"
+	run __check_arch "$(type -P cat 2>/dev/null)"
 	refute_output ""
 	assert_success
 
-	run __check_arch "$(which cat)" "FOO"
+	run __check_arch "$(type -P cat 2>/dev/null)" "FOO"
 	refute_output ""
 	assert_failure
 }

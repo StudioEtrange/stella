@@ -966,7 +966,8 @@ __sort_version() {
 
 
 __url_encode() {
-	if [ "$(which xxd 2>/dev/null)" = "" ]; then
+	#if [ "$(which xxd 2>/dev/null)" = "" ]; then
+	if ! type -P xxd &>/dev/null; then
 		__url_encode_1 "$@"
 	else
 		__url_encode_with_xxd "$@"
@@ -2729,13 +2730,15 @@ __download() {
 	if [ ! -f "$STELLA_APP_CACHE_DIR/$FILE_NAME" ]; then
 		if [ ! -f "$STELLA_INTERNAL_CACHE_DIR/$FILE_NAME" ]; then
 			# NOTE : curl seems to be more compatible
-			if [[ -n `which curl 2> /dev/null` ]]; then
+			#if [[ -n `which curl 2> /dev/null` ]]; then
+			if type -P curl &>/dev/null; then
 				# TODO : why two curl call ?
 				curl -fkSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL" || \
 				curl -fkSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL" || \
 				rm -f "$STELLA_APP_CACHE_DIR/$FILE_NAME"
 			else
-				if [[ -n `which wget 2> /dev/null` ]]; then
+				#if [[ -n `which wget 2> /dev/null` ]]; then
+				if type -P wget &>/dev/null; then
 					wget "$URL" -O "$STELLA_APP_CACHE_DIR/$FILE_NAME" --no-check-certificate || \
 					wget "$URL" -O "$STELLA_APP_CACHE_DIR/$FILE_NAME" || \
 					rm -f "$STELLA_APP_CACHE_DIR/$FILE_NAME"
