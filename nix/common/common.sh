@@ -2866,7 +2866,8 @@ __mercurial_project_version() {
 		[ "$o" = "LONG" ] && _opt_version_long=ON
 	done
 
-	if [[ -n `which hg 2> /dev/null` ]]; then
+	#if [[ -n `which hg 2> /dev/null` ]]; then
+	if type -P hg &>/dev/null; then
 		if [ "$_opt_version_long" = "ON" ]; then
 			echo "$(hg log -R "$_PATH" -r . --template "{latesttag}-{latesttagdistance}-{node|short}")"
 		fi
