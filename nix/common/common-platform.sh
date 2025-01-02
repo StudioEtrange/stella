@@ -363,17 +363,18 @@ __require() {
 			else
 				if [ "$_opt_stella_feature" = "ON" ]; then
 					echo "** REQUIRE $_id : installing it from stella"
-					echo -------------------------------------------
+					#echo -------------------------------------------
 					( __feature_install "$_id" "NON_DECLARED $_opt_internal" )
 
-					echo REALLY ENABLED 1 ${FEATURE_LIST_ENABLED[@]}
-					echo $PATH
+					#echo REALLY ENABLED 1 ${FEATURE_LIST_ENABLED[@]}
+					#echo $PATH
 
-					echo -------------------------------------------
+					#echo -------------------------------------------
+					echo "** REQUIRE $_id : init it"
 					__feature_init "$_id" "NON_DECLARED"
-					echo REALLY ENABLED 2 ${FEATURE_LIST_ENABLED[@]}
-					echo $PATH
-					echo -------------------------------------------
+					echo "** features now enabled ${FEATURE_LIST_ENABLED[@]}"
+					#echo $PATH
+					#echo -------------------------------------------
 				else
 					echo "** ERROR -- Please install $_artefact"
 					echo "-- For a system install : try stella.sh sys install $_id OR your regular OS package manager"
