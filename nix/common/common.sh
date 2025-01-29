@@ -2314,7 +2314,7 @@ __count_folder_item() {
 }
 
 __del_folder() {
-	echo "** Deleting $1 folder"
+	__log "DEBUG" "** Deleting $1 folder"
 	[ -d $1 ] && rm -Rf $1
 }
 

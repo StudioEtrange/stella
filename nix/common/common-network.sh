@@ -590,6 +590,7 @@ __get_network_info() {
 
 }
 
+# TODO return only ipv4
 __get_ip_from_interface() {
 	local _if="$1"
 	type ifconfig &>/dev/null

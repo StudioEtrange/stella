@@ -220,7 +220,7 @@ __init_app() {
 		mkdir -p "$_approot"
 	fi
 
-  [ "$_workroot" = "" ] && _workroot="$_approot/workspace"
+  	[ "$_workroot" = "" ] && _workroot="$_approot/workspace"
 	[ "$_cachedir" = "" ] && _cachedir="$_approot/cache"
 
 	[ "$(__is_abs "$_workroot")" = "FALSE" ] && _workroot=$(__rel_to_abs_path "$_workroot" "$_approot")

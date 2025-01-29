@@ -526,7 +526,7 @@ __feature_remove() {
 	if [ "$TEST_FEATURE" = "1" ]; then
 
 		if [ ! "$FEAT_BUNDLE" = "" ]; then
-			__log "DEBUG" " ** Remove bundle $FEAT_NAME version $FEAT_VERSION"
+			__log "INFO" "** Remove bundle $FEAT_NAME version $FEAT_VERSION"
 			__del_folder $FEAT_INSTALL_ROOT
 
 			__push_schema_context
@@ -546,7 +546,7 @@ __feature_remove() {
 			FEAT_BUNDLE_MODE=
 			__pop_schema_context
 		else
-			__log "DEBUG" " ** Remove $FEAT_NAME version $FEAT_VERSION from $FEAT_INSTALL_ROOT"
+			__log "INFO" "** Remove $FEAT_NAME version $FEAT_VERSION from $FEAT_INSTALL_ROOT"
 			__del_folder $FEAT_INSTALL_ROOT
 		fi
 	fi
@@ -936,7 +936,7 @@ __feature_init_installed() {
 		fi
 	done
 
-	__log "INFO" "** Features initialized : $FEATURE_LIST_ENABLED_VISIBLE"
+	__log "INFO" "Features initialized : $FEATURE_LIST_ENABLED_VISIBLE"
 }
 
 

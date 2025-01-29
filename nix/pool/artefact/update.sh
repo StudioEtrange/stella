@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 _CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+# https://github.com/mercuriev/bash-colors
+update_bash-colors() {
+  rm -Rf "${_CURRENT_FILE_DIR}/bash-colors"
+  echo "Using https://github.com/mercuriev/bash-colors"
+  git clone https://github.com/mercuriev/bash-colors "${_CURRENT_FILE_DIR}/bash-colors"
+  rm -Rf "${_CURRENT_FILE_DIR}/bash-colors/.git"
+}
+
+
 # https://github.com/rudimeier/bash_ini_parser
 update_bash_ini_parser() {
   rm -Rf "${_CURRENT_FILE_DIR}/bash_ini_parser"
@@ -35,6 +44,9 @@ update_pure-getopt() {
 }
 
 case $1 in
+  bash-colors )
+    update_bash-colors
+    ;;
   bash_ini_parser )
     update_bash_ini_parser
     ;;
@@ -47,7 +59,7 @@ case $1 in
   lddtree )
     update_lddtree
     ;;
-    * )
-    echo "Usage : ${_CURRENT_FILE_DIR}/update.sh <bash_ini_parser|pure-getopt|screenFetch|lddtree>"
+  * )
+    echo "Usage : ${_CURRENT_FILE_DIR}/update.sh <bash-colors|bash_ini_parser|pure-getopt|screenFetch|lddtree>"
     ;;
 esac
