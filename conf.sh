@@ -178,6 +178,7 @@ else
 		STELLA_ENV_FILE="$STELLA_APP_ENV_FILE"
 		__log_stella "DEBUG" "Current stella env file : $STELLA_ENV_FILE"
 	else
+		STELLA_ENV_FILE="$STELLA_APP_ENV_FILE"
 		__log_stella "WARN" "Current selected stella app env file does not exist : $STELLA_APP_ENV_FILE"
 	fi
 fi

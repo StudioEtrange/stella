@@ -3086,21 +3086,26 @@ __get_keys() {
 
 
 __del_key() {
-	local _FILE=$1
-	local _SECTION=$2
-	local _KEY=$3
+	local _FILE="$1"
+	local _SECTION="$2"
+	local _KEY="$3"
 
 	[ -f "$_FILE" ] && __ini_file "DEL" "$_FILE" "$_SECTION" "$_KEY"
 }
 
 __add_key() {
-	local _FILE=$1
-	local _SECTION=$2
-	local _KEY=$3
-	local _VALUE=$4
+	local _FILE="$1"
+	local _SECTION="$2"
+	local _KEY="$3"
+	local _VALUE="$4"
 
-	if [ ! -f "$_FILE" ]; then
-		touch $_FILE
+	if [ "${_FILE}" = "" ]; then
+		__dds_log "ERROR" "add_key no file specified"
+		exit 1
+	fi
+
+	if [ ! -f "${_FILE}" ]; then
+		touch ${_FILE}
 	fi
 
 	__ini_file "ADD" "$_FILE" "$_SECTION" "$_KEY" "$_VALUE"
