@@ -52,7 +52,7 @@ __transfer_app(){
 
 	__standard_include="INCLUDE /.stella-id"
 
-	__log "DEBUG" "** ${_opt_sudo} Transfer app $STELLA_APP_NAME to $_uri"
+	__log "DEBUG" "** ${_opt_sudo} Transfer app $STELLA_APP_NAME from $STELLA_APP_ROOT to $_uri"
 
 	__transfer_folder_rsync "$STELLA_APP_ROOT" "$_uri" "$__standard_include $_opt_delete_excluded $_opt_ex_cache $_opt_ex_workspace $_opt_ex_hidden $_opt_exclude $_opt_ex_git $_opt_sudo $_opt_folder_content $_opt_copy_links"
 
