@@ -901,6 +901,20 @@ __ansible_play_localhost() {
 # }
 
 
+# search existing formula here : https://formulae.brew.sh/
+# TODO not complete because we might want to get binary by specifying a version and a platform
+__brew_get_archive_url() {
+	local formula="$1"
+
+	json="$(curl -skL "https://formulae.brew.sh/api/formula/${formula}.json" | tr -d '\n')"
+
+	bottles="$(echo "$json" | sed -E 's/.*"bottle":\{([^}]+\}\}\})\}.*/\1/')"
+
+	echo "$bottles" | grep -Eo '"[a-zA-Z0-9_]+":\{"cellar":"[^"]+","url":"[^"]+"' | \
+	sed -E 's/"([a-zA-Z0-9_]+)":\{"cellar":"[^"]+","url":"([^"]+)"/\1 \2/'
+
+}
+
 # --------- SYSTEM INSTALL/REMOVE RECIPES------------------------------------
 __sys_install() {
 	# _item package name
