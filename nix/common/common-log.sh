@@ -63,122 +63,124 @@ __log_app() {
 # domain is a string to indicate some sort of "category"
 # remaning parameters are the message to print
 __log_private() {
-	local __level="$1"
-	local __domain="$2"
-	shift 2
-	local __msg="$@"
+	{
+		local __level="$1"
+		local __domain="$2"
+		shift 2
+		local __msg="$@"
 
-	_print="0"
+		_print="0"
 
-	[ ${__current_log_level_filter} = "" ] && __current_log_level_filter="INFO"
-	
-	local _beginning_new_line="0"
-	local _no_header="0"
-	while [[ "${__level}" =~ _BEGINNING_NEWLINE|_NO_HEADER ]]; do
+		[ ${__current_log_level_filter} = "" ] && __current_log_level_filter="INFO"
+		
+		local _beginning_new_line="0"
+		local _no_header="0"
+		while [[ "${__level}" =~ _BEGINNING_NEWLINE|_NO_HEADER ]]; do
+			case ${__level} in
+				*_BEGINNING_NEWLINE* ) _beginning_new_line="1"; __level="${__level//_BEGINNING_NEWLINE}";;
+				*_NO_HEADER* ) _no_header="1"; __level="${__level//_NO_HEADER}";;
+			esac
+		done
+
+		local _color=
+		local _no_color_for_msg="1"
 		case ${__level} in
-			*_BEGINNING_NEWLINE* ) _beginning_new_line="1"; __level="${__level//_BEGINNING_NEWLINE}";;
-			*_NO_HEADER* ) _no_header="1"; __level="${__level//_NO_HEADER}";;
+				INFO )
+					_color="clr_bold clr_green"
+				;;
+				WARN )
+					_color="clr_bold"
+				;;
+				ERROR )
+					_color="clr_bold clr_red"
+					_no_color_for_msg="0"
+				;;
+				DEBUG )
+					_color="clr_bold clr_cyan"
+				;;
+				ASK )
+					_color="clr_bold clr_blue"
+				;;
 		esac
-	done
+		# disable color if needed
+		if [ "${STELLA_TERMINAL_COLOR}" = "OFF" ]; then
+			_color=""
+		fi
 
-	local _color=
-	local _no_color_for_msg="1"
-	case ${__level} in
+		case ${__current_log_level_filter} in
 			INFO )
-				_color="clr_bold clr_green"
-			;;
+				case ${__level} in
+					INFO|WARN|ERROR|ASK ) _print="1"
+					;;
+				esac
+				;;
 			WARN )
-				_color="clr_bold"
+				case ${__level} in
+					WARN|ERROR|ASK ) _print="1"
+					;;
+				esac
 			;;
 			ERROR )
-				_color="clr_bold clr_red"
-				_no_color_for_msg="0"
+				case ${__level} in
+					ERROR|ASK ) _print="1"
+					;;
+				esac
 			;;
 			DEBUG )
-				_color="clr_bold clr_cyan"
+				case ${__level} in
+					INFO|WARN|ERROR|DEBUG|ASK ) _print="1"
+					;;
+				esac
 			;;
-			ASK )
-				_color="clr_bold clr_blue"
-			;;
-	esac
-	# disable color if needed
-	if [ "${STELLA_TERMINAL_COLOR}" = "OFF" ]; then
-		_color=""
-	fi
-
-	case ${__current_log_level_filter} in
-		INFO )
-			case ${__level} in
-				INFO|WARN|ERROR|ASK ) _print="1"
-				;;
-			esac
-			;;
-		WARN )
-			case ${__level} in
-				WARN|ERROR|ASK ) _print="1"
-				;;
-			esac
-		;;
-		ERROR )
-			case ${__level} in
-				ERROR|ASK ) _print="1"
-				;;
-			esac
-		;;
-		DEBUG )
-			case ${__level} in
-				INFO|WARN|ERROR|DEBUG|ASK ) _print="1"
-				;;
-			esac
-		;;
-	esac
-
-	if [ "${_print}" = "1" ]; then
-
-		[ ! ${__domain} = "" ] && __domain="@${__domain}"
-
-		# start by printing a newline
-		if [ "${_beginning_new_line}" = "1" ]; then
-			printf "\n";
-		fi
-
-		# nothing to print more
-		if [ "${_no_header}" = "1" ]; then
-			if [ "${__msg}" = "" ]; then
-				return
-			fi
-		fi
-
-
-		case ${__level} in
-			# add spaces for tab alignment
-			INFO|WARN ) __level="${__level} ";;
-			ASK ) __level="${__level}  ";;
 		esac
-		
 
-		if [ "${_color}" = "" ]; then
-			if [ "${_no_header}" = "0" ]; then
-				echo "${__level}${__domain}> ${__msg}"
-			else
-				echo "${__msg}"
+		if [ "${_print}" = "1" ]; then
+
+			[ ! ${__domain} = "" ] && __domain="@${__domain}"
+
+			# start by printing a newline
+			if [ "${_beginning_new_line}" = "1" ]; then
+				printf "\n";
 			fi
-		else
-			if [ "${_no_color_for_msg}" = "1" ]; then
+
+			# nothing to print more
+			if [ "${_no_header}" = "1" ]; then
+				if [ "${__msg}" = "" ]; then
+					return
+				fi
+			fi
+
+
+			case ${__level} in
+				# add spaces for tab alignment
+				INFO|WARN ) __level="${__level} ";;
+				ASK ) __level="${__level}  ";;
+			esac
+			
+
+			if [ "${_color}" = "" ]; then
 				if [ "${_no_header}" = "0" ]; then
-					${_color} -n "${__level}${__domain}> "; clr_reset "${__msg}"
+					echo "${__level}${__domain}> ${__msg}"
 				else
-					clr_reset "${__msg}"
+					echo "${__msg}"
 				fi
 			else
-				if [ "${_no_header}" = "0" ]; then
-					${_color} "${__level}${__domain}> ${__msg}"
+				if [ "${_no_color_for_msg}" = "1" ]; then
+					if [ "${_no_header}" = "0" ]; then
+						${_color} -n "${__level}${__domain}> "; clr_reset "${__msg}"
+					else
+						clr_reset "${__msg}"
+					fi
 				else
-					${_color} "${__msg}"
+					if [ "${_no_header}" = "0" ]; then
+						${_color} "${__level}${__domain}> ${__msg}"
+					else
+						${_color} "${__msg}"
+					fi
 				fi
 			fi
 		fi
-	fi
+	} >&2
 }
 
 fi
