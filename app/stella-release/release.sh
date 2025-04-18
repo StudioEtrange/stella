@@ -172,7 +172,7 @@ function pack_stella() {
 	esac
 
 	if [ "$_opt_auto_extract" = "ON" ]; then
-		# TODO replace with __make_sevenzip_sfx_bin
+		echo TODO replace with __make_sevenzip_sfx_bin
 		#$STELLA_API make_targz_sfx_shell "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".7z "$STELLA_APP_WORK_ROOT/output/dist/$_release_filename".zip.exe win "7Z"
 	fi
 }
