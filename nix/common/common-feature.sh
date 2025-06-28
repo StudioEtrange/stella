@@ -1110,202 +1110,6 @@ __internal_feature_context() {
 }
 
 
-
-# select an official schema
-# pick a feature schema by filling some values with default one
-# and may return split schema properties
-# __select_official_schema_old() {
-# 	local _SCHEMA="$1"
-# 	local _RESULT_SCHEMA="$2"
-#
-# 	local _VAR_FEATURE_NAME="$3"
-# 	local _VAR_FEATURE_VER="$4"
-# 	local _VAR_FEATURE_ARCH="$5"
-# 	local _VAR_FEATURE_FLAVOUR="$6"
-# 	local _VAR_FEATURE_OS_RESTRICTION="$7"
-# 	local _VAR_FEATURE_OS_EXCLUSION="$8"
-#
-# 	local _FILLED_SCHEMA=
-#
-#
-#  	if [ ! "$_RESULT_SCHEMA" = "" ]; then
-# 		eval $_RESULT_SCHEMA=
-# 	fi
-#
-#  	# __translate_schema "$_SCHEMA" "$_VAR_FEATURE_NAME" "$_VAR_FEATURE_VER" "$_VAR_FEATURE_ARCH" "$_VAR_FEATURE_FLAVOUR" "$_VAR_FEATURE_OS_RESTRICTION" "$_VAR_FEATURE_OS_EXCLUSION"
-# 	__translate_schema "$_SCHEMA" "$3" "$4" "$5" "$6" "$7" "$8"
-#
-# 	local _TR_FEATURE_NAME=${!_VAR_FEATURE_NAME}
-# 	local _TR_FEATURE_VER=${!_VAR_FEATURE_VER}
-# 	local _TR_FEATURE_ARCH=${!_VAR_FEATURE_ARCH}
-# 	local _TR_FEATURE_FLAVOUR=${!_VAR_FEATURE_FLAVOUR}
-# 	local _TR_FEATURE_OS_RESTRICTION=${!_VAR_FEATURE_OS_RESTRICTION}
-# 	local _TR_FEATURE_OS_EXCLUSION=${!_VAR_FEATURE_OS_EXCLUSION}
-# 	local _official=0
-# 	if [[ " ${__STELLA_FEATURE_LIST[@]} " =~ " ${_TR_FEATURE_NAME} " ]]; then
-# 		# grab feature info
-# 		local _feat_found=0
-# 		if [ ! -z "$STELLA_FEATURE_RECIPE_EXTRA" ]; then
-# 			if [ -f "$STELLA_FEATURE_RECIPE_EXTRA/feature_$_TR_FEATURE_NAME.sh" ]; then
-# 				. "$STELLA_FEATURE_RECIPE_EXTRA/feature_$_TR_FEATURE_NAME.sh"
-# 				_feat_found=1
-# 			fi
-# 		fi
-# 		if [ "$_feat_found" = "0" ]; then
-# 			if [ -f "$STELLA_FEATURE_RECIPE/feature_$_TR_FEATURE_NAME.sh" ]; then
-# 				. "$STELLA_FEATURE_RECIPE/feature_$_TR_FEATURE_NAME.sh"
-# 				_feat_found=1
-# 			else
-# 				if [ -f "$STELLA_FEATURE_RECIPE_EXPERIMENTAL/feature_$_TR_FEATURE_NAME.sh" ]; then
-# 					. "$STELLA_FEATURE_RECIPE_EXPERIMENTAL/feature_$_TR_FEATURE_NAME.sh"
-# 					_feat_found=1
-# 				fi
-# 			fi
-# 		fi
-# 		if [ "$_feat_found" = "1" ]; then
-# 			# load feature properties
-# 			feature_$_TR_FEATURE_NAME
-# 		fi
-#
-#
-# 		local list_version=
-# 		local k
-# 		for k in $FEAT_LIST_SCHEMA; do
-# 			__translate_schema "${_TR_FEATURE_NAME}#${k}" "NONE" "_TMP_V"
-# 			list_version="$list_version $_TMP_V"
-# 		done
-# 		# select last available version by default
-# 		if [ "${_TR_FEATURE_VER}" = "" ]; then
-# 			# TODO use ENDING_CHAR_REVERSE for some feature in a new FIELD (like FEAT_VERSION_ORDER)
-# 			_TR_FEATURE_VER="$(__get_last_version "$list_version" "SEP _")"
-# 			[ ! "$_VAR_FEATURE_VER" = "" ] && eval $_VAR_FEATURE_VER=$_TR_FEATURE_VER
-# 		else
-# 			# find version from the list
-# 			_TR_FEATURE_VER="$(__select_version_from_list "${_TR_FEATURE_VER}" "${list_version}" "SEP _")"
-# 			# NOTE : if _TR_FEATURE_VER is empty here, its because we cannot find a matching version
-# 			[ ! "$_VAR_FEATURE_VER" = "" ] && eval $_VAR_FEATURE_VER=$_TR_FEATURE_VER
-# 		fi
-#
-# 		_FILLED_SCHEMA="${_TR_FEATURE_NAME}#${_TR_FEATURE_VER}"
-#
-# 		# ADDING OS restriction and OS exclusion
-# 		_OS_OPTION=
-# 		[ ! "$_TR_FEATURE_OS_RESTRICTION" = "" ] && _OS_OPTION="$_OS_OPTION/$_TR_FEATURE_OS_RESTRICTION"
-# 		[ ! "$_TR_FEATURE_OS_EXCLUSION" = "" ] && _OS_OPTION="$_OS_OPTION"\\\\"$_TR_FEATURE_OS_EXCLUSION"
-#
-#
-#
-# 		# check schema exists
-# 		# we already know which version to find
-# 		# we are looking for different arch and flavour
-# 		# if we are looking for a bundle, only arch is used. There is no flavour support for bundle
-# 		# starting with specified ones, then with default ones, then with possible ones
-# 		# NOTE : version must exist and take precedence on flavour which take precedence on arch
-# 		local _looking_arch
-# 		local _looking_flavour
-#
-# 		if [ "$_TR_FEATURE_ARCH" = "" ]; then
-# 			# arch could have absolutely no info specified in default value and FEAT_LIST_SCHEMA
-# 			# so we do not have to look for any value
-# 			[ ! "$FEAT_DEFAULT_ARCH" = "" ] && _looking_arch="$FEAT_DEFAULT_ARCH x64 x86"
-# 		else
-# 			_looking_arch="$_TR_FEATURE_ARCH"
-# 		fi
-#
-# 		local l
-# 		local a
-# 		local f
-#
-# 		# bundle might have arch, but no flavour
-# 		if [ ! "$FEAT_BUNDLE" = "" ]; then
-# 			# arch is not always presents in FEAT_LIST_SCHEMA and could not have default value
-# 			if [ "$_looking_arch" = "" ]; then
-# 				for l in $FEAT_LIST_SCHEMA; do
-# 					if [ "${_TR_FEATURE_NAME}#${l}" = "$_FILLED_SCHEMA" ]; then
-# 						[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
-# 					fi
-# 					[ "$_official" = "1" ] && break
-# 				done
-# 			else
-# 				for a in $_looking_arch; do
-# 					for l in $FEAT_LIST_SCHEMA; do
-# 						if [ "${_TR_FEATURE_NAME}#${l}" = "$_FILLED_SCHEMA"@"$a" ]; then
-# 							[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
-# 						fi
-# 						[ "$_official" = "1" ] && break
-# 					done
-# 					[ "$_official" = "1" ] && break
-# 				done
-# 			fi
-# 		else
-#
-#
-# 			# flavour is always presents in FEAT_LIST_SCHEMA but not for bundle
-# 			if [ "$_TR_FEATURE_FLAVOUR" = "" ]; then
-# 				_looking_flavour="$FEAT_DEFAULT_FLAVOUR binary source"
-# 			else
-# 				_looking_flavour="$_TR_FEATURE_FLAVOUR"
-# 			fi
-#
-# 			for f in $_looking_flavour; do
-# 				# we do not look for any arch while searching source flavour
-# 				# arch is not used when schema contains source,
-# 				# only used for binary flavour
-# 				if [ "$f" = "source" ]; then
-# 					for l in $FEAT_LIST_SCHEMA; do
-# 						if [ "${_TR_FEATURE_NAME}#${l}" = "$_FILLED_SCHEMA":"$f" ]; then
-# 							[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
-# 						fi
-# 						[ "$_official" = "1" ] && break
-# 					done
-# 				else
-# 					# arch is not always presents in FEAT_LIST_SCHEMA and could not have default value
-# 					if [ "$_looking_arch" = "" ]; then
-# 						for l in $FEAT_LIST_SCHEMA; do
-# 							if [ "${_TR_FEATURE_NAME}#${l}" = "$_FILLED_SCHEMA":"$f" ]; then
-# 								[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
-# 							fi
-# 							[ "$_official" = "1" ] && break
-# 						done
-# 					else
-# 						for a in $_looking_arch; do
-# 							for l in $FEAT_LIST_SCHEMA; do
-# 								if [ "${_TR_FEATURE_NAME}#${l}" = "$_FILLED_SCHEMA"@"$a":"$f" ]; then
-# 									[ ! "$_RESULT_SCHEMA" = "" ] && _official=1
-# 								fi
-# 								[ "$_official" = "1" ] && break
-# 							done
-# 							[ "$_official" = "1" ] && break
-# 						done
-# 					fi
-# 				fi
-# 				[ "$_official" = "1" ] && break
-# 			done
-# 		fi
-#
-# 		if 	[ "$_official" = "1" ]; then
-# 			[ ! "$a" = "" ] && _FILLED_SCHEMA="$_FILLED_SCHEMA"@"$a"
-# 			[ ! "$f" = "" ] && _FILLED_SCHEMA="$_FILLED_SCHEMA":"$f"
-#
-# 			[ ! "$_VAR_FEATURE_ARCH" = "" ] && eval $_VAR_FEATURE_ARCH="$a"
-# 			[ ! "$_VAR_FEATURE_FLAVOUR" = "" ] && eval $_VAR_FEATURE_FLAVOUR="$f"
-# 		fi
-# 	fi
-#
-# 	if [ "$_official" = "1" ]; then
-# 		eval $_RESULT_SCHEMA=$_FILLED_SCHEMA$_OS_OPTION
-# 	else
-# 		# not official so empty split values
-# 		[ ! "$_VAR_FEATURE_NAME" = "" ] && eval $_VAR_FEATURE_NAME=
-# 		[ ! "$_VAR_FEATURE_VER" = "" ] && eval $_VAR_FEATURE_VER=
-# 		[ ! "$_VAR_FEATURE_ARCH" = "" ] && eval $_VAR_FEATURE_ARCH=
-# 		[ ! "$_VAR_FEATURE_FLAVOUR" = "" ] && eval $_VAR_FEATURE_FLAVOUR=
-# 		[ ! "$_VAR_FEATURE_OS_RESTRICTION" = "" ] && eval $_VAR_FEATURE_OS_RESTRICTION=
-# 		[ ! "$_VAR_FEATURE_OS_EXCLUSION" = "" ] && eval $_VAR_FEATURE_OS_EXCLUSION=
-# 	fi
-#
-# }
-
 # select an official schema
 # pick a feature schema by filling some values with default one
 # and may return split schema properties
@@ -1432,6 +1236,7 @@ __select_official_schema() {
 		if [ "$_TR_FEATURE_ARCH" = "" ]; then
 			# arch could have absolutely no info specified in default value and FEAT_LIST_SCHEMA
 			# so we do not have to look for any value
+			# x86 means 32bits or x64 means 64 bits
 			[ ! "$FEAT_DEFAULT_ARCH" = "" ] && _looking_arch="$FEAT_DEFAULT_ARCH x64 x86"
 		else
 			_looking_arch="$_TR_FEATURE_ARCH"
@@ -1542,7 +1347,7 @@ __select_official_schema() {
 
 # split schema properties
 # feature schema name[#version][@arch][:flavour][/os_restriction][\os_exclusion] in any order
-#				@arch could be x86 or x64
+#				@arch could be x86 or x64 (means 32 bits or 64 bits)
 #				:flavour could be binary or source
 # example: wget/ubuntu#1_2@x86:source wget/ubuntu#1_2@x86:source\macos
 __translate_schema() {

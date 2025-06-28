@@ -16,8 +16,8 @@ feature_etcd_3_3_10() {
 
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		FEAT_BINARY_URL_x64=https://github.com/etcd-io/etcd/releases/download/v3.3.10/etcd-v3.3.10-linux-arm64.tar.gz
-		FEAT_BINARY_URL_FILENAME_x64=etcd-v3.3.10-linux-arm64.tar.gz
+		FEAT_BINARY_URL_x64=https://github.com/etcd-io/etcd/releases/download/v3.3.10/etcd-v3.3.10-linux-amd64.tar.gz
+		FEAT_BINARY_URL_FILENAME_x64=etcd-v3.3.10-linux-amd64.tar.gz
 		FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP
 
 	fi

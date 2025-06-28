@@ -188,9 +188,16 @@ __set_current_platform_info() {
 	STELLA_CURRENT_PLATFORM=$(__get_platform_from_os "$STELLA_CURRENT_OS")
 	STELLA_CURRENT_PLATFORM_SUFFIX=$(__get_platform_suffix "$STELLA_CURRENT_PLATFORM")
 
-	# current running arch of the os : x86_64, aarch64 ...
-	STELLA_CURRENT_ARCH=$(uname -m | tr '[:upper:]' '[:lower:]')
-	[ "$STELLA_CURRENT_ARCH " = "" ] && STELLA_CURRENT_ARCH="unknown-arch"
+	# current running arch of the os : x86_64, aarch64, arm64 ..., usefull to determine intel vs arm cpu
+	# NOTE : FEAT_ARCH is used to select 32bits (x86) or 64bits (x64) version
+	STELLA_CURRENT_CPU_ARCH=$(uname -m | tr '[:upper:]' '[:lower:]')
+	[ "$STELLA_CURRENT_CPU_ARCH " = "" ] && STELLA_CURRENT_CPU_ARCH="unknown-arch"
+	# STELLA_CURRENT_CPU_ARCH value uname -m			Signification
+	# i386, i486, i586, i686	Intel 32 bits
+	# x86_64, amd64 			64 bits
+	# armv6l, armv7l,armv8l 	ARM 32 bits
+	# aarch64, arm64			ARM 64bits
+
 
 	if type -P nproc &>/dev/null; then
 		STELLA_NB_CPU=$(nproc)
@@ -1037,7 +1044,7 @@ __sys_install_build-chain-standard() {
 	else
 		#bison util-linux build-essential gcc-multilib g++-multilib g++ pkg-config
 		# NOTE : The gcc-multilib g++-multilib package are not available for arm64/aarch64 architecture
-		if [ "$STELLA_CURRENT_ARCH" = "aarch64" ]; then 
+		if [ "$STELLA_CURRENT_CPU_ARCH" = "aarch64" ]; then 
 			__use_package_manager "INSTALL" "build-chain-standard" "apt-get build-essential | yum gcc gcc-c++ make kernel-devel | apk gcc g++ make"
 		else
 			__use_package_manager "INSTALL" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib | yum gcc gcc-c++ make kernel-devel | apk gcc g++ make"
