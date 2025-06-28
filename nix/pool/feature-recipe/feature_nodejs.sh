@@ -5,13 +5,33 @@ _NODEJS_INCLUDED_=1
 
 feature_nodejs() {
 	FEAT_NAME="nodejs"
-	FEAT_LIST_SCHEMA="22_12_0@x64:binary 10_15_3@x64:binary 9_7_0@x64:binary 9_7_0@x86:binary 8_9_4@x64:binary 8_9_4@x86:binary 7_9_0@x64:binary 7_9_0@x86:binary 6_10_2@x64:binary 6_10_2@x86:binary 4_4_5@x64:binary 4_4_5@x86:binary 0_12_14@x64:binary 0_12_14@x86:binary 0_10_45@x64:binary 0_10_45@x86:binary"
+	FEAT_LIST_SCHEMA="22_17_0@x64:binary 22_12_0@x64:binary 10_15_3@x64:binary 9_7_0@x64:binary 9_7_0@x86:binary 8_9_4@x64:binary 8_9_4@x86:binary 7_9_0@x64:binary 7_9_0@x86:binary 6_10_2@x64:binary 6_10_2@x86:binary 4_4_5@x64:binary 4_4_5@x86:binary 0_12_14@x64:binary 0_12_14@x86:binary 0_10_45@x64:binary 0_10_45@x86:binary"
 	FEAT_DEFAULT_ARCH="x64"
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
 
 
+feature_nodejs_22_17_0() {
+	FEAT_VERSION="22_17_0"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		FEAT_BINARY_URL_x64="https://nodejs.org/dist/v22.17.0/node-v22.17.0-darwin-x64.tar.gz"
+		FEAT_BINARY_URL_FILENAME_x64="node-v22.17.0-darwin-x64.tar.gz"
+		FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+	fi
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		FEAT_BINARY_URL_x64="https://nodejs.org/dist/v22.17.0/node-v22.17.0-linux-x64.tar.xz"
+		FEAT_BINARY_URL_FILENAME_x64="node-v22.17.0-linux-x64.tar.xz"
+		FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+	fi
+
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/node"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
+
+}
 
 
 
