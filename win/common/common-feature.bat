@@ -721,9 +721,7 @@ REM init feature context (properties, variables, ...)
 	if not "!__SCHEMA!"=="" (
 		call :select_official_schema !__SCHEMA! "FEAT_SCHEMA_SELECTED" "TMP_FEAT_SCHEMA_NAME" "TMP_FEAT_SCHEMA_VERSION" "FEAT_ARCH" "FEAT_SCHEMA_FLAVOUR" "FEAT_SCHEMA_OS_RESTRICTION" "FEAT_SCHEMA_OS_EXCLUSION"
 
-
 		if not "!FEAT_SCHEMA_SELECTED!"=="" (
-
 			REM call :translate_schema "!FEAT_SCHEMA_SELECTED!" "TMP_FEAT_SCHEMA_NAME" "TMP_FEAT_SCHEMA_VERSION" "FEAT_ARCH" "FEAT_SCHEMA_FLAVOUR" "FEAT_SCHEMA_OS_RESTRICTION" "FEAT_SCHEMA_OS_EXCLUSION"
 
 			REM set install root (FEAT_INSTALL_ROOT)
@@ -755,7 +753,7 @@ REM init feature context (properties, variables, ...)
 			REM grab feature info
 			call %STELLA_FEATURE_RECIPE%\feature_!TMP_FEAT_SCHEMA_NAME!.bat :feature_!TMP_FEAT_SCHEMA_NAME!
 			call %STELLA_FEATURE_RECIPE%\feature_!TMP_FEAT_SCHEMA_NAME!.bat :feature_!TMP_FEAT_SCHEMA_NAME!_!TMP_FEAT_SCHEMA_VERSION!
-
+			
 			REM bundle path
 			if not "!FEAT_BUNDLE!"=="" (
 				if "!FEAT_BUNDLE!"=="LIST" (
@@ -842,13 +840,13 @@ REM and may return split schema properties
 			if not "!_select_VAR_FEATURE_VER!"=="" set "!_select_VAR_FEATURE_VER!=!FEAT_DEFAULT_VERSION!"
 		)
 		if "!_TR_FEATURE_ARCH!"=="" (
-			REM set "_TR_FEATURE_ARCH=!FEAT_DEFAULT_ARCH!"
-			REM if not "!_select_VAR_FEATURE_ARCH!"=="" set "!_select_VAR_FEATURE_ARCH!=!FEAT_DEFAULT_ARCH!"
-			if "!STELLA_CPU_ARCH!"=="64" (
-				set "_cpu_arch=x64"
-			) else (
-				set "_cpu_arch=x86"
-			)
+			set "_TR_FEATURE_ARCH=!FEAT_DEFAULT_ARCH!"
+			if not "!_select_VAR_FEATURE_ARCH!"=="" set "!_select_VAR_FEATURE_ARCH!=!FEAT_DEFAULT_ARCH!"
+			REM if "!STELLA_CPU_ARCH!"=="64" (
+			REM	set "_cpu_arch=x64"
+			REM ) else (
+			REM	set "_cpu_arch=x86"
+			REM )
 			set "_TR_FEATURE_ARCH=!_cpu_arch!"
 			if not "!_select_VAR_FEATURE_ARCH!"=="" set "!_select_VAR_FEATURE_ARCH!=!_cpu_arch!"
 		)
