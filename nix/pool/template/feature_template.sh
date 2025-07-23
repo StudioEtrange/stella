@@ -47,14 +47,23 @@ feature_template_1_0_0() {
 
 
 
-
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		FEAT_BINARY_URL_x64="http://foo.com/bar"
-		FEAT_BINARY_URL_FILENAME_x64="template-1_0_0-x64.zip"
-		FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
-		FEAT_BINARY_URL_x86="http://foo.com/bar"
-		FEAT_BINARY_URL_FILENAME_x86="template-1_0_0-x86.zip"
-		FEAT_BINARY_URL_PROTOCOL_x86="HTTP_ZIP"
+		if [ "${STELLA_CURRENT_CPU_FAMILY}" = "intel" ]; then
+			FEAT_BINARY_URL_x64="http://foo.com/bar"
+			FEAT_BINARY_URL_FILENAME_x64="template-1_0_0-linux_amd64.zip"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+			FEAT_BINARY_URL_x86="http://foo.com/bar"
+			FEAT_BINARY_URL_FILENAME_x86="template-1_0_0-linux_386.zip"
+			FEAT_BINARY_URL_PROTOCOL_x86="HTTP_ZIP"
+		fi
+		if [ "${STELLA_CURRENT_CPU_FAMILY}" = "arm" ]; then
+			FEAT_BINARY_URL_x64="http://foo.com/bar"
+			FEAT_BINARY_URL_FILENAME_x64="template-1_0_0-x64.zip"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+			FEAT_BINARY_URL_x86="http://foo.com/bar"
+			FEAT_BINARY_URL_FILENAME_x86="template-1_0_0-x86.zip"
+			FEAT_BINARY_URL_PROTOCOL_x86="HTTP_ZIP"
+		fi
 	fi
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
