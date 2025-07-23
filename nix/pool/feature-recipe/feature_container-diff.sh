@@ -4,7 +4,7 @@ _containerdiff_INCLUDED_=1
 feature_container-diff() {
 	FEAT_NAME=container-diff
 	FEAT_LIST_SCHEMA="0_17_0x64:binary"
-	FEAT_DEFAULT_ARCH=x64
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="Diff your Docker containers, analysing filesystem, rpm and pip packages and so on..."

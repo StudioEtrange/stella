@@ -8,7 +8,7 @@ _LIBTOOL_INCLUDED_=1
 feature_libtool() {
 	FEAT_NAME=libtool
 	FEAT_LIST_SCHEMA="2_4_7:source 2_4_2:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_LINK="https://www.gnu.org/software/libtool/"

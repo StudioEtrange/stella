@@ -10,7 +10,7 @@ _BOOST_INCLUDED_=1
 feature_boost() {
 	FEAT_NAME=boost
 	FEAT_LIST_SCHEMA="1_61_0:source 1_59_0:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

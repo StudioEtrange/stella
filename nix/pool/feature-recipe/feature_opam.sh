@@ -8,7 +8,7 @@ feature_opam() {
 	FEAT_NAME=opam
 	FEAT_LIST_SCHEMA="1_2_2@x64:binary 1_2_2@x86:binary"
 	FEAT_DEFAULT_VERSION=1_2_2
-	FEAT_DEFAULT_ARCH=x64
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 

@@ -6,7 +6,7 @@ _ANT_INCLUDED_=1
 feature_ant() {
 	FEAT_NAME=ant
 	FEAT_LIST_SCHEMA="1_9_16:binary"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 

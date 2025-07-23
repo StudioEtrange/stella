@@ -5,7 +5,7 @@ _dive_INCLUDED_=1
 feature_dive() {
 	FEAT_NAME="dive"
 	FEAT_LIST_SCHEMA="0_11_0@x64:binary"
-	FEAT_DEFAULT_ARCH="x64"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="A tool for exploring each layer in a docker image"

@@ -5,7 +5,7 @@ _helm_INCLUDED_=1
 feature_helm() {
 	FEAT_NAME="helm"
 	FEAT_LIST_SCHEMA="3_13_3@x64:binary"
-	FEAT_DEFAULT_ARCH="x64"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="The Kubernetes Package Manager. Helm is a tool for managing Charts. Charts are packages of pre-configured Kubernetes resources."

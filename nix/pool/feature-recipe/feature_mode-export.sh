@@ -4,7 +4,7 @@ _EXPORTMODE_INCLUDED_=1
 feature_mode-export() {
 	FEAT_NAME="mode-export"
 	FEAT_LIST_SCHEMA="1"
-	FEAT_DEFAULT_ARCH=
+	
 
 	FEAT_BUNDLE=MERGE_LIST
 }

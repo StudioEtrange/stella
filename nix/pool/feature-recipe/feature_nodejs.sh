@@ -6,7 +6,7 @@ _NODEJS_INCLUDED_=1
 feature_nodejs() {
 	FEAT_NAME="nodejs"
 	FEAT_LIST_SCHEMA="22_17_0@x64:binary 22_12_0@x64:binary 10_15_3@x64:binary 9_7_0@x64:binary 9_7_0@x86:binary 8_9_4@x64:binary 8_9_4@x86:binary 7_9_0@x64:binary 7_9_0@x86:binary 6_10_2@x64:binary 6_10_2@x86:binary 4_4_5@x64:binary 4_4_5@x86:binary 0_12_14@x64:binary 0_12_14@x86:binary 0_10_45@x64:binary 0_10_45@x86:binary"
-	FEAT_DEFAULT_ARCH="x64"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 

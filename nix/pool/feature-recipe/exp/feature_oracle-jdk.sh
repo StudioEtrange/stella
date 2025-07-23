@@ -15,7 +15,7 @@ _ORACLEJDK_INCLUDED_=1
 feature_oracle-jdk() {
 	FEAT_NAME=oracle-jdk
 	FEAT_LIST_SCHEMA="8u152@x64:binary 8u152@x86:binary 8u91@x86:binary 8u91@x64:binary 8u45@x86:binary 8u45@x64:binary 7u80@x86:binary 7u80@x64:binary"
-	FEAT_DEFAULT_ARCH=x64
+	
 	FEAT_DEFAULT_FLAVOUR=binary
 }
 

@@ -17,7 +17,7 @@ feature_augeas() {
 	FEAT_NAME=augeas
 
 	FEAT_LIST_SCHEMA="1_6_0:source 1_5_0:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

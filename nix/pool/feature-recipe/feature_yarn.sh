@@ -5,7 +5,7 @@ _yarn_INCLUDED_=1
 feature_yarn() {
 	FEAT_NAME=yarn
 	FEAT_LIST_SCHEMA="1_16_0:binary 1_22_10:binary"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="Fast, reliable, and secure dependency management."

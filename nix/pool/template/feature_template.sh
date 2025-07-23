@@ -5,8 +5,6 @@ _TEMPLATE_INCLUDED_=1
 feature_template() {
 	FEAT_NAME="template"
 	FEAT_LIST_SCHEMA="1_0_0@x64:binary 1_0_0@x86:binary 1_0_0:source\macos"
-	# set FEAT_DEFAULT_ARCH if there is x64 (64bits) or x86 (32 bits to be made) versions is the FEAT_LIST_SCHEMA. FEAT_DEFAULT_ARCH will force to use one version over the other when both are available and none have been requestedc
-	FEAT_DEFAULT_ARCH="x64"
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="template is foo"
@@ -61,7 +59,7 @@ feature_template_1_0_0() {
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		# intel cpu
-		if [ "$STELLA_CURRENT_CPU_ARCH" = "x86_64" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
 			FEAT_BINARY_URL_x64="http://foo.com/bar"
 			FEAT_BINARY_URL_FILENAME_x64="template-1_0_0-darwin_amd64.zip"
 			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
@@ -70,7 +68,7 @@ feature_template_1_0_0() {
 			FEAT_BINARY_URL_PROTOCOL_x86="HTTP_ZIP"
 		fi
 		# arm/apple cpu
-		if [ "$STELLA_CURRENT_CPU_ARCH" = "arm64" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
 			FEAT_BINARY_URL_x86=
 			FEAT_BINARY_URL_FILENAME_x86=
 			FEAT_BINARY_URL_PROTOCOL_x86=
@@ -110,10 +108,8 @@ feature_template_install_binary() {
 }
 
 
-
-
 # when feature is only a standalone binary and protocol used is HTTP : FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
-feature_kind_install_binary() {
+feature_template_install_binary() {
 
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP FORCE_NAME $FEAT_BINARY_URL_FILENAME"
 
@@ -122,6 +118,8 @@ feature_kind_install_binary() {
 		mv "${FEAT_INSTALL_ROOT}/${FEAT_BINARY_URL_FILENAME}" "${FEAT_INSTALL_ROOT}/template"
 		chmod +x "${FEAT_INSTALL_ROOT}/template"
 	fi
+
+	__feature_callback
 }
 
 

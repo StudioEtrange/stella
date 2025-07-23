@@ -5,7 +5,7 @@ _cointop_INCLUDED_=1
 feature_cointop() {
 	FEAT_NAME=cointop
 	FEAT_LIST_SCHEMA="1_1_4:binary"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="The fastest and most interactive terminal based UI application for tracking cryptocurrencies "

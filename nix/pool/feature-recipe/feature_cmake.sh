@@ -5,7 +5,7 @@ feature_cmake() {
 
 	FEAT_NAME=cmake
 	FEAT_LIST_SCHEMA="3_12_4:source 3_12_4:binary 3_11_4:source 3_11_4:binary 3_11_1:source 3_11_1:binary 3_6_2:source 3_6_2:binary 2_8_12:source 2_8_12:binary 3_2_3:binary 3_2_3:source 3_3_1:binary 3_3_1:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 

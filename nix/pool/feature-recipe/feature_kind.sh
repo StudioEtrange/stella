@@ -21,7 +21,7 @@ _KIND_INCLUDED_=1
 feature_kind() {
 	FEAT_NAME=kind
 	FEAT_LIST_SCHEMA="0_11_1@x64:binary"
-	FEAT_DEFAULT_ARCH=x64
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	

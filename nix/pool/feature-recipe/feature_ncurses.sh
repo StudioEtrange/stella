@@ -10,7 +10,7 @@ _NCURSES_INCLUDED_=1
 feature_ncurses() {
 	FEAT_NAME="ncurses"
 	FEAT_LIST_SCHEMA="6_4:source 6_3:source 6_2:source 6_1:source 6_0:source 5_9:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="ncurses is a programming library providing an API that allows the programmer to write text-based user interfaces in a terminal-independent manner."

@@ -6,7 +6,7 @@ _dry_INCLUDED_=1
 feature_dry() {
 	FEAT_NAME=dry
 	FEAT_LIST_SCHEMA="0_9_beta_9@x64 0_9_beta_9@x86:binary"
-	FEAT_DEFAULT_ARCH="x64"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="A Docker manager for the terminal"

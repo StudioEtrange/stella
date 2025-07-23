@@ -10,7 +10,7 @@ _miniforge3_INCLUDED_=1
 feature_miniforge3() {
 	FEAT_NAME="miniforge3"
 	FEAT_LIST_SCHEMA="23_3_1_1@x64:binary"
-	FEAT_DEFAULT_ARCH="x64"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="Minimal env and package python manager with conda as environment management tool and connected to conda-forge."

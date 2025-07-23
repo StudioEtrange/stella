@@ -8,7 +8,7 @@ feature_matchbox() {
 
 	FEAT_NAME=matchbox
 	FEAT_LIST_SCHEMA="0_7_0:binary"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 

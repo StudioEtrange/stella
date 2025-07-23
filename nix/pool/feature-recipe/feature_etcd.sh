@@ -6,7 +6,7 @@ _etcd_INCLUDED_=1
 feature_etcd() {
 	FEAT_NAME=etcd
 	FEAT_LIST_SCHEMA="3_3_10@x64:binary 2_3_7@x64:binary"
-	FEAT_DEFAULT_ARCH=x64
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 

@@ -5,7 +5,7 @@ _lynis_INCLUDED_=1
 feature_lynis() {
 	FEAT_NAME=lynis
 	FEAT_LIST_SCHEMA="3_0_4:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="Security auditing tool for Linux, macOS, and UNIX-based systems. Assists with compliance testing (HIPAA/ISO27001/PCI DSS) and system hardening. Agentless, and installation optional."

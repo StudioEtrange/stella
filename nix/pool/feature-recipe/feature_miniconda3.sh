@@ -19,7 +19,7 @@ _miniconda3_INCLUDED_=1
 feature_miniconda3() {
 	FEAT_NAME="miniconda3"
 	FEAT_LIST_SCHEMA="23_1_0_py3_10@x64:binary 23_1_0_py3_9@x64:binary 4_12_0_py3_9@x64:binary 4_12_0_py3_7@x64:binary 4_7_10@x64:binary 4_7_10@x86:binary 4_6_14@x64:binary 4_6_14@x86:binary 4_5_12@x64:binary 4_5_12@x86:binary 4_5_11@x64:binary 4_5_11@x86:binary 4_2_12@x64:binary 4_2_12@x86:binary 4_1_11@x64:binary 4_1_11@x86:binary"
-	FEAT_DEFAULT_ARCH="x64"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 

@@ -8,7 +8,7 @@ feature_ndpi() {
 	FEAT_NAME=ndpi
 
 	FEAT_LIST_SCHEMA="SNAPSHOT:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

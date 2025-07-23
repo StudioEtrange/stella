@@ -6,7 +6,7 @@ _k0s_INCLUDED_=1
 feature_k0s() {
 	FEAT_NAME="k0s"
 	FEAT_LIST_SCHEMA="1_28_4_k0s_0@x64:binary"
-	FEAT_DEFAULT_ARCH="x64"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="k0s is an all-inclusive Kubernetes distribution, which is configured with all of the features needed to build a Kubernetes cluster and packaged as a single binary for ease of use."

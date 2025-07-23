@@ -6,7 +6,7 @@ feature_patchelf() {
 	FEAT_NAME=patchelf
 
 	FEAT_LIST_SCHEMA="0_10:source 0_9:source 0_8:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="A small utility to modify the dynamic linker and RPATH of ELF executables"

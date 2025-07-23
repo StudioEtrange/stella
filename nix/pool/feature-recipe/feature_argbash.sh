@@ -6,7 +6,7 @@ _argbash_INCLUDED_=1
 feature_argbash() {
 	FEAT_NAME=argbash
 	FEAT_LIST_SCHEMA="2_8_1:binary"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="Bash argument parsing code generator"

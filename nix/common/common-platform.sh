@@ -191,13 +191,33 @@ __set_current_platform_info() {
 	# current running arch of the os : x86_64, aarch64, arm64 ..., usefull to determine intel vs arm cpu
 	# NOTE : FEAT_ARCH is used to select 32bits (x86) or 64bits (x64) version
 	STELLA_CURRENT_CPU_ARCH=$(uname -m | tr '[:upper:]' '[:lower:]')
-	[ "$STELLA_CURRENT_CPU_ARCH " = "" ] && STELLA_CURRENT_CPU_ARCH="unknown-arch"
+	[ "$STELLA_CURRENT_CPU_ARCH" = "" ] && STELLA_CURRENT_CPU_ARCH="unknown-arch"
 	# STELLA_CURRENT_CPU_ARCH value uname -m			Signification
 	# i386, i486, i586, i686	Intel 32 bits
 	# x86_64, amd64 			64 bits
 	# armv6l, armv7l,armv8l 	ARM 32 bits
-	# aarch64, arm64			ARM 64bits
+	# aarch64, arm64			ARM 64 bits
 
+	case $STELLA_CURRENT_CPU_ARCH in
+		# Intel / AMD
+		i*86|x86_64|amd64)
+			STELLA_CURRENT_CPU_FAMILY="intel"
+			;;
+		# ARM
+		armv*l|aarch64|arm64)
+			STELLA_CURRENT_CPU_FAMILY="arm"
+			;;
+		# PowerPC
+		ppc*)
+			STELLA_CURRENT_CPU_FAMILY="ppc"
+			;;
+		mips*)
+			STELLA_CURRENT_CPU_FAMILY="mips"
+			;;
+		*)
+			STELLA_CURRENT_CPU_FAMILY="unknown"
+			;;
+	esac
 
 	if type -P nproc &>/dev/null; then
 		STELLA_NB_CPU=$(nproc)
@@ -215,7 +235,7 @@ __set_current_platform_info() {
 	# https://www.sysadmit.com/2016/02/linux-como-saber-si-es-32-o-64-bits.html
 	# https://superuser.com/questions/208301/linux-command-to-return-number-of-bits-32-or-64/208306#208306
 
-	# CPU 64Bits capable
+	# CPU 64Bits or 32Bits
 	STELLA_CPU_ARCH=
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		grep -q -o -w 'lm' /proc/cpuinfo && STELLA_CPU_ARCH=64 || STELLA_CPU_ARCH=32
@@ -229,11 +249,11 @@ __set_current_platform_info() {
 
 	#  Note that on several architectures, a 64-bit kernel can run 32-bit userland programs,
 	#  so even if the uname -m shows a 64-bit kernel, there is no guarantee that 64-bit libraries will be available.
-	if [ "$(uname -m | grep 64)" = "" ]; then
-		STELLA_KERNEL_ARCH=32
-	else
-		STELLA_KERNEL_ARCH=64
-	fi
+	# if [ "$(uname -m | grep 64)" = "" ]; then
+	# 	STELLA_KERNEL_ARCH=32
+	# else
+	# 	STELLA_KERNEL_ARCH=64
+	# fi
 
 	# The getconf LONG_BIT get the default bit size of the C library
 	STELLA_C_ARCH=$(getconf LONG_BIT)
@@ -1017,40 +1037,42 @@ __sys_remove_brew() {
 __sys_install_build-chain-standard() {
 	local _package_manager=
 
-	if [ "$STELLA_CURRENT_OS" = "macos" ]; then
-		echo " ** Install build-chain-standard on your system"
-		# from https://github.com/lockfale/msf-installer/blob/master/msf_install.sh
-		# http://docs.python-guide.org/en/latest/starting/install/osx/
-		local PKGS=`pkgutil --pkgs`
-		if [[ $PKGS =~ com.apple.pkg.Xcode ]]; then
-			echo " ** Xcode detected"
-		else
-			echo " ** WARN Xcode not detected."
-			echo " It is NOT mandatory but you may want to install it from the Apple AppStore"
-			echo " or download it from https://developer.apple.com/downloads."
-			# difference between appstore and download site
-			# http://apple.stackexchange.com/questions/62201/download-xcode-from-developer-site-vs-install-from-app-store
+	case $STELLA_CURRENT_PLATFORM in
+		darwin)
+			echo " ** Install build-chain-standard on your system"
+			# from https://github.com/lockfale/msf-installer/blob/master/msf_install.sh
+			# http://docs.python-guide.org/en/latest/starting/install/osx/
+			local PKGS=`pkgutil --pkgs`
+			if [[ $PKGS =~ com.apple.pkg.Xcode ]]; then
+				echo " ** Xcode detected"
+			else
+				echo " ** WARN Xcode not detected."
+				echo " It is NOT mandatory but you may want to install it from the Apple AppStore"
+				echo " or download it from https://developer.apple.com/downloads."
+				# difference between appstore and download site
+				# http://apple.stackexchange.com/questions/62201/download-xcode-from-developer-site-vs-install-from-app-store
 
-			# TODO make a separate script to install xcode
-			# http://stackoverflow.com/questions/4081568/downloading-xcode-with-wget-or-curl
-		fi
-		if [[ $PKGS =~ com.apple.pkg.DeveloperToolsCLI || $PKGS =~ com.apple.pkg.CLTools_Executables ]]; then
-			echo " ** Command Line Development Tools is already intalled"
-		else
-			echo " ** WARN Command Line Development Tools not intalled. See https://developer.apple.com/downloads"
-			xcode-select --install
-		fi
-
-	else
-		#bison util-linux build-essential gcc-multilib g++-multilib g++ pkg-config
-		# NOTE : The gcc-multilib g++-multilib package are not available for arm64/aarch64 architecture
-		if [ "$STELLA_CURRENT_CPU_ARCH" = "aarch64" ]; then 
-			__use_package_manager "INSTALL" "build-chain-standard" "apt-get build-essential | yum gcc gcc-c++ make kernel-devel | apk gcc g++ make"
-		else
-			__use_package_manager "INSTALL" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib | yum gcc gcc-c++ make kernel-devel | apk gcc g++ make"
-		fi
-	fi
+				# TODO make a separate script to install xcode
+				# http://stackoverflow.com/questions/4081568/downloading-xcode-with-wget-or-curl
+			fi
+			if [[ $PKGS =~ com.apple.pkg.DeveloperToolsCLI || $PKGS =~ com.apple.pkg.CLTools_Executables ]]; then
+				echo " ** Command Line Development Tools is already intalled"
+			else
+				echo " ** WARN Command Line Development Tools not intalled. See https://developer.apple.com/downloads"
+				xcode-select --install
+			fi
+		;;
+		linux)
+			# NOTE : The gcc-multilib g++-multilib package are not available for arm64/aarch64 architecture
+			if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+				__use_package_manager "INSTALL" "build-chain-standard" "apt-get build-essential | yum gcc gcc-c++ make kernel-devel | apk gcc g++ make"
+			else
+				__use_package_manager "INSTALL" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib | yum gcc gcc-c++ make kernel-devel | apk gcc g++ make"
+			fi
+		;;
+	esac
 }
+
 __sys_remove_build-chain-standard() {
 	if [ "$STELLA_CURRENT_OS" = "macos" ]; then
 		echo " ** Remove Xcode and Command Line Development Tools by hand"

@@ -5,7 +5,7 @@ _NUCTL_INCLUDED_=1
 feature_nuctl() {
 	FEAT_NAME="nuctl"
 	FEAT_LIST_SCHEMA="1_6_27@x64:binary"
-	FEAT_DEFAULT_ARCH="x64"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="Nuclio command-line interface"

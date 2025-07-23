@@ -8,7 +8,7 @@ feature_ansible() {
 	FEAT_NAME=ansible
 
 	FEAT_LIST_SCHEMA="2_7_2:source 2_4_0_0:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 

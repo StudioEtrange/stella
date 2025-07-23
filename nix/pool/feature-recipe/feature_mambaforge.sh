@@ -12,7 +12,7 @@ _mambaforge_INCLUDED_=1
 feature_mambaforge() {
 	FEAT_NAME="mambaforge"
 	FEAT_LIST_SCHEMA="22_11_1_4@x64:binary 4_11_0_0@x64:binary"
-	FEAT_DEFAULT_ARCH="x64"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 

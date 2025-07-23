@@ -7,7 +7,7 @@ feature_bc() {
 	FEAT_NAME=bc
 
 	FEAT_LIST_SCHEMA="1_06_95:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 

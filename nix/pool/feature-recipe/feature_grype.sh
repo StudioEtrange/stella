@@ -5,7 +5,7 @@ _grype_INCLUDED_=1
 feature_grype() {
 	FEAT_NAME=grype
 	FEAT_LIST_SCHEMA="0_74_0@x64:binary"
-	FEAT_DEFAULT_ARCH="x64"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="A vulnerability scanner for container images and filesystems"

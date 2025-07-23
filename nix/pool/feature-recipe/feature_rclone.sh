@@ -8,7 +8,7 @@ feature_rclone() {
 	FEAT_NAME="rclone"
 	[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && FEAT_LIST_SCHEMA="1_54_0@x64:binary"
 	[ "$STELLA_CURRENT_PLATFORM" = "linux" ] && FEAT_LIST_SCHEMA="1_54_0@x64:binary 1_54_0@x86:binary"
-	FEAT_DEFAULT_ARCH="x64"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	

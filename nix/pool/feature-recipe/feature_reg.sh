@@ -6,7 +6,7 @@ _reg_INCLUDED_=1
 feature_reg() {
 	FEAT_NAME=reg
 	FEAT_LIST_SCHEMA="studioetrange:source 0_16_0@x64:binary 0_16_0@x86:binary 0_13_0@x64:binary 0_13_0@x86:binary 0_9_0@x64:binary 0_9_0@x86:binary"
-	FEAT_DEFAULT_ARCH=x64
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="docker registry client"

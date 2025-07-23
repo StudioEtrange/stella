@@ -25,7 +25,7 @@ _ALLEGRO_INCLUDED_=1
 feature_allegro() {
 	FEAT_NAME=allegro
 	FEAT_LIST_SCHEMA="5_0_11:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

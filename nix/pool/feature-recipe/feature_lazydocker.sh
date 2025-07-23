@@ -5,7 +5,7 @@ _LAZYDOCKER_INCLUDED_=1
 feature_lazydocker() {
 	FEAT_NAME="lazydocker"
 	FEAT_LIST_SCHEMA="0_12@x64:binary"
-	FEAT_DEFAULT_ARCH="x64"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="A simple terminal UI for both docker and docker-compose, written in Go with the gocui library."

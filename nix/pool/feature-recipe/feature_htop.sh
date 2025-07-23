@@ -5,7 +5,7 @@ _HTOP_INCLUDED_=1
 feature_htop() {
 	FEAT_NAME=htop
 	FEAT_LIST_SCHEMA="2_0_2:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

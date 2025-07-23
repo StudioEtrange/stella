@@ -12,7 +12,7 @@ _miniforge_INCLUDED_=1
 feature_miniforge() {
 	FEAT_NAME="miniforge"
 	FEAT_LIST_SCHEMA="25_3_0_3@x64:binary"
-	FEAT_DEFAULT_ARCH="x64"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 
@@ -32,12 +32,12 @@ feature_miniforge_25_3_0_3() {
 	fi
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		if [ "$STELLA_CURRENT_CPU_ARCH" = "x86_64" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
 			FEAT_BINARY_URL_x64="hhttps://github.com/conda-forge/miniforge/releases/download/25.3.0-3/Miniforge3-25.3.0-3-MacOSX-x86_64.sh"
 			FEAT_BINARY_URL_FILENAME_x64="Miniforge3-25.3.0-3-MacOSX-x86_64.sh"
 			FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
 		fi
-		if [ "$STELLA_CURRENT_CPU_ARCH" = "arm64" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
 			FEAT_BINARY_URL_x64="https://github.com/conda-forge/miniforge/releases/download/25.3.0-3/Miniforge3-25.3.0-3-MacOSX-arm64.sh"
 			FEAT_BINARY_URL_FILENAME_x64="Miniforge3-25.3.0-3-MacOSX-arm64.sh"
 			FEAT_BINARY_URL_PROTOCOL_x64="HTTP"

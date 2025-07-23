@@ -14,7 +14,7 @@ _RUBYINSTALL_INCLUDED_=1
 feature_ruby-install() {
 	FEAT_NAME=ruby-install
 	FEAT_LIST_SCHEMA="0_6_1:binary"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 

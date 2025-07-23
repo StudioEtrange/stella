@@ -6,7 +6,7 @@ _LIBPNG_INCLUDED_=1
 feature_libpng() {
 	FEAT_NAME="libpng"
 	FEAT_LIST_SCHEMA="1_6_17:source 1_6_37:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="Reference library for supporting the Portable Network Graphics (PNG) format."

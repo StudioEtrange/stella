@@ -193,7 +193,6 @@ http://applocator.blogspot.fr/2013/10/speed-up-bash-scripts-that-use-grep.html
 * [ ] nix : replace each echo informative message (not return string function) with log() call
 * [ ] Default build arch equivalent to current cpu arch ? (and change option name buildarch with forcearch) (set STELLA_BUILD_ARCH_DEFAULT)
 * [ ] win : sort version : http://stackoverflow.com/questions/34417346/how-to-sort-lines-of-a-text-file-containing-version-numbers-in-format-major-mino
-* [ ] feature system : FEAT_DEFAULT_ARCH must be fill with current cpu arch
 * [X] feature system nix : FEAT_DEFAULT_VERSION should be the last version available
 * [ ] feature system win : FEAT_DEFAULT_VERSION should be the last version available
 * [ ] feature built from source must pick an arch and be installed in a folder with version@arch -* buildarch option should be remove -* by default built arch should be current cpu arch

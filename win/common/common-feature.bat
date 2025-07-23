@@ -842,8 +842,15 @@ REM and may return split schema properties
 			if not "!_select_VAR_FEATURE_VER!"=="" set "!_select_VAR_FEATURE_VER!=!FEAT_DEFAULT_VERSION!"
 		)
 		if "!_TR_FEATURE_ARCH!"=="" (
-			set "_TR_FEATURE_ARCH=!FEAT_DEFAULT_ARCH!"
-			if not "!_select_VAR_FEATURE_ARCH!"=="" set "!_select_VAR_FEATURE_ARCH!=!FEAT_DEFAULT_ARCH!"
+			REM set "_TR_FEATURE_ARCH=!FEAT_DEFAULT_ARCH!"
+			REM if not "!_select_VAR_FEATURE_ARCH!"=="" set "!_select_VAR_FEATURE_ARCH!=!FEAT_DEFAULT_ARCH!"
+			if "!STELLA_CPU_ARCH!"=="64" (
+				set "_cpu_arch=x64"
+			) else (
+				set "_cpu_arch=x86"
+			)
+			set "_TR_FEATURE_ARCH=!_cpu_arch!"
+			if not "!_select_VAR_FEATURE_ARCH!"=="" set "!_select_VAR_FEATURE_ARCH!=!_cpu_arch!"
 		)
 		if "!_TR_FEATURE_FLAVOUR!"=="" (
 			set "_TR_FEATURE_FLAVOUR=!FEAT_DEFAULT_FLAVOUR!"

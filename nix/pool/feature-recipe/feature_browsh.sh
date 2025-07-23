@@ -6,7 +6,7 @@ _browsh_INCLUDED_=1
 feature_browsh() {
 	FEAT_NAME=browsh
 	FEAT_LIST_SCHEMA="1_5_0@x64:binary 1_5_0@x86:binary"
-	FEAT_DEFAULT_ARCH="x64"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="A fully-modern text-based browser, rendering to TTY and browsers "

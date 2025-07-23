@@ -4,7 +4,7 @@ _JQ_INCLUDED_=1
 feature_jq() {
 	FEAT_NAME=jq
 	FEAT_LIST_SCHEMA="1_8_0@x64:binary 1_8_0@x86:binary 1_6@x64:binary 1_6@x86:binary 1_5@x64:binary 1_5@x86:binary 1_4@x64:binary 1_4@x86:binary"
-	FEAT_DEFAULT_ARCH="x64"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
@@ -31,7 +31,7 @@ feature_jq_1_8_0() {
 	fi
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		if [ "$STELLA_CURRENT_CPU_ARCH" = "x86_64" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
 			FEAT_BINARY_URL_x86=
 			FEAT_BINARY_URL_FILENAME_x86=
 			FEAT_BINARY_URL_PROTOCOL_x86=
@@ -39,7 +39,7 @@ feature_jq_1_8_0() {
 			FEAT_BINARY_URL_FILENAME_x64="jq-macos-amd64-$FEAT_VERSION"
 			FEAT_BINARY_URL_PROTOCOL_x64=HTTP
 		fi
-		if [ "$STELLA_CURRENT_CPU_ARCH" = "arm64" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
 			FEAT_BINARY_URL_x86=
 			FEAT_BINARY_URL_FILENAME_x86=
 			FEAT_BINARY_URL_PROTOCOL_x86=

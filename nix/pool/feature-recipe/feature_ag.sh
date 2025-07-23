@@ -6,7 +6,7 @@ _ag_INCLUDED_=1
 feature_ag() {
 	FEAT_NAME=ag
 	FEAT_LIST_SCHEMA="1_0_2:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

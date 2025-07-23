@@ -5,7 +5,7 @@ _DOCKERCOMPOSE_INCLUDED_=1
 feature_docker-compose() {
 	FEAT_NAME="docker-compose"
 	FEAT_LIST_SCHEMA="2_16_0@x64:binary 2_10_2@x64:binary 1_29_2@x64:binary 1_25_4@x64:binary 1_23_1@x64:binary 1_21_2@x64:binary 1_18_0@x64:binary 1_11_2@x64:binary 1_9_0@x64:binary 1_8_1@x64:binary 1_1_0@x64:binary 1_3_1@x64:binary 1_5_2@x64:binary 1_7_1@x64:binary"
-	FEAT_DEFAULT_ARCH="x64"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	

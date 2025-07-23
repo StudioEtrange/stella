@@ -5,7 +5,7 @@ _fastfetch_INCLUDED_=1
 feature_fastfetch() {
 	FEAT_NAME="fastfetch"
 	FEAT_LIST_SCHEMA="2_5_0@x64:binary"
-	FEAT_DEFAULT_ARCH="x64"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="Print a screen describing the system. Like neofetch, but much faster because written mostly in C"

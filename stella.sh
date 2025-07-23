@@ -99,7 +99,6 @@ SCRIPT=''                   ''          'path'              s           0       
 "
 __argparse "${BASH_SOURCE[0]}" "$OPTIONS" "$PARAMETERS" "Stella" "$(usage)" "EXTRA_ARG OTHERARG EXTRA_ARG_EVAL OTHERARG_EVAL" "$@"
 
-
 # --------------- APP ----------------------------
 if [ "$DOMAIN" = "app" ]; then
 	__init_stella_env

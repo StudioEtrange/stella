@@ -33,7 +33,7 @@ _minikube_INCLUDED_=1
 feature_minikube() {
 	FEAT_NAME="minikube"
 	FEAT_LIST_SCHEMA="1_25_2:binary 1_23_2:binary 0_25_0:binary 0_11_0:binary"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="minikube implements a local Kubernetes cluster on macOS, Linux, and Windows. All you need is Docker (or similarly compatible) container or a Virtual Machine environment, and Kubernetes is a single command away : minikube start"
