@@ -156,28 +156,62 @@ goto :eof
 :: TODO : TO FINISH see nix version
 :set_current_platform_info
 
+	call :get_os_from_distro "STELLA_CURRENT_OS" "windows"
+	call :get_platform_from_os "STELLA_CURRENT_PLATFORM" "%STELLA_CURRENT_OS%"
+	call :get_platform_suffix "STELLA_CURRENT_PLATFORM_SUFFIX" "%STELLA_CURRENT_PLATFORM%"
+
+	set "STELLA_NB_CPU=!NUMBER_OF_PROCESSORS!"
+
 	REM https://learn.microsoft.com/fr-fr/windows/win32/winprog64/wow64-implementation-details
 	REM PROCESSOR_ARCHITECTURE=AMD64 ou PROCESSOR_ARCHITECTURE=IA64 ou PROCESSOR_ARCHITECTURE=ARM64 or x86
 	set "STELLA_CURRENT_CPU_ARCH=!PROCESSOR_ARCHITECTURE!"
 	if "!STELLA_CURRENT_CPU_ARCH!"=="" (
 		set "STELLA_CURRENT_CPU_ARCH=unknown-arch"
+		set "STELLA_CURRENT_CPU_FAMILY=unknown"
 	)
 
 	if "!PROCESSOR_ARCHITECTURE!"=="x86" (
 		set "STELLA_CPU_ARCH=32"
+		set "STELLA_CURRENT_CPU_FAMILY=intel"
 	)
 
 	if "!PROCESSOR_ARCHITECTURE!"=="AMD64" (
 		set "STELLA_CPU_ARCH=64"
+		set "STELLA_CURRENT_CPU_FAMILY=intel"
+	)
+
+	if "!PROCESSOR_ARCHITECTURE!"=="amd64" (
+		set "STELLA_CPU_ARCH=64"
+		set "STELLA_CURRENT_CPU_FAMILY=intel"
+	)
+
+	if "!PROCESSOR_ARCHITECTURE!"=="IA64" (
+		set "STELLA_CPU_ARCH=64"
+		set "STELLA_CURRENT_CPU_FAMILY=intel"
+	)
+
+	if "!PROCESSOR_ARCHITECTURE!"=="ARM64" (
+		set "STELLA_CPU_ARCH=64"
+		set "STELLA_CURRENT_CPU_FAMILY=arm"
+	)
+
+	if "!PROCESSOR_ARCHITECTURE!"=="arm64" (
+		set "STELLA_CPU_ARCH=64"
+		set "STELLA_CURRENT_CPU_FAMILY=arm"
+	)
+
+	if "!PROCESSOR_ARCHITECTURE!"=="ARM" (
+		set "STELLA_CPU_ARCH=32"
+		set "STELLA_CURRENT_CPU_FAMILY=arm"
+	)
+
+	if "!PROCESSOR_ARCHITECTURE!"=="arm" (
+		set "STELLA_CPU_ARCH=32"
+		set "STELLA_CURRENT_CPU_FAMILY=arm"
 	)
 
 
-	set "STELLA_NB_CPU=!NUMBER_OF_PROCESSORS!"
 
-
-	call :get_os_from_distro "STELLA_CURRENT_OS" "windows"
-	call :get_platform_from_os "STELLA_CURRENT_PLATFORM" "%STELLA_CURRENT_OS%"
-	call :get_platform_suffix "STELLA_CURRENT_PLATFORM_SUFFIX" "%STELLA_CURRENT_PLATFORM%"
 goto :eof
 
 

@@ -411,7 +411,6 @@ goto :eof
 			goto :eof
 		)
 	)
-
 	if not "!FEAT_SCHEMA_SELECTED!"=="" (
 		if "%_opt_internal_feature%"=="ON" (
 			set "_save_app_feature_root=!STELLA_APP_FEATURE_ROOT!"
@@ -544,6 +543,7 @@ goto :eof
 				call %STELLA_COMMON%\common.bat :stack_push "!_SCHEMA!"
 				call :push_schema_context
 				echo Installing !FEAT_NAME! version !FEAT_VERSION! in !FEAT_INSTALL_ROOT!
+				echo Feature picked is !FEAT_SCHEMA_SELECTED!
 				if "!FEAT_SCHEMA_FLAVOUR!"=="source" (
 					call %STELLA_COMMON%\common-build.bat :start_build_session
 				)
@@ -560,7 +560,7 @@ goto :eof
 						echo ** Feature !save_SCHEMA! is installed
 						call :feature_init "!FEAT_SCHEMA_SELECTED!" !_OPT!
 					) else (
-						echo ** Error while installing feature !FEAT_SCHEMA_SELECTED!
+						echo ** Error while installing feature asked !_SCHEMA!
 						REM Sometimes current directory is lost by the system
 						cd /D %STELLA_APP_ROOT%
 					)
@@ -842,13 +842,6 @@ REM and may return split schema properties
 		if "!_TR_FEATURE_ARCH!"=="" (
 			set "_TR_FEATURE_ARCH=!FEAT_DEFAULT_ARCH!"
 			if not "!_select_VAR_FEATURE_ARCH!"=="" set "!_select_VAR_FEATURE_ARCH!=!FEAT_DEFAULT_ARCH!"
-			REM if "!STELLA_CPU_ARCH!"=="64" (
-			REM	set "_cpu_arch=x64"
-			REM ) else (
-			REM	set "_cpu_arch=x86"
-			REM )
-			set "_TR_FEATURE_ARCH=!_cpu_arch!"
-			if not "!_select_VAR_FEATURE_ARCH!"=="" set "!_select_VAR_FEATURE_ARCH!=!_cpu_arch!"
 		)
 		if "!_TR_FEATURE_FLAVOUR!"=="" (
 			set "_TR_FEATURE_FLAVOUR=!FEAT_DEFAULT_FLAVOUR!"
