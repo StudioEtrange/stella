@@ -212,7 +212,7 @@ if "%DOMAIN%"=="proxy" (
 	)
 
 )
-if "%DOMAIN%"=="proxy" goto :end
+if "%DOMAIN%"=="api" goto :end
 
 
 
@@ -228,11 +228,9 @@ if "%DOMAIN%"=="stella" (
 		)
 	)
 
-	if "%ACTION%"=="install" (
-		if "%id%"=="dep" (
-			call %STELLA_COMMON%\common-platform.bat :__stella_requirement
-			goto :end
-		)
+	if "%ACTION%"=="init" (
+		call %STELLA_COMMON%\common-platform.bat :__stella_requirement
+		goto :end
 	)
 
 
@@ -278,8 +276,8 @@ if "%DOMAIN%"=="stella" goto :end
 	echo 		feature remove ^<feature schema^> : remove a feature
 	echo 		feature list ^<all^|feature name^|active^>: list all available features OR available version of a feature OR current active features
 	echo	* various :
-	echo 		api list all : list public functions of stella api
-	echo 		stella install dep : install all features and systems requirements for the current OS (%STELLA_CURRENT_OS%)
+	echo 		stella init : install all features and systems requirements for the current OS (%STELLA_CURRENT_OS%)
+	echo 		stella api list : list public functions of stella api
 	echo 		stella version print : print stella version
 	echo 		stella search path : print current system search path
 	echo	* network management :
