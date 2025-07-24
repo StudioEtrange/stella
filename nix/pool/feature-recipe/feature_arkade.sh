@@ -45,10 +45,17 @@ feature_arkade_0_11_40() {
 		fi
 	fi
 
+	FEAT_ENV_CALLBACK="feature_arkade_env"
+
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/arkade"
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
 }
 
+
+feature_arkade_env(){
+	export PATH="$HOME/.arkade/bin:${PATH}"
+	echo "** $HOME/.arkade/bin is added to PATH"
+}
 
 
 
