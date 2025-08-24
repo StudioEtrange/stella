@@ -3,15 +3,22 @@
 
 call %~dp0\conf.bat
 
-:: arguments
-set "params=domain:"app feature stella proxy boot sys" action:"bypass version on off register search remove link api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature install list shell" id:"_ANY_""
-set "options=-f: -buildarch:"x86 x64" -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_ -stellaroot:_ANY_ -samples: -proxy:_ANY_ -depforce: -depignore: -export:_ANY_ -portable:_ANY_"
-call %STELLA_COMMON%\argopt.bat :argopt %*
-if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
-if "%ARGOPT_FLAG_HELP%"=="1" goto :usage
 
-set FORCE=%-f%
+if "%~1"=="init" (
+    call %STELLA_COMMON%\common.bat :init_stella_env
+	call %STELLA_COMMON%\common-platform.bat :__stella_requirement
+	goto :end
+) else (
 
+	:: arguments
+	set "params=domain:"app feature stella proxy boot sys" action:"bypass version on off register search remove link api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature install list shell" id:"_ANY_""
+	set "options=-f: -buildarch:"x86 x64" -approot:_ANY_ -workroot:_ANY_ -cachedir:_ANY_ -stellaroot:_ANY_ -samples: -proxy:_ANY_ -depforce: -depignore: -export:_ANY_ -portable:_ANY_"
+	call %STELLA_COMMON%\argopt.bat :argopt %*
+	if "%ARGOPT_FLAG_ERROR%"=="1" goto :usage
+	if "%ARGOPT_FLAG_HELP%"=="1" goto :usage
+
+	set FORCE=%-f%
+)
 
 REM --------------- APP ----------------------------
 if "%DOMAIN%"=="app" (
@@ -228,13 +235,7 @@ if "%DOMAIN%"=="stella" (
 		)
 	)
 
-	if "%ACTION%"=="install" (
-		if "%id%"=="dep" (
-			call %STELLA_COMMON%\common-platform.bat :__stella_requirement
-			goto :end
-		)
-	)
-
+	
 
 
 	if "%ACTION%"=="version" (
@@ -278,8 +279,8 @@ if "%DOMAIN%"=="stella" goto :end
 	echo 		feature remove ^<feature schema^> : remove a feature
 	echo 		feature list ^<all^|feature name^|active^>: list all available features OR available version of a feature OR current active features
 	echo	* various :
-	echo 		api list all : list public functions of stella api
-	echo 		stella install dep : install all features and systems requirements for the current OS (%STELLA_CURRENT_OS%)
+	echo 		init : install all features and systems requirements for the current OS (%STELLA_CURRENT_OS%)
+	echo 		stella api list : list public functions of stella api
 	echo 		stella version print : print stella version
 	echo 		stella search path : print current system search path
 	echo	* network management :

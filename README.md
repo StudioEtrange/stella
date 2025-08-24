@@ -47,7 +47,7 @@ windows system :
 
 ```
 git clone https://github.com/StudioEtrange/stella
-stella.bat stella install dep
+stella.bat init
 ```
 
 ### With git but behind a proxy
@@ -64,7 +64,7 @@ windows system :
 set "https_proxy=http://my.proxy.com"
 set "http_proxy=http://my.proxy.com"
 git clone https://github.com/StudioEtrange/stella
-stella.bat stella install dep
+stella.bat init
 ```
 
 ## Examples

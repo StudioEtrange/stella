@@ -40,6 +40,28 @@ goto :eof
 	set "FEAT_BINARY_URL_FILENAME_x64=template-1_0_0-x86.zip"
 	set "FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP"
 
+
+	REM to fix download url for intel OR arm processors in 32 or 64 bits, use this:
+	if "!STELLA_CURRENT_CPU_FAMILY!"=="intel" (
+		set "FEAT_BINARY_URL_x86=http://foo.com/bar"
+		set "FEAT_BINARY_URL_FILENAME_x86=template-1_0_0-x86.zip"
+		set "FEAT_BINARY_URL_PROTOCOL_x86=HTTP_ZIP"
+		set "FEAT_BINARY_URL_x64=http://foo.com/template-1_0_0-x86.zip"
+		set "FEAT_BINARY_URL_FILENAME_x64=template-1_0_0-x86.zip"
+		set "FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP"
+	)
+
+	if "!STELLA_CURRENT_CPU_FAMILY!"=="arm" (
+		set "FEAT_BINARY_URL_x86=http://foo.com/bar"
+		set "FEAT_BINARY_URL_FILENAME_x86=template-1_0_0-x86.zip"
+		set "FEAT_BINARY_URL_PROTOCOL_x86=HTTP_ZIP"
+		set "FEAT_BINARY_URL_x64=http://foo.com/template-1_0_0-x86.zip"
+		set "FEAT_BINARY_URL_FILENAME_x64=template-1_0_0-x86.zip"
+		set "FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP"
+	)
+
+
+
 	REM callback are list of functions
 	REM manual callback (with feature_callback)
 	set FEAT_SOURCE_CALLBACK=
@@ -56,6 +78,10 @@ goto :eof
 
 
 goto :eof
+
+
+
+
 
 :feature_template_setenv
 	set "TEMPLATE_HOME=!FEAT_INSTALL_ROOT!"
