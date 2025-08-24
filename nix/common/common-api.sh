@@ -17,7 +17,7 @@ __api_proxy() {
 		fi
 	done
 
-	echo "** API ERROR : Function $FUNC_NAME does not exist"
+	__log_stella "ERROR" "API ERROR : Function $FUNC_NAME does not exist"
 }
 
 __api_list() {

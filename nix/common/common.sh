@@ -3104,7 +3104,7 @@ __add_key() {
 	local _VALUE="$4"
 
 	if [ "${_FILE}" = "" ]; then
-		__dds_log "ERROR" "add_key no file specified"
+		__log_stella "ERROR" "add_key no file specified"
 		exit 1
 	fi
 
