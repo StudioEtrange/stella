@@ -3084,7 +3084,8 @@ __get_keys() {
 
 }
 
-
+# delete a specific key
+# SECTION : section name (if empty, the whole file is searched)
 __del_key() {
 	local _FILE="$1"
 	local _SECTION="$2"
@@ -3093,6 +3094,9 @@ __del_key() {
 	[ -f "$_FILE" ] && __ini_file "DEL" "$_FILE" "$_SECTION" "$_KEY"
 }
 
+# set or add a key
+# SECTION : section name (if empty, the whole file is searched)
+# if section does not exist, it will be created
 __add_key() {
 	local _FILE="$1"
 	local _SECTION="$2"
@@ -3111,43 +3115,57 @@ __add_key() {
 	__ini_file "ADD" "$_FILE" "$_SECTION" "$_KEY" "$_VALUE"
 }
 
+# ADD set or add a key
+# DELETE remove a key
+# SECTION : section name (if empty, the whole file is searched)
+# if section does not exist, it will be created
 __ini_file() {
-	local _MODE=$1
-	local _FILE=$2
-	local _SECTION=$3
-	local _KEY=$4
+	local _MODE="$1"
+	local _FILE="$2"
+	local _SECTION="$3"
+	local _KEY="$4"
 	if [ ! "$_KEY" = "" ]; then
-		local _VALUE=$5
+		local _VALUE="$5"
 	fi
 
 	# escape regexp special characters
 	# http://stackoverflow.com/questions/407523/escape-a-string-for-a-sed-replace-pattern
-	_SECTION_NAME=$_SECTION
-	_SECTION=$(echo $_SECTION | sed -e 's/[]\/$*.^|[]/\\&/g')
+	_SECTION_NAME="$_SECTION"
+	if [ ! "$_SECTION_NAME" = "" ]; then
+		_SECTION=$(echo "$_SECTION" | sed -e 's/[]\/$*.^|[]/\\&/g')
+	fi
 	_VALUE=$(echo "$_VALUE" | sed -e 's/\\/\\\\/g')
 	_KEY=$(echo "$_KEY" | sed -e 's/\\/\\\\/g')
 
 	tp=$(mktmp)
 
-	awk -F= -v mode="$_MODE" -v val="$_VALUE" '
+	awk -F= -v mode="$_MODE" -v val="$_VALUE" -v section="$_SECTION" '
 	# Clear the flags
 	BEGIN {
 		processing = 0;
 		skip = 0;
 		modified = 0;
+		ignore_section = 0;
+		# If no section is specified, we process the whole file
+		if ( section == "" ) {
+			ignore_section = 1;
+			processing = 1;
+		}
 	}
 
 	# Leaving the found section
 	/\[/ {
-		if(processing) {
-			if ( mode == "ADD" ) {
-				print "'$_KEY'="val;
-				modified = 1;
-				processing = 0;
-			}
+		if (!ignore_section) {
+			if(processing) {
+				if ( mode == "ADD" ) {
+					print "'$_KEY'="val;
+					modified = 1;
+					processing = 0;
+				}
 
-			if ( mode == "DEL" ) {
-				processing = 0;
+				if ( mode == "DEL" ) {
+					processing = 0;
+				}
 			}
 		}
 	}
@@ -3155,7 +3173,7 @@ __ini_file() {
 
 	# Entering the section, set the flag
 	/^\['$_SECTION']/ {
-		processing = 1;
+		if (!ignore_section) processing = 1;
 	}
 
 	# Modify the line, if the flag is set
@@ -3177,7 +3195,7 @@ __ini_file() {
 	}
 
 
-	# Output a line (that we didnt output above)
+	# Output a line (that we did not output above)
 	/.*/ {
 
 		if (skip)
@@ -3187,7 +3205,7 @@ __ini_file() {
 	}
 	END {
 		if(!modified && mode == "ADD") {
-			if(!processing) print "['$_SECTION_NAME']"
+		    if(!ignore_section && !processing) print "['$_SECTION_NAME']"
 			if("'$_KEY'" != "") {
 				print "'$_KEY'="val;
 			}
