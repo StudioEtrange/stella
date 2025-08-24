@@ -233,7 +233,7 @@ __init_app() {
 
 	_STELLA_APP_PROPERTIES_FILE="$_approot/$STELLA_APP_PROPERTIES_FILENAME"
 	if [ -f "$_STELLA_APP_PROPERTIES_FILE" ]; then
-		__log "WARN" "Properties file $_STELLA_APP_PROPERTIES_FILE already exists"
+		__log_stella "WARN" "Properties file $_STELLA_APP_PROPERTIES_FILE already exists"
 	else
 		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_NAME" "$_app_name"
 		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_WORK_ROOT" "$_workroot"
