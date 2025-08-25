@@ -560,46 +560,81 @@ __vagrant_get_ssh_options() {
 # TODO : these functions support only ipv4
 # https://stackoverflow.com/a/33550399
 __get_network_info() {
-	#local _err=
-	type netstat &>/dev/null
+	type ip &>/dev/null
 	if [ $? = 0 ]; then
-		# NOTE : we pick the first default interface if we have more than one
-		STELLA_DEFAULT_INTERFACE="$(netstat -rn | awk '/^0.0.0.0/ {thif=substr($0,74,10); print thif;} /^default.*UG/ {thif=substr($0,65,10); print thif;}' | head -1)"
+		# pick the first default interface if there is several
+		STELLA_DEFAULT_INTERFACE_IPV4="$(ip -4 route ls 2>/dev/null | grep default | grep -Po '(?<=dev )(\S+)' | head -1)"
+		STELLA_DEFAULT_INTERFACE_IPV6="$(ip -6 route show default 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}' | head -1)"
 	else
-		type ip &>/dev/null
-		[ $? = 0 ] && STELLA_DEFAULT_INTERFACE="$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1)"
-	fi
+		type netstat &>/dev/null
+		# pick the first default interface if there is several
+		if [ $? = 0 ]; then
+			STELLA_DEFAULT_INTERFACE_IPV4="$(netstat -4 -rn 2>/dev/null | awk '/^0.0.0.0/ {thif=substr($0,74,10); print thif;} /^default.*UG/ {thif=substr($0,65,10); print thif;}' | head -1)"
+			STELLA_DEFAULT_INTERFACE_IPV6="$(netstat -6 -rn 2>/dev/null | awk '/::\/0/ && /UG/ {print $NF; exit}' | head -1)"
+		fi
+	fi	
+	STELLA_DEFAULT_INTERFACE="$STELLA_DEFAULT_INTERFACE_IPV4"
 
 	# contains default ip
-	STELLA_HOST_DEFAULT_IP="$(__get_ip_from_interface ${STELLA_DEFAULT_INTERFACE})"
+	STELLA_HOST_DEFAULT_IP_IPV4="$(__get_ip_from_interface "${STELLA_DEFAULT_INTERFACE_IPV4}" "ipv4")"
+	STELLA_HOST_DEFAULT_IP_IPV6="$(__get_ip_from_interface "${STELLA_DEFAULT_INTERFACE_IPV4}" "ipv6")"
+	STELLA_HOST_DEFAULT_IP="${STELLA_HOST_DEFAULT_IP_IPV4}"
 
-	type ifconfig &>/dev/null
+	type ip &>/dev/null
 	if [ $? = 0 ]; then
-		# contains all available IP
-		STELLA_HOST_IP="$(ifconfig | grep -Eo 'inet (adr:|addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | tr '\n' ' ')"
+		STELLA_HOST_IP_IPV4="$(ip -4 addr 2>/dev/null | awk '/inet / {print $2}' | cut -d/ -f1 | tr '\n' ' ')"
+		#STELLA_HOST_IP_IPV4="$(ip -4 addr show scope global 2>/dev/null | awk '/inet / {print $2}' | cut -d/ -f1 | tr '\n' ' ')"
+		STELLA_HOST_IP_IPV6="$(ip -6 addr 2>/dev/null | awk '/inet6/ {print $2}' | cut -d/ -f1 | tr '\n' ' ')"
+		#STELLA_HOST_IP_IPV6="$(ip -6 addr show scope global 2>/dev/null | awk '/inet6/ {print $2}' | cut -d/ -f1 | tr '\n' ' ')"
 	else
-		type ip &>/dev/null
+		type ifconfig &>/dev/null
 		if [ $? = 0 ]; then
-			STELLA_HOST_IP="$(ip -o -4 addr | awk '{split($4, a, "/"); print a[1]}' | tr '\n' ' ')"
+			STELLA_HOST_IP_IPV4="$(ifconfig 2>/dev/null | grep -Eo 'inet (adr:|addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | tr '\n' ' ')"
+			STELLA_HOST_IP_IPV6="$(ifconfig 2>/dev/null | grep -Eo 'inet6 (adr:|addr:)?[0-9a-fA-F:]+' | awk '{print $2}' | sed 's/^(addr|adr)://' | tr '\n' ' ')"
 		else
-			# do not work on macos
+			# NOTE : hostname return a mix of ipv4 and ipv6 and only adress with global scope (no Ipv6 local link or 127.0.0.1)
+			# NOTE : hostname -I do not exist on MacOS
 			type hostname &>/dev/null
-			[ $? = 0 ] && STELLA_HOST_IP="$(hostname -I 2>/dev/null)"
+			if [ $? = 0 ]; then
+				STELLA_HOST_IP_IPV4="$(hostname -I 2>/dev/null | tr ' ' '\n' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | tr '\n' ' ')"
+				STELLA_HOST_IP_IPV6="$(hostname -I 2>/dev/null | tr ' ' '\n' | grep -E '^[0-9a-fA-F:]+$' | tr '\n' ' ')"
+			fi
 		fi
 	fi
 
+	STELLA_HOST_IP="$STELLA_HOST_IP_IPV4"
+
 }
 
-# TODO return only ipv4
+# can return several ip separated by space
 __get_ip_from_interface() {
 	local _if="$1"
-	type ifconfig &>/dev/null
+	local _mode="$2"
+	
+	[ "$_mode" = "" ] && _mode="ipv4"
+	#https://unix.stackexchange.com/a/407128
+	type ip &>/dev/null
 	if [ $? = 0 ]; then
-		echo "$(ifconfig ${_if} 2>/dev/null | grep -Eo 'inet (adr:|addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*')"
+		case $_mode in
+			ipv4 )
+				echo "$(ip -4 addr show dev ${_if} 2>/dev/null | awk '/inet / {print $2}' | cut -d/ -f1)"
+				;;
+			ipv6 )
+				echo "$(ip -6 addr show dev ${_if} 2>/dev/null | awk '/inet6 / {print $2}' | cut -d/ -f1)"
+				;;
+		esac
 	else
-		#https://unix.stackexchange.com/a/407128
-		type ip &>/dev/null
-		[ $? = 0 ] && echo "$(ip -4 -o addr show dev ${_if} | awk '{split($4, a, "/"); print a[1]}')"
+		type ifconfig &>/dev/null
+		if [ $? = 0 ]; then
+			case $_mode in
+				ipv4 )
+					echo "$(ifconfig ${_if} 2>/dev/null | grep -Eo 'inet (adr:|addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*')"
+					;;
+				ipv6 )
+					echo "$(ifconfig ${_if} 2>/dev/null | grep -Eo 'inet6 (adr:|addr:)?[0-9a-fA-F:]+' | awk '{print $2}' | sed 's/^(addr|adr)://' | tr '\n' ' ')"
+					;;
+			esac
+		fi
 	fi
 }
 
@@ -613,6 +648,7 @@ __get_ip_from_interface() {
 #	fi
 #}
 
+# TODO : support only ipv4
 # https://unix.stackexchange.com/questions/20784/how-can-i-resolve-a-hostname-to-an-ip-address-in-a-bash-script
 # NOTE : host, dig, nslookup only request dns and do not look for ip in /etc/hosts
 # NOTE on getent :
@@ -634,17 +670,17 @@ __get_ip_from_hostname() {
 	fi
 }
 
-# determine external IP
+# determine IP viewed by external WAN
 # https://unix.stackexchange.com/a/194136
 # TODO : work only ipv4
 __get_ip_external() {
-	
 	type dig &>/dev/null
 	if [ $? = 0 ]; then
 		__result="$(dig @resolver1.opendns.com A myip.opendns.com +short -4)"
 		#__result="$(dig @resolver1.opendns.com AAAA myip.opendns.com +short -6)"
 	else
-		__result="$(curl -s ipinfo.io/ip)"
+		__result="$(curl --connect-timeout 2 -skL ipinfo.io/ip)"
+		#__result="$(curl --connect-timeout 2 -skL v6.ipinfo.io/ip)"
 	fi
 
 	echo "${__result}"
