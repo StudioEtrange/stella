@@ -380,6 +380,7 @@ $(command minikube "$@");
 #	__find_free_port "2" "UDP"
 #	__find_free_port "3" "CONSECUTIVE"
 #	__find_free_port "2" "TCP RANGE_BEGIN 640 RANGE_END 650 EXCLUDE_LIST_BEGIN 602 603 645 642 641 644 646 650 EXCLUDE_LIST_END CONSECUTIVE"
+# TODO ipv6
 __find_free_port() {
 	local ports="${1:-1}"
 	local __opt="$2"
@@ -460,6 +461,7 @@ __find_free_port() {
 # return TRUE if port is open
 # return FALSE if port is unreachable
 #	return nothing if we cannot test
+# work with ipV4 or ipv6
 __check_tcp_port_open() {
 	local __host="$1"
 	local __port="$2"
@@ -557,7 +559,7 @@ __vagrant_get_ssh_options() {
 # __get_interface_used_for()
 
 
-# TODO : these functions support only ipv4
+# TODO : choose between ipv4 and ipv6
 # https://stackoverflow.com/a/33550399
 __get_network_info() {
 	type ip &>/dev/null
