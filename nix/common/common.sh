@@ -961,17 +961,43 @@ __sort_version() {
 }
 
 
-
-
-
-
+# other method https://gist.github.com/cdown/1163649
+# other method http://unix.stackexchange.com/a/60698
 __url_encode() {
-	#if [ "$(which xxd 2>/dev/null)" = "" ]; then
-	if ! type -P xxd &>/dev/null; then
-		__url_encode_1 "$@"
-	else
-		__url_encode_with_xxd "$@"
-	fi
+	__url_encode_with_awk  "$@"
+}
+
+# https://unix.stackexchange.com/a/678894
+__url_encode_with_awk() {
+  LC_ALL=C awk -- '
+    BEGIN {
+      for (i = 1; i <= 255; i++) hex[sprintf("%c", i)] = sprintf("%%%02X", i)
+    }
+    function urlencode(s,  c,i,r,l) {
+      l = length(s)
+      for (i = 1; i <= l; i++) {
+        c = substr(s, i, 1)
+        r = r "" (c ~ /^[-._~0-9a-zA-Z]$/ ? c : hex[c])
+      }
+      return r
+    }
+    BEGIN {
+      for (i = 1; i < ARGC; i++)
+        print urlencode(ARGV[i])
+    }' "$@"
+}
+
+# https://gist.github.com/cdown/1163649
+# xxd is used to support wide characters
+__url_encode_with_xxd() {
+  local length="${#1}"
+  for (( i = 0; i < length; i++ )); do
+    local c="${1:i:1}"
+    case $c in
+	      [a-zA-Z0-9.~_-]) printf "$c" ;;
+	    *) printf "$c" | xxd -p -c1 | while read x;do printf "%%%s" "$x";done
+	  esac
+	done
 }
 
 # https://gist.github.com/cdown/1163649
@@ -991,21 +1017,10 @@ __url_encode_1() {
     LC_COLLATE=$old_lc_collate
 }
 
-# https://gist.github.com/cdown/1163649
-# xxd is used to suppoert wide characters
-__url_encode_with_xxd() {
-  local length="${#1}"
-  for (( i = 0; i < length; i++ )); do
-    local c="${1:i:1}"
-    case $c in
-	      [a-zA-Z0-9.~_-]) printf "$c" ;;
-	    *) printf "$c" | xxd -p -c1 | while read x;do printf "%%%s" "$x";done
-	  esac
-	done
-}
+
+
 
 # Faster solution than __url_encode_1 ? (without xxd)
-# http://unix.stackexchange.com/a/60698
 __url_encode_2() {
 	string=$1; format=; set --
   while
@@ -1028,6 +1043,10 @@ __url_encode_2() {
   done
   printf "$format\\n" "$@"
 }
+
+
+
+
 
 # https://gist.github.com/cdown/1163649
 __url_decode() {

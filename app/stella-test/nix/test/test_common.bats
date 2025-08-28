@@ -32,14 +32,16 @@ teardown() {
 	run __url_decode 'hello%20%60the%60%20%22%40world%22'
 	assert_output 'hello `the` "@world"'
 
+
+
 	run __url_encode "Höhe über dem Meeresspiegel"
-	assert_output "H%c3%b6he%20%c3%bcber%20dem%20Meeresspiegel"
+	assert_output "H%C3%B6he%20%C3%BCber%20dem%20Meeresspiegel"
 
 	run __url_decode 'H%C3%B6he %C3%BCber%20dem%20Meeresspiegel'
 	assert_output "Höhe über dem Meeresspiegel"
 
 	run __url_encode '你好世界'
-	assert_output "%e4%bd%a0%e5%a5%bd%e4%b8%96%e7%95%8c"
+	assert_output "%E4%BD%A0%E5%A5%BD%E4%B8%96%E7%95%8C"
 
 	run __url_decode $(__url_encode '你好世界')
 	assert_output '你好世界'
