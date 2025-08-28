@@ -630,7 +630,9 @@ __get_network_info() {
 
 }
 
-
+# retrieve a stable ip from default network interface
+# a stable ip is an ip which is not temporary, not tentative, not deprecated, not dadfailed for ipv6
+# a stable ip could be used as a server ip
 __get_stable_ip_from_default_interface() {
 	local _mode="$1"
 	[ "$_mode" = "" ] && _mode="ipv4"
