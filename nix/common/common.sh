@@ -393,7 +393,7 @@ __sudo_begin_session() {
     trap '__sudo_end_session; exit' SIGABRT SIGHUP SIGINT SIGQUIT SIGTERM ERR EXIT
 }
 __sudo_end_session() {
-		echo "** Ending sudo session $STELLA_SUDO_PID"
+	__log "INFO" "Ending sudo session $STELLA_SUDO_PID"
     kill -0 "$STELLA_SUDO_PID"
     trap - SIGABRT SIGHUP SIGINT SIGQUIT SIGTERM ERR EXIT
     sudo -k
@@ -1505,7 +1505,7 @@ __transfer_stella() {
 		[ "$o" = "FOLDER_CONTENT" ] && _opt_folder_content="FOLDER_CONTENT"
 		[ "$o" = "DELETE_EXCLUDED" ] && _opt_delete_excluded="DELETE_EXCLUDED"
 	done
-	__log "DEBUG" "** ${_opt_sudo} Transfer stella to $_uri"
+	__log "DEBUG" "${_opt_sudo} Transfer stella to $_uri"
 	__transfer_folder_rsync "$STELLA_ROOT" "$_uri" "$_opt_delete_excluded $_opt_ex_win $_opt_ex_app $_opt_ex_cache $_opt_ex_workspace $_opt_ex_env $_opt_ex_git $_opt_sudo $_opt_folder_content"
 }
 
@@ -1553,7 +1553,7 @@ __transfer_file_rsync() {
 	local _uri="$2"
 	local _opt="$3"
 
-	__log "DEBUG" "** Transfer file $_file to $_uri"
+	__log "DEBUG" "Transfer file $_file to $_uri"
 	__transfer_rsync "FILE" "$_file" "$_uri" "$_opt"
 }
 
@@ -1712,7 +1712,7 @@ __transfer_rsync() {
 			;;
 		local )
 			if [ "$_source" = "$_target" ]; then
-				__log "INFO" " ** source $_source and target $_target are equivalent, so no transfer"
+				__log "INFO" "source $_source and target $_target are equivalent, so no transfer"
 			else
 				# '--rsync-path' option seems to not work when we are on the same host (local)
 				if [ "$_opt_sudo" = "ON" ]; then
@@ -1726,7 +1726,7 @@ __transfer_rsync() {
 			fi
 			;;
 		*)
-			echo "** ERROR protocol unknown"
+			__log "ERROR" "protocol $__stella_uri_schema unknown"
 			;;
 	esac
 }
@@ -2333,7 +2333,7 @@ __count_folder_item() {
 }
 
 __del_folder() {
-	__log "DEBUG" "** Deleting $1 folder"
+	__log "DEBUG" "Deleting $1 folder"
 	[ -d $1 ] && rm -Rf $1
 }
 
@@ -2434,10 +2434,10 @@ __resource() {
 		fi
 	done
 
-	[ "$_opt_revert" = "ON" ] && __log "INFO" " ** Reverting resource :"
-	[ "$_opt_update" = "ON" ] && __log "INFO" " ** Updating resource :"
-	[ "$_opt_delete" = "ON" ] && __log "INFO" " ** Deleting resource :"
-	[ "$_opt_get" = "ON" ] && __log "INFO" " ** Getting resource :"
+	[ "$_opt_revert" = "ON" ] && __log "INFO" "Reverting resource :"
+	[ "$_opt_update" = "ON" ] && __log "INFO" "Updating resource :"
+	[ "$_opt_delete" = "ON" ] && __log "INFO" "Deleting resource :"
+	[ "$_opt_get" = "ON" ] && __log "INFO" "Getting resource :"
 	[ ! "$FINAL_DESTINATION" = "" ] && __log "INFO" " $NAME in $FINAL_DESTINATION" || __log "INFO" " $NAME"
 
 	#[ "$FORCE" ] && rm -Rf $FINAL_DESTINATION
@@ -2474,13 +2474,13 @@ __resource() {
 					if [ "$_opt_get" = "ON" ]; then
 						if [ "$_opt_merge" = "ON" ]; then
 							if [ -f "$FINAL_DESTINATION/._MERGED_$NAME" ]; then
-								__log "INFO" " ** Ressource already merged"
+								__log "INFO" "Ressource already merged"
 								_FLAG=0
 							fi
 						fi
 						if [ "$_opt_strip" = "ON" ]; then
-							#__log " ** Ressource already stripped"
-							__log "INFO" " ** Destination folder exist"
+							#__log "Ressource already stripped"
+							__log "INFO" "Destination folder exist"
 							#_FLAG=0
 						fi
 					fi
@@ -2495,7 +2495,7 @@ __resource() {
 					if [ "$_opt_get" = "ON" ]; then
 						if [ "$_opt_merge" = "ON" ]; then
 							if [ -f "$FINAL_DESTINATION/._MERGED_$NAME" ]; then
-								__log "INFO" " ** Ressource already merged"
+								__log "INFO" "Ressource already merged"
 								_FLAG=0
 							fi
 						fi
@@ -2507,12 +2507,12 @@ __resource() {
 				[ "$_opt_merge" = "ON" ] && __log "INFO" "MERGE option not supported with this protocol"
 				if [ -d "$FINAL_DESTINATION" ]; then
 					if [ "$_opt_get" = "ON" ]; then
-						__log "INFO" " ** Ressource already exist"
+						__log "INFO" "Ressource already exist"
 						_FLAG=0
 					fi
 				else
-					[ "$_opt_revert" = "ON" ] && __log "INFO" " ** Ressource does not exist" && _FLAG=0
-					[ "$_opt_update" = "ON" ] && __log "INFO" " ** Ressource does not exist" && _FLAG=0
+					[ "$_opt_revert" = "ON" ] && __log "INFO" "Ressource does not exist" && _FLAG=0
+					[ "$_opt_update" = "ON" ] && __log "INFO" "Ressource does not exist" && _FLAG=0
 				fi
 				;;
 		esac
@@ -2554,7 +2554,7 @@ __resource() {
 				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
 				;;
 			* )
-				__log "INFO" " ** ERROR Unknow protocol"
+				__log "ERROR" "Unknow protocol"
 				;;
 		esac
 	fi
@@ -2578,7 +2578,7 @@ __download_uncompress() {
 	if [ "${FILE_NAME}" = "_AUTO_" ]; then
 		#_AFTER_SLASH=${URL##*/}
 		FILE_NAME=$(__get_filename_from_url "$URL")
-		__log "INFO" "** Guessed file name is $FILE_NAME"
+		__log "INFO" "Guessed file name is $FILE_NAME"
 	fi
 
 	__download "$URL" "$FILE_NAME"
@@ -2628,7 +2628,7 @@ __compress() {
 			fi
 			;;
 		ZIP)
-			__log "DEBUG" "TODO: *********** ZIP NOT IMPLEMENTED"
+			__log "ERROR" "TODO: *********** ZIP NOT IMPLEMENTED"
 			;;
 		TAR*)
 				[ -d "$_target" ] && tar -c -v $_tar_flag -f "$_output_archive" -C "$_target/.." "$(basename "${_target}")"
@@ -2661,7 +2661,7 @@ __uncompress() {
 
 	mkdir -p "$UNZIP_DIR"
 
-	__log "INFO" " ** Uncompress $FILE_PATH in $UNZIP_DIR"
+	__log "INFO" "Uncompress $FILE_PATH in $UNZIP_DIR"
 
 	cd "$UNZIP_DIR"
 
@@ -2713,7 +2713,7 @@ __uncompress() {
 				ar p "$FILE_PATH" data.tar.gz | tar xz
 			;;
 		*)
-			__log "INFO" " ** ERROR : Unknown archive format"
+			__log "ERROR" "Unknown archive format"
 			;;
 	esac
 }
@@ -2734,12 +2734,12 @@ __download() {
 	if [ "$FILE_NAME" = "_AUTO_" ]; then
 		#_AFTER_SLASH=${URL##*/}
 		FILE_NAME=$(__get_filename_from_url "$URL")
-		__log "INFO" "** Guessed file name is $FILE_NAME"
+		__log "INFO" "Guessed file name is $FILE_NAME"
 	fi
 
 	mkdir -p "$STELLA_APP_CACHE_DIR"
 
-	__log "INFO" " ** Download $FILE_NAME from $URL into cache"
+	__log "INFO" "Download $FILE_NAME from $URL into cache"
 
 	#if [ "$FORCE" = "1" ]; then
 	#	rm -Rf "$STELLA_APP_CACHE_DIR/$FILE_NAME"
@@ -2766,10 +2766,10 @@ __download() {
 				fi
 			fi
 		else
-			__log "INFO" " ** Already downloaded"
+			__log "INFO" "Already downloaded"
 		fi
 	else
-		__log "INFO" " ** Already downloaded"
+		__log "INFO" "Already downloaded"
 	fi
 
 	local _tmp_dir
@@ -2788,11 +2788,11 @@ __download() {
 					mkdir -p "$DEST_DIR"
 				fi
 				cp "$_tmp_dir/$FILE_NAME" "$DEST_DIR/"
-				__log "INFO" "** Downloaded $FILE_NAME is in $DEST_DIR"
+				__log "INFO" "Downloaded $FILE_NAME is in $DEST_DIR"
 			fi
 		fi
 	else
-		__log "INFO" "** ERROR downloading $URL"
+		__log "ERROR" "ERROR downloading $URL"
 	fi
 }
 

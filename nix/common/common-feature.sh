@@ -69,7 +69,7 @@ __feature_init() {
 					__feature_init "${dep}"
 					# if some deps are missing, this might not be an error, because we have merged FEAT_SOURCE_DEPENDENCIES and FEAT_BINARY_DEPENDENCIES
 					#if [ "$TEST_FEATURE" = "0" ]; then
-					#	__log "DEBUG" "** ${_current_feat} dependency $dep seems can not be initialized or is not installed."
+					#	__log "DEBUG" "${_current_feat} dependency $dep seems can not be initialized or is not installed."
 					#fi
 				fi
 			done
@@ -536,7 +536,7 @@ __feature_remove() {
 	if [ "$TEST_FEATURE" = "1" ]; then
 
 		if [ ! "$FEAT_BUNDLE" = "" ]; then
-			__log "INFO" "** Remove bundle $FEAT_NAME version $FEAT_VERSION"
+			__log "INFO" "Remove bundle $FEAT_NAME version $FEAT_VERSION"
 			__del_folder $FEAT_INSTALL_ROOT
 
 			__push_schema_context
@@ -556,7 +556,7 @@ __feature_remove() {
 			FEAT_BUNDLE_MODE=
 			__pop_schema_context
 		else
-			__log "INFO" "** Remove $FEAT_NAME version $FEAT_VERSION from $FEAT_INSTALL_ROOT"
+			__log "INFO" "Remove $FEAT_NAME version $FEAT_VERSION from $FEAT_INSTALL_ROOT"
 			__del_folder $FEAT_INSTALL_ROOT
 		fi
 	fi
@@ -769,7 +769,7 @@ __feature_install() {
 						# a dependency is not added to current app properties
 						__feature_install $dep "$_OPT NON_DECLARED"
 						if [ "$TEST_FEATURE" = "0" ]; then
-							__log "INFO" "** Error while installing dependency feature $FEAT_SCHEMA_SELECTED"
+							__log "INFO" "Error while installing dependency feature $FEAT_SCHEMA_SELECTED"
 						fi
 
 					fi
@@ -834,8 +834,8 @@ __feature_install() {
 
 			else
 
-				__log "INFO" " ** Installing $FEAT_NAME version $FEAT_VERSION in $FEAT_INSTALL_ROOT"
-				__log "INFO" " ** Feature asked is $_SCHEMA, feature picked is $FEAT_SCHEMA_SELECTED"
+				__log "INFO" "Installing $FEAT_NAME version $FEAT_VERSION in $FEAT_INSTALL_ROOT"
+				__log "INFO" "Feature asked is $_SCHEMA, feature picked is $FEAT_SCHEMA_SELECTED"
 
 				# NOTE : feature_callback is called from recipe itself
 
@@ -852,10 +852,10 @@ __feature_install() {
 					__feature_inspect "$FEAT_SCHEMA_SELECTED"
 
 					if [ "$TEST_FEATURE" = "1" ]; then
-						__log "INFO" "** Feature $_SCHEMA is installed"
+						__log "INFO" "Feature $_SCHEMA is installed"
 						__feature_init "$FEAT_SCHEMA_SELECTED" "$_OPT"
 					else
-						__log "INFO" "** Error while installing feature asked $_SCHELA (feature picked is $FEAT_SCHEMA_SELECTED)"
+						__log "ERROR" "Error while installing feature asked $_SCHELA (feature picked is $FEAT_SCHEMA_SELECTED)"
 						#__del_folder $FEAT_INSTALL_ROOT
 						# Sometimes current directory is lost by the system
 						cd "$STELLA_APP_ROOT"
@@ -863,7 +863,7 @@ __feature_install() {
 				fi
 			fi
 		else
-			__log "INFO" "** Feature $_SCHEMA already installed"
+			__log "INFO" "Feature $_SCHEMA already installed"
 			__feature_init "$FEAT_SCHEMA_SELECTED" $_OPT
 		fi
 
@@ -884,7 +884,7 @@ __feature_install() {
 
 
 	else
-		__log "INFO" " ** Error unknow feature $_SCHEMA"
+		__log "ERROR" "Unknow feature $_SCHEMA"
 	fi
 
 }
