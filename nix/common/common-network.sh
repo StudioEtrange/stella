@@ -562,28 +562,38 @@ __vagrant_get_ssh_options() {
 
 # https://stackoverflow.com/a/33550399
 __get_network_info() {
-	# ip is not present on MacOS by default
-	type ip &>/dev/null
-	if [ $? = 0 ]; then
-		# pick the first default interface if there is several
-		STELLA_DEFAULT_INTERFACE_IPV4="$(ip -4 route ls 2>/dev/null | grep default | grep -Po '(?<=dev )(\S+)' | head -1)"
-		STELLA_DEFAULT_INTERFACE_IPV6="$(ip -6 route show default 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}' | head -1)"
-	else
-		type netstat &>/dev/null
-		# pick the first default interface if there is several
-		if [ $? = 0 ]; then
-			case $STELLA_CURRENT_PLATFORM in 
-				darwin )
+	case $STELLA_CURRENT_PLATFORM in
+		darwin )
+			type route &>/dev/null
+			if [ $? = 0 ]; then
+				STELLA_DEFAULT_INTERFACE_IPV4="$(route -n get -inet default 2>/dev/null | awk '/interface: / {print $2; exit}')"
+				STELLA_DEFAULT_INTERFACE_IPV6="$(route -n get -inet6 default 2>/dev/null | awk '/interface: / {print $2; exit}')"
+			else
+				type netstat &>/dev/null
+				# pick the first default interface if there is several
+				if [ $? = 0 ]; then
 					STELLA_DEFAULT_INTERFACE_IPV4="$(netstat -rn -f inet 2>/dev/null | awk '/^default/ {print $NF; exit}' | head -1)"
 					STELLA_DEFAULT_INTERFACE_IPV6="$(netstat -rn -f inet6 2>/dev/null | awk '/^default/ {print $NF; exit}' | head -1)"
-					;;
-				linux )
+				fi
+			fi
+			;;
+		linux )
+			type ip &>/dev/null
+			if [ $? = 0 ]; then
+				# pick the first default interface if there is several
+				STELLA_DEFAULT_INTERFACE_IPV4="$(ip -4 route show default 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}' | head -1)"
+				STELLA_DEFAULT_INTERFACE_IPV6="$(ip -6 route show default 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}' | head -1)"
+			else
+				type netstat &>/dev/null
+				# pick the first default interface if there is several
+				if [ $? = 0 ]; then
 					STELLA_DEFAULT_INTERFACE_IPV4="$(netstat -rn -A inet 2>/dev/null | awk '/^0.0.0.0/ {thif=substr($0,74,10); print thif;} /^default.*UG/ {thif=substr($0,65,10); print thif;}' | head -1)"
 					STELLA_DEFAULT_INTERFACE_IPV6="$(netstat -rn -A inet6 2>/dev/null | awk '/::\/0/ && /UG/ {print $NF; exit}' | head -1)"
-					;;
-			esac
-		fi
-	fi	
+				fi
+			fi
+			;;
+	esac
+	
 	# TODO : choose between ipv4 and ipv6
 	STELLA_DEFAULT_INTERFACE="$STELLA_DEFAULT_INTERFACE_IPV4"
 
@@ -595,23 +605,23 @@ __get_network_info() {
 
 	type ip &>/dev/null
 	if [ $? = 0 ]; then
-		STELLA_HOST_IP_IPV4="$(ip -4 addr 2>/dev/null | awk '/inet / {print $2}' | cut -d/ -f1 | tr '\n' ' ')"
-		#STELLA_HOST_IP_IPV4="$(ip -4 addr show scope global 2>/dev/null | awk '/inet / {print $2}' | cut -d/ -f1 | tr '\n' ' ')"
-		STELLA_HOST_IP_IPV6="$(ip -6 addr 2>/dev/null | awk '/inet6/ {print $2}' | cut -d/ -f1 | tr '\n' ' ')"
-		#STELLA_HOST_IP_IPV6="$(ip -6 addr show scope global 2>/dev/null | awk '/inet6/ {print $2}' | cut -d/ -f1 | tr '\n' ' ')"
+		# works on linux only
+		# contains a list of ips
+		STELLA_HOST_IP_IPV4="$(ip -4 addr 2>/dev/null | awk '/inet / {print $2}' | cut -d/ -f1 | xargs)"
+		STELLA_HOST_IP_IPV6="$(ip -6 addr 2>/dev/null | awk '/inet6/ {print $2}' | cut -d/ -f1 | xargs)"
 	else
 		type ifconfig &>/dev/null
 		if [ $? = 0 ]; then
 			# works on linux and MacOS
-			STELLA_HOST_IP_IPV4="$(ifconfig 2>/dev/null | grep -Eo 'inet (adr:|addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | tr '\n' ' ')"
-			STELLA_HOST_IP_IPV6="$(ifconfig 2>/dev/null | grep -Eo 'inet6 (adr:|addr:)?[0-9a-fA-F:]+' | awk '{print $2}' | sed 's/^(addr|adr)://' | tr '\n' ' ')"
+			STELLA_HOST_IP_IPV4="$(ifconfig 2>/dev/null | grep -Eo 'inet (adr:|addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | xargs)"
+			STELLA_HOST_IP_IPV6="$(ifconfig 2>/dev/null | grep -Eo 'inet6 (adr:|addr:)?[0-9a-fA-F:]+' | awk '{print $2}' | sed 's/^(addr|adr)://' | xargs)"
 		else
-			# NOTE : hostname return a mix of ipv4 and ipv6 and only adress with global scope (no Ipv6 local link or 127.0.0.1)
+			# NOTE WARN : hostname return a mix of ipv4 and ipv6 and only adress with global scope (no Ipv6 local link or 127.0.0.1)
 			# NOTE : hostname -I do not exist on MacOS
 			type hostname &>/dev/null
 			if [ $? = 0 ]; then
-				STELLA_HOST_IP_IPV4="$(hostname -I 2>/dev/null | tr ' ' '\n' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | tr '\n' ' ')"
-				STELLA_HOST_IP_IPV6="$(hostname -I 2>/dev/null | tr ' ' '\n' | grep -E '^[0-9a-fA-F:]+$' | tr '\n' ' ')"
+				STELLA_HOST_IP_IPV4="$(hostname -I 2>/dev/null | tr ' ' '\n' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | xargs)"
+				STELLA_HOST_IP_IPV6="$(hostname -I 2>/dev/null | tr ' ' '\n' | grep -E '^[0-9a-fA-F:]+$' | xargs)"
 			fi
 		fi
 	fi
@@ -620,32 +630,69 @@ __get_network_info() {
 
 }
 
+
+__get_stable_ip_from_default_interface() {
+	local _mode="$1"
+	[ "$_mode" = "" ] && _mode="ipv4"
+
+	case $_mode in
+		ipv4 )
+			__get_ip_from_interface "${STELLA_DEFAULT_INTERFACE_IPV4}" "$_mode" "STABLE"
+			;;
+		ipv6 )
+			__get_ip_from_interface "${STELLA_DEFAULT_INTERFACE_IPV6}" "$_mode" "STABLE"
+			;;
+	esac
+
+}
+
 # can return several ip separated by space
 __get_ip_from_interface() {
 	local _if="$1"
 	local _mode="$2"
-	
+	# STABLE : find stable ip (no temporary, no tentative, no deprecated, no dadfailed), usefull to be used as an ip server address
+	local _option="$3" 
 	[ "$_mode" = "" ] && _mode="ipv4"
+
 	#https://unix.stackexchange.com/a/407128
 	type ip &>/dev/null
 	if [ $? = 0 ]; then
 		case $_mode in
 			ipv4 )
-				ip -4 addr show dev ${_if} 2>/dev/null | awk '/inet / {print $2}' | cut -d/ -f1
+				if [ "$_option" = "STABLE" ]; then
+					ip -4 -o addr show dev ${_if} scope global 2>/dev/null | awk '/inet / {print $4}' | cut -d/ -f1 | xargs
+				else
+					ip -4 addr show dev ${_if} 2>/dev/null | awk '/inet / {print $2}' | cut -d/ -f1 | xargs
+				fi
 				;;
 			ipv6 )
-				ip -6 addr show dev ${_if} 2>/dev/null | awk '/inet6 / {print $2}' | cut -d/ -f1
+				if [ "$_option" = "STABLE" ]; then
+					# only global scope ipv6 adress (no local link, no temporary, no deprecated, no tentative, no dadfailed)
+					ip -6 -o addr show dev ${_if} scope global | grep -Ev 'mngtmpaddr|temporary|tentative|deprecated|dadfailed' | awk '{print $4}' | cut -d/ -f1 | xargs
+				else
+					ip -6 addr show dev ${_if} 2>/dev/null | awk '/inet6 / {print $2}' | cut -d/ -f1 | xargs
+				fi
 				;;
 		esac
 	else
 		type ifconfig &>/dev/null
 		if [ $? = 0 ]; then
 			case $_mode in
+				# fonctionne sous linux et macos
 				ipv4 )
-					ifconfig ${_if} 2>/dev/null | grep -Eo 'inet (adr:|addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*'
+					if [ "$_option" = "STABLE" ]; then
+						ifconfig ${_if} 2>/dev/null | awk '/inet / && $2!="127.0.0.1" {print $2}' | xargs
+					else
+						ifconfig ${_if} 2>/dev/null | awk '/inet / {print $2}' | xargs
+					fi
 					;;
 				ipv6 )
-					ifconfig ${_if} 2>/dev/null | grep -Eo 'inet6 (adr:|addr:)?[0-9a-fA-F:]+' | awk '{print $2}' | sed 's/^(addr|adr)://' | tr '\n' ' '
+					if [ "$_option" = "STABLE" ]; then
+						# NOTE : on linux there is no way to filter stable ip with ifconfig tool !
+						[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && ifconfig ${_if} 2>/dev/null | awk '/inet6 / && $2!="::1" && $2!~/^fe80:/ && $0!~/ temporary| tentative| deprecated/ {print $2}' | cut -d% -f1 | xargs
+					else
+						ifconfig ${_if} 2>/dev/null | awk '/inet6 / {print $2}' | xargs
+					fi
 					;;
 			esac
 		fi
