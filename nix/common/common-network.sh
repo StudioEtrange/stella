@@ -204,7 +204,7 @@ __proxy_override() {
 	function hg() {
 		local __port
 		[ ! "${STELLA_PROXY_PORT}" = "" ] && __port=":${STELLA_PROXY_PORT}"
-		echo $(command hg --config http_proxy.host="${STELLA_PROXY_HOST}${__port}" --config http_proxy.user="${STELLA_PROXY_USER}" --config http_proxy.passwd="${STELLA_PROXY_PASS}" "$@")
+		command hg --config http_proxy.host="${STELLA_PROXY_HOST}${__port}" --config http_proxy.user="${STELLA_PROXY_USER}" --config http_proxy.passwd="${STELLA_PROXY_PASS}" "$@"
 	}
 
 	function mvn() {
@@ -458,9 +458,9 @@ __find_free_port() {
 }
 
 # https://stackoverflow.com/a/14701003/5027535
-# return TRUE if port is open
-# return FALSE if port is unreachable
-#	return nothing if we cannot test
+# print TRUE if port is open
+# print FALSE if port is unreachable
+# print nothing if we cannot test
 # work with ipV4 or ipv6
 __check_tcp_port_open() {
 	local __host="$1"
@@ -478,8 +478,8 @@ __check_tcp_port_open() {
 	else
 		type timeout &>/dev/null
 		if [ $? = 0 ]; then
-			 timeout ${__timeout} bash -c "</dev/tcp/${__host}/${__port}" 2>/dev/null
-			 [ $? = 0 ] && echo "TRUE" || echo "FALSE"
+			timeout ${__timeout} bash -c "</dev/tcp/${__host}/${__port}" 2>/dev/null
+			[ $? = 0 ] && echo "TRUE" || echo "FALSE"
 		else
 			# TODO : timeout nor nc are present we cannot check tcp port is open or not
 			echo ""
@@ -550,7 +550,7 @@ __ssh_execute() {
 # vagrant machine name
 __vagrant_get_ssh_options() {
 	local __name="$1"
-	echo "$(vagrant ssh-config $__name | sed '/^[[:space:]]*$/d' |  awk '/^Host .*$/ { detected=1; }  { if(start) {print " -o "$1"="$2}; if(detected) start=1; }')"
+	vagrant ssh-config $__name | sed '/^[[:space:]]*$/d' |  awk '/^Host .*$/ { detected=1; }  { if(start) {print " -o "$1"="$2}; if(detected) start=1; }'
 }
 
 # TODO
@@ -559,9 +559,10 @@ __vagrant_get_ssh_options() {
 # __get_interface_used_for()
 
 
-# TODO : choose between ipv4 and ipv6
+
 # https://stackoverflow.com/a/33550399
 __get_network_info() {
+	# ip is not present on MacOS by default
 	type ip &>/dev/null
 	if [ $? = 0 ]; then
 		# pick the first default interface if there is several
@@ -571,15 +572,25 @@ __get_network_info() {
 		type netstat &>/dev/null
 		# pick the first default interface if there is several
 		if [ $? = 0 ]; then
-			STELLA_DEFAULT_INTERFACE_IPV4="$(netstat -4 -rn 2>/dev/null | awk '/^0.0.0.0/ {thif=substr($0,74,10); print thif;} /^default.*UG/ {thif=substr($0,65,10); print thif;}' | head -1)"
-			STELLA_DEFAULT_INTERFACE_IPV6="$(netstat -6 -rn 2>/dev/null | awk '/::\/0/ && /UG/ {print $NF; exit}' | head -1)"
+			case $STELLA_CURRENT_PLATFORM in 
+				darwin )
+					STELLA_DEFAULT_INTERFACE_IPV4="$(netstat -rn -f inet 2>/dev/null | awk '/^default/ {print $NF; exit}' | head -1)"
+					STELLA_DEFAULT_INTERFACE_IPV6="$(netstat -rn -f inet6 2>/dev/null | awk '/^default/ {print $NF; exit}' | head -1)"
+					;;
+				linux )
+					STELLA_DEFAULT_INTERFACE_IPV4="$(netstat -rn -A inet 2>/dev/null | awk '/^0.0.0.0/ {thif=substr($0,74,10); print thif;} /^default.*UG/ {thif=substr($0,65,10); print thif;}' | head -1)"
+					STELLA_DEFAULT_INTERFACE_IPV6="$(netstat -rn -A inet6 2>/dev/null | awk '/::\/0/ && /UG/ {print $NF; exit}' | head -1)"
+					;;
+			esac
 		fi
 	fi	
+	# TODO : choose between ipv4 and ipv6
 	STELLA_DEFAULT_INTERFACE="$STELLA_DEFAULT_INTERFACE_IPV4"
 
 	# contains default ip
 	STELLA_HOST_DEFAULT_IP_IPV4="$(__get_ip_from_interface "${STELLA_DEFAULT_INTERFACE_IPV4}" "ipv4")"
-	STELLA_HOST_DEFAULT_IP_IPV6="$(__get_ip_from_interface "${STELLA_DEFAULT_INTERFACE_IPV4}" "ipv6")"
+	STELLA_HOST_DEFAULT_IP_IPV6="$(__get_ip_from_interface "${STELLA_DEFAULT_INTERFACE_IPV6}" "ipv6")"
+	# TODO : choose between ipv4 and ipv6
 	STELLA_HOST_DEFAULT_IP="${STELLA_HOST_DEFAULT_IP_IPV4}"
 
 	type ip &>/dev/null
@@ -591,6 +602,7 @@ __get_network_info() {
 	else
 		type ifconfig &>/dev/null
 		if [ $? = 0 ]; then
+			# works on linux and MacOS
 			STELLA_HOST_IP_IPV4="$(ifconfig 2>/dev/null | grep -Eo 'inet (adr:|addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | tr '\n' ' ')"
 			STELLA_HOST_IP_IPV6="$(ifconfig 2>/dev/null | grep -Eo 'inet6 (adr:|addr:)?[0-9a-fA-F:]+' | awk '{print $2}' | sed 's/^(addr|adr)://' | tr '\n' ' ')"
 		else
@@ -603,7 +615,7 @@ __get_network_info() {
 			fi
 		fi
 	fi
-
+	# TODO : choose between ipv4 and ipv6
 	STELLA_HOST_IP="$STELLA_HOST_IP_IPV4"
 
 }
@@ -619,10 +631,10 @@ __get_ip_from_interface() {
 	if [ $? = 0 ]; then
 		case $_mode in
 			ipv4 )
-				echo "$(ip -4 addr show dev ${_if} 2>/dev/null | awk '/inet / {print $2}' | cut -d/ -f1)"
+				ip -4 addr show dev ${_if} 2>/dev/null | awk '/inet / {print $2}' | cut -d/ -f1
 				;;
 			ipv6 )
-				echo "$(ip -6 addr show dev ${_if} 2>/dev/null | awk '/inet6 / {print $2}' | cut -d/ -f1)"
+				ip -6 addr show dev ${_if} 2>/dev/null | awk '/inet6 / {print $2}' | cut -d/ -f1
 				;;
 		esac
 	else
@@ -630,10 +642,10 @@ __get_ip_from_interface() {
 		if [ $? = 0 ]; then
 			case $_mode in
 				ipv4 )
-					echo "$(ifconfig ${_if} 2>/dev/null | grep -Eo 'inet (adr:|addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*')"
+					ifconfig ${_if} 2>/dev/null | grep -Eo 'inet (adr:|addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*'
 					;;
 				ipv6 )
-					echo "$(ifconfig ${_if} 2>/dev/null | grep -Eo 'inet6 (adr:|addr:)?[0-9a-fA-F:]+' | awk '{print $2}' | sed 's/^(addr|adr)://' | tr '\n' ' ')"
+					ifconfig ${_if} 2>/dev/null | grep -Eo 'inet6 (adr:|addr:)?[0-9a-fA-F:]+' | awk '{print $2}' | sed 's/^(addr|adr)://' | tr '\n' ' '
 					;;
 			esac
 		fi
@@ -650,9 +662,7 @@ __get_ip_from_interface() {
 #	fi
 #}
 
-# TODO : support only ipv4
 # https://unix.stackexchange.com/questions/20784/how-can-i-resolve-a-hostname-to-an-ip-address-in-a-bash-script
-# NOTE : host, dig, nslookup only request dns and do not look for ip in /etc/hosts
 # NOTE on getent :
 #					ipv4 adress
 #						getent ahostsv4 www.google.de | grep STREAM | head -n 1 | cut -d ' ' -f 1
@@ -663,27 +673,86 @@ __get_ip_from_interface() {
 #					list all resolved address
 #						getent ahosts google.de
 # 					getent ahosts google.de | head -n 1 | cut -d ' ' -f 1
-__get_ip_from_hostname() {
+__get_ip_from_host() {
+	local _mode="$2"
+	[ "$_mode" = "" ] && _mode="ipv4"
 	type getent &>/dev/null
 	if [ $? = 0 ]; then
-		echo "$(getent ahostsv4 $1 | grep STREAM | head -n 1 | cut -d ' ' -f 1)"
+		case $_mode in
+			ipv4 )
+				getent ahostsv4 $1 | grep STREAM | head -n 1 | cut -d ' ' -f 1
+				;;
+			ipv6 )
+				getent ahostsv6 $1 | grep STREAM | head -n 1 | cut -d ' ' -f 1
+				;;
+		esac
 	else
-		echo "$(ping -q -c 1 -t 1 $1 2>/dev/null | grep -m 1 PING | cut -d "(" -f2 | cut -d ")" -f1)"
+		type dig &>/dev/null
+		if [ $? = 0 ]; then
+			case $_mode in
+				ipv4 )
+					dig +short A $1 | head -n 1
+					;;
+				ipv6 )
+					dig +short AAAA $1 | head -n 1
+					;;
+			esac
+		else
+			case $STELLA_CURRENT_PLATFORM in
+				darwin )
+					case $_mode in
+						ipv4 )
+							ping -q -c 1 -t 1 $1 2>/dev/null | grep -m 1 PING | cut -d "(" -f2 | cut -d ")" -f1
+						;;
+						# NOTE on macos there is no timeout (-t) option for ping6
+						ipv6 )
+							perl -e 'alarm shift; exec @ARGV' "1" ping6 -q -c 1 -o "$1" 2>/dev/null | head -n1 | awk '{print $NF}'
+						;;
+					esac
+				;;
+				linux )
+					case $_mode in
+						ipv4 )
+							ping -4 -q -c 1 -t 1 $1 2>/dev/null | grep -m 1 PING | cut -d "(" -f2 | cut -d ")" -f1
+							;;
+						ipv6 )
+							ping6 -q -c 1 -t 1 $1 2>/dev/null | grep -m 1 PING | cut -d "(" -f3 | cut -d ")" -f1
+							;;
+					esac
+				;;
+			esac
+		fi
 	fi
 }
 
-# determine IP viewed by external WAN
+# determine IP viewed of the current host as viewed from external WAN
+# NOTE : in case off ipv6 this will return the current temporary ipv6 used by current host
 # https://unix.stackexchange.com/a/194136
-# TODO : work only ipv4
 __get_ip_external() {
-	type dig &>/dev/null
-	if [ $? = 0 ]; then
-		__result="$(dig @resolver1.opendns.com A myip.opendns.com +short -4)"
-		#__result="$(dig @resolver1.opendns.com AAAA myip.opendns.com +short -6)"
-	else
-		__result="$(curl --connect-timeout 2 -skL ipinfo.io/ip)"
-		#__result="$(curl --connect-timeout 2 -skL v6.ipinfo.io/ip)"
-	fi
+	local _mode="$1"
+
+	[ "$_mode" = "" ] && _mode="ipv4"
+
+	case $_mode in
+		ipv4 )
+			type dig &>/dev/null
+			if [ $? = 0 ]; then
+				__result="$(dig @resolver1.opendns.com A myip.opendns.com +short -4)"
+			else
+				__result="$(curl --connect-timeout 2 -skL ipinfo.io/ip)"
+			fi
+		;;
+		ipv6 )
+			type dig &>/dev/null
+			if [ $? = 0 ]; then
+				# NOTE : in this case dig will return the current temporary ipv6 used by current host
+				__result="$(dig @resolver1.opendns.com AAAA myip.opendns.com +short -6)"
+			else
+				__result="$(curl --connect-timeout 2 -skL v6.ipinfo.io/ip)"
+			fi
+		;;
+	esac
+	
 
 	echo "${__result}"
 }
