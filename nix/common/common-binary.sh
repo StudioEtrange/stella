@@ -97,7 +97,7 @@ _STELLA_COMMON_BINARY_INCLUDED_=1
 __get_elf_interpreter_linux() {
 	local _file="$1"
 	if __is_bin "$_file"; then
-		readelf  -p ".interp" "$_file" | sed -E -n '/\[\s*[0-9]\]/s/^\s*\[.*\]\s*(.*)/\1/p'
+		readelf  -p ".interp" "$_file" | sed -E -n '/\[[[:space:]]*[0-9]\]/s/^[[:space:]]*\[.*\][[:space:]]*(.*)/\1/p'
 	fi
 }
 
@@ -346,10 +346,10 @@ __get_rpath() {
 
 		if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 			local _field='RUNPATH'
-			IFS=':' read -ra _rpath_values <<< $(objdump -p $_file | grep -E "$_field\s" | tr -s ' ' | cut -d ' ' -f 3)
+			IFS=':' read -ra _rpath_values <<< $(objdump -p $_file | grep -E "$_field[[:space:]]" | tr -s ' ' | cut -d ' ' -f 3)
 			if [ "$_rpath_values" = "" ]; then
 				_field="RPATH"
-				IFS=':' read -ra _rpath_values <<< $(objdump -p $_file | grep -E "$_field\s" | tr -s ' ' | cut -d ' ' -f 3)
+				IFS=':' read -ra _rpath_values <<< $(objdump -p $_file | grep -E "$_field[[:space:]]" | tr -s ' ' | cut -d ' ' -f 3)
 			fi
 			echo "${_rpath_values[@]}"
 		fi

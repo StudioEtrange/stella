@@ -83,7 +83,7 @@ elf_interp_readelf() {
 	# String dump of section '.interp':
 	#  [     0]  /lib/ld-musl-x86_64.so.1
 	#
-	readelf  -p .interp "$1" | sed -E -n '/\[\s*[0-9]\]/s/^\s*\[.*\]\s*(.*)/\1/p'
+	readelf  -p .interp "$1" | sed -E -n '/\[[[:space:]]*[0-9]\]/s/^[[:space:]]*\[.*\][[:space:]]*(.*)/\1/p'
 }
 
 elf_needed_readelf() {
