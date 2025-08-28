@@ -2438,7 +2438,7 @@ __resource() {
 	[ "$_opt_update" = "ON" ] && __log "INFO" "Updating resource :"
 	[ "$_opt_delete" = "ON" ] && __log "INFO" "Deleting resource :"
 	[ "$_opt_get" = "ON" ] && __log "INFO" "Getting resource :"
-	[ ! "$FINAL_DESTINATION" = "" ] && __log "INFO" " $NAME in $FINAL_DESTINATION" || __log "INFO" " $NAME"
+	[ ! "$FINAL_DESTINATION" = "" ] && __log "INFO" "$NAME in $FINAL_DESTINATION" || __log "INFO" "$NAME"
 
 	#[ "$FORCE" ] && rm -Rf $FINAL_DESTINATION
 	if [ "$_opt_get" = "ON" ]; then
@@ -2668,28 +2668,32 @@ __uncompress() {
 	case "$FILE_PATH" in
 		*.zip)
 			__require "unzip" "unzip" "SYSTEM"
-			[ "$_opt_strip" = "OFF" ] && unzip -a -o "$FILE_PATH"
-			[ "$_opt_strip" = "ON" ] && __unzip-strip "$FILE_PATH" "$UNZIP_DIR"
+			if [ "$_opt_strip" = "ON" ]; then
+				__unzip-strip "$FILE_PATH" "$UNZIP_DIR"
+			else
+				unzip -a -o "$FILE_PATH"
+			fi
 			;;
 		*.tar )
-			if [ "$_opt_strip" = "OFF" ]; then
-				tar xf "$FILE_PATH"
-			else
+			if [ "$_opt_strip" = "ON" ]; then
 				tar xf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-strip "$FILE_PATH" "$UNZIP_DIR"
+			else
+				tar xf "$FILE_PATH"
 			fi
 			;;
 		*.gz | *.tgz)
-			if [ "$_opt_strip" = "OFF" ]; then
-				tar xzf "$FILE_PATH"
-			else
+			__log "DEBUG" "GZ file detected - option strip is $_opt_strip"	
+			if [ "$_opt_strip" = "ON" ]; then
 				tar xzf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-strip "$FILE_PATH" "$UNZIP_DIR"
+			else
+				tar xzf "$FILE_PATH"
 			fi
 			;;
 		*.xz | *.tar.bz2 | *.tbz2 | *.tbz)
-			if [ "$_opt_strip" = "OFF" ]; then
-				tar xf "$FILE_PATH"
-			else
+			if [ "$_opt_strip" = "ON" ]; then
 				tar xf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-strip "$FILE_PATH" "$UNZIP_DIR"
+			else
+				tar xf "$FILE_PATH"
 			fi
 			;;
 		*.bz2|*.bz)
@@ -2739,11 +2743,13 @@ __download() {
 
 	mkdir -p "$STELLA_APP_CACHE_DIR"
 
-	__log "INFO" "Download $FILE_NAME from $URL into cache"
 
-	#if [ "$FORCE" = "1" ]; then
-	#	rm -Rf "$STELLA_APP_CACHE_DIR/$FILE_NAME"
-	#fi
+	if [ "$FORCE" = "1" ]; then
+		__log "INFO" "Empty $FILE_NAME from cache if any"
+		rm -Rf "$STELLA_APP_CACHE_DIR/$FILE_NAME"
+	fi
+
+	__log "INFO" "Download $FILE_NAME from $URL into cache"
 
 
 	if [ ! -f "$STELLA_APP_CACHE_DIR/$FILE_NAME" ]; then
@@ -2766,10 +2772,10 @@ __download() {
 				fi
 			fi
 		else
-			__log "INFO" "Already downloaded"
+			__log "INFO" "File already into cache"
 		fi
 	else
-		__log "INFO" "Already downloaded"
+		__log "INFO" "File already into cache"
 	fi
 
 	local _tmp_dir

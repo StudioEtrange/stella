@@ -32,7 +32,7 @@ usage() {
 	echo " L     app vendor <app-path> [--stellaroot=<path>] : vendorize stella (current or a specific one) into an app"
 	echo " L     app deploy <uri> [--cache] [--workspace] [--hidden] [--sudo] : deploy current app version to an uri. Could be to local filesystem, to ssh or to a vagrant machine. Vagrant use: vagrant://machine-name. [--cache] : include app cache folder. [--workspace] : include app workspace folder. [--sudo] : execute deploy as sudo. [--hidden] : exclude hidden files"
 	echo " o-- feature management :"
-	echo " L     feature install <feature schema> [--depforce] [--depignore] [--buildarch=x86|x64] [--export=<path>] [--portable=<path>] : install a feature. [--depforce] will force to reinstall all dependencies. [--depignore] will ignore dependencies. schema = feature_name[#version][@arch][:binary|source][/os_restriction][\\os_exclusion]"
+	echo " L     feature install <feature schema> [--depforce] [--depignore] [--buildarch=x86|x64] [--export=<path>] [--portable=<path>] [-f] : install a feature. [--depforce] will force to reinstall all dependencies. [-f] will ignore files in cache, [--depignore] will ignore dependencies. schema = feature_name[#version][@arch][:binary|source][/os_restriction][\\os_exclusion]"
 	echo " L     feature remove <feature schema> : remove a feature"
 	echo " L     feature info <feature schema> : show some feature informations"
 	echo " L     feature list <all|feature name|active|full-active> : list all available feature OR available versions of a feature OR current active features OR full list of active features even hidden ones"
