@@ -96,8 +96,17 @@ WORKSPACE=''                       	''    		''            		b     		0     		'1' 
 HIDDEN=''                       	''    		''            		b     		0     		'1'           			Exclude hidden files.
 SUDO=''                       	''    		''            		b     		0     		'1'           			Execute as sudo.
 SCRIPT=''                   ''          'path'              s           0           ''                      Script path.
+DEBUG=''                       	'd'    		''            		b     		0     		'1'           			Active log in debug mode.
 "
 __argparse "${BASH_SOURCE[0]}" "$OPTIONS" "$PARAMETERS" "Stella" "$(usage)" "EXTRA_ARG OTHERARG EXTRA_ARG_EVAL OTHERARG_EVAL" "$@"
+
+# active debug mode
+if [ "$DEBUG" = "1" ]; then
+	STELLA_LOG_STATE="ON"
+	STELLA_LOG_LEVEL="DEBUG"
+	STELLA_APP_LOG_STATE="ON"
+	STELLA_APP_LOG_LEVEL="DEBUG"
+fi
 
 # --------------- APP ----------------------------
 if [ "$DOMAIN" = "app" ]; then
