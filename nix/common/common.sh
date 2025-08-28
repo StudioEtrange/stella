@@ -2755,15 +2755,11 @@ __download() {
 	if [ ! -f "$STELLA_APP_CACHE_DIR/$FILE_NAME" ]; then
 		if [ ! -f "$STELLA_INTERNAL_CACHE_DIR/$FILE_NAME" ]; then
 			# NOTE : curl seems to be more compatible
-			#if [[ -n `which curl 2> /dev/null` ]]; then
-			if type -P curl &>/dev/null; then
-				# TODO : why two curl call ?
-				curl -fkSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL" || \
+			if type curl &>/dev/null; then
 				curl -fkSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL" || \
 				rm -f "$STELLA_APP_CACHE_DIR/$FILE_NAME"
 			else
-				#if [[ -n `which wget 2> /dev/null` ]]; then
-				if type -P wget &>/dev/null; then
+				if type wget &>/dev/null; then
 					wget "$URL" -O "$STELLA_APP_CACHE_DIR/$FILE_NAME" --no-check-certificate || \
 					wget "$URL" -O "$STELLA_APP_CACHE_DIR/$FILE_NAME" || \
 					rm -f "$STELLA_APP_CACHE_DIR/$FILE_NAME"
@@ -2891,8 +2887,7 @@ __mercurial_project_version() {
 		[ "$o" = "LONG" ] && _opt_version_long=ON
 	done
 
-	#if [[ -n `which hg 2> /dev/null` ]]; then
-	if type -P hg &>/dev/null; then
+	if type hg &>/dev/null; then
 		if [ "$_opt_version_long" = "ON" ]; then
 			echo "$(hg log -R "$_PATH" -r . --template "{latesttag}-{latesttagdistance}-{node|short}")"
 		fi
@@ -2921,7 +2916,7 @@ __git_project_version() {
 	fi
 
 	if [ -d "${_path}/.git" ]; then
-		if type -P git &>/dev/null; then
+		if type git &>/dev/null; then
 			# TODO NOTE : --first-parent option needs git version >= 1.8.4 but for fast execution purpose we test only >2
 			if [ "$(git --version | awk '{print $3}' | cut -d. -f1)" -ge 2 ]; then			
 				echo "$(git --git-dir "${_path}/.git" describe --tags ${_git_options} --always --first-parent)"

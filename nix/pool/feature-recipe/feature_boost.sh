@@ -246,7 +246,7 @@ feature_boost_install_source() {
 	  #                     : python lib folder
 
 
-		echo "using python : $_python_ver : $(type -P python 2>/dev/null) : $_pyconfig_path : $(__python_get_lib_path) ;" >> "$SRC_DIR/user-config.jam"
+		echo "using python : $_python_ver : $(command -v python 2>/dev/null) : $_pyconfig_path : $(__python_get_lib_path) ;" >> "$SRC_DIR/user-config.jam"
 
 		# NOTE to insert several python versions use this example :
 		# for pyver in $(pyversions); do \

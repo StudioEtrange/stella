@@ -219,12 +219,12 @@ __set_current_platform_info() {
 			;;
 	esac
 
-	if type -P nproc &>/dev/null; then
-		STELLA_NB_CPU=$(nproc)
-	elif type -P sysctl &>/dev/null; then
-		STELLA_NB_CPU=`sysctl hw.ncpu 2> /dev/null | awk '{print $NF}'`
+	if type nproc &>/dev/null; then
+		STELLA_NB_CPU="$(nproc)"
+	elif type sysctl &>/dev/null; then
+		STELLA_NB_CPU="$(sysctl hw.ncpu 2>/dev/null | awk '{print $NF}')"
 	else
-		STELLA_NB_CPU=1
+		STELLA_NB_CPU="1"
 	fi
 
 
@@ -490,7 +490,7 @@ __default_runtime_search_path() {
 			# the 'include' command is relative
 			local _oldpwd="$PWD"
 			cd "/etc" >/dev/null
-			interp=$(__get_elf_interpreter_linux "$(type -P ls 2>/dev/null)")
+			interp=$(__get_elf_interpreter_linux "$(command -v ls 2>/dev/null)")
 			echo $interp
 			case "$interp" in
 			*/ld-musl-*)
@@ -751,7 +751,7 @@ __get_current_package_manager() {
 	esac
 
 	for p in $plist; do
-		if type -P "${p}" &>/dev/null; then
+		if type "${p}" &>/dev/null; then
 			_package_manager="$p"
 			break
 		fi
@@ -886,7 +886,7 @@ __ansible_play_localhost() {
 	local __opt="$3"
 
 	local __tags=
-	local __python="-e ansible_python_interpreter=$(type -P python 2>/dev/null)"
+	local __python="-e ansible_python_interpreter=$(command -v python 2>/dev/null)"
 	local __debug="-v"
 	for o in ${__opt}; do
 		[ "$__tags" = "1" ] && __tags="--tags=$o"
@@ -1007,11 +1007,10 @@ __sys_install_brew() {
 
 
 	echo " ** Check Homebrew"
-	#if [[ -n `which brew 2> /dev/null` ]]; then
-	if type -P brew &>/dev/null; then
+	if type brew &>/dev/null; then
 		echo " ** brew doctor"
 		brew doctor
-		local _brewLocation="$(type -P brew 2>/dev/null)"
+		local _brewLocation="$(command -v brew 2>/dev/null)"
 		local _appLocation="$(brew --prefix)"
 		echo " ** -------------- **"
 		echo "Homebrew is installed in $_brewLocation"
