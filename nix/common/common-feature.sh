@@ -315,6 +315,7 @@ __feature_match_installed() {
 	else
 		__internal_feature_context "$_SCHEMA"
 	fi
+
 }
 
 # save context before calling __feature_inspect, in case we use it inside a schema context
@@ -440,9 +441,7 @@ __feature_inspect() {
 	TEST_FEATURE=0
 
 	[ "$_SCHEMA" = "" ] && return
-
 	__feature_match_installed "$_SCHEMA"
-
 	if [ ! "$FEAT_SCHEMA_SELECTED" = "" ]; then
 		if [ ! "$FEAT_BUNDLE" = "" ]; then
 			local p
@@ -456,6 +455,7 @@ __feature_inspect() {
 				TEST_FEATURE=0
 				__feature_inspect $p
 				[ "$TEST_FEATURE" = "0" ] && _t=0
+
 			done
 			FEAT_BUNDLE_MODE=
 			__pop_schema_context
@@ -481,7 +481,6 @@ __feature_inspect() {
 	else
 		__feature_catalog_info $_SCHEMA
 	fi
-
 }
 
 
@@ -800,7 +799,6 @@ __feature_install() {
 				if [ ! "$FEAT_BUNDLE_ITEM" = "" ]; then
 
 					__push_schema_context
-
 					FEAT_BUNDLE_MODE=$FEAT_BUNDLE
 
 					local _create_bundle_root=
@@ -808,12 +806,11 @@ __feature_install() {
 						if [ "$_portable_mode" = "OFF" ]; then
 							# if FEAT_BUNDLE_MODE!="" we are inside a bundle and if FEAT_BUNDLE!="" we are a bundle installed in a bundle
 							# we need to create the root folder of this bundle in bundle (except the fake bundle "mdoe-export" detected by _export_mode or _portable_mode)
-							if [ "$FEAT_BUNDLE" = "MERGE_LIST" ]; then
+							if [ ! "$FEAT_BUNDLE" = "" ]; then
 								if [ ! "$FEAT_BUNDLE_MODE" = "" ]; then
 									# here is the good place to detect if we need to create bundle root, and store its path
 									# because after feature install of each bundled item, these values are lost
 									_create_bundle_root="${FEAT_INSTALL_ROOT}/${FEAT_NAME}/${FEAT_VERSION}"
-
 								fi
 							fi
 						fi
@@ -905,11 +902,13 @@ __feature_install() {
 
 		if [ "$_export_mode" = "ON" ]; then
 			#FEAT_BUNDLE="$_save_feat_bundle"
+			FEAT_BUNDLE=
 			STELLA_APP_FEATURE_ROOT="$_save_app_feature_root"
 		fi
 
 		if [ "$_portable_mode" = "ON" ]; then
 			#FEAT_BUNDLE="$_save_feat_bundle"
+			FEAT_BUNDLE=
 			STELLA_APP_FEATURE_ROOT="$_save_app_feature_root"
 			__set_build_mode_default "RELOCATE" "$_save_relocate_default_mode"
 		fi
@@ -1173,7 +1172,6 @@ __select_official_schema() {
 
 	local _FILLED_SCHEMA=
 
-
  	if [ ! "$_RESULT_SCHEMA" = "" ]; then
 		eval $_RESULT_SCHEMA=
 	fi
@@ -1202,12 +1200,12 @@ __select_official_schema() {
 				fi
 			fi
 		fi
+
 		if [ "$_feat_found" = "1" ]; then
 			# load feature properties
 			feature_$_TR_FEATURE_NAME
 			[ ! "$_VAR_FEATURE_NAME" = "" ] && eval $_VAR_FEATURE_NAME=${_TR_FEATURE_NAME}
 		fi
-
 
 		local list_version=
 		local k
@@ -1395,7 +1393,6 @@ __select_official_schema() {
 		[ ! "$_VAR_FEATURE_OS_RESTRICTION" = "" ] && eval $_VAR_FEATURE_OS_RESTRICTION=
 		[ ! "$_VAR_FEATURE_OS_EXCLUSION" = "" ] && eval $_VAR_FEATURE_OS_EXCLUSION=
 	fi
-
 }
 
 
