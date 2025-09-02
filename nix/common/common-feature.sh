@@ -811,6 +811,8 @@ __feature_install() {
 									# here is the good place to detect if we need to create bundle root, and store its path
 									# because after feature install of each bundled item, these values are lost
 									_create_bundle_root="${FEAT_INSTALL_ROOT}/${FEAT_NAME}/${FEAT_VERSION}"
+									# TODO : export a feature which is a NESTED bundle fail
+									[ "$FEAT_BUNDLE" = "NESTED" ] && __log_stella "WARN" "Install a feature ${FEAT_NAME}#${FEAT_VERSION} which is a NESTED bundle in export mode could fail !"
 								fi
 							fi
 						fi

@@ -359,6 +359,7 @@ https://github.com/ansible/ansible-modules-core/blob/devel/system/service.py
                   # INCLUDE_FILTER is apply first, before EXCLUDE_FILTER
                   # BUILD_ACTION <action1> <action2>
 
+* [X] nix : install bundle NESTED, LIST, MERGE and MERGE_LIST is ok, but export a NESTED bundle does not work
 
 ------
 
