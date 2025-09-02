@@ -607,40 +607,41 @@ __feature_install() {
 	local _OPT="$2"
 
 	local o
-	local _opt_internal_feature=OFF
-	local _opt_hidden_feature=OFF
-	local _opt_non_declared_feature=OFF
-	local _opt_ignore_dep=OFF
-	local _opt_force_reinstall_dep=0
-	local _flag_export=OFF
-	local _dir_export=
-	local _export_mode=OFF
-	local _flag_portable=OFF
-	local _dir_portable=
-	local _portable_mode=OFF
+	local _opt_internal_feature="OFF"
+	local _opt_hidden_feature="OFF"
+	local _opt_non_declared_feature="OFF"
+	local _opt_ignore_dep="OFF"
+	local _opt_force_reinstall_dep="0"
+	local _flag_export="OFF"
+	local _dir_export=""
+	local _export_mode="OFF"
+	local _flag_portable="OFF"
+	local _dir_portable=""
+	local _portable_mode="OFF"
 
 	for o in $_OPT; do
 		# INTERNAL : install feature inside stella root instead of current stella app workspace
-		[ "$o" = "INTERNAL" ] && _opt_internal_feature=ON && _export_mode=OFF
+		[ "$o" = "INTERNAL" ] && _opt_internal_feature="ON" && _export_mode="OFF"
 		# HIDDEN : this feature will not be seen in list of active features
-		[ "$o" = "HIDDEN" ] && _opt_hidden_feature=ON
+		[ "$o" = "HIDDEN" ] && _opt_hidden_feature="ON"
 		# NON_DECLARED : this feature will not been auto added to current app properties
-		[ "$o" = "NON_DECLARED" ] && _opt_non_declared_feature=ON
+		[ "$o" = "NON_DECLARED" ] && _opt_non_declared_feature="ON"
 		# DEP_FORCE : force reinstall all dependencies
-		[ "$o" = "DEP_FORCE" ] && _opt_force_reinstall_dep=1
+		[ "$o" = "DEP_FORCE" ] && _opt_force_reinstall_dep="1"
 		# DEP_IGNORE : ignore installation step of all dependencies
 		[ "$o" = "DEP_IGNORE" ] && _opt_ignore_dep=ON
 		# EXPORT <dir> : will install feature in this specified root directory
-		[ "$_flag_export" = "ON" ] && _dir_export="$o" && _export_mode=ON && _flag_export=OFF
-		[ "$o" = "EXPORT" ] && _flag_export=ON
+		[ "$_flag_export" = "ON" ] && _dir_export="$o" && _export_mode="ON" && _flag_export="OFF"
+		[ "$o" = "EXPORT" ] && _flag_export="ON"
 		# PORTABLE <dir> : will install feature in this specified root directory in a portable way - this folder will ship every dependencies
-		[ "$_flag_portable" = "ON" ] && _dir_portable="$o" && _portable_mode=ON && _flag_portable=OFF
-		[ "$o" = "PORTABLE" ] && _flag_portable=ON
+		[ "$_flag_portable" = "ON" ] && _dir_portable="$o" && _portable_mode="ON" && _flag_portable=OFF
+		[ "$o" = "PORTABLE" ] && _flag_portable="ON"
 	done
 
 
 
-
+	local _save_app_feature_root=
+	#local _save_feat_bundle=
 	# EXPORT / PORTABLE MODE ------------------------------------
 	if [ "$_export_mode" = "ON" ]; then
 		_opt_internal_feature=OFF
@@ -650,7 +651,7 @@ __feature_install() {
 		FEAT_MODE_EXPORT_SCHEMA="$_SCHEMA"
 		_SCHEMA="mode-export"
 
-		local _save_app_feature_root="$STELLA_APP_FEATURE_ROOT"
+		_save_app_feature_root="$STELLA_APP_FEATURE_ROOT"
 		STELLA_APP_FEATURE_ROOT="$(__rel_to_abs_path "$_dir_export")"
 		_OPT="${_OPT//EXPORT/__}"
 	fi
@@ -664,7 +665,7 @@ __feature_install() {
 		FEAT_MODE_EXPORT_SCHEMA="$_SCHEMA"
 		_SCHEMA="mode-export"
 
-		local _save_app_feature_root="$STELLA_APP_FEATURE_ROOT"
+		_save_app_feature_root="$STELLA_APP_FEATURE_ROOT"
 		STELLA_APP_FEATURE_ROOT="$(__rel_to_abs_path "$_dir_portable")"
 		_OPT="${_OPT//PORTABLE/__}"
 
@@ -679,6 +680,14 @@ __feature_install() {
 	local a
 
 	__internal_feature_context "$_SCHEMA"
+	
+	# if [ "$_export_mode" = "ON" ]; then
+	# 	_save_feat_bundle="$FEAT_BUNDLE"
+	# fi
+	# if [ "$_portable_mode" = "ON" ]; then
+	# 	_save_feat_bundle="$FEAT_BUNDLE"
+	# fi
+
 	if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" = "" ]; then
 		if [ ! "$FEAT_SCHEMA_OS_RESTRICTION" = "$STELLA_CURRENT_OS" ]; then
 			__log "INFO" " $_SCHEMA not installed on $STELLA_CURRENT_OS"
@@ -696,7 +705,7 @@ __feature_install() {
 
 
 
-		local _save_app_feature_root=
+		_save_app_feature_root=
 		if [ "$_opt_internal_feature" = "ON" ]; then
 			_save_app_feature_root=$STELLA_APP_FEATURE_ROOT
 			STELLA_APP_FEATURE_ROOT=$STELLA_INTERNAL_FEATURE_ROOT
@@ -791,7 +800,24 @@ __feature_install() {
 				if [ ! "$FEAT_BUNDLE_ITEM" = "" ]; then
 
 					__push_schema_context
+
 					FEAT_BUNDLE_MODE=$FEAT_BUNDLE
+
+					local _create_bundle_root=
+					if [ "$_export_mode" = "OFF" ]; then
+						if [ "$_portable_mode" = "OFF" ]; then
+							# if FEAT_BUNDLE_MODE!="" we are inside a bundle and if FEAT_BUNDLE!="" we are a bundle installed in a bundle
+							# we need to create the root folder of this bundle in bundle (except the fake bundle "mdoe-export" detected by _export_mode or _portable_mode)
+							if [ "$FEAT_BUNDLE" = "MERGE_LIST" ]; then
+								if [ ! "$FEAT_BUNDLE_MODE" = "" ]; then
+									# here is the good place to detect if we need to create bundle root, and store its path
+									# because after feature install of each bundled item, these values are lost
+									_create_bundle_root="${FEAT_INSTALL_ROOT}/${FEAT_NAME}/${FEAT_VERSION}"
+
+								fi
+							fi
+						fi
+					fi
 
 					if [ ! "$FEAT_BUNDLE_MODE" = "LIST" ]; then
 						save_FORCE=$FORCE
@@ -803,6 +829,7 @@ __feature_install() {
 					# MERGE : each item will be installed in the bundle path (without each feature name/version)
 					# LIST : this bundle is just a list of items that will be installed normally (without bundle name nor version in path: item_name/item_version )
 					# MERGE_LIST : this bundle is a list of items that will be installed in a MERGED way (without bundle name nor version AND without each feature name/version)
+					#				by default the root folder where it is installed is STELLA_APP_FEATURE_ROOT
 					local _flags
 					case $FEAT_BUNDLE_MODE in
 						LIST|MERGE_LIST|NESTED|MERGE )
@@ -824,10 +851,19 @@ __feature_install() {
 					__pop_schema_context
 				fi
 
-
 				# restore export/portable mode
 				__stack_pop "STELLA" "_portable_mode"
 				__stack_pop "STELLA" "_export_mode"
+
+				if [ ! "$_create_bundle_root" = "" ]; then
+					# mkdir -p is created earlier but in MERGE_LIST mode it is erased first so we have to recreate it
+					# why we create it : we create an ampty folder with the bundle name along side the merged content
+					# so we can test that the bundle is installed
+					mkdir -p "$_create_bundle_root"
+					_create_bundle_root=""
+				fi
+
+
 
 				# automatic call of bundle's callback after installation of all items
 				__feature_callback
@@ -843,7 +879,7 @@ __feature_install() {
 				feature_"$FEAT_NAME"_install_"$FEAT_SCHEMA_FLAVOUR"
 
 				# Sometimes current directory is lost by the system. For example when deleting source folder at the end of the install recipe
-				cd $STELLA_APP_ROOT
+				cd "$STELLA_APP_ROOT"
 
 			fi
 
@@ -855,7 +891,7 @@ __feature_install() {
 						__log "INFO" "Feature $_SCHEMA is installed"
 						__feature_init "$FEAT_SCHEMA_SELECTED" "$_OPT"
 					else
-						__log "ERROR" "Error while installing feature asked $_SCHELA (feature picked is $FEAT_SCHEMA_SELECTED)"
+						__log "ERROR" "Error while installing feature asked $_SCHEMA (feature picked is $FEAT_SCHEMA_SELECTED)"
 						#__del_folder $FEAT_INSTALL_ROOT
 						# Sometimes current directory is lost by the system
 						cd "$STELLA_APP_ROOT"
@@ -868,11 +904,13 @@ __feature_install() {
 		fi
 
 		if [ "$_export_mode" = "ON" ]; then
-			STELLA_APP_FEATURE_ROOT=$_save_app_feature_root
+			#FEAT_BUNDLE="$_save_feat_bundle"
+			STELLA_APP_FEATURE_ROOT="$_save_app_feature_root"
 		fi
 
 		if [ "$_portable_mode" = "ON" ]; then
-			STELLA_APP_FEATURE_ROOT=$_save_app_feature_root
+			#FEAT_BUNDLE="$_save_feat_bundle"
+			STELLA_APP_FEATURE_ROOT="$_save_app_feature_root"
 			__set_build_mode_default "RELOCATE" "$_save_relocate_default_mode"
 		fi
 
@@ -1032,7 +1070,6 @@ __internal_feature_context() {
 	fi
 
 	if [ ! "$_SCHEMA" = "" ]; then
-		#__select_official_schema_old "$_SCHEMA" "FEAT_SCHEMA_SELECTED" "TMP_FEAT_SCHEMA_NAME" "TMP_FEAT_SCHEMA_VERSION" "FEAT_ARCH" "FEAT_SCHEMA_FLAVOUR" "FEAT_SCHEMA_OS_RESTRICTION" "FEAT_SCHEMA_OS_EXCLUSION"
 		__select_official_schema "$_SCHEMA" "FEAT_SCHEMA_SELECTED" "TMP_FEAT_SCHEMA_NAME" "TMP_FEAT_SCHEMA_VERSION" "FEAT_ARCH" "FEAT_SCHEMA_FLAVOUR" "FEAT_SCHEMA_OS_RESTRICTION" "FEAT_SCHEMA_OS_EXCLUSION"
 	fi
 
@@ -1229,7 +1266,8 @@ __select_official_schema() {
 		# check schema exists
 		# we already know which version to find
 		# we are looking for different arch and flavour
-		# if we are looking for a bundle, only arch is used. There is no flavour support for bundle
+		# if we are looking for a bundle, only arch is used for the bundle feature. There is no flavour support for bundle feature
+		# (but each item of a bundle can use arch and flavour!)
 		# starting with specified ones, then with default ones, then with possible ones
 		local _looking_arch="$_TR_FEATURE_ARCH"
 		local _looking_flavour
@@ -1344,7 +1382,8 @@ __select_official_schema() {
 
 	if [ "$_official" = "1" ]; then
 		eval $_RESULT_SCHEMA=$_FILLED_SCHEMA$_OS_OPTION
-		__translate_schema "$_SCHEMA" "" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR" "_TR_FEATURE_OS_RESTRICTION" "_TR_FEATURE_OS_EXCLUSION"
+		# TODO : do we need this __translate_schema call ?
+		#__translate_schema "$_SCHEMA" "" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR" "_TR_FEATURE_OS_RESTRICTION" "_TR_FEATURE_OS_EXCLUSION"
 
 	else
 		[ ! "$_RESULT_SCHEMA" = "" ] && eval $_RESULT_SCHEMA=

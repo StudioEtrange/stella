@@ -2554,7 +2554,7 @@ __resource() {
 				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
 				;;
 			* )
-				__log "ERROR" "Unknow protocol"
+				__log "ERROR" "Unknow protocol ${PROTOCOL}"
 				;;
 		esac
 	fi

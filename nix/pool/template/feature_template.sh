@@ -15,7 +15,7 @@ feature_template() {
 
 
 feature_template_1_0_0() {
-	# if FEAT_ARCH (ie:FEAT_BINARY_URL_x86) is not not null, properties FOO_ARCH=BAR will be selected and setted as FOO=BAR (ie:FEAT_BINARY_URL)
+	# if FEAT_ARCH (ie:FEAT_BINARY_URL_x86) is not not null, properties FOO_ARCH=BAR (will be selected and setted as FOO=BAR (ie:FEAT_BINARY_URL)
 	# if FOO_ARCH is empty, FOO will not be changed
 
 	FEAT_VERSION="1_0_0"
