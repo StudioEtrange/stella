@@ -5,12 +5,71 @@ _NODEJS_INCLUDED_=1
 
 feature_nodejs() {
 	FEAT_NAME="nodejs"
-	FEAT_LIST_SCHEMA="22_17_0@x64:binary 22_12_0@x64:binary 10_15_3@x64:binary 9_7_0@x64:binary 9_7_0@x86:binary 8_9_4@x64:binary 8_9_4@x86:binary 7_9_0@x64:binary 7_9_0@x86:binary 6_10_2@x64:binary 6_10_2@x86:binary 4_4_5@x64:binary 4_4_5@x86:binary 0_12_14@x64:binary 0_12_14@x86:binary 0_10_45@x64:binary 0_10_45@x86:binary"
+	FEAT_LIST_SCHEMA="24_7_0@x64:binary 22_19_0@x64:binary 22_17_0@x64:binary 22_12_0@x64:binary 10_15_3@x64:binary 9_7_0@x64:binary 9_7_0@x86:binary 8_9_4@x64:binary 8_9_4@x86:binary 7_9_0@x64:binary 7_9_0@x86:binary 6_10_2@x64:binary 6_10_2@x86:binary 4_4_5@x64:binary 4_4_5@x86:binary 0_12_14@x64:binary 0_12_14@x86:binary 0_10_45@x64:binary 0_10_45@x86:binary"
 	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
 
+feature_nodejs_24_7_0() {
+	FEAT_VERSION="24_7_0"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL_x64="hhttps://nodejs.org/dist/v24.7.0/node-v24.7.0-linux-x64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="node-v24.7.0-linux-x64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://nodejs.org/dist/v24.7.0/node-v24.7.0-linux-arm64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="node-v22.19.0-linux-arm64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+	fi
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://nodejs.org/dist/v24.7.0/node-v24.7.0-darwin-x64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="node-v24.7.0-darwin-x64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://nodejs.org/dist/v24.7.0/node-v24.7.0-darwin-arm64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="node-v24.7.0-darwin-arm64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+	fi
+}
+
+feature_nodejs_22_19_0() {
+	FEAT_VERSION="22_19_0"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://nodejs.org/dist/v22.19.0/node-v22.19.0-linux-x64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="node-v22.19.0-linux-x64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://nodejs.org/dist/v22.19.0/node-v22.19.0-linux-arm64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="node-v22.19.0-linux-arm64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+	fi
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://nodejs.org/dist/v22.19.0/node-v22.19.0-darwin-x64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="node-v22.19.0-darwin-x64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://nodejs.org/dist/v22.19.0/node-v22.19.0-darwin-arm64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="node-v22.19.0-darwin-arm64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+	fi
+}
 
 feature_nodejs_22_17_0() {
 	FEAT_VERSION="22_17_0"
