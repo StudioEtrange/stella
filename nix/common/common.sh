@@ -275,7 +275,7 @@ __sha256() {
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		printf "$*" | shasum -a 256 | tr -dc '[:alnum:]'
 	else
-		type sha256sum &>/dev/null && printf "$*" | sha256sum | tr -dc '[:alnum:]'
+		type sha256sum >/dev/null 2>&1 && printf "$*" | sha256sum | tr -dc '[:alnum:]'
 	fi
 }
 
@@ -283,7 +283,7 @@ __sha1() {
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		printf "$*" | shasum -a 1 | tr -dc '[:alnum:]'
 	else
-		type sha1sum &>/dev/null && printf "$*" | sha1sum | tr -dc '[:alnum:]'
+		type sha1sum >/dev/null 2>&1 && printf "$*" | sha1sum | tr -dc '[:alnum:]'
 	fi
 }
 
@@ -295,7 +295,7 @@ __md5() {
 		#printf "$*" | md5 | tr -dc '[:alnum:]'
 		md5 -qs "$*" | tr -dc '[:alnum:]'
 	else
-		type md5sum &>/dev/null && printf '%s' "$*" | md5sum | tr -dc '[:alnum:]'
+		type md5sum >/dev/null 2>&1 && printf '%s' "$*" | md5sum | tr -dc '[:alnum:]'
 	fi
 }
 
@@ -355,7 +355,7 @@ __generate_password() {
 # On some systems, sudo do not exist, and we may already exec cmd as root
 #		sample : __sudo_exec apt-get update
 __sudo_exec() {
-	if $(type sudo &>/dev/null); then
+	if $(type sudo >/dev/null 2>&1); then
 		sudo -E "$@"
 	else
 		"$@"
@@ -2755,11 +2755,11 @@ __download() {
 	if [ ! -f "$STELLA_APP_CACHE_DIR/$FILE_NAME" ]; then
 		if [ ! -f "$STELLA_INTERNAL_CACHE_DIR/$FILE_NAME" ]; then
 			# NOTE : curl seems to be more compatible
-			if type curl &>/dev/null; then
+			if type curl >/dev/null 2>&1; then
 				curl -fkSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL" || \
 				rm -f "$STELLA_APP_CACHE_DIR/$FILE_NAME"
 			else
-				if type wget &>/dev/null; then
+				if type wget >/dev/null 2>&1; then
 					wget "$URL" -O "$STELLA_APP_CACHE_DIR/$FILE_NAME" --no-check-certificate || \
 					wget "$URL" -O "$STELLA_APP_CACHE_DIR/$FILE_NAME" || \
 					rm -f "$STELLA_APP_CACHE_DIR/$FILE_NAME"
@@ -2887,7 +2887,7 @@ __mercurial_project_version() {
 		[ "$o" = "LONG" ] && _opt_version_long=ON
 	done
 
-	if type hg &>/dev/null; then
+	if type hg >/dev/null 2>&1; then
 		if [ "$_opt_version_long" = "ON" ]; then
 			echo "$(hg log -R "$_PATH" -r . --template "{latesttag}-{latesttagdistance}-{node|short}")"
 		fi
@@ -2916,7 +2916,7 @@ __git_project_version() {
 	fi
 
 	if [ -d "${_path}/.git" ]; then
-		if type git &>/dev/null; then
+		if type git >/dev/null 2>&1; then
 			# TODO NOTE : --first-parent option needs git version >= 1.8.4 but for fast execution purpose we test only >2
 			if [ "$(git --version | awk '{print $3}' | cut -d. -f1)" -ge 2 ]; then			
 				echo "$(git --git-dir "${_path}/.git" describe --tags ${_git_options} --always --first-parent)"

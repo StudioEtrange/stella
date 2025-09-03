@@ -94,8 +94,8 @@ feature_firehol_install_source() {
 	__feature_callback
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
-	type ipset &>/dev/null || AUTO_INSTALL_CONF_FLAG_POSTFIX="--disable-update-ipsets"
-	type traceroute &>/dev/null || AUTO_INSTALL_CONF_FLAG_POSTFIX="$AUTO_INSTALL_CONF_FLAG_POSTFIX --disable-link-balancer"
+	type ipset >/dev/null 2>&1 || AUTO_INSTALL_CONF_FLAG_POSTFIX="--disable-update-ipsets"
+	type traceroute >/dev/null 2>&1 || AUTO_INSTALL_CONF_FLAG_POSTFIX="$AUTO_INSTALL_CONF_FLAG_POSTFIX --disable-link-balancer"
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 

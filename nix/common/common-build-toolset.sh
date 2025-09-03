@@ -197,7 +197,7 @@ __enable_current_toolset() {
 		;;
 		cmake)
 			# if no version specified, prefer cmake already present on system
-			if ! type cmake &>/dev/null; then
+			if ! type cmake >/dev/null 2>&1; then
 				__toolset_install "$STELLA_BUILD_CONFIG_TOOL_SCHEMA"
 				__toolset_init "$STELLA_BUILD_CONFIG_TOOL_SCHEMA"
 			fi
@@ -245,7 +245,7 @@ __enable_current_toolset() {
 		 	__translate_schema "$STELLA_BUILD_COMPIL_FRONTEND_SCHEMA" "_REQUIRED_TOOLSET_NAME" "_REQUIRED_TOOLSET_VER"
 			local _install_gcc
 
-			if $(type gcc &>/dev/null); then
+			if $(type gcc >/dev/null 2>&1); then
 				_install_gcc=0
 
 				if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
@@ -301,20 +301,20 @@ __enable_current_toolset() {
 			"C++")
 				case $STELLA_BUILD_COMPIL_FRONTEND in
 					default)
-						if ! type "g++" &>/dev/null || ! type "clang++" &>/dev/null; then
+						if ! type "g++" >/dev/null 2>&1 || ! type "clang++" >/dev/null 2>&1; then
 							echo "** ERROR : missing g++ or clang++"
 							echo "** Try stella.sh sys install build-chain-standard OR your regular OS package manager"
 							exit 1
 						fi
 					;;
 					clang-omp)
-						if ! type "clang++-omp" &>/dev/null; then
+						if ! type "clang++-omp" >/dev/null 2>&1; then
 							echo "** ERROR : missing clang++ for clang-omp"
 							exit 1
 						fi
 					;;
 					gcc)
-						if ! type "g++" &>/dev/null; then
+						if ! type "g++" >/dev/null 2>&1; then
 							echo "** ERROR : missing g++ for gcc"
 							__toolset_install "$STELLA_BUILD_COMPIL_FRONTEND_SCHEMA"
 							__toolset_init "$STELLA_BUILD_COMPIL_FRONTEND_SCHEMA"
@@ -338,7 +338,7 @@ __enable_current_toolset() {
 				__gcc_linker_search_path
 			fi
 	esac
-	if $(type pkg-config &>/dev/null); then
+	if $(type pkg-config >/dev/null 2>&1); then
 		echo "===> pkg-config default search path"
 		__pkgconfig_search_path
 	fi

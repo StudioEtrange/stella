@@ -219,9 +219,9 @@ __set_current_platform_info() {
 			;;
 	esac
 
-	if type nproc &>/dev/null; then
+	if type nproc >/dev/null 2>&1; then
 		STELLA_NB_CPU="$(nproc)"
-	elif type sysctl &>/dev/null; then
+	elif type sysctl >/dev/null 2>&1; then
 		STELLA_NB_CPU="$(sysctl hw.ncpu 2>/dev/null | awk '{print $NF}')"
 	else
 		STELLA_NB_CPU="1"
@@ -361,7 +361,7 @@ __require() {
 
 	echo "** REQUIRE $_id ($_artefact)"
 	local _err=
-	type $_artefact &>/dev/null || _err=1
+	type $_artefact >/dev/null 2>&1 || _err=1
 
 	if [ "$_err" = "1" ]; then
 		if [ "$_opt_optional" = "ON" ]; then
@@ -556,7 +556,7 @@ __ld_linker_search_path() {
 # pkg-config full search path
 # https://linux.die.net/man/1/pkg-config
 __pkgconfig_search_path() {
-	if $(type pkg-config &>/dev/null); then
+	if $(type pkg-config >/dev/null 2>&1); then
 		echo ${PKG_CONFIG_PATH}:$(pkg-config --variable pc_path pkg-config)
 	fi
 }
@@ -751,7 +751,7 @@ __get_current_package_manager() {
 	esac
 
 	for p in $plist; do
-		if type "${p}" &>/dev/null; then
+		if type "${p}" >/dev/null 2>&1; then
 			_package_manager="$p"
 			break
 		fi
@@ -1007,7 +1007,7 @@ __sys_install_brew() {
 
 
 	echo " ** Check Homebrew"
-	if type brew &>/dev/null; then
+	if type brew >/dev/null 2>&1; then
 		echo " ** brew doctor"
 		brew doctor
 		local _brewLocation="$(command -v brew 2>/dev/null)"

@@ -163,7 +163,7 @@ __reset_system_proxy_values() {
 __proxy_override() {
 
 	# sudo do not preserve env var by default
-	type sudo &>/dev/null && \
+	type sudo >/dev/null 2>&1 && \
 	function sudo() {
 		command sudo no_proxy="$STELLA_NO_PROXY" https_proxy="$STELLA_HTTPS_PROXY" http_proxy="$STELLA_HTTP_PROXY" "$@"
 	}
@@ -434,11 +434,11 @@ __find_free_port() {
 	local taken_ports
 
 	local __network_cmd
-	type ss &>/dev/null
+	type ss >/dev/null 2>&1
 	if [ $? = 0 ]; then
 		__network_cmd="ss"
 	else
-		type netstat &>/dev/null
+		type netstat >/dev/null 2>&1
 		if [ $? = 0 ]; then
 			__network_cmd="netstat"
 		else
@@ -471,12 +471,12 @@ __check_tcp_port_open() {
 	[ "${__timeout}" = "" ] && __timeout=3
 
 	# NOTE : nc is present by default on MacOS
-	type nc &>/dev/null
+	type nc >/dev/null 2>&1
 	if [ $? = 0 ]; then
 		nc -w ${__timeout} -v ${__host} ${__port} </dev/null 2>/dev/null
 		[ $? = 0 ] && echo "TRUE" || echo "FALSE"
 	else
-		type timeout &>/dev/null
+		type timeout >/dev/null 2>&1
 		if [ $? = 0 ]; then
 			timeout ${__timeout} bash -c "</dev/tcp/${__host}/${__port}" 2>/dev/null
 			[ $? = 0 ] && echo "TRUE" || echo "FALSE"
@@ -564,12 +564,12 @@ __vagrant_get_ssh_options() {
 __get_network_info() {
 	case $STELLA_CURRENT_PLATFORM in
 		darwin )
-			type route &>/dev/null
+			type route >/dev/null 2>&1
 			if [ $? = 0 ]; then
 				STELLA_DEFAULT_INTERFACE_IPV4="$(route -n get -inet default 2>/dev/null | awk '/interface: / {print $2; exit}')"
 				STELLA_DEFAULT_INTERFACE_IPV6="$(route -n get -inet6 default 2>/dev/null | awk '/interface: / {print $2; exit}')"
 			else
-				type netstat &>/dev/null
+				type netstat >/dev/null 2>&1
 				# pick the first default interface if there is several
 				if [ $? = 0 ]; then
 					STELLA_DEFAULT_INTERFACE_IPV4="$(netstat -rn -f inet 2>/dev/null | awk '/^default/ {print $NF; exit}' | head -1)"
@@ -578,13 +578,13 @@ __get_network_info() {
 			fi
 			;;
 		linux )
-			type ip &>/dev/null
+			type ip >/dev/null 2>&1
 			if [ $? = 0 ]; then
 				# pick the first default interface if there is several
 				STELLA_DEFAULT_INTERFACE_IPV4="$(ip -4 route show default 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}' | head -1)"
 				STELLA_DEFAULT_INTERFACE_IPV6="$(ip -6 route show default 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}' | head -1)"
 			else
-				type netstat &>/dev/null
+				type netstat >/dev/null 2>&1
 				# pick the first default interface if there is several
 				if [ $? = 0 ]; then
 					STELLA_DEFAULT_INTERFACE_IPV4="$(netstat -rn -A inet 2>/dev/null | awk '/^0.0.0.0/ {thif=substr($0,74,10); print thif;} /^default.*UG/ {thif=substr($0,65,10); print thif;}' | head -1)"
@@ -603,14 +603,14 @@ __get_network_info() {
 	# TODO : choose between ipv4 and ipv6
 	STELLA_HOST_DEFAULT_IP="${STELLA_HOST_DEFAULT_IP_IPV4}"
 
-	type ip &>/dev/null
+	type ip >/dev/null 2>&1
 	if [ $? = 0 ]; then
 		# works on linux only
 		# contains a list of ips
 		STELLA_HOST_IP_IPV4="$(ip -4 addr 2>/dev/null | awk '/inet / {print $2}' | cut -d/ -f1 | xargs)"
 		STELLA_HOST_IP_IPV6="$(ip -6 addr 2>/dev/null | awk '/inet6/ {print $2}' | cut -d/ -f1 | xargs)"
 	else
-		type ifconfig &>/dev/null
+		type ifconfig >/dev/null 2>&1
 		if [ $? = 0 ]; then
 			# works on linux and MacOS
 			STELLA_HOST_IP_IPV4="$(ifconfig 2>/dev/null | grep -Eo 'inet (adr:|addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | xargs)"
@@ -618,7 +618,7 @@ __get_network_info() {
 		else
 			# NOTE WARN : hostname return a mix of ipv4 and ipv6 and only adress with global scope (no Ipv6 local link or 127.0.0.1)
 			# NOTE : hostname -I do not exist on MacOS
-			type hostname &>/dev/null
+			type hostname >/dev/null 2>&1
 			if [ $? = 0 ]; then
 				STELLA_HOST_IP_IPV4="$(hostname -I 2>/dev/null | tr ' ' '\n' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | xargs)"
 				STELLA_HOST_IP_IPV6="$(hostname -I 2>/dev/null | tr ' ' '\n' | grep -E '^[0-9a-fA-F:]+$' | xargs)"
@@ -657,7 +657,7 @@ __get_ip_from_interface() {
 	[ "$_mode" = "" ] && _mode="ipv4"
 
 	#https://unix.stackexchange.com/a/407128
-	type ip &>/dev/null
+	type ip >/dev/null 2>&1
 	if [ $? = 0 ]; then
 		case $_mode in
 			ipv4 )
@@ -677,7 +677,7 @@ __get_ip_from_interface() {
 				;;
 		esac
 	else
-		type ifconfig &>/dev/null
+		type ifconfig >/dev/null 2>&1
 		if [ $? = 0 ]; then
 			case $_mode in
 				# fonctionne sous linux et macos
@@ -704,7 +704,7 @@ __get_ip_from_interface() {
 # TODO : do an equivalent without "ip" command
 #
 #__print_ip_info() {
-#	type ip &>/dev/null
+#	type ip >/dev/null 2>&1
 #	if [ $? = 0 ]; then
 #		PROBLEM : this command show only interface wich have an ip
 #		ip -o addr | awk '{split($4, a, "/"); print $2" : "a[1]}'
@@ -725,7 +725,7 @@ __get_ip_from_interface() {
 __get_ip_from_host() {
 	local _mode="$2"
 	[ "$_mode" = "" ] && _mode="ipv4"
-	type getent &>/dev/null
+	type getent >/dev/null 2>&1
 	if [ $? = 0 ]; then
 		case $_mode in
 			ipv4 )
@@ -736,7 +736,7 @@ __get_ip_from_host() {
 				;;
 		esac
 	else
-		type dig &>/dev/null
+		type dig >/dev/null 2>&1
 		if [ $? = 0 ]; then
 			case $_mode in
 				ipv4 )
@@ -784,7 +784,7 @@ __get_ip_external() {
 
 	case $_mode in
 		ipv4 )
-			type dig &>/dev/null
+			type dig >/dev/null 2>&1
 			if [ $? = 0 ]; then
 				__result="$(dig @resolver1.opendns.com A myip.opendns.com +short -4)"
 			else
@@ -792,7 +792,7 @@ __get_ip_external() {
 			fi
 		;;
 		ipv6 )
-			type dig &>/dev/null
+			type dig >/dev/null 2>&1
 			if [ $? = 0 ]; then
 				# NOTE : in this case dig will return the current temporary ipv6 used by current host
 				__result="$(dig @resolver1.opendns.com AAAA myip.opendns.com +short -6)"
