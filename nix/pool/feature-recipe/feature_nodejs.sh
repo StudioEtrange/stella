@@ -39,6 +39,9 @@ feature_nodejs_24_7_0() {
 			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
 		fi
 	fi
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/node"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 }
 
 feature_nodejs_22_19_0() {
@@ -69,6 +72,10 @@ feature_nodejs_22_19_0() {
 			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
 		fi
 	fi
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/node"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
+	
 }
 
 feature_nodejs_22_17_0() {
