@@ -1,6 +1,10 @@
 if [ ! "$_miniconda3_INCLUDED_" = "1" ]; then
 _miniconda3_INCLUDED_=1
 
+# deprecated
+# prefer miniforge3 with use mamba binary and conda-forge repository
+# instead of conda binary anr anaconda repositories
+
 # NOTE :
 # to install full anaconda distribution use :
 # conda install anaconda
