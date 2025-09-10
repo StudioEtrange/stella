@@ -16,7 +16,7 @@ feature_nodejs_24_7_0() {
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
-			FEAT_BINARY_URL_x64="hhttps://nodejs.org/dist/v24.7.0/node-v24.7.0-linux-x64.tar.gz"
+			FEAT_BINARY_URL_x64="https://nodejs.org/dist/v24.7.0/node-v24.7.0-linux-x64.tar.gz"
 			FEAT_BINARY_URL_FILENAME_x64="node-v24.7.0-linux-x64.tar.gz"
 			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
 		fi
