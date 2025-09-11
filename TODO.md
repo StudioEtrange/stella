@@ -110,26 +110,29 @@ use
   `bashate stella.sh`
 
 
-# Various List
+# Various
 
+* [ ] win download
+  * use embedded curl.exe present since Windows 10 build 17063 https://curl.se/windows/microsoft.html ?
+  * use a powershell equivalent command ?
 * [ ] nix : __get_keys for ini files do not support character others than [a-zA-Z0-9._]{1,}[[:space:]]*= for key/value pair
 * [ ] path management (absolute, relative, ...) use https://github.com/bashup/realpaths ?
 * [ ] review argparse : too long !
   * getopt alternatives implementation
-      https://github.com/droundy/goopt
-      https://code.google.com/p/opts-go/
-      https://godoc.org/code.google.com/p/getopt
-      https://github.com/kesselborn/go-getopt
+      - https://github.com/droundy/goopt
+      - https://code.google.com/p/opts-go/
+      - https://godoc.org/code.google.com/p/getopt
+      - https://github.com/kesselborn/go-getopt
   * generate argument parser 
-      https://argbash.io/
-      https://github.com/matejak/argbash
-* [ ] use https://github.com/icy/bocker to turn stella app into docker
+      - https://argbash.io/
+      - https://github.com/matejak/argbash
+* [-] use https://github.com/icy/bocker to turn stella app into docker
 * [ ] common-app : different behavior between __get_all_properties and __get_app_property. The first evaluate property with eval BUT NOT the second.
 * [X] bug recipe m4 (and maybe bison, automake, autoconf, ...) build is broken with glibc 2.28
-* https://www.reddit.com/r/archlinux/comments/97gsb1/glibc_update_breaks_buildroot/
-* https://bugs.archlinux.org/task/59562
-* https://github.com/coreutils/gnulib/commit/4af4a4a71827c0bc5e0ec67af23edef4f15cee8e#diff-5bcce8ce55246264586c4aed2a45ff89
-* https://github.com/buildroot/buildroot/commit/c48f8a64626c60bd1b46804b7cf1a699ff53cdf3
+  * https://www.reddit.com/r/archlinux/comments/97gsb1/glibc_update_breaks_buildroot/
+  * https://bugs.archlinux.org/task/59562
+  * https://github.com/coreutils/gnulib/commit/4af4a4a71827c0bc5e0ec67af23edef4f15cee8e#diff-5bcce8ce55246264586c4aed2a45ff89
+  * https://github.com/buildroot/buildroot/commit/c48f8a64626c60bd1b46804b7cf1a699ff53cdf3
 
 * various cross compiler https://blog.filippo.io/easy-windows-and-linux-cross-compilers-for-macos/
  * [ ] use of mingw-w64 for target : windows https://github.com/Homebrew/homebrew-core/blob/master/Formula/mingw-w64.rb
@@ -163,21 +166,15 @@ use
 
 
 * [ ] nix : review speed and optimization
-https://stackoverflow.com/questions/5014823/how-to-profile-a-bash-shell-script-slow-startup
-https://stackoverflow.com/a/20855353
-https://github.com/F-Hauri/bashProfiler
-https://github.com/paypal/gnomon
-http://applocator.blogspot.fr/2013/10/speed-up-bash-scripts-that-use-grep.html
-
+  * https://stackoverflow.com/questions/5014823/how-to-profile-a-bash-shell-script-slow-startup
+  * https://stackoverflow.com/a/20855353
+  * https://github.com/F-Hauri/bashProfiler
+  * https://github.com/paypal/gnomon
+  * http://applocator.blogspot.fr/2013/10/speed-up-bash-scripts-that-use-grep.html
 * [ ] nix : common-platform if netstat or ifconfig not present (centos7/rhel7) provide alternative with ip addr to get IP & interface
-
 * [ ] nix : make a flat distro of stella in one file https://github.com/shellfire-dev/fatten
-
 * [X] nix : test sourced https://stackoverflow.com/a/28776166
-
 * [ ] nix : zsh compatibility https://stackoverflow.com/questions/9901210/bash-source0-equivalent-in-zsh
-
-
 * [ ] win : review 'select_official_schema' function, like in nix, to take care of all arch/flavour possibility
 * [ ] nix : use busybox to get binaries small unix tool without building them (i.e unzip) https://busybox.net/
 * [ ] nix : embedded ssh server/client : https://matt.ucc.asn.au/dropbear/dropbear.html
@@ -187,8 +184,8 @@ http://applocator.blogspot.fr/2013/10/speed-up-bash-scripts-that-use-grep.html
 * [ ] win : review link feature library and lib isolation
 * [ ] win : portable mode review copy dependencies
 * [ ] win add recipes for these libs :
- https://ryzomcore.atlassian.net/wiki/display/RC/MinGW+External+Libraries
- https://ryzomcore.atlassian.net/wiki/display/RC/Create+External+Libs
+  * https://ryzomcore.atlassian.net/wiki/display/RC/MinGW+External+Libraries
+  * https://ryzomcore.atlassian.net/wiki/display/RC/Create+External+Libs
 * [ ] win : build mingw-w64 compiler from source https://github.com/niXman/mingw-builds
 * [ ] nix : replace each echo informative message (not return string function) with log() call
 * [ ] Default build arch equivalent to current cpu arch ? (and change option name buildarch with forcearch) (set STELLA_BUILD_ARCH_DEFAULT)
@@ -207,37 +204,38 @@ http://applocator.blogspot.fr/2013/10/speed-up-bash-scripts-that-use-grep.html
 * [ ] proxy values in stella-env should be local or global
 * [X] win : link-app : add option to align workspace/cache path (like on nix)
 * [ ] ssh : launch stella app through ssh
- https://thornelabs.net/2013/08/21/simple-ways-to-send-multiple-line-commands-over-ssh.html
- http://stackoverflow.com/questions/4412238/whats-the-cleanest-way-to-ssh-and-run-multiple-commands-in-bash
- http://tldp.org/LDP/abs/html/here-docs.html
- http://stackoverflow.com/questions/305035/how-to-use-ssh-to-run-shell-script-on-a-remote-machine
- SSHFS ? cache delivering only via HTTP ?
+  - https://thornelabs.net/2013/08/21/simple-ways-to-send-multiple-line-commands-over-ssh.html
+  - http://stackoverflow.com/questions/4412238/whats-the-cleanest-way-to-ssh-and-run-multiple-commands-in-bash
+  - http://tldp.org/LDP/abs/html/here-docs.html
+  - http://stackoverflow.com/questions/305035/how-to-use-ssh-to-run-shell-script-on-a-remote-machine
+  - SSHFS ? cache delivering only via HTTP ?
 
 * [ ] win : harmonization of internal recipe (patch, unzip, wget, ...)
 * [ ] configuration step for each feature recipe
-    nix : use augeas https://github.com/hercules-team/augeas ? -* see ryba ? (nodejs) -* use simple sed ?
-    win : ?
+  * nix : use augeas https://github.com/hercules-team/augeas ? 
+  * use simple sed ?
+  * win : ?
 * [ ] turn stella/nix/common/* folder into module ?
-    module/core
-    module/feature
-    module/app
-    module/boot
+  * module/core
+  * module/feature
+  * module/app
+  * module/boot
 * [ ] unit test : app/test/nix app/text/win
-    nix :
+    * nix :
       * bats
       * sharness : https://github.com/chriscool/sharness
-    win : ?
-    * Tests using mbland/bats, an optimized version of Sam Stephenson's Bash Automated Testing System (BATS).
-    * Code coverage comes from Simon Kagstrom's kcov code coverage tool, which not only provides code coverage for Bash scripts (!!!) but can push the results to Coveralls!
+    * win : ?
+      * Tests using mbland/bats, an optimized version of Sam Stephenson's Bash Automated Testing System (BATS).
+      * Code coverage comes from Simon Kagstrom's kcov code coverage tool, which not only provides code coverage for Bash scripts (!!!) but can push the results to Coveralls!
 
-* [ ] ryzom nix : openal, libgnu_regex (?), libmysql, lua51, lua52, luabind, stlport (?)
- https://github.com/Shopify/homebrew-shopify/blob/master/mysql-client.rb
- https://github.com/Homebrew/homebrew-core/blob/master/Formula/mysql.rb
+* [-] nix : for ryzom add these libraries : openal, libgnu_regex (?), libmysql, lua51, lua52, luabind, stlport (?)
+  * https://github.com/Shopify/homebrew-shopify/blob/master/mysql-client.rb
+  * https://github.com/Homebrew/homebrew-core/blob/master/Formula/mysql.rb
 * [ ] macos : capacity to download homebrew binary (but special build and should depend on brew installed library ?) (i.e : https://homebrew.bintray.com/bottles/libzip-1.0.1.el_capitan.bottle.tar.gz)
 
 * [ ] distinguish PATH env for current stella app with PATH from stella in 2 variable, and give the possibility to retrieve them in a separate way
 
-* [ ] win/nix : remove FORCE global option, add it as option for each function
+* [ ] win/nix : remove FORCE global option, turn it as option for each function
 
 * [X] win : change proxyport, proxyhost, proxyuser, proxypassword in stella.sh command line as a unique arg --proxy=uri, and use  function uri_parse
 
@@ -253,10 +251,8 @@ http://applocator.blogspot.fr/2013/10/speed-up-bash-scripts-that-use-grep.html
 
 
 * [ ] REWORK :
+  ```
     DEPRECATED STELLA_BUILD_RELOCATE
-
-
-
 
     STELLA_LINK_PATH_MODE (ex STELLA_BUILD_LINK_PATH :  DEFAULT | ABSOLUTE | RELATIVE
                             and STELLA_FEATURE_LINK_PATH)
@@ -289,24 +285,26 @@ http://applocator.blogspot.fr/2013/10/speed-up-bash-scripts-that-use-grep.html
           could be ABSOLUTE LINK or RELATIVE LINK
       DEFAULT
           do not change anything while building OR installing feature
-
+  ```
 
 * [ ] waiting loader
- progress bar :
- http://stackoverflow.com/questions/238073/how-to-add-a-progress-bar-to-a-shell-script
- https://github.com/dspinellis/pmonitor
- http://stackoverflow.com/a/238140/5027535
- https://gist.github.com/unhammer/b0ab6a6aa8e1eeaf236b
- https://github.com/edouard-lopez/progress-bar.sh
- http://stackoverflow.com/a/16348366/5027535
- dtruss/strace : https://www.reddit.com/r/golang/comments/363dhp/how_do_i_make_go_get_to_display_the_progress_of/
- spinner :
- http://stackoverflow.com/a/3330834/5027535
- https://github.com/marascio/bash-tips-and-tricks/tree/master/showing-progress-with-a-bash-spinner
+  * progress bar :
+    * http://stackoverflow.com/questions/238073/how-to-add-a-progress-bar-to-a-shell-script
+    * https://github.com/dspinellis/pmonitor
+    * http://stackoverflow.com/a/238140/5027535
+    * https://gist.github.com/unhammer/b0ab6a6aa8e1eeaf236b
+    * https://github.com/edouard-lopez/progress-bar.sh
+    * http://stackoverflow.com/a/16348366/5027535
+  * dtruss/strace :
+    * https://www.reddit.com/r/golang/comments/363dhp/how_do_i_make_go_get_to_display_the_progress_of/
+ * spinner :
+  * http://stackoverflow.com/a/3330834/5027535
+  * https://github.com/marascio/bash-tips-and-tricks/tree/master/showing-progress-with-a-bash-spinner
 
 * [ ] git do not support always all options see function git_project_version
 
 * [ ] note on bootstrap applications
+```
 Bootstrap a brand new application and use stella as a library or tools collection inside your project
 NIX :
 	cd your_project
@@ -315,24 +313,26 @@ NIX :
 WIN:
   cd your_project
 	powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/StudioEtrange/stella/master/win/pool/stella-bridge.bat', 'stella-bridge.bat')" && stella-bridge.bat bootstrap & del /q stella-bridge.bat
+```
 
 * [ ] note on bootstrap a standalone stable stella
+```
 NIX
 curl -sSL https://raw.githubusercontent.com/StudioEtrange/stella/master/nix/pool/stella-bridge.sh | bash -s -- standalone stella
 
 WIN
 powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/StudioEtrange/stella/master/win/pool/stella-bridge.bat', 'stella-bridge.bat')" && stella-bridge.bat standalone & del /q stella-bridge.bat
+```
 
-* [ ] openal
-http://repo.or.cz/openal-soft.git
-https://github.com/kcat/openal-soft
+* [ ] add feature openal
+  * http://repo.or.cz/openal-soft.git
+  * https://github.com/kcat/openal-soft
 
 * [ ] nix : init management detection (systemd, upstart, sysV(=init))
-http://unix.stackexchange.com/questions/196166/how-to-find-out-if-a-system-uses-sysv-upstart-or-systemd-initsystem
-http://unix.stackexchange.com/questions/18209/detect-init-system-using-the-shell
-http://unix.stackexchange.com/questions/138994/init-systems-and-service-management-on-different-distributions
-https://github.com/ansible/ansible-modules-core/blob/devel/system/service.py
-
+  * http://unix.stackexchange.com/questions/196166/how-to-find-out-if-a-system-uses-sysv-upstart-or-systemd-initsystem
+  * http://unix.stackexchange.com/questions/18209/detect-init-system-using-the-shell
+  * http://unix.stackexchange.com/questions/138994/init-systems-and-service-management-on-different-distributions
+  * https://github.com/ansible/ansible-modules-core/blob/devel/system/service.py
 
 
 * [X] nix : add "vendor" command to embed a minimal stella inside app
@@ -342,12 +342,12 @@ https://github.com/ansible/ansible-modules-core/blob/devel/system/service.py
 
 
 * [ ] ruby :
-    uru : manage ruby environnement https://bitbucket.org/jonforums/uru
-    ruby-build : download ruby source and build ruby. Do not manage dependencies. Do not manage ruby env https://github.com/rbenv/ruby-build
-    ruby-install : download ruby source and build ruby. Manage dependencies. Do not manage ruby env.
-    rbenv : manage ruby env https://github.com/rbenv/rbenv
-    chruby : manage ruby env
-    rvm : download ruby source and build ruby. Manage dependencies. Manage ruby env
+  * uru : manage ruby environnement https://bitbucket.org/jonforums/uru
+  * ruby-build : download ruby source and build ruby. Do not manage dependencies. Do not manage ruby env https://github.com/rbenv/ruby-build
+  * ruby-install : download ruby source and build ruby. Manage dependencies. Do not manage ruby env.
+  * rbenv : manage ruby env https://github.com/rbenv/rbenv
+  * chruby : manage ruby env
+  * rvm : download ruby source and build ruby. Manage dependencies. Manage ruby env
 
 
 * [X] nix : review boost recipes (replace prepare_build with start_manual_build)

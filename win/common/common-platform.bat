@@ -227,7 +227,7 @@ goto :eof
 
 :__stella_requirement
 	call %STELLA_COMMON%\common-feature.bat :feature_install unzip#5_51_1_INTERNAL "HIDDEN INTERNAL"
-	call %STELLA_COMMON%\common-feature.bat :feature_install wget#1_17_1_INTERNAL@x86:binary "HIDDEN INTERNAL"
+	REM call %STELLA_COMMON%\common-feature.bat :feature_install wget#1_17_1_INTERNAL@x86:binary "HIDDEN INTERNAL"
 	call %STELLA_COMMON%\common-feature.bat :feature_install sevenzip#9_38 "HIDDEN INTERNAL"
 	call %STELLA_COMMON%\common-feature.bat :feature_install patch#2_5_9_INTERNAL:binary "HIDDEN INTERNAL"
 goto :eof
