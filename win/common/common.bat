@@ -867,21 +867,13 @@ REM - use powershell in batch http://stackoverflow.com/a/20476904
 	if not exist "%STELLA_APP_CACHE_DIR%\%FILE_NAME%" (
 		REM "%WGET%" "%URL%" -O "%STELLA_APP_CACHE_DIR%\%FILE_NAME%" --no-check-certificate || del /F "%STELLA_APP_CACHE_DIR%\%FILE_NAME%"
 		
-		where "%CU%" >NUL 2>&1
+		where "%CURL%" >NUL 2>&1
         if not errorlevel 1 (
 			"%CURL%" -fkSL -o "%STELLA_APP_CACHE_DIR%\%FILE_NAME%" "%URL%" || del /F "%STELLA_APP_CACHE_DIR%\%FILE_NAME%"
 		) else (
 			REM https://stackoverflow.com/a/20476904
 			REM compatible powershell 2.0 et +
-			"%POWERSHELL%" -NoProfile -ExecutionPolicy Bypass -Command ^
-                "$ErrorActionPreference='Stop'; ^
-                try { ^
-                    if ([enum]::GetNames([Net.SecurityProtocolType]) -contains 'Tls12') { ^
-                        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 ^
-                    }; ^
-                    (New-Object Net.WebClient).DownloadFile('%URL%','%STELLA_APP_CACHE_DIR%\%FILE_NAME%') ^
-                } catch { exit 1 }" ^
-			|| del /F "%STELLA_APP_CACHE_DIR%\%FILE_NAME%"
+			"%POWERSHELL%" -NoProfile -ExecutionPolicy Bypass -Command "$ErrorActionPreference='Stop'; try{ [Net.ServicePointManager]::SecurityProtocol=[enum]::Parse([Net.SecurityProtocolType],'Tls12') }catch{}; (New-Object Net.WebClient).DownloadFile('%URL%','%STELLA_APP_CACHE_DIR%\%FILE_NAME%')" || del /F /Q "%STELLA_APP_CACHE_DIR%\%FILE_NAME%"
 		)
 	) else (
 		echo ** Already downloaded

@@ -5,15 +5,15 @@ goto :eof
 
 :feature_packer
 	set "FEAT_NAME=packer"
-	set "FEAT_LIST_SCHEMA=0_7_5@x64:binary 0_7_5@x86:binary"
-	set "FEAT_DEFAULT_VERSION=0_7_5"
+	set "FEAT_LIST_SCHEMA=1_14_2@x64:binary 1_14_2@x86:binary"
+	set "FEAT_DEFAULT_VERSION=1_14_2"
 	set "FEAT_DEFAULT_ARCH=x64"
 	set "FEAT_DEFAULT_FLAVOUR=binary"
 goto :eof
 
 
-:feature_packer_0_7_5
-	set "FEAT_VERSION=0_7_5"
+:feature_packer_1_14_2
+	set "FEAT_VERSION=1_14_2"
 	
 	set FEAT_SOURCE_DEPENDENCIES=
 	set FEAT_BINARY_DEPENDENCIES=
@@ -22,10 +22,10 @@ goto :eof
 	set FEAT_SOURCE_URL_FILENAME=
 	set FEAT_SOURCE_URL_PROTOCOL=
 
-	set "FEAT_BINARY_URL_x86=https://dl.bintray.com/mitchellh/packer/packer_0.7.5_windows_386.zip"
+	set "FEAT_BINARY_URL_x86=https://releases.hashicorp.com/packer/1.14.2/packer_1.14.2_windows_386.zip"
 	set "FEAT_BINARY_URL_FILENAME_x86="
 	set "FEAT_BINARY_URL_PROTOCOL_x86=HTTP_ZIP"
-	set "FEAT_BINARY_URL_x64=https://dl.bintray.com/mitchellh/packer/packer_0.7.5_windows_amd64.zip"
+	set "FEAT_BINARY_URL_x64=https://releases.hashicorp.com/packer/1.14.2/packer_1.14.2_windows_amd64.zip"
 	set "FEAT_BINARY_URL_FILENAME_x64="
 	set "FEAT_BINARY_URL_PROTOCOL_x64=HTTP_ZIP"
 
