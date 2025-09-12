@@ -1,6 +1,8 @@
 if [ ! "$_TEMPLATE_INCLUDED_" = "1" ]; then
 _TEMPLATE_INCLUDED_=1
 
+# feature syntax :
+#		name[#version][@arch][:flavour][/os_restriction][\os_exclusion]
 
 feature_template() {
 	FEAT_NAME="template"

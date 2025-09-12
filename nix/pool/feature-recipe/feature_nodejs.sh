@@ -2,10 +2,11 @@ if [ ! "$_NODEJS_INCLUDED_" = "1" ]; then
 _NODEJS_INCLUDED_=1
 
 
+# for other bulld, like static muslc builds or build compatible with glibc 2.17, see https://github.com/nodejs/unofficial-builds
 
 feature_nodejs() {
 	FEAT_NAME="nodejs"
-	FEAT_LIST_SCHEMA="24_7_0@x64:binary 22_19_0@x64:binary 22_17_0@x64:binary 22_12_0@x64:binary 10_15_3@x64:binary 9_7_0@x64:binary 9_7_0@x86:binary 8_9_4@x64:binary 8_9_4@x86:binary 7_9_0@x64:binary 7_9_0@x86:binary 6_10_2@x64:binary 6_10_2@x86:binary 4_4_5@x64:binary 4_4_5@x86:binary 0_12_14@x64:binary 0_12_14@x86:binary 0_10_45@x64:binary 0_10_45@x86:binary"
+	FEAT_LIST_SCHEMA="24_7_0@x64:binary 23_7_0_glibc_217@x64:binary 22_19_0@x64:binary 22_19_0_glibc_217@x64:binary 22_17_0@x64:binary 22_12_0@x64:binary 10_15_3@x64:binary 9_7_0@x64:binary 9_7_0@x86:binary 8_9_4@x64:binary 8_9_4@x86:binary 7_9_0@x64:binary 7_9_0@x86:binary 6_10_2@x64:binary 6_10_2@x86:binary 4_4_5@x64:binary 4_4_5@x86:binary 0_12_14@x64:binary 0_12_14@x86:binary 0_10_45@x64:binary 0_10_45@x86:binary"
 	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
@@ -43,6 +44,43 @@ feature_nodejs_24_7_0() {
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/node"
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 }
+
+
+
+feature_nodejs_23_7_0_glibc_217() {
+	FEAT_VERSION="23_7_0_glibc_217"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://unofficial-builds.nodejs.org/download/release/v23.7.0/node-v23.7.0-linux-x64-glibc-217.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="node-v23.7.0-linux-x64-glibc-217.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+	fi
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/node"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
+}
+
+
+
+
+feature_nodejs_22_19_0_glibc_217() {
+	FEAT_VERSION="22_19_0_glibc_217"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://unofficial-builds.nodejs.org/download/release/v22.19.0/node-v22.19.0-linux-x64-glibc-217.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="node-v22.19.0-linux-x64-glibc-217.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+	fi
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/node"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
+	
+}
+
 
 feature_nodejs_22_19_0() {
 	FEAT_VERSION="22_19_0"
