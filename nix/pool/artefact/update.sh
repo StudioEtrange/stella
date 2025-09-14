@@ -4,7 +4,8 @@ _CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # https://gist.github.com/StudioEtrange/290afc0b333e66f271a000bba4b1e110
 updage_homebrew-get-bottle() {
   rm -f "${_CURRENT_FILE_DIR}/homebrew_get_bottle.sh"
-  curl -fksL "https://gist.githubusercontent.com/StudioEtrange/290afc0b333e66f271a000bba4b1e110/raw/homebrew_get_bottle.sh" -o "${_CURRENT_FILE_DIR}/homebrew_get_bottle.sh"
+  # ?$(date +%s) is here only to invalidate server cache by changing URL
+  curl -fksL "https://gist.githubusercontent.com/StudioEtrange/290afc0b333e66f271a000bba4b1e110/raw/homebrew_get_bottle.sh?$(date +%s)" -o "${_CURRENT_FILE_DIR}/homebrew_get_bottle.sh"
   chmod +x "${_CURRENT_FILE_DIR}/homebrew_get_bottle.sh"
 }
 

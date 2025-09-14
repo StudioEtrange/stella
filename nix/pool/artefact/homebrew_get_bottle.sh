@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# --- Mandatory options parsing ---
+# --- Options parsing ---
 usage() {
     cat <<EOF
 
