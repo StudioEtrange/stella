@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 _CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+# https://gist.github.com/StudioEtrange/290afc0b333e66f271a000bba4b1e110
+updage_homebrew-get-bottle() {
+  rm -f "${_CURRENT_FILE_DIR}/homebrew_get_bottle.sh"
+  curl -fksL "https://gist.githubusercontent.com/StudioEtrange/290afc0b333e66f271a000bba4b1e110/raw/homebrew_get_bottle.sh" -o "${_CURRENT_FILE_DIR}/homebrew_get_bottle.sh"
+  chmod +x "${_CURRENT_FILE_DIR}/homebrew_get_bottle.sh"
+}
+
 # https://github.com/mercuriev/bash-colors
 update_bash-colors() {
   rm -Rf "${_CURRENT_FILE_DIR}/bash-colors"
@@ -59,7 +66,10 @@ case $1 in
   lddtree )
     update_lddtree
     ;;
+  homebrew-get-bottle )
+    updage_homebrew-get-bottle
+    ;;
   * )
-    echo "Usage : ${_CURRENT_FILE_DIR}/update.sh <bash-colors|bash_ini_parser|pure-getopt|screenFetch|lddtree>"
+    echo "Usage : ${_CURRENT_FILE_DIR}/update.sh <bash-colors|bash_ini_parser|pure-getopt|screenFetch|lddtree|homebrew-get-bottle>"
     ;;
 esac
