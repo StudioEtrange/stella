@@ -8,8 +8,10 @@ REM MSYS2 has a package manager : pacman
 REM pacman use have two kind of package (MSYS2 packages and MINGW-W64 pacakges)
 REM 	MSYS2 packages rely on msys2.dll
 REM		MINGW-W64 packages are windows native (there is 2 types of packages here mingw32 (32bits) or mingw64 (64bits))
+REM		https://github.com/msys2/MINGW-packages
 REM		https://github.com/Alexpux/MINGW-packages/wiki/Creating-MINGW-packages
 REM 	http://repo.msys2.org/
+REM		packages : https://packages.msys2.org/packages/
 REM For example :
 REM curl package exists as
 REM			 a MSYS2 package (rely on msys2.dll) [name : msys/curl]

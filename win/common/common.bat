@@ -752,6 +752,7 @@ goto :eof
 		)
 
 		if "%EXTENSION%"==".zip" (
+			call %STELLA_COMMON%\common-platform.bat :require "unzip" "unzip" "INTERNAL"
 			"%UZIP%" -q -o "%FILE_PATH%" -d "%UNZIP_DIR%"
 		)
 

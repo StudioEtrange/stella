@@ -253,10 +253,12 @@ goto :eof
 	set "_OPT=%~2"
 
 	set _opt_internal_feature=OFF
-	set _opt_hidden_feature=OFF
+	REM set _opt_hidden_feature=OFF
+	set _opt_non_declared_feature=OFF
 	for %%O in (%_OPT%) do (
 		if "%%O"=="INTERNAL" set _opt_internal_feature=ON
-		if "%%O"=="HIDDEN" set _opt_hidden_feature=ON
+		REM if "%%O"=="HIDDEN" set _opt_hidden_feature=ON
+		if "%%O"=="NON_DECLARED" set _opt_non_declared_feature=ON
 	)
 
 	call :feature_inspect !_remove_SCHEMA!
@@ -280,7 +282,8 @@ goto :eof
 		set "STELLA_APP_TEMP_DIR=!STELLA_INTERNAL_TEMP_DIR!"
 	)
 
-	if not "%_opt_hidden_feature%"=="ON" (
+	REM if not "%_opt_hidden_feature%"=="ON" (
+	if not "%_opt_non_declared_feature%"=="ON" (
 		call %STELLA_COMMON%\common-app.bat :remove_app_feature !_remove_SCHEMA!
 	)
 
@@ -294,8 +297,22 @@ goto :eof
 			call :push_schema_context
 
 			set "FEAT_BUNDLE_MODE=!FEAT_BUNDLE!"
+			set "_flags="
+			if "!FEAT_BUNDLE_MODE!"=="NESTED" (
+				set "_flags=HIDDEN NON_DECLARED"
+			)
+			if "!FEAT_BUNDLE_MODE!"=="MERGE" (
+				set "_flags=HIDDEN NON_DECLARED"
+			)
+			if "!FEAT_BUNDLE_MODE!"=="LIST" (
+				set "_flags=HIDDEN NON_DECLARED"
+			)
+			if "!FEAT_BUNDLE_MODE!"=="MERGE_LIST" (
+				set "_flags=HIDDEN NON_DECLARED"
+			)
+
 			for %%p in (!FEAT_BUNDLE_ITEM!) do (
-				call :feature_remove %%p "HIDDEN"
+				call :feature_remove %%p "!_flags!"
 			)
 			set "FEAT_BUNDLE_MODE="
 			call :pop_schema_context
@@ -331,6 +348,7 @@ goto :eof
 
 	set _opt_internal_feature=OFF
 	set _opt_hidden_feature=OFF
+	set _opt_non_declared_feature=OFF
 	set _opt_force_reinstall_dep=0
 	set _opt_ignore_dep=OFF
 	set _flag_export=OFF
@@ -343,6 +361,7 @@ goto :eof
 	for %%O in (%_OPT%) do (
 		if "%%O"=="INTERNAL" set _opt_internal_feature=ON
 		if "%%O"=="HIDDEN" set _opt_hidden_feature=ON
+		if "%%O"=="NON_DECLARED" set _opt_non_declared_feature=ON
 		if "%%O"=="DEP_FORCE" set _opt_force_reinstall_dep=1
 		if "%%O"=="DEP_IGNORE" set _opt_ignore_dep=ON
 		if "!_flag_export!"=="ON" (
@@ -369,6 +388,7 @@ goto :eof
 	if "!_export_mode!"=="ON" (
 		set _opt_internal_feature=OFF
 		set _opt_hidden_feature=ON
+		set _opt_non_declared_feature=ON
 
 		set "FEAT_MODE_EXPORT_SCHEMA=!_SCHEMA!"
 		set "_SCHEMA=mode-export"
@@ -381,6 +401,7 @@ goto :eof
 	if "!_portable_mode!"=="ON" (
 		set _opt_internal_feature=OFF
 		set _opt_hidden_feature=ON
+		set _opt_non_declared_feature=ON
 
 		set "FEAT_MODE_EXPORT_SCHEMA=!_SCHEMA!"
 		set "_SCHEMA=mode-export"
@@ -423,7 +444,8 @@ goto :eof
 			set "STELLA_APP_TEMP_DIR=!STELLA_INTERNAL_TEMP_DIR!"
 		)
 
-		if not "%_opt_hidden_feature%"=="ON" (
+		REM if not "%_opt_hidden_feature%"=="ON" (
+		if not "%_opt_non_declared_feature%"=="ON" (
 			call %STELLA_COMMON%\common-app.bat :add_app_feature !_SCHEMA!
 		)
 
@@ -468,7 +490,7 @@ goto :eof
 				for %%p in (!_dependencies!) do (
 					echo Installing dependency %%p
 
-					call :feature_install %%p "!_OPT! HIDDEN"
+					call :feature_install %%p "!_OPT! NON_DECLARED"
 					if "!TEST_FEATURE!"=="0" (
 						echo ** Error while installing dependency feature !FEAT_SCHEMA_SELECTED!
 					)
@@ -505,17 +527,24 @@ goto :eof
 					REM MERGE : each item will be installed in the bundle path (without each feature name/version)
 					REM LIST : this bundle is just a list of items that will be installed normally (without bundle name nor version in path: item_name/item_version )
 					REM MERGE_LIST : this bundle is a list of items that will be installed in a MERGED way (without bundle name nor version AND without each feature name/version)
-
+					set "_flags="
+					if "!FEAT_BUNDLE_MODE!"=="NESTED" (
+						set "_flags=HIDDEN NON_DECLARED"
+					)
+					if "!FEAT_BUNDLE_MODE!"=="MERGE" (
+						set "_flags=HIDDEN NON_DECLARED"
+					)
 					if "!FEAT_BUNDLE_MODE!"=="LIST" (
-						set " _flag_hidden="
-					) else (
-						set "_flag_hidden=HIDDEN"
+						set "_flags=HIDDEN NON_DECLARED"
+					)
+					if "!FEAT_BUNDLE_MODE!"=="MERGE_LIST" (
+						set "_flags=HIDDEN NON_DECLARED"
 					)
 
 
 
 					for %%p in (!FEAT_BUNDLE_ITEM!) do (
-						call :feature_install %%p "!_OPT! !_flag_hidden!"
+						call :feature_install %%p "!_OPT! !_flags!"
 					)
 
 
@@ -618,7 +647,8 @@ goto :eof
 					REM for each detected version
 					for /D %%V in ( %STELLA_INTERNAL_FEATURE_ROOT%\%%F\* ) do (
 						set "_ver=%%~nxV"
-						call :feature_init !_folder!#!_ver! "INTERNAL HIDDEN"
+						REM TODO : internal feature (installed in stella root) should be hidden in active feature list or not ?
+						call :feature_init !_folder!#!_ver!
 					)
 				)
 			)
