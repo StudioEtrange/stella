@@ -143,7 +143,7 @@ use
 * [ ] win : implement version constraint number like npm (https://github.com/npm/node-semver) instead of only  get_last_version() function
 * [ ] Test and remove DEST_ERASE in each feature_recipe : cause problem when bundled in merge mode. But only for binary ? keep it for source? only when get binary
 * [ ] win : add FEATURE_LIST_ENABLED_VISIBLE
-* [ ] win : feat_install() split HIDDEN into HIDDEN and NON_DECLARED
+* [X] win : feat_install() split HIDDEN into HIDDEN and NON_DECLARED
 * [ ] win : while feat_init() pre init dependencies
 * [X] nix : replace ini management
   * [-] https://github.com/albfan/bash-ini-parser do not work on MacOS (https://github.com/albfan/bash-ini-parser/issues/8)
@@ -193,7 +193,8 @@ use
 * [X] feature system nix : FEAT_DEFAULT_VERSION should be the last version available
 * [ ] feature system win : FEAT_DEFAULT_VERSION should be the last version available
 * [ ] feature built from source must pick an arch and be installed in a folder with version@arch -* buildarch option should be remove -* by default built arch should be current cpu arch
-* [ ] win : replace patch from gnuwin32 (pb with UAC)
+* [ ] win : replace patch from gnuwin32 (pb with UAC) ? DONT KNOW WHAT IS THIS
+* [ ] win : add a call to require "patch" each time it is called
 * [ ] nix : FORCE_RENAME on link_feature_library (see windows implementation)
 * [X] win : check library dynamic dependencies * use dependencywalker in console mode ? use dumpbin http://stackoverflow.com/a/475323 ? use CMAKE GetPrerequisites. FINISH check_linked_lib.cmake use it with cmake -P check_linked_lib.cmake -DMY_BINARY_LOCATION=<path>
 * [ ] nix : when ckecking dependencies dynamic -* print all libs

@@ -9,6 +9,8 @@ REM official website : http://mingw-w64.org/
 REM we use download url known as 'mingw-builds' (see : http://mingw-w64.org/doku.php/download)
 REM					https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/
 
+REM Mingw-w64 is a collection of header files, import libraries, libraries and tools that, when combined with a compiler toolchain, such as GCC or LLVM, provides a complete development environment for building native Windows applications and libraries.
+
 :feature_mingw-w64
 	set "FEAT_NAME=mingw-w64"
 	set "FEAT_LIST_SCHEMA=mingw4_gcc4_9_2_winthread@x64:binary mingw4_gcc4_9_2_winthread@x86:binary mingw4_gcc4_9_2_posixthread@x64:binary mingw4_gcc4_9_2_posixthread@x86:binary"

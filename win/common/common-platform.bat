@@ -226,10 +226,6 @@ REM REQUIREMENTS STELLA -------------
 goto :eof
 
 :__stella_requirement
-	call %STELLA_COMMON%\common-feature.bat :feature_install unzip#5_51_1_INTERNAL "HIDDEN INTERNAL"
-	REM call %STELLA_COMMON%\common-feature.bat :feature_install wget#1_17_1_INTERNAL@x86:binary "HIDDEN INTERNAL"
-	call %STELLA_COMMON%\common-feature.bat :feature_install sevenzip#9_38 "HIDDEN INTERNAL"
-	call %STELLA_COMMON%\common-feature.bat :feature_install patch#2_5_9_INTERNAL:binary "HIDDEN INTERNAL"
 goto :eof
 
 
@@ -262,6 +258,12 @@ REM REQUIRE ---------------------
 			set _opt_stella_feature=ON
 			set _opt_system=OFF
 		)
+		if "%%O"=="INTERNAL" (
+			set _opt_system=OFF
+			set _opt_stella_feature=ON
+			set _opt_stella_toolset=OFF
+			set _opt_internal=INTERNAL
+		)
 	)
 
 	echo ** REQUIRE !_id! (!_artefact!)
@@ -291,16 +293,11 @@ REM REQUIRE ---------------------
 				goto :end
 			) else (
 				if "!_opt_stella_feature!" == "ON" (
-					echo ** REQUIRE !_id! : installing it from stella
-					call %STELLA_COMMON%\common-feature.bat :feature_install !_id!
+					echo -- REQUIRE !_id! : installing it from stella
+					call %STELLA_COMMON%\common-feature.bat :feature_install "!_id!" "NON_DECLARED !_opt_internal!"
+					echo -- REQUIRE !_id! : init it
+					call %STELLA_COMMON%\common-feature.bat :feature_init "!_id!" "NON_DECLARED"
 
-					REM echo -- For an install from Stella : try stella.bat feature install !_id!
-					REM @echo off
-					REM goto :end
-					REM TODO fork this to not pertubate current feature_install
-					REM but first review stella api boot on windows
-					REM call %STELLA_COMMON%\common-feature.bat :feature_install "!_id!" "INTERNAL HIDDEN"
-					REM __feature_init "$_id"
 				) else (
 					echo ** ERROR -- Please install !_artefact!
 					echo -- For a system install : try stella.bat sys install !_id! OR install it manually

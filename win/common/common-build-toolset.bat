@@ -11,7 +11,7 @@ goto :eof
 	set "FORCE="
 
 	set "STELLA_APP_FEATURE_ROOT=!STELLA_INTERNAL_TOOLSET_ROOT!"
-	call %STELLA_COMMON%\common-feature.bat :feature_install %~1 "HIDDEN"
+	call %STELLA_COMMON%\common-feature.bat :feature_install %~1 "NON_DECLARED"
 
 	set "STELLA_APP_FEATURE_ROOT=!_toolset_install_save_app_feature_root!"
 	set "FORCE=!_toolset_install_save_force!"
