@@ -502,7 +502,7 @@ __ssh_execute() {
 	local __cmd="$2"
 	local __opt="$3"
 
-	__require "ssh" "ssh"
+	__require "ssh" "ssh" "SYSTEM"
 
 	local __opt_shared=
 	local __opt_sudo=

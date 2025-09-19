@@ -1609,7 +1609,7 @@ __transfer_rsync() {
 	done
 
 	# NOTE : rsync needs to be present on both host (source AND target)
-	__require "rsync" "rsync"
+	__require "rsync" "rsync" "SYSTEM"
 
 	__uri_parse "$_uri"
 
@@ -1621,7 +1621,7 @@ __transfer_rsync() {
 	fi
 
 	if [ "$__stella_uri_schema" = "ssh" ]; then
-		__require "ssh" "ssh"
+		__require "ssh" "ssh" "SYSTEM"
 		_ssh_port="22"
 		[ ! "$__stella_uri_port" = "" ] && _ssh_port="$__stella_uri_port"
 	fi
