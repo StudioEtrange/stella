@@ -1,5 +1,3 @@
-# *TODO & NOTES*
-
 
 # Recipe, package manager inspiration
 
@@ -29,35 +27,39 @@
   * hunter https://github.com/ruslo/hunter
 * C++ package manager : conan https://conan.io/
 
-# games
-* https://ttygames.wordpress.com/
-* https://github.com/herrbischoff/awesome-command-line-apps#games
-* https://www.ubuntupit.com/top-20-best-linux-terminal-console-games-that-you-can-play-right-now/
-
-* [ ] https://github.com/vaniacer/piu-piu-SH
-* [ ] PWMAngband - multiplayer angband
-http://powerwyrm.monsite-orange.fr
-http://angband.online/
-http://tangar.info/en/p
-* [ ] Mangband - another multiplayer version of angband
-  https://mangband.org/
-  https://github.com/mangband/mangband
-  http://tangar.info/en/m
-* [ ] TomeNet - indeep online roguelike game which include both MMORPG genre features and roguelike gameplay
-  https://www.tomenet.eu/
-  http://tangar.info/en/t
+## games
+  * https://ttygames.wordpress.com/
+  * https://github.com/herrbischoff/awesome-command-line-apps#games
+  * https://www.ubuntupit.com/top-20-best-linux-terminal-console-games-that-you-can-play-right-now/
 
 
-# command line tools list
-* https://github.com/agarrharr/awesome-cli-apps
-* https://terminalsare.sexy/
-* https://github.com/herrbischoff/awesome-command-line-apps
-* https://hackernoon.com/macbook-my-command-line-utilities-f8a121c3b019
+  * [ ] https://github.com/vaniacer/piu-piu-SH
+  * [ ] PWMAngband - multiplayer angband
+    * http://powerwyrm.monsite-orange.fr
+    * http://angband.online/
+    * http://tangar.info/en/p
+  * [ ] Mangband - another multiplayer version of angband
+    * https://mangband.org/
+    * https://github.com/mangband/mangband
+    * http://tangar.info/en/m
+  * [ ] TomeNet - indeep online roguelike game which include both MMORPG genre features and roguelike gameplay
+    * https://www.tomenet.eu/
+    * http://tangar.info/en/t
 
-# various recipe to write
-* [ ] https://github.com/ivanilves/lstags
-* [X] https://nicolargo.github.io/glances/
-* [X] cointop https://github.com/miguelmota/cointop
+
+## command line tools list
+  * https://github.com/agarrharr/awesome-cli-apps
+  * https://terminalsare.sexy/
+  * https://github.com/herrbischoff/awesome-command-line-apps
+  * https://hackernoon.com/macbook-my-command-line-utilities-f8a121c3b019
+  * https://github.com/agarrharr/awesome-cli-apps
+  * https://github.com/toolleeo/awesome-cli-apps-in-a-csv
+  * https://terminal-apps.dev/
+
+## various recipe to write
+  * [ ] https://github.com/ivanilves/lstags
+  * [X] https://nicolargo.github.io/glances/
+  * [X] cointop https://github.com/miguelmota/cointop
 
 
 # bash : builder - transpiler 

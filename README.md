@@ -109,7 +109,7 @@ or launch a shell with all your environment variables setted :
 
 ```
 cd my_app
-./stella-link.sh boot shell local
+./stella-link.sh shell
 jq
 ```
 
