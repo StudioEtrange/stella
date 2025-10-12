@@ -4,7 +4,7 @@ _ccda_INCLUDED_=1
 
 feature_ccda() {
 	FEAT_NAME="ccda"
-	FEAT_LIST_SCHEMA="2025_10_10_0307@x64:binary"
+	FEAT_LIST_SCHEMA='2025_10_10_0307@x64:binary'
 	
 	FEAT_DEFAULT_FLAVOUR="binary"
 

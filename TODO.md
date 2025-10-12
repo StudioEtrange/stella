@@ -24,7 +24,7 @@
 
 ## both
 * cmake recipes
-  * hunter https://github.com/ruslo/hunter
+  * hunter https://github.com/cpp-pm/hunter
 * C++ package manager : conan https://conan.io/
 
 ## games
@@ -33,7 +33,7 @@
   * https://www.ubuntupit.com/top-20-best-linux-terminal-console-games-that-you-can-play-right-now/
 
 
-  * [ ] https://github.com/vaniacer/piu-piu-SH
+  * [ ] https://github.com/vaniacer/piu-piu-SH (source only)
   * [ ] PWMAngband - multiplayer angband
     * http://powerwyrm.monsite-orange.fr
     * http://angband.online/
@@ -58,8 +58,7 @@
 
 ## various recipe to write
   * [ ] https://github.com/ivanilves/lstags
-  * [X] https://nicolargo.github.io/glances/
-  * [X] cointop https://github.com/miguelmota/cointop
+  * [ ] https://nicolargo.github.io/glances/
 
 
 # bash : builder - transpiler 

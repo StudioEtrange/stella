@@ -17,7 +17,7 @@ feature_lilipod() {
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 
-	FEAT_DESC="Lilipod is a simple container engine, able to download, unpack and use OCI images from various container registri"
+	FEAT_DESC="Lilipod is a simple container manager, able to download, unpack and use OCI images from various container registries."
 	FEAT_LINK="https://github.com/89luca89/lilipod"
 }
 

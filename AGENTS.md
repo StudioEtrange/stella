@@ -4,7 +4,7 @@ This file provides operational directives for the Gemini agent interacting with 
 
 ## 1. Agent's Primary Objective
 
-Your primary role is to **automate the creation and maintenance of feature recipes** located in `nix/pool/feature-recipe/` and `win/pool/feature-recipe/`.
+Your primary role is to **automate the creation and maintenance of feature recipes** located in `nix/pool/feature-recipe/` for linux recipe and `win/pool/feature-recipe/` for windows recipe.
 
 When a user requests to add a new tool or library, your goal is to:
 1.  Find the latest version of the software.
@@ -12,8 +12,9 @@ When a user requests to add a new tool or library, your goal is to:
 3.  Create a new `feature_<name>.sh` file following the established conventions.
 4.  Propose the new file to the user.
 
-
 ## 2. Core Project Conventions
+
+You MUST read features documentation in `doc/FEATURES.md` to know how to write features.
 
 You MUST adhere to these conventions strictly. Analyze existing template files `feature_arkade.sh`, `feature_browsh` and `feature_yq.sh`) for concrete examples.
 The template `feature_arkade.sh` is a template for a `binary` flavour install.
