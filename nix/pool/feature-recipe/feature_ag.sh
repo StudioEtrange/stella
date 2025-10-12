@@ -4,14 +4,17 @@ _ag_INCLUDED_=1
 # darwin -- OK -- 20151012
 
 feature_ag() {
-	FEAT_NAME=ag
+	FEAT_NAME="ag"
 	FEAT_LIST_SCHEMA="1_0_2:source"
 	
 	FEAT_DEFAULT_FLAVOUR="source"
+
+	FEAT_DESC="A code-searching tool similar to ack, but faster."
+	FEAT_LINK="https://github.com/ggreer/the_silver_searcher http://geoff.greer.fm/ag/"
 }
 
 feature_ag_1_0_2() {
-	FEAT_VERSION=1_0_2
+	FEAT_VERSION="1_0_2"
 
 
 	FEAT_SOURCE_DEPENDENCIES="zlib#^1_2 pcre#8_36 xzutils#5_2_1"

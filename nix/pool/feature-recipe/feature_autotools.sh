@@ -4,9 +4,12 @@ _AUTOTOOLS_INCLUDED_=1
 
 
 feature_autotools() {
-	FEAT_NAME=autotools
+	FEAT_NAME="autotools"
 	FEAT_LIST_SCHEMA="1_2 1_1_1 1_1 1_0"
 	FEAT_BUNDLE="MERGE"
+
+	FEAT_DESC="The GNU Build System, also known as the Autotools, is a suite of programming tools designed to assist in making source code packages portable to many Unix-like systems."
+	FEAT_LINK="https://www.gnu.org/software/automake/faq/autotools-faq.html"
 }
 
 
