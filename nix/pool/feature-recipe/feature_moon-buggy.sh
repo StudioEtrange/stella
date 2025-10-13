@@ -13,7 +13,7 @@ feature_moon-buggy() {
 feature_moon-buggy_master() {
 	FEAT_VERSION="master"
 
-	FEAT_SOURCE_DEPENDENCIES="ncurses#6_0"
+	FEAT_SOURCE_DEPENDENCIES="ncurses#6_5"
 
 	FEAT_SOURCE_URL="https://github.com/seehuhn/moon-buggy/archive/refs/heads/master.tar.gz"
 	FEAT_SOURCE_URL_FILENAME="moon-buggy-master.tar.gz"

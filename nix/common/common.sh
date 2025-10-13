@@ -2681,13 +2681,18 @@ __uncompress() {
 				tar xf "$FILE_PATH"
 			fi
 			;;
-		*.gz | *.tgz)
-			__log "DEBUG" "GZ file detected - option strip is $_opt_strip"	
+		*.tar.gz | *.tgz)
+			__log "DEBUG" "TAR.GZ file detected - option strip is $_opt_strip"	
 			if [ "$_opt_strip" = "ON" ]; then
 				tar xzf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-strip "$FILE_PATH" "$UNZIP_DIR"
 			else
 				tar xzf "$FILE_PATH"
 			fi
+			;;
+		*.gz)
+			__require "gzip" "gzip" "SYSTEM"
+			# gzip do not support any arborescence, so there is no strip option to support
+			gzip -d "$FILE_PATH"
 			;;
 		*.xz | *.tar.bz2 | *.tbz2 | *.tbz)
 			if [ "$_opt_strip" = "ON" ]; then
