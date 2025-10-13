@@ -2440,6 +2440,15 @@ __resource() {
 	[ "$_opt_get" = "ON" ] && __log "INFO" "Getting resource :"
 	[ ! "$FINAL_DESTINATION" = "" ] && __log "INFO" "$NAME in $FINAL_DESTINATION" || __log "INFO" "$NAME"
 
+	if [ "${URI}" = "" ]; then
+		__log_stella "ERROR" "ressource URI empty"
+		exit 1
+	fi
+	if [ "${PROTOCOL}" = "" ]; then
+		__log_stella "ERROR" "ressource protocol empty"
+		exit 1
+	fi
+
 	#[ "$FORCE" ] && rm -Rf $FINAL_DESTINATION
 	if [ "$_opt_get" = "ON" ]; then
 		#if [ "$FORCE" ]; then
