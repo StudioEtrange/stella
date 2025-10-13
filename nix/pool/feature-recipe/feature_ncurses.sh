@@ -31,8 +31,7 @@ feature_ncurses_6_5() {
 	FEAT_SOURCE_CALLBACK="feature_ncurses_patch"
 	FEAT_PATCHES_URL="https://invisible-island.net/archives/ncurses/6.5/dev-patches.zip"
 
-	FEAT_TEST="tput"
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/$FEAT_TEST"
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/ncursesw6-config $FEAT_INSTALL_ROOT/bin/ncurses6-config"
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 
 }
@@ -47,8 +46,7 @@ feature_ncurses_6_4() {
 	FEAT_SOURCE_CALLBACK="feature_ncurses_patch"
 	FEAT_PATCHES_URL="https://invisible-island.net/archives/ncurses/6.4/dev-patches.zip"
 
-	FEAT_TEST="tput"
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/$FEAT_TEST"
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/ncursesw6-config $FEAT_INSTALL_ROOT/bin/ncurses6-config"
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 
 }
@@ -64,8 +62,7 @@ feature_ncurses_6_3() {
 	FEAT_SOURCE_CALLBACK="feature_ncurses_patch"
 	FEAT_PATCHES_URL="https://invisible-island.net/archives/ncurses/6.3/dev-patches.zip"
 
-	FEAT_TEST="tput"
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/$FEAT_TEST"
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/ncursesw6-config $FEAT_INSTALL_ROOT/bin/ncurses6-config"
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 
 }
@@ -80,8 +77,7 @@ feature_ncurses_6_2() {
 	FEAT_SOURCE_CALLBACK="feature_ncurses_patch"
 	FEAT_PATCHES_URL="https://invisible-island.net/archives/ncurses/6.2/dev-patches.zip"
 
-	FEAT_TEST="tput"
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/$FEAT_TEST"
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/ncursesw6-config $FEAT_INSTALL_ROOT/bin/ncurses6-config"
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 
 }
@@ -96,8 +92,7 @@ feature_ncurses_6_1() {
 	FEAT_SOURCE_CALLBACK="feature_ncurses_patch"
 	FEAT_PATCHES_URL="https://invisible-island.net/archives/ncurses/6.1/dev-patches.zip"
 
-	FEAT_TEST="tput"
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/$FEAT_TEST"
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/ncursesw6-config $FEAT_INSTALL_ROOT/bin/ncurses6-config"
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 
 }
@@ -113,8 +108,7 @@ feature_ncurses_6_0() {
 	FEAT_SOURCE_CALLBACK="feature_ncurses_patch"
 	FEAT_PATCHES_URL="https://invisible-island.net/archives/ncurses/6.0/dev-patches.zip"
 
-	FEAT_TEST="tput"
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/$FEAT_TEST"
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/ncursesw6-config $FEAT_INSTALL_ROOT/bin/ncurses6-config"
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 
 }
@@ -130,8 +124,7 @@ feature_ncurses_5_9() {
 	FEAT_SOURCE_CALLBACK="feature_ncurses_patch"
 	FEAT_PATCHES_URL="https://invisible-island.net/archives/ncurses/5.9/dev-patches.zip"
 
-	FEAT_TEST="tput"
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/$FEAT_TEST"
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/tput"
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 
 }
@@ -170,10 +163,12 @@ feature_ncurses_install_source() {
 
 	__set_toolset "STANDARD"
 
-
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP"
 
 	[ "$STELLA_CURRENT_PLATFORM" = "linux" ] && __set_build_mode "RPATH" "ADD_FIRST" "$FEAT_INSTALL_ROOT/lib"
+
+	__feature_callback
+
 
 	# with wide encoding
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
@@ -186,8 +181,6 @@ feature_ncurses_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
-	__feature_callback
-
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP NO_FIX NO_CHECK"
 
 	# standard build
@@ -195,7 +188,8 @@ feature_ncurses_install_source() {
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="
 			--disable-dependency-tracking \
 			--with-shared           \
-            --without-debug"
+            --without-debug       \
+			--disable-widec" # disable wide encoding
             #--enable-pc-files"
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=

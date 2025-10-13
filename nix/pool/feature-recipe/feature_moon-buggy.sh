@@ -26,7 +26,7 @@ feature_moon-buggy_master() {
 }
 
 feature_moon-buggy_link() {
-	__link_feature_library "ncurses#6_0" "FORCE_DYNAMIC"
+	__link_feature_library "ncurses#6_5" "FORCE_DYNAMIC"
 }
 
 feature_moon-buggy_install_source() {
