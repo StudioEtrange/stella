@@ -1,19 +1,20 @@
 
-# Recipe, package manager inspiration
+## Nix package manager
 
-## Nix
+  * nixos (https://github.com/NixOS/nixpkgs)
+  * homebrew (https://github.com/Homebrew/homebrew-core)
+  * 0install (http://0install.net/)
+  * rudix (http://rudix.org/)
+  * appimage https://appimage.github.io/apps/
+  * snapcraft - snapd
+  * flatpak https://flatpak.org/
 
-* nixos (https://github.com/NixOS/nixpkgs)
-* homebrew (https://github.com/Homebrew/homebrew-core)
-* 0install (http://0install.net/)
-* rudix (http://rudix.org/)
-* appimage https://appimage.github.io/apps/
-* snapcraft - snapd
-* flatpak https://flatpak.org/
-
-## WIN
-
+## windows package manager
 * bluego (https://bitbucket.org/Vertexwahn/bluego)
+  * BlueGo is a tool which builds Boost, Qt and OpenSceneGraph libraries using Visual Studio
+  * https://vertexwahn.de/page/open_source/
+  * https://github.com/Vertexwahn/BlueGo
+
 
 * mingw-w64 RECIPE :
  * http://www.gaia-gis.it/spatialite-3.0.0-BETA/mingw64_how_to.html
@@ -22,29 +23,34 @@
  * https://github.com/Alexpux/MINGW-packages
  * https://github.com/Alexpux/MSYS2-packages
 
-## both
-* cmake recipes
+## package manager
+
+* CMake package manager
   * hunter https://github.com/cpp-pm/hunter
-* C++ package manager : conan https://conan.io/
+    * CMake driven cross-platform package manager for C/C++.
+
+* conan
+  * Conan - The open-source C and C++ package manager
+  * https://github.com/conan-io/conan
+  * https://conan.io/
+
 
 ## games
   * https://ttygames.wordpress.com/
   * https://github.com/herrbischoff/awesome-command-line-apps#games
   * https://www.ubuntupit.com/top-20-best-linux-terminal-console-games-that-you-can-play-right-now/
 
-
-  * [ ] https://github.com/vaniacer/piu-piu-SH (source only)
-  * [ ] PWMAngband - multiplayer angband
+  * PWMAngband - multiplayer angband
     * http://powerwyrm.monsite-orange.fr
     * http://angband.online/
     * http://tangar.info/en/p
-  * [ ] Mangband - another multiplayer version of angband
+  * Mangband - another multiplayer version of angband
     * https://mangband.org/
     * https://github.com/mangband/mangband
     * http://tangar.info/en/m
-  * [ ] TomeNet - indeep online roguelike game which include both MMORPG genre features and roguelike gameplay
+  * TomeNet - indeep online roguelike game which include both MMORPG genre features and roguelike gameplay
     * https://www.tomenet.eu/
-    * http://tangar.info/en/t
+    * https://github.com/TomenetGame/tomenet
 
 
 ## command line tools list
@@ -57,21 +63,25 @@
   * https://terminal-apps.dev/
 
 ## various recipe to write
-  * [ ] https://github.com/ivanilves/lstags
-  * [ ] https://nicolargo.github.io/glances/
+  * lstags
+    * https://github.com/ivanilves/lstags
+    * Explore Docker registries and manipulate Docker images!
+  * Glances
+    * https://nicolargo.github.io/glances/
+    * https://github.com/nicolargo/glances
+    * Glances an Eye on your system. A top/htop alternative for GNU/Linux, BSD, Mac OS and Windows operating systems.
+    * langage python
 
 
 # bash : builder - transpiler 
 
 * to batch and bash : https://github.com/BYVoid/Batsh
-* bash static linked : https://github.com/robxu9/bash-static
+
 
 
 # Various
 
 * NOTE : homebrew flag setting system https://github.com/Homebrew/homebrew/blob/master/Library/Homebrew/extend/ENV/super.rb
-
-
 
 * NOTE history : FIRST PUSH OF stella pre version : https://bitbucket.org/StudioEtrange/ryzomcore-script/src/1308706a1dc3f1dde7d65b048e9b16f2a2f2f518
 
@@ -79,17 +89,6 @@
 # Development environment
 
 * Shellcheck -- https://github.com/koalaman/shellcheck
-
-in Atom Editor
-
-  ```
-    brew install shellcheck
-    apm install linter
-    apm install linter-shellcheck
-  ```
-
-then use
-  `shellcheck stella.sh`
 
 * checkbashisms
 
@@ -152,18 +151,13 @@ use
 * [ ] bash formatter https://github.com/mvdan/sh
 * [ ] openssl and zlib binaries from conan.io https://bintray.com/conan-community/conan/OpenSSL%3Aconan https://github.com/conan-community/conan-openssl
 * [ ] app vendor do not work with stella-link.sh with stellaroot option
-* [ ] binary bundle go+bash + busybox ?
-    https://github.com/progrium/go-basher
-    https://github.com/robxu9/bash-static
+* [ ] binary bundle go+bash + busybox ? https://github.com/progrium/go-basher
 
 
 * [ ] nix : color & style https://odb.github.io/shml/
 * [ ] nix : explore https://github.com/alebcay/awesome-shell
-* [ ] nix : shell framework https://github.com/shellfire-dev/shellfire
-
-* [ ] nix : bash-lib : https://github.com/aks/bash-lib
-* [ ] COMMENTS code
-* [ ] Format output (log system)
+* [ ] nix : shell framework https://github.com/shellfire-dev/shellfire TODO : import shell function into stella
+* [ ] nix : bash-lib : https://github.com/aks/bash-lib TODO : import shell function into stella
 
 
 * [ ] nix : review speed and optimization
@@ -369,61 +363,19 @@ powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.github
 
 ## bare metal deploy
 
-* cobbler
-** http://cobbler.github.io/
-** https://github.com/cobbler/cobbler
-** relocating cobbler http://cobbler.github.io/manuals/2.6.0/2/5_-_Relocating_Your_Installation.html
-** cobbler in docker 1 : http://container-solutions.com/cobbler-in-a-docker-container/ https://github.com/ContainerSolutions/docker-cobbler https://github.com/honnix/docker-cobbler
-** cobbler in docker 2 : https://github.com/yongfengdu/docker-cobbler
-
 * foreman
-** https://theforeman.org/
-
-* stacki
-** https://github.com/StackIQ/stacki
-
-* terraform + packet : https://www.terraform.io/docs/providers/packet/index.html
+  * https://theforeman.org/
 
 * matchbox https://github.com/coreos/matchbox
-https://coreos.com/blog/matchbox-with-terraform
-https://coreos.com/tectonic/docs/latest/install/bare-metal/metal-terraform.html
+  * https://coreos.com/blog/matchbox-with-terraform
+  * https://coreos.com/tectonic/docs/latest/install/bare-metal/metal-terraform.html
 
-## hadoop deploy
 
-* from bare metal to hadoop : cobbler + ansible + cloudera manager
-** https://blog.godatadriven.com/bare-metal-hadoop-provisioning-ansible-cobbler.html
 
-* structor for VM deploy
-  https://github.com/cartershanklin/structor (and forks)
+## Kubernetes 
 
-* 3 nodes HDFS Yarn MapReduce :
-  https://www.linode.com/docs/databases/hadoop/how-to-install-and-set-up-hadoop-cluster/
-  add spark :
-  https://www.linode.com/docs/databases/hadoop/install-configure-run-spark-on-top-of-hadoop-yarn-cluster/
-
-* http://hadoop.apache.org/docs/r2.7.2/hadoop-project-dist/hadoop-common/SingleCluster.html
-  http://hadoop.apache.org/docs/r2.7.2/hadoop-project-dist/hadoop-common/ClusterSetup.html
-
-## Kubernetes deploy
-
-* several contribution of kubernetes deploy techniques : https://github.com/kubernetes/kube-deploy
 * kops : https://github.com/kubernetes/kops
-* kubernetes-everywhere : https://github.com/kubernetes/kubernetes-anywhere
-* ansible : http://blog.jameskyle.org/2014/08/deploying-baremetal-kubernetes-cluster/
-* quickstart kubernetes https://www.linode.com/docs/applications/containers/manage-a-docker-cluster-with-kubernetes/
 
-
-## VM
-    terraform agnostic IaaS management : https://www.terraform.io/
-    libvirt : VM management library (qemu, lxc, virtualbox, vmware ...)
-        https://github.com/Homebrew/homebrew-core/blob/master/Formula/libvirt.rb
-    terraform libvirt provider https://github.com/dmacvicar/terraform-provider-libvirt
-    archipel https://github.com/ArchipelProject/Archipel http://archipelproject.org/
-        archipel client : https://hub.docker.com/r/schrauber/archipelclient/
-    nobullshitvm https://github.com/ChoHag/nbsvm
 
 ## infra management
-  https://blog.docker.com/2017/01/infrakit-hood-high-availability/
-  https://github.com/docker/infrakit
-    OS
-  https://github.com/linuxkit/linuxkit
+  * https://github.com/linuxkit/linuxkit
