@@ -317,7 +317,6 @@ __auto_build() {
 	[ "$_opt_configure" = "ON" ] && __launch_configure "$SOURCE_DIR" "$INSTALL_DIR" "$BUILD_DIR" "$OPT"
 	[ "$_opt_build" = "ON" ] && __launch_build "$SOURCE_DIR" "$INSTALL_DIR" "$BUILD_DIR" "$OPT"
 
-
 	cd "$INSTALL_DIR"
 
 	# clean workspace
@@ -384,6 +383,10 @@ __launch_configure() {
 	case $STELLA_BUILD_CONFIG_TOOL_BIN_FAMILY in
 
 		configure)
+			if [ ! -f "$AUTO_SOURCE_DIR/configure" ]; then
+				echo "** ERROR : configure script not found in $AUTO_SOURCE_DIR"
+				return 1
+			fi
 			chmod +x "$AUTO_SOURCE_DIR/configure"
 
 			if [ "$AUTO_INSTALL_CONF_FLAG_PREFIX" = "" ]; then

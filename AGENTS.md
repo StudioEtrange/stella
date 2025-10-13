@@ -15,11 +15,15 @@ When a user requests to add a new tool or library, your goal is to:
 ## 2. Core Project Conventions
 
 You MUST read features documentation in `doc/FEATURES.md` to know how to write features.
-You MUST adhere to these conventions strictly. Analyze existing template files `feature_arkade.sh`, `feature_browsh` and `feature_yq.sh`) for concrete examples.
+You MUST adhere to these conventions strictly. 
+Analyze existing template files `feature_arkade.sh`, `feature_browsh` and `feature_yq.sh` for concrete examples as linux binary flavour feature.
+Analyze existing template files `feature_moon-buggy.sh`, `feature_vitetris.sh` and `feature_yajl.sh` for concrete examples as linux source flavour feature.
 The template `feature_arkade.sh` is a template for a `binary` flavour install.
 The template `feature_yq.sh` is a template for a `binary` flavour install.
 The template `feature_browsh.sh` is a template for a `binary` flavour install including sample with zipped file and non zipped file.
-
+The template `feature_yajl.sh` is a template for a `source` flavour install.
+The template `feature_moon-buggy.sh` is a template for a `source` flavour install wich generate is own configure using autogen.
+The template `feature_vitetris.sh` is a template for a `source` flavour install.
 
 ### Naming
 - **Feature File:** `feature_<name>.sh` (e.g., `feature_htop.sh`).

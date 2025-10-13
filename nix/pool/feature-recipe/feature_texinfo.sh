@@ -5,7 +5,7 @@ _texinfo_INCLUDED_=1
 feature_texinfo() {
 	FEAT_NAME=texinfo
 
-	FEAT_LIST_SCHEMA="7_1:source 5_1:source"
+	FEAT_LIST_SCHEMA="7_2:source 7_1:source 5_1:source"
 	
 	FEAT_DEFAULT_FLAVOUR="source"
 
@@ -15,7 +15,19 @@ feature_texinfo() {
 
 }
 
+feature_texinfo_7_2() {
+	FEAT_VERSION="7_2"
 
+	FEAT_SOURCE_URL="https://ftp.gnu.org/gnu/texinfo/texinfo-7.2.tar.xz"
+	FEAT_SOURCE_URL_FILENAME="texinfo-7.2.tar.xz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
+
+	FEAT_SOURCE_CALLBACK=""
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/texindex"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
+
+}
 
 
 feature_texinfo_7_1() {

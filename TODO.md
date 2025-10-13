@@ -38,7 +38,7 @@
 ## games
   * https://ttygames.wordpress.com/
   * https://github.com/herrbischoff/awesome-command-line-apps#games
-  * https://www.ubuntupit.com/top-20-best-linux-terminal-console-games-that-you-can-play-right-now/
+  * https://ubuntupit.com/best-linux-terminal-console-games/
 
   * PWMAngband - multiplayer angband
     * http://powerwyrm.monsite-orange.fr
@@ -91,23 +91,18 @@
 * Shellcheck -- https://github.com/koalaman/shellcheck
 
 * checkbashisms
+  ```
+    brew install checkbashisms
+    apm install linter
+    apm install linter-checkbashisms
+  ```
 
-```
-  brew install checkbashisms
-  apm install linter
-  apm install linter-checkbashisms
-```
-
-* shell code style guideline
-
-in shell
-
+* bashate - shell code style guideline
   ```
     pip install bashate
+    bashate script.sh
   ```
 
-use
-  `bashate stella.sh`
 
 
 # Various
