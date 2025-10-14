@@ -1,6 +1,7 @@
 
-## Nix package manager
+## Recipes to create
 
+## From Nix package manager
   * nixos (https://github.com/NixOS/nixpkgs)
   * homebrew (https://github.com/Homebrew/homebrew-core)
   * 0install (http://0install.net/)
@@ -9,33 +10,30 @@
   * snapcraft - snapd
   * flatpak https://flatpak.org/
 
-## windows package manager
-* bluego (https://bitbucket.org/Vertexwahn/bluego)
-  * BlueGo is a tool which builds Boost, Qt and OpenSceneGraph libraries using Visual Studio
-  * https://vertexwahn.de/page/open_source/
-  * https://github.com/Vertexwahn/BlueGo
+## From windows package manager
+  * bluego (https://bitbucket.org/Vertexwahn/bluego)
+    * BlueGo is a tool which builds Boost, Qt and OpenSceneGraph libraries using Visual Studio
+    * https://vertexwahn.de/page/open_source/
+    * https://github.com/Vertexwahn/BlueGo
 
+  * mingw-w64 RECIPE :
+    * http://www.gaia-gis.it/spatialite-3.0.0-BETA/mingw64_how_to.html
 
-* mingw-w64 RECIPE :
- * http://www.gaia-gis.it/spatialite-3.0.0-BETA/mingw64_how_to.html
+  * msys2 + mingw-w64 RECIPES :
+    * https://github.com/Alexpux/MINGW-packages
+    * https://github.com/Alexpux/MSYS2-packages
 
-* msys2 + mingw-w64 RECIPES :
- * https://github.com/Alexpux/MINGW-packages
- * https://github.com/Alexpux/MSYS2-packages
+## CMake package manager
 
-## package manager
-
-* CMake package manager
   * hunter https://github.com/cpp-pm/hunter
     * CMake driven cross-platform package manager for C/C++.
 
-* conan
-  * Conan - The open-source C and C++ package manager
-  * https://github.com/conan-io/conan
-  * https://conan.io/
+  * conan
+    * Conan - The open-source C and C++ package manager
+    * https://github.com/conan-io/conan
+    * https://conan.io/
 
-
-## games
+## games to integrate
   * https://ttygames.wordpress.com/
   * https://github.com/herrbischoff/awesome-command-line-apps#games
   * https://ubuntupit.com/best-linux-terminal-console-games/
@@ -143,7 +141,7 @@
 * [X] nix : replace ini management
   * [-] https://github.com/albfan/bash-ini-parser do not work on MacOS (https://github.com/albfan/bash-ini-parser/issues/8)
   * [X] https://github.com/rudimeier/bash_ini_parser
-* [ ] bash formatter https://github.com/mvdan/sh
+* [ ] bash linter that fix format https://github.com/mvdan/sh
 * [ ] openssl and zlib binaries from conan.io https://bintray.com/conan-community/conan/OpenSSL%3Aconan https://github.com/conan-community/conan-openssl
 * [ ] app vendor do not work with stella-link.sh with stellaroot option
 * [ ] binary bundle go+bash + busybox ? https://github.com/progrium/go-basher

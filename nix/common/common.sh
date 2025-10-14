@@ -2700,8 +2700,18 @@ __uncompress() {
 			;;
 		*.gz)
 			__require "gzip" "gzip" "SYSTEM"
+			local unzip_dir_equal_original_dir=
+			local gz_file="$UNZIP_DIR/$(basename $FILE_PATH)"
+			
+			[ -f "$gz_file" ] && unzip_dir_equal_original_dir="1"
+			[ ! "$unzip_dir_equal_original_dir" = "1" ] && cp -f "$FILE_PATH" "$gz_file"
+			
 			# gzip do not support any arborescence, so there is no strip option to support
-			gzip -d "$FILE_PATH"
+			# gzip unncompress only where the gz file is located
+			gzip -f -d "$gz_file"
+			
+			[ ! "$unzip_dir_equal_original_dir" = "1" ] && rm -f "$gz_file"
+			unzip_dir_equal_original_dir=
 			;;
 		*.xz | *.tar.bz2 | *.tbz2 | *.tbz)
 			if [ "$_opt_strip" = "ON" ]; then
