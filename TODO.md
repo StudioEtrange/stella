@@ -59,6 +59,7 @@
   * https://github.com/agarrharr/awesome-cli-apps
   * https://github.com/toolleeo/awesome-cli-apps-in-a-csv
   * https://terminal-apps.dev/
+  * network tools : https://gist.github.com/ryancdotorg/84275935f0b82578d8c222e2e915fc78
 
 ## various recipe to write
   * lstags
