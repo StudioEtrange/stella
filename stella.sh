@@ -2,25 +2,31 @@
 _STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 #shellcheck source=conf.sh
-. "$_STELLA_CURRENT_FILE_DIR"/conf.sh
+. "$_STELLA_CURRENT_FILE_DIR/conf.sh"
 
 
 # NOTE : use "env" with source (or .) command only
 #		source ./stella.sh env
 #		. ./stella.sh env
 # NOTE : warn : some env var (like PATH) are cumulative
-if [ "$1" = "env" ]; then
-	# https://stackoverflow.com/questions/2683279/how-to-detect-if-a-script-is-being-sourced
-	[[ "$0" != "$BASH_SOURCE" ]] && sourced=1 || sourced=0
-	if [ "$sourced" = "0" ]; then
-		echo "** use source"
-		echo ". <stella.sh|stella-link.sh> env"
-		exit 1
-	fi
-	__init_stella_env
-	echo "** Current env is setted/refreshed with stella env"
+case "$1" in
+	env)
+		# https://stackoverflow.com/questions/2683279/how-to-detect-if-a-script-is-being-sourced
+		[[ "$0" != "$BASH_SOURCE" ]] && sourced=1 || sourced=0
+		if [ "$sourced" = "0" ]; then
+			echo "** use source"
+			echo ". <stella.sh|stella-link.sh> env"
+			exit 1
+		fi
+		__init_stella_env
+		echo "** Current env is setted/refreshed with stella env"
+	;;
 
-else
+	info)
+		$STELLA_ARTEFACT/neofetch/neofetch
+	;;
+
+	*)
 
 usage() {
 	echo "USAGE :"
@@ -40,6 +46,7 @@ usage() {
 	echo " L     feature info <feature schema> : show some feature informations"
 	echo " L     feature list <all|feature name|active|full-active> : list all available feature OR available versions of a feature OR current active features OR full list of active features even hidden ones"
 	echo " o-- various :"
+	echo " L     info : print current system informations"
 	echo " L     stella api list : list public functions of stella api"
 	echo " L     stella install dep : install all features and systems requirements if any, for the current OS ($STELLA_CURRENT_OS)"
 	echo " L     stella version print : print stella version"
@@ -362,5 +369,5 @@ if [ "$DOMAIN" = "stella" ]; then
 fi
 
 
-__log "INFO" "** END **"
-fi
+;;
+esac

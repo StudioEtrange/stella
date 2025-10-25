@@ -4,6 +4,39 @@ _STELLA_COMMON_BUILD_LINK_INCLUDED_=1
 
 
 
+# ------------------------------------------------------------------------------
+#
+# __link_feature_library
+#
+# This is a core function of the Stella build system responsible for managing
+# the linking of a binary against a specific "feature" (a library or tool
+# previously installed by Stella or available on the host system).
+#
+# It correctly resolves the feature's location and sets the necessary
+# compiler and linker flags (e.g., -I, -L, -l, rpath) to ensure the build
+# system can find and link against the dependency.
+#
+# It supports various linking strategies, such as forcing static or dynamic
+# linking, using pkg-config, or simply retrieving the necessary flags and
+# paths into variables for manual use.
+#
+# @param {string} $1 - The feature's SCHEMA to link against (e.g., "openssl@1.1.1").
+# @param {string} $2 - A space-separated string of options to control linking behavior.
+#
+# @option FORCE_STATIC - Forces linking against the static version (.a) of the library.
+# @option FORCE_DYNAMIC - Forces linking against the dynamic version (.so, .dylib) of the library.
+# @option GET_FLAGS <prefix> - Stores the generated flags in variables with the given prefix
+#                             (e.g., <prefix>_C_CXX_FLAGS) instead of setting them globally.
+# @option GET_FOLDER <prefix> - Stores the feature's paths (ROOT, LIB, BIN, INCLUDE) in
+#                              variables with the given prefix.
+# @option NO_SET_FLAGS - Prevents the function from modifying the global build flags.
+# @option LIBS_NAME <names...> - Specifies the library names for the linker's -l flag (e.g., "ssl crypto").
+# @option USE_PKG_CONFIG - Uses pkg-config to determine the required flags.
+# @option FORCE_LIB_FOLDER <path> - Overrides the default 'lib' sub-directory name.
+# @option FORCE_BIN_FOLDER <path> - Overrides the default 'bin' sub-directory name.
+# @option FORCE_INCLUDE_FOLDER <path> - Overrides the default 'include' sub-directory name.
+#
+# ------------------------------------------------------------------------------
 __link_feature_library() {
 	local SCHEMA="$1"
 	local _link_OPT="$2"
@@ -17,7 +50,7 @@ __link_feature_library() {
 	# GET_FOLDER <prefix> -- get prefix_ROOT, prefix_LIB, prefix_BIN, prefix_INCLUDE with correct path
 	# NO_SET_FLAGS -- do not set stella build system flags (by default, flags will be generated) AND do not add RPATH values
 	# LIBS_NAME -- libraries name to use with -l arg -- you can specify several libraries. If you do not use LIBS_NAME -l flag will not be setted, only -L will be setted. If you use LIBS_NAME both -l and -L flags will be setted
-  # USE_PKG_CONFIG -- use of pkg-config
+ 	# USE_PKG_CONFIG -- use of pkg-config
 
 	local _ROOT=
 	local _BIN=
@@ -77,6 +110,8 @@ __link_feature_library() {
 		[ "$o" = "LIBS_NAME" ] && _flag_libs_name=ON
 	done
 
+	echo "** Linking to $SCHEMA"
+
 	# check origin for this schema
 	local _origin
 	case "$SCHEMA" in
@@ -101,8 +136,7 @@ __link_feature_library() {
 			__add_toolset "pkgconfig"
 			# we need to add some defaut seach into path, because pkgconfig have default values from its install path
 			# pkgconfig is installed inside stella and do not have correct default values when we want to link against SYSTEM libraries
-			echo "** WARN : adding some system lib search path for pkg-config, because we use pkg-config for a SYSTEM lib"
-			# TODO __default_linker_search_path should receive arch, because linker search path depend on arch
+			echo "** WARN : adding some system lib search path for pkg-config, because we use pkg-config installed by stella for a SYSTEM lib"
 			__def_path=$(__default_linker_search_path)
 			__def_path="${__def_path//:/ }"
 			for _p in $__def_path; do
@@ -112,7 +146,7 @@ __link_feature_library() {
 		return
 	fi
 
-	echo "** Linking to $SCHEMA"
+	
 
 	[ "$STELLA_BUILD_COMPIL_FRONTEND" = "" ] && echo "** WARN : compil frontend empty - did you set a toolset ?"
 

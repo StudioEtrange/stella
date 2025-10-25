@@ -510,11 +510,11 @@ __default_runtime_search_path() {
 
 
 # SEARCH PATH AT LINKING - WHILE BUILDING override with LIBRARY_PATH enn var
-
 # linker search path
 # library search path during linking
 # arch : x64|x86
-#				if empty the default system current arch will be used
+#				x64 means 64bits
+#				x86 means 32bits
 # LINUX https://stackoverflow.com/questions/9922949/how-to-print-the-ldlinker-search-path
 # NOTE ON MACOS :
 #			 https://opensource.apple.com/source/dyld/dyld-519.2.1/src/dyld.cpp.auto.html
@@ -522,13 +522,36 @@ __default_runtime_search_path() {
 #												can be checked with : gcc  -Xlinker -v
 __default_linker_search_path() {
 	local __arch="$1"
+
+	if [ "$__arch" = "" ]; then
+		case $STELLA_CPU_ARCH in
+			"64")
+				__arch="x64"
+			;;
+			"32")
+				__arch="x86"
+			;;
+		esac
+	fi
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		[ "$__arch" = "x64" ] && $__arch="-m64"
-		[ "$__arch" = "x86" ] && $__arch="-m32"
+		case $__arch in
+			"x64")
+				__arch="-m64"
+			;;
+			"x86")
+				__arch="-m32"
+			;;
+		esac
 		gcc $__arch -Xlinker --verbose  2>/dev/null | grep SEARCH | sed 's/SEARCH_DIR("=\?\([^"]\+\)"); */\1\n/g'  | grep -vE '^$'
 	fi
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		echo "/usr/local/lib:/usr/lib"
+		printf '%s\n' "/usr/local/lib"
+		local sdk
+		sdk="$(xcrun --sdk macosx --show-sdk-path 2>/dev/null || true)"
+		if [ -n "$sdk" ]; then
+			printf '%s\n' "$sdk/usr/lib"
+		fi
+		printf '%s\n' "/usr/lib"
 	fi
 }
 
@@ -538,7 +561,10 @@ __default_linker_search_path() {
 # https://stackoverflow.com/a/21610523/5027535
 __gcc_linker_search_path() {
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		gcc -print-search-dirs | sed '/^lib/b 1;d;:1;s,/[^/.][^/]*/\.\./,/,;t 1;s,:[^=]*=,:;,;s,;,;  ,g' | tr \; \\012
+		gcc -print-search-dirs | sed '/^lib/b 1;d;:1;s,/[^/.][^/]*/\.\./,/,;t 1;s,:[^=]*=,:;,;s,;,;  ,g; s/^libraries:[[:space:]]*;[[:space:]]*//' | tr : \\012
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		gcc -print-search-dirs | sed -n 's/^libraries:[[:space:]]*\(=\)\{0,1\}[[:space:]]*//p' | tr ':' '\n'
 	fi
 }
 

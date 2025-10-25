@@ -588,7 +588,7 @@ __feature_remove_list() {
 	done
 }
 
-
+# by default a feature origin is STELLA not from SYSTEM
 __feature_choose_origin() {
 	local _SCHEMA="$1"
 	__translate_schema "$_SCHEMA" "_CHOOSE_ORIGIN_FEATURE_NAME"
@@ -1476,7 +1476,7 @@ __translate_schema() {
 
 # --------------- DEPRECATED ---------------------------------------------
 
-
+# TODO TRANSFORM THIS INTO A FEATURE
 __file5() {
 	URL=ftp://ftp.astron.com/pub/file/file-5.15.tar.gz
 	VER=5.15
@@ -1493,7 +1493,7 @@ __file5() {
 }
 
 
-
+# TODO TRANSFORM THIS INTO A FEATURE
 __binutils() {
 	#TODO configure flag
 	URL=http://ftp.gnu.org/gnu/binutils/binutils-2.23.2.tar.bz2

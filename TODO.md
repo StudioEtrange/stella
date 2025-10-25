@@ -106,6 +106,7 @@
 
 # Various
 
+* [ ] documente __link_feature_library "FORCE_ORIGIN_STELLA openssl#^1_1" and FEAT_SOURCE_DEPENDENCIES="FORCE_ORIGIN_STELLA openssl#^1_1" sample in libwebsockets  and ag
 * [ ] win download
   * use embedded curl.exe present since Windows 10 build 17063 https://curl.se/windows/microsoft.html ?
   * use a powershell equivalent command ?

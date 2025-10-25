@@ -331,12 +331,10 @@ __enable_current_toolset() {
 	case $STELLA_BUILD_COMPIL_FRONTEND_BIN_FAMILY in
 		gcc)
 			echo "===> default linker search path"
-			# TODO could depend on arch
 			__default_linker_search_path
-			if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-				echo "===> gcc hardcoded libraries search (-L flag)"
-				__gcc_linker_search_path
-			fi
+
+			echo "===> gcc hardcoded libraries search (-L flag)"
+			__gcc_linker_search_path
 	esac
 	if $(type pkg-config >/dev/null 2>&1); then
 		echo "===> pkg-config default search path"
