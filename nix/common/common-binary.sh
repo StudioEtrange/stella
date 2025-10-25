@@ -55,7 +55,7 @@ _STELLA_COMMON_BINARY_INCLUDED_=1
 #							4. /etc/ld.so.conf and /etc/ld.so.conf/* - configuration file for ld.so which lists additional library directories (see see __default_runtime_search_path)
 #							5. builtin directories - basically /lib and /usr/lib
 #
-#						LINUX : AT BUILD TIME : Static and dynamic libraries will be searched at BUILD time in the following order - see common-platform function __default_linker_search_path
+#						LINUX : AT BUILD TIME : Static and dynamic libraries will be searched at BUILD time in the following order 
 #							1. LIBRARY_PATH
 #									MACOS : Environment variable is also LIBRARY_PATH
 #							2. path given to the linker with gcc option -L and gcc hardcoded path (see __gcc_linker_search_path)
@@ -332,7 +332,7 @@ __tweak_binary_file() {
 
 
 # RPATH -------------------------------------------------------------------
-# return rpath values in search order
+# return rpath values separated by spaces in search order
 __get_rpath() {
 	local _file="$1"
 	local _rpath_values

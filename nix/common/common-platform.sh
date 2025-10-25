@@ -463,8 +463,6 @@ __default_target_triplet() {
 # https://stackoverflow.com/questions/9922949/how-to-print-the-ldlinker-search-path
 
 
-
-
 # SEARCH PATH AT RUNTIME - WHILE RUNNING PROGRAM env variable LD_LIBRARY_PATH take precedence for linux and DYLD_* take precedence for macos
 # dynamic libraries search path at runtime
 # https://github.com/StudioEtrange/lddtree/blob/579ebe449b76ed9d22f116a6f30b87b1f2ded2ca/lddtree.sh#L169
@@ -560,6 +558,31 @@ __default_runtime_search_path() {
 	printf '%s\n' "$(printf '%s' "$c_ldso_paths" | sed 's/:/\n/g')"
 }
 
+__default_framework_search_path() {
+    local c_fw_paths=""
+    if [ "${STELLA_CURRENT_PLATFORM}" = "darwin" ]; then
+        if [ -n "${DYLD_FRAMEWORK_PATH:-}" ]; then
+            IFS=:; for p in $DYLD_FRAMEWORK_PATH; do
+                [ -d "$p" ] || continue
+                case ":$c_fw_paths:" in
+                    *:"$p":*) : ;;
+                    *) c_fw_paths="${c_fw_paths:+$c_fw_paths:}$p" ;;
+                esac
+            done; unset IFS
+        fi
+        local _fb="${DYLD_FALLBACK_FRAMEWORK_PATH:-$HOME/Library/Frameworks:/Library/Frameworks:/Network/Library/Frameworks:/System/Library/Frameworks}"
+        IFS=:; for p in $_fb; do
+            [ -d "$p" ] || continue
+            case ":$c_fw_paths:" in
+                *:"$p":*) : ;;
+                *) c_fw_paths="${c_fw_paths:+$c_fw_paths:}$p" ;;
+            esac
+        done; unset IFS
+    fi
+    printf '%s\n' "$(printf '%s' "$c_fw_paths" | sed 's/:/\n/g')"
+}
+
+
 # retrieve in solving order all search path for libraries at RUNTIME
 # if a binary is passed, it will take care of hardcoded search path into binary
 __runtime_search_path() {
@@ -570,14 +593,13 @@ __runtime_search_path() {
 		# 1. LD_LIBRARY_PATH
 		[ ! -z $LD_LIBRARY_PATH ] && printf '%s\n' "$(printf '%s' "$LD_LIBRARY_PATH" | sed 's/:/\n/g')"
 		# 2. hardcoded DT_RUNPATH
-		[ -f "$binary" ] && __get_rpath "$binary"
+		[ -f "$binary" ] && __get_rpath "$binary" | tr -s '[:space:]' '\n'
 		# 3. parsed file /etc/ld.so.conf
 		__default_runtime_search_path
 	fi
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		# 1. hardcoded LC_RPATH (expansion des @executable_path/@loader_path)
-		rpaths="TODO"
-		printf '%s\n' "$(printf '%s' "$rpaths" | sed 's/:/\n/g')"
+		# 1. hardcoded LC_RPATH
+		[ -f "$binary" ] && __get_rpath "$binary" | tr -s '[:space:]' '\n'
 		# 1. DYLD_LIBRARY_PATH
 		[ ! -z $DYLD_LIBRARY_PATH ] && printf '%s\n' "$(printf '%s' "$DYLD_LIBRARY_PATH" | sed 's/:/\n/g')"
 		# 2. DYLD_FALLBACK_LIBRARY_PATH or if empty __default_runtime_search_path
@@ -590,7 +612,8 @@ __runtime_search_path() {
 }
 
 
-# SEARCH PATH AT LINKING - WHILE BUILDING env var LIBRARY_PATH take precedence
+
+# SEARCH PATH AT LINKING WHILE BUILDING env var LIBRARY_PATH take precedence on linux and macos
 # linker search path
 # library search path during linking at build time
 # arch : x64|x86
@@ -658,7 +681,26 @@ __gcc_linker_search_path() {
 	fi
 }
 
+# SEARCH PATH AT LINKING WHILE BUILDING env var LIBRARY_PATH take precedence on linux and macos
+__linker_search_path() {
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		# 1. LIBRARY_PATH
+		[ ! -z $LIBRARY_PATH ] && printf '%s\n' "$(printf '%s' "$LIBRARY_PATH" | sed 's/:/\n/g')"
+		# 2. hardcoded gcc search path
+		__gcc_linker_search_path
+		# 3. hardcoded path into the linker (see __default_linker_search_path) 
+		__default_linker_search_path
+	fi
 
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		# 1. LIBRARY_PATH
+		[ ! -z $LIBRARY_PATH ] && printf '%s\n' "$(printf '%s' "$LIBRARY_PATH" | sed 's/:/\n/g')"
+		# 2. hardcoded gcc search path
+		__gcc_linker_search_path
+		# 3. hardcoded path into the linker (see __default_linker_search_path) 
+		__default_linker_search_path
+	fi
+}
 
 # pkg-config full search path
 # https://linux.die.net/man/1/pkg-config
