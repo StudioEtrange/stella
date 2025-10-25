@@ -43,6 +43,8 @@ STELLA_DIST_URL="$STELLA_URL/dist"
 # /pool/nix/artefact
 # /dist
 
+STELLA_ORIGINAL_SYSTEM_PATH="$PATH"
+
 # STELLA INCLUDE ---------------------------------------------
 
 #shellcheck source=nix/common/common-algorithm.sh
