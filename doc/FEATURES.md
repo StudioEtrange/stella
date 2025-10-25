@@ -4,9 +4,9 @@ This guide is intended for developers working on Stella. It provides a step-by-s
 
 ## Core Concepts
 
-Stella features are defined in "recipe" files located in `nix/pool/feature-recipe/`. These are shell scripts that follow a "convention over configuration" pattern. The Stella core engine sources these scripts and calls predefined functions and variables to perform installation, environment setup, and other tasks.
+Stella features are defined in "recipe" files located in `@./nix/pool/feature-recipe/`. These are shell scripts that follow a "convention over configuration" pattern. The Stella core engine sources these scripts and calls predefined functions and variables to perform installation, environment setup, and other tasks.
 
-We will use `nix/pool/feature-recipe/feature_arkade.sh` as our reference model.
+We will use `@./nix/pool/feature-recipe/feature_arkade.sh` as our reference model.
 
 ## File Structure Anatomy
 

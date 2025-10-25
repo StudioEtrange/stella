@@ -46,18 +46,20 @@ _STELLA_COMMON_BINARY_INCLUDED_=1
 #					https://wincent.com/wiki/@executable_path,_@load_path_and_@rpath
 #
 #			LINKED LIBS
-#						LINUX : Dynamic libs will be searched at RUNTINE in the following directories in the given order:
-#							1. DT_RPATH - a list of directories which is linked into the executable, supported on most UNIX systems.
+#						LINUX : AT RUNTIME : Dynamic libs will be searched at RUNTINE in the following directories in the given order:
+#							1. DT_RPATH - a list of directories which is harcoded into the executable, supported on most UNIX systems.
 #											The DT_RPATH entries are ignored if DT_RUNPATH entries exist.
 #							2. LD_LIBRARY_PATH - an environment variable which holds a list of directories
+#									MACOS : Environment variable is DYLD_LIBRARY_PATH instead of LD_LIBRARY_PATH
 #							3. DT_RUNPATH - same as RPATH, but searched after LD_LIBRARY_PATH, supported only on most recent UNIX systems, e.g. on most current Linux systems
-#							4. /etc/ld.so.conf and /etc/ld.so.conf/* - configuration file for ld.so which lists additional library directories
+#							4. /etc/ld.so.conf and /etc/ld.so.conf/* - configuration file for ld.so which lists additional library directories (see see __default_runtime_search_path)
 #							5. builtin directories - basically /lib and /usr/lib
 #
-#						LINUX : Static and dynamic libraries will be searched at BUILD time in the folowwing order - see common-platform function __default_linker_search_path
+#						LINUX : AT BUILD TIME : Static and dynamic libraries will be searched at BUILD time in the following order - see common-platform function __default_linker_search_path
 #							1. LIBRARY_PATH
-#							2. path giver to the linker from gcc option -L and gcc hardcoded path
-#							3. hardcoded path into the linker
+#									MACOS : Environment variable is also LIBRARY_PATH
+#							2. path given to the linker with gcc option -L and gcc hardcoded path (see __gcc_linker_search_path)
+#							3. hardcoded path into the linker (see __default_linker_search_path) 
 
 #					  LINUX INFO :
 #								http://blog.tremily.us/posts/rpath/
@@ -69,9 +71,6 @@ _STELLA_COMMON_BINARY_INCLUDED_=1
 #						LINUX	TOOLS :
 #								https://github.com/gentoo/pax-utils
 #								https://github.com/ncopa/lddtree
-#
-#						MACOS :
-#								Environment variable is DYLD_LIBRARY_PATH instead of LD_LIBRARY_PATH
 #
 #						LINUX DEBUG :
 #								LD_TRACE_LOADED_OBJECTS=1 LD_DEBUG=libs ./program

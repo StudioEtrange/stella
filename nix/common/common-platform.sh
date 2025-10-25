@@ -463,58 +463,139 @@ __default_target_triplet() {
 # https://stackoverflow.com/questions/9922949/how-to-print-the-ldlinker-search-path
 
 
-# SEARCH PATH AT RUNTIME - WHILE RUNNING PROGRAM override with LD_LIBRARY_PATH enn var
 
+
+# SEARCH PATH AT RUNTIME - WHILE RUNNING PROGRAM env variable LD_LIBRARY_PATH take precedence for linux and DYLD_* take precedence for macos
 # dynamic libraries search path at runtime
 # https://github.com/StudioEtrange/lddtree/blob/579ebe449b76ed9d22f116a6f30b87b1f2ded2ca/lddtree.sh#L169
 __default_runtime_search_path() {
 	local c_ldso_paths=
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		c_ldso_paths="/usr/local/lib:/usr/lib"
+	fi
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 
+		read_ldso_conf() {
+			local __depth="${__depth:-0}"
+			[ "$__depth" -gt 20 ] && return 0
+			__depth=$((__depth+1))
+
+			local p line
+			for p in "$@"; do
+				# Fichier lisible ?
+				[ -r "$p" ] || continue
+
+				while IFS= read -r line || [ -n "$line" ]; do
+					# Enlever commentaires en fin de ligne (# ...)
+					# (simple, ne gère pas les # échappés — suffisant ici)
+					line=${line%%\#*}
+
+					# Trim spaces
+					line=${line#"${line%%[![:space:]]*}"}
+					line=${line%"${line##*[![:space:]]}"}
+
+					# bypass empty lines
+					[ -z "$line" ] && continue
+					case $line in
+						include[[:space:]]*)
+							# Extraire motif après "include"
+							set -- ${line#include}
+							# $@ contient maintenant le motif (éventuellement avec glob)
+							# Laisser le glob s'étendre volontairement (non quoté)
+							read_ldso_conf $__depth "$@"
+							;;
+						*)
+							# Première "colonne" seulement (au cas où)
+							# (ld.so.conf n'attend qu'un chemin par ligne)
+							set -- $line
+							local path=$1
+
+							# Normaliser: garantir un seul / en tête
+							case $path in
+								/*) : ;;
+								*) path="/$path" ;;
+							esac
+
+							# Garder seulement les répertoires existants
+							if [ -d "$path" ]; then
+								# Ajouter sans créer de ":" initial
+								case ":$c_ldso_paths:" in
+									*:"$path":*) : ;;     # déjà présent → ignorer
+									*)
+										if [ -n "$c_ldso_paths" ]; then
+											c_ldso_paths="$c_ldso_paths:$path"
+										else
+											c_ldso_paths="$path"
+										fi
+										;;
+								esac
+							fi
+							;;
+					esac
+				done < "$p"
+			done
+		}
+
 		if [ -r /etc/ld.so.conf ] ; then
-			read_ldso_conf() {
-				local line p
-				for p ; do
-					# if the glob didnt match anything #360041,
-					# or the files arent readable, skip it
-					[ -r "${p}" ] || continue
-					while read line ; do
-						case ${line} in
-							"#"*) ;;
-							"include "*) read_ldso_conf ${line#* } ;;
-							*) c_ldso_paths="$c_ldso_paths:/${line#/}";;
-						esac
-					done <"${p}"
-				done
-			}
-			# the 'include' command is relative
-			local _oldpwd="$PWD"
+			# the 'include' can be relative
+			local _oldpwd="$(pwd)"
 			cd "/etc" >/dev/null
-			interp=$(__get_elf_interpreter_linux "$(command -v ls 2>/dev/null)")
-			echo $interp
+			interp=$(__get_elf_interpreter_linux "$(type -P ls 2>/dev/null)")
+			#echo $interp
 			case "$interp" in
-			*/ld-musl-*)
-				musl_arch=${interp%.so*}
-				musl_arch=${musl_arch##*-}
-				read_ldso_conf /etc/ld-musl-${musl_arch}.path
-				;;
-			*/ld-linux*|*/ld.so*) # glibc
-				read_ldso_conf /etc/ld.so.conf
-				;;
+				*/ld-musl-*)
+					# muslc
+					musl_arch=${interp%.so*}
+					musl_arch=${musl_arch##*-}
+					read_ldso_conf /etc/ld-musl-${musl_arch}.path
+					;;
+				*/ld-linux*|*/ld.so*)
+					# glibc
+					read_ldso_conf /etc/ld.so.conf
+					;;
 			esac
 			cd "$_oldpwd"
 		fi
 	fi
-	echo "${c_ldso_paths}"
+	printf '%s\n' "$(printf '%s' "$c_ldso_paths" | sed 's/:/\n/g')"
+}
+
+# retrieve in solving order all search path for libraries at RUNTIME
+# if a binary is passed, it will take care of hardcoded search path into binary
+__runtime_search_path() {
+	local binary="$1"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		# 0. hardcoded DT_RPATH (but printed in step 2 because __get_rpath return DT_RPATH and DT_RUNPATH together)
+		# 1. LD_LIBRARY_PATH
+		[ ! -z $LD_LIBRARY_PATH ] && printf '%s\n' "$(printf '%s' "$LD_LIBRARY_PATH" | sed 's/:/\n/g')"
+		# 2. hardcoded DT_RUNPATH
+		[ -f "$binary" ] && __get_rpath "$binary"
+		# 3. parsed file /etc/ld.so.conf
+		__default_runtime_search_path
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		# 1. hardcoded LC_RPATH (expansion des @executable_path/@loader_path)
+		rpaths="TODO"
+		printf '%s\n' "$(printf '%s' "$rpaths" | sed 's/:/\n/g')"
+		# 1. DYLD_LIBRARY_PATH
+		[ ! -z $DYLD_LIBRARY_PATH ] && printf '%s\n' "$(printf '%s' "$DYLD_LIBRARY_PATH" | sed 's/:/\n/g')"
+		# 2. DYLD_FALLBACK_LIBRARY_PATH or if empty __default_runtime_search_path
+		if [ -z $DYLD_FALLBACK_LIBRARY_PATH ]; then
+			__default_runtime_search_path
+		else
+			printf '%s\n' "$(printf '%s' "$DYLD_FALLBACK_LIBRARY_PATH" | sed 's/:/\n/g')"
+		fi 
+	fi
 }
 
 
-# SEARCH PATH AT LINKING - WHILE BUILDING override with LIBRARY_PATH enn var
-
+# SEARCH PATH AT LINKING - WHILE BUILDING env var LIBRARY_PATH take precedence
 # linker search path
-# library search path during linking
+# library search path during linking at build time
 # arch : x64|x86
-#				if empty the default system current arch will be used
+#				x64 means 64bits
+#				x86 means 32bits
 # LINUX https://stackoverflow.com/questions/9922949/how-to-print-the-ldlinker-search-path
 # NOTE ON MACOS :
 #			 https://opensource.apple.com/source/dyld/dyld-519.2.1/src/dyld.cpp.auto.html
@@ -522,29 +603,41 @@ __default_runtime_search_path() {
 #												can be checked with : gcc  -Xlinker -v
 __default_linker_search_path() {
 	local __arch="$1"
+
+	if [ "$__arch" = "" ]; then
+		case $STELLA_CPU_ARCH in
+			"64")
+				__arch="x64"
+			;;
+			"32")
+				__arch="x86"
+			;;
+		esac
+	fi
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		[ "$__arch" = "x64" ] && $__arch="-m64"
-		[ "$__arch" = "x86" ] && $__arch="-m32"
+		case $__arch in
+			"x64")
+				__arch="-m64"
+			;;
+			"x86")
+				__arch="-m32"
+			;;
+		esac
 		gcc $__arch -Xlinker --verbose  2>/dev/null | grep SEARCH | sed 's/SEARCH_DIR("=\?\([^"]\+\)"); */\1\n/g'  | grep -vE '^$'
 	fi
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		echo "/usr/local/lib:/usr/lib"
+		printf '%s\n' "/usr/local/lib"
+		local sdk
+		sdk="$(xcrun --sdk macosx --show-sdk-path 2>/dev/null || true)"
+		if [ -n "$sdk" ]; then
+			printf '%s\n' "$sdk/usr/lib"
+		fi
+		printf '%s\n' "/usr/lib"
 	fi
 }
 
-
-# gcc hardcoded libraries search path when linking
-# gcc passes a few extra -L paths to the linker, which you can list with the following command:
-# https://stackoverflow.com/a/21610523/5027535
-__gcc_linker_search_path() {
-	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		gcc -print-search-dirs | sed '/^lib/b 1;d;:1;s,/[^/.][^/]*/\.\./,/,;t 1;s,:[^=]*=,:;,;s,;,;  ,g' | tr \; \\012
-	fi
-}
-
-# library search path during linking (-L flag) 
-# NOT AT RUNTIME ==> parse ld.so.conf to see search path at runtime
-# see __default_linker_search_path
+# library search path during linking (-L flag) - same as __default_linker_search_path
+# THIS AT BUILD TIME NOT AT RUNTIME ==> parse ld.so.conf to see search path at runtime see __default_runtime_search_path
 # ld not used on macos
 # https://stackoverflow.com/a/21610523/5027535
 __ld_linker_search_path() {
@@ -552,6 +645,20 @@ __ld_linker_search_path() {
 		ld --verbose 2>/dev/null | grep SEARCH | sed 's/SEARCH_DIR("=\?\([^"]\+\)"); */\1\n/g'  | grep -vE '^$'
 	fi
 }
+
+# gcc hardcoded libraries search path when linking
+# gcc passes a few extra -L paths to the linker, which you can list with the following command:
+# https://stackoverflow.com/a/21610523/5027535
+__gcc_linker_search_path() {
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		gcc -print-search-dirs | sed '/^lib/b 1;d;:1;s,/[^/.][^/]*/\.\./,/,;t 1;s,:[^=]*=,:;,;s,;,;  ,g; s/^libraries:[[:space:]]*;[[:space:]]*//' | tr : \\012
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		gcc -print-search-dirs | sed -n 's/^libraries:[[:space:]]*\(=\)\{0,1\}[[:space:]]*//p' | tr ':' '\n'
+	fi
+}
+
+
 
 # pkg-config full search path
 # https://linux.die.net/man/1/pkg-config

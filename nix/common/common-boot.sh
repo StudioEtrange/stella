@@ -325,11 +325,9 @@ __bootstrap_stella_env() {
 	declare >$_t
 	declare -f >>$_t
 ( exec bash -i 3<<HERE 4<&0 <&3
-. $_t 2>/dev/null;rm $_t;
-echo "** STELLA SHELL with env var setted (type exit to exit...) **"
-exec  3>&- <&4
+. $_t 2>/dev/null;rm $_t; exec 3>&- <&4; echo "** Welcome to STELLA SHELL **";
 HERE
-)
+) 
 }
 
 
