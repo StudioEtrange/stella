@@ -104,6 +104,9 @@ fi
 # GATHER PLATFORM INFO ---------------------------------------------
 __set_current_platform_info
 
+#shellcheck source=nix/common/lib-dmg.sh
+. $STELLA_COMMON/lib-dmg.sh
+
 # GATHER CURRENT APP INFO ---------------------------------------------
 # Before include stella-link.sh, you can override file properties file
 # 	STELLA_APP_PROPERTIES_FILENAME="foo.properties" ==> change properties name
