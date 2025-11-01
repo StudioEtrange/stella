@@ -1,19 +1,36 @@
 #!/usr/bin/env bash
 _CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# https://gist.github.com/StudioEtrange/290afc0b333e66f271a000bba4b1e110
-updage_homebrew-get-bottle() {
-  rm -f "${_CURRENT_FILE_DIR}/homebrew_get_bottle.sh"
+
+# https://gist.github.com/StudioEtrange/8c2801df68969538cfccc6dcdb8d6bcc
+update_macos-dyld-cache-analyse() {
+  rm -f "${_CURRENT_FILE_DIR}/macos-dyld-cache-analyse.sh"
   # ?$(date +%s) is here only to invalidate server cache by changing URL
-  curl -fksL "https://gist.githubusercontent.com/StudioEtrange/290afc0b333e66f271a000bba4b1e110/raw/homebrew_get_bottle.sh?$(date +%s)" -o "${_CURRENT_FILE_DIR}/homebrew_get_bottle.sh"
-  chmod +x "${_CURRENT_FILE_DIR}/homebrew_get_bottle.sh"
+  curl -fksL "https://gist.githubusercontent.com/StudioEtrange/8c2801df68969538cfccc6dcdb8d6bcc/raw/macos-dyld-cache-analyse?$(date +%s)" -o "${_CURRENT_FILE_DIR}/macos-dyld-cache-analyse.sh"
+  chmod +x "${_CURRENT_FILE_DIR}/macos-dyld-cache-analyse.sh"
 }
 
-# https://github.com/mercuriev/bash-colors
+# https://gist.github.com/StudioEtrange/c2f1a2f625c5745c84dda2bc02fea4eb
+update_macos-link-analyse() {
+  rm -f "${_CURRENT_FILE_DIR}/macos-link-analyse.sh"
+  # ?$(date +%s) is here only to invalidate server cache by changing URL
+  curl -fksL "https://gist.githubusercontent.com/StudioEtrange/c2f1a2f625c5745c84dda2bc02fea4eb/raw/macos-link-analyse.sh?$(date +%s)" -o "${_CURRENT_FILE_DIR}/macos-link-analyse.sh"
+  chmod +x "${_CURRENT_FILE_DIR}/macos-link-analyse.sh"
+}
+
+# https://gist.github.com/StudioEtrange/5b0eac67f8917d7bc69e01d262854b5b
+update_homebrew-get-bottle() {
+  rm -f "${_CURRENT_FILE_DIR}/homebrew-get-bottle.sh"
+  # ?$(date +%s) is here only to invalidate server cache by changing URL
+  curl -fksL "https://gist.githubusercontent.com/StudioEtrange/5b0eac67f8917d7bc69e01d262854b5b/raw/homebrew-get-bottle.sh?$(date +%s)" -o "${_CURRENT_FILE_DIR}/homebrew-get-bottle.sh"
+  chmod +x "${_CURRENT_FILE_DIR}/homebrew-get-bottle.sh"
+}
+
+# https://github.com/dappvibe/bash-colors
 update_bash-colors() {
   rm -Rf "${_CURRENT_FILE_DIR}/bash-colors"
-  echo "Using https://github.com/mercuriev/bash-colors"
-  git clone https://github.com/mercuriev/bash-colors "${_CURRENT_FILE_DIR}/bash-colors"
+  echo "Using https://github.com/dappvibe/bash-colors"
+  git clone https://github.com/dappvibe/bash-colors "${_CURRENT_FILE_DIR}/bash-colors"
   rm -Rf "${_CURRENT_FILE_DIR}/bash-colors/.git"
 }
 
@@ -38,7 +55,16 @@ update_screenFetch() {
   rm -Rf "${_CURRENT_FILE_DIR}/screenFetch/.git"
 }
 
+# https://github.com/dylanaraps/neofetch
+update_neofetch() {
+  rm -Rf "${_CURRENT_FILE_DIR}/neofetch"
+  echo "Using https://github.com/dylanaraps/neofetch"
+  git clone https://github.com/dylanaraps/neofetch "${_CURRENT_FILE_DIR}/neofetch"
+  rm -Rf "${_CURRENT_FILE_DIR}/neofetch/.git"
+}
+
 # https://github.com/StudioEtrange/lddtree
+# TODO reunification of my fork versus the original lddtree ?
 update_lddtree() {
   rm -Rf "${_CURRENT_FILE_DIR}/lddtree"
   echo "Using StudioEtrange fork (https://github.com/StudioEtrange/lddtree) of original ncopa (https://github.com/ncopa/lddtree)"
@@ -64,13 +90,22 @@ case $1 in
   screenFetch )
     update_screenFetch
     ;;
+  neofetch )
+    update_neofetch
+    ;;
   lddtree )
     update_lddtree
     ;;
   homebrew-get-bottle )
-    updage_homebrew-get-bottle
+    update_homebrew-get-bottle
+    ;;
+  macos-link-analyse)
+    update_macos-link-analyse
+    ;;
+  macos-dyld-cache-analyse)
+    update_macos-dyld-cache-analyse
     ;;
   * )
-    echo "Usage : ${_CURRENT_FILE_DIR}/update.sh <bash-colors|bash_ini_parser|pure-getopt|screenFetch|lddtree|homebrew-get-bottle>"
+    echo "Usage : ${_CURRENT_FILE_DIR}/update.sh <bash-colors|bash_ini_parser|pure-getopt|screenFetch|neofetch|lddtree|homebrew-get-bottle|macos-link-analyse|macos-dyld-cache-analyse>"
     ;;
 esac
