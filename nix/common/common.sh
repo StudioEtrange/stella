@@ -2648,6 +2648,28 @@ __compress() {
 
 }
 
+__uncompress_dmg() {
+	local FILE_PATH="$1"
+	local UNZIP_DIR="$2"
+	local OPT="$3"
+
+	local _opt_dest_erase=OFF # delete destination folder (default : FALSE)
+	for o in $OPT; do
+		[ "$o" = "DEST_ERASE" ] && _opt_dest_erase=ON
+	done
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		if [ "$_opt_dest_erase" = "ON" ]; then
+			rm -Rf "$UNZIP_DIR"
+		fi
+		mkdir -p "$UNZIP_DIR"
+		__extract_dmg "$FILE_PATH" "$UNZIP_DIR"
+	else
+		__log_stella "WARN" "dmg files are supported only on darwin system"
+	fi
+
+}
+
 __uncompress() {
 	local FILE_PATH
 	local UNZIP_DIR
