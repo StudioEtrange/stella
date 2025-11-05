@@ -227,11 +227,10 @@ __prepare_build() {
 	echo "====> CMAKE_LIBRARY_PATH : $CMAKE_LIBRARY_PATH"
 	echo "====> CMAKE_INCLUDE_PATH : $CMAKE_INCLUDE_PATH"
 	echo "====> STELLA_CMAKE_EXTRA_FLAGS : $STELLA_CMAKE_EXTRA_FLAGS"
-	echo "** SOME ENV"
-	echo "====> LIBRARY_PATH (search path at link time) : $LIBRARY_PATH"
-	echo "====> LD_LIBRARY_PATH (search path at run time linux): $LD_LIBRARY_PATH"
-	echo "====> DYLD_LIBRARY_PATH (search path at run time darwin): $DYLD_LIBRARY_PATH"
-
+	echo "** SOME environment variables"
+	echo "====> LIBRARY_PATH (additional search path at LINK/BUILD time for linux and darwin) : $LIBRARY_PATH"
+	echo "====> LD_LIBRARY_PATH (additional search path at RUNTIME for linux): $LD_LIBRARY_PATH"
+	echo "====> DYLD_LIBRARY_PATH (additional search path at RUNTIME for darwin): $DYLD_LIBRARY_PATH"
 
 }
 

@@ -367,6 +367,11 @@ json_solved_map() {
   printf ']'
 }
 
+# order of search - reading LC_LOAD_DYLIB
+# 1.check dependency if absolute path (i.e : /usr/lib/libSystem.B.dylib) - could be in dyld cache or on disk
+# 2.if present in LC_LOAD_DYLIB value try to solve @rpath, @loader_path, @executable_path
+# 3 DYLD_LIBRARY_PATH (if not disabled by apple security SIP)
+# 4 DYLD_FALLBACK_LIBRARY_PATH (if not disabled by apple security SIP) or its default values : $HOME/lib:/usr/local/lib:/usr/lib
 resolve_dep() {
   local dep="$1" bin="$2" exec_dir="$3"
 

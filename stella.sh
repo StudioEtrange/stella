@@ -362,5 +362,4 @@ if [ "$DOMAIN" = "stella" ]; then
 fi
 
 
-__log "INFO" "** END **"
 fi

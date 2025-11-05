@@ -46,11 +46,28 @@ _STELLA_COMMON_BINARY_INCLUDED_=1
 #					https://wincent.com/wiki/@executable_path,_@load_path_and_@rpath
 #
 #			LINKED LIBS
+#						MACOS
+#							Since macOS 11 system libs are managed in dyld shared cache. Theses libs are not present in filesystem
+#							cache files are in /System/Library/dyld/dyld_shared_cache*
+#											   /System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache*
+#							explore cache file with https://github.com/arandomdev/DyldExtractor (python)
+#									dyldex -l -f /usr/lib/libz /System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_x86_64h
+#							explore cache file with ipsw
+#									ipsw dyld image /System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_x86_64h /usr/lib/libz.1.dylib
+#							NOTE static libraries are in sdk subfolders
+#									xcrun --sdk macosx --show-sdk-path ==> /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
+#
 #						LINUX : AT RUNTIME : Dynamic libs will be searched at RUNTINE in the following directories in the given order:
 #							1. DT_RPATH - a list of directories which is harcoded into the executable, supported on most UNIX systems.
 #											The DT_RPATH entries are ignored if DT_RUNPATH entries exist.
 #							2. LD_LIBRARY_PATH - an environment variable which holds a list of directories
 #									MACOS : Environment variable is DYLD_LIBRARY_PATH instead of LD_LIBRARY_PATH
+#											WARN : do not work as expected DYLD_LIBRARY_PATH (and other DYLD_*) are emptyied for security reasons
+#												    due to SIP (Security Integrity Protection)
+#													when using wrappers, shims (rbenv, asdf, ...) or binary from /bin or /usr/bin (like /bin/sh)
+#													DYLD_LIBRARY_PATH=foo /bin/sh -c 'echo $DYLD_LIBRARY_PATH' => Print nothing
+#													see https://github.com/ros2/ros2/issues/409
+#													see https://github.com/rbenv/rbenv/issues/962
 #							3. DT_RUNPATH - same as RPATH, but searched after LD_LIBRARY_PATH, supported only on most recent UNIX systems, e.g. on most current Linux systems
 #							4. /etc/ld.so.conf and /etc/ld.so.conf/* - configuration file for ld.so which lists additional library directories (see see __default_runtime_search_path)
 #							5. builtin directories - basically /lib and /usr/lib
@@ -60,7 +77,12 @@ _STELLA_COMMON_BINARY_INCLUDED_=1
 #									MACOS : Environment variable is also LIBRARY_PATH
 #							2. path given to the linker with gcc option -L and gcc hardcoded path (see __gcc_linker_search_path)
 #							3. hardcoded path into the linker (see __default_linker_search_path) 
-
+#
+#					  LOADER : load libraries AT RUNTIME
+#								LINUX : ld.so, ld-linux.so, ld-musl.so		MACOS : dyld
+#					  LINKER : look for libraries AT BUILD TIME
+#								LINUX : ld									MACOS : ld64
+#
 #					  LINUX INFO :
 #								http://blog.tremily.us/posts/rpath/
 # 								https://bbs.archlinux.org/viewtopic.php?id=6460
@@ -464,7 +486,7 @@ __remove_all_rpath() {
 			done
 		fi
 		if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-			__require "patchelf" "patchelf#0_10" "STELLA_FEATURE"
+			__require "patchelf" "patchelf#0_10" "STELLA_FEATURE INTERNAL"
 				msg="$msg -- deleting all RPATH values."
 			patchelf --remove-rpath "$_path"
 		fi
@@ -575,7 +597,7 @@ __add_rpath() {
 			done
 		fi
 		if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-			__require "patchelf" "patchelf#0_10" "STELLA_FEATURE"
+			__require "patchelf" "patchelf#0_10" "STELLA_FEATURE INTERNAL"
 			patchelf --set-rpath "${_new_rpath// /:}" "$_path"
 			msg="$msg -- adding : $_new_rpath"
 		fi
@@ -873,10 +895,20 @@ __find_linked_lib_darwin() {
 					if [ "$(__is_abs "$linked_lib")" = "FALSE" ]; then
 						[ "$_opt_verbose" = "ON" ] && printf %s "-- WARN : pure relative path - consider use @loader_path or @rpath"
 					fi
-					if [ -f "$linked_lib" ]; then
-						[ "$_opt_verbose" = "ON" ] && printf %s "-- OK"
-						_match=1
-					fi
+					case $line in
+						# NOTE : to collect current cached folders root name on current macos version running on this host :
+						#		./macos-dyld-cache-analyse.sh --dir | awk -F/ 'NF>=3 {print "/" $2 "/" $3; next} NF==2 {print "/" $2; next}' | sort -u
+						/usr/lib*|/System/Library*|/System/iOSSupport*|/Library/Frameworks*)
+							[ "$_opt_verbose" = "ON" ] && printf %s "-- OK -- should be in dyld cache"
+							_match=1
+						;;
+						*)
+							if [ -f "$linked_lib" ]; then
+								[ "$_opt_verbose" = "ON" ] && printf %s "-- OK"
+								_match=1
+							fi
+						;;
+					esac
 				fi
 			fi
 			if [ "$_match" = "" ]; then
@@ -1117,7 +1149,7 @@ __tweak_linked_lib() {
 
 
 		if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-			__require "patchelf" "patchelf#0_10" "STELLA_FEATURE"
+			__require "patchelf" "patchelf#0_10" "STELLA_FEATURE INTERNAL"
 		fi
 
 		local _resolved_lib
@@ -1355,7 +1387,7 @@ __check_install_name_darwin() {
 	if __is_shareable_bin "$_path"; then
 		if __is_macho "$_path" || __is_macho_universal "$_path"; then
 
-
+			# NOTE : only dylib (MH_DYLIB) have install name, no MH_BUNDLE
 			printf "*** Checking ID/Install Name value : "
 			local _install_name="$(__get_install_name_darwin $_path)"
 

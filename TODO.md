@@ -23,6 +23,10 @@
     * https://github.com/Alexpux/MINGW-packages
     * https://github.com/Alexpux/MSYS2-packages
 
+## From generic package manager
+  * spack for nix AND windows : https://github.com/spack/spack https://spack.io/
+
+
 ## CMake package manager
 
   * hunter https://github.com/cpp-pm/hunter
@@ -76,7 +80,7 @@
 
 * to batch and bash : https://github.com/BYVoid/Batsh
 
-
+* shfmt : A shell parser, formatter, and interpreter. Supports POSIX Shell, Bash, and mksh.  : https://github.com/mvdan/sh (aka shfmt)
 
 # Various
 
