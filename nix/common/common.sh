@@ -2412,7 +2412,7 @@ __resource() {
 	local _opt_version=OFF
 	local _opt_dest_erase=OFF
 	local _checkout_version=
-	local _download_filename=_AUTO_
+	local _download_filename="_AUTO_"
 	for o in $OPT; do
 		if [ "$_opt_force_name" = "ON" ]; then
 			_download_filename=$o
@@ -2531,6 +2531,10 @@ __resource() {
 		[ ! -d $FINAL_DESTINATION ] && mkdir -p $FINAL_DESTINATION
 
 		case ${PROTOCOL} in
+			HOMEBREW_BOTTLE)
+				if [ "$_opt_get" = "ON" ]; then __download_uncompress "$URI" "$_download_filename" "$FINAL_DESTINATION" "$_STRIP"; fi
+				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
+				;;
 			HTTP_ZIP )
 				if [ "$_opt_get" = "ON" ]; then __download_uncompress "$URI" "$_download_filename" "$FINAL_DESTINATION" "$_STRIP"; fi
 				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
@@ -2570,6 +2574,51 @@ __resource() {
 }
 
 # DOWNLOAD AND ZIP FUNCTIONS---------------------------------------------------
+
+__download_uncompress_homebrew_bottle() {
+	local FORMULA
+	local FILE_NAME
+	local UNZIP_DIR
+	local OPT
+	# DEST_ERASE delete destination folder
+	# STRIP delete first folder in archive
+
+	FORMULA="$1"
+	FILE_NAME="$2"
+	UNZIP_DIR="$3"
+	OPT="$4"
+
+	if [ "$STELLA_CPU_ARCH" = "32" ]; then
+		__log "ERROR" "Homebrew bottle do not support 32 bits archive"
+		exit 1
+	fi
+
+	local arch
+	case ${STELLA_CURRENT_CPU_FAMILY} in
+		intel)
+			arch="amd64"
+			;;
+		arm)
+			arch="arm64"
+			;;
+	esac
+
+	if [ "${FILE_NAME}" = "_AUTO_" ]; then
+	#OUT="${FORMULA}-${VERSION}.${OS}_${ARCH}.bottle.tar.gz"
+		$STELLA_ARTEFACT/homebrew_get_bottle.sh -n $FORMULA -o "${STELLA_CURRENT_PLATFORM}" -a "${arch}" -d "${STELLA_APP_CACHE_DIR}"
+	else
+		$STELLA_ARTEFACT/homebrew_get_bottle.sh -n $FORMULA -f "${FILE_NAME}"
+	fi
+	if [ -f "$STELLA_APP_CACHE_DIR/$FILE_NAME" ]; then
+		__uncompress "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$UNZIP_DIR" "$OPT"
+	else
+		if [ -f "$STELLA_INTERNAL_CACHE_DIR/$FILE_NAME" ]; then
+			__uncompress "$STELLA_INTERNAL_CACHE_DIR/$FILE_NAME" "$UNZIP_DIR" "$OPT"
+		fi
+	fi
+
+}
+
 __download_uncompress() {
 	local URL
 	local FILE_NAME
