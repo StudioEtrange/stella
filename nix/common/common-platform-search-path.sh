@@ -83,7 +83,16 @@ __pkgconfig_search_path() {
 }
 
 
-
+# TODO
+# __search_dynamic_library_at_runtime_in_system() {
+# methodes possibles
+# 	1.ldconfig -p show cached library used at runtime, it use  /etc/ld.so.conf  and do not use LD_LIBRARY_PATH
+#			to update cache needs root permission : sudo ldconfig
+#	2.check file in
+#			at build time  __search_library_paths_at_buildtime take care of LIBRARY_PATH
+#			or at runetime : __search_library_paths_at_runtime take care of LD_LIBRARY_PATH
+#	find /usr/lib*/ -type f -name '*.so*'
+# }
 
 # ----------------------------- AT RUNTIME/RUN TIME -------------
 

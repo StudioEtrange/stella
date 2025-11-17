@@ -3,9 +3,7 @@ if [ ! "$_STELLA_COMMON_BUILD_LINK_INCLUDED_" = "1" ]; then
 _STELLA_COMMON_BUILD_LINK_INCLUDED_=1
 
 
-# __search_dynamic_library_in_system() {
 
-# }
 
 __link_feature_library() {
 	local SCHEMA="$1"
