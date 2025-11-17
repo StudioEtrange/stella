@@ -69,14 +69,14 @@ _STELLA_COMMON_BINARY_INCLUDED_=1
 #													see https://github.com/ros2/ros2/issues/409
 #													see https://github.com/rbenv/rbenv/issues/962
 #							3. DT_RUNPATH - same as RPATH, but searched after LD_LIBRARY_PATH, supported only on most recent UNIX systems, e.g. on most current Linux systems
-#							4. /etc/ld.so.conf and /etc/ld.so.conf/* - configuration file for ld.so which lists additional library directories (see see __default_runtime_search_path)
+#							4. /etc/ld.so.conf and /etc/ld.so.conf/* - configuration file for ld.so which lists additional library directories (see __default_search_library_paths_at_runtime)
 #							5. builtin directories - basically /lib and /usr/lib
 #
 #						LINUX : AT BUILD TIME : Static and dynamic libraries will be searched at BUILD time in the following order 
 #							1. LIBRARY_PATH
 #									MACOS : Environment variable is also LIBRARY_PATH
-#							2. path given to the linker with gcc option -L and gcc hardcoded path (see __gcc_linker_search_path)
-#							3. hardcoded path into the linker (see __default_linker_search_path) 
+#							2. path given to the linker with gcc option -L and gcc hardcoded path (see __gcc_extra_search_library_paths_at_buildtime
+#							3. hardcoded path into the linker (see __search_library_paths_at_buildtime) 
 #
 #					  LOADER : load libraries AT RUNTIME
 #								LINUX : ld.so, ld-linux.so, ld-musl.so		MACOS : dyld

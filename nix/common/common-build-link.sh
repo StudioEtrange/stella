@@ -104,8 +104,8 @@ __link_feature_library() {
 			__add_toolset "pkgconfig"
 			# we need to add some defaut seach into path, because pkgconfig have default values from its install path
 			# pkgconfig is installed inside stella and do not have correct default values when we want to link against SYSTEM libraries
-			echo "** WARN : adding some system lib search path for pkg-config, because we use pkg-config for a SYSTEM lib"
-			__def_path=$(__default_linker_search_path)
+			echo "** WARN : adding some system lib search path to pkg-config, because we use pkg-config for a SYSTEM lib"
+			__def_path=$(__search_library_paths_at_buildtime)
 			for _p in $__def_path; do
 				STELLA_BUILD_PKG_CONFIG_PATH="${STELLA_BUILD_PKG_CONFIG_PATH}:${_p}/pkgconfig"
 			done

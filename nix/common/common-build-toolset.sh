@@ -3,6 +3,55 @@ if [ ! "$_STELLA_COMMON_BUILD_TOOLSET_INCLUDED_" = "1" ]; then
 _STELLA_COMMON_BUILD_TOOLSET_INCLUDED_=1
 
 
+
+# ------------------------------------------ TOOLSET specific ------------------------------------
+
+# http://stackoverflow.com/questions/5188267/checking-the-gcc-version-in-a-makefile
+# return X.Y.Z as version of current gcc
+# ex : 4.4.7
+__gcc_version() {
+	gcc -dumpversion
+}
+
+# return an int representation of current gcc version
+# ex : 40407
+__gcc_version_int() {
+	gcc -dumpversion | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$/&00/'
+}
+
+# check if current gcc version hit the minimal version required
+# first param : X_Y_Z (or X_Y)
+# return 1 if required minimal version is fullfilled by the current gcc version
+__gcc_check_min_version() {
+	local _required_ver=$1
+	expr $(__gcc_version_int) \>= $(echo $_required_ver | sed -e 's/_\([0-9][0-9]\)/\1/g' -e 's/_\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$/&00/')
+}
+
+# detect if current gcc binary is in fact clang (mainly for MacOS)
+# return 1 if gcc is clang
+__gcc_is_clang() {
+	if [ "$(echo | gcc -dM -E - | grep __clang__)" = "" ]; then
+		echo "0"
+	else
+		echo "1"
+	fi
+}
+
+# NOTE apple-clang-llvm versions are not synchronized with clang-llvm versions
+__clang_version() {
+	clang --version | head -n 1 | grep -o -E "[[:digit:]].[[:digit:]].[[:digit:]]" | head -1
+}
+
+
+# return the target triplet
+#			Name of CPU family/model (eg. x86_64)
+#			The vendor (eg. linux)
+#			Operating system name (eg. gnu)
+__default_target_triplet() {
+	gcc -dumpmachine
+}
+
+
 # TOOLSET ------------------------------------------------------------------------------------------------------------------------------
 __toolset_install() {
 	local _save_STELLA_APP_FEATURE_ROOT=$STELLA_APP_FEATURE_ROOT
@@ -331,9 +380,9 @@ __enable_current_toolset() {
 	case $STELLA_BUILD_COMPIL_FRONTEND_BIN_FAMILY in
 		gcc)
 			echo "===> default linker search path at build/link time"
-			__default_linker_search_path
-			echo "===> gcc hardcoded libraries search (-L flag) at build/link time"
-			__gcc_linker_search_path
+			__search_library_paths_at_buildtime
+			echo "===> gcc hardcoded libraries search at build/link time"
+			__gcc_extra_search_library_paths_at_buildtime
 	esac
 	if $(type pkg-config >/dev/null 2>&1); then
 		echo "===> pkg-config default search path"

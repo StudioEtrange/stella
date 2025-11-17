@@ -1,3 +1,7 @@
+if [ ! "$_STELLA_PLATFORM_SEARCH_PATH_INCLUDED_" = "1" ]; then
+_STELLA_PLATFORM_SEARCH_PATH_INCLUDED_=1
+
+# ----------------------------- HELPERS -------------
 
 # Helper: append a path at the end of a colon-separated list if not yet in list
 # DOES NOT force absolute, DOES NOT check existence
@@ -55,18 +59,6 @@ __path_append_list_from_stdin() {
   printf '%s' "$list"
 }
 
-# add all lines from a list (one by line)
-__path_append_from_list() {
-  local list="$1"; shift
-  local IFS=$'\n' # preserve line with spaces
-  local line
-  for line in "$@"; do
-    [ -n "$line" ] || continue
-    list="$(__path_append_any "$list" "$line")"
-  done
-  printf '%s' "$list"
-}
-
 # Helper: get Darwin SDK path
 # 1. use SDKROOT if set
 # 2. else use xcrun --sdk macosx --show-sdk-path
@@ -81,6 +73,17 @@ __darwin_get_sdkroot() {
   fi
   return 1
 }
+
+# pkg-config full search path
+# https://linux.die.net/man/1/pkg-config
+__pkgconfig_search_path() {
+	if $(type pkg-config >/dev/null 2>&1); then
+		echo ${PKG_CONFIG_PATH}:$(pkg-config --variable pc_path pkg-config)
+	fi
+}
+
+
+
 
 # ----------------------------- AT RUNTIME/RUN TIME -------------
 
@@ -141,10 +144,9 @@ __darwin_default_search_framework_paths_at_runtime() {
   printf '%s\n' "$(printf '%s' "$res" | tr ':' '\n')"
 }
 
-
-# TODO fix this !
 __linux_default_search_library_paths_at_runtime() {
-	# inspired by lddtree : https://github.com/StudioEtrange/lddtree/blob/579ebe449b76ed9d22f116a6f30b87b1f2ded2ca/lddtree.sh#L169
+	local c_ldso_paths=""
+	# inspired adapted from lddtree : https://github.com/StudioEtrange/lddtree/blob/579ebe449b76ed9d22f116a6f30b87b1f2ded2ca/lddtree.sh#L169
 	read_ldso_conf() {
 		local __depth="${__depth:-0}"
 		[ "$__depth" -gt 20 ] && return 0
@@ -206,7 +208,7 @@ __linux_default_search_library_paths_at_runtime() {
 		done
 	}
 
-	# inspired by lddtree : https://github.com/StudioEtrange/lddtree/blob/579ebe449b76ed9d22f116a6f30b87b1f2ded2ca/lddtree.sh#L184
+	# inspired adapted from lddtree : https://github.com/StudioEtrange/lddtree/blob/579ebe449b76ed9d22f116a6f30b87b1f2ded2ca/lddtree.sh#L184
 	if [ -r /etc/ld.so.conf ] ; then
 		# the 'include' can be relative
 		local _oldpwd="$(pwd)"
@@ -226,6 +228,8 @@ __linux_default_search_library_paths_at_runtime() {
 		esac
 		cd "$_oldpwd"
 	fi
+
+	printf '%s\n' "$(printf '%s' "$c_ldso_paths" | sed 's/:/\n/g')"
 }
 
 __default_search_library_paths_at_runtime() {
@@ -253,14 +257,13 @@ __search_library_paths_at_runtime() {
 		;;
 
 		linux)
-			# TODO
 			# 0. extract DT_RPATH (but printed in step 2 because __get_rpath return DT_RPATH and DT_RUNPATH together)
 			# 1. LD_LIBRARY_PATH
 			[ ! -z $LD_LIBRARY_PATH ] && printf '%s\n' "$(printf '%s' "$LD_LIBRARY_PATH" | sed 's/:/\n/g')"
 			# 2. extract DT_RUNPATH which will be used when looking for library
 			[ -f "$binary" ] && __get_rpath "$binary" | tr -s '[:space:]' '\n'
-			# 3.__default_runtime_search_path
-			__linux_default_search_library_paths_at_runtime # TODO REIMPLEMENT THIS
+			# 3. default search library path
+			__linux_default_search_library_paths_at_runtime
 		;; 
 	esac
 	
@@ -274,8 +277,8 @@ __darwin_default_search_framework_paths_at_buildtime() {
   # 1. SDKROOT
   local sdk
   if ! sdk="$(__darwin_get_sdkroot)"; then
-	# ALTERNATIVE : __gcc_default_search_framework_paths_at_buildtime if xcrun do not exist
-	# NOTE : gcc method is not complete, do not add other Frameworks path
+	# ALTERNATIVE to sdkroot : use __gcc_default_search_framework_paths_at_buildtime if xcrun do not exist
+	# NOTE : this alternative method is not complete, do not add other Frameworks path
 	path="$(__gcc_default_search_framework_paths_at_buildtime)"
 	res="$(__path_append_any "$res" "$path")"
 	sdk="$(echo $path | sed 's,/System/Library/Frameworks.*,,')"
@@ -320,7 +323,8 @@ __darwin_default_search_library_paths_at_buildtime() {
   # 2. SDKROOT
   local sdk
   if ! sdk="$(__darwin_get_sdkroot)"; then
-	# NOTE : for darwin gcc method is not complete, do not add /usr/local/lib
+	# ALTERNATIVE to sdkroot : use __gcc_default_search_framework_paths_at_buildtime if xcrun do not exist
+	# NOTE : this alternative method is not complete, do not add /usr/local/lib
   	res="$(__gcc_default_search_library_paths_at_buildtime)"
 	return $?
   fi
@@ -469,3 +473,5 @@ __search_library_paths_at_buildtime() {
 
 
 }
+
+fi
