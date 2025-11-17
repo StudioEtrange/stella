@@ -142,6 +142,7 @@ __darwin_default_search_framework_paths_at_runtime() {
 }
 
 
+# TODO fix this !
 __linux_default_search_library_paths_at_runtime() {
 	# inspired by lddtree : https://github.com/StudioEtrange/lddtree/blob/579ebe449b76ed9d22f116a6f30b87b1f2ded2ca/lddtree.sh#L169
 	read_ldso_conf() {
@@ -259,7 +260,7 @@ __search_library_paths_at_runtime() {
 			# 2. extract DT_RUNPATH which will be used when looking for library
 			[ -f "$binary" ] && __get_rpath "$binary" | tr -s '[:space:]' '\n'
 			# 3.__default_runtime_search_path
-			# __default_runtime_search_path # TODO REIMPLEMENT THIS
+			__linux_default_search_library_paths_at_runtime # TODO REIMPLEMENT THIS
 		;; 
 	esac
 	
@@ -341,6 +342,7 @@ __darwin_default_search_library_paths_at_buildtime() {
 # it is a hack because gcc -Xlinker -v alwayrs generate an error we ignore to get information
 # method used as an alternative in __darwin_default_search_library_paths_at_buildtime
 __gcc_default_search_library_paths_at_buildtime() {
+	local __arch=""
 	case $STELLA_CPU_ARCH in
 		"64")
 			__arch="-m64"
