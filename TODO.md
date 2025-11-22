@@ -294,25 +294,25 @@
 * [ ] git do not support always all options see function git_project_version
 
 * [ ] note on bootstrap applications
-```
-Bootstrap a brand new application and use stella as a library or tools collection inside your project
-NIX :
-	cd your_project
-	curl -sSL https://raw.githubusercontent.com/StudioEtrange/stella/master/nix/pool/stella-bridge.sh | bash -s -* bootstrap [stella folder]
+  ```
+    Bootstrap a brand new application and use stella as a library or tools collection inside your project
+    NIX :
+      cd your_project
+      curl -sSL https://raw.githubusercontent.com/StudioEtrange/stella/master/nix/pool/stella-bridge.sh | bash -s -* bootstrap [stella folder]
 
-WIN:
-  cd your_project
-	powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/StudioEtrange/stella/master/win/pool/stella-bridge.bat', 'stella-bridge.bat')" && stella-bridge.bat bootstrap & del /q stella-bridge.bat
-```
+    WIN:
+      cd your_project
+      powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/StudioEtrange/stella/master/win/pool/stella-bridge.bat', 'stella-bridge.bat')" && stella-bridge.bat bootstrap & del /q stella-bridge.bat
+  ```
 
 * [ ] note on bootstrap a standalone stable stella
-```
-NIX
-curl -sSL https://raw.githubusercontent.com/StudioEtrange/stella/master/nix/pool/stella-bridge.sh | bash -s -- standalone stella
+  ```
+  NIX
+  curl -sSL https://raw.githubusercontent.com/StudioEtrange/stella/master/nix/pool/stella-bridge.sh | bash -s -- standalone stella
 
-WIN
-powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/StudioEtrange/stella/master/win/pool/stella-bridge.bat', 'stella-bridge.bat')" && stella-bridge.bat standalone & del /q stella-bridge.bat
-```
+  WIN
+  powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/StudioEtrange/stella/master/win/pool/stella-bridge.bat', 'stella-bridge.bat')" && stella-bridge.bat standalone & del /q stella-bridge.bat
+  ```
 
 * [ ] add feature openal
   * http://repo.or.cz/openal-soft.git
@@ -344,10 +344,13 @@ powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.github
 * [ ] win  : review all recipes (replace prepare_build with start_manual_build)
 * [ ] win build :
   * auto_build launch_configure : implements autotools (mingw or msys)
-  * auto_build :  # INCLUDE_FILTER <expr> -- include these files for inspect and fix
+  * auto_build :
+    ``` 
+                  # INCLUDE_FILTER <expr> -- include these files for inspect and fix
                   # EXCLUDE_FILTER <expr> -- exclude these files for inspect and fix
                   # INCLUDE_FILTER is apply first, before EXCLUDE_FILTER
                   # BUILD_ACTION <action1> <action2>
+    ```
 
 * [X] nix : install bundle NESTED, LIST, MERGE and MERGE_LIST is ok, but export a NESTED bundle does not work
 
