@@ -27,7 +27,30 @@ __pkgconfig_search_path() {
 	fi
 }
 
-# seatch a dynamic library available at runtime in system
+# search a dynamic library into dyld cache
+# 	either in known list of files in cache (default mode and faster mode)
+#	OR by scanning dyld cache (needs ipsw tool)
+#   depending on STELLA_LINKED_LIB_CACHE_MODE_DARWIN value
+__darwin_dynamic_library_exists_in_cache() {
+	local lib_file_name="$1"
+	local lib_regex_file=/${lib_file_name}'(.*)\.dylib$'
+
+	case $STELLA_LINKED_LIB_CACHE_MODE_DARWIN in
+		cache-list|*)
+			[ -f "$STELLA_ARTEFACT/macos-dyld-cache-list.txt" ] && cat $STELLA_ARTEFACT/macos-dyld-cache-list.txt | grep -E -e "$lib_regex_file" -m1
+			[ $? -eq 0 ] && return 0
+			;;
+
+		dyld-cache)
+			__require "ipsw" "ipsw" "INTERNAL" 2>&1 1>/dev/null
+			$STELLA_ARTEFACT/macos-dyld-cache-analyse.sh --quiet --only-dylib --no-default-excludes --images --exists-one "$lib_regex_file"
+			[ $? -eq 0 ] && return 0
+			;;
+	esac
+	return 1
+}
+
+# search a dynamic library available at runtime in system
 #		__search_dynamic_library_at_runtime "libcurl"
 #
 # 		NOTE  : return 0 at first match else return 1
@@ -39,14 +62,26 @@ __search_dynamic_library_at_runtime() {
 	local lib_file_name="$1"
 	local lib_regex_file
 	
+	# macOS before 11 Big Sur used to ship with the source binaries still on-disk, particularly so it can be updated with update_dyld_shared_cache [Archived 2015-08-29 at the Wayback Machine]. Starting with macOS 11, update_dyld_shared_cache is deprecated and, as in iOS, the only copy of the libraries is in the "cache".
+	# https://theapplewiki.com/wiki/Dev:Dyld_shared_cache
 	case $STELLA_CURRENT_PLATFORM in
 		darwin)
-			# TODO
-			lib_regex_file="${lib_file_name}"
-			$STELLA_
-			macos-dyld-cache-analyse.sh --quiet --only-dylib --no-default-excludes --images --exists-one libz
-		;;
+			lib_regex_file=${lib_file_name}'(.*)\.dylib$'
 
+			if __darwin_dynamic_library_exists_on_filesystem; then
+				# NOTE : __find_file_in_path_list is not recursive
+				__find_file_in_path_list "^${lib_regex_file}" "$(__get_search_library_paths_at_runtime | tr '\n' ':')" "STOP_FIRST"
+				[ $? -eq 0 ] && return 0
+			else
+				# STEP 1 - find in dyld cache
+				__darwin_dynamic_library_exists_in_cache "$lib_file_name"
+				[ $? -eq 0 ] && return 0
+
+				# STEP 2 - find in system search paths
+				__find_file_in_path_list "^$lib_regex_file" "$(__get_search_library_paths_at_runtime | tr '\n' ':')" "STOP_FIRST"
+				[ $? -eq 0 ] && return 0
+			fi
+		;;
 
 		linux)
 			lib_regex_file='^'${lib_file_name}'.so'

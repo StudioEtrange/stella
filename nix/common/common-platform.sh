@@ -268,6 +268,15 @@ __get_macos_version() {
 	echo $(sw_vers -productVersion | awk -F '.' '{print $1 "." $2}')
 }
 
+# macos use only dynamic libraries from dyld shared cache since macos 11
+# before dynamic libraries exists on filesystem (even if they are alos cached (like in 10.x))
+__darwin_dynamic_library_exists_on_filesystem() {
+	if [ "$(__select_version_from_list ">=11" "$(__get_macos_version)" "SEP .")" = "" ]; then
+		return 0
+	else
+		return 1
+	fi
+}
 
 __platform_specifity() {
 	#http://unix.stackexchange.com/questions/30091/fix-or-alternative-for-mktemp-in-os-x

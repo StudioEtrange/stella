@@ -9,19 +9,19 @@ $STELLA_API require "bats" "bats" "INTERNAL"
 
 function test_launch_bats() {
 	local domain="$1"
-  # regular expression that will match tests functions names
-  local filter="$2"
+	# regular expression that will match tests functions names
+	local filter="$2"
 
-  local _v=$(mktmp)
-  declare >"$_v"
-  declare -f >>"$_v"
+	local _v=$(mktmp)
+	declare >"$_v"
+	declare -f >>"$_v"
 
-  if [ "$filter" = "" ]; then
-    __BATS_STELLA_DECLARE="$_v" bats --verbose-run "$STELLA_APP_ROOT/test/test_$domain.bats"
-  else
-    __BATS_STELLA_DECLARE="$_v" bats --verbose-run "$STELLA_APP_ROOT/test/test_$domain.bats" -f ${filter}
-  fi
-  rm -f "$_v"
+	if [ "$filter" = "" ]; then
+		__BATS_STELLA_DECLARE="$_v" bats --verbose-run "$STELLA_APP_ROOT/test/test_$domain.bats"
+	else
+		__BATS_STELLA_DECLARE="$_v" bats --verbose-run "$STELLA_APP_ROOT/test/test_$domain.bats" -f ${filter}
+	fi
+	rm -f "$_v"
 }
 
 STELLA_LOG_STATE=ON

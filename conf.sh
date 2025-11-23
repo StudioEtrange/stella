@@ -278,6 +278,11 @@ __reset_build_env
 # linked libs we do not want to tweak (change link to)
 STELLA_BINARY_DEFAULT_LIB_IGNORED='^/System/Library|^/usr/lib|^/lib'
 
+# where to check if a system dynamic lib is in cache :
+#		cache-list : in known list of dyld-cache  (default mode and faster mode)
+#		dyld-cache : scan dyld cache (needs ipsw tool)
+#	see : __darwin_dynamic_library_exists_in_cache
+STELLA_LINKED_LIB_CACHE_MODE_DARWIN="cache-list"
 
 # API ---------------------------------------------
 STELLA_API_ALGORITHM_PUBLIC="stack_init stack_push stack_pop"

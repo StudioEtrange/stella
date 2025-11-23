@@ -2363,13 +2363,21 @@ __path_append_to_list_from_stdin() {
 
 # Usage :
 #   __find_file_in_path_list "<regex_file>_pattern" "<paths_list_with_separator_:>" "STOP_FIRST SUB_DIRS subdir1 subdir2"
-#
-#   __find_file_in_path_list '^libz\.so$' "/usr:/usr/local:/opt"
-#	__find_file_in_path_list "libz.so" "/lib" "SUB_DIRS x86_64-linux-gnu STOP_FIRST"
-# 	for an exact file match use : '^libfoo\.so$''
-#
-#	STOP_FIRST : STOP search at first match
-#	SUB_DIRS : subdirs search list (separated by space)
+#	samples :
+#   	__find_file_in_path_list 'libGL.*' "/usr:/usr/local:/opt:/usr/lib"
+#			/usr/lib/libGL.so.1
+#		__find_file_in_path_list "libz.so" "/lib" "SUB_DIRS x86_64-linux-gnu STOP_FIRST"
+#			/lib/x86_64-linux-gnu/libz.so.1
+#		__find_file_in_path_list "^libz" "/usr/lib:/usr/local:/opt
+#			/usr/lib/libz.1.2.12.dylib
+#		PATTERN : regex pattern applid to each file contained in path
+#		PATH_LIST : list of path separated by ':'
+#	NOTE :
+# 		for an exact file match use : '^libfoo\.so$''
+# 		it is a non recursive seach file
+# 	OPTIONS:
+#		STOP_FIRST : STOP search at first match
+#		SUB_DIRS : subdirs search list (separated by space)
 __find_file_in_path_list() {
 
 	[ $# -lt 2 ] && return 1
@@ -2391,15 +2399,15 @@ __find_file_in_path_list() {
 
 	__search_dir() {
 		local DIR="$1"
-		local entry name
-
+		local entry
+		local name
+		local FOUND
 		[ -d "$DIR" ] || return 0
 		# browse DIR
 		for entry in "$DIR"/*; do
-			[ -e "$entry" ] || continue
 			name=${entry##*/}
 			# PATTERN is a regex used by grep -E
-			if echo "$name" | grep -Eq -- "$PATTERN"; then
+			if echo "$name" | grep -E -e "$PATTERN" -q; then
 				echo "$entry"
 				FOUND=1
 				[ "$_opt_first" = "ON" ] && return 0
@@ -2425,7 +2433,6 @@ __find_file_in_path_list() {
 				if [ "$_opt_first" = "ON" ] && [ "$FOUND" -eq 1 ]; then
 					break
 				fi
-
 			done
 			IFS=':'
 			if [ "$_opt_first" = "ON" ] && [ "$FOUND" -eq 1 ]; then
@@ -2433,7 +2440,6 @@ __find_file_in_path_list() {
 			fi
 		fi
 	done
-
 	IFS="$OLD_IFS"
 
 	[ "$FOUND" -eq 1 ] && return 0 || return 1
