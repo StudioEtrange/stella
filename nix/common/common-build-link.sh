@@ -18,7 +18,7 @@ __link_feature_library() {
 	# GET_FOLDER <prefix> -- get prefix_ROOT, prefix_LIB, prefix_BIN, prefix_INCLUDE with correct path
 	# NO_SET_FLAGS -- do not set stella build system flags (by default, flags will be generated) AND do not add RPATH values
 	# LIBS_NAME -- libraries name to use with -l arg -- you can specify several libraries. If you do not use LIBS_NAME -l flag will not be setted, only -L will be setted. If you use LIBS_NAME both -l and -L flags will be setted
-  # USE_PKG_CONFIG -- use of pkg-config
+  	# USE_PKG_CONFIG -- use of pkg-config
 
 	local _ROOT=
 	local _BIN=

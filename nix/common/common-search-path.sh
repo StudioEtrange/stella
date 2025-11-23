@@ -3,61 +3,6 @@ _STELLA_PLATFORM_SEARCH_PATH_INCLUDED_=1
 
 # ----------------------------- HELPERS -------------
 
-# Helper: append a path at the end of a colon-separated list if not yet in list
-# DOES NOT force absolute, DOES NOT check existence
-# $1 = current list
-# $2 = candidate path
-__path_append_any() {
-  local list="$1"
-  local p="$2"
-
-  [ -z "$p" ] && { printf '%s' "$list"; return; }
-
-  case ":$list:" in
-    *:"$p":*)
-      printf '%s' "$list"
-      ;;
-    *)
-      if [ -n "$list" ]; then
-        printf '%s:%s' "$list" "$p"
-      else
-        printf '%s' "$p"
-      fi
-      ;;
-  esac
-}
-
-# Helper: append a path only if directory exists
-__path_append_if_dir() {
-  local list="$1"
-  local p="$2"
-
-  [ -z "$p" ] && { printf '%s' "$list"; return; }
-  [ -d "$p" ] || { printf '%s' "$list"; return; }
-
-  case ":$list:" in
-    *:"$p":*)
-      printf '%s' "$list"
-      ;;
-    *)
-      if [ -n "$list" ]; then
-        printf '%s:%s' "$list" "$p"
-      else
-        printf '%s' "$p"
-      fi
-      ;;
-  esac
-}
-
-# add all lines from STDIN (one per line) into colon list $1
-__path_append_list_from_stdin() {
-  local list="$1" line
-  while IFS= read -r line; do
-    [ -n "$line" ] || continue
-    list="$(__path_append_any "$list" "$line")"
-  done
-  printf '%s' "$list"
-}
 
 # Helper: get Darwin SDK path
 # 1. use SDKROOT if set
@@ -82,17 +27,51 @@ __pkgconfig_search_path() {
 	fi
 }
 
+# seatch a dynamic library available at runtime in system
+#		__search_dynamic_library_at_runtime "libcurl"
+#
+# 		NOTE  : return 0 at first match else return 1
+#		on linux
+#			STEP 0 check in current LD_LIBRARY_PATH
+#			STEP 1 check in lld cache
+#			STEP 2 check in all search path for libraries at RUNTIME from __get_search_library_paths_at_runtime
+__search_dynamic_library_at_runtime() {
+	local lib_file_name="$1"
+	local lib_regex_file
+	
+	case $STELLA_CURRENT_PLATFORM in
+		darwin)
+			# TODO
+			lib_regex_file="${lib_file_name}"
+			$STELLA_
+			macos-dyld-cache-analyse.sh --quiet --only-dylib --no-default-excludes --images --exists-one libz
+		;;
 
-# TODO
-# __search_dynamic_library_at_runtime_in_system() {
-# methodes possibles
-# 	1.ldconfig -p show cached library used at runtime, it use  /etc/ld.so.conf  and do not use LD_LIBRARY_PATH
-#			to update cache needs root permission : sudo ldconfig
-#	2.check file in
-#			at build time  __search_library_paths_at_buildtime take care of LIBRARY_PATH
-#			or at runetime : __search_library_paths_at_runtime take care of LD_LIBRARY_PATH
-#	find /usr/lib*/ -type f -name '*.so*'
-# }
+
+		linux)
+			lib_regex_file='^'${lib_file_name}'.so'
+
+			# STEP 0 - find in current LD_LIBRARY_PATH
+			[ -n "$LD_LIBRARY_PATH" ] && __find_file_in_path_list "$lib_regex_file" "$LD_LIBRARY_PATH" "STOP_FIRST"
+			[ $? -eq 0 ] && return 0
+
+			# STEP 1 - find in ld cache
+			if command -v ldconfig >/dev/null 2>&1; then
+				local found_path="$(ldconfig -p 2>/dev/null | awk -v lib="$lib_regex_file" '$1 ~ lib { print $NF; exit }')"
+				if [ -n "$found_path" ] && [ -e "$found_path" ]; then
+					printf '%s\n' "$found_path"
+					return 0
+				fi
+			fi
+
+			# STEP 2 - find in system search paths
+			__find_file_in_path_list "$lib_regex_file" "$(__get_search_library_paths_at_runtime | tr '\n' ':')" "STOP_FIRST"
+			[ $? -eq 0 ] && return 0
+		;;
+	esac
+
+	return 1
+}
 
 # ----------------------------- AT RUNTIME/RUN TIME -------------
 
@@ -110,7 +89,7 @@ __darwin_default_search_library_paths_at_runtime() {
   if [ -n "${DYLD_LIBRARY_PATH:-}" ]; then
     IFS=:; for p in $DYLD_LIBRARY_PATH; do
       # here we keep only existing dirs, runtime should be real
-      res="$(__path_append_if_dir "$res" "$p")"
+      res="$(__path_append_to_list_if_exists "$res" "$p")"
     done
     unset IFS
   fi
@@ -118,7 +97,7 @@ __darwin_default_search_library_paths_at_runtime() {
   # fallback (or default)
   local fb="${DYLD_FALLBACK_LIBRARY_PATH:-$HOME/lib:/usr/local/lib:/usr/lib}"
   IFS=:; for p in $fb; do
-    res="$(__path_append_if_dir "$res" "$p")"
+    res="$(__path_append_to_list_if_exists "$res" "$p")"
   done
   unset IFS
 
@@ -138,7 +117,7 @@ __darwin_default_search_framework_paths_at_runtime() {
   # DYLD_FRAMEWORK_PATH
   if [ -n "${DYLD_FRAMEWORK_PATH:-}" ]; then
     IFS=:; for p in $DYLD_FRAMEWORK_PATH; do
-      res="$(__path_append_if_dir "$res" "$p")"
+      res="$(__path_append_to_list_if_exists "$res" "$p")"
     done
     unset IFS
   fi
@@ -146,7 +125,7 @@ __darwin_default_search_framework_paths_at_runtime() {
   # fallback (or default)
   local fb="${DYLD_FALLBACK_FRAMEWORK_PATH:-$HOME/Library/Frameworks:/Library/Frameworks:/Network/Library/Frameworks:/System/Library/Frameworks}"
   IFS=:; for p in $fb; do
-    res="$(__path_append_if_dir "$res" "$p")"
+    res="$(__path_append_to_list_if_exists "$res" "$p")"
   done
   unset IFS
 
@@ -255,7 +234,7 @@ __default_search_library_paths_at_runtime() {
 
 # retrieve in solving order all search path for libraries at RUNTIME
 # if a binary is in arg, then runtime path hardcoded in binary will also be returned into the result
-__search_library_paths_at_runtime() {
+__get_search_library_paths_at_runtime() {
 	local binary="$1"
 	case $STELLA_CURRENT_PLATFORM in
 		darwin)
@@ -266,11 +245,19 @@ __search_library_paths_at_runtime() {
 		;;
 
 		linux)
-			# 0. extract DT_RPATH (but printed in step 2 because __get_rpath return DT_RPATH and DT_RUNPATH together)
+			# 0. extract DT_RPATH
+			[ -f "$binary" ] && _rpath="$(__get_rpath "$binary" | tr -s '[:space:]' '\n')"
+			# if DT_RUNPATH is setted, DT_RPATH is ignored
+			if [ $? -eq 12 ]; then
+				echo "$_rpath"
+			fi
 			# 1. LD_LIBRARY_PATH
 			[ ! -z $LD_LIBRARY_PATH ] && printf '%s\n' "$(printf '%s' "$LD_LIBRARY_PATH" | sed 's/:/\n/g')"
-			# 2. extract DT_RUNPATH which will be used when looking for library
-			[ -f "$binary" ] && __get_rpath "$binary" | tr -s '[:space:]' '\n'
+			# 2. extract DT_RUNPATH
+			[ -f "$binary" ] && _rpath="$(__get_rpath "$binary" | tr -s '[:space:]' '\n')"
+			if [ $? -eq 21 ] || [ $? -eq 22 ]; then
+				echo "$_rpath"
+			fi
 			# 3. default search library path
 			__linux_default_search_library_paths_at_runtime
 		;; 
@@ -289,19 +276,19 @@ __darwin_default_search_framework_paths_at_buildtime() {
 	# ALTERNATIVE to sdkroot : use __gcc_default_search_framework_paths_at_buildtime if xcrun do not exist
 	# NOTE : this alternative method is not complete, do not add other Frameworks path
 	path="$(__gcc_default_search_framework_paths_at_buildtime)"
-	res="$(__path_append_any "$res" "$path")"
+	res="$(__path_append_to_list "$res" "$path")"
 	sdk="$(echo $path | sed 's,/System/Library/Frameworks.*,,')"
   fi
   if [ -n "$sdk" ]; then
-    res="$(__path_append_any "$res" "$sdk/System/Library/Frameworks")"
-    res="$(__path_append_any "$res" "$sdk/Library/Frameworks")"
+    res="$(__path_append_to_list "$res" "$sdk/System/Library/Frameworks")"
+    res="$(__path_append_to_list "$res" "$sdk/Library/Frameworks")"
   fi
 
   # 2. host defaults (these should exist on real macOS, but we still check)
-  res="$(__path_append_if_dir "$res" "$HOME/Library/Frameworks")"
-  res="$(__path_append_if_dir "$res" /Library/Frameworks)"
-  res="$(__path_append_if_dir "$res" /Network/Library/Frameworks)"
-  res="$(__path_append_if_dir "$res" /System/Library/Frameworks)"
+  res="$(__path_append_to_list_if_exists "$res" "$HOME/Library/Frameworks")"
+  res="$(__path_append_to_list_if_exists "$res" /Library/Frameworks)"
+  res="$(__path_append_to_list_if_exists "$res" /Network/Library/Frameworks)"
+  res="$(__path_append_to_list_if_exists "$res" /System/Library/Frameworks)"
 
   printf '%s\n' "$(printf '%s' "$res" | tr ':' '\n')"
 }
@@ -339,13 +326,13 @@ __darwin_default_search_library_paths_at_buildtime() {
   fi
   if [ -n "$sdk" ]; then
     # standard places inside SDK
-    res="$(__path_append_any "$res" "$sdk/usr/local/lib")"
-    res="$(__path_append_any "$res" "$sdk/usr/lib")"
+    res="$(__path_append_to_list "$res" "$sdk/usr/local/lib")"
+    res="$(__path_append_to_list "$res" "$sdk/usr/lib")"
   fi
 
   # 3. system defaults if they exists
-  res="$(__path_append_if_dir "$res" /usr/local/lib)"
-  res="$(__path_append_if_dir "$res" /usr/lib)"
+  res="$(__path_append_to_list_if_exists "$res" /usr/local/lib)"
+  res="$(__path_append_to_list_if_exists "$res" /usr/lib)"
 
   printf '%s\n' "$(printf '%s' "$res" | tr ':' '\n')"
 }
@@ -439,23 +426,24 @@ __ld_default_search_library_paths_at_buildtime() {
 # 		linux : https://stackoverflow.com/questions/9922949/how-to-print-the-ldlinker-search-path
 #		macos : https://opensource.apple.com/source/dyld/dyld-519.2.1/src/dyld.cpp.auto.html
 #				harcoded values : https://opensource.apple.com/source/dyld/dyld-519.2.1/src/dyld.cpp.auto.html
-__search_library_paths_at_buildtime() {
+__get_search_library_paths_at_buildtime() {
 	local res="" p
+	local OLD_IFS="$IFS"
 	case "$STELLA_CURRENT_PLATFORM" in
 		"darwin")
 			# 1. LIBRARY_PATH
 			if [ -n "${LIBRARY_PATH:-}" ]; then
 				IFS=:; for p in $LIBRARY_PATH; do
-					res="$(__path_append_any "$res" "$p")"
+					res="$(__path_append_to_list "$res" "$p")"
 				done
-				unset IFS
+				IFS="$OLD_IFS"
 			fi
 			
 			# 2. hardcoded gcc search path
-			res="$(__gcc_extra_search_library_paths_at_buildtime | __path_append_list_from_stdin "$res")"
+			res="$(__gcc_extra_search_library_paths_at_buildtime | __path_append_to_list_from_stdin "$res")"
 
 			# 3. default lib search path
-			res="$(__darwin_default_search_library_paths_at_buildtime | __path_append_list_from_stdin "$res")"
+			res="$(__darwin_default_search_library_paths_at_buildtime | __path_append_to_list_from_stdin "$res")"
 
 			printf '%s\n' "$(printf '%s' "$res" | tr ':' '\n')"
 		;;
@@ -464,16 +452,16 @@ __search_library_paths_at_buildtime() {
 			# 1. LIBRARY_PATH
 			if [ -n "${LIBRARY_PATH:-}" ]; then
 				IFS=:; for p in $LIBRARY_PATH; do
-					res="$(__path_append_any "$res" "$p")"
+					res="$(__path_append_to_list "$res" "$p")"
 				done
-				unset IFS
+				IFS="$OLD_IFS"
 			fi
 
 			# 2. hardcoded gcc search path
-			res="$(__gcc_extra_search_library_paths_at_buildtime | __path_append_list_from_stdin "$res")"
+			res="$(__gcc_extra_search_library_paths_at_buildtime | __path_append_to_list_from_stdin "$res")"
 
 			# 3. default lib search path
-			res="$(__gcc_default_search_library_paths_at_buildtime | __path_append_list_from_stdin "$res")"
+			res="$(__gcc_default_search_library_paths_at_buildtime | __path_append_to_list_from_stdin "$res")"
 
 			printf '%s\n' "$(printf '%s' "$res" | tr ':' '\n')"
 		;;

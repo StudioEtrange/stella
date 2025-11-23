@@ -6,6 +6,13 @@ _STELLA_COMMON_INCLUDED_=1
 #turns off bash's hash function
 #set +h
 
+# init stella environment
+__init_stella_env() {
+	__feature_init_installed
+	# PROXY
+	__init_proxy
+}
+
 
 # VARIOUS-----------------------------
 
@@ -2284,14 +2291,144 @@ __symlink_abs_to_rel_path() {
 
 
 
+# append a path at the end of a colon-separated list if not yet in list
+# DOES NOT force absolute, DOES NOT check existence
+# $1 = current list
+# $2 = candidate path
+__path_append_to_list() {
+  local list="$1"
+  local p="$2"
 
+  [ -z "$p" ] && { printf '%s' "$list"; return; }
 
-# init stella environment
-__init_stella_env() {
-	__feature_init_installed
-	# PROXY
-	__init_proxy
+  case ":$list:" in
+    *:"$p":*)
+      printf '%s' "$list"
+      ;;
+    *)
+      if [ -n "$list" ]; then
+        printf '%s:%s' "$list" "$p"
+      else
+        printf '%s' "$p"
+      fi
+      ;;
+  esac
 }
+
+# append a path only if directory exists
+# append a path at the end of a colon-separated list if not yet in list
+__path_append_to_list_if_exists() {
+  local list="$1"
+  local p="$2"
+
+  [ -z "$p" ] && { printf '%s' "$list"; return; }
+  [ -d "$p" ] || { printf '%s' "$list"; return; }
+
+  case ":$list:" in
+    *:"$p":*)
+      printf '%s' "$list"
+      ;;
+    *)
+      if [ -n "$list" ]; then
+        printf '%s:%s' "$list" "$p"
+      else
+        printf '%s' "$p"
+      fi
+      ;;
+  esac
+}
+
+# add all lines from STDIN (one per line) into colon list $1
+# append path at the end of a colon-separated list if not yet in list
+__path_append_to_list_from_stdin() {
+  local list="$1" line
+  while IFS= read -r line; do
+    [ -n "$line" ] || continue
+    list="$(__path_append_to_list "$list" "$line")"
+  done
+  printf '%s' "$list"
+}
+
+
+
+# Usage :
+#   __find_file_in_path_list "<regex_file>_pattern" "<paths_list_with_separator_:>" "STOP_FIRST SUB_DIRS subdir1 subdir2"
+#
+#   __find_file_in_path_list '^libz\.so$' "/usr:/usr/local:/opt"
+#	__find_file_in_path_list "libz.so" "/lib" "SUB_DIRS x86_64-linux-gnu STOP_FIRST"
+# 	for an exact file match use : '^libfoo\.so$''
+#
+#	STOP_FIRST : STOP search at first match
+#	SUB_DIRS : subdirs search list (separated by space)
+__find_file_in_path_list() {
+
+	[ $# -lt 2 ] && return 1
+
+	local PATTERN="$1"   # file to find with regex
+	local PATH_LIST="$2"
+	local OPT="$3"
+	local SUB_DIRS=
+	local FOUND=0
+
+	local _opt_first=
+	local _first_matching=
+	local _flag_subdir
+	for o in $OPT; do
+		[ "$o" = "STOP_FIRST" ] && _opt_first="ON" && _flag_subdir= # STOP search at first match
+		[ "$_flag_subdir" = "ON" ] && SUB_DIRS="${SUB_DIRS} ${o}"
+		[ "$o" = "SUB_DIRS" ] && _flag_subdir="ON"
+	done
+
+	__search_dir() {
+		local DIR="$1"
+		local entry name
+
+		[ -d "$DIR" ] || return 0
+		# browse DIR
+		for entry in "$DIR"/*; do
+			[ -e "$entry" ] || continue
+			name=${entry##*/}
+			# PATTERN is a regex used by grep -E
+			if echo "$name" | grep -Eq -- "$PATTERN"; then
+				echo "$entry"
+				FOUND=1
+				[ "$_opt_first" = "ON" ] && return 0
+			fi
+		done
+	}
+
+	local BASE
+	local OLD_IFS="$IFS"
+	IFS=':'
+	for BASE in $PATH_LIST; do
+		[ -z "$BASE" ] && BASE="."
+
+		__search_dir "$BASE"
+		if [ "$_opt_first" = "ON" ] && [ "$FOUND" -eq 1 ]; then
+            break
+        fi
+		if [ -n "$SUB_DIRS" ]; then
+			IFS=' '
+			for SUB in $SUB_DIRS; do
+				[ -z "$SUB" ] && continue
+				__search_dir "$BASE/$SUB"
+				if [ "$_opt_first" = "ON" ] && [ "$FOUND" -eq 1 ]; then
+					break
+				fi
+
+			done
+			IFS=':'
+			if [ "$_opt_first" = "ON" ] && [ "$FOUND" -eq 1 ]; then
+				break
+			fi
+		fi
+	done
+
+	IFS="$OLD_IFS"
+
+	[ "$FOUND" -eq 1 ] && return 0 || return 1
+}
+
 
 #MEASURE TOOL----------------------------------------------
 # __timecount_start "count_id"

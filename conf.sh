@@ -53,10 +53,10 @@ STELLA_ORIGINAL_SYSTEM_PATH="$PATH"
 . $STELLA_COMMON/common-log.sh
 #shellcheck source=nix/common/common-platform.sh
 . $STELLA_COMMON/common-platform.sh
-#shellcheck source=nix/common/common-platform-search-path.sh
-. $STELLA_COMMON/common-platform-search-path.sh
 #shellcheck source=nix/common/common.sh
 . $STELLA_COMMON/common.sh
+#shellcheck source=nix/common/common-search-path.sh
+. $STELLA_COMMON/common-search-path.sh
 #shellcheck source=nix/common/common-feature.sh
 . $STELLA_COMMON/common-feature.sh
 #shellcheck source=nix/common/common-app.sh

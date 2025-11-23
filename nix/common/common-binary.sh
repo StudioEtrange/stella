@@ -30,86 +30,6 @@ _STELLA_COMMON_BINARY_INCLUDED_=1
 # __check_install_name_darwin	# TEST IS MACHO AND IS DYN FILE - RECURSIVE -- OPTIONAL FILTER -- [RETURN ERROR CODE]
 # __tweak_install_name_darwin # TEST IS MACHO AND IS DYN FILE - RECURSIVE -- OPTIONAL FILTER
 
-# NOTE
-#			LINUX ELF TOOLS
-#					objdump (needed to analysis) -- in sys package gnu binutils (WARN : objdump not always present on linux system / prefer readelf ? see lddtree to change objdump to readelf)
-#					ldd (needed for linked lib analys) -- present by default => security warning
-#					patchelf (needed to analysis AND modify rpath) -- in stella recipe 'patchelf'
-#					scanelf (needed to analysis) -- in stella recipe pax-utils
-#					readelf (needed to analysis)-- in sys package gnu 'binutils'
-#			MACOS BINARY TOOLS :
-#					otool (needed to analysis) -- in ??
-#					install_name_tool (needed to modify rpath, install_name and already linked lib. Cannot add or remove linked lib) -- in ??
-#			MACOS : install_name, rpath, loader_path, executable_path
-# 					https://mikeash.com/pyblog/friday-qa-2009-11-06-linking-and-install-names.html
-#					http://jorgen.tjer.no/post/2014/05/20/dt-rpath-ld-and-at-rpath-dyld/
-#					https://wincent.com/wiki/@executable_path,_@load_path_and_@rpath
-#
-#			LINKED LIBS
-#						MACOS
-#							Since macOS 11 system libs are managed in dyld shared cache. Theses libs are not present in filesystem
-#							cache files are in /System/Library/dyld/dyld_shared_cache*
-#											   /System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache*
-#							explore cache file with https://github.com/arandomdev/DyldExtractor (python)
-#									dyldex -l -f /usr/lib/libz /System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_x86_64h
-#							explore cache file with ipsw
-#									ipsw dyld image /System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_x86_64h /usr/lib/libz.1.dylib
-#							NOTE static libraries are in sdk subfolders
-#									xcrun --sdk macosx --show-sdk-path ==> /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
-#
-#						LINUX : AT RUNTIME : Dynamic libs will be searched at RUNTINE in the following directories in the given order:
-#							1. DT_RPATH - a list of directories which is harcoded into the executable, supported on most UNIX systems.
-#											The DT_RPATH entries are ignored if DT_RUNPATH entries exist.
-#							2. LD_LIBRARY_PATH - an environment variable which holds a list of directories
-#									MACOS : Environment variable is DYLD_LIBRARY_PATH instead of LD_LIBRARY_PATH
-#											WARN : do not work as expected DYLD_LIBRARY_PATH (and other DYLD_*) are emptyied for security reasons
-#												    due to SIP (Security Integrity Protection)
-#													when using wrappers, shims (rbenv, asdf, ...) or binary from /bin or /usr/bin (like /bin/sh)
-#													DYLD_LIBRARY_PATH=foo /bin/sh -c 'echo $DYLD_LIBRARY_PATH' => Print nothing
-#													see https://github.com/ros2/ros2/issues/409
-#													see https://github.com/rbenv/rbenv/issues/962
-#							3. DT_RUNPATH - same as RPATH, but searched after LD_LIBRARY_PATH, supported only on most recent UNIX systems, e.g. on most current Linux systems
-#							4. /etc/ld.so.conf and /etc/ld.so.conf/* - configuration file for ld.so which lists additional library directories (see __default_search_library_paths_at_runtime)
-#							5. builtin directories - basically /lib and /usr/lib
-#
-#						LINUX : AT BUILD TIME : Static and dynamic libraries will be searched at BUILD time in the following order 
-#							1. LIBRARY_PATH
-#									MACOS : Environment variable is also LIBRARY_PATH
-#							2. path given to the linker with gcc option -L and gcc hardcoded path (see __gcc_extra_search_library_paths_at_buildtime
-#							3. hardcoded path into the linker (see __search_library_paths_at_buildtime) 
-#
-#					  LOADER : load libraries AT RUNTIME
-#								LINUX : ld.so, ld-linux.so, ld-musl.so		MACOS : dyld
-#					  LINKER : look for libraries AT BUILD TIME
-#								LINUX : ld									MACOS : ld64
-#
-#					  LINUX INFO :
-#								http://blog.tremily.us/posts/rpath/
-# 								https://bbs.archlinux.org/viewtopic.php?id=6460
-# 								http://www.cyberciti.biz/tips/linux-shared-library-management.html
-#								http://www.kaizou.org/2015/01/linux-libraries/
-#								https://stackoverflow.com/a/4250666/5027535
-#
-#						LINUX	TOOLS :
-#								https://github.com/gentoo/pax-utils
-#								https://github.com/ncopa/lddtree
-#
-#						LINUX DEBUG :
-#								LD_TRACE_LOADED_OBJECTS=1 LD_DEBUG=libs ./program
-#								LD_DEBUG values http://www.bnikolic.co.uk/blog/linux-ld-debug.html
-#
-#						MACOS DEBUG :
-#								DYLD_PRINT_LIBRARIES=1 : print loaded libraries
-#								DYLD_PRINT_SEARCHING=1 : print search libraries result 
-#								DYLD_PRINT_LIBRARIES=1 DYLD_PRINT_SEARCHING=1 ./program
-#
-# 	 	LINUX RPATH : PATCHELF
-#							using patchelf  "--set-rpath, --shrink-rpath and --print-rpath now prefer DT_RUNPATH over DT_RPATH,
-#							which is obsolete. When updating, if both are present, both are updated.
-# 						If only DT_RPATH is present, it is converted to DT_RUNPATH unless --force-rpath is specified.
-# 						If neither is present, a DT_RUNPATH is added unless --force-rpath is specified, in which case a DT_RPATH is added."
-#
-
 
 
 
@@ -354,25 +274,56 @@ __tweak_binary_file() {
 
 
 # RPATH -------------------------------------------------------------------
-# return rpath values separated by spaces in search order
+# print rpath values separated by spaces in search order
+# return code
+#		on darwin : 0 LC_RPATH is not empty - 1 LC_RPATH is empty 
+#		on linux : 
+#					11 = DT_RPATH is empty and DT_RUNPATH is empty
+#					21 = DT_RPATH is empty and DT_RUNPATH is not empty
+#					12 = DT_RPATH is not empty and DT_RUNPATH is empty
+#					22 = DT_RPATH is not empty and DT_RUNPATH is not empty
+#					in order print DT_RUNPATH if not empty then DT_RPATH is not empty
 __get_rpath() {
 	local _file="$1"
 	local _rpath_values
-
+	local _runpath_values
+	local _return=0
 	if __is_executable_or_shareable_bin "$_file"; then
 		if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 			_rpath_values="$(otool -l "$_file" | grep -E "LC_RPATH" -A2 | awk '/LC_RPATH/{for(i=2;i;--i)getline; print $0 }' | tr -s ' ' | cut -d ' ' -f 3 |  tr '\n' ' ')"
-			echo "$(__trim $_rpath_values)"
+			_rpath_values="$(__trim $_rpath_values)"
+			if [ -n "$_rpath_values" ]; then
+				printf '%s' "$_rpath_values"
+				return 0
+			else
+				return 1
+			fi
 		fi
 
 		if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 			local _field='RUNPATH'
+			IFS=':' read -ra _runpath_values <<< $(objdump -p $_file | grep -E "$_field[[:space:]]" | tr -s ' ' | cut -d ' ' -f 3)
+			
+			if [ "$_runpath_values" = "" ]; then
+				_return=$(( _return + 10 ))
+			else
+				echo "${_runpath_values[@]}"
+				_return=$(( _return + 20 ))
+				
+			fi
+
+			_field="RPATH"
 			IFS=':' read -ra _rpath_values <<< $(objdump -p $_file | grep -E "$_field[[:space:]]" | tr -s ' ' | cut -d ' ' -f 3)
 			if [ "$_rpath_values" = "" ]; then
-				_field="RPATH"
-				IFS=':' read -ra _rpath_values <<< $(objdump -p $_file | grep -E "$_field[[:space:]]" | tr -s ' ' | cut -d ' ' -f 3)
+				_return=$(( _return + 1 ))
+			else
+				_return=$(( _return + 2 ))
+				if [ ! "$_runpath_values" = "" ]; then
+					echo "${_rpath_values[@]}"
+				fi
 			fi
-			echo "${_rpath_values[@]}"
+
+			return $_return
 		fi
 	fi
 }
