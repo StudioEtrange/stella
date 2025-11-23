@@ -99,9 +99,6 @@ __get_platform_from_os() {
 		windows)
 			echo "windows"
 			;;
-		unknown)
-			echo "unknown"
-			;;
 		*)
 			echo "unknown"
 			;;
@@ -165,11 +162,10 @@ __get_os_env_from_kernel() {
 
 __set_current_platform_info() {
 
-
-	
 	
 	# some old configurations forgive to set sbin folders as PATH values
 	# mainly on centos
+	# TODO : REMOVE THIS ?
 	# https://forums.centos.org/viewtopic.php?t=53983
 	PATH="${PATH}:/usr/local/sbin:/usr/sbin:/sbin"
 
@@ -272,6 +268,15 @@ __get_macos_version() {
 	echo $(sw_vers -productVersion | awk -F '.' '{print $1 "." $2}')
 }
 
+# macos use only dynamic libraries from dyld shared cache since macos 11
+# before dynamic libraries exists on filesystem (even if they are alos cached (like in 10.x))
+__darwin_dynamic_library_exists_on_filesystem() {
+	if [ "$(__select_version_from_list ">=11" "$(__get_macos_version)" "SEP .")" = "" ]; then
+		return 0
+	else
+		return 1
+	fi
+}
 
 __platform_specifity() {
 	#http://unix.stackexchange.com/questions/30091/fix-or-alternative-for-mktemp-in-os-x
@@ -416,306 +421,8 @@ __require() {
 	return $_result
 }
 
-# TOOLSET specific --------------------------------------------------------
 
-# http://stackoverflow.com/questions/5188267/checking-the-gcc-version-in-a-makefile
-# return X.Y.Z as version of current gcc
-# ex : 4.4.7
-__gcc_version() {
-	gcc -dumpversion
-}
-
-# return an int representation of current gcc version
-# ex : 40407
-__gcc_version_int() {
-	gcc -dumpversion | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$/&00/'
-}
-
-# check if current gcc version hit the minimal version required
-# first param : X_Y_Z (or X_Y)
-# return 1 if required minimal version is fullfilled by the current gcc version
-__gcc_check_min_version() {
-	local _required_ver=$1
-	expr $(__gcc_version_int) \>= $(echo $_required_ver | sed -e 's/_\([0-9][0-9]\)/\1/g' -e 's/_\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$/&00/')
-}
-
-# detect if current gcc binary is in fact clang (mainly for MacOS)
-# return 1 if gcc is clang
-__gcc_is_clang() {
-	if [ "$(echo | gcc -dM -E - | grep __clang__)" = "" ]; then
-		echo "0"
-	else
-		echo "1"
-	fi
-}
-
-
-# return the target triplet
-#			Name of CPU family/model (eg. x86_64)
-#			The vendor (eg. linux)
-#			Operating system name (eg. gnu)
-__default_target_triplet() {
-	gcc -dumpmachine
-}
-
-
-# LIBRARIES SEARCH PATH -------
-# https://stackoverflow.com/questions/9922949/how-to-print-the-ldlinker-search-path
-
-
-# SEARCH PATH AT RUNTIME - WHILE RUNNING PROGRAM env variable LD_LIBRARY_PATH take precedence for linux and DYLD_* take precedence for macos
-# dynamic libraries search path at runtime
-# https://github.com/StudioEtrange/lddtree/blob/579ebe449b76ed9d22f116a6f30b87b1f2ded2ca/lddtree.sh#L169
-__default_runtime_search_path() {
-	local c_ldso_paths=
-	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		c_ldso_paths="/usr/local/lib:/usr/lib"
-	fi
-	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-
-		read_ldso_conf() {
-			local __depth="${__depth:-0}"
-			[ "$__depth" -gt 20 ] && return 0
-			__depth=$((__depth+1))
-
-			local p line
-			for p in "$@"; do
-				# Fichier lisible ?
-				[ -r "$p" ] || continue
-
-				while IFS= read -r line || [ -n "$line" ]; do
-					# Enlever commentaires en fin de ligne (# ...)
-					# (simple, ne gère pas les # échappés — suffisant ici)
-					line=${line%%\#*}
-
-					# Trim spaces
-					line=${line#"${line%%[![:space:]]*}"}
-					line=${line%"${line##*[![:space:]]}"}
-
-					# bypass empty lines
-					[ -z "$line" ] && continue
-					case $line in
-						include[[:space:]]*)
-							# Extraire motif après "include"
-							set -- ${line#include}
-							# $@ contient maintenant le motif (éventuellement avec glob)
-							# Laisser le glob s'étendre volontairement (non quoté)
-							read_ldso_conf $__depth "$@"
-							;;
-						*)
-							# Première "colonne" seulement (au cas où)
-							# (ld.so.conf n'attend qu'un chemin par ligne)
-							set -- $line
-							local path=$1
-
-							# Normaliser: garantir un seul / en tête
-							case $path in
-								/*) : ;;
-								*) path="/$path" ;;
-							esac
-
-							# Garder seulement les répertoires existants
-							if [ -d "$path" ]; then
-								# Ajouter sans créer de ":" initial
-								case ":$c_ldso_paths:" in
-									*:"$path":*) : ;;     # déjà présent → ignorer
-									*)
-										if [ -n "$c_ldso_paths" ]; then
-											c_ldso_paths="$c_ldso_paths:$path"
-										else
-											c_ldso_paths="$path"
-										fi
-										;;
-								esac
-							fi
-							;;
-					esac
-				done < "$p"
-			done
-		}
-
-		if [ -r /etc/ld.so.conf ] ; then
-			# the 'include' can be relative
-			local _oldpwd="$(pwd)"
-			cd "/etc" >/dev/null
-			interp=$(__get_elf_interpreter_linux "$(type -P ls 2>/dev/null)")
-			#echo $interp
-			case "$interp" in
-				*/ld-musl-*)
-					# muslc
-					musl_arch=${interp%.so*}
-					musl_arch=${musl_arch##*-}
-					read_ldso_conf /etc/ld-musl-${musl_arch}.path
-					;;
-				*/ld-linux*|*/ld.so*)
-					# glibc
-					read_ldso_conf /etc/ld.so.conf
-					;;
-			esac
-			cd "$_oldpwd"
-		fi
-	fi
-	printf '%s\n' "$(printf '%s' "$c_ldso_paths" | sed 's/:/\n/g')"
-}
-
-__default_framework_search_path() {
-    local c_fw_paths=""
-    if [ "${STELLA_CURRENT_PLATFORM}" = "darwin" ]; then
-        if [ -n "${DYLD_FRAMEWORK_PATH:-}" ]; then
-            IFS=:; for p in $DYLD_FRAMEWORK_PATH; do
-                [ -d "$p" ] || continue
-                case ":$c_fw_paths:" in
-                    *:"$p":*) : ;;
-                    *) c_fw_paths="${c_fw_paths:+$c_fw_paths:}$p" ;;
-                esac
-            done; unset IFS
-        fi
-        local _fb="${DYLD_FALLBACK_FRAMEWORK_PATH:-$HOME/Library/Frameworks:/Library/Frameworks:/Network/Library/Frameworks:/System/Library/Frameworks}"
-        IFS=:; for p in $_fb; do
-            [ -d "$p" ] || continue
-            case ":$c_fw_paths:" in
-                *:"$p":*) : ;;
-                *) c_fw_paths="${c_fw_paths:+$c_fw_paths:}$p" ;;
-            esac
-        done; unset IFS
-    fi
-    printf '%s\n' "$(printf '%s' "$c_fw_paths" | sed 's/:/\n/g')"
-}
-
-
-# retrieve in solving order all search path for libraries at RUNTIME
-# if a binary is passed, it will take care of hardcoded search path into binary
-__runtime_search_path() {
-	local binary="$1"
-
-	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		# 0. hardcoded DT_RPATH (but printed in step 2 because __get_rpath return DT_RPATH and DT_RUNPATH together)
-		# 1. LD_LIBRARY_PATH
-		[ ! -z $LD_LIBRARY_PATH ] && printf '%s\n' "$(printf '%s' "$LD_LIBRARY_PATH" | sed 's/:/\n/g')"
-		# 2. hardcoded DT_RUNPATH
-		[ -f "$binary" ] && __get_rpath "$binary" | tr -s '[:space:]' '\n'
-		# 3. parsed file /etc/ld.so.conf
-		__default_runtime_search_path
-	fi
-	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		# 1. hardcoded LC_RPATH
-		[ -f "$binary" ] && __get_rpath "$binary" | tr -s '[:space:]' '\n'
-		# 1. DYLD_LIBRARY_PATH
-		[ ! -z $DYLD_LIBRARY_PATH ] && printf '%s\n' "$(printf '%s' "$DYLD_LIBRARY_PATH" | sed 's/:/\n/g')"
-		# 2. DYLD_FALLBACK_LIBRARY_PATH or if empty __default_runtime_search_path
-		if [ -z $DYLD_FALLBACK_LIBRARY_PATH ]; then
-			__default_runtime_search_path
-		else
-			printf '%s\n' "$(printf '%s' "$DYLD_FALLBACK_LIBRARY_PATH" | sed 's/:/\n/g')"
-		fi 
-	fi
-}
-
-
-
-# SEARCH PATH AT LINKING WHILE BUILDING env var LIBRARY_PATH take precedence on linux and macos
-# linker search path
-# library search path during linking at build time
-# arch : x64|x86
-#				x64 means 64bits
-#				x86 means 32bits
-# LINUX https://stackoverflow.com/questions/9922949/how-to-print-the-ldlinker-search-path
-# NOTE ON MACOS :
-#			 https://opensource.apple.com/source/dyld/dyld-519.2.1/src/dyld.cpp.auto.html
-#			 hardcoded values https://opensource.apple.com/source/dyld/dyld-519.2.1/src/dyld.cpp.auto.html
-#												can be checked with : gcc  -Xlinker -v
-__default_linker_search_path() {
-	local __arch="$1"
-
-	if [ "$__arch" = "" ]; then
-		case $STELLA_CPU_ARCH in
-			"64")
-				__arch="x64"
-			;;
-			"32")
-				__arch="x86"
-			;;
-		esac
-	fi
-	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		case $__arch in
-			"x64")
-				__arch="-m64"
-			;;
-			"x86")
-				__arch="-m32"
-			;;
-		esac
-		gcc $__arch -Xlinker --verbose  2>/dev/null | grep SEARCH | sed 's/SEARCH_DIR("=\?\([^"]\+\)"); */\1\n/g'  | grep -vE '^$'
-	fi
-	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		printf '%s\n' "/usr/local/lib"
-		local sdk
-		sdk="$(xcrun --sdk macosx --show-sdk-path 2>/dev/null || true)"
-		if [ -n "$sdk" ]; then
-			printf '%s\n' "$sdk/usr/lib"
-		fi
-		printf '%s\n' "/usr/lib"
-	fi
-}
-
-# library search path during linking (-L flag) - same as __default_linker_search_path
-# THIS AT BUILD TIME NOT AT RUNTIME ==> parse ld.so.conf to see search path at runtime see __default_runtime_search_path
-# ld not used on macos
-# https://stackoverflow.com/a/21610523/5027535
-__ld_linker_search_path() {
-	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		ld --verbose 2>/dev/null | grep SEARCH | sed 's/SEARCH_DIR("=\?\([^"]\+\)"); */\1\n/g'  | grep -vE '^$'
-	fi
-}
-
-# gcc hardcoded libraries search path when linking
-# gcc passes a few extra -L paths to the linker, which you can list with the following command:
-# https://stackoverflow.com/a/21610523/5027535
-__gcc_linker_search_path() {
-	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		gcc -print-search-dirs | sed '/^lib/b 1;d;:1;s,/[^/.][^/]*/\.\./,/,;t 1;s,:[^=]*=,:;,;s,;,;  ,g; s/^libraries:[[:space:]]*;[[:space:]]*//' | tr : \\012
-	fi
-	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		gcc -print-search-dirs | sed -n 's/^libraries:[[:space:]]*\(=\)\{0,1\}[[:space:]]*//p' | tr ':' '\n'
-	fi
-}
-
-# SEARCH PATH AT LINKING WHILE BUILDING env var LIBRARY_PATH take precedence on linux and macos
-__linker_search_path() {
-	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		# 1. LIBRARY_PATH
-		[ ! -z $LIBRARY_PATH ] && printf '%s\n' "$(printf '%s' "$LIBRARY_PATH" | sed 's/:/\n/g')"
-		# 2. hardcoded gcc search path
-		__gcc_linker_search_path
-		# 3. hardcoded path into the linker (see __default_linker_search_path) 
-		__default_linker_search_path
-	fi
-
-	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		# 1. LIBRARY_PATH
-		[ ! -z $LIBRARY_PATH ] && printf '%s\n' "$(printf '%s' "$LIBRARY_PATH" | sed 's/:/\n/g')"
-		# 2. hardcoded gcc search path
-		__gcc_linker_search_path
-		# 3. hardcoded path into the linker (see __default_linker_search_path) 
-		__default_linker_search_path
-	fi
-}
-
-# pkg-config full search path
-# https://linux.die.net/man/1/pkg-config
-__pkgconfig_search_path() {
-	if $(type pkg-config >/dev/null 2>&1); then
-		echo ${PKG_CONFIG_PATH}:$(pkg-config --variable pc_path pkg-config)
-	fi
-}
-
-# NOTE apple-clang-llvm versions are not synchronized with clang-llvm versions
-__clang_version() {
-	clang --version | head -n 1 | grep -o -E "[[:digit:]].[[:digit:]].[[:digit:]]" | head -1
-}
-
-# RUNTIME specific --------------------------------------------------------
+# ---------------------------------------- PYTHON RUNTIME  ----------------------------------------
 
 # PYTHON VERSION
 # get python version on 1 digits (2, 3, ...)
@@ -803,7 +510,7 @@ __python_get_pyconfig() {
 
 
 
-# PACKAGE SYSTEM ----------------------------
+# --------------------------------------------------- PACKAGE MANAGER ---------------------------------------------------
 # set a global proxy for yum
 # sample : __yum_proxy_set $STELLA_HTTP_PROXY
 __yum_proxy_set() {
@@ -988,8 +695,9 @@ __use_package_manager() {
 	fi
 
 }
-# ----------- ANSIBLE -----------------------------------------------------
 
+
+# --------------------------------------------- ANSIBLE -----------------------------------------------------
 
 # ARG1 playbook yml file
 # ARG2 roles root folder
@@ -1062,36 +770,7 @@ __ansible_play_localhost() {
 
 }
 
-#
-# __ansible_play_vagrant() {
-#   INFRA_NAME="$1"
-#   PLAYBOOK="$2"
-#   LIMIT="$3"
-#   [ -z $LIMIT ] && LIMIT=all
-#
-#   ANSIBLE_INVENTORY_FILE=$STELLA_APP_ROOT/infra/$INFRA_NAME/.vagrant/provisioners/ansible/inventory
-#   ANSIBLE_PLAYBOOK=$STELLA_APP_ROOT/infra/playbook/$PLAYBOOK.yml
-#
-#   ANSIBLE_EXTRA_VARS=\{\"infra_name\":\"$INFRA_NAME\",\"proxy_name\":\"sesame\"\}
-#   ANSIBLE_ROLES_PATH=$STELLA_APP_ROOT/infra/roles PYTHONUNBUFFERED=1 ANSIBLE_FORCE_COLOR=true ANSIBLE_HOST_KEY_CHECKING=false ANSIBLE_SSH_ARGS='-o UserKnownHostsFile=/dev/null -o IdentitiesOnly=yes -o ControlMaster=auto -o ControlPersist=60s' ansible-playbook --connection=ssh --timeout=30 --inventory-file=$ANSIBLE_INVENTORY_FILE --limit=$LIMIT --extra-vars=$ANSIBLE_EXTRA_VARS -v $ANSIBLE_PLAYBOOK
-# }
-
-
-# search existing formula here : https://formulae.brew.sh/
-# TODO not complete because we might want to get binary by specifying a version and a platform
-__brew_get_archive_url() {
-	local formula="$1"
-
-	json="$(curl -skL "https://formulae.brew.sh/api/formula/${formula}.json" | tr -d '\n')"
-
-	bottles="$(echo "$json" | sed -E 's/.*"bottle":\{([^}]+\}\}\})\}.*/\1/')"
-
-	echo "$bottles" | grep -Eo '"[a-zA-Z0-9_]+":\{"cellar":"[^"]+","url":"[^"]+"' | \
-	sed -E 's/"([a-zA-Z0-9_]+)":\{"cellar":"[^"]+","url":"([^"]+)"/\1 \2/'
-
-}
-
-# --------- SYSTEM INSTALL/REMOVE RECIPES------------------------------------
+# ------------------------------------------- SYSTEM INSTALL/REMOVE RECIPES------------------------------------
 __sys_install() {
 	# _item package name
 	# other args : optionnal arguments

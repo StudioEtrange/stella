@@ -4,6 +4,7 @@ _STELLA_LIB_BINARY_INCLUDED_=1
 
 
 # GENERIC
+#.__info_bin
 # __is_bin
 # __is_shareable_bin
 # __is_static_lib
@@ -410,6 +411,7 @@ __is_static_lib() {
 # object is shareable (shared lib or executable)
 # NOTE on linux it happens that executable file have DYN flag instead of EXEC flag
 # http://stackoverflow.com/a/34522357
+# NOTE : on macos MH_BUNDLE is a loadable module. It is loadable but not linkable
 __is_shareable_bin() {
 	local _file="$1"
 	local _result=1
@@ -417,10 +419,12 @@ __is_shareable_bin() {
 		local _type_bin="$(__type_bin "$_file")"
 		case $_type_bin in
 			FILE_MACHO)
-					[[ "$(__macho_filetype "$(__macho_header "$_file")")" =~ MH_DYLIB|MH_BUNDLE ]] && _result=0
+					#[[ "$(__macho_filetype "$(__macho_header "$_file")")" =~ MH_DYLIB|MH_BUNDLE ]] && _result=0
+					[[ "$(__macho_filetype "$(__macho_header "$_file")")" =~ MH_DYLIB ]] && _result=0
 				;;
 			FILE_MACHO_UNIVERSAL)
-					[[ "$(__macho_universal_global_filetype "$_file")" =~ MH_DYLIB|MH_BUNDLE ]] && _result=0
+					#[[ "$(__macho_universal_global_filetype "$_file")" =~ MH_DYLIB|MH_BUNDLE ]] && _result=0
+					[[ "$(__macho_universal_global_filetype "$_file")" =~ MH_DYLIB ]] && _result=0
 				;;
 			FILE_ELF)
 					[[ "$(__elf_filetype "$(__elf_header "$_file")")" =~ ET_DYN ]] && _result=0

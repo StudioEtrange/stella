@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 _CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+#STELLA_LOG_STATE=OFF
+. "$_CURRENT_FILE_DIR/stella-link.sh" include
+
+update_macos-dyld-cache-list() {
+	$STELLA_API require "ipsw" "ipsw" "INTERNAL"
+	"${_CURRENT_FILE_DIR}/macos-dyld-cache-analyse.sh" --quiet --only-dylib --no-default-excludes --images 1>"${_CURRENT_FILE_DIR}/macos-dyld-cache-list.txt"
+}
 
 # https://gist.github.com/StudioEtrange/8c2801df68969538cfccc6dcdb8d6bcc
 update_macos-dyld-cache-analyse() {
@@ -105,7 +112,10 @@ case $1 in
   macos-dyld-cache-analyse)
     update_macos-dyld-cache-analyse
     ;;
+  macos-dyld-cache-list)
+	update_macos-dyld-cache-list
+	;;
   * )
-    echo "Usage : ${_CURRENT_FILE_DIR}/update.sh <bash-colors|bash_ini_parser|pure-getopt|screenFetch|neofetch|lddtree|homebrew-get-bottle|macos-link-analyse|macos-dyld-cache-analyse>"
+    echo "Usage : ${_CURRENT_FILE_DIR}/update.sh <bash-colors|bash_ini_parser|pure-getopt|screenFetch|neofetch|lddtree|homebrew-get-bottle|macos-link-analyse|macos-dyld-cache-analyse|macos-dyld-cache-list>"
     ;;
 esac

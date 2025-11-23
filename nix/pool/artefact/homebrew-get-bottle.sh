@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-set -euo pipefail
+# homebrew-get-bottle.sh
+# https://gist.github.com/StudioEtrange/5b0eac67f8917d7bc69e01d262854b5b
+# Author: StudioEtrange https://github.com/StudioEtrange
+# License: MIT
 
 # --- Options parsing ---
 usage() {

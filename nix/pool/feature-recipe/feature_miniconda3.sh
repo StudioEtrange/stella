@@ -1,8 +1,8 @@
 if [ ! "$_miniconda3_INCLUDED_" = "1" ]; then
 _miniconda3_INCLUDED_=1
 
-# deprecated
-# prefer miniforge3 with use mamba binary and conda-forge repository
+# DEPRECATED
+# prefer miniforge3 which use mamba binary and conda-forge repository
 # instead of conda binary anr anaconda repositories
 
 # NOTE :
