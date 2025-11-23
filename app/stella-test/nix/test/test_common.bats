@@ -415,3 +415,136 @@ teardown() {
 	assert_failure
 
 }
+
+
+
+@test "__sort_version" {
+
+	run __sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b 1.1" "SEP . DESC"
+	assert_output "1.1.1b 1.1.1a 1.1.1 1.1.0 1.1"
+
+	run __sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b 1.1" "SEP . ASC"
+	assert_output "1.1 1.1.0 1.1.1 1.1.1a 1.1.1b"
+
+	run __sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b 1.1"  "SEP . DESC ENDING_CHAR_REVERSE"
+	assert_output "1.1.1 1.1.1b 1.1.1a 1.1.0 1.1"
+
+	run __sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b 1.1"  "SEP . ASC ENDING_CHAR_REVERSE"
+	assert_output "1.1 1.1.0 1.1.1a 1.1.1b 1.1.1"
+
+	run __sort_version "1.0.0 1.0.1 1.1.1 1.1.1a 1.1.1b" "SEP . DESC"
+	assert_output "1.1.1b 1.1.1a 1.1.1 1.0.1 1.0.0"
+
+	run __sort_version "1.0.0 1.0.1 1.1.1 1.1.1a 1.1.1b" "SEP . ASC"
+	assert_output "1.0.0 1.0.1 1.1.1 1.1.1a 1.1.1b"
+
+	run __sort_version "build507 build510 build403 build4000 build" "ASC"
+	assert_output "build build403 build507 build510 build4000"
+
+	run __sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "ASC"
+	assert_output "1.1.0 1.1.1 1.1.1a 1.1.1b"
+
+	run __sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "ASC SEP ."
+	assert_output "1.1.0 1.1.1 1.1.1a 1.1.1b"
+
+	run __sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "ASC SEP . ENDING_CHAR_REVERSE"
+	assert_output "1.1.0 1.1.1a 1.1.1b 1.1.1"
+
+	run __sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "DESC"
+	assert_output "1.1.1b 1.1.1a 1.1.1 1.1.0"
+
+	run __sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "DESC SEP ."
+	assert_output "1.1.1b 1.1.1a 1.1.1 1.1.0"
+
+	run __sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "DESC SEP . ENDING_CHAR_REVERSE"
+	assert_output "1.1.1 1.1.1b 1.1.1a 1.1.0"
+
+	run __sort_version "1.1.0 1.1.1 1.1.1alpha 1.1.1beta1 1.1.1beta2" "ASC ENDING_CHAR_REVERSE SEP ."
+	assert_output "1.1.0 1.1.1alpha 1.1.1beta1 1.1.1beta2 1.1.1"
+
+	run __sort_version "1.1.0 1.1.1 1.1.1alpha 1.1.1beta1 1.1.1beta2" "DESC ENDING_CHAR_REVERSE SEP ."
+	assert_output "1.1.1 1.1.1beta2 1.1.1beta1 1.1.1alpha 1.1.0"
+
+	run __sort_version "1.9.0 1.10.0 1.10.1.1 1.10.1 1.10.1alpha1 1.10.1beta1 1.10.1beta2 1.10.2 1.10.2.1 1.10.2.2 1.10.0RC1 1.10.0RC2" "DESC ENDING_CHAR_REVERSE SEP ."
+	assert_output "1.10.2.2 1.10.2.1 1.10.2 1.10.1.1 1.10.1 1.10.1beta2 1.10.1beta1 1.10.1alpha1 1.10.0 1.10.0RC2 1.10.0RC1 1.9.0"
+
+}
+
+@test "__filter_version_list" {
+
+	run __filter_version_list ">=1.1.0" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
+	assert_output "1.1.0 1.1.1 1.1.1a 1.1.1b"
+
+	run __filter_version_list ">=1.1.1" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
+	assert_output "1.1.1 1.1.1a 1.1.1b"
+
+	run __filter_version_list ">=1.1.1" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP . ENDING_CHAR_REVERSE"
+	assert_output "1.1.1"
+
+	run __filter_version_list "<1.1.0" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
+	assert_output ""
+
+	run __filter_version_list "<1.1.1a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
+	assert_output "1.1.0 1.1.1"
+
+	run __filter_version_list "<=1.1.1a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
+	assert_output "1.1.0 1.1.1 1.1.1a"
+
+	run __filter_version_list "<=1.1.1a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP . ENDING_CHAR_REVERSE"
+	assert_output "1.1.0 1.1.1a"
+
+	run __filter_version_list "^1.1.1a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP . ENDING_CHAR_REVERSE"
+	assert_output "1.1.1a"
+
+	run __filter_version_list "^1.1" "1.1.0 1.1.1 1.1.1a 1.1.1b 1.1" "SEP ."
+	assert_output "1.1 1.1.0 1.1.1 1.1.1a 1.1.1b"
+
+	run __filter_version_list "^1.1" "1.1.0 1.1.1 1.1.1a 1.1.1b 1.1" "DESC SEP ." 
+	assert_output "1.1.1b 1.1.1a 1.1.1 1.1.0 1.1"
+	
+	run __filter_version_list "1.1" "1.1.0 1.1.1 1.1.1a 1.1.1b 1.1" "SEP ." 
+	assert_output "1.1"
+
+	run __filter_version_list "" "1.1.0 1.1.1 1.1.1a 1.1.1b 1.1" "SEP ." 
+	assert_output "1.1 1.1.0 1.1.1 1.1.1a 1.1.1b"
+}
+
+
+# ^version : pin version and select most recent version with same version part (not exactly like npm)
+#		^1.0 select the latest 1.0.* version (like 1.0.0 or 1.0.4)
+#		^1 select the latest 1.* version (like 1.0.0 or 1.2.4)
+@test "__select_version_from_list" {
+
+	run __select_version_from_list ">1.1.1a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
+	assert_output "1.1.1b"
+
+	run __select_version_from_list ">1.1.1b" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
+	assert_output ""
+
+	run __select_version_from_list ">=1.1.1a" "1.1.1 1.1.0 1.1.1a 1.1.1b" "SEP ."
+	assert_output "1.1.1a"
+
+	run __select_version_from_list "<=1.1.1c" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
+	assert_output "1.1.1b"
+
+	run __select_version_from_list "<1.1" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
+	assert_output ""
+
+	run __select_version_from_list "<1.1.0a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
+	assert_output "1.1.0"
+
+	run __select_version_from_list "<=1.1.1a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
+	assert_output "1.1.1a"
+
+	run __select_version_from_list "^1.1.1a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
+	assert_output "1.1.1a"
+
+	run __select_version_from_list "^1.0" "1.0.0 1.0.1 1.1.1 1.1.1a 1.1.1b" "SEP ."
+	assert_output "1.0.1"
+
+	run __select_version_from_list "^1.1" "1.1 1.0.0" "SEP ."
+	assert_output "1.1"
+
+	run __select_version_from_list "^1.1" "1.1 1.1.0" "SEP ."
+	assert_output "1.1.0"
+}

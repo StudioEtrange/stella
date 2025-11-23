@@ -421,6 +421,7 @@ __get_last_version() {
 }
 
 # pick a version from a list according to constraint
+# options LIMIT n, ENDING_CHAR_REVERSE, SEP c : see __sort_version
 # selector could be
 #				a specific version number
 #				or a version number with a constraint symbol >, >=, <, <=, ^
@@ -435,41 +436,17 @@ __get_last_version() {
 #				^version : pin version and select most recent version with same version part (not exactly like npm)
 #					^1.0 select the latest 1.0.* version (like 1.0.0 or 1.0.4)
 #					^1 select the latest 1.* version (like 1.0.0 or 1.2.4)
-
-# 	options LIMIT n, ENDING_CHAR_REVERSE, SEP c : see __sort_version
-
+# samples: see samples in test_common.bats
 #		__select_version_from_list ">1.1.1a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
-# desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
-# select_version result is : 1.1.1b
+# 				desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
+# 				selected_version result is : 1.1.1b
 #		__select_version_from_list ">1.1.1b" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
-# desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
-# select_version result is : <none>
+# 				desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
+# 				selected_version result is : <none>
 #		__select_version_from_list ">=1.1.1a" "1.1.1 1.1.0 1.1.1a 1.1.1b" "SEP ."
-# desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
-# select_version result is : 1.1.1a
-#		__select_version_from_list "<=1.1.1c" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
-# desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
-# select_version result is : 1.1.1b
-#		__select_version_from_list "<1.1" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
-# desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
-# select_version result is : 1.1.0
-#		__select_version_from_list "<1.1.0a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
-# desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
-# select_version result is : 1.1.0
-#		__select_version_from_list "<=1.1.1a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
-# desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
-# select_version result is : 1.1.0
-#		__select_version_from_list "^1.1.1a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
-# desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
-# select_version result is : 1.1.1a
-#		__select_version_from_list "^1.0" "1.0.0 1.0.1 1.1.1 1.1.1a 1.1.1b" "SEP ."
-# desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0 1.0.1 1.0.8
-# select_version result is : 1.0.1
-#			__select_version_from_list "^1.1" "1.1 1.0.0" "SEP ."
-# select_version result is : 1.1
-#			__select_version_from_list "^1.1" "1.1 1.1.0" "SEP ."
-# select_version result is : 1.1.0
-__select_version_from_list() {
+# 				desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
+# 				selected_version result is : 1.1.1a
+__select_version_from_list_old() {
 	local selector="$1"
 	local list="$2"
 	local opt="$3"
@@ -614,31 +591,9 @@ __select_version_from_list() {
 # 	same as __select_version_from_list but return a matching list of versions instead of one picked version
 # 	options LIMIT n, ENDING_CHAR_REVERSE, SEP c : see __sort_version
 #					ASC (default), DESC : will return result filtered list in this order
+# samples : see samples in test_common.bats
 # __filter_version_list ">=1.1.0" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
 #		1.1.0 1.1.1 1.1.1a 1.1.1b
-# __filter_version_list ">=1.1.1" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
-#		1.1.1 1.1.1a 1.1.1b
-# __filter_version_list ">=1.1.1" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP . ENDING_CHAR_REVERSE"
-#		1.1.1
-# __filter_version_list "<1.1.0" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
-#
-# __filter_version_list "<1.1.1a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
-#		1.1.0 1.1.1
-# __filter_version_list "<=1.1.1a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
-#		1.1.0 1.1.1 1.1.1a
-# __filter_version_list "<=1.1.1a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP . ENDING_CHAR_REVERSE"
-#		1.1.0 1.1.1a
-# __filter_version_list "^1.1.1a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP . ENDING_CHAR_REVERSE"
-#		1.1.1a
-# __filter_version_list "^1.1" "1.1.0 1.1.1 1.1.1a 1.1.1b 1.1" "SEP ."
-#		1.1 1.1.0 1.1.1 1.1.1a 1.1.1b
-# __filter_version_list "^1.1" "1.1.0 1.1.1 1.1.1a 1.1.1b 1.1" "DESC SEP ." 
-#		1.1.1b 1.1.1a 1.1.1 1.1.0 1.1
-# __filter_version_list "1.1" "1.1.0 1.1.1 1.1.1a 1.1.1b 1.1" "SEP ." 
-#		1.1
-# __filter_version_list "" "1.1.0 1.1.1 1.1.1a 1.1.1b 1.1" "SEP ." 
-#		1.1.0 1.1.1 1.1.1a 1.1.1b 1.1
-
 __filter_version_list() {
 	local selector="$1"
 	local list="$2"
@@ -652,11 +607,11 @@ __filter_version_list() {
 	for o in $opt; do
 		[ "$o" = "ASC" ] && __result_order="$o"
 		[ "$o" = "DESC" ] && __result_order="$o"
+		[ "$flag_limit" = "ON" ] && limit="$o" && flag_limit="OFF"
+		[ "$o" = "LIMIT" ] && flag_limit="ON"
 		[ "$o" = "ENDING_CHAR_REVERSE" ] && __sort_opt="${__sort_opt} ENDING_CHAR_REVERSE"
 		[ "$flag_sep" = "ON" ] && __sort_opt="${__sort_opt} $o" && flag_sep="OFF"
 		[ "$o" = "SEP" ] && flag_sep="ON" && __sort_opt="${__sort_opt} SEP"
-		[ "$flag_limit" = "ON" ] && limit="$o" && flag_limit="OFF"
-		[ "$o" = "LIMIT" ] && flag_limit="ON"
 	done
 
 
@@ -795,31 +750,79 @@ __filter_version_list() {
 
 }
 
+# pick a version from a list according to constraint
+# options LIMIT n, ENDING_CHAR_REVERSE, SEP c : see __sort_version
+# selector could be
+#				a specific version number
+#				or a version number with a constraint symbol >, >=, <, <=, ^
+#				>version : most recent after version
+#					>1.0 select the latest version after 1.0, which is not 1.0 (like 2.3.4)
+#				>=version : most recent including version
+#					>=1.0 select the latest version after 1.0, which may be 1.0
+#				<version : most recent just before version
+#					<1.0 select the latest just before 1.0, which is not 1.0 (like 0.3.4)
+#				<=version : most recent just before version including version itself
+#					<=1.0 select the latest version just before 1.0, which may be 1.0
+#				^version : pin version and select most recent version with same version part (not exactly like npm)
+#					^1.0 select the latest 1.0.* version (like 1.0.0 or 1.0.4)
+#					^1 select the latest 1.* version (like 1.0.0 or 1.2.4)
+# samples: see samples in test_common.bats
+#		__select_version_from_list ">1.1.1a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
+# 				desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
+# 				selected_version result is : 1.1.1b
+#		__select_version_from_list ">1.1.1b" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
+# 				desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
+# 				selected_version result is : <none>
+#		__select_version_from_list ">=1.1.1a" "1.1.1 1.1.0 1.1.1a 1.1.1b" "SEP ."
+# 				desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
+# 				selected_version result is : 1.1.1a
+__select_version_from_list() {
+	local selector="$1"
+	local list="$2"
+	local opt="$3"
+	local result=""
+	local filtered
+	local v
+
+	case ${selector} in
+		\>=* | \>* )
+			# take first element of the filtered list
+			filtered="$(__filter_version_list "${selector}" "${list}" "${opt}")"
+			for v in ${filtered}; do
+				result="${v}"
+				break
+			done
+			;;
+
+		\<=* | \<* | ^* )
+			# take last element of the filtered list
+			filtered="$(__filter_version_list "${selector}" "${list}" "${opt}")"
+			if [ -n "${filtered}" ]; then
+				for v in ${filtered}; do
+					result="${v}"
+				done
+			fi
+			;;
+
+		"" )
+			result=""
+			;;
+
+		* )
+			filtered="$(__filter_version_list "${selector}" "${list}" "${opt}")"
+			for v in ${filtered}; do
+				result="${v}"
+				break
+			done
+			;;
+	esac
+
+	echo "${result}"
+}
+
 
 
 # sort a list of versions
-
-#__sort_version "build507 build510 build403 build4000 build" "ASC"
-#  build build403 build507 build510 build4000
-#__sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "ASC"
-#  1.1.0 1.1.1 1.1.1a 1.1.1b
-#__sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "ASC SEP ."
-#  1.1.0 1.1.1 1.1.1a 1.1.1b
-#__sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "ASC SEP . ENDING_CHAR_REVERSE"
-#  1.1.0 1.1.1a 1.1.1b 1.1.1
-#__sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "DESC"
-#  1.1.1b 1.1.1a 1.1.1 1.1.0
-#__sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "DESC SEP ."
-#  1.1.1b 1.1.1a 1.1.1 1.1.0
-#__sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "DESC SEP . ENDING_CHAR_REVERSE"
-#  1.1.1 1.1.1b 1.1.1a 1.1.0
-#__sort_version "1.1.0 1.1.1 1.1.1alpha 1.1.1beta1 1.1.1beta2" "ASC ENDING_CHAR_REVERSE SEP ."
-#  1.1.0 1.1.1alpha 1.1.1beta1 1.1.1beta2 1.1.1
-#__sort_version "1.1.0 1.1.1 1.1.1alpha 1.1.1beta1 1.1.1beta2" "DESC ENDING_CHAR_REVERSE SEP ."
-#  1.1.1 1.1.1beta2 1.1.1beta1 1.1.1alpha 1.1.0
-#__sort_version "1.9.0 1.10.0 1.10.1.1 1.10.1 1.10.1alpha1 1.10.1beta1 1.10.1beta2 1.10.2 1.10.2.1 1.10.2.2 1.10.0RC1 1.10.0RC2" "DESC ENDING_CHAR_REVERSE SEP ."
-#  1.10.2.2 1.10.2.1 1.10.2 1.10.1.1 1.10.1 1.10.1beta2 1.10.1beta1 1.10.1alpha1 1.10.0 1.10.0RC2 1.10.0RC1 1.9.0
-
 # options :
 #		ASC : ascending order
 #		DESC : decresacing order
@@ -829,8 +832,15 @@ __filter_version_list() {
 # 			we must indicate separator with SEP if we use ENDING_CHAR_REVERSE and if there is any separator (obviously)
 #		LIMIT n : limit to a number of result
 # NOTE : characters "}", "!" and "{" may cause problem if they are used in versions strings
-
-
+# samples : see samples ih test_common.bats
+#__sort_version "build507 build510 build403 build4000 build" "ASC"
+#  build build403 build507 build510 build4000
+#__sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "ASC"
+#  1.1.0 1.1.1 1.1.1a 1.1.1b
+#__sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "ASC SEP ."
+#  1.1.0 1.1.1 1.1.1a 1.1.1b
+#__sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "ASC SEP . ENDING_CHAR_REVERSE"
+#  1.1.0 1.1.1a 1.1.1b 1.1.1
 __sort_version() {
 	local list=$1
 	local opt="$2"
