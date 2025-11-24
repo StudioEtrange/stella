@@ -2684,6 +2684,7 @@ __resource() {
 		[ ! -d $FINAL_DESTINATION ] && mkdir -p $FINAL_DESTINATION
 
 		case ${PROTOCOL} in
+			# TODO
 			HOMEBREW_BOTTLE)
 				if [ "$_opt_get" = "ON" ]; then __download_uncompress "$URI" "$_download_filename" "$FINAL_DESTINATION" "$_STRIP"; fi
 				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi

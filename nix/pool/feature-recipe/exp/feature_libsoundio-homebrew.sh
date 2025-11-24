@@ -1,6 +1,8 @@
 if [ ! "$_LIBSOUNDIO-HOMEBREW_INCLUDED_" = "1" ]; then
 _LIBSOUNDIO-HOMEBREW_INCLUDED_=1
 
+# TODO
+# ./nix/pool/artefact/homebrew-get-bottle.sh -n libsoundio --list
 feature_libsoundio-homebrew() {
 	FEAT_NAME="libsoundio-homebrew"
 	FEAT_LIST_SCHEMA="latest:binary"
@@ -14,7 +16,7 @@ feature_libsoundio-homebrew_latest() {
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
-			FEAT_BINARY_URL_x64="https://github.com/fathyb/libsoundio-homebrew/releases/download/v0.0.3/libsoundio-homebrew.macos-amd64.zip"
+			FEAT_BINARY_URL_x64=""
 			FEAT_BINARY_URL_FILENAME_x64="libsoundio-homebrew-macos-amd64-${FEAT_VERSION}.zip"
 			FEAT_BINARY_URL_PROTOCOL_x64="HOMEBREW_BOTTLE"
 		fi
