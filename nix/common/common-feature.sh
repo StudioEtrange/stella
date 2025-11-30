@@ -15,9 +15,9 @@ __list_active_features_full() {
 }
 
 __list_feature_version() {
-	local _SCHEMA=$1
+	local _SCHEMA="$1"
 
-	__internal_feature_context $_SCHEMA
+	__internal_feature_context "$_SCHEMA"
 	echo "$(__sort_version "$FEAT_LIST_SCHEMA" "DESC SEP _")"
 }
 
@@ -34,7 +34,14 @@ __feature_init() {
 
 	__internal_feature_context "$_SCHEMA"
 	# check if feature is not already enabled
-	if [[ ! " ${FEATURE_LIST_ENABLED[@]} " =~ " $FEAT_NAME#$FEAT_VERSION " ]]; then
+	local _already_enabled=0
+	case " $FEATURE_LIST_ENABLED " in
+		*" $FEAT_NAME#$FEAT_VERSION "*)
+			_already_enabled=1
+		;;
+	esac
+	#if [[ ! " ${FEATURE_LIST_ENABLED[@]} " =~ " $FEAT_NAME#$FEAT_VERSION " ]]; then
+	if [ "$_already_enabled" -eq 0 ]; then
 		__feature_inspect "$FEAT_SCHEMA_SELECTED"
 		if [ "$TEST_FEATURE" = "1" ]; then
 
@@ -74,8 +81,8 @@ __feature_init() {
 				fi
 			done
 			__pop_schema_context
-
 			FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED $FEAT_NAME#$FEAT_VERSION"
+
 			if [ ! "$_opt_hidden_feature" = "ON" ]; then
 				FEATURE_LIST_ENABLED_VISIBLE="$FEATURE_LIST_ENABLED_VISIBLE $FEAT_NAME#$FEAT_VERSION"
 			fi
@@ -93,7 +100,14 @@ __feature_init() {
 					fi
 					# call env call back of each bundle item
 					# only uf call back have not been called just before (when a bundle is just installed each bundle items have already been initialized and env callback already called)
-					if [[ ! " ${FEATURE_LIST_ENABLED[@]} " =~ " $p " ]]; then
+					local _env_already_called=0
+					case " $FEATURE_LIST_ENABLED " in
+						*" $p "*)
+							_env_already_called=1
+						;;
+					esac
+					#if [[ ! " ${FEATURE_LIST_ENABLED[@]} " =~ " $p " ]]; then
+					if [ "$_env_already_called" -eq 0 ]; then
 						for c in $FEAT_ENV_CALLBACK; do
 							$c
 						done
@@ -136,8 +150,8 @@ __feature_add_repo() {
 
 # get information on feature (from catalog)
 __feature_catalog_info() {
-	local _SCHEMA=$1
-	__internal_feature_context $_SCHEMA
+	local _SCHEMA="$1"
+	__internal_feature_context "$_SCHEMA"
 }
 
 
@@ -435,13 +449,13 @@ __feature_info() {
 
 # test if a feature is installed
 # AND retrieve informations based on actually installed feature
-# OR retrieve informations from feature recipe if not installed
+# OR retrieve informations from feature recipe catalog if not installed
 __feature_inspect() {
 	local _SCHEMA="$1"
 	TEST_FEATURE=0
 
 	[ "$_SCHEMA" = "" ] && return
-	__feature_match_installed "$_SCHEMA"
+	__feature_match_installed "${_SCHEMA}"
 	if [ ! "$FEAT_SCHEMA_SELECTED" = "" ]; then
 		if [ ! "$FEAT_BUNDLE" = "" ]; then
 			local p
@@ -479,7 +493,7 @@ __feature_inspect() {
 			done
 		fi
 	else
-		__feature_catalog_info $_SCHEMA
+		__feature_catalog_info "${_SCHEMA}"
 	fi
 }
 
@@ -1387,7 +1401,7 @@ __select_official_schema() {
 	fi
 
 	if [ "$_official" = "1" ]; then
-		eval $_RESULT_SCHEMA=$_FILLED_SCHEMA$_OS_OPTION
+		[ ! "$_RESULT_SCHEMA" = "" ] && eval $_RESULT_SCHEMA=$_FILLED_SCHEMA$_OS_OPTION
 		# TODO : do we need this __translate_schema call ?
 		#__translate_schema "$_SCHEMA" "" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR" "_TR_FEATURE_OS_RESTRICTION" "_TR_FEATURE_OS_EXCLUSION"
 
@@ -1404,12 +1418,182 @@ __select_official_schema() {
 }
 
 
+
+# split schema properties
+#
+# schema structure:
+#   [cond_lib[#version]%][cond_bin[#version]!]name[#version][@arch][:flavour][/os_restriction][\os_exclusion]
+#
+# Prefix conditions:
+#   cond_lib%   -> requires a library to exist in libpath (repeatable)
+#   cond_bin!   -> requires a binary to exist in PATH (repeatable)
+#   both may include optional #version (e.g. unzip#5)
+#
+# Suffix fields (unordered):
+#   #version    -> feature version or version selector (> >= < <= ^)
+#   @arch       -> architecture (x86 or x64)
+#   :flavour    -> binary or source
+#   /os_restr   -> OS restriction
+#   \os_excl    -> OS exclusion
+#
+# Example:
+#   jq!unzip#5!libpar%libz#2_1%foo:binary
+#
+# Output variables are passed as names:
+#   __translate_schema SCHEMA \
+#       VAR_NAME VAR_VER VAR_ARCH VAR_FLAV VAR_OSR VAR_OSE \
+#       [VAR_COND_LIB VAR_COND_BIN]
+__translate_schema() {
+    local _tr_schema="$1"
+
+    local _VAR_FEATURE_NAME="$2"
+    local _VAR_FEATURE_VER="$3"
+    local _VAR_FEATURE_ARCH="$4"
+    local _VAR_FEATURE_FLAVOUR="$5"
+    local _VAR_FEATURE_OS_RESTRICTION="$6"
+    local _VAR_FEATURE_OS_EXCLUSION="$7"
+    local _VAR_FEATURE_COND_LIB="$8"   # stores library conditions
+    local _VAR_FEATURE_COND_BIN="$9"   # stores binary conditions
+
+    # Initialize returned variables (empty)
+    [ -n "$_VAR_FEATURE_NAME" ]           && eval $_VAR_FEATURE_NAME=
+    [ -n "$_VAR_FEATURE_VER" ]            && eval $_VAR_FEATURE_VER=
+    [ -n "$_VAR_FEATURE_ARCH" ]           && eval $_VAR_FEATURE_ARCH=
+    [ -n "$_VAR_FEATURE_FLAVOUR" ]        && eval $_VAR_FEATURE_FLAVOUR=
+    [ -n "$_VAR_FEATURE_OS_RESTRICTION" ] && eval $_VAR_FEATURE_OS_RESTRICTION=
+    [ -n "$_VAR_FEATURE_OS_EXCLUSION" ]   && eval $_VAR_FEATURE_OS_EXCLUSION=
+    [ -n "$_VAR_FEATURE_COND_LIB" ]       && eval $_VAR_FEATURE_COND_LIB=
+    [ -n "$_VAR_FEATURE_COND_BIN" ]       && eval $_VAR_FEATURE_COND_BIN=
+
+    # Internal working variables
+    local _name=""
+    local _ver=""
+    local _arch=""
+    local _flavour=""
+    local _osr=""
+    local _ose=""
+    local _cond_lib=""
+    local _cond_bin=""
+
+    local _rest="${_tr_schema:-}"
+    local i=0 ch len
+
+    #
+    # Step 0 — parse prefix repeated conditions
+    #   format: <token>! or <token>%
+    #   stops when there is no '!' or '%' left (the rest is the main schema)
+    #
+    while true; do
+        # nothing left -> stop
+        [ -z "$_rest" ] && break
+
+        # find first '!' or '%'
+        local idx=-1
+        local marker=""
+        len=${#_rest}
+        i=0
+        while [ "$i" -lt "$len" ]; do
+            ch=${_rest:$i:1}
+            if [ "$ch" = "!" ] || [ "$ch" = "%" ]; then
+                idx=$i
+                marker=$ch
+                break
+            fi
+            i=$((i+1))
+        done
+
+        # no '!' or '%' -> no more prefix conditions
+        [ "$idx" -lt 0 ] && break
+
+        # token before marker
+        local token=${_rest:0:$idx}
+
+        # if token empty, stop to avoid infinite loop / malformed prefix
+        [ -z "$token" ] && break
+
+        # register prefix condition
+        case "$marker" in
+            '!') _cond_bin="${_cond_bin:+$_cond_bin }$token" ;;
+            '%') _cond_lib="${_cond_lib:+$_cond_lib }$token" ;;
+        esac
+
+        # advance after marker
+        _rest=${_rest:$((idx+1))}
+    done
+
+    #
+    # Step 1 — extract feature name (up to first special separator)
+    #
+    i=0
+    while [ $i -lt ${#_rest} ]; do
+        ch=${_rest:$i:1}
+        case "$ch" in
+            '#'|'@'|':'|'/'|'\')
+                break
+                ;;
+        esac
+        i=$((i+1))
+    done
+    _name=${_rest:0:$i}
+    _rest=${_rest:$i}
+
+    #
+    # Step 2 — parse unordered suffix selectors (# @ : / \)
+    #
+    local c part
+    while [ -n "$_rest" ]; do
+        c=${_rest:0:1}
+        _rest=${_rest:1}
+
+        i=0
+        while [ $i -lt ${#_rest} ]; do
+            ch=${_rest:$i:1}
+            case "$ch" in
+                '#'|'@'|':'|'/'|'\')
+                    break
+                    ;;
+            esac
+            i=$((i+1))
+        done
+        part=${_rest:0:$i}
+        _rest=${_rest:$i}
+
+        case "$c" in
+            '#') _ver="$part" ;;
+            '@') _arch="$part" ;;
+            ':') _flavour="$part" ;;
+            '/') _osr="$part" ;;
+            '\') _ose="$part" ;;
+        esac
+    done
+
+    #
+    # Step 3 — assign parsed results to user variables
+    #
+    [ -n "$_VAR_FEATURE_NAME" ]           && eval $_VAR_FEATURE_NAME=\"$_name\"
+    [ -n "$_VAR_FEATURE_VER" ]            && eval $_VAR_FEATURE_VER=\"$_ver\"
+    [ -n "$_VAR_FEATURE_ARCH" ]           && eval $_VAR_FEATURE_ARCH=\"$_arch\"
+    [ -n "$_VAR_FEATURE_FLAVOUR" ]        && eval $_VAR_FEATURE_FLAVOUR=\"$_flavour\"
+    [ -n "$_VAR_FEATURE_OS_RESTRICTION" ] && eval $_VAR_FEATURE_OS_RESTRICTION=\"$_osr\"
+    [ -n "$_VAR_FEATURE_OS_EXCLUSION" ]   && eval $_VAR_FEATURE_OS_EXCLUSION=\"$_ose\"
+    [ -n "$_VAR_FEATURE_COND_LIB" ]       && eval $_VAR_FEATURE_COND_LIB=\"$_cond_lib\"
+    [ -n "$_VAR_FEATURE_COND_BIN" ]       && eval $_VAR_FEATURE_COND_BIN=\"$_cond_bin\"
+
+    # DEBUG sample output
+    # echo "NAME=$_name VER=$_ver ARCH=$_arch FLAV=$_flavour OSR=$_osr OSE=$_ose COND_LIB=$_cond_lib COND_BIN=$_cond_bin"
+	return 0
+}
+
+
+# TODO
 # split schema properties
 # feature schema name[#version][@arch][:flavour][/os_restriction][\os_exclusion] in any order
+#  				[condition_library_in_libpath%][condition_binary_in_path!]name[#version][@arch][:flavour][/os_restriction][\os_exclusion] 
 #				@arch could be x86 or x64 (means 32 bits or 64 bits)
 #				:flavour could be binary or source
+#				#version could contain a version selector version number with a constraint symbol >, >=, <, <=, ^ (see __select_version_from_list)
 # example: wget/ubuntu#1_2@x86:source wget/ubuntu#1_2@x86:source\macos
-__translate_schema() {
+__translate_schema_old() {
 	local _tr_schema="$1"
 
 	local _VAR_FEATURE_NAME="$2"
@@ -1442,41 +1626,42 @@ __translate_schema() {
 
 	_char=":"
 	if [ -z "${_tr_schema##*$_char*}" ]; then
-		if [ ! "$_VAR_FEATURE_FLAVOUR" = "" ]; then eval $_VAR_FEATURE_FLAVOUR="$(echo $_tr_schema | sed 's,^.*:\([^/\\#@]*\).*$,\1,')"; fi
+		if [ ! "$_VAR_FEATURE_FLAVOUR" = "" ]; then eval $_VAR_FEATURE_FLAVOUR=\"$(echo $_tr_schema | sed 's,^.*:\([^/\\#@]*\).*$,\1,')\"; fi
 	fi
 
 	_char="/"
 	if [ -z "${_tr_schema##*$_char*}" ]; then
-		if [ ! "$_VAR_FEATURE_OS_RESTRICTION" = "" ]; then eval $_VAR_FEATURE_OS_RESTRICTION="$(echo $_tr_schema | sed 's,^.*/\([^:\\#@]*\).*$,\1,')"; fi
+		if [ ! "$_VAR_FEATURE_OS_RESTRICTION" = "" ]; then eval $_VAR_FEATURE_OS_RESTRICTION=\"$(echo $_tr_schema | sed 's,^.*/\([^:\\#@]*\).*$,\1,')\"; fi
 	fi
 
 	_char='\\'
 	if [ -z "${_tr_schema##*\\*}" ]; then
-		if [ ! "$_VAR_FEATURE_OS_EXCLUSION" = "" ]; then eval $_VAR_FEATURE_OS_EXCLUSION="$(echo $_tr_schema | sed 's,^.*\\\([^:/#@]*\).*$,\1,')"; fi
+		if [ ! "$_VAR_FEATURE_OS_EXCLUSION" = "" ]; then eval $_VAR_FEATURE_OS_EXCLUSION=\"$(echo $_tr_schema | sed 's,^.*\\\([^:/#@]*\).*$,\1,')\"; fi
 	fi
 
 	_char="#"
 	if [ -z "${_tr_schema##*$_char*}" ]; then
-		# NOTE : we escape < char while eval
-		if [ ! "$_VAR_FEATURE_VER" = "" ]; then eval $_VAR_FEATURE_VER="$(echo $_tr_schema | sed -e 's,^.*#\([^:/\\@]*\).*$,\1,'  -e 's,<,\\<,')"; fi
+		if [ ! "$_VAR_FEATURE_VER" = "" ]; then eval $_VAR_FEATURE_VER=\"$(echo $_tr_schema | sed -e 's,^.*#\([^:/\\@]*\).*$,\1,')\"; fi
 	fi
 
 	_char="@"
 	if [ -z "${_tr_schema##*$_char*}" ]; then
-		if [ ! "$_VAR_FEATURE_ARCH" = "" ]; then eval $_VAR_FEATURE_ARCH="$(echo $_tr_schema | sed 's,^.*@\([^:/\\#]*\).*$,\1,')"; fi
+		if [ ! "$_VAR_FEATURE_ARCH" = "" ]; then eval $_VAR_FEATURE_ARCH=\"$(echo $_tr_schema | sed 's,^.*@\([^:/\\#]*\).*$,\1,')\"; fi
 	fi
 
 
-	if [ ! "$_VAR_FEATURE_NAME" = "" ]; then eval $_VAR_FEATURE_NAME="$(echo $_tr_schema | sed 's,^\([^:/\\#@]*\).*$,\1,')"; fi
+	if [ ! "$_VAR_FEATURE_NAME" = "" ]; then eval $_VAR_FEATURE_NAME=\"$(echo $_tr_schema | sed 's,^\([^:/\\#@]*\).*$,\1,')\"; fi
 
 	# Debug log
 	#echo TRANSLATE RESULT NAME: $_VAR_FEATURE_NAME = $(eval echo \$${_VAR_FEATURE_NAME})  VERSION: $_VAR_FEATURE_VER = $(eval echo \$${_VAR_FEATURE_VER}) ARCH: $_VAR_FEATURE_ARCH = $(eval echo \$${_VAR_FEATURE_ARCH}) FLAVOUR: $_VAR_FEATURE_FLAVOUR = $(eval echo \$${_VAR_FEATURE_FLAVOUR}) OSR: $_VAR_FEATURE_OS_RESTRICTION = $(eval echo \$${_VAR_FEATURE_OS_RESTRICTION})
+
+	return 0
 }
 
 
 # --------------- DEPRECATED ---------------------------------------------
 
-
+# TODO
 __file5() {
 	URL=ftp://ftp.astron.com/pub/file/file-5.15.tar.gz
 	VER=5.15

@@ -22,7 +22,7 @@ feature_autotools_1_2() {
 	# BUNDLE ITEM LIST
 	# order is important
 	# see http://petio.org/tools.html
-	FEAT_BUNDLE_ITEM="texinfo#7_1:source m4#1_4_19:source autoconf#2_71:source automake#1_16_5:source libtool#2_4_7:source"
+	FEAT_BUNDLE_ITEM="texinfo#^7_1:source m4#1_4_19:source autoconf#2_71:source automake#1_16_5:source libtool#2_4_7:source"
 
 	FEAT_ENV_CALLBACK=
 	FEAT_BUNDLE_CALLBACK=
