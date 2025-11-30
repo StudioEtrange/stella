@@ -320,21 +320,21 @@ __get_assets_properties() {
 
 
 __remove_app_feature() {
-	local _SCHEMA=$1
+	local _SCHEMA="$1"
 
-	__app_feature "REMOVE" $_SCHEMA
+	__app_feature "REMOVE" "$_SCHEMA"
 }
 
 __add_app_feature() {
-	local _SCHEMA=$1
+	local _SCHEMA="$1"
 
-	__app_feature "ADD" $_SCHEMA
+	__app_feature "ADD" "$_SCHEMA"
 }
 
 __app_feature() {
 	# ADD or REMOVE
-	local _MODE=$1
-	local _SCHEMA=$2
+	local _MODE="$1"
+	local _SCHEMA="$2"
 	local _APP_FEATURE_LIST=
 
 	local _flag=0
@@ -386,7 +386,7 @@ __app_feature() {
 		if [ ! "$STELLA_APP_FEATURE_LIST" = "$_APP_FEATURE_LIST" ]; then
 			__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" "$_APP_FEATURE_LIST"
 			# refresh value
-			STELLA_APP_FEATURE_LIST=$_APP_FEATURE_LIST
+			STELLA_APP_FEATURE_LIST="$_APP_FEATURE_LIST"
 		fi
 	fi
 }
@@ -413,17 +413,17 @@ __uninstall_features() {
 
 # install a feature listed in app feature list. Look for matching version in app feature list, so could match several version
 __get_feature() {
-	local _SCHEMA=$1
+	local _SCHEMA="$1"
 
 	local _flag=0
 
-	__translate_schema $_SCHEMA "_TR_FEATURE_NAME" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR" "_TR_FEATURE_OS_RESTRICTION" "_TR_FEATURE_OS_EXCLUSION"
+	__translate_schema "$_SCHEMA" "_TR_FEATURE_NAME" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR" "_TR_FEATURE_OS_RESTRICTION" "_TR_FEATURE_OS_EXCLUSION"
 
 	if [ ! "$STELLA_APP_FEATURE_LIST" = "" ]; then
 
 		for f in $STELLA_APP_FEATURE_LIST; do
 
-			__translate_schema $f "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR" "TR_FEATURE_OS_RESTRICTION" "TR_FEATURE_OS_EXCLUSION"
+			__translate_schema "$f" "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR" "TR_FEATURE_OS_RESTRICTION" "TR_FEATURE_OS_EXCLUSION"
 
 			_flag=1
 			[ ! "$_TR_FEATURE_NAME" = "$TR_FEATURE_NAME" ] && _flag=0
@@ -433,7 +433,7 @@ __get_feature() {
 
 
 			if [ "$_flag" = "1" ]; then
-				__feature_install $f
+				__feature_install "$f"
 			fi
 		done
 	fi

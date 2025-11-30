@@ -380,7 +380,7 @@ __enable_current_toolset() {
 	case $STELLA_BUILD_COMPIL_FRONTEND_BIN_FAMILY in
 		gcc)
 			echo "===> default linker search path at build/link time"
-			__search_library_paths_at_buildtime
+			__gcc_default_search_library_paths_at_buildtime
 			echo "===> gcc hardcoded libraries search at build/link time"
 			__gcc_extra_search_library_paths_at_buildtime
 	esac
