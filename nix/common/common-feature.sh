@@ -1069,16 +1069,13 @@ __internal_feature_context() {
 	FEAT_SOURCE_URL=
 	FEAT_VERSION=
 	
-	# MERGE / NESTED / LIST / MERGE_LIST
 
 
 	if [ "$_SCHEMA" = "" ]; then
 		return
 	fi
 
-	if [ ! "$_SCHEMA" = "" ]; then
-		__select_official_schema "$_SCHEMA" "FEAT_SCHEMA_SELECTED" "TMP_FEAT_SCHEMA_NAME" "TMP_FEAT_SCHEMA_VERSION" "FEAT_ARCH" "FEAT_SCHEMA_FLAVOUR" "FEAT_SCHEMA_OS_RESTRICTION" "FEAT_SCHEMA_OS_EXCLUSION"
-	fi
+	__select_official_schema "$_SCHEMA" "FEAT_SCHEMA_SELECTED" "TMP_FEAT_SCHEMA_NAME" "TMP_FEAT_SCHEMA_VERSION" "FEAT_ARCH" "FEAT_SCHEMA_FLAVOUR" "FEAT_SCHEMA_OS_RESTRICTION" "FEAT_SCHEMA_OS_EXCLUSION"
 
 	if [ ! "$FEAT_SCHEMA_SELECTED" = "" ]; then
 
@@ -1211,7 +1208,7 @@ __select_official_schema() {
 
 		if [ "$_feat_found" = "1" ]; then
 			# load feature properties
-			feature_$_TR_FEATURE_NAME
+			"feature_${_TR_FEATURE_NAME}"
 			[ ! "$_VAR_FEATURE_NAME" = "" ] && eval $_VAR_FEATURE_NAME=${_TR_FEATURE_NAME}
 		fi
 
