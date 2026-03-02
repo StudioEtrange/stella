@@ -130,7 +130,7 @@ call %STELLA_COMMON%\common-build.bat :reset_build_env
 
 
 :: API ---------------------------------------------
-set "STELLA_API_COMMON_PUBLIC=get_active_path uncompress trim argparse is_path_abs get_resource delete_resource update_resource revert_resource download_uncompress del_folder copy_folder_content_into fork run_admin mercurial_project_version git_project_version"
+set "STELLA_API_COMMON_PUBLIC=transfer_rsync transfer_folder_rsync transfer_file_rsync get_active_path uncompress trim argparse is_path_abs get_resource delete_resource update_resource revert_resource download_uncompress del_folder copy_folder_content_into fork run_admin mercurial_project_version git_project_version"
 set "STELLA_API_API_PUBLIC=api_connect api_disconnect"
 set "STELLA_API_APP_PUBLIC=get_app_property link_app get_data get_assets get_data_pack get_assets_pack delete_data delete_data_pack delete_assets delete_assets_pack update_data update_assets revert_data revert_assets update_data_pack update_assets_pack revert_data_pack revert_assets_pack get_feature get_features"
 set "STELLA_API_FEATURE_PUBLIC=feature_remove feature_catalog_info feature_install feature_install_list feature_init list_active_features feature_reinit_installed feature_inspect"

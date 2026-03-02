@@ -119,6 +119,223 @@ goto :eof
 goto :eof
 
 
+:: TRANSFER TOOL ---------------------------------------------------------
+:: Transfer stella to a target
+:: ARG1 uri
+:: ARG2 options
+::		CACHE, WORKSPACE, ENV, GIT are excluded by default ==> uses these option to force include
+::		APP, WIN are included ==> uses these option to force exclude
+::		SUDO use sudo on the target
+::		FOLDER_CONTENT use this option to transfer content of stella folder only (not stella folder itself)
+:transfer_stella
+	set "_uri=%~1"
+	set "_OPT=%~2"
+
+	call :abs_to_rel_path "_rel_cache" "%STELLA_INTERNAL_CACHE_DIR%" "%STELLA_ROOT%"
+	set "_opt_ex_cache=EXCLUDE /!_rel_cache!/"
+	call :abs_to_rel_path "_rel_workspace" "%STELLA_INTERNAL_WORK_ROOT%" "%STELLA_ROOT%"
+	set "_opt_ex_workspace=EXCLUDE /!_rel_workspace!/"
+	set "_opt_ex_env=EXCLUDE /.stella-env"
+	set "_opt_ex_git=EXCLUDE /.git/"
+	set "_opt_ex_win="
+	set "_opt_ex_app="
+	set "_opt_sudo="
+	set "_opt_folder_content="
+	set "_opt_delete_excluded="
+
+	for %%O in (%_OPT%) do (
+		if "%%O"=="CACHE" set "_opt_ex_cache="
+		if "%%O"=="WORKSPACE" set "_opt_ex_workspace="
+		if "%%O"=="ENV" set "_opt_ex_env="
+		if "%%O"=="GIT" set "_opt_ex_git="
+		if "%%O"=="WIN" set "_opt_ex_win=EXCLUDE /win/ EXCLUDE /stella.bat EXCLUDE /conf.bat"
+		if "%%O"=="APP" set "_opt_ex_app=EXCLUDE /app/"
+		if "%%O"=="SUDO" set "_opt_sudo=SUDO"
+		if "%%O"=="FOLDER_CONTENT" set "_opt_folder_content=FOLDER_CONTENT"
+		if "%%O"=="DELETE_EXCLUDED" set "_opt_delete_excluded=DELETE_EXCLUDED"
+	)
+
+	echo DEBUG %_opt_sudo% Transfer stella to %_uri%
+	call :transfer_folder_rsync "%STELLA_ROOT%" "%_uri%" "%_opt_delete_excluded% %_opt_ex_win% %_opt_ex_app% %_opt_ex_cache% %_opt_ex_workspace% %_opt_ex_env% %_opt_ex_git% %_opt_sudo% %_opt_folder_content%"
+
+goto :eof
+
+:: example
+:: call :transfer_folder_rsync "/foo/folder" "ssh://user@ip"
+::			here target host is 'ip'
+::			here path is empty, so folder will be sync inside home directory of user as /home/user/folder
+:: call :transfer_folder_rsync "/foo/folder" "ssh://user@ip/path"
+::			transfert /foo/folder to host 'ip' into absolute path '/path'
+:: call :transfer_folder_rsync "/foo/folder" "local://../path" OR call :transfer_folder_rsync "/foo/folder" "../path"
+:transfer_folder_rsync
+	set "_folder=%~1"
+	set "_uri=%~2"
+	set "_opt=%~3"
+	call :transfer_rsync "FOLDER" "%_folder%" "%_uri%" "%_opt%"
+goto :eof
+
+:: example
+:: call :transfer_file_rsync "/foo/file1" "ssh://user@ip/?folder/file2"
+::			file1 will be sync inside home directory of user as /home/user/folder/file2
+:transfer_file_rsync
+	set "_file=%~1"
+	set "_uri=%~2"
+	set "_opt=%~3"
+	echo DEBUG Transfer file %_file% to %_uri%
+	call :transfer_rsync "FILE" "%_file%" "%_uri%" "%_opt%"
+goto :eof
+
+:: ARG mode FOLDER|FILE
+:: ARG source
+:: ARG uri
+::			[schema://][user@][host][:port][/abs_path|?rel_path]
+:: 		path could be absolute path in the target system
+:: 		or could be relavite path to a default folder
+:: 		default schema is local
+::			available schemas
+::					ssh://user@host:port[/abs_path|?rel_path]
+::					local://[/abs_path|[?]rel_path]  ==> with local:// char '?' is optionnal to use relative_path
+::
+::	NOTE : use ssh shared connection by default
+::
+::	OPTIONS
+:: 		EXCLUDE (repeat this option for each exclude filter to set - path are absolute to the root of the folder to transfert. example : /workspace/)
+:: 		INCLUDE (This option override exclude rules. Repeat this option for each include filter to set - path are absolute to the root of the folder to transfert. example : /workspace/)
+:: 		FOLDER_CONTENT will transfer folder content not folder itself
+:: 		EXCLUDE_HIDDEN exclude hidden files
+::			SUDO use sudo while transfering to uri
+::			COPY_LINKS copy real files linked by a symlink instead of the symlink
+::			DELETE_EXCLUDED delete excluded files on the target
+:transfer_rsync
+	set "_mode=%~1"
+	set "_source=%~2"
+	set "_uri=%~3"
+	set "_OPT=%~4"
+
+	set _flag_exclude=OFF
+	set "_exclude="
+	set _flag_include=OFF
+	set "_include="
+	set _opt_folder_content=OFF
+	set _opt_sudo=OFF
+	set _opt_exclude_hidden=OFF
+	set _opt_copy_links=OFF
+	set _opt_delete_excluded=OFF
+
+	for %%O in (%_OPT%) do (
+		if "!_flag_exclude!"=="ON" (
+			set "_exclude=%%O !_exclude!"
+			set _flag_exclude=OFF
+		)
+		if "%%O"=="EXCLUDE" set _flag_exclude=ON
+		
+		if "!_flag_include!"=="ON" (
+			set "_include=%%O !_include!"
+			set _flag_include=OFF
+		)
+		if "%%O"=="INCLUDE" set _flag_include=ON
+
+		if "%%O"=="FOLDER_CONTENT" set _opt_folder_content=ON
+		if "%%O"=="EXCLUDE_HIDDEN" set _opt_exclude_hidden=ON
+		if "%%O"=="SUDO" set _opt_sudo=ON
+		if "%%O"=="COPY_LINKS" set _opt_copy_links=ON
+		if "%%O"=="DELETE_EXCLUDED" set _opt_delete_excluded=ON
+	)
+
+	call %STELLA_COMMON%\common-platform.bat :require "rsync" "rsync" "SYSTEM"
+
+	call :uri_parse "_uri_info" "%_uri%"
+	set "_schema=!_uri_info_SCHEMA!"
+	if "!_schema!"=="" set "_schema=local"
+
+	set "_local_filesystem=OFF"
+	if "!_schema!"=="local" set "_local_filesystem=ON"
+
+	if "!_schema!"=="ssh" (
+		call %STELLA_COMMON%\common-platform.bat :require "ssh" "ssh" "SYSTEM"
+		set "_ssh_port=22"
+		if not "!_uri_info_PORT!"=="" set "_ssh_port=!_uri_info_PORT!"
+	)
+
+	set "_target="
+	set "_target_path="
+
+	if "!_local_filesystem!"=="ON" (
+		if "!_uri_info_PATH!"=="" (
+			set "_target=!_uri!"
+		) else (
+			set "_target=!_uri_info_PATH!"
+		)
+		set "_target_path=!_target!"
+	)
+
+	if "!_local_filesystem!"=="OFF" (
+		set "_target=!_uri_info_PATH!"
+		set "_target_path=!_target!"
+		set "_target_address=!_uri_info_HOST!"
+		if not "!_uri_info_USER!"=="" set "_target_address=!_uri_info_USER!@!_target_address!"
+		set "_target=!_target_address!:!_target!"
+	)
+
+	set "_base_folder="
+	set "_opt_include_flags="
+	set "_opt_exclude_flags="
+	set "_opt_links="
+	
+	if "!_opt_copy_links!"=="ON" set "_opt_links=--copy-links --keep-dirlinks"
+	if "!_opt_delete_excluded!"=="ON" set "_opt_exclude_flags=--delete-excluded !_opt_exclude_flags!"
+
+	if "%_mode%"=="FOLDER" (
+		if "!_opt_folder_content!"=="ON" (
+			REM Ensure source ends with /
+			if not "!_source:~-1!"=="/" set "_source=!_source!/"
+		) else (
+			REM Ensure source does NOT end with /
+			if "!_source:~-1!"=="/" set "_source=!_source:~0,-1!"
+			if "!_source:~-1!"=="\" set "_source=!_source:~0,-1!"
+			
+			call :basename "_base_name" "!_source!"
+			set "_base_folder=/!_base_name!/"
+		)
+		
+		for %%o in (!_include!) do (
+			set "_item=!_base_folder!%%o"
+			set "_item=!_item://=/!"
+			set "_opt_include_flags=--include=!_item! !_opt_include_flags!"
+		)
+		
+		for %%o in (!_exclude!) do (
+			set "_item=!_base_folder!%%o"
+			set "_item=!_item://=/!"
+			set "_opt_exclude_flags=--exclude=!_item! !_opt_exclude_flags!"
+		)
+		
+		if "!_opt_exclude_hidden!"=="ON" set "_opt_exclude_flags=!_opt_exclude_flags! --exclude=!_base_folder!.*"
+	)
+
+	if "!_schema!"=="ssh" (
+		if "!_opt_sudo!"=="ON" (
+			set "_rsync_path=sudo -Es mkdir -p '!_target_path!'; sudo -Es rsync"
+			rsync !_opt_links! !_opt_include_flags! !_opt_exclude_flags! --rsync-path="!_rsync_path!" --no-owner --no-group --force --delete -prltD -vz -e "ssh -p !_ssh_port!" "!_source!" "!_target!"
+		) else (
+			set "_rsync_path=mkdir -p '$(dirname "!_target_path!")'; rsync"
+			rsync !_opt_links! !_opt_include_flags! !_opt_exclude_flags! --rsync-path="!_rsync_path!" --no-owner --no-group --force --delete -prltD -vz -e "ssh -p !_ssh_port!" "!_source!" "!_target!"
+		)
+	)
+	
+	if "!_schema!"=="local" (
+		if "!_source!"=="!_target!" (
+			echo Source and target are equivalent
+		) else (
+			call :dirname "_parent_target" "!_target_path!"
+			if not exist "!_parent_target!" mkdir "!_parent_target!"
+			rsync !_opt_links! !_opt_include_flags! !_opt_exclude_flags! --force --delete -avz "!_source!" "!_target!"
+		)
+	)
+
+goto :eof
+
+
 :: Test if a path is absolute
 :: NOTE : Too slow
 :: ARG1 is the name of the return variable - TRUE if path is absolute, FALSE if path is not absolute
