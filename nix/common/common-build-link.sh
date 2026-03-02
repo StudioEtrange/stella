@@ -4,7 +4,9 @@ _STELLA_COMMON_BUILD_LINK_INCLUDED_=1
 
 
 
-
+# for build time : 
+#	can generate flags for build time (GET_FLAGS)
+#	set link flags for stella build engine
 __link_feature_library() {
 	local SCHEMA="$1"
 	local _link_OPT="$2"
@@ -33,11 +35,11 @@ __link_feature_library() {
 	local _opt_flavour=
 	local _opt_use_pkg_config=OFF
 	local _flag_lib_folder=OFF
-	local _lib_folder=lib
+	local _lib_folder="lib"
 	local _flag_bin_folder=OFF
-	local _bin_folder=bin
+	local _bin_folder="bin"
 	local _flag_include_folder=OFF
-	local _include_folder=include
+	local _include_folder="include"
 	local _opt_set_flags=ON
 	local _flag_libs_name=OFF
 	local _libs_name=
@@ -79,6 +81,7 @@ __link_feature_library() {
 	done
 
 	# check origin for this schema
+	# TODO review
 	local _origin
 	case "$SCHEMA" in
 		FORCE_ORIGIN_STELLA*)
@@ -100,10 +103,10 @@ __link_feature_library() {
 		echo "We do not link against STELLA version of $SCHEMA, but from SYSTEM."
 		if [ "$_opt_use_pkg_config" = "ON" ]; then
 			__add_toolset "pkgconfig"
-			# we need to add some defaut seach into path, because pkgconfig have default values from its install path
+			# we need to add some default search into path, because pkgconfig have as default values values derived from its install path
 			# pkgconfig is installed inside stella and do not have correct default values when we want to link against SYSTEM libraries
 			echo "** WARN : adding some system lib search path to pkg-config, because we use pkg-config for a SYSTEM lib"
-			__def_path=$(__search_library_paths_at_buildtime)
+			__def_path=$(__get_search_library_paths_at_buildtime)
 			for _p in $__def_path; do
 				STELLA_BUILD_PKG_CONFIG_PATH="${STELLA_BUILD_PKG_CONFIG_PATH}:${_p}/pkgconfig"
 			done
@@ -167,7 +170,7 @@ __link_feature_library() {
 	if [ "$_flag_lib_isolation" = "TRUE" ]; then
 
 		echo "*** Isolate dependencies into $LIB_TARGET_FOLDER"
-		__del_folder "$LIB_TARGET_FOLDER"
+		rm -Rf "$LIB_TARGET_FOLDER"
 		echo "*** Copying items from $REQUIRED_LIB_ROOT/$_lib_folder to $LIB_TARGET_FOLDER"
 		__copy_folder_content_into "$REQUIRED_LIB_ROOT"/"$_lib_folder" "$LIB_TARGET_FOLDER" "*"$LIB_EXTENSION"*"
 		__copy_folder_content_into "$REQUIRED_LIB_ROOT"/"$_lib_folder/pkgconfig" "$LIB_TARGET_FOLDER/pkgconfig"
@@ -284,6 +287,37 @@ __set_link_flags() {
 
 }
 
+
+# prepare link flags
+# __stella_feature_list : a list of stella features to link against
+# USE_PKG_CONFIG_FOR_SYSTEM_DEP -- use of pkg-config tool to link to system libraries
+__auto_build_link() {
+	local __callback_list="$1"
+	local __stella_feature_list="$2"
+	local __opt="$3"
+
+	local _opt_use_pkg_config_for_system_dep=
+	for o in $__opt; do
+		[ "$o" = "USE_PKG_CONFIG_FOR_SYSTEM_DEP" ] && _opt_use_pkg_config_for_system_dep="ON"
+	done
+
+	if [ "$_opt_use_pkg_config_for_system_dep" = "ON" ]; then
+		__add_toolset "pkgconfig"
+		# we need to add some default search into path, because pkgconfig have as default values values derived from its install path
+		# pkgconfig is installed inside stella and do not have correct default values when we want to link against SYSTEM libraries
+		echo "** WARN : adding some system lib search path to pkg-config, because we use pkg-config for a SYSTEM lib"
+		__def_path=$(__get_search_library_paths_at_buildtime)
+		for _p in $__def_path; do
+			STELLA_BUILD_PKG_CONFIG_PATH="${STELLA_BUILD_PKG_CONFIG_PATH}:${_p}/pkgconfig"
+		done
+	fi
+
+	for c in $__callback_list; do
+		for f in $__stella_feature_list; do
+			"$c" "$f"
+		done
+	done
+}
 
 
 fi

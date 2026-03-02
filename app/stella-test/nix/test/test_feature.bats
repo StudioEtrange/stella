@@ -154,6 +154,28 @@ teardown() {
 	assert_equal "$TR_FEATURE_COND_LIB" "lib1#1_3"
 	assert_equal "$TR_FEATURE_COND_BIN" "bin1#1_5 bin2"
 
+	_test='lib4#1_4%bin1#1_5!lib1#1_3%bin2!'
+	__translate_schema "$_test" "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR" "TR_FEATURE_OS_RESTRICTION" "TR_FEATURE_OS_EXCLUSION" "TR_FEATURE_COND_LIB" "TR_FEATURE_COND_BIN"
+	assert_equal "$TR_FEATURE_NAME" ""
+	assert_equal "$TR_FEATURE_VER" ""
+	assert_equal "$TR_FEATURE_ARCH" ""
+	assert_equal "$TR_FEATURE_FLAVOUR" ""
+	assert_equal "$TR_FEATURE_OS_RESTRICTION" ""
+	assert_equal "$TR_FEATURE_OS_EXCLUSION" ""
+	assert_equal "$TR_FEATURE_COND_LIB" "lib4#1_4 lib1#1_3"
+	assert_equal "$TR_FEATURE_COND_BIN" "bin1#1_5 bin2"
+
+	_test='bin8!'
+	__translate_schema "$_test" "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR" "TR_FEATURE_OS_RESTRICTION" "TR_FEATURE_OS_EXCLUSION" "TR_FEATURE_COND_LIB" "TR_FEATURE_COND_BIN"
+	assert_equal "$TR_FEATURE_NAME" ""
+	assert_equal "$TR_FEATURE_VER" ""
+	assert_equal "$TR_FEATURE_ARCH" ""
+	assert_equal "$TR_FEATURE_FLAVOUR" ""
+	assert_equal "$TR_FEATURE_OS_RESTRICTION" ""
+	assert_equal "$TR_FEATURE_OS_EXCLUSION" ""
+	assert_equal "$TR_FEATURE_COND_LIB" ""
+	assert_equal "$TR_FEATURE_COND_BIN" "bin8"
+
 }
 
 
@@ -190,6 +212,8 @@ teardown() {
 	assert_equal "$TR_FEATURE_OS_EXCLUSION" ""
 
 }
+
+
 
 @test "__feature_catalog_info" {
 
@@ -283,5 +307,21 @@ teardown() {
 	assert_equal "$FEAT_VERSION" "$def_ver"
 	assert_equal "$FEAT_ARCH" "$def_arch"
 	assert_equal "$FEAT_INSTALL_ROOT" "$STELLA_APP_FEATURE_ROOT/$FEAT_NAME/$FEAT_VERSION"
+
+}
+
+
+# TODO complete this test
+@test "__feature_condition_test" {
+
+	run __feature_condition_find_dyn_lib "libfoo"
+	assert_failure
+
+	run __feature_condition_find_dyn_lib "libz"
+	assert_success
+
+	run __feature_condition_find_cmd "test"
+	assert_success
+	
 
 }

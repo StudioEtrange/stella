@@ -95,6 +95,9 @@ __toolset_init() {
 				if [ ! "$FEAT_SEARCH_PATH" = "" ]; then
 					STELLA_BUILD_TOOLSET_PATH="$FEAT_SEARCH_PATH:$STELLA_BUILD_TOOLSET_PATH"
 				fi
+				if [ ! "$FEAT_LIBRARY_SEARCH_PATH" = "" ]; then
+					STELLA_BUILD_TOOLSET_LIBRARY_PATH="$FEAT_LIBRARY_SEARCH_PATH:$STELLA_BUILD_TOOLSET_LIBRARY_PATH"
+				fi
 				for c in $FEAT_ENV_CALLBACK; do
 					$c
 				done
@@ -105,6 +108,9 @@ __toolset_init() {
 
 		if [ ! "$FEAT_SEARCH_PATH" = "" ]; then
 			STELLA_BUILD_TOOLSET_PATH="$FEAT_SEARCH_PATH:$STELLA_BUILD_TOOLSET_PATH"
+		fi
+		if [ ! "$FEAT_LIBRARY_SEARCH_PATH" = "" ]; then
+			STELLA_BUILD_TOOLSET_LIBRARY_PATH="$FEAT_LIBRARY_SEARCH_PATH:$STELLA_BUILD_TOOLSET_LIBRARY_PATH"
 		fi
 		local c
 		# TODO : warn : env vars should be uninitialized later because use of a toolset is temporary
@@ -337,11 +343,18 @@ __enable_current_toolset() {
 
 	echo "** All toolset are installed"
 
-	echo "** Set toolsets search path"
+	echo "** Set toolsets search paths"
 	_save_path_CURRENT_TOOLSET="$PATH"
 	PATH="$STELLA_BUILD_TOOLSET_PATH:$PATH"
 
+	echo "** Set toolsets library search paths"
+	_save_library_path_CURRENT_TOOLSET="$LIBRARY_PATH"
+	_save_ld_library_path_CURRENT_TOOLSET="$LD_LIBRARY_PATH"
+	_save_dyld_library_path_CURRENT_TOOLSET="$DYLD_LIBRARY_PATH"
 
+	LIBRARY_PATH="$STELLA_BUILD_TOOLSET_LIBRARY_PATH:$LIBRARY_PATH"
+	LD_LIBRARY_PATH="$STELLA_BUILD_TOOLSET_LIBRARY_PATH:$LD_LIBRARY_PATH"
+	DYLD_LIBRARY_PATH="$STELLA_BUILD_TOOLSET_LIBRARY_PATH:$DYLD_LIBRARY_PATH"
 
 
 	echo "** Check from build toolset feature availability: $STELLA_BUILD_CHECK_TOOLSET"
@@ -429,8 +442,12 @@ __enable_current_toolset() {
 
 
 __disable_current_toolset() {
-	echo "** Disable current toolset path"
+	echo "** Disable current toolset paths"
 	PATH="$_save_path_CURRENT_TOOLSET"
+
+	LIBRARY_PATH="$_save_library_path_CURRENT_TOOLSET"
+	LD_LIBRARY_PATH="$_save_ld_library_path_CURRENT_TOOLSET"
+	DYLD_LIBRARY_PATH="$_save_dyld_library_path_CURRENT_TOOLSET"
 }
 
 

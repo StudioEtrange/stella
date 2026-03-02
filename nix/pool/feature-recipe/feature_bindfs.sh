@@ -25,6 +25,8 @@ feature_bindfs_1_17_6() {
 
 
 	FEAT_SOURCE_DEPENDENCIES="FORCE_ORIGIN_SYSTEM fuse"
+	#FEAT_SOURCE_DEPENDENCIES="libfuse3%fuse"
+
 
 	FEAT_SOURCE_URL="https://github.com/mpartel/bindfs/archive/1.17.6.tar.gz"
 	FEAT_SOURCE_URL_FILENAME="bindfs-1.17.6.tar.gz"

@@ -50,7 +50,7 @@ __darwin_dynamic_library_exists_in_cache() {
 	return 1
 }
 
-# search a dynamic library available at runtime in system
+# search a dynamic library available at runtime IN SYSTEM ONLY (not in stella workspace)
 #		__search_dynamic_library_at_runtime "libcurl"
 #
 # 		NOTE  : return 0 at first match else return 1
@@ -84,7 +84,7 @@ __search_dynamic_library_at_runtime() {
 		;;
 
 		linux)
-			lib_regex_file='^'${lib_file_name}'.so'
+			lib_regex_file='^'${lib_file_name}'\.so'
 
 			# STEP 0 - find in current LD_LIBRARY_PATH
 			[ -n "$LD_LIBRARY_PATH" ] && __find_file_in_path_list "$lib_regex_file" "$LD_LIBRARY_PATH" "STOP_FIRST"
@@ -108,6 +108,24 @@ __search_dynamic_library_at_runtime() {
 	return 1
 }
 
+
+# search a static library available IN SYSTEM ONLY (not in stella workspace)
+#		__search_static_library "libcurl"
+#
+# 		NOTE  : return 0 at first match else return 1
+__search_static_library() {
+
+	local lib_file_name="$1"
+	local lib_regex_file
+
+
+	lib_regex_file='^'${lib_file_name}'\.a$'
+	__find_file_in_path_list "$lib_regex_file" "$(__get_search_library_paths_at_runtime | tr '\n' ':')" "STOP_FIRST"
+	[ $? -eq 0 ] && return 0
+	
+	return 1
+}
+
 # ----------------------------- AT RUNTIME/RUN TIME -------------
 
 # order of search - reading LC_LOAD_DYLIB
@@ -120,13 +138,14 @@ __darwin_default_search_library_paths_at_runtime() {
   local res=""
   local p
 
+  local OLD_IFS="$IFS"
+
   # from DYLD_LIBRARY_PATH
   if [ -n "${DYLD_LIBRARY_PATH:-}" ]; then
     IFS=:; for p in $DYLD_LIBRARY_PATH; do
       # here we keep only existing dirs, runtime should be real
       res="$(__path_append_to_list_if_exists "$res" "$p")"
     done
-    unset IFS
   fi
 
   # fallback (or default)
@@ -134,7 +153,8 @@ __darwin_default_search_library_paths_at_runtime() {
   IFS=:; for p in $fb; do
     res="$(__path_append_to_list_if_exists "$res" "$p")"
   done
-  unset IFS
+
+  IFS="$OLD_IFS"
 
   printf '%s\n' "$(printf '%s' "$res" | tr ':' '\n')"
 }
@@ -149,12 +169,13 @@ __darwin_default_search_framework_paths_at_runtime() {
   local res=""
   local p
 
+  local OLD_IFS="$IFS"
+
   # DYLD_FRAMEWORK_PATH
   if [ -n "${DYLD_FRAMEWORK_PATH:-}" ]; then
     IFS=:; for p in $DYLD_FRAMEWORK_PATH; do
       res="$(__path_append_to_list_if_exists "$res" "$p")"
     done
-    unset IFS
   fi
 
   # fallback (or default)
@@ -162,13 +183,17 @@ __darwin_default_search_framework_paths_at_runtime() {
   IFS=:; for p in $fb; do
     res="$(__path_append_to_list_if_exists "$res" "$p")"
   done
-  unset IFS
+
+  IFS="$OLD_IFS"
 
   printf '%s\n' "$(printf '%s' "$res" | tr ':' '\n')"
 }
 
 __linux_default_search_library_paths_at_runtime() {
 	local c_ldso_paths=""
+
+	local OLD_IFS="$IFS"
+
 	# inspired adapted from lddtree : https://github.com/StudioEtrange/lddtree/blob/579ebe449b76ed9d22f116a6f30b87b1f2ded2ca/lddtree.sh#L169
 	read_ldso_conf() {
 		local __depth="${__depth:-0}"
@@ -252,6 +277,7 @@ __linux_default_search_library_paths_at_runtime() {
 		cd "$_oldpwd"
 	fi
 
+	IFS="$OLD_IFS"
 	printf '%s\n' "$(printf '%s' "$c_ldso_paths" | sed 's/:/\n/g')"
 }
 
@@ -328,7 +354,7 @@ __darwin_default_search_framework_paths_at_buildtime() {
   printf '%s\n' "$(printf '%s' "$res" | tr ':' '\n')"
 }
 
-# it is a hack because rgcc -Xlinker -vr alwayrs generate an error we ignore to get information
+# it is a hack because gcc -Xlinker -vr always generate an error we ignore to get information
 # method used as an alternative in __darwin_default_search_framework_paths_at_buildtime
 __gcc_default_search_framework_paths_at_buildtime() {
 	case $STELLA_CURRENT_PLATFORM in

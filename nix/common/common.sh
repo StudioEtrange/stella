@@ -1954,12 +1954,9 @@ __is_dir_empty() {
 	return $([ -z "$(ls -A "$1" 2>/dev/null)" ])
 }
 
+# NOTES:
 # To get: /tmp/my.dir (like dirname)
 # path = ${foo%/*}
-# To get: filename.tar.gz (like basename)
-# file = ${foo##*/}
-# To get: filename
-# base = ${file%%.*}
 __get_path_from_string() {
 	if [ "$1" = "${1%/*}" ]; then
 		echo "."
@@ -1968,6 +1965,11 @@ __get_path_from_string() {
 	fi
 }
 
+# NOTES:
+# To get: filename.tar.gz (like basename)
+# file = ${foo##*/}
+# To get: filename
+# base = ${file%%.*}
 __get_filename_from_string() {
 	echo ${1##*/}
 }
@@ -2374,7 +2376,7 @@ __path_append_to_list_from_stdin() {
 #		PATH_LIST : list of path separated by ':'
 #	NOTE :
 # 		for an exact file match use : '^libfoo\.so$''
-# 		it is a non recursive seach file
+# 		it is a non recursive search file
 # 	OPTIONS:
 #		STOP_FIRST : STOP search at first match
 #		SUB_DIRS : subdirs search list (separated by space)
@@ -2401,8 +2403,7 @@ __find_file_in_path_list() {
 		local DIR="$1"
 		local entry
 		local name
-		local FOUND
-		[ -d "$DIR" ] || return 0
+		[ -d "$DIR" ] || return 1
 		# browse DIR
 		for entry in "$DIR"/*; do
 			name=${entry##*/}

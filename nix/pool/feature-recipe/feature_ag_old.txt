@@ -19,7 +19,7 @@ feature_ag_2_2_0() {
 	FEAT_VERSION="2_2_0"
 
 
-	FEAT_SOURCE_DEPENDENCIES="libz%zlib#^1_2 pcre#8_36 xzutils#5_2_1"
+	FEAT_SOURCE_DEPENDENCIES="zlib#^1_2 pcre#8_36 xzutils#5_2_1"
 	FEAT_BINARY_DEPENDENCIES=
 	FEAT_SOURCE_URL="https://github.com/ggreer/the_silver_searcher/archive/refs/tags/2.2.0.tar.gz"
 	FEAT_SOURCE_URL_FILENAME="the_silver_searcher-2.2.0.tar.gz"
@@ -29,8 +29,7 @@ feature_ag_2_2_0() {
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
 
-	FEAT_SOURCE_CALLBACK=""
-	FEAT_SOURCE_LINK_CALLBACK="feature_ag_link"
+	FEAT_SOURCE_CALLBACK="feature_ag_link"
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
@@ -43,6 +42,7 @@ feature_ag_2_2_0() {
 feature_ag_1_0_2() {
 	FEAT_VERSION="1_0_2"
 
+
 	FEAT_SOURCE_DEPENDENCIES="zlib#^1_2 pcre#8_36 xzutils#5_2_1"
 	FEAT_BINARY_DEPENDENCIES=
 	FEAT_SOURCE_URL="https://github.com/ggreer/the_silver_searcher/archive/refs/tags/1.0.2.tar.gz"
@@ -53,9 +53,7 @@ feature_ag_1_0_2() {
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
 
-	FEAT_SOURCE_CALLBACK=
-	# or FEAT_LINK_CALLBACK ?
-	FEAT_SOURCE_LINK_CALLBACK="feature_ag_link"
+	FEAT_SOURCE_CALLBACK="feature_ag_link"
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
@@ -64,26 +62,12 @@ feature_ag_1_0_2() {
 
 }
 
-
-
 feature_ag_link() {
-	local __linked_feature="$1"
+	__link_feature_library "zlib" "FORCE_DYNAMIC"
+	__link_feature_library "pcre" "GET_FLAGS _pcre FORCE_STATIC LIBS_NAME pcre NO_SET_FLAGS"
+	__link_feature_library "xzutils" "GET_FLAGS _lzma LIBS_NAME lzma NO_SET_FLAGS"
 
-	case $__linked_feature in
-		zlib*)
-			__link_feature_library "zlib" "FORCE_DYNAMIC"
-		;;
-		pcre*)
-			__link_feature_library "pcre" "GET_FLAGS _pcre FORCE_STATIC LIBS_NAME pcre NO_SET_FLAGS"
-			AUTO_INSTALL_CONF_FLAG_PREFIX="$AUTO_INSTALL_CONF_FLAG_PREFIX PCRE_CFLAGS=\"$_pcre_C_CXX_FLAGS $_pcre_CPP_FLAGS\" PCRE_LIBS=\"$_pcre_LINK_FLAGS\""
-
-		;;
-		xzutils*)
-			__link_feature_library "xzutils" "GET_FLAGS _lzma LIBS_NAME lzma NO_SET_FLAGS"
-			AUTO_INSTALL_CONF_FLAG_PREFIX="$AUTO_INSTALL_CONF_FLAG_PREFIX LZMA_CFLAGS=\"$_lzma_C_CXX_FLAGS $_lzma_CPP_FLAGS\" LZMA_LIBS=\"$_lzma_LINK_FLAGS\""
-		;;
-	esac
-
+	AUTO_INSTALL_CONF_FLAG_PREFIX="LZMA_CFLAGS=\"$_lzma_C_CXX_FLAGS $_lzma_CPP_FLAGS\" LZMA_LIBS=\"$_lzma_LINK_FLAGS\" PCRE_CFLAGS=\"$_pcre_C_CXX_FLAGS $_pcre_CPP_FLAGS\" PCRE_LIBS=\"$_pcre_LINK_FLAGS\""
 }
 
 
@@ -100,9 +84,6 @@ feature_ag_install_source() {
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="--disable-dependency-tracking"
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
-
-
-	__auto_build_link "$FEAT_SOURCE_LINK_CALLBACK" "$FEAT_SOURCE_DEP_FROM_STELLA"
 
 	__feature_callback
 

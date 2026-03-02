@@ -31,20 +31,22 @@ install_name, rpath, loader_path, executable_path
 Starting macOS 11, system libraries are embedded in the **dyld shared cache** rather than stored as normal files.
 
 **Cache locations**
-/System/Library/dyld/dyld_shared_cache*
-/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache*
+
+  /System/Library/dyld/dyld_shared_cache*
+  /System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache*
 
 **Exploration Tools**
 
-* tool https://github.com/arandomdev/DyldExtractor (python)
-dyldex -l -f /usr/lib/libz /System/.../dyld_shared_cache_x86_64h
+  * tool https://github.com/arandomdev/DyldExtractor (python)
+  dyldex -l -f /usr/lib/libz /System/.../dyld_shared_cache_x86_64h
 
-* ipsw tool
-ipsw dyld image /System/.../dyld_shared_cache_x86_64h /usr/lib/libz.1.dylib
+  * ipsw tool
+  ipsw dyld image /System/.../dyld_shared_cache_x86_64h /usr/lib/libz.1.dylib
 
 **SDK static libraries**
-xcrun --sdk macosx --show-sdk-path
-# /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
+
+  xcrun --sdk macosx --show-sdk-path
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
 
 ---
 

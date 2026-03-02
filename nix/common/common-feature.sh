@@ -57,6 +57,7 @@ __feature_init() {
 			__push_schema_context
 
 			for dep in $_dependencies; do
+				# TODO : replace FORCE_ORIGIN_ with dependencies condition parsing
 				if [ "$dep" = "FORCE_ORIGIN_STELLA" ]; then
 					_force_origin="STELLA"
 					continue
@@ -94,7 +95,7 @@ __feature_init() {
 				FEAT_BUNDLE_MODE=$FEAT_BUNDLE
 				FEATURE_LIST_ENABLED="$FEATURE_LIST_ENABLED [ BUNDLE:<${FEAT_BUNDLE_MODE}> "
 				for p in $FEAT_BUNDLE_ITEM; do
-					__internal_feature_context $p
+					__internal_feature_context "$p"
 					if [ ! "$FEAT_SEARCH_PATH" = "" ]; then
 						PATH="$FEAT_SEARCH_PATH:$PATH"
 					fi
@@ -121,7 +122,7 @@ __feature_init() {
 			fi
 
 			if [ ! "$FEAT_SEARCH_PATH" = "" ]; then
-				PATH="$FEAT_SEARCH_PATH:$PATH"
+				export PATH="$FEAT_SEARCH_PATH:$PATH"
 			fi
 
 			local c
@@ -359,6 +360,7 @@ __push_schema_context() {
 	__stack_push "STELLA" "$FEAT_SCHEMA_OS_RESTRICTION"
 	__stack_push "STELLA" "$FEAT_SCHEMA_SELECTED"
 	__stack_push "STELLA" "$FEAT_SEARCH_PATH"
+	__stack_push "STELLA" "$FEAT_LIBRARY_SEARCH_PATH"
 	__stack_push "STELLA" "$FEAT_SOURCE_CALLBACK"
 	__stack_push "STELLA" "$FEAT_SOURCE_DEPENDENCIES"
 	__stack_push "STELLA" "$FEAT_SOURCE_URL_FILENAME"
@@ -388,6 +390,7 @@ __pop_schema_context() {
 	__stack_pop "STELLA" "FEAT_SOURCE_URL_FILENAME"
 	__stack_pop "STELLA" "FEAT_SOURCE_DEPENDENCIES"
 	__stack_pop "STELLA" "FEAT_SOURCE_CALLBACK"
+	__stack_pop "STELLA" "FEAT_LIBRARY_SEARCH_PATH"
 	__stack_pop "STELLA" "FEAT_SEARCH_PATH"
 	__stack_pop "STELLA" "FEAT_SCHEMA_SELECTED"
 	__stack_pop "STELLA" "FEAT_SCHEMA_OS_RESTRICTION"
@@ -769,7 +772,7 @@ __feature_install() {
 				__push_schema_context
 
 				for dep in $_dependencies; do
-
+					# TODO : replace FORCE_ORIGIN_ with dependencies condition parsing
 					if [ "$dep" = "FORCE_ORIGIN_STELLA" ]; then
 						_force_origin="STELLA"
 						continue
@@ -1045,6 +1048,10 @@ __internal_feature_context() {
 	local TMP_FEAT_SCHEMA_VERSION=
 	
 	# NOTE : FEAT_BUNDLE_PATH and FEAT_BUNDLE_MODE should not be initialized here. They are set outside when managing a bundle
+	
+	
+	# selected official schema
+	FEAT_SCHEMA_SELECTED=
 
 	FEAT_ARCH=
 	FEAT_BINARY_CALLBACK=
@@ -1074,8 +1081,8 @@ __internal_feature_context() {
 	FEAT_SCHEMA_FLAVOUR=
 	FEAT_SCHEMA_OS_EXCLUSION=
 	FEAT_SCHEMA_OS_RESTRICTION=
-	FEAT_SCHEMA_SELECTED=
 	FEAT_SEARCH_PATH=
+	FEAT_LIBRARY_SEARCH_PATH=
 	FEAT_SOURCE_CALLBACK=
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_SOURCE_URL_FILENAME=
@@ -1140,7 +1147,7 @@ __internal_feature_context() {
 			fi
 		fi
 		if [ "$_feat_found" = "1" ]; then
-			feature_$TMP_FEAT_SCHEMA_NAME
+			"feature_${TMP_FEAT_SCHEMA_NAME}"
 			feature_"$TMP_FEAT_SCHEMA_NAME"_"$TMP_FEAT_SCHEMA_VERSION"
 		fi
 
@@ -1655,10 +1662,36 @@ __translate_schema_old() {
 	return 0
 }
 
+# command -v return true if list of file in PATH, a shell function or an alias or a shell builtin exists
+# TODO implement command version test ? : tool#version
+__feature_condition_find_cmd() {
+	[ -z "$1" ] && return 1
+	for i in $1; do
+		command -v -- "${i%%#*}" >/dev/null 2>&1 || return 1
+	done
+	return 0
+}
+
+# test if all names of a dynamic libraries list can be found at runtime
+# lib filename without extension (.so or .dylib)
+# TODO implement library version test ? : lib#version
+__feature_condition_find_dyn_lib() {
+	[ -z "$1" ] && return 1
+	for i in $1; do
+		__search_dynamic_library_at_runtime "${i%%#*}" >/dev/null 2>&1 || return 1
+	done
+	return 0
+}
+
+# TODO
+# lib filename without extension (.a)
+# __feature_condition_find_static_lib() {
+
+# }
 
 # --------------- DEPRECATED ---------------------------------------------
 
-# TODO
+# TODO transform into feature recipe
 __file5() {
 	URL=ftp://ftp.astron.com/pub/file/file-5.15.tar.gz
 	VER=5.15
@@ -1675,7 +1708,7 @@ __file5() {
 }
 
 
-
+# TODO transform into feature recipe
 __binutils() {
 	#TODO configure flag
 	URL=http://ftp.gnu.org/gnu/binutils/binutils-2.23.2.tar.bz2

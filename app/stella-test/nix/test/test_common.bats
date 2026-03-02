@@ -548,3 +548,65 @@ teardown() {
 	run __select_version_from_list "^1.1" "1.1 1.1.0" "SEP ."
 	assert_output "1.1.0"
 }
+
+
+@test "__get_path_from_string" {
+	run __get_path_from_string "/tmp/foo/my.dir"
+	assert_output "/tmp/foo"
+
+	run __get_path_from_string "path"
+	assert_output "."
+
+}
+
+@test "__get_filename_from_string" {
+	run __get_filename_from_string "/tmp/foo/my.dir"
+	assert_output "my.dir"
+
+	run __get_filename_from_string "path"
+	assert_output "path"
+
+}
+
+
+
+@test "__path_append_to_list" {
+
+	run __path_append_to_list "" "/foo"
+	assert_output "/foo"
+
+	run __path_append_to_list "/foo" "/bar/camp"
+	assert_output "/foo:/bar/camp"
+
+	run __path_append_to_list "/foo:/bar" "/var:/camp"
+	assert_output "/foo:/bar:/var:/camp"
+}
+
+
+@test "__find_file_in_path_list1" {
+
+	mkdir -p "$STELLA_APP_WORK_ROOT/__find_file_in_path_list/foo"
+	mkdir -p "$STELLA_APP_WORK_ROOT/__find_file_in_path_list/bar"
+	mkdir -p "$STELLA_APP_WORK_ROOT/__find_file_in_path_list/camp"
+
+	echo "1" > "$STELLA_APP_WORK_ROOT/__find_file_in_path_list/foo/foo.txt"
+	echo "1" > "$STELLA_APP_WORK_ROOT/__find_file_in_path_list/bar/file1.txt"
+	echo "1" > "$STELLA_APP_WORK_ROOT/__find_file_in_path_list/camp/file2.txt"
+
+	run __find_file_in_path_list '^foo\.txt$' "$STELLA_APP_WORK_ROOT/__find_file_in_path_list/foo"
+	assert_success
+	assert_output "$STELLA_APP_WORK_ROOT/__find_file_in_path_list/foo/foo.txt"
+
+	run __find_file_in_path_list  '^file.\.txt$' "$STELLA_APP_WORK_ROOT/__find_file_in_path_list/foo:$STELLA_APP_WORK_ROOT/__find_file_in_path_list/bar:$STELLA_APP_WORK_ROOT/__find_file_in_path_list/camp"
+	assert_success
+	echo "$STELLA_APP_WORK_ROOT/__find_file_in_path_list/bar/file1.txt 
+	$STELLA_APP_WORK_ROOT/__find_file_in_path_list/camp/file2.txt" | assert_output
+
+	run __find_file_in_path_list  '^file.\.txt$' "$STELLA_APP_WORK_ROOT/__find_file_in_path_list/foo:$STELLA_APP_WORK_ROOT/__find_file_in_path_list/bar:$STELLA_APP_WORK_ROOT/__find_file_in_path_list/camp" "STOP_FIRST"
+	assert_success
+	echo "$STELLA_APP_WORK_ROOT/__find_file_in_path_list/bar/file1.txt" | assert_output
+
+
+	rm -Rf "$STELLA_APP_WORK_ROOT/__find_file_in_path_list"
+
+}
