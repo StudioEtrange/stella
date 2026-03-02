@@ -2681,7 +2681,7 @@ __resource() {
 	fi
 
 	if [ "$_FLAG" = "1" ]; then
-		[ ! -d $FINAL_DESTINATION ] && mkdir -p $FINAL_DESTINATION
+		[ ! -d "$FINAL_DESTINATION" ] && mkdir -p "$FINAL_DESTINATION"
 
 		case ${PROTOCOL} in
 			HOMEBREW_BOTTLE)
@@ -2699,16 +2699,18 @@ __resource() {
 				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
 				;;
 			HG )
-				if [ "$_opt_revert" = "ON" ]; then cd "$FINAL_DESTINATION"; hg revert --all -C; fi
-				if [ "$_opt_update" = "ON" ]; then cd "$FINAL_DESTINATION"; hg pull; hg update $_checkout_version; fi
-				if [ "$_opt_get" = "ON" ]; then hg clone $URI "$FINAL_DESTINATION"; if [ ! "$_checkout_version" = "" ]; then cd "$FINAL_DESTINATION"; hg update $_checkout_version; fi; fi
+				if [ "$_opt_revert" = "ON" ]; then ( cd "$FINAL_DESTINATION"; hg revert --all -C; ); fi
+	            if [ "$_opt_update" = "ON" ]; then ( cd "$FINAL_DESTINATION"; hg pull; hg update "$_checkout_version"; ); fi
+                if [ "$_opt_get" = "ON" ]; then hg clone "$URI" "$FINAL_DESTINATION"; if [ ! "$_checkout_version" = "" ]; then ( cd "$FINAL_DESTINATION"; hg update "$_checkout_version"; ); fi; fi
 				# [ "$_opt_merge" = "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
 			GIT )
 				__require "git" "git" "SYSTEM"
-				if [ "$_opt_revert" = "ON" ]; then cd "$FINAL_DESTINATION"; git reset --hard; fi
-				if [ "$_opt_update" = "ON" ]; then cd "$FINAL_DESTINATION"; git pull;if [ ! "$_checkout_version" = "" ]; then git checkout $_checkout_version; fi; fi
-				if [ "$_opt_get" = "ON" ]; then git clone --recursive $URI "$FINAL_DESTINATION"; if [ ! "$_checkout_version" = "" ]; then cd "$FINAL_DESTINATION"; git checkout $_checkout_version; fi; fi
+				if [ "$_opt_revert" = "ON" ]; then ( cd "$FINAL_DESTINATION"; git reset --hard; ); fi
+				if [ "$_opt_update" = "ON" ]; then 
+						( cd "$FINAL_DESTINATION"; git pull;if [ ! "$_checkout_version" = "" ]; then git checkout "$_checkout_version"; fi; )
+				fi
+				if [ "$_opt_get" = "ON" ]; then git clone --recursive "$URI" "$FINAL_DESTINATION"; if [ ! "$_checkout_version" = "" ]; then ( cd "$FINAL_DESTINATION"; git checkout "$_checkout_version"; ); fi; fi
 				# [ "$_opt_merge" = "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
 				;;
 			FILE )
@@ -2825,27 +2827,29 @@ __compress() {
 			;;
 	esac
 
-	case $_mode in
-		7Z)
-			if [ -d "$_target" ]; then
-				cd "$_target/.."
-				7z a -t7z "$_output_archive" "$(basename "${_target}")"
-				mv "$_output_archive" "$_output_archive"
-			fi
-			if [ -f "$_target" ]; then
-				cd "$(dirname "${_target}")"
-				7z a -t7z "$_output_archive" "$(basename "${_target}")"
-				mv "$_output_archive" "$_output_archive"
-			fi
-			;;
-		ZIP)
-			__log "ERROR" "TODO: *********** ZIP NOT IMPLEMENTED"
-			;;
-		TAR*)
-				[ -d "$_target" ] && tar -c -v $_tar_flag -f "$_output_archive" -C "$_target/.." "$(basename "${_target}")"
-				[ -f "$_target" ] && tar -c -v $_tar_flag -f "$_output_archive" -C "$(dirname "${_target}")" "$(basename "${_target}")"
-			;;
-	esac
+	(
+		case $_mode in
+				7Z)
+						if [ -d "$_target" ]; then
+								cd "$_target/.."
+								7z a -t7z "$_output_archive" "$(basename "${_target}")"
+								mv "$_output_archive" "$_output_archive"
+						fi
+						if [ -f "$_target" ]; then
+								cd "$(dirname "${_target}")"
+								7z a -t7z "$_output_archive" "$(basename "${_target}")"
+								mv "$_output_archive" "$_output_archive"
+						fi
+						;;
+				ZIP)
+						__log "ERROR" "TODO: *********** ZIP NOT IMPLEMENTED"
+						;;
+				TAR*)
+								[ -d "$_target" ] && tar -c -v $_tar_flag -f "$_output_archive" -C "$_target/.." "$(basename "${_target}")"
+								[ -f "$_target" ] && tar -c -v $_tar_flag -f "$_output_archive" -C "$(dirname "${_target}")" "$(basename "${_target}")"
+						;;
+		esac
+    )
 
 
 }
@@ -2896,78 +2900,80 @@ __uncompress() {
 
 	__log "INFO" "Uncompress $FILE_PATH in $UNZIP_DIR"
 
-	cd "$UNZIP_DIR"
+	(
+		cd "$UNZIP_DIR"
 
-	case "$FILE_PATH" in
-		*.zip)
-			__require "unzip" "unzip" "SYSTEM"
-			if [ "$_opt_strip" = "ON" ]; then
-				__unzip-strip "$FILE_PATH" "$UNZIP_DIR"
-			else
-				unzip -a -o "$FILE_PATH"
-			fi
-			;;
-		*.tar )
-			if [ "$_opt_strip" = "ON" ]; then
-				tar xf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-strip "$FILE_PATH" "$UNZIP_DIR"
-			else
-				tar xf "$FILE_PATH"
-			fi
-			;;
-		*.tar.gz | *.tgz)
-			__log "DEBUG" "TAR.GZ file detected - option strip is $_opt_strip"	
-			if [ "$_opt_strip" = "ON" ]; then
-				tar xzf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-strip "$FILE_PATH" "$UNZIP_DIR"
-			else
-				tar xzf "$FILE_PATH"
-			fi
-			;;
-		*.gz)
-			__require "gzip" "gzip" "SYSTEM"
-			local unzip_dir_equal_original_dir=
-			local gz_file="$UNZIP_DIR/$(basename $FILE_PATH)"
-			
-			[ -f "$gz_file" ] && unzip_dir_equal_original_dir="1"
-			[ ! "$unzip_dir_equal_original_dir" = "1" ] && cp -f "$FILE_PATH" "$gz_file"
-			
-			# gzip do not support any arborescence, so there is no strip option to support
-			# gzip unncompress only where the gz file is located
-			gzip -f -d "$gz_file"
-			
-			[ ! "$unzip_dir_equal_original_dir" = "1" ] && rm -f "$gz_file"
-			unzip_dir_equal_original_dir=
-			;;
-		*.xz | *.tar.bz2 | *.tbz2 | *.tbz)
-			if [ "$_opt_strip" = "ON" ]; then
-				tar xf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-strip "$FILE_PATH" "$UNZIP_DIR"
-			else
-				tar xf "$FILE_PATH"
-			fi
-			;;
-		*.bz2|*.bz)
-			if [ "$_opt_strip" = "OFF" ]; then
-				cp -f "$FILE_PATH" .
-				bzip2 -d *
-			else
-				# NOTE : maybe not needed because a bz2 file contains always only one files and not a directory ?
-				__bzip2-strip "$FILE_PATH" "$UNZIP_DIR"
-			fi
-			;;
-		*.7z)
-			__require "7z" "7z" "SYSTEM"
-			[ "$_opt_strip" = "OFF" ] && 7z x "$FILE_PATH" -y -o"$UNZIP_DIR"
-			[ "$_opt_strip" = "ON" ] && __sevenzip-strip "$FILE_PATH" "$UNZIP_DIR"
-			;;
-		*.deb)
-			# STRIP not supported. Often in debian packages, there is a lot of folder at first level
-			# https://www.g-loaded.eu/2008/01/28/how-to-extract-rpm-or-deb-packages/
-			ar p "$FILE_PATH" data.tar.xz | tar x 2>/dev/null || \
-				ar p "$FILE_PATH" data.tar.gz | tar xz
-			;;
-		*)
-			__log "ERROR" "Unknown archive format"
-			;;
-	esac
+		case "$FILE_PATH" in
+			*.zip)
+				__require "unzip" "unzip" "SYSTEM"
+				if [ "$_opt_strip" = "ON" ]; then
+					__unzip-strip "$FILE_PATH" "$UNZIP_DIR"
+				else
+					unzip -a -o "$FILE_PATH"
+				fi
+				;;
+			*.tar )
+				if [ "$_opt_strip" = "ON" ]; then
+					tar xf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-strip "$FILE_PATH" "$UNZIP_DIR"
+				else
+					tar xf "$FILE_PATH"
+				fi
+				;;
+			*.tar.gz | *.tgz)
+				__log "DEBUG" "TAR.GZ file detected - option strip is $_opt_strip"	
+				if [ "$_opt_strip" = "ON" ]; then
+					tar xzf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-strip "$FILE_PATH" "$UNZIP_DIR"
+				else
+					tar xzf "$FILE_PATH"
+				fi
+				;;
+			*.gz)
+				__require "gzip" "gzip" "SYSTEM"
+				local unzip_dir_equal_original_dir=
+				local gz_file="$UNZIP_DIR/$(basename $FILE_PATH)"
+				
+				[ -f "$gz_file" ] && unzip_dir_equal_original_dir="1"
+				[ ! "$unzip_dir_equal_original_dir" = "1" ] && cp -f "$FILE_PATH" "$gz_file"
+				
+				# gzip do not support any arborescence, so there is no strip option to support
+				# gzip unncompress only where the gz file is located
+				gzip -f -d "$gz_file"
+				
+				[ ! "$unzip_dir_equal_original_dir" = "1" ] && rm -f "$gz_file"
+				unzip_dir_equal_original_dir=
+				;;
+			*.xz | *.tar.bz2 | *.tbz2 | *.tbz)
+				if [ "$_opt_strip" = "ON" ]; then
+					tar xf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-strip "$FILE_PATH" "$UNZIP_DIR"
+				else
+					tar xf "$FILE_PATH"
+				fi
+				;;
+			*.bz2|*.bz)
+				if [ "$_opt_strip" = "OFF" ]; then
+					cp -f "$FILE_PATH" .
+					bzip2 -d *
+				else
+					# NOTE : maybe not needed because a bz2 file contains always only one files and not a directory ?
+					__bzip2-strip "$FILE_PATH" "$UNZIP_DIR"
+				fi
+				;;
+			*.7z)
+				__require "7z" "7z" "SYSTEM"
+				[ "$_opt_strip" = "OFF" ] && 7z x "$FILE_PATH" -y -o"$UNZIP_DIR"
+				[ "$_opt_strip" = "ON" ] && __sevenzip-strip "$FILE_PATH" "$UNZIP_DIR"
+				;;
+			*.deb)
+				# STRIP not supported. Often in debian packages, there is a lot of folder at first level
+				# https://www.g-loaded.eu/2008/01/28/how-to-extract-rpm-or-deb-packages/
+				ar p "$FILE_PATH" data.tar.xz | tar x 2>/dev/null || \
+					ar p "$FILE_PATH" data.tar.gz | tar xz
+				;;
+			*)
+				__log "ERROR" "Unknown archive format"
+				;;
+		esac
+	)
 }
 
 __download() {
@@ -3052,18 +3058,20 @@ __untar-strip() {
 	local dest=${2:-.}
 	local temp=$(mktmpdir)
 
-	cd "$temp"
-	tar xzf "$FILE_PATH"
+	(
+		cd "$temp"
+		tar xzf "$FILE_PATH"
 
-	shopt -s dotglob
-	local f=("$temp"/*)
+		shopt -s dotglob
+		local f=("$temp"/*)
 
-	if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
-			mv "$temp"/*/* "$dest"
-	else
-			mv "$temp"/* "$dest"
-	fi
-	rm -Rf "$temp"
+		if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
+				mv "$temp"/*/* "$dest"
+		else
+				mv "$temp"/* "$dest"
+		fi
+		rm -Rf "$temp"
+	)
 }
 
 __unzip-strip() {
@@ -3106,19 +3114,21 @@ __bzip2-strip() {
     local dest=${2:-.}
     local temp=$(mktmpdir)
 
-	cp -f $zip $temp/
-	cd $temp
-    bzip2 -d *
+	(
+		cp -f $zip $temp/
+		cd $temp
+		bzip2 -d *
 
-    shopt -s dotglob
-    local f=("$temp"/*)
+		shopt -s dotglob
+		local f=("$temp"/*)
 
-    if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
-        mv "$temp"/*/* "$dest"
-    else
-        mv "$temp"/* "$dest"
-    fi
-    rm -Rf "$temp"
+		if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
+			mv "$temp"/*/* "$dest"
+		else
+			mv "$temp"/* "$dest"
+		fi
+		rm -Rf "$temp"
+	)
 }
 
 # SCM ---------------------------------------------
