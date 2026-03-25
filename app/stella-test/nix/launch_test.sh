@@ -5,7 +5,9 @@ _CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
 #STELLA_LOG_STATE=OFF
 . "$_CURRENT_FILE_DIR/stella-link.sh" include
 
-$STELLA_API require "bats" "bats" "INTERNAL"
+#$STELLA_API require "bats" "bats" "INTERNAL"
+$STELLA_API get_feature "bats"
+
 
 function test_launch_bats() {
 	local domain="$1"
@@ -24,7 +26,7 @@ function test_launch_bats() {
 	rm -f "$_v"
 }
 
-STELLA_LOG_STATE=ON
+
 case $1 in
   h|help|--help|-h)
     echo " * Usage $0 common|binary|feature|algorithm|all [test-name]"
