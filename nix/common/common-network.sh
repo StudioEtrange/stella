@@ -191,9 +191,13 @@ __proxy_override() {
 
 	function curl() {
 		local __port
-		[ ! "${STELLA_PROXY_PORT}" = "" ] && __port=":${STELLA_PROXY_PORT}"
-		[ ! "$STELLA_PROXY_USER" = "" ] && echo $(command curl --noproxy "${STELLA_NO_PROXY}" --proxy "${STELLA_PROXY_HOST}${__port}" --proxy-user "${STELLA_PROXY_USER}:${STELLA_PROXY_PASS}" "$@")
-		[ "$STELLA_PROXY_USER" = "" ] && echo $(command curl --noproxy "${STELLA_NO_PROXY}" --proxy "${STELLA_PROXY_HOST}${__port}" "$@")
+		[ -n "${STELLA_PROXY_PORT}" ] && __port=":${STELLA_PROXY_PORT}"
+
+		if [ -n "${STELLA_PROXY_USER}" ]; then
+				command curl --noproxy "${STELLA_NO_PROXY}" --proxy "${STELLA_PROXY_HOST}${__port}" --proxy-user "${STELLA_PROXY_USER}:${STELLA_PROXY_PASS}" "$@"
+		else
+				command curl --noproxy "${STELLA_NO_PROXY}" --proxy "${STELLA_PROXY_HOST}${__port}" "$@"
+		fi
 	}
 
 
@@ -593,7 +597,7 @@ __get_network_info() {
 			fi
 			;;
 	esac
-	
+
 	# TODO : choose between ipv4 and ipv6
 	STELLA_DEFAULT_INTERFACE="$STELLA_DEFAULT_INTERFACE_IPV4"
 
@@ -653,7 +657,7 @@ __get_ip_from_interface() {
 	local _if="$1"
 	local _mode="$2"
 	# STABLE : find stable ip (no temporary, no tentative, no deprecated, no dadfailed), usefull to be used as an ip server address
-	local _option="$3" 
+	local _option="$3"
 	[ "$_mode" = "" ] && _mode="ipv4"
 
 	#https://unix.stackexchange.com/a/407128
@@ -801,7 +805,7 @@ __get_ip_external() {
 			fi
 		;;
 	esac
-	
+
 
 	echo "${__result}"
 }
@@ -877,7 +881,7 @@ __register_no_proxy() {
 
 	_list_uri="${_list_uri//,/ }"
 	_list_uri="${_list_uri} ${STELLA_PROXY_NO_PROXY//,/ }"
-	
+
 	_list_uri="$(__list_filter_duplicate "${_list_uri}")"
 
 	_list_uri="$(__sort_version "${_list_uri}")"
