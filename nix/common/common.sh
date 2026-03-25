@@ -2112,7 +2112,11 @@ __rel_to_abs_path() {
 				# relative to a given absolute path
 				if [ -d "$_abs_root_path/$_rel_path" ]; then
 					# NOTE call to __rel_to_abs_path_alternative_3 is equivalent
-					result="$(cd "$_abs_root_path/$_rel_path" && pwd -P)"
+					# pwd -L (and pwd) return logical path
+					# pwd -P return physical path by resolving all symlink
+					# NOTE : in windows, WSL use mount, it will return real path (/mnt/c/Users instead of /home/user)
+					#result="$(cd "$_abs_root_path/$_rel_path" && pwd -P)"
+					result="$(cd "$_abs_root_path/$_rel_path" && pwd)"
 				else
 					# TODO using this method if directory does not exist returned path is not real absolute (example : /tata/toto/../titi instead of /tata/titi)
 					# TODO : we rely on pure bash version, because readlink -m option used in alternative2 do not exist on some system

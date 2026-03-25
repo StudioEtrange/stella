@@ -9,6 +9,9 @@ set -h
 #set -x
 #set -xv
 
+# pwd -L (and pwd) return logical path
+# pwd -P return physical path by resolving all symlink
+# NOTE : in windows, WSL use mount, it will return real path (/mnt/c/Users instead of /home/user)
 _STELLA_CONF_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 if [ "$STELLA_CURRENT_RUNNING_DIR" = "" ]; then
 	#STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
