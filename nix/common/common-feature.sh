@@ -1140,8 +1140,8 @@ __internal_feature_context() {
 			fi
 		fi
 		if [ "$_feat_found" = "1" ]; then
-			feature_$TMP_FEAT_SCHEMA_NAME
-			feature_"$TMP_FEAT_SCHEMA_NAME"_"$TMP_FEAT_SCHEMA_VERSION"
+			"feature_${TMP_FEAT_SCHEMA_NAME}"
+			"feature_${TMP_FEAT_SCHEMA_NAME}_${TMP_FEAT_SCHEMA_VERSION}"
 		fi
 
 		# bundle path
