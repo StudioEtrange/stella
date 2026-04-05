@@ -1,6 +1,8 @@
-# Gemini Agent Configuration for the Stella Project
+# Agent Configuration for the Stella Framework Project
 
-This file provides operational directives for the Gemini agent interacting with the Stella codebase.
+This file provides operational directives for AI agents interacting with the Stella framework codebase.
+
+This file concern only Stella framework and its files from this folder and its subfolder.
 
 ## 1. Agent's Primary Objective
 
