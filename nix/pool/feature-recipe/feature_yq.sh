@@ -10,7 +10,7 @@ feature_yq() {
 	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
-	FEAT_DESC="yq is a portable command-line YAML processor "
+	FEAT_DESC="yq is a portable command-line YAML processor"
 	FEAT_LINK="https://mikefarah.gitbook.io/yq/ https://github.com/mikefarah/yq"
 }
 
