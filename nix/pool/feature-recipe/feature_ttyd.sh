@@ -5,7 +5,7 @@ _ttyd_INCLUDED_=1
 
 feature_ttyd() {
 	FEAT_NAME="ttyd"
-	FEAT_LIST_SCHEMA="latest:binary 1_7_7@x64:binary 1_7_7@x86:binary"
+	FEAT_LIST_SCHEMA="latest_homebrew:binary 1_7_7@x64:binary 1_7_7@x86:binary"
 	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
@@ -14,8 +14,8 @@ feature_ttyd() {
 }
 
 
-feature_ttyd_latest() {
-	FEAT_VERSION="latest"
+feature_ttyd_latest_homebrew() {
+	FEAT_VERSION="latest_homebrew"
 
 	FEAT_BINARY_URL="ttyd"
 	FEAT_BINARY_URL_PROTOCOL="HOMEBREW_BOTTLE"
@@ -56,20 +56,7 @@ feature_ttyd_install_binary() {
 
 	case $FEAT_BINARY_URL_PROTOCOL in
 		HOMEBREW_BOTTLE)
-			__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP"
-			local content_folder=""
-			(
-				shopt -s dotglob
-
-				for x in "$FEAT_INSTALL_ROOT/"*; do
-            		[ -d "$x" ] || continue
-					content_folder="$x"
-				done
-
-				for f in "$content_folder/"*; do mv "$f" "${FEAT_INSTALL_ROOT}"/; done
-
-				rm -rf "${content_folder}"
-			)
+			__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT"
 			;;
 		
 		*)

@@ -2,6 +2,7 @@ if [ ! "$_LIBSOUNDIO-HOMEBREW_INCLUDED_" = "1" ]; then
 _LIBSOUNDIO-HOMEBREW_INCLUDED_=1
 
 # TODO NOT FINISHED
+# see feature_ffmpeg for example of homebrew bottle download and install
 
 feature_libsoundio-homebrew() {
 	FEAT_NAME="libsoundio-homebrew"

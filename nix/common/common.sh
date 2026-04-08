@@ -2687,8 +2687,7 @@ __resource() {
 		case ${PROTOCOL} in
 			HOMEBREW_BOTTLE)
 				# TODO
-				if [ "$_opt_get" = "ON" ]; then __download_uncompress_homebrew_bottle "$URI" "$_download_filename" "$FINAL_DESTINATION" "$_STRIP"; fi
-				#if [ "$_opt_get" = "ON" ]; then __download_uncompress "$URI" "$_download_filename" "$FINAL_DESTINATION" "$_STRIP"; fi
+				if [ "$_opt_get" = "ON" ]; then __download_uncompress_homebrew_bottle "$URI" "$_download_filename" "$FINAL_DESTINATION"; fi
 				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
 				;;
 			HTTP_ZIP )
@@ -2742,7 +2741,7 @@ __download_uncompress_homebrew_bottle() {
 	FORMULA="$1"
 	FILE_NAME="$2"
 	UNZIP_DIR="$3"
-	OPT="$4"
+	OPT="STRIP $4"
 
 	if [ "$STELLA_CPU_ARCH" = "32" ]; then
 		__log "ERROR" "Homebrew bottle do not support 32 bits archive"
@@ -2780,24 +2779,40 @@ __download_uncompress_homebrew_bottle() {
 		fi
 	fi
 
-	# NOTE : linux bottles have place holder (@@HOMEBREW_PREFIX@@) replaced by brew tool for interpreter path and rpath values
-	# we need to set interpreter and we ignore other values for rpath
-	__require "patchelf" "patchelf#0_18_0" "STELLA_FEATURE INTERNAL"
-	
-	__system_interpreter="$(patchelf --print-interpreter /bin/ls)"
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		# NOTE : linux bottles have place holder (@@HOMEBREW_PREFIX@@) replaced by brew tool for interpreter path and rpath values
+		# we need to set interpreter and we ignore other values for rpath
+		__require "patchelf" "patchelf#0_18_0" "STELLA_FEATURE INTERNAL"
+		
+		__system_interpreter="$(patchelf --print-interpreter /bin/ls)"
 
-	find "$UNZIP_DIR" -type f -perm -111 | while IFS= read -r f; do
-		interp="$(patchelf --print-interpreter "$f" 2>/dev/null || true)"
+		find "$UNZIP_DIR" -type f -perm -111 | while IFS= read -r f; do
+			interp="$(patchelf --print-interpreter "$f" 2>/dev/null || true)"
+			if [ -n "$interp" ] && echo "$interp" | grep -q '@@HOMEBREW_PREFIX@@'; then
+				echo "→ Patching interpreter for: $f"
+				chmod u+w "$f"
+				patchelf --set-interpreter "$__system_interpreter" "$f"
+			fi
+		done
 
-		if [ -n "$interp" ] && echo "$interp" | grep -q '@@HOMEBREW_PREFIX@@'; then
-			echo "→ Patching interpreter for: $f"
-			chmod u+w "$f"
-			patchelf --set-interpreter "$__system_interpreter" "$f"
-		fi
-	done
+		# NOTE we leave in place all rpath values - because they may have no impact
+		# patchelf --remove-rpath "$f"
+	fi
 
-	# we leave in place all rpath values - because they may have no impact
-	# patchelf --remove-rpath "$f"
+	local content_folder=""
+	(
+		# remove folder named with "version" from "latest/feature/version/*"
+		shopt -s dotglob
+		for x in "$UNZIP_DIR/"*; do
+			[ -d "$x" ] || continue
+			content_folder="$x"
+		done
+		echo "→ Move bottle files from $content_folder to $UNZIP_DIR"
+		for f in "$content_folder/"*; do 
+			mv "$f" "${UNZIP_DIR}"/; 
+		done
+		rm -rf "${content_folder}"
+	)
 }
 
 

@@ -2,11 +2,12 @@ if [ ! "$_dungeon_INCLUDED_" = "1" ]; then
 _dungeon_INCLUDED_=1
 
 # TODO
-# missing dependencies : gfortran and others 
+# for latest_homebrew
+#		linuw missing dependencies : gfortran
 
 feature_dungeon() {
 	FEAT_NAME="dungeon"
-	FEAT_LIST_SCHEMA="latest:binary"
+	FEAT_LIST_SCHEMA="latest_homebrew:binary"
 	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
@@ -15,8 +16,8 @@ feature_dungeon() {
 }
 
 
-feature_dungeon_latest() {
-	FEAT_VERSION="latest"
+feature_dungeon_latest_homebrew() {
+	FEAT_VERSION="latest_homebrew"
 
 	FEAT_BINARY_URL="dungeon"
 	FEAT_BINARY_URL_PROTOCOL="HOMEBREW_BOTTLE"
@@ -31,20 +32,7 @@ feature_dungeon_install_binary() {
 
 	case $FEAT_BINARY_URL_PROTOCOL in
 		HOMEBREW_BOTTLE)
-			__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP"
-			local content_folder=""
-			(
-				shopt -s dotglob
-
-				for x in "$FEAT_INSTALL_ROOT/"*; do
-            		[ -d "$x" ] || continue
-					content_folder="$x"
-				done
-
-				for f in "$content_folder/"*; do mv "$f" "${FEAT_INSTALL_ROOT}"/; done
-
-				rm -rf "${content_folder}"
-			)
+			__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE"
 			;;
 	esac
 	
