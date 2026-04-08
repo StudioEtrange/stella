@@ -437,7 +437,7 @@ __remove_all_rpath() {
 			done
 		fi
 		if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-			__require "patchelf" "patchelf#0_10" "STELLA_FEATURE INTERNAL"
+			__require "patchelf" "patchelf#0_18_0" "STELLA_FEATURE INTERNAL"
 				msg="$msg -- deleting all RPATH values."
 			patchelf --remove-rpath "$_path"
 		fi
@@ -548,7 +548,7 @@ __add_rpath() {
 			done
 		fi
 		if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-			__require "patchelf" "patchelf#0_10" "STELLA_FEATURE INTERNAL"
+			__require "patchelf" "patchelf#0_18_0" "STELLA_FEATURE INTERNAL"
 			patchelf --set-rpath "${_new_rpath// /:}" "$_path"
 			msg="$msg -- adding : $_new_rpath"
 		fi
@@ -1100,7 +1100,7 @@ __tweak_linked_lib() {
 
 
 		if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-			__require "patchelf" "patchelf#0_10" "STELLA_FEATURE INTERNAL"
+			__require "patchelf" "patchelf#0_18_0" "STELLA_FEATURE INTERNAL"
 		fi
 
 		local _resolved_lib

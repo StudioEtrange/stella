@@ -10,7 +10,7 @@ feature_patchelf() {
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="A small utility to modify the dynamic linker and RPATH of ELF executables"
-	FEAT_LINK="http://nixos.org/patchelf.html"
+	FEAT_LINK="http://nixos.org/patchelf.html https://github.com/NixOS/patchelf"
 
 }
 

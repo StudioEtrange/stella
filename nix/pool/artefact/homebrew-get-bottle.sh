@@ -106,6 +106,10 @@ if [ -z "$VERSION" ]; then
     log "→ Using VERSION=$VERSION"
 fi
 
+# determine revision
+REVISION="$(echo "$FORMULA_JSON" | jq -r '.revision // 0')"
+log "→ Using REVISION=$REVISION"
+
 BASE="https://ghcr.io/v2/${IMAGE_REPO}"
 
 # --- Auth: use GITHUB_TOKEN if provided, else anonymous token ---
@@ -126,7 +130,11 @@ curl_helper() {
         -H "Authorization: Bearer ${TOKEN}" "$@"
 }
 
-INDEX_URL="${BASE}/manifests/${VERSION}"
+if [ -n "$REVISION" ] && [ ! "$REVISION" = "0" ]; then
+    INDEX_URL="${BASE}/manifests/${VERSION}_${REVISION}"
+else
+    INDEX_URL="${BASE}/manifests/${VERSION}"
+fi
 log "→ Fetching multi-arch index: ${INDEX_URL}"
 INDEX_JSON="$(curl_helper \
     -H "Accept: application/vnd.oci.image.index.v1+json, application/vnd.docker.distribution.manifest.list.v2+json" \
@@ -161,7 +169,6 @@ DIGEST="$(jq -r --arg os "$OS" --arg arch "$ARCH" '
         empty
     end
 ' <<<"$INDEX_JSON" | head -n1)"
-[ -n "${DIGEST}" ] || { echo "Failed: digest for $OS/$ARCH not found." >&2; exit 1; }
 [ -n "${DIGEST}" ] || {
     echo "Failed:" 
     echo "  digest for $OS/$ARCH not found"

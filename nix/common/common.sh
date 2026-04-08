@@ -2556,34 +2556,34 @@ __resource() {
 	#		"DEST_ERASE" when GET, will erase FINAL_DESTINATION first
 	# TODO : remove illegal characters in NAME. NAME is used in flag file name when merging
 
-	local _opt_merge=OFF
-	local _opt_strip=OFF
-	local _opt_get=ON
-	local _opt_delete=OFF
-	local _opt_update=OFF
-	local _opt_revert=OFF
-	local _opt_force_name=OFF
-	local _opt_version=OFF
-	local _opt_dest_erase=OFF
+	local _opt_merge="OFF"
+	local _opt_strip="OFF"
+	local _opt_get="ON"
+	local _opt_delete="OFF"
+	local _opt_update="OFF"
+	local _opt_revert="OFF"
+	local _opt_force_name="OFF"
+	local _opt_version="OFF"
+	local _opt_dest_erase="OFF"
 	local _checkout_version=
 	local _download_filename="_AUTO_"
 	for o in $OPT; do
 		if [ "$_opt_force_name" = "ON" ]; then
-			_download_filename=$o
-			_opt_force_name=OFF
+			_download_filename="$o"
+			_opt_force_name="OFF"
 		else
 			if [ "$_opt_version" = "ON" ]; then
-				_checkout_version=$o
-				_opt_version=OFF
+				_checkout_version="$o"
+				_opt_version="OFF"
 			else
-				[ "$o" = "VERSION" ] && _opt_version=ON
-				[ "$o" = "MERGE" ] && _opt_merge=ON
-				[ "$o" = "DEST_ERASE" ] && _opt_dest_erase=ON
-				[ "$o" = "STRIP" ] && _opt_strip=ON
-				[ "$o" = "FORCE_NAME" ] && _opt_force_name=ON
-				if [ "$o" = "DELETE" ]; then _opt_delete=ON;  _opt_revert=OFF;  _opt_get=OFF; _opt_update=OFF; fi
-				if [ "$o" = "UPDATE" ]; then _opt_update=ON;  _opt_revert=OFF;  _opt_get=OFF; _opt_delete=OFF; fi
-				if [ "$o" = "REVERT" ]; then _opt_revert=ON;  _opt_update=OFF;  _opt_get=OFF; _opt_delete=OFF; fi
+				[ "$o" = "VERSION" ] && _opt_version="ON"
+				[ "$o" = "MERGE" ] && _opt_merge="ON"
+				[ "$o" = "DEST_ERASE" ] && _opt_dest_erase="ON"
+				[ "$o" = "STRIP" ] && _opt_strip="ON"
+				[ "$o" = "FORCE_NAME" ] && _opt_force_name="ON"
+				if [ "$o" = "DELETE" ]; then _opt_delete="ON";  _opt_revert="OFF";  _opt_get="OFF"; _opt_update="OFF"; fi
+				if [ "$o" = "UPDATE" ]; then _opt_update="ON";  _opt_revert="OFF";  _opt_get="OFF"; _opt_delete="OFF"; fi
+				if [ "$o" = "REVERT" ]; then _opt_revert="ON";  _opt_update="OFF";  _opt_get="OFF"; _opt_delete="OFF"; fi
 			fi
 		fi
 	done
@@ -2686,7 +2686,9 @@ __resource() {
 
 		case ${PROTOCOL} in
 			HOMEBREW_BOTTLE)
-				if [ "$_opt_get" = "ON" ]; then __download_uncompress "$URI" "$_download_filename" "$FINAL_DESTINATION" "$_STRIP"; fi
+				# TODO
+				if [ "$_opt_get" = "ON" ]; then __download_uncompress_homebrew_bottle "$URI" "$_download_filename" "$FINAL_DESTINATION" "$_STRIP"; fi
+				#if [ "$_opt_get" = "ON" ]; then __download_uncompress "$URI" "$_download_filename" "$FINAL_DESTINATION" "$_STRIP"; fi
 				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
 				;;
 			HTTP_ZIP )
@@ -2755,13 +2757,20 @@ __download_uncompress_homebrew_bottle() {
 		arm)
 			arch="arm64"
 			;;
+		*)
+			__log "ERROR" "Unsupported architecture for Homebrew bottle (${STELLA_CURRENT_CPU_FAMILY})"
+			exit 1
+			;;
 	esac
 
+	[ "${FILE_NAME}" = "" ] && FILE_NAME="_AUTO_"
+
 	if [ "${FILE_NAME}" = "_AUTO_" ]; then
-	#OUT="${FORMULA}-${VERSION}.${OS}_${ARCH}.bottle.tar.gz"
-		$STELLA_ARTEFACT/homebrew_get_bottle.sh -n $FORMULA -o "${STELLA_CURRENT_PLATFORM}" -a "${arch}" -d "${STELLA_APP_CACHE_DIR}"
+		"$STELLA_ARTEFACT/homebrew-get-bottle.sh" -n "$FORMULA" -o "${STELLA_CURRENT_PLATFORM}" -a "${arch}" -d "${STELLA_APP_CACHE_DIR}"
+		FILE_NAME=$(find "$STELLA_APP_CACHE_DIR" -maxdepth 1 -type f -name "${FORMULA}-*.bottle.tar.gz" | head -n 1)
+		FILE_NAME=${FILE_NAME##*/}
 	else
-		$STELLA_ARTEFACT/homebrew_get_bottle.sh -n $FORMULA -f "${FILE_NAME}"
+		"$STELLA_ARTEFACT/homebrew-get-bottle.sh" -n "$FORMULA" -o "${STELLA_CURRENT_PLATFORM}" -a "${arch}" -d "${STELLA_APP_CACHE_DIR}" -f "${FILE_NAME}"
 	fi
 	if [ -f "$STELLA_APP_CACHE_DIR/$FILE_NAME" ]; then
 		__uncompress "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$UNZIP_DIR" "$OPT"
@@ -2771,7 +2780,26 @@ __download_uncompress_homebrew_bottle() {
 		fi
 	fi
 
+	# NOTE : linux bottles have place holder (@@HOMEBREW_PREFIX@@) replaced by brew tool for interpreter path and rpath values
+	# we need to set interpreter and we ignore other values for rpath
+	__require "patchelf" "patchelf#0_18_0" "STELLA_FEATURE INTERNAL"
+	
+	__system_interpreter="$(patchelf --print-interpreter /bin/ls)"
+
+	find "$UNZIP_DIR" -type f -perm -111 | while IFS= read -r f; do
+		interp="$(patchelf --print-interpreter "$f" 2>/dev/null || true)"
+
+		if [ -n "$interp" ] && echo "$interp" | grep -q '@@HOMEBREW_PREFIX@@'; then
+			echo "→ Patching interpreter for: $f"
+			chmod u+w "$f"
+			patchelf --set-interpreter "$__system_interpreter" "$f"
+		fi
+	done
+
+	# we leave in place all rpath values - because they may have no impact
+	# patchelf --remove-rpath "$f"
 }
+
 
 __download_uncompress() {
 	local URL
@@ -2786,7 +2814,8 @@ __download_uncompress() {
 	UNZIP_DIR="$3"
 	OPT="$4"
 
-
+	[ "${FILE_NAME}" = "" ] && FILE_NAME="_AUTO_"
+	
 	if [ "${FILE_NAME}" = "_AUTO_" ]; then
 		#_AFTER_SLASH=${URL##*/}
 		FILE_NAME=$(__get_filename_from_url "$URL")
@@ -3055,16 +3084,19 @@ __untar-strip() {
 
 	cd "$temp"
 	tar xzf "$FILE_PATH"
+	(
+		shopt -s dotglob
+		local f=("$temp"/*)
 
-	shopt -s dotglob
-	local f=("$temp"/*)
-
-	if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
-			mv "$temp"/*/* "$dest"
-	else
-			mv "$temp"/* "$dest"
-	fi
+		if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
+				mv "$temp"/*/* "$dest"
+		else
+				mv "$temp"/* "$dest"
+		fi
+	)
 	rm -Rf "$temp"
+	
+	
 }
 
 __unzip-strip() {
@@ -3073,15 +3105,17 @@ __unzip-strip() {
     local temp=$(mktmpdir)
 
     unzip -a -o -d "$temp" "$zip"
-    shopt -s dotglob
-    local f=("$temp"/*)
+    (
+		shopt -s dotglob
+		local f=("$temp"/*)
 
-    if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
-        mv "$temp"/*/* "$dest"
-    else
-        mv "$temp"/* "$dest"
-    fi
-    rm -Rf "$temp"
+		if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
+			mv "$temp"/*/* "$dest"
+		else
+			mv "$temp"/* "$dest"
+		fi
+	)
+	rm -Rf "$temp"
 }
 
 __sevenzip-strip() {
@@ -3089,14 +3123,16 @@ __sevenzip-strip() {
     local dest=${2:-.}
     local temp=$(mktmpdir)
     7z x "$zip" -y -o"$temp"
-    shopt -s dotglob
-    local f=("$temp"/*)
+    (
+		shopt -s dotglob
+		local f=("$temp"/*)
 
-    if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
-        mv "$temp"/*/* "$dest"
-    else
-        mv "$temp"/* "$dest"
-    fi
+		if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
+			mv "$temp"/*/* "$dest"
+		else
+			mv "$temp"/* "$dest"
+		fi
+	)
     rm -Rf "$temp"
 }
 
@@ -3110,15 +3146,16 @@ __bzip2-strip() {
 	cp -f $zip $temp/
 	cd $temp
     bzip2 -d *
+	(
+		shopt -s dotglob
+		local f=("$temp"/*)
 
-    shopt -s dotglob
-    local f=("$temp"/*)
-
-    if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
-        mv "$temp"/*/* "$dest"
-    else
-        mv "$temp"/* "$dest"
-    fi
+		if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
+			mv "$temp"/*/* "$dest"
+		else
+			mv "$temp"/* "$dest"
+		fi
+	)
     rm -Rf "$temp"
 }
 
