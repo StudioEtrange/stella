@@ -16,6 +16,8 @@ Usage:
     $0 -h|--help
   Download: 
     $0 -n FORMULA -o OS -a ARCH [-v VERSION] [-d OUTFILE_DIR] [-f OUTFILE] [-q|--quiet]
+  Download and Extract: 
+    $0 -n FORMULA -o OS -a ARCH -e|--extract [-v VERSION] [-d OUTFILE_DIR] [-q|--quiet]
   List available OS/ARCH:
     $0 -n FORMULA -L|--list [-v VERSION] [-q|--quiet]
 
@@ -27,12 +29,18 @@ Example:
     $0 -n privoxy --list -v 4.0.0
     $0 -n wget -o linux -a amd64
     $0 -n privoxy -o linux -a amd64 -v 4.0.0 -d /tmp -f privoxy.tar.gz
+	$0 -n privoxy -o linux -a amd64 -v 4.0.0 -e -d privoxy
 
 Environment:
   GITHUB_TOKEN   Optional; if set, used for GHCR Authorization instead of anonymous token.
 
+Notes;
+  - There is no way to list available versions.
+  - On linux, the interpreter path of built binaries must be set before use.
+  - On MacOs, most of the binaries dependencies must be relinked. Use to check dependencies ; https://gist.github.com/StudioEtrange/c2f1a2f625c5745c84dda2bc02fea4eb
+
 Author:
-  StudioEtrange (c) 2025
+  StudioEtrange (c) 2025-2026
 
 EOF
 }
@@ -41,9 +49,10 @@ FORMULA=""
 VERSION=""
 OS=""
 ARCH=""
-OUT=""
+OUTFILE=""
 LIST_PLATFORMS=0
-OUT_DIR="."
+EXTRACT_MODE=0
+OUTFILE_DIR="."
 QUIET=0
 
 # --- Parse options (short + a long flag for listing) ---
@@ -53,8 +62,9 @@ while [ $# -gt 0 ]; do
     -v) VERSION="${2:-}"; shift 2 ;;
     -o) OS="${2:-}"; shift 2 ;;
     -a) ARCH="${2:-}"; shift 2 ;;
-    -f) OUT="${2:-}"; shift 2 ;;
-    -d) OUT_DIR="${2:-}"; shift 2 ;;
+    -f) OUTFILE="${2:-}"; shift 2 ;;
+    -d) OUTFILE_DIR="${2:-}"; shift 2 ;;
+    -e|--extract) EXTRACT_MODE=1; shift ;;
     -L|--list) LIST_PLATFORMS=1; shift ;;
     -q|--quiet) QUIET=1; shift ;;
     -h|--help) usage; exit 0 ;;
@@ -193,24 +203,40 @@ BLOB_DIGEST="$(jq -r '
 [ -n "${BLOB_DIGEST}" ] || { echo "Failed: .tar.gz layer not found." >&2; exit 1; }
 log "→ Blob digest: ${BLOB_DIGEST}"
 
-# Default outfile name if not provided
-[ -n "$OUT" ] || OUT="${FORMULA}-${VERSION}.${OS}_${ARCH}.bottle.tar.gz"
+# Manage file and folder
+# in extract mode
+if [ "$EXTRACT_MODE" -eq 1 ]; then
+	OUTFILE="${FORMULA}-${VERSION}.${OS}_${ARCH}.bottle.tar.gz"
+else
+	# in other mode
+	# Default outfile name if not provided
+	[ -n "$OUTFILE" ] || OUTFILE="${FORMULA}-${VERSION}.${OS}_${ARCH}.bottle.tar.gz"
+fi
 
 # Prepend output directory
-mkdir -p "$OUT_DIR" || { echo "Failed: cannot create OUT_DIR '$OUT_DIR'." >&2; exit 1; }
-[ -w "$OUT_DIR" ] || { echo "Failed: OUT_DIR '$OUT_DIR' is not writable." >&2; exit 1; }
-OUT="${OUT_DIR%/}/$OUT"
+mkdir -p "$OUTFILE_DIR" || { echo "Failed: cannot create OUTFILE_DIR '$OUTFILE_DIR'." >&2; exit 1; }
+[ -w "$OUTFILE_DIR" ] || { echo "Failed: OUTFILE_DIR '$OUTFILE_DIR' is not writable." >&2; exit 1; }
+OUTFILE="${OUTFILE_DIR%/}/$OUTFILE"
 
 BLOB_URL="${BASE}/blobs/${BLOB_DIGEST}"
 log "→ Downloading: ${BLOB_URL}"
-trap 'rc=$?; if [ $rc -ne 0 ]; then echo "Download failed, removing: $OUT" >&2; rm -f "$OUT"; fi; exit $rc' EXIT
+trap 'rc=$?; if [ $rc -ne 0 ]; then echo "Download failed, removing: $OUTFILE" >&2; rm -f "$OUTFILE"; fi; exit $rc' EXIT
 curl_helper \
     -H "Accept: application/octet-stream" \
-    "$BLOB_URL" -o "$OUT"
+    "$BLOB_URL" -o "$OUTFILE"
 trap - EXIT
 
 if [ "$QUIET" -eq 0 ]; then
-    echo "✅ Download complete: $OUT"
+    echo "✅ Download complete: $OUTFILE"
     echo "   Content preview:"
-    tar -tzf "$OUT" | sed -n '1,12p'
+    tar -tzf "$OUTFILE" | sed -n '1,12p'
+fi
+
+
+if [ "$EXTRACT_MODE" -eq 1 ]; then
+	tar -xzf "$OUTFILE" -C "$OUTFILE_DIR"
+	if [ "$QUIET" -eq 0 ]; then
+		echo "✅ Extract complete in: $OUTFILE_DIR"
+	fi
+	rm -f $OUTFILE
 fi
