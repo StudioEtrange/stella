@@ -1,6 +1,7 @@
 if [ ! "$_VHS_INCLUDED_" = "1" ]; then
 _VHS_INCLUDED_=1
 
+# VHS requires ttyd and ffmpeg to be installed and available on your PATH.
 
 feature_vhs() {
 	FEAT_NAME="vhs"
@@ -57,9 +58,6 @@ feature_vhs_install_binary() {
 
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP"
 
-	if [ -f "${FEAT_INSTALL_ROOT}/vhs" ]; then
-		chmod +x "${FEAT_INSTALL_ROOT}/vhs"
-	fi
 
 }
 
