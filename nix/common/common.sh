@@ -2765,11 +2765,11 @@ __download_uncompress_homebrew_bottle() {
 	[ "${FILE_NAME}" = "" ] && FILE_NAME="_AUTO_"
 
 	if [ "${FILE_NAME}" = "_AUTO_" ]; then
-		"$STELLA_ARTEFACT/homebrew-get-bottle.sh" -n "$FORMULA" -o "${STELLA_CURRENT_PLATFORM}" -a "${arch}" -d "${STELLA_APP_CACHE_DIR}"
+		"$STELLA_ARTEFACT/homebrew-get-bottle.sh" -n "$FORMULA" -o "${STELLA_CURRENT_PLATFORM}" -a "${arch}" -d "${STELLA_APP_CACHE_DIR}" || { echo "ERROR" ; exit 1; }
 		FILE_NAME=$(find "$STELLA_APP_CACHE_DIR" -maxdepth 1 -type f -name "${FORMULA}-*.bottle.tar.gz" | head -n 1)
 		FILE_NAME=${FILE_NAME##*/}
 	else
-		"$STELLA_ARTEFACT/homebrew-get-bottle.sh" -n "$FORMULA" -o "${STELLA_CURRENT_PLATFORM}" -a "${arch}" -d "${STELLA_APP_CACHE_DIR}" -f "${FILE_NAME}"
+		"$STELLA_ARTEFACT/homebrew-get-bottle.sh" -n "$FORMULA" -o "${STELLA_CURRENT_PLATFORM}" -a "${arch}" -d "${STELLA_APP_CACHE_DIR}" -f "${FILE_NAME}" || { echo "ERROR" ; exit 1; }
 	fi
 	if [ -f "$STELLA_APP_CACHE_DIR/$FILE_NAME" ]; then
 		__uncompress "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$UNZIP_DIR" "$OPT"
@@ -2960,43 +2960,61 @@ __uncompress() {
 			fi
 			;;
 		*.tar.gz | *.tgz)
-			__log "DEBUG" "TAR.GZ file detected - option strip is $_opt_strip"	
+			__log "DEBUG" "TAR.GZ file detected - option strip is $_opt_strip"
+			__require "gzip" "gzip" "SYSTEM"
 			if [ "$_opt_strip" = "ON" ]; then
 				tar xzf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-strip "$FILE_PATH" "$UNZIP_DIR"
 			else
 				tar xzf "$FILE_PATH"
 			fi
 			;;
-		*.gz)
-			__require "gzip" "gzip" "SYSTEM"
-			local unzip_dir_equal_original_dir=
-			local gz_file="$UNZIP_DIR/$(basename $FILE_PATH)"
-			
-			[ -f "$gz_file" ] && unzip_dir_equal_original_dir="1"
-			[ ! "$unzip_dir_equal_original_dir" = "1" ] && cp -f "$FILE_PATH" "$gz_file"
-			
-			# gzip do not support any arborescence, so there is no strip option to support
-			# gzip unncompress only where the gz file is located
-			gzip -f -d "$gz_file"
-			
-			[ ! "$unzip_dir_equal_original_dir" = "1" ] && rm -f "$gz_file"
-			unzip_dir_equal_original_dir=
-			;;
-		*.xz | *.tar.bz2 | *.tbz2 | *.tbz)
+		*.tar.bz2 | *.tbz2 | *.tbz )
+			__log "DEBUG" "TAR.BZ2 file detected - option strip is $_opt_strip"
+			__require "bzip2" "bzip2" "SYSTEM"
 			if [ "$_opt_strip" = "ON" ]; then
-				tar xf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-strip "$FILE_PATH" "$UNZIP_DIR"
+				tar xjf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-bz2-strip "$FILE_PATH" "$UNZIP_DIR"
 			else
-				tar xf "$FILE_PATH"
+				tar xjf "$FILE_PATH"
 			fi
+			;;
+		*.tar.xz | *.txz )
+			__log "DEBUG" "TAR.XZ file detected - option strip is $_opt_strip"
+			__require "xz" "xz" "SYSTEM"
+			if [ "$_opt_strip" = "ON" ]; then
+				tar xJf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-xz-strip "$FILE_PATH" "$UNZIP_DIR"
+			else
+				tar xJf "$FILE_PATH"
+			fi
+			;;
+		*.xz )
+			# NOTE : xz do not support any arborescence, but only a file, so there is no strip option 
+			__require "xz" "xz" "SYSTEM"
+			local temp=$(mktmpdir)
+			cp -f "$FILE_PATH" "$temp/"
+			cd "$temp"
+			xz -d "$temp/$(basename $FILE_PATH)"
+			# NOTE : without -k option original archive will be deleted
+			mv "$temp"/* "$UNZIP_DIR"
 			;;
 		*.bz2|*.bz)
-			if [ "$_opt_strip" = "OFF" ]; then
-				cp -f "$FILE_PATH" .
-				bzip2 -d *
-			else
-				# NOTE : maybe not needed because a bz2 file contains always only one files and not a directory ?
-				__bzip2-strip "$FILE_PATH" "$UNZIP_DIR"
-			fi
+			# NOTE : bz2 do not support any arborescence, but only a file, so there is no strip option 
+			__require "bzip2" "bzip2" "SYSTEM"
+			local temp=$(mktmpdir)
+			cp -f "$FILE_PATH" "$temp/"
+			cd "$temp"
+			bzip2 -d "$temp/$(basename $FILE_PATH)"
+			# NOTE : without -k option original archive will be deleted
+			mv "$temp"/* "$UNZIP_DIR"
+			;;
+		*.gz)
+			# NOTE : gz do not support any arborescence, but only a file, so there is no strip option 
+			__require "gzip" "gzip" "SYSTEM"
+			local temp=$(mktmpdir)
+			cp -f "$FILE_PATH" "$temp/"
+			cd "$temp"
+			gzip -f -d "$temp/$(basename $FILE_PATH)"
+			# NOTE : without -k option original archive will be deleted
+			mv "$temp"/* "$UNZIP_DIR"
 			;;
 		*.7z)
 			__require "7z" "7z" "SYSTEM"
@@ -3098,7 +3116,7 @@ __untar-strip() {
 	local temp=$(mktmpdir)
 
 	cd "$temp"
-	tar xzf "$FILE_PATH"
+	tar xzf "$zip"
 	(
 		shopt -s dotglob
 		local f=("$temp"/*)
@@ -3110,8 +3128,48 @@ __untar-strip() {
 		fi
 	)
 	rm -Rf "$temp"
-	
-	
+}
+
+
+__untar-xz-strip() {
+	local zip=$1
+	local dest=${2:-.}
+	local temp=$(mktmpdir)
+
+	cd "$temp"
+	tar xJf "$zip"
+	(
+		shopt -s dotglob
+		local f=("$temp"/*)
+
+		if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
+				mv "$temp"/*/* "$dest"
+		else
+				mv "$temp"/* "$dest"
+		fi
+	)
+	rm -Rf "$temp"
+}
+
+
+__untar-bz2-strip() {
+	local zip=$1
+	local dest=${2:-.}
+	local temp=$(mktmpdir)
+
+	cd "$temp"
+	tar xjf "$zip"
+	(
+		shopt -s dotglob
+		local f=("$temp"/*)
+
+		if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
+				mv "$temp"/*/* "$dest"
+		else
+				mv "$temp"/* "$dest"
+		fi
+	)
+	rm -Rf "$temp"
 }
 
 __unzip-strip() {
@@ -3153,26 +3211,7 @@ __sevenzip-strip() {
 
 
 
-__bzip2-strip() {
-    local zip=$1
-    local dest=${2:-.}
-    local temp=$(mktmpdir)
 
-	cp -f $zip $temp/
-	cd $temp
-    bzip2 -d *
-	(
-		shopt -s dotglob
-		local f=("$temp"/*)
-
-		if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
-			mv "$temp"/*/* "$dest"
-		else
-			mv "$temp"/* "$dest"
-		fi
-	)
-    rm -Rf "$temp"
-}
 
 # SCM ---------------------------------------------
 # https://vcversioner.readthedocs.org/en/latest/
