@@ -2,6 +2,10 @@ if [ ! "$_VHS_INCLUDED_" = "1" ]; then
 _VHS_INCLUDED_=1
 
 # VHS requires ttyd and ffmpeg to be installed and available on your PATH.
+# VHS also needs to run chromium which needs several dependencies (https://github.com/charmbracelet/vhs/issues/438)
+
+# alternative use docker
+#	docker run --rm -v $(PWD):/vhs ghcr.io/charmbracelet/vhs demo.tape;
 
 feature_vhs() {
 	FEAT_NAME="vhs"
