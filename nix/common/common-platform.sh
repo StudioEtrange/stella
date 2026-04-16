@@ -22,7 +22,7 @@ _STELLA_PLATFORM_INCLUDED_=1
 #			linux <---> linux
 
 __get_os_from_distro() {
-	local _distro=$1
+	local _distro="$1"
 	
 	case $_distro in
 		"Mac OS X"|macos)
@@ -30,52 +30,16 @@ __get_os_from_distro() {
 	 		;;
 	esac
 
-	# minimize
 	_distro=$(echo "${_distro}" | tr '[:upper:]' '[:lower:]')
-
-	
-
-	# remove spaces
 	_distro="${_distro// /_}"
+
+	[ "${_distro}" = "" ] && _distro="unknown"
 
 	if [[ "${_distro}" = "unknown" ]] && [[ "${OSTYPE}" =~ "linux" ]]; then
 		_distro="linuxgeneric"
 	fi
 
-	echo $_distro
-
-	# case $_distro in
-	# 	"Red Hat Enterprise Linux")
-	# 		echo "rhel"
-	# 		;;
-	# 	Ubuntu|ubuntu*)
-	# 		echo "ubuntu"
-	# 		;;
-	# 	Debian|debian*)
-	# 		echo "debian"
-	# 		;;
-	# 	CentOS*|centos*)
-	# 		echo "centos"
-	# 		;;
-	# 	archlinux*)
-	# 		echo "archlinux"
-	# 		;;
-	# 	boot2docker*)
-	# 		echo "linuxgeneric"
-	# 		;;
-	# 	Alpine*|alpine*)
-	# 		echo "alpine"
-	# 		;;
-	# 	"Mac OS X"|macos)
-	# 		echo "macos"
-	# 		;;
-	# 	*Windows*|*windows*)
-	# 		echo "windows"
-	# 		;;
-	# 	*)
-	# 		echo "linuxgeneric"
-	# 		;;
-	# esac
+	printf '%s\n' "$_distro"
 }
 
 
@@ -169,18 +133,27 @@ __set_current_platform_info() {
 	# https://forums.centos.org/viewtopic.php?t=53983
 	PATH="${PATH}:/usr/local/sbin:/usr/sbin:/sbin"
 
-	# call screenFetch once by setting/unsetting  exit function and sourcing screenfetch
-	# https://github.com/KittyKatt/screenFetch
-	exit() {
-	:
-	}
-	. $STELLA_ARTEFACT/screenFetch/screenfetch-dev -n -E 1>/dev/null 2>&1
-	unset exit
+	detected_distro="$(
+		# call unifetch once by setting/unsetting  exit function and sourcing screenfetch
+		exit() {
+			:
+		}
+		eval "$(
+			#awk '/^ma_fonction\(\)/,/^}/' lib.sh
+			grep -vx 'main "$@"' "$STELLA_ARTEFACT/unifetch/unifetch"
+			#grep -vx 'main "$@"' "$STELLA_ARTEFACT/neofetch/neofetch"
+		)"
+		distro_shorthand="on"
+		kernel_shorthand="on"
+		cache_uname > /dev/null 2>&1
+		get_os > /dev/null 2>&1
+		get_distro > /dev/null 2>&1
+		unset -f exit
+		printf '%s\n' "$distro"
+	)"
 
-
-	STELLA_CURRENT_OS=$(__get_os_from_distro "$distro")
-	# TODO do not know what is the purpose of STELLA_CURRENT_OS_ENV
-	STELLA_CURRENT_OS_ENV=$(__get_os_env_from_kernel "$kernel")
+	STELLA_CURRENT_OS=$(__get_os_from_distro "$detected_distro")
+	# STELLA_CURRENT_OS_ENV=$(__get_os_env_from_kernel "$kernel")
 	STELLA_CURRENT_PLATFORM=$(__get_platform_from_os "$STELLA_CURRENT_OS")
 	STELLA_CURRENT_PLATFORM_SUFFIX=$(__get_platform_suffix "$STELLA_CURRENT_PLATFORM")
 

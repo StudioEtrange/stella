@@ -70,6 +70,15 @@ update_neofetch() {
   rm -Rf "${_CURRENT_FILE_DIR}/neofetch/.git"
 }
 
+# Fork of neofetech
+# https://github.com/nmimusic/unifetch
+update_unifetch() {
+  rm -Rf "${_CURRENT_FILE_DIR}/unifetch"
+  echo "Using https://github.com/nmimusic/unifetch"
+  git clone https://github.com/nmimusic/unifetch "${_CURRENT_FILE_DIR}/unifetch"
+  rm -Rf "${_CURRENT_FILE_DIR}/unifetch/.git"
+}
+
 # https://github.com/StudioEtrange/lddtree
 # TODO reunification of my fork versus the original lddtree ?
 update_lddtree() {
@@ -94,11 +103,11 @@ case $1 in
   pure-getopt )
     update_pure-getopt
     ;;
-  screenFetch )
-    update_screenFetch
-    ;;
   neofetch )
     update_neofetch
+    ;;
+  unifetch )
+    update_unifetch
     ;;
   lddtree )
     update_lddtree
@@ -116,6 +125,6 @@ case $1 in
 	update_macos-dyld-cache-list
 	;;
   * )
-    echo "Usage : ${_CURRENT_FILE_DIR}/update.sh <bash-colors|bash_ini_parser|pure-getopt|screenFetch|neofetch|lddtree|homebrew-get-bottle|macos-link-analyse|macos-dyld-cache-analyse|macos-dyld-cache-list>"
+    echo "Usage : ${_CURRENT_FILE_DIR}/update.sh <bash-colors|bash_ini_parser|pure-getopt|neofetch|unifetch|lddtree|homebrew-get-bottle|macos-link-analyse|macos-dyld-cache-analyse|macos-dyld-cache-list>"
     ;;
 esac
