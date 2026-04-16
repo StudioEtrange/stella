@@ -252,7 +252,11 @@ __set_current_platform_info() {
 	# fi
 
 	# The getconf LONG_BIT get the default bit size of the C library
-	STELLA_C_ARCH=$(getconf LONG_BIT)
+	if type getconf >/dev/null 2>&1; then
+		STELLA_C_ARCH=$(getconf LONG_BIT)
+	else
+		STELLA_C_ARCH=
+	fi
 	STELLA_USERSPACE_ARCH=unknown
 
 	__get_network_info
