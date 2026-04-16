@@ -54,14 +54,6 @@ update_bash_ini_parser() {
   rm -Rf "${_CURRENT_FILE_DIR}/bash_ini_parser/.git"
 }
 
-# https://github.com/KittyKatt/screenFetch
-update_screenFetch() {
-  rm -Rf "${_CURRENT_FILE_DIR}/screenFetch"
-  echo "Using https://github.com/KittyKatt/screenFetch"
-  git clone https://github.com/KittyKatt/screenFetch "${_CURRENT_FILE_DIR}/screenFetch"
-  rm -Rf "${_CURRENT_FILE_DIR}/screenFetch/.git"
-}
-
 # https://github.com/dylanaraps/neofetch
 update_neofetch() {
   rm -Rf "${_CURRENT_FILE_DIR}/neofetch"
