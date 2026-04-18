@@ -6,7 +6,7 @@ _CLIPROXYAPI_INCLUDED_=1
 
 feature_cliproxyapi() {
 	FEAT_NAME="cliproxyapi"
-	FEAT_LIST_SCHEMA="6_8_39@x64:binary 6_8_24@x64:binary 6_8_8@x64:binary 6_7_53@x64:binary 6_7_41@x64:binary"
+	FEAT_LIST_SCHEMA="6_9_29@x64:binary 6_8_39@x64:binary 6_8_24@x64:binary 6_8_8@x64:binary 6_7_53@x64:binary 6_7_41@x64:binary"
 
 	FEAT_DEFAULT_FLAVOUR="binary"
 
@@ -15,6 +15,55 @@ feature_cliproxyapi() {
 }
 
 
+
+feature_cliproxyapi_6_9_29() {
+	FEAT_VERSION="6_9_29"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/router-for-me/CLIProxyAPI/releases/download/v6.9.29/CLIProxyAPI_6.9.29_darwin_amd64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="CLIProxyAPI_6.9.29_darwin_amd64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+
+			FEAT_BINARY_URL_x86=
+			FEAT_BINARY_URL_FILENAME_x86=
+			FEAT_BINARY_URL_PROTOCOL_x86=
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/router-for-me/CLIProxyAPI/releases/download/v6.9.29/CLIProxyAPI_6.9.29_darwin_arm64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="CLIProxyAPI_6.9.29_darwin_arm64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+
+			FEAT_BINARY_URL_x86=
+			FEAT_BINARY_URL_FILENAME_x86=
+			FEAT_BINARY_URL_PROTOCOL_x86=
+		fi
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/router-for-me/CLIProxyAPI/releases/download/v6.9.29/CLIProxyAPI_6.9.29_linux_amd64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="CLIProxyAPI_6.9.29_linux_amd64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+
+			FEAT_BINARY_URL_x86=
+			FEAT_BINARY_URL_FILENAME_x86=
+			FEAT_BINARY_URL_PROTOCOL_x86=
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/router-for-me/CLIProxyAPI/releases/download/v6.9.29/CLIProxyAPI_6.9.29_linux_arm64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="CLIProxyAPI_6.9.29_linux_arm64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+
+			FEAT_BINARY_URL_x86=
+			FEAT_BINARY_URL_FILENAME_x86=
+			FEAT_BINARY_URL_PROTOCOL_x86=
+		fi
+	fi
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/cli-proxy-api"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
+
+}
 
 feature_cliproxyapi_6_8_39() {
 	FEAT_VERSION="6_8_39"

@@ -4,7 +4,7 @@ _CMAKE_INCLUDED_=1
 feature_cmake() {
 
 	FEAT_NAME="cmake"
-	FEAT_LIST_SCHEMA="4_0_4:source 4_0_4:binary 3_31_9:source 3_31_9:binary 3_12_4:source 3_12_4:binary"
+	FEAT_LIST_SCHEMA="4_0_4:source 4_3_1:binary 4_0_4:binary 3_31_9:source 3_31_9:binary 3_12_4:source 3_12_4:binary"
 	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
@@ -13,6 +13,42 @@ feature_cmake() {
 }
 
 
+
+feature_cmake_4_3_1() {
+	FEAT_VERSION="4_3_1"
+	# TODO  needed dependencies
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL="https://github.com/Kitware/CMake/releases/download/v4.3.1/cmake-4.3.1.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="cmake-4.3.1.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		FEAT_BINARY_URL="https://github.com/Kitware/CMake/releases/download/v4.3.1/cmake-4.3.1-macos-universal.dmg"
+		FEAT_BINARY_URL_FILENAME="cmake-4.3.1-macos-universal.dmg"
+		FEAT_BINARY_URL_PROTOCOL="HTTP"
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL="https://github.com/Kitware/CMake/releases/download/v4.3.1/cmake-4.3.1-linux-x86_64.tar.gz"
+			FEAT_BINARY_URL_FILENAME="cmake-4.3.1-linux-x86_64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL="HTTP_ZIP"
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL="https://github.com/Kitware/CMake/releases/download/v4.3.1/cmake-4.3.1-linux-aarch64.tar.gz"
+			FEAT_BINARY_URL_FILENAME="cmake-4.3.1-linux-aarch64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL="HTTP_ZIP"
+		fi
+	fi
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/cmake"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		CMAKE_FILE_APP="CMake.app"
+	fi
+}
 
 feature_cmake_4_0_4() {
 	FEAT_VERSION="4_0_4"
