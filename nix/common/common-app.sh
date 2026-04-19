@@ -163,7 +163,7 @@ __vendorize_stella() {
 																											|| __abs_stellaroot="$_stella_root"
 	__STELLA_ROOT_SAVE="$STELLA_ROOT"
 	STELLA_ROOT="$__abs_stellaroot"
-	__transfer_stella "$_target_approot/$_folder_name" "WIN APP"
+	__transfer_stella "$_target_approot/$_folder_name" "DELETE_EXCLUDED EXCLUDE_WIN EXCLUDE_APP EXCLUDE_AI"
 	STELLA_ROOT="$__STELLA_ROOT_SAVE"
 
 	# we need to save version information of the vendorized stella before recreating link

@@ -1486,8 +1486,9 @@ __uri_parse() {
 
 # [schema://][user@][host][:port][/abs_path|?rel_path]
 # By default
-# CACHE, WORKSPACE, ENV, GIT are excluded ==> use theses options to force include
-# APP, WIN are included ==> uses these option to force exclude
+# CACHE, WORKSPACE, .stella-env, .git are excluded by default ==> use theses options to force include
+# /app, /win folders are included by default ==> use EXCLUDE_WIN EXCLUDE_APP options to force exclude
+# AI files are included by default ==> use EXCLUDE_AI option to force exclude
 # SUDO use sudo on the target
 # FOLDER_CONTENT use this option to transfer content of stella folder only (not stella folder itself)
 __transfer_stella() {
@@ -1511,19 +1512,21 @@ __transfer_stella() {
 	_opt_folder_content=
 	local _opt_delete_excluded=
 
+	
 	for o in $_OPT; do
 		[ "$o" = "CACHE" ] && _opt_ex_cache=
 		[ "$o" = "WORKSPACE" ] && _opt_ex_workspace=
 		[ "$o" = "ENV" ] && _opt_ex_env=
 		[ "$o" = "GIT" ] && _opt_ex_git=
-		[ "$o" = "WIN" ] && _opt_ex_win="EXCLUDE /win/ EXCLUDE /stella.bat EXCLUDE /conf.bat"
-		[ "$o" = "APP" ] && _opt_ex_app="EXCLUDE /app/"
+		[ "$o" = "EXCLUDE_WIN" ] && _opt_ex_win="EXCLUDE /win/ EXCLUDE /stella.bat EXCLUDE /conf.bat"
+		[ "$o" = "EXCLUDE_APP" ] && _opt_ex_app="EXCLUDE /app/"
+		[ "$o" = "EXCLUDE_AI" ] && _opt_ex_ai="EXCLUDE /.agents/ EXCLUDE /AGENTS.md"
 		[ "$o" = "SUDO" ] && _opt_sudo="SUDO"
 		[ "$o" = "FOLDER_CONTENT" ] && _opt_folder_content="FOLDER_CONTENT"
 		[ "$o" = "DELETE_EXCLUDED" ] && _opt_delete_excluded="DELETE_EXCLUDED"
 	done
 	__log "DEBUG" "${_opt_sudo} Transfer stella to $_uri"
-	__transfer_folder_rsync "$STELLA_ROOT" "$_uri" "$_opt_delete_excluded $_opt_ex_win $_opt_ex_app $_opt_ex_cache $_opt_ex_workspace $_opt_ex_env $_opt_ex_git $_opt_sudo $_opt_folder_content"
+	__transfer_folder_rsync "$STELLA_ROOT" "$_uri" "$_opt_delete_excluded $_opt_ex_ai $_opt_ex_win $_opt_ex_app $_opt_ex_cache $_opt_ex_workspace $_opt_ex_env $_opt_ex_git $_opt_sudo $_opt_folder_content"
 }
 
 
