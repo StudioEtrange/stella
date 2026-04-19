@@ -8,6 +8,34 @@ Stella features are defined in "recipe" files located in `@./nix/pool/feature-re
 
 We will use `@./nix/pool/feature-recipe/feature_arkade.sh` as our reference model.
 
+## Conventions
+
+- You MUST strictly adhere to conventions described below.
+
+### Conventions about feature recipe
+- To know about used conventions for feature recipe in stella project 
+
+    * Analyze existing features files `@./nix/pool/feature-recipe/feature_arkade.sh`, `@./nix/pool/feature-recipe/feature_browsh` and `@./nix/pool/feature-recipe/feature_yq.sh` for concrete examples as linux binary flavour feature.
+    * Analyze existing template files `@./nix/pool/feature-recipe/feature_moon-buggy.sh`, `@./nix/pool/feature-recipe/feature_vitetris.sh` and `@./nix/pool/feature-recipe/feature_yajl.sh` for concrete examples as linux source flavour feature.
+    * The feature `@./nix/pool/feature-recipe/feature_arkade.sh` is a concrete example for a `binary` flavour install.
+    * The feature `@./nix/pool/feature-recipe/feature_yq.sh` is a concrete example for a `binary` flavour install.
+    * The feature `@./nix/pool/feature-recipe/feature_browsh.sh` is a concrete example for a `binary` flavour install including example with zipped file and non zipped file.
+    * The feature `@./nix/pool/feature-recipe/feature_yajl.sh` is a concrete example for a `source` flavour install.
+    * The feature `@./nix/pool/feature-recipe/feature_moon-buggy.sh` is a concrete example for a `source` flavour install wich generate is own configure using autogen.
+    * The feature `@./nix/pool/feature-recipe/feature_vitetris.sh` is a concrete example for a `source` flavour install.
+
+
+### Naming Conventions
+- **Feature File:** `feature_<name>.sh` (e.g., `feature_htop.sh`).
+- **Inclusion Guard Variable:** `_<NAME_IN_UPPERCASE>_INCLUDED_` (e.g., `_HTOP_INCLUDED_`).
+- **Main Function:** `feature_<name>()` (e.g., `feature_htop`).
+- **Feature Variables:** All variables defining a feature's metadata MUST be prefixed with `FEAT_` (e.g., `FEAT_NAME`, `FEAT_VERSION`). `FEAT_DESC` must be fill in english language. FEAT_URL could contains a code source url (like github.com) and an official website url separated by space.
+- **Version Function:** `feature_<name>_<version>()` where `.` is replaced by `_` (e.g., `feature_htop_3_2_2`).
+- **Install Function:** `feature_<name>_install_<flavour>()` (e.g., `feature_htop_install_binary`).
+
+
+
+
 ## File Structure Anatomy
 
 A feature recipe file must follow a specific structure. Let's break down the `feature_arkade.sh` example.
@@ -53,7 +81,7 @@ feature_arkade() {
 - `FEAT_DESC`: A one-line description of the feature.
 - `FEAT_LINK`: A space-separated list of relevant URLs.
 
-### 4. Version-Specific Function: `feature_<name>_<version>()`
+### 3. Version-Specific Function: `feature_<name>_<version>()`
 
 For each version defined in `FEAT_LIST_SCHEMA`, you must create a corresponding function. The version dots (`.`) are replaced with underscores (`_`) in the function name.
 
@@ -88,7 +116,7 @@ feature_arkade_0_11_40() {
 - `FEAT_SEARCH_PATH`: A directory to add to the user's `PATH` environment variable.
 - `FEAT_ENV_CALLBACK` (Optional): The name of a function to call for custom environment setup.
 
-### 5. Installation Function: `feature_<name>_install_<flavour>()`
+### 4. Installation Function: `feature_<name>_install_<flavour>()`
 
 For each flavour defined in `FEAT_LIST_SCHEMA`, you must create an installation function.
 
@@ -119,7 +147,22 @@ feature_arkade_env(){
 ```
 This function is sourced into the user's environment to set up `PATH` or other variables.
 
-## How to Add a New Linux Feature: A Checklist
+
+
+## Key Commands & Workflows
+
+
+### To Add a New Feature:
+1.  **Identify Software Details:** Find the name, latest version, and download URLs for the software to be added. <flavour> could be `binary` if any download is available or `source` if no compiled binary exists.
+2.  **Version:** Double check the LATEST versions which should be the last release on github. In stella, in features versions `.` is replaced by `_`
+4.  **Create Recipe File:** Create a new file at `@./nix/pool/feature-recipe/feature_<name>.sh`.
+5.  **Implement Recipe:** Write the content of the script, following the structure of existing recipes.
+    - `feature_<name>()` function for metadata.
+    - `feature_<name>_<version>()` function for version-specific details (URLs, checksums).
+    - `feature_<name>_install_<flavour>()` function for the installation logic. Install goal for a `binary` is download the binary and move it in the right stella folder. Install a `source` goal is to build the `source`.
+6.  **Verify:** Do not execute tests unless requested, but ensure the script is syntactically correct and follows all conventions.
+
+### A Checklist to Add a New Linux Feature:
 
 1.  **Create File:** Create your new file in `nix/pool/feature-recipe/feature_<myfeature>.sh`.
 2.  **Add Guard:** Add the inclusion guard.
@@ -144,3 +187,8 @@ This function is sourced into the user's environment to set up `PATH` or other v
     ```bash
     stella install <myfeature>
     ```
+
+### To Test a Feature (if requested by the user)
+- Use the main `stella.sh` script.
+- **Command:** `./stella.sh install <feature_name>`
+- **Example:** `./stella.sh install htop`

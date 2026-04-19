@@ -1,29 +1,29 @@
 ---
 name: apply-recipe-update
 description:
-  Modifie à jour les recipes Linux du projet Stella ( de type flavour `binary`) en ajoutant une version cible donnée, en modifiant proprement les scripts bash existants.
-  Ce skill prend en entrée une liste de recipes à mettre à jour (typiquement issue de `detect-updatable-binary-recipes`) et génère les modifications nécessaires pour ajouter la version cible à la recipe en respectant strictement les conventions de format et de style du projet.
+  Updates Linux recipes in the Stella project (of flavour type `binary`) by adding a given target version, properly modifying existing bash scripts.
+  This skill takes as input a list of recipes to update (typically produced by `detect-updatable-binary-recipes`) and generates the necessary modifications to add the target version to the recipe while strictly respecting the project's formatting and style conventions.
 ---
 
 # SKILL: apply-recipe-update
 
 ## DESCRIPTION
-Modifie à jour les recipes Linux du projet Stella ( de type flavour `binary`) en ajoutant une version cible donnée, en modifiant proprement les scripts bash existants.
+Updates Linux recipes in the Stella project (of flavour type `binary`) by adding a given target version, properly modifying existing bash scripts.
 
-Ce skill prend en entrée une liste de recipes à mettre à jour (typiquement issue de `detect-updatable-binary-recipes`) et génère les modifications nécessaires pour ajouter la version cible à la recipe en respectant strictement les conventions de format et de style du projet.
+This skill takes as input a list of recipes to update (typically produced by `detect-updatable-binary-recipes`) and generates the necessary modifications to add the target version to the recipe while strictly respecting the project's formatting and style conventions.
 
 ---
 
 ## USE WHEN
-Utiliser ce skill lorsque :
-- vous avez identifié des recipes updatables
-- vous souhaitez générer automatiquement les modifications bash
-- vous voulez produire un patch prêt à review
+Use this skill when:
+- you have identified updatable recipes
+- you want to automatically generate bash modifications
+- you want to produce a patch ready for review
 
-Ne pas utiliser ce skill :
-- sans version cible validée
-- pour autre chose que les recipes Linux `binary`
-- pour deviner des URLs ou des versions
+Do not use this skill:
+- without a validated target version
+- for anything other than Linux `binary` recipes
+- to guess URLs or versions
 
 ---
 
@@ -31,11 +31,11 @@ Ne pas utiliser ce skill :
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| stella_root | string | yes | Chemin racine du projet Stella |
-| updates | array | yes | Liste des recipes pour lequelles il faut ajouter une version plus recente à la cible |
-| dry_run | boolean | no | Si `true`, ne modifie rien, produit uniquement le patch (default: true) |
+| stella_root | string | yes | Root path of the Stella project |
+| updates | array | yes | List of recipes for which a more recent target version must be added |
+| dry_run | boolean | no | If `true`, does not modify anything, only produces the patch (default: true) |
 
-### Format de `updates`
+### `updates` input format
 
 ```
 | recipe | current_highest_version_in_stella | latest_version_to_add | url                             |
@@ -43,186 +43,195 @@ Ne pas utiliser ce skill :
 | jq     | 1_7                               | 1_8                    | https://github.com/stedolan/jq |
 | yq     | 4_44_3                            | 4_45_1                 | https://github.com/mikefarah/yq |
 ```
-
 ---
 
 ## OUTPUT
 
-### Mode dry_run (default)
-- Le meme tableau que l’input `updates` avec une colonne supplémentaire `status` indiquant le résultat de la tentative de mise à jour (`ready`, `error`, `skipped`)
-- Un patch unifié (diff) montrant les changements qui seraient appliqués
+- The same table as the `updates` input with an additional `status` column indicating the result of the update attempt (`ready`, `error`, `skipped`)
+- output table must be in Markdown format
 
+  Output result table example:
+  | recipe | current_highest_version_in_stella | latest_version_to_add | url                             | status           |
+  |--------|-----------------------------------|------------------------|---------------------------------|------------------|
+  | jq     | 1_7                               | 1_8                    | https://github.com/stedolan/jq | OK                 |
+  | yq     | 4_44_3                            | 4_45_1                 | https://github.com/mikefarah/yq | KO : URL not accessible |
 
-### Mode apply
-- Le meme tableau que l’input `updates` avec une colonne supplémentaire `status` indiquant le résultat de la tentative de mise à jour (`ready`, `error`, `skipped`)
-- Les fichiers de recipes modifiés avec les changements appliqués
+- if `dry_run` is `false` output the modified recipe files with the changes applied
+
+- if `dry_run` is `true` do NOT modify any file.
+- if `dry_run` is `true` (default), also produce a unified patch (diff) showing the changes that would be applied to the recipe files to add the target versions. The patch should be clean and ready for review.
+  
+  Unified patch example:
+
+  ```diff
+  - JQ_VERSION="1_7"
+  + JQ_VERSION="1_8"
+
+  - https://.../jq-1.7.tar.gz
+  + https://.../jq-1.8.tar.gz
+
+  ```
 
 ---
 
 ## STEPS
 
-### 1. Validation des entrées
-- Vérifier que chaque recipe existe
-- Vérifier que la version cible est cohérente (format Stella `_`)
-- Vérifier que `target_version > current_version`
+### 1. Input validation
+- Verify that each recipe exists
+- Verify that the target version is consistent (Stella `_` format)
+- Verify that `target_version > current_version`
 
 ---
 
-### 2. Localisation de la recipe
-- Trouver le fichier bash correspondant à la recipe
-- Identifier :
-  - bloc de version
-  - URL de téléchargement
-  - variables associées
+### 2. Locate the recipe
+- Find the bash file corresponding to the recipe
+- Identify:
+  - version block
+  - download URL
+  - associated variables
 
 ---
 
-### 3. Ajoute la version
-- Ajouter la version cible à la recipe
-- Respecter strictement le format Stella (`_`)
-- Bien positionner la nouvelle version dans la liste des versions (ordre décroissant)
-- Vérifier l’URL de la nouvelle version
-- Ne pas toucher aux autres versions.
+### 3. Add the version
+- Add the target version to the recipe
+- Strictly respect the Stella format (`_`)
+- Properly position the new version in the version list (descending order)
+- Verify the URL of the new version
+- Do not modify other versions.
   
 ---
 
-### 4. Normalisation des versions
-- Convertir les versions au format Stella :
-  - utiliser `_` comme séparateur
-  - exemple : `1.2.3` → `1_2_3`
+### 4. Version normalization
+- Convert versions to Stella format:
+  - use `_` as separator
+  - example: `1.2.3` → `1_2_3`
 
 ---
 
-### 5. Tri des versions
-- Utiliser la logique Stella
-- Si nécessaire, utiliser la fonction bash : `__sort_version` définie dans : `stella/nix/common/lib.sh`
-
-
----
-### 6. Ajout de la fonction feature_<version> correspondant à la nouvelle version
-- Si la recipe utilise une fonction bloc `feature_<version>`, ajouter une nouvelle fonction pour la version cible
-- Copier la logique de la fonction existante (ex: `feature_1_7`) en adaptant la version et les URLs
-- Ne pas ajouter de logique supplémentaire, se contenter de dupliquer et adapter la fonction existante
-- Modifier les références à la version dans la nouvelle fonction (ex: `JQ_VERSION="1_8"`)
-
-
----
-### 7. Vérification des artefacts
-- Vérifier que l’URL cible existe réellement
-- Vérifier la cohérence nom/version
+### 5. Version sorting
+- Use Stella logic
+- If necessary, use the bash function: `__sort_version` defined in: `stella/nix/common/lib.sh`
 
 ---
 
-### 8. Respect des conventions Stella
-- Ne pas casser :
-  - structure du script
-  - fonctions existantes
-  - style bash
-- Conserver :
+### 6. Add the feature_<version> function corresponding to the new version
+- If the recipe uses a `feature_<version>` function block, add a new function for the target version
+- Copy the logic from the existing function (e.g., `feature_1_7`) and adapt version and URLs
+- Do not add additional logic, only duplicate and adapt the existing function
+- Update version references in the new function (e.g., `JQ_VERSION="1_8"`)
+
+---
+
+### 7. Artifact verification
+- Verify that the target URL actually exists
+- Verify name/version consistency
+- Verifiy that the artifact URL is accessible and not broken (e.g., by checking HTTP status code or using `curl --head`)
+- If the URL is not accessible, do not apply the update and report an error in the output table, in the status field (e.g., `KO: URL not accessible`)
+
+---
+
+### 8. Respect Stella conventions
+- Do not break:
+  - script structure
+  - existing functions
+  - bash style
+- Preserve:
   - indentation
-  - nommage
-  - logique existante
+  - naming
+  - existing logic
 
 ---
 
-### 9. Génération du patch
-- Produire un diff unifié (`git diff` style)
-- Inclure uniquement les changements nécessaires
-- Aucun bruit inutile
+### 9. Patch generation
+- Produce a unified diff (`git diff` style)
+- Include only necessary changes
+- No unnecessary noise
 
 ---
 
 ## RULES
 
-- Ne jamais inventer une URL
-- Ne jamais changer de source
-- Ne jamais modifier autre chose que la version et ses impacts directs
-- Ne pas refactorer le script
-- Ne pas ajouter de logique
-- Respect strict du format Stella
-- Ne modifier que les recipes demandées
+- Never invent a URL
+- Never change the source
+- Never modify anything other than the version and its direct impacts
+- Do not refactor the script
+- Do not add logic
+- Strictly respect Stella format
+- Only modify the requested recipes
 
 ---
 
 ## EDGE CASES
 
-### Version non trouvée
-→ Ne pas modifier la recipe, signaler erreur
+### Version not found
+→ Do not modify the recipe, report error
 
-### URL cassée après update
-→ Ne pas appliquer, remonter erreur
+### Broken URL after update
+→ Do not apply, report error
 
-### Pattern d’URL complexe
-→ Adapter uniquement la partie version
+### Complex URL pattern
+→ Adapt only the version part
 
-### Plusieurs occurrences de version
-→ Mettre à jour toutes les occurrences pertinentes
+### Multiple version occurrences
+→ Update all relevant occurrences
 
-### Version dans plusieurs variables
-→ Synchroniser toutes les variables
+### Version in multiple variables
+→ Synchronize all variables
 
 ---
 
 ## QUALITY CRITERIA
 
-Le patch doit être :
+The patch must be:
 - minimal
 - exact
-- reproductible
-- lisible
-- conforme aux conventions Stella
+- reproducible
+- readable
+- compliant with Stella conventions
 
 ---
 
 ## PROMPT TEMPLATE
 
-Tu travailles sur le projet Stella.
+You are working on the Stella project.
 
-Ta mission est d'ajouter des versions cibles dans des recipes Linux de flavour `binary`.
+Your mission is to add target versions to Linux recipes of flavour type `binary`.
 
-Contraintes :
-- Ne modifie que les recipes fournies
-- Respecte le format de version Stella (`_`)
-- Mets à jour uniquement ce qui est nécessaire
-- Conserve la structure bash existante
-- Ne change pas la source des URLs
-- Vérifie que les artefacts existent
-- Ne fais aucune hypothèse non vérifiable
+Constraints:
+- Only modify the provided recipes
+- Respect the Stella version format (`_`)
+- Update only what is necessary
+- Preserve the existing bash structure
+- Do not change URL sources
+- Verify that artifacts exist
+- Do not make any unverifiable assumptions
 
-Produit :
-- un patch propre (diff)
-- ou applique les changements si demandé
+Produce:
+- a clean patch (diff) ready for review if in dry_run mode
+- or apply the changes if requested
+- a status report for each recipe indicating success or error
 
----
-
-
-## EXAMPLE OUTPUT (dry_run)
-
-```diff
-- JQ_VERSION="1_7"
-+ JQ_VERSION="1_8"
-
-- https://.../jq-1.7.tar.gz
-+ https://.../jq-1.8.tar.gz
-```
+Resources and documentation:
+- Full documentation regarding Stella feature recipes is available in `doc/FEATURES.md`
 
 ---
+
+
 
 ## NON-GOALS
-
-Ce skill ne doit PAS :
-- détecter les updates (c’est le rôle du skill précédent)
-- modifier d’autres recipes
-- changer l’architecture du script
-- ajouter des features
-- corriger du code existant
-- ne doit modifier aucun fichier si `dry_run` est `true`
+This skill must NOT:
+- detect updates (this is the role of the previous skill)
+- modify other recipes
+- change the script architecture
+- add features
+- fix existing code
+- modify any file if dry_run is true
 
 ---
 
 ## NOTES
 
-- Ce skill est conçu pour fonctionner après :
-  → `detect-updatable-binary-recipes`
-- Peut être intégré dans un pipeline automatisé :
-  detect → apply → test → commit
+- This skill is designed to work after detecting updatable recipes using `detect-updatable-binary-recipes` skill
+- Can be integrated into an automated pipeline for maintaining Stella recipes.
+- The complete documentation regarding Stella feature recipes is available in `doc/FEATURES.md`
+

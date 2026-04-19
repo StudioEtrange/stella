@@ -1,30 +1,30 @@
 ---
 name: detect-updatable-binary-recipes
 description:
-  Analyse les recipes Linux du projet Stella ayant une flavour `binary` et détecte celles pour lesquelles une version plus récente est disponible à la même source que celle actuellement utilisée.
-  Ce skill permet d’identifier les opportunités de mise à jour des scripts d’installation bash sans modifier directement les fichiers.
+  Analyzes Linux recipes in the Stella project with flavour `binary` and detects those for which a more recent version is available from the same source currently used.
+  This skill identifies update opportunities for bash installation scripts without directly modifying files.
 ---
 
 # SKILL: detect-updatable-binary-recipes
 
 ## DESCRIPTION
-Analyse les recipes Linux du projet Stella ayant une flavour `binary` et détecte celles pour lesquelles une version plus récente est disponible à la même source que celle actuellement utilisée.
+Analyzes Linux recipes in the Stella project with flavour `binary` and detects those for which a more recent version is available from the same source currently used.
 
-Ce skill permet d’identifier les opportunités de mise à jour des scripts d’installation bash sans modifier directement les fichiers.
+This skill identifies update opportunities for bash installation scripts without directly modifying files.
 
 ---
 
 ## USE WHEN
-Utiliser ce skill lorsque :
-- vous voulez auditer les recipes Stella pour détecter des mises à jour
-- vous maintenez des scripts d’installation bash dans Stella
-- vous souhaitez comparer les versions actuelles avec celles disponibles en amont
-- vous préparez une mise à jour de features `binary`
+Use this skill when:
+- you want to audit Stella recipes to detect updates
+- you maintain bash installation scripts in Stella
+- you want to compare current versions with upstream available ones
+- you are preparing an update of `binary` features
 
-Ne pas utiliser ce skill :
-- pour modifier les scripts
-- pour générer des patches
-- pour analyser autre chose que les recipes Linux `binary`
+Do not use this skill:
+- to modify scripts
+- to generate patches
+- to analyze anything other than Linux `binary` recipes
 
 ---
 
@@ -32,181 +32,180 @@ Ne pas utiliser ce skill :
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| stella_root | string | yes | Chemin racine du projet Stella |
-| recipes_scope | string | no | Sous-ensemble de recipes à analyser (`all` par défaut) |
-
+| stella_root | string | yes | Root path of the Stella project |
+| recipes_scope | string | no | Subset of recipes to analyze (`all` by default) |
 
 ---
 
 ## OUTPUT
 
-Retourne une liste des recipes **updatables uniquement**.
+Returns a list of **updatable recipes only**.
 
-Format recommandé (Markdown) :
+Recommended format (Markdown):
 
-| recipe | current_highest_version_in_stella | latest_version_to_add |
-|--------|-----------------------------------|------------------------|
+| recipe | current_highest_version_in_stella | latest_version_to_add |  url  |
+|--------|-----------------------------------|------------------------|------|
 
-Si aucune mise à jour :
+If no updates:
 
-`Aucune recipe Linux de flavour binary n’a de version plus récente détectée.`
-
+`No Linux recipe with flavour binary has a more recent version detected.`
 
 
 ---
 
 ## STEPS
 
-### 1. Filtrage des recipes
-- Identifier uniquement les recipes :
+### 1. Recipe filtering
+- Identify only recipes:
   - Linux
-  - avec flavour `binary`
+  - with flavour `binary`
 
 ---
 
-### 2. Extraction de la version actuelle
-- Lire les recipes Stella
-- Identifier toutes les versions déclarées
-- Conserver la version la plus élevée actuellement présente dans Stella
+### 2. Extract current version
+- Read Stella recipes
+- Identify all declared versions
+- Keep the highest version currently present in Stella
 
 ---
 
-### 3. Identification de la source
-- Extraire l’URL de téléchargement utilisée dans la recipe
-- Utiliser **exactement cette source**
-- Ne pas changer de site, miroir ou API
+### 3. Source identification
+- Extract the download URL used in the recipe
+- Use **exactly this source**
+- Do not change site, mirror, or API
 
 ---
 
-### 4. Découverte des versions disponibles
-- Inspecter la même URL / repository source
-- Lister les versions disponibles
-- Filtrer :
-  - exclure alpha, beta, rc, nightly, snapshot, draft (sauf option)
-- Ne garder que les versions réellement accessibles
+### 4. Discover available versions
+- Inspect the same source URL / repository
+- List available versions
+- Filter:
+  - exclude alpha, beta, rc, nightly, snapshot, draft (unless specified otherwise)
+- Keep only actually accessible versions
 
 ---
 
-### 5. Normalisation des versions
-- Convertir les versions au format Stella :
-  - utiliser `_` comme séparateur
-  - exemple : `1.2.3` → `1_2_3`
+### 5. Version normalization
+- Convert versions to Stella format:
+  - use `_` as separator
+  - example: `1.2.3` → `1_2_3`
 
 ---
 
-### 6. Tri des versions
-- Utiliser la logique Stella
-- Si nécessaire, utiliser la fonction bash : `__sort_version` définie dans : `stella/nix/common/lib.sh`
-
-
----
-
-### 7. Comparaison
-- Comparer :
-- version actuelle Stella
-- version la plus récente disponible
-- Conserver uniquement si : `latest > current`
-
+### 6. Version sorting
+- Use Stella logic
+- If necessary, use the bash function: `__sort_version` defined in: `stella/nix/common/lib.sh`
 
 ---
 
-### 8. Construction du résultat
-Pour chaque recipe updatable :
+### 7. Comparison
+- Compare:
+- current Stella version
+- latest available version
+- Keep only if: `latest > current`
 
-- nom de la recipe
-- version actuelle (max dans Stella)
-- version cible (plus récente disponible)
+---
+
+### 8. Build result
+For each updatable recipe:
+
+- recipe name
+- current version (max in Stella)
+- target version (latest available)
 
 ---
 
 ## RULES
 
-- Toujours utiliser la **même source que la recipe**
-- Ne jamais inventer de version
-- Ne jamais extrapoler sans preuve
-- Ne pas inclure de recipes non `binary`
-- Ne pas inclure de recipes non Linux
-- Respecter strictement le format de version Stella (`_`)
-- Ne pas inclure de versions non vérifiables
-- Ne pas modifier les scripts
+- Always use the **same source as the recipe**
+- Never invent a version
+- Never extrapolate without proof
+- Do not include non-`binary` recipes
+- Do not include non-Linux recipes
+- Strictly respect Stella version format (`_`)
+- Do not include unverifiable versions
+- Do not modify scripts
 
 ---
 
 ## EDGE CASES
 
-### Source non exploitable
-- Si la source ne permet pas d’énumérer les versions :
-→ ignorer la recipe
+### Unusable source
+- If the source does not allow version enumeration:
+→ ignore the recipe
 
-### Version ambiguë
-- Si plusieurs branches existent :
-→ rester cohérent avec la branche actuelle de la recipe
+### Ambiguous version
+- If multiple branches exist:
+→ stay consistent with the current recipe branch
 
-### Format incohérent
-- Si conversion `.` → `_` ambiguë :
-→ signaler plutôt que deviner
+### Inconsistent format
+- If `.` → `_` conversion is ambiguous:
+→ report instead of guessing
 
-### Artefacts multiples
-- Si plusieurs types de fichiers :
-→ ne garder que ceux utilisés par la recipe
+### Multiple artifacts
+- If multiple file types:
+→ keep only those used by the recipe
 
 ---
 
 ## QUALITY CRITERIA
 
-Le résultat doit être :
+The result must be:
 - exact
-- vérifiable
-- reproductible
-- fidèle à Stella
-- sans hallucination
+- verifiable
+- reproducible
+- faithful to Stella
+- without hallucination
 
 ---
 
 ## PROMPT TEMPLATE
 
-Tu travailles sur le projet Stella.
+You are working on the Stella project.
 
-Analyse les recipes Linux dont la flavour est `binary` et détecte celles qui peuvent être mises à jour.
+Analyze Linux recipes with flavour `binary` and detect those that can be updated.
 
-Contraintes :
-- Vérifie les versions disponibles à la même URL source que celle utilisée par Stella.
-- Les versions Stella utilisent `_` comme séparateur.
-- Utilise la logique Stella pour trier les versions (`__sort_version` si nécessaire).
-- Ignore les préreleases sauf instruction contraire.
-- N’invente aucune version.
+Constraints:
+- Check available versions at the same source URL used by Stella.
+- Stella versions use `_` as separator.
+- Use Stella logic to sort versions (`__sort_version` if needed).
+- Ignore prereleases unless instructed otherwise.
+- Do not invent any version.
 
-Sortie :
-Liste uniquement les recipes updatables avec :
-- nom
-- version actuelle
-- version cible
-- url du projet
+Output:
+List only updatable recipes with:
+- name
+- current version
+- target version
+- project URL
 
----
-
-## EXAMPLE
-
+Example:
 | recipe | current_highest_version_in_stella | latest_version_to_add | url                             |
 |--------|-----------------------------------|------------------------|---------------------------------|
 | jq     | 1_7                               | 1_8                    | https://github.com/stedolan/jq |
 | yq     | 4_44_3                            | 4_45_1                 | https://github.com/mikefarah/yq |
 
+
+Resources and documentation:
+- Full documentation regarding Stella feature recipes is available in `doc/FEATURES.md`
+
+
 ---
 
 ## NON-GOALS
 
-Ce skill ne doit PAS :
-- modifier les recipes
-- générer du code bash
-- proposer des patches
-- changer les URLs
-- gérer d’autres flavours que `binary`
-- traiter d’autres OS que Linux
+This skill must NOT:
+- modify recipes
+- generate bash code
+- propose patches
+- change URLs
+- handle other flavours than `binary`
+- process other OS than Linux
 
 ---
 
 ## NOTES
 
-- Ce skill est conçu pour s’intégrer dans un workflow de maintenance Stella
-- Il peut être utilisé en pré-traitement avant un skill de mise à jour automatique
+- This skill is designed to integrate into a Stella maintenance workflow
+- It can be used as a preprocessing step before an automatic update skill
+- Full documentation regarding Stella feature recipes is available in `doc/FEATURES.md`
