@@ -2,7 +2,7 @@
 name: apply-recipe-update
 description:
   Updates Linux recipes in the Stella project (of flavour type `binary`) by adding a given target version, properly modifying existing bash scripts.
-  This skill takes as input a list of recipes to update (typically produced by `detect-updatable-binary-recipes`) and generates the necessary modifications to add the target version to the recipe while strictly respecting the project's formatting and style conventions.
+  This skill takes as input a list of recipes to update (typically produced by `detect-updatable-binary-recipes`) and generates the necessary modifications to add the target version to the recipe while strictly respecting the project's formatting and style conventions. And print a result table indicating the status of each update attempt.
 ---
 
 # SKILL: apply-recipe-update
@@ -10,7 +10,7 @@ description:
 ## DESCRIPTION
 Updates Linux recipes in the Stella project (of flavour type `binary`) by adding a given target version, properly modifying existing bash scripts.
 
-This skill takes as input a list of recipes to update (typically produced by `detect-updatable-binary-recipes`) and generates the necessary modifications to add the target version to the recipe while strictly respecting the project's formatting and style conventions.
+This skill takes as input a list of recipes to update (typically produced by `detect-updatable-binary-recipes`) and generates the necessary modifications to add the target version to the recipe while strictly respecting the project's formatting and style conventions. And print a result table indicating the status of each update attempt.
 
 ---
 
@@ -47,8 +47,9 @@ Do not use this skill:
 
 ## OUTPUT
 
-- The same table as the `updates` input with an additional `status` column indicating the result of the update attempt (`ready`, `error`, `skipped`)
-- output table must be in Markdown format
+- You MUST ALWAYS print a result table, that indicate for each recipe whether the update was successfully applied or if an error occurred (with error details), each time this skill is executed, regardless of the `dry_run` mode.
+- The result table format is the same as the `updates` input with an additional `status` column indicating the result (`OK`, `KO`) of the update attempt and the reason of a KO result
+- Result table must be in Markdown format
 
   Output result table example:
   | recipe | current_highest_version_in_stella | latest_version_to_add | url                             | status           |
@@ -95,7 +96,7 @@ Do not use this skill:
 ### 3. Add the version
 - Add the target version to the recipe
 - Strictly respect the Stella format (`_`)
-- Properly position the new version in the version list (descending order)
+- Add the new version in the version list (descending order)
 - Verify the URL of the new version
 - Do not modify other versions.
   
@@ -116,7 +117,7 @@ Do not use this skill:
 
 ### 6. Add the feature_<version> function corresponding to the new version
 - If the recipe uses a `feature_<version>` function block, add a new function for the target version
-- Copy the logic from the existing function (e.g., `feature_1_7`) and adapt version and URLs
+- Copy the logic from the existing function (e.g., `feature_1_7`), add it just BEFORE the copied functions and adapt version and URLs
 - Do not add additional logic, only duplicate and adapt the existing function
 - Update version references in the new function (e.g., `JQ_VERSION="1_8"`)
 
