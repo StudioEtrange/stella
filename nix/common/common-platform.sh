@@ -167,6 +167,10 @@ __set_current_platform_info() {
 	# armv6l, armv7l,armv8l 	ARM 32 bits
 	# aarch64, arm64			ARM 64 bits
 
+	# on macos
+	#   on CPU intel, uname -m returns x86_64 but it can run 32bits and 64bits apps
+	#   on CPU arm, uname -m returns arm64
+	# BUT if the current process executing stella is running under rosetta 2 emulation for some reason, so we need to consider the current ARCH to be intel !!!
 	case $STELLA_CURRENT_CPU_ARCH in
 		# Intel / AMD
 		i*86|x86_64|amd64)
@@ -174,7 +178,20 @@ __set_current_platform_info() {
 			;;
 		# ARM
 		armv*l|aarch64|arm64)
-			STELLA_CURRENT_CPU_FAMILY="arm"
+			case $STELLA_CURRENT_PLATFORM in
+				darwin)
+					# on macos, if the process is running under rosetta 2 emulation, so we need to consider the current ARCH to be intel
+					# test is rosetta 2 is active : sysctl -n sysctl.proc_translated 2>/dev/null | grep -q "1"
+					if sysctl -n sysctl.proc_translated 2>/dev/null | grep -q "1"; then
+						STELLA_CURRENT_CPU_FAMILY="intel"
+					else
+						STELLA_CURRENT_CPU_FAMILY="arm"
+					fi
+					;;
+				*)
+					STELLA_CURRENT_CPU_FAMILY="arm"
+					;;
+			esac
 			;;
 		# PowerPC
 		ppc*)
