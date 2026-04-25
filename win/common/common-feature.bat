@@ -51,7 +51,11 @@ goto :eof
 				for %%p in (!FEAT_BUNDLE_ITEM!) do (
 					REM call :feature_init %%p "HIDDEN"
 					call :internal_feature_context "%%p"
-					if not "!FEAT_SEARCH_PATH!"=="" set "PATH=!FEAT_SEARCH_PATH!;!PATH!"
+					if not "!FEAT_SEARCH_PATH!"=="" (
+						if not exist "!FEAT_INSTALL_ROOT!\._STELLA_DO_NOT_UPDATE_PATH" (
+							set "PATH=!FEAT_SEARCH_PATH!;!PATH!"
+						)
+					)
 					for %%e in (!FEAT_ENV_CALLBACK!) do (
 						call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :%%e
 					)
@@ -63,7 +67,11 @@ goto :eof
 			)
 
 			if not "!_opt_hidden_feature!"=="ON" set "FEATURE_LIST_ENABLED=!FEATURE_LIST_ENABLED! !FEAT_NAME!#!FEAT_VERSION!"
-			if not "!FEAT_SEARCH_PATH!"=="" set "PATH=!FEAT_SEARCH_PATH!;!PATH!"
+			if not "!FEAT_SEARCH_PATH!"=="" (
+				if not exist "!FEAT_INSTALL_ROOT!\._STELLA_DO_NOT_UPDATE_PATH" (
+					set "PATH=!FEAT_SEARCH_PATH!;!PATH!"
+				)
+			)
 
 
 			for %%p in (!FEAT_ENV_CALLBACK!) do (

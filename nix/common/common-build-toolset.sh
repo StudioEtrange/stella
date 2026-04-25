@@ -93,7 +93,9 @@ __toolset_init() {
 			for p in $FEAT_BUNDLE_ITEM; do
 				__internal_feature_context $p
 				if [ ! "$FEAT_SEARCH_PATH" = "" ]; then
-					STELLA_BUILD_TOOLSET_PATH="$FEAT_SEARCH_PATH:$STELLA_BUILD_TOOLSET_PATH"
+					if [ ! -f "$FEAT_INSTALL_ROOT/._STELLA_DO_NOT_UPDATE_PATH" ]; then
+						STELLA_BUILD_TOOLSET_PATH="$FEAT_SEARCH_PATH:$STELLA_BUILD_TOOLSET_PATH"
+					fi
 				fi
 				for c in $FEAT_ENV_CALLBACK; do
 					$c
@@ -104,7 +106,9 @@ __toolset_init() {
 		fi
 
 		if [ ! "$FEAT_SEARCH_PATH" = "" ]; then
-			STELLA_BUILD_TOOLSET_PATH="$FEAT_SEARCH_PATH:$STELLA_BUILD_TOOLSET_PATH"
+			if [ ! -f "$FEAT_INSTALL_ROOT/._STELLA_DO_NOT_UPDATE_PATH" ]; then
+				STELLA_BUILD_TOOLSET_PATH="$FEAT_SEARCH_PATH:$STELLA_BUILD_TOOLSET_PATH"
+			fi
 		fi
 		local c
 		# TODO : warn : env vars should be uninitialized later because use of a toolset is temporary

@@ -96,7 +96,9 @@ __feature_init() {
 				for p in $FEAT_BUNDLE_ITEM; do
 					__internal_feature_context $p
 					if [ ! "$FEAT_SEARCH_PATH" = "" ]; then
-						PATH="$FEAT_SEARCH_PATH:$PATH"
+						if [ ! -f "$FEAT_INSTALL_ROOT/._STELLA_DO_NOT_UPDATE_PATH" ]; then
+							PATH="$FEAT_SEARCH_PATH:$PATH"
+						fi
 					fi
 					# call env call back of each bundle item
 					# only uf call back have not been called just before (when a bundle is just installed each bundle items have already been initialized and env callback already called)
@@ -121,7 +123,9 @@ __feature_init() {
 			fi
 
 			if [ ! "$FEAT_SEARCH_PATH" = "" ]; then
-				PATH="$FEAT_SEARCH_PATH:$PATH"
+				if [ ! -f "$FEAT_INSTALL_ROOT/._STELLA_DO_NOT_UPDATE_PATH" ]; then
+					PATH="$FEAT_SEARCH_PATH:$PATH"
+				fi
 			fi
 
 			local c
@@ -631,8 +635,11 @@ __feature_install() {
 	local _flag_portable="OFF"
 	local _dir_portable=""
 	local _portable_mode="OFF"
+	local _opt_do_not_updat_path="OFF"
 
 	for o in $_OPT; do
+		# NO_PATH_UPDATE : do not update PATH env variable with FEAT_SEARCH_PATH of the feature
+		[ "$o" = "NO_PATH_UPDATE" ] && _opt_do_not_updat_path="ON"
 		# INTERNAL : install feature inside stella root instead of current stella app workspace
 		[ "$o" = "INTERNAL" ] && _opt_internal_feature="ON" && _export_mode="OFF"
 		# HIDDEN : this feature will not be seen in list of active features
@@ -891,6 +898,10 @@ __feature_install() {
 				[ "$FEAT_SCHEMA_FLAVOUR" = "source" ] && __start_build_session
 				feature_"$FEAT_NAME"_install_"$FEAT_SCHEMA_FLAVOUR"
 
+				if [ $_opt_do_not_updat_path = "ON" ]; then
+					__log "INFO" "Do not update PATH env variable with $FEAT_SEARCH_PATH (var FEAT_SEARCH_PATH) of $FEAT_NAME version $FEAT_VERSION"
+					touch "$FEAT_INSTALL_ROOT/._STELLA_DO_NOT_UPDATE_PATH"
+				fi
 				# Sometimes current directory is lost by the system. For example when deleting source folder at the end of the install recipe
 				cd "$STELLA_APP_ROOT"
 

@@ -51,9 +51,10 @@ goto :eof
 			for %%p in (!FEAT_BUNDLE_ITEM!) do (
 				REM call :feature_init %%p "HIDDEN"
 				call %STELLA_COMMON%\common-feature.bat :internal_feature_context "%%p"
-				if not "!FEAT_SEARCH_PATH!"=="" set "STELLA_BUILD_TOOLSET_PATH=!FEAT_SEARCH_PATH!;!STELLA_BUILD_TOOLSET_PATH!"
-				for %%e in (!FEAT_ENV_CALLBACK!) do (
-					call %STELLA_FEATURE_RECIPE%\feature_!FEAT_NAME!.bat :%%e
+				if not "!FEAT_SEARCH_PATH!"=="" (
+					if not exist "!FEAT_INSTALL_ROOT!\._STELLA_DO_NOT_UPDATE_PATH" (
+						set "STELLA_BUILD_TOOLSET_PATH=!FEAT_SEARCH_PATH!;!STELLA_BUILD_TOOLSET_PATH!"
+					)
 				)
 			)
 			set "FEAT_BUNDLE_MODE="
@@ -61,7 +62,11 @@ goto :eof
 			call %STELLA_COMMON%\common-feature.bat :pop_schema_context
 		)
 
-		if not "!FEAT_SEARCH_PATH!"=="" set "STELLA_BUILD_TOOLSET_PATH=!FEAT_SEARCH_PATH!;!STELLA_BUILD_TOOLSET_PATH!"
+		if not "!FEAT_SEARCH_PATH!"=="" (
+			if not exist "!FEAT_INSTALL_ROOT!\._STELLA_DO_NOT_UPDATE_PATH" (
+				set "STELLA_BUILD_TOOLSET_PATH=!FEAT_SEARCH_PATH!;!STELLA_BUILD_TOOLSET_PATH!"
+			)
+		)
 
 		REM TODO : warn : env vars should be uninitialized later because use of a toolset is temporary
 		for %%p in (!FEAT_ENV_CALLBACK!) do (
