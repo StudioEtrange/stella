@@ -2610,18 +2610,18 @@ __resource() {
 	if [ "$_opt_get" = "ON" ]; then
 		#if [ "$FORCE" ]; then
 		#	[ "$_opt_merge" = "OFF" ] && rm -Rf "$FINAL_DESTINATION"
-		#	[ "$_opt_merge" = "ON" ] && rm -f "$FINAL_DESTINATION/._MERGED_$NAME"
+		#	[ "$_opt_merge" = "ON" ] && rm -f "$FINAL_DESTINATION/._STELLA_MERGED_$NAME"
 		#fi
 		if [ "$_opt_dest_erase" = "ON" ]; then
 			[ "$_opt_merge" = "OFF" ] && rm -Rf "$FINAL_DESTINATION"
-			[ "$_opt_merge" = "ON" ] && rm -f "$FINAL_DESTINATION/._MERGED_$NAME"
+			[ "$_opt_merge" = "ON" ] && rm -f "$FINAL_DESTINATION/._STELLA_MERGED_$NAME"
 		fi
 	fi
 
 
 	if [ "$_opt_delete" = "ON" ]; then
 		[ "$_opt_merge" = "OFF" ] && rm -Rf "$FINAL_DESTINATION"
-		[ "$_opt_merge" = "ON" ] && rm -f "$FINAL_DESTINATION/._MERGED_$NAME"
+		[ "$_opt_merge" = "ON" ] && rm -f "$FINAL_DESTINATION/._STELLA_MERGED_$NAME"
 		_FLAG=0
 	fi
 
@@ -2639,7 +2639,7 @@ __resource() {
 				if [ -d "$FINAL_DESTINATION" ]; then
 					if [ "$_opt_get" = "ON" ]; then
 						if [ "$_opt_merge" = "ON" ]; then
-							if [ -f "$FINAL_DESTINATION/._MERGED_$NAME" ]; then
+							if [ -f "$FINAL_DESTINATION/._STELLA_MERGED_$NAME" ]; then
 								__log "INFO" "Ressource already merged"
 								_FLAG=0
 							fi
@@ -2660,7 +2660,7 @@ __resource() {
 				if [ -d "$FINAL_DESTINATION" ]; then
 					if [ "$_opt_get" = "ON" ]; then
 						if [ "$_opt_merge" = "ON" ]; then
-							if [ -f "$FINAL_DESTINATION/._MERGED_$NAME" ]; then
+							if [ -f "$FINAL_DESTINATION/._STELLA_MERGED_$NAME" ]; then
 								__log "INFO" "Ressource already merged"
 								_FLAG=0
 							fi
@@ -2691,38 +2691,38 @@ __resource() {
 			HOMEBREW_BOTTLE)
 				# TODO
 				if [ "$_opt_get" = "ON" ]; then __download_uncompress_homebrew_bottle "$URI" "$_download_filename" "$FINAL_DESTINATION"; fi
-				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
+				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._STELLA_MERGED_$NAME"; fi
 				;;
 			HTTP_ZIP )
 				if [ "$_opt_get" = "ON" ]; then __download_uncompress "$URI" "$_download_filename" "$FINAL_DESTINATION" "$_STRIP"; fi
-				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
+				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._STELLA_MERGED_$NAME"; fi
 				;;
 			HTTP )
 				# HTTP protocol use always merge by default : because it never erase destination folder
 				# but the 'merged' flag file will be created only if we pass the option MERGE
 				if [ "$_opt_get" = "ON" ]; then __download "$URI" "$_download_filename" "$FINAL_DESTINATION"; fi
-				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
+				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._STELLA_MERGED_$NAME"; fi
 				;;
 			HG )
 				if [ "$_opt_revert" = "ON" ]; then cd "$FINAL_DESTINATION"; hg revert --all -C; fi
 				if [ "$_opt_update" = "ON" ]; then cd "$FINAL_DESTINATION"; hg pull; hg update $_checkout_version; fi
 				if [ "$_opt_get" = "ON" ]; then hg clone $URI "$FINAL_DESTINATION"; if [ ! "$_checkout_version" = "" ]; then cd "$FINAL_DESTINATION"; hg update $_checkout_version; fi; fi
-				# [ "$_opt_merge" = "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
+				# [ "$_opt_merge" = "ON" ] && echo 1 > "$FINAL_DESTINATION/._STELLA_MERGED_$NAME"
 				;;
 			GIT )
 				__require "git" "git" "SYSTEM"
 				if [ "$_opt_revert" = "ON" ]; then cd "$FINAL_DESTINATION"; git reset --hard; fi
 				if [ "$_opt_update" = "ON" ]; then cd "$FINAL_DESTINATION"; git pull;if [ ! "$_checkout_version" = "" ]; then git checkout $_checkout_version; fi; fi
 				if [ "$_opt_get" = "ON" ]; then git clone --recursive $URI "$FINAL_DESTINATION"; if [ ! "$_checkout_version" = "" ]; then cd "$FINAL_DESTINATION"; git checkout $_checkout_version; fi; fi
-				# [ "$_opt_merge" = "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
+				# [ "$_opt_merge" = "ON" ] && echo 1 > "$FINAL_DESTINATION/._STELLA_MERGED_$NAME"
 				;;
 			FILE )
 				if [ "$_opt_get" = "ON" ]; then __copy_folder_content_into "$URI" "$FINAL_DESTINATION"; fi
-				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
+				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._STELLA_MERGED_$NAME"; fi
 				;;
 			FILE_ZIP )
 				__uncompress "$URI" "$FINAL_DESTINATION" "$_STRIP"
-				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
+				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._STELLA_MERGED_$NAME"; fi
 				;;
 			* )
 				__log "ERROR" "Unknow protocol ${PROTOCOL}"

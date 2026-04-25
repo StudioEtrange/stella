@@ -459,7 +459,7 @@ goto :eof
 		REM 		call :del_folder "%FINAL_DESTINATION%"
 		REM 	)
 		REM 	if "!_opt_merge!"=="ON" (
-		REM 		del /q/f "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
+		REM 		del /q/f "%FINAL_DESTINATION%\._STELLA_MERGED_!_name_legal!"
 		REM 	)
 		REM )
 
@@ -468,7 +468,7 @@ goto :eof
 				call :del_folder "%FINAL_DESTINATION%"
 			)
 			if "!_opt_merge!"=="ON" (
-				del /q/f "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
+				del /q/f "%FINAL_DESTINATION%\._STELLA_MERGED_!_name_legal!"
 			)
 		)
 	)
@@ -478,7 +478,7 @@ goto :eof
 			call :del_folder "%FINAL_DESTINATION%"
 		)
 		if "!_opt_merge!"=="ON" (
-			del /q/f "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
+			del /q/f "%FINAL_DESTINATION%\._STELLA_MERGED_!_name_legal!"
 		)
 		set _FLAG=0
 	)
@@ -517,7 +517,7 @@ goto :eof
 			if exist "!FINAL_DESTINATION!" (
 				if "!_opt_get!"=="ON" (
 					if "!_opt_merge!"=="ON" (
-						if exist "%FINAL_DESTINATION%\._MERGED_!_name_legal!" (
+						if exist "%FINAL_DESTINATION%\._STELLA_MERGED_!_name_legal!" (
 							echo  ** Ressource already merged
 							set _FLAG=0
 						)
@@ -544,7 +544,7 @@ goto :eof
 			if exist "%FINAL_DESTINATION%" (
 				if "!_opt_get!"=="ON" (
 					if "!_opt_merge!"=="ON" (
-						if exist "%FINAL_DESTINATION%\._MERGED_!_name_legal!" (
+						if exist "%FINAL_DESTINATION%\._STELLA_MERGED_!_name_legal!" (
 							echo  ** Ressource already merged
 							set _FLAG=0
 						)
@@ -579,13 +579,13 @@ goto :eof
 
 		if "%PROTOCOL%"=="HTTP_ZIP" (
 			if "!_opt_get!"=="ON" call :download_uncompress "%URI%" "!_download_filename!" "%FINAL_DESTINATION%" "%_STRIP%"
-			if "!_opt_merge!"=="ON" echo 1 > "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
+			if "!_opt_merge!"=="ON" echo 1 > "%FINAL_DESTINATION%\._STELLA_MERGED_!_name_legal!"
 		)
 		if "%PROTOCOL%"=="HTTP" (
 			REM HTTP protocol use always merge by default : because it never erase destination folder
 			REM but the 'merged' flag file will be created only if we pass the option MERGE
 			if "!_opt_get!"=="ON" call :download "%URI%" "!_download_filename!" "%FINAL_DESTINATION%"
-			if "!_opt_merge!"=="ON" echo 1 > "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
+			if "!_opt_merge!"=="ON" echo 1 > "%FINAL_DESTINATION%\._STELLA_MERGED_!_name_legal!"
 		)
 		if "%PROTOCOL%"=="HG" (
 			if "!_opt_revert!"=="ON" (
@@ -632,11 +632,11 @@ goto :eof
 		)
 		if "%PROTOCOL%"=="FILE" (
 			if "!_opt_get!"=="ON" call :copy_folder_content_into "%URI%" "%FINAL_DESTINATION%"
-			if "!_opt_merge!"=="ON" echo 1 > "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
+			if "!_opt_merge!"=="ON" echo 1 > "%FINAL_DESTINATION%\._STELLA_MERGED_!_name_legal!"
 		)
 		if "%PROTOCOL%"=="FILE_ZIP" (
 			if "!_opt_get!"=="ON" call :uncompress "%URI%" "%FINAL_DESTINATION%" "%_STRIP%"
-			if "!_opt_merge!"=="ON" echo 1 > "%FINAL_DESTINATION%\._MERGED_!_name_legal!"
+			if "!_opt_merge!"=="ON" echo 1 > "%FINAL_DESTINATION%\._STELLA_MERGED_!_name_legal!"
 		)
 	)
 goto :eof
