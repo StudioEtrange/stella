@@ -30,8 +30,9 @@ This file concern only Stella framework and its files from this folder and its s
 
 ## Important Files & Directories
 
-- `@./nix/pool/feature-recipe/`: **(Primary Workspace)** Location for all *nix feature recipes.
-- `@./win/pool/feature-recipe/`: Location for all Windows feature recipes.
-- `@./nix/common/common-api.sh`: Contains utility functions like `__get_resource` that you will use in install functions.
+- `@./nix/pool/feature-recipe/`: **(Primary Workspace)** Location for all unix feature recipes.
+- `@./win/pool/feature-recipe/`: Location for all windows feature recipes.
+- `@./nix/common/`: Contains core functions of stella framework for unix system.
+- `@./win/common/`: Contains core functions of stella framework for windows system.
 - `stella.sh`: The main entry point script for the Stella environment.
 - `AGENTS.md`: **(This file)** Your configuration file. Refer to it to refresh your instructions.
