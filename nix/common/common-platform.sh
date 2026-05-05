@@ -331,9 +331,9 @@ __stella_requirement() {
 # require a specific binary.
 # By default the required binary is MANDATORY
 # Test if binary is present, if not :
-#		if binary is OPTIONAL, just print warn and guidelines to install it as a STELLA_FEATURE or as a package SYSTEM
-#		if binary is not OPTIONAL, it will install it as a STELLA_FEATURE or provide guideline to install it as a package SYSTEM
-#		INTERNAL will install it as a STELLA_FEATURE installed in stella feature workspace instead of current app workspace
+#			if binary is OPTIONAL, just print warn and guidelines to install it as a STELLA_FEATURE or as a package SYSTEM
+#			if binary is not OPTIONAL, it will install it as a STELLA_FEATURE or provide guidelines to install it as a package SYSTEM
+#			INTERNAL will install it as a STELLA_FEATURE installed in stella feature workspace instead of current app workspace
 __require() {
 	local _artefact="$1" # binary to test
 	local _id="$2" # feature name (for stella) or sys name (for package manager)
@@ -345,9 +345,9 @@ __require() {
 	# SYSTEM
 	# STELLA_FEATURE
 	# INTERNAL
-	local _opt_optional=OFF
-	local _opt_system=OFF
-	local _opt_stella_feature=ON
+	local _opt_optional="OFF"
+	local _opt_system="OFF"
+	local _opt_stella_feature="ON"
 	local _opt_internal=
 
 
@@ -886,6 +886,7 @@ __sys_install_build-chain-standard() {
 		linux)
 			# tool readelf is inside binutils
 			# NOTE : The gcc-multilib g++-multilib package are not available for arm64/aarch64 architecture
+			# TODO : I dont know if it would be better to install pkg-config from system instead using from stella
 			if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
 				__use_package_manager "INSTALL" "build-chain-standard" "apt-get build-essential patch | yum gcc gcc-c++ make kernel-devel patch binutils | apk gcc g++ make patch binutils"
 			else
