@@ -2311,58 +2311,129 @@ __symlink_abs_to_rel_path() {
 # DOES NOT force absolute, DOES NOT check existence
 # $1 = current list
 # $2 = candidate path
+# mode :
+# ALWAYS_PREPEND add path or move it at the beginning position
+# ALWAYS_POSTPEND add path or move it at the end position
+# PREPEND_IF_NOT_EXISTS add path at the beginning position only if not already present
+# POSTPEND_IF_NOT_EXISTS add path at the end position only if not already present (BY DEFAULT)
 __path_append_to_list() {
-  local list="$1"
-  local p="$2"
+	local list="$1"
+	local p="$2"
+	local mode="${3:-POSTPEND_IF_NOT_EXISTS}"
+	local new_list=""
+	local item
+	local old_ifs="$IFS"
 
-  [ -z "$p" ] && { printf '%s' "$list"; return; }
+	[ -z "$p" ] && { printf '%s' "$list"; return; }
 
-  case ":$list:" in
-    *:"$p":*)
-      printf '%s' "$list"
-      ;;
-    *)
-      if [ -n "$list" ]; then
-        printf '%s:%s' "$list" "$p"
-      else
-        printf '%s' "$p"
-      fi
-      ;;
-  esac
+	case "$mode" in
+	ALWAYS_PREPEND|ALWAYS_POSTPEND)
+		IFS=":"
+		for item in ${list}; do
+			[ "$item" = "$p" ] && continue
+			if [ -n "${new_list}" ]; then
+				new_list="${new_list}:${item}"
+			else
+				new_list="${item}"
+			fi
+		done
+		IFS="$old_ifs"
+
+		if [ "$mode" = "ALWAYS_PREPEND" ]; then
+			if [ -n "${new_list}" ]; then
+				printf '%s:%s' "$p" "${new_list}"
+			else
+				printf '%s' "$p"
+			fi
+		else
+			if [ -n "${new_list}" ]; then
+				printf '%s:%s' "${new_list}" "$p"
+			else
+				printf '%s' "$p"
+			fi
+		fi
+		;;
+	PREPEND_IF_NOT_EXISTS)
+		case ":$list:" in
+		*:"$p":*)
+			printf '%s' "${list}"
+			;;
+		*)
+			if [ -n "${list}" ]; then
+				printf '%s:%s' "$p" "${list}"
+			else
+				printf '%s' "$p"
+			fi
+			;;
+		esac
+		;;
+	POSTPEND_IF_NOT_EXISTS|*)
+		case ":${list}:" in
+		*:"$p":*)
+			printf '%s' "${list}"
+			;;
+		*)
+			if [ -n "${list}" ]; then
+				printf '%s:%s' "${list}" "$p"
+			else
+				printf '%s' "$p"
+			fi
+			;;
+		esac
+		;;
+	esac
+}
+
+# remove a path from a colon-separated list
+# DOES NOT force absolute, DOES NOT check existence
+# $1 = current list
+# $2 = path to remove
+__path_remove_from_list() {
+	local list="$1"
+	local p="$2"
+	local new_list=""
+	local item
+	local old_ifs="$IFS"
+	
+	[ -z "$p" ] && { printf '%s' "$list"; return; }
+
+	IFS=":"
+	for item in ${list}; do
+		[ "$item" = "$p" ] && continue
+		if [ -n "${new_list}" ]; then
+			new_list="${new_list}:${item}"
+		else
+			new_list="${item}"
+		fi
+	done
+	IFS="$old_ifs"
+
+	printf '%s' "${new_list}"
 }
 
 # append a path only if directory exists
 # append a path at the end of a colon-separated list if not yet in list
 __path_append_to_list_if_exists() {
-  local list="$1"
-  local p="$2"
+	local list="$1"
+	local p="$2"
+	local mode="${3:-POSTPEND_IF_NOT_EXISTS}"
+	
+	[ -z "$p" ] && { printf '%s' "$list"; return; }
+	[ -d "$p" ] || { printf '%s' "$list"; return; }
 
-  [ -z "$p" ] && { printf '%s' "$list"; return; }
-  [ -d "$p" ] || { printf '%s' "$list"; return; }
-
-  case ":$list:" in
-    *:"$p":*)
-      printf '%s' "$list"
-      ;;
-    *)
-      if [ -n "$list" ]; then
-        printf '%s:%s' "$list" "$p"
-      else
-        printf '%s' "$p"
-      fi
-      ;;
-  esac
+	__path_append_to_list "$list" "$p" "$mode"
 }
 
 # add all lines from STDIN (one per line) into colon list $1
 # append path at the end of a colon-separated list if not yet in list
 __path_append_to_list_from_stdin() {
-  local list="$1" line
-  while IFS= read -r line; do
-    [ -n "$line" ] || continue
-    list="$(__path_append_to_list "$list" "$line")"
-  done
-  printf '%s' "$list"
+	local list="$1" line
+	local mode="${2:-POSTPEND_IF_NOT_EXISTS}"
+	while IFS= read -r line; do
+		[ -n "$line" ] || continue
+		list="$(__path_append_to_list "$list" "$line" "$mode")"
+	done
+	printf '%s' "$list"
 }
 
 
