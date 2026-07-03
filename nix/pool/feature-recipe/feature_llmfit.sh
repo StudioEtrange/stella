@@ -30,8 +30,8 @@ feature_llmfit_0_9_37() {
 	fi
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
-			FEAT_BINARY_URL_x64="https://github.com/AlexsJones/llmfit/releases/download/v0.9.37/llmfit-v0.9.37-x86_64-unknown-linux-gnu.tar.gzz"
-			FEAT_BINARY_URL_FILENAME_x64="llmfit-v0.9.37-x86_64-unknown-linux-gnu.tar.gzz"
+			FEAT_BINARY_URL_x64="https://github.com/AlexsJones/llmfit/releases/download/v0.9.37/llmfit-v0.9.37-x86_64-unknown-linux-gnu.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="llmfit-v0.9.37-x86_64-unknown-linux-gnu.tar.gz"
 			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
 		fi
 		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
@@ -54,10 +54,6 @@ feature_llmfit_install_binary() {
 
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP"
 	
-
-	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		xattr -dr com.apple.quarantine "${FEAT_INSTALL_ROOT}"
-	fi
 
 	
 }
