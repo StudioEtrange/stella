@@ -91,12 +91,20 @@ update_lddtree() {
   rm -Rf "${_CURRENT_FILE_DIR}/lddtree/.git"
 }
 
+# https://github.com/StudioEtrange/glibc-binary-compat
+update_glibc-binary-compat() {
+  rm -Rf "${_CURRENT_FILE_DIR}/glibc-binary-compat"
+  echo "Using https://github.com/StudioEtrange/glibc-binary-compat"
+  git clone https://github.com/StudioEtrange/glibc-binary-compat "${_CURRENT_FILE_DIR}/glibc-binary-compat"
+  rm -Rf "${_CURRENT_FILE_DIR}/glibc-binary-compat/.git"
+}
+
 # https://github.com/agriffis/pure-getopt
 update_pure-getopt() {
   echo "TODO"
 }
 
-case $1 in
+case "$1" in
   autoconf-scripts)
     update_autoconf_scripts
     ;;
@@ -128,9 +136,26 @@ case $1 in
     update_macos-dyld-cache-analyse
     ;;
   macos-dyld-cache-list)
-	update_macos-dyld-cache-list
+	  update_macos-dyld-cache-list
 	;;
+  glibc-binary-compat)
+    update_glibc-binary-compat
+  ;;
+  all)
+    update_autoconf_scripts
+    update_bash-colors
+    update_bash_ini_parser
+    update_pure-getopt
+    update_neofetch
+    update_unifetch
+    update_lddtree
+    update_homebrew-get-bottle
+    update_macos-link-analyse
+    update_macos-dyld-cache-analyse
+	  update_macos-dyld-cache-list
+    update_glibc-binary-compat
+  ;;
   * )
-    echo "Usage : ${_CURRENT_FILE_DIR}/update.sh <autoconf-scripts|bash-colors|bash_ini_parser|pure-getopt|neofetch|unifetch|lddtree|homebrew-get-bottle|macos-link-analyse|macos-dyld-cache-analyse|macos-dyld-cache-list>"
+    echo "Usage : ${_CURRENT_FILE_DIR}/update.sh <aall|utoconf-scripts|bash-colors|bash_ini_parser|pure-getopt|neofetch|unifetch|lddtree|homebrew-get-bottle|macos-link-analyse|macos-dyld-cache-analyse|macos-dyld-cache-list|glibc-binary-compat>"
     ;;
 esac
