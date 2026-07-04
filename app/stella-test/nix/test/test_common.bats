@@ -394,6 +394,71 @@ teardown() {
 
 
 # LIST  -------------------------------------------------------------------
+@test "__path_append_to_list" {
+
+	run __path_append_to_list "a:b:c" "d"
+	assert_output "a:b:c:d"
+
+	run __path_append_to_list "a:b:c" "b"
+	assert_output "a:b:c"
+
+	run __path_append_to_list "a:b:c" "b" "ALWAYS_PREPEND"
+	assert_output "b:a:c"
+
+	run __path_append_to_list "a:b:c" "d" "ALWAYS_PREPEND"
+	assert_output "d:a:b:c"
+
+	run __path_append_to_list "a:b:c" "b" "ALWAYS_POSTPEND"
+	assert_output "a:c:b"
+
+	run __path_append_to_list "a:b:c" "d" "ALWAYS_POSTPEND"
+	assert_output "a:b:c:d"
+
+	run __path_append_to_list "a:b:c" "b" "PREPEND_IF_NOT_EXISTS"
+	assert_output "a:b:c"
+
+	run __path_append_to_list "a:b:c" "d" "PREPEND_IF_NOT_EXISTS"
+	assert_output "d:a:b:c"
+
+	run __path_append_to_list "a:b:c" "b" "POSTPEND_IF_NOT_EXISTS"
+	assert_output "a:b:c"
+
+	run __path_append_to_list "a:b:c" "d" "POSTPEND_IF_NOT_EXISTS"
+	assert_output "a:b:c:d"
+
+	run __path_append_to_list "a:b:c" ""
+	assert_output "a:b:c"
+
+	run __path_append_to_list "" "a" "ALWAYS_PREPEND"
+	assert_output "a"
+
+}
+
+@test "__path_remove_from_list" {
+
+	run __path_remove_from_list "a:b:c" "b"
+	assert_output "a:c"
+
+	run __path_remove_from_list "a:b:c" "a"
+	assert_output "b:c"
+
+	run __path_remove_from_list "a:b:c" "c"
+	assert_output "a:b"
+
+	run __path_remove_from_list "a:b:c" "d"
+	assert_output "a:b:c"
+
+	run __path_remove_from_list "a:b:a:c" "a"
+	assert_output "b:c"
+
+	run __path_remove_from_list "a:b:c" ""
+	assert_output "a:b:c"
+
+	run __path_remove_from_list "a" "a"
+	assert_output ""
+
+}
+
 @test "__list_contains" {
 
 	run __list_contains "aa bb xx" "bb"
