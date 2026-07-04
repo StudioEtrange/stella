@@ -84,6 +84,9 @@ info() {
     echo 
     echo "custom glibc runtime path: ${CUSTOM_GLIBC_PATH:-$DEFAULT_GLIBC_RUNTIME_PATH} "
     echo "interpreter: $EXPECTED_INTERPRETER"
+    echo
+    local _ldd_version="$(ldd --version 2>/dev/null | awk '/ldd/{print $NF}')"
+	echo "current system glibc version: ${_ldd_version}"
 }
 
 

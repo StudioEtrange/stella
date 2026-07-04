@@ -41,17 +41,10 @@ __link_to_glibc_binary_compat() {
     local search_folder="${2}"
     local custom_glibc_runtime_path="${3}"
 
-    export GBC_FEAT_INSTALL_ROOT="${STELLA_ARTEFACT}/glibc-binay-compat"
-   
-	local _ldd_version="$(ldd --version 2>/dev/null | awk '/ldd/{print $NF}')"
-	
-	echo "INFO: Current system glibc version: ${_ldd_version}"
-	echo "INFO: Link ${binary} with custom glibc in ${custom_glibc_runtime_path} built with GBC (https://github.com/StudioEtrange/glibc-binary-compat)"
-
     export CUSTOM_GLIBC_PATH="${custom_glibc_runtime_path}"
     export CUSTOM_GLIBC_LINKER="${custom_glibc_runtime_path}/lib/ld-linux-x86-64.so.2"
 
-    "${GBC_FEAT_INSTALL_ROOT}/patch-with-custom-glibc.sh" "${binary}" "${search_folder}"
+    "${STELLA_ARTEFACT}/glibc-binary-compat/patch-with-custom-glibc.sh" "${binary}" "${search_folder}"
 }
 
 # GENERIC -------------------------------------------------------------------
