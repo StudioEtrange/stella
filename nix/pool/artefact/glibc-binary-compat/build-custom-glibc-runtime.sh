@@ -38,21 +38,21 @@ NB_PROC="${NB_PROC:-AUTO}"
 
 PROJECT_WORKSPACE_ROOT="$HOME/.build-custom-glibc-runtime"
 
-MINIFORGE_ROOT="$PROJECT_WORKSPACE_ROOT/miniforge3"
+MINIFORGE_ROOT="${PROJECT_WORKSPACE_ROOT}/miniforge3"
 MAMBA_ENV_NAME="build-custom-glibc-runtime"
 
 # parameters
 GLIBC_INSTALL_DIR="${1}"
-GLIBC_VERSION="${2:-GLIBC_VERSION}"
-GCC_VERSION="${3:-GCC_VERSION}"
-KERNEL_SUPPORTED_VERSION="${4:-KERNEL_SUPPORTED_VERSION}"
-NB_PROC="${5:-NB_PROC}"
+GLIBC_VERSION="${2:-${GLIBC_VERSION}}"
+GCC_VERSION="${3:-${GCC_VERSION}}"
+KERNEL_SUPPORTED_VERSION="${4:-${KERNEL_SUPPORTED_VERSION}}"
+NB_PROC="${5:-${NB_PROC}}"
 
-GLIBC_ROOT="$PROJECT_WORKSPACE_ROOT/glibc"
-GLIBC_SRC_ROOT="$GLIBC_ROOT/src-dir"
-GLIBC_TAR_FILE="$GLIBC_SRC_ROOT/glibc-$GLIBC_VERSION.tar.gz"
-GLIBC_SRC_DIR="$GLIBC_SRC_ROOT/glibc-$GLIBC_VERSION"
-GLIBC_BUILD_DIR="$GLIBC_ROOT/build-dir"
+GLIBC_ROOT="${PROJECT_WORKSPACE_ROOT}/glibc"
+GLIBC_SRC_ROOT="${GLIBC_ROOT}/src-dir"
+GLIBC_TAR_FILE="${GLIBC_SRC_ROOT}/glibc-${GLIBC_VERSION}.tar.gz"
+GLIBC_SRC_DIR="${GLIBC_SRC_ROOT}/glibc-${GLIBC_VERSION}"
+GLIBC_BUILD_DIR="${GLIBC_ROOT}/build-dir"
 
 
 # --- Colors ---
@@ -69,7 +69,7 @@ usage() {
     echo "$0 <install path> <glibc version>] [<gcc version>] [<nb processor>]"
     echo
     echo Arguments:
-    echo "  <install path>: Built glibc with minimal runtime will be copied in this path"
+    echo "  <install path>: Built glibc with minimal runtime will be copied in this path. Will be delete and recreated at launch."
     echo "  <glibc version>: libc version to build with a minimal runtime. Source code is donwloaded. Default value is ${GLIBC_VERSION}. (can be set using env variable GLIBC_VERSION)"
     echo "  <gcc version>: gcc version downloaded and used. Default value is ${GCC_VERSION}. (can be set using env variable GCC_VERSION)"
     echo "  <kernel supported>: Linux kernel minimal supported version by glibc. Default value is ${KERNEL_SUPPORTED_VERSION}. (can be set using env variable KERNEL_SUPPORTED_VERSION)"
@@ -128,12 +128,12 @@ case "$1" in
         ;;
 esac
 
-if [ "$GLIBC_INSTALL_DIR" = "" ]; then
+if [ -z "${GLIBC_INSTALL_DIR}" ]; then
     usage
 	error "Please provide glibc install dir at first argument : $0 /opt/glibc"
 fi
 
-info "Will build glibc version $GLIBC_VERSION for minimal linux kernel version $KERNEL_SUPPORTED_VERSION into $GLIBC_INSTALL_DIR"
+info "Will build glibc version ${GLIBC_VERSION} for minimal linux kernel version $KERNEL_SUPPORTED_VERSION into $GLIBC_INSTALL_DIR"
 info "Will install and use gcc version: ${GCC_VERSION}"
 if check_command gcc; then
     gcc_system_version="$(gcc -dumpfullversion -dumpversion)"
@@ -174,17 +174,17 @@ check_command "patchelf" "stop"
 
 
 # install miniforge3
-export PATH="$MINIFORGE_ROOT/bin:$PATH"
+export PATH="${MINIFORGE_ROOT}/bin:$PATH"
 
 if check_command "mamba"; then
     info "Mamba is already installed."
 else
     info "Mamba is not installed. Installing Miniforge3..."
-    mkdir -p "$MINIFORGE_ROOT"
-    cd "$MINIFORGE_ROOT"
-    wget -O "$MINIFORGE_ROOT/Miniforge3.sh" "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
-    bash "$MINIFORGE_ROOT/Miniforge3.sh" -p "$MINIFORGE_ROOT" -b -f
-    rm -f "$MINIFORGE_ROOT/Miniforge3.sh"
+    mkdir -p "${MINIFORGE_ROOT}"
+    cd "${MINIFORGE_ROOT}"
+    wget -O "${MINIFORGE_ROOT}/Miniforge3.sh" "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
+    bash "${MINIFORGE_ROOT}/Miniforge3.sh" -p "${MINIFORGE_ROOT}" -b -f
+    rm -f "${MINIFORGE_ROOT}/Miniforge3.sh"
 fi
 
 
@@ -210,58 +210,58 @@ info "Adding requirements into mamba environment"
 # mamba install -c conda-forge -y gcc=${GCC_VERSION} make=4.3 bison python=3.12 texinfo=7.2 python=3.12
 
 # info "-------------- GLIBC COMPILATION ------------------"
-# mkdir -p "$GLIBC_SRC_ROOT"
+mkdir -p "$GLIBC_SRC_ROOT"
 
-# if [ ! -f "$GLIBC_TAR_FILE" ]; then
-#     info "Downloading glibc $GLIBC_VERSION..."
-#     wget --no-check-certificate -O "$GLIBC_TAR_FILE" "https://ftp.gnu.org/gnu/glibc/glibc-$GLIBC_VERSION.tar.gz"
-# else
-#     info "Glibc tarball file already exists."
-# fi
+if [ ! -f "$GLIBC_TAR_FILE" ]; then
+    info "Downloading glibc $GLIBC_VERSION..."
+    wget --no-check-certificate -O "$GLIBC_TAR_FILE" "https://ftp.gnu.org/gnu/glibc/glibc-$GLIBC_VERSION.tar.gz"
+else
+    info "Glibc tarball file already exists."
+fi
 
-# rm -rf "$GLIBC_SRC_DIR"
-# info "Extracting glibc source..."
-# tar -zxvf "$GLIBC_TAR_FILE" -C "$GLIBC_SRC_ROOT" 1>/dev/null
+rm -rf "$GLIBC_SRC_DIR"
+info "Extracting glibc source..."
+tar -zxvf "$GLIBC_TAR_FILE" -C "$GLIBC_SRC_ROOT" 1>/dev/null
 
-# info "Configuring glibc..."
-# rm -rf "$GLIBC_BUILD_DIR"
-# mkdir -p "$GLIBC_BUILD_DIR"
-# cd "$GLIBC_BUILD_DIR"
+info "Configuring glibc..."
+rm -rf "$GLIBC_BUILD_DIR"
+mkdir -p "$GLIBC_BUILD_DIR"
+cd "$GLIBC_BUILD_DIR"
 
-# rm -rf "$GLIBC_INSTALL_DIR"
-# mkdir -p "$GLIBC_INSTALL_DIR"
+rm -rf "$GLIBC_INSTALL_DIR"
+mkdir -p "$GLIBC_INSTALL_DIR"
 
-# # building glibc require LD_LIBRARY_PATH to be empty or configuration step fail
-# export LD_LIBRARY_PATH=""
+# building glibc require LD_LIBRARY_PATH to be empty or configuration step fail
+export LD_LIBRARY_PATH=""
 
-# $GLIBC_SRC_DIR/configure --prefix="$GLIBC_INSTALL_DIR" \
-#             --disable-profile \
-#             --disable-werror \
-#             --enable-kernel="$KERNEL_SUPPORTED_VERSION" \
-#             CC="gcc -m64" \
-#             CXX="g++ -m64" \
-#             CFLAGS="-O2" \
-#             CXXFLAGS="-O2" \
-#             MAKE=make
+$GLIBC_SRC_DIR/configure --prefix="$GLIBC_INSTALL_DIR" \
+            --disable-profile \
+            --disable-werror \
+            --enable-kernel="$KERNEL_SUPPORTED_VERSION" \
+            CC="gcc -m64" \
+            CXX="g++ -m64" \
+            CFLAGS="-O2" \
+            CXXFLAGS="-O2" \
+            MAKE=make
 
-# info "Building glibc..."
-# case $NB_PROC in
-# 	"AUTO")
-# 		make -j"$(nproc)"
-# 		;;
-# 	[0-9]*)
-# 		make -j${NB_PROC}
-# 		;;
-# 	*)
-# 		make
-# 		;;
-# esac
+info "Building glibc..."
+case $NB_PROC in
+	"AUTO")
+		make -j"$(nproc)"
+		;;
+	[0-9]*)
+		make -j${NB_PROC}
+		;;
+	*)
+		make
+		;;
+esac
 
-# info "Installing glibc in $GLIBC_INSTALL_DIR..."
-# make install || warn "make install failed but continuing."
+info "Installing glibc in $GLIBC_INSTALL_DIR..."
+make install || warn "make install failed but continuing."
 
-# info "Glibc $GLIBC_VERSION build process finished."
-# info "Installation directory: $GLIBC_INSTALL_DIR"
+info "Glibc $GLIBC_VERSION build process finished."
+info "Installation directory: $GLIBC_INSTALL_DIR"
 
 
 GLIBC_LIB="$GLIBC_INSTALL_DIR/lib/libc-${GLIBC_VERSION}.so"

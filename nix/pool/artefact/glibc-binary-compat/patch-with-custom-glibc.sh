@@ -79,11 +79,11 @@ patch() {
 info() {
     echo "Link a binary to a custom built glibc runtime"
     echo
-    echo "binary: $BINARY_TO_PATCH"
-    echo "binary search folder: $FOLDER_TO_PATCH_ROOT"
+    echo "binary: ${BINARY_TO_PATCH}"
+    echo "binary search folder: ${FOLDER_TO_PATCH_ROOT}"
     echo 
-    echo "custom glibc runtime path: ${CUSTOM_GLIBC_PATH:-$DEFAULT_GLIBC_RUNTIME_PATH} "
-    echo "interpreter: $EXPECTED_INTERPRETER"
+    echo "custom glibc runtime path: ${CUSTOM_GLIBC_PATH:-${DEFAULT_GLIBC_RUNTIME_PATH}} "
+    echo "interpreter: ${EXPECTED_INTERPRETER}"
     echo
     local _ldd_version="$(ldd --version 2>/dev/null | awk '/ldd/{print $NF}')"
 	echo "current system glibc version: ${_ldd_version}"
@@ -128,9 +128,9 @@ PATCH_WORKSPACE="$HOME/.patch-workspace/$(basename "${FOLDER_TO_PATCH_ROOT}")"
 
 DEFAULT_EXTENDED_RPATH="${DEFAULT_GLIBC_RUNTIME_PATH}/lib:${DEFAULT_GLIBC_RUNTIME_PATH}/rtlib"
 [ ! "${CUSTOM_GLIBC_PATH:-}" = "" ] && EXTENDED_USER_RPATH="${CUSTOM_GLIBC_PATH}/lib:${CUSTOM_GLIBC_PATH}/rtlib" || EXTENDED_USER_RPATH=""
-EXPECTED_RPATH="${EXTENDED_USER_RPATH:-DEFAULT_EXTENDED_RPATH}"
+EXPECTED_RPATH="${EXTENDED_USER_RPATH:-${DEFAULT_EXTENDED_RPATH}}"
 
-EXPECTED_INTERPRETER="${CUSTOM_GLIBC_LINKER:-$DEFAULT_INTERPRETER}"
+EXPECTED_INTERPRETER="${CUSTOM_GLIBC_LINKER:-${DEFAULT_INTERPRETER}}"
 
 
 

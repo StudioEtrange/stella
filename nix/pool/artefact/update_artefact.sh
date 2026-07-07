@@ -156,6 +156,6 @@ case "$1" in
     update_glibc-binary-compat
   ;;
   * )
-    echo "Usage : ${_CURRENT_FILE_DIR}/update.sh <aall|utoconf-scripts|bash-colors|bash_ini_parser|pure-getopt|neofetch|unifetch|lddtree|homebrew-get-bottle|macos-link-analyse|macos-dyld-cache-analyse|macos-dyld-cache-list|glibc-binary-compat>"
+    echo "Usage : ${0} <aall|utoconf-scripts|bash-colors|bash_ini_parser|pure-getopt|neofetch|unifetch|lddtree|homebrew-get-bottle|macos-link-analyse|macos-dyld-cache-analyse|macos-dyld-cache-list|glibc-binary-compat>"
     ;;
 esac
