@@ -1751,7 +1751,7 @@ __transfer_rsync() {
 	esac
 }
 
-
+# TODO deprecated : use __daemon_start
 __daemonize() {
 	local _item_path="$1"
 	local _log_file="$2"
@@ -1764,9 +1764,348 @@ __daemonize() {
 
 }
 
+# replace __daemonize()
+# Usage: __daemon_start <daemon_name> <exec_file> [log_file] [process arguments...]
+# i.e : __daemon_start "cpa" "../aistack-cli/aistack" "$HOME/cpa.log" cpa launch
+__daemon_start() {
+    local _name="$1"
+    local _item_path="$2"
+	local _log_file="$3"
+    local _pid_file
+	local _cmd_file
+    local _pid
+
+    if [ -z "$_name" ] || [ -z "$_item_path" ]; then
+        return 2
+    fi
+
+    case "$_name" in
+        *[!a-zA-Z0-9_.-]*|'')
+			__log "ERROR" "Authorized chars for process name: a-z A-Z 0-9 _ . -"
+            return 2
+            ;;
+    esac
+
+	if [ ! -x "${_item_path}" ]; then
+        __log "ERROR" "Executable not found or not executable: ${_item_path}"
+        return 2
+    fi
+
+	mkdir -p "${STELLA_APP_TEMP_DIR}"
+
+    _pid_file="${STELLA_APP_TEMP_DIR}/${_name}.pid"
+	_cmd_file="${STELLA_APP_TEMP_DIR}/${_name}.cmd"
+
+	[ -z "${_log_file}" ] && _log_file="${STELLA_APP_TEMP_DIR}/${_name}.log"
+
+    if [ -f "$_pid_file" ]; then
+        _pid=$(cat "$_pid_file" 2>/dev/null)
+
+        case "$_pid" in
+            ''|*[!0-9]*)
+                __log "WARN" "Invalid PID file for task ${_name}; removing it"
+                rm -f "$_pid_file" "$_cmd_file"
+                ;;
+            *)
+                if kill -0 "$_pid" 2>/dev/null; then
+                    if __daemon_pid_matches "$_pid" "$_item_path"; then
+                        __log "WARN" "Task ${_name} already exists with PID ${_pid}"
+                        return 1
+                    fi
+
+                    __log "WARN" "PID ${_pid} is used by another process; removing stale PID file"
+                fi
+
+                rm -f "$_pid_file" "$_cmd_file"
+                ;;
+        esac
+    fi
+
+
+	# Remove the three fixed parameters. Remaining parameters are passed
+    # directly to the executable.
+    shift 3
+
+    nohup "$_item_path" "$@" >"$_log_file" 2>&1 &
+    _pid=$!
+	
+
+    if ! printf '%s\n' "$_pid" >"$_pid_file"; then
+        __log "ERROR" "Cannot write PID file: ${_pid_file}"
+        kill "$_pid" 2>/dev/null
+        return 1
+    fi
+
+    if ! printf '%s\n' "$_item_path" >"$_cmd_file"; then
+        __log "ERROR" "Cannot write command file: ${_cmd_file}"
+        kill "$_pid" 2>/dev/null
+        rm -f "$_pid_file"
+        return 1
+    fi
+
+    sleep 1
+
+     if ! kill -0 "$_pid" 2>/dev/null; then
+        __log "ERROR" \
+            "Task ${_name} could not start. See log: ${_log_file}"
+        rm -f "$_pid_file" "$_cmd_file"
+        return 1
+    fi
+
+    __log "INFO" "Task ${_name} started - PID: ${_pid} - Log: ${_log_file}"
+    return 0
+}
+
+# Usage: __daemon_stop <daemon_name> [timeout]
+__daemon_stop() {
+    local _name="$1"
+    local _timeout="${2:-10}"
+    local _pid_file
+    local _cmd_file
+    local _item_path
+    local _pid
+    local _elapsed=0
+	local _kill_elapsed=0
+    local _kill_timeout=5
+
+    if [ -z "$_name" ]; then
+        __log "ERROR" "Usage: __daemon_stop <daemon_name> [timeout]"
+        return 2
+    fi
+
+    case "$_name" in
+        ''|*[!a-zA-Z0-9_.-]*)
+            __log "ERROR" "Authorized chars for process name: a-z A-Z 0-9 _ . -"
+            return 2
+            ;;
+    esac
+
+    case "$_timeout" in
+        ''|0|*[!0-9]*)
+            __log "ERROR" "Timeout must be a positive integer"
+            return 2
+            ;;
+    esac
+
+    _pid_file="${STELLA_APP_TEMP_DIR}/${_name}.pid"
+    _cmd_file="${STELLA_APP_TEMP_DIR}/${_name}.cmd"
+
+    if [ ! -f "$_pid_file" ]; then
+        __log "WARN" "Task ${_name} is not started"
+        return 1
+    fi
+
+    _pid=$(cat "$_pid_file" 2>/dev/null)
+
+    case "$_pid" in
+        ''|*[!0-9]*)
+            __log "WARN" "Invalid PID in ${_pid_file}: ${_pid}"
+            rm -f "$_pid_file" "$_cmd_file"
+            return 1
+            ;;
+    esac
+
+    if ! kill -0 "$_pid" 2>/dev/null; then
+        __log "WARN" "Task ${_name} is already stopped"
+        rm -f "$_pid_file" "$_cmd_file"
+        return 0
+    fi
+
+    if [ ! -f "$_cmd_file" ]; then
+        __log "ERROR" \
+            "Cannot verify PID ${_pid}: command file is missing"
+        return 1
+    fi
+
+    _item_path=$(cat "$_cmd_file" 2>/dev/null)
+
+    if ! __daemon_pid_matches "$_pid" "$_item_path"; then
+        __log "ERROR" "PID ${_pid} no longer belongs to task ${_name}; refusing to stop it"
+        rm -f "$_pid_file" "$_cmd_file"
+        return 1
+    fi
+
+	__log "INFO" "Stopping task ${_name} with PID ${_pid}"
+
+    if ! kill -TERM "$_pid" 2>/dev/null; then
+		if kill -0 "$_pid" 2>/dev/null; then
+			__log "ERROR" "Cannot send SIGTERM to PID ${_pid}"
+			return 1
+		fi
+	fi
+
+	while kill -0 "$_pid" 2>/dev/null; do
+		if [ "$_elapsed" -ge "$_timeout" ]; then
+			__log "WARN" "Force stopping task ${_name} with PID ${_pid}"
+
+			if ! kill -KILL "$_pid" 2>/dev/null; then
+				if kill -0 "$_pid" 2>/dev/null; then
+					__log "ERROR" "Cannot send SIGKILL to PID ${_pid}"
+					return 1
+				fi
+
+				break
+			fi
+
+			while kill -0 "$_pid" 2>/dev/null; do
+				if [ "$_kill_elapsed" -ge "$_kill_timeout" ]; then
+					__log "ERROR" \
+						"Task ${_name} with PID ${_pid} did not disappear after SIGKILL"
+					return 1
+				fi
+
+				sleep 1
+				_kill_elapsed=$((_kill_elapsed + 1))
+			done
+
+			break
+		fi
+
+		sleep 1
+		_elapsed=$((_elapsed + 1))
+	done
+
+    rm -f "$_pid_file" "$_cmd_file"
+
+    __log "INFO" "Task ${_name} with PID ${_pid} is stopped"
+    return 0
+}
+
+# Usage: __daemon_status <nom>
+__daemon_status() {
+    local _name="$1"
+    local _pid_file
+	local _cmd_file
+    local _item_path
+    local _pid
+
+    if [ -z "$_name" ]; then
+        __log "ERROR" "Usage: __daemon_status <daemon_name>"
+        return 2
+    fi
+
+    case "$_name" in
+        ''|*[!a-zA-Z0-9_.-]*)
+            __log "ERROR" "Authorized chars for process name: a-z A-Z 0-9 _ . -"
+            return 2
+            ;;
+    esac
+
+    _pid_file="${STELLA_APP_TEMP_DIR}/${_name}.pid"
+	_cmd_file="${STELLA_APP_TEMP_DIR}/${_name}.cmd"
+
+    if [ ! -f "$_pid_file" ]; then
+        __log "INFO" "Task ${_name} is stopped"
+        return 1
+    fi
+
+    _pid=$(cat "$_pid_file" 2>/dev/null)
+
+    case "$_pid" in
+        ''|*[!0-9]*)
+            __log "WARN" "Invalid PID in ${_pid_file}: ${_pid}"
+            rm -f "$_pid_file" "$_cmd_file"
+            return 1
+            ;;
+    esac
+
+    if ! kill -0 "$_pid" 2>/dev/null; then
+        __log "INFO" "Task ${_name} is stopped; removing stale PID file"
+        rm -f "$_pid_file" "$_cmd_file"
+        return 1
+    fi
+
+	if [ -f "$_cmd_file" ]; then
+        _item_path=$(cat "$_cmd_file" 2>/dev/null)
+
+        if ! __daemon_pid_matches "$_pid" "$_item_path"; then
+            __log "WARN" "Task ${_name} is stopped; PID ${_pid} belongs to another process"
+            rm -f "$_pid_file" "$_cmd_file"
+            return 1
+        fi
+    else
+        __log "WARN" "Task ${_name} seems to be running with PID ${_pid}, but its command cannot be verified"
+        return 2
+    fi
+
+    __log "INFO" "Task ${_name} is running - PID: ${_pid}"
+    return 0
+}
+
+# Usage:
+#   __daemon_pid_matches <pid> <expected_binary_or_script>
+#
+# Comparison is based only on the executable or script basename.
+#
+# Supports arbitrary interpreter options:
+#   python3 -X dev -W ignore /path/script.py
+#   perl -I /path/modules -M Module /path/script.pl
+#   bash -x -O extglob /path/script.sh
+#
+# Compatible with Bash 3.2, Linux and macOS.
+#
+# Limitations:
+#   - paths containing spaces cannot be parsed reliably;
+#   - a false positive is possible if the expected basename appears as an
+#     unrelated command-line argument.
+__daemon_pid_matches() {
+    local _pid="$1"
+    local _expected="$2"
+    local _expected_name
+    local _command
+    local _argument
+    local _argument_name
+    local _noglob_was_enabled=0
+    local IFS=$' \t\n'
+
+    case "$_pid" in
+        ''|*[!0-9]*)
+            return 1
+            ;;
+    esac
+
+    [ -n "$_expected" ] || return 1
+
+    _expected_name=${_expected##*/}
+
+    # -ww avoids command-line truncation on Linux and macOS.
+    _command=$(ps -ww -p "$_pid" -o command= 2>/dev/null) ||
+        return 1
+
+    # Remove leading spaces and tabs.
+    _command=${_command#"${_command%%[!	 ]*}"}
+
+    [ -n "$_command" ] || return 1
+
+    # Preserve the current pathname-expansion setting.
+    case $- in
+        *f*)
+            _noglob_was_enabled=1
+            ;;
+    esac
+
+    # Intentional splitting of the command line into arguments.
+    set -f
+    set -- $_command
+
+    [ "$_noglob_was_enabled" -eq 1 ] || set +f
+
+    for _argument
+    do
+        _argument_name=${_argument##*/}
+
+        if [ "$_argument_name" = "$_expected_name" ]; then
+            return 0
+        fi
+    done
+
+    return 1
+}
+
 __get_active_path() {
 	echo "$PATH"
 }
+
 
 
 # filter a list with include and exclude elements

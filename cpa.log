@@ -1,0 +1,19 @@
+nohup: ignoring input
+CLIProxyAPI Version: 7.2.96, Commit: 285322cd, BuiltAt: 2026-07-23T06:21:01Z
+[2026-07-26 23:42:11] [--------] [info ] [main.go:568] CLIProxyAPI Version: 7.2.96, Commit: 285322cd, BuiltAt: 2026-07-23T06:21:01Z
+[2026-07-26 23:42:11] [--------] [info ] [antigravity_version.go:58] periodic antigravity version refresh started (interval=3h0m0s)
+[2026-07-26 23:42:11] [--------] [info ] [server.go:933] management routes registered after secret key configuration
+[2026-07-26 23:42:11] [--------] [info ] [model_updater.go:137] startup model refresh completed from https://raw.githubusercontent.com/router-for-me/models/refs/heads/main/models.json, changes detected for providers: [claude]
+[2026-07-26 23:42:11] [--------] [info ] [model_updater.go:91] periodic model refresh started (interval=3h0m0s)
+API server started successfully on: localhost:8317
+server clients and configuration updated: 3 clients (3 auth entries + 0 Gemini API keys + 0 Interactions API keys + 0 Claude API keys + 0 Codex keys + 0 xAI keys + 0 Vertex-compat + 0 OpenAI-compat)
+[2026-07-26 23:42:12] [--------] [info ] [antigravity_version.go:83] fetched latest antigravity version version=2.4.2
+[2026-07-26 23:42:12] [--------] [info ] [codex_client_models_updater.go:60] startup Codex client model refresh completed from https://raw.githubusercontent.com/router-for-me/models/refs/heads/main/codex_client_models.json, no changes detected
+[2026-07-26 23:42:12] [--------] [info ] [codex_client_models_updater.go:36] periodic Codex client model refresh started (interval=3h0m0s)
+[2026-07-26 23:42:12] [--------] [info ] [clients.go:149] full client load complete - 3 clients (3 auth files + 0 Gemini API keys + 0 Vertex API keys + 0 Claude API keys + 0 Codex keys + 0 xAI keys + 0 OpenAI-compat)
+[2026-07-26 23:42:12] [--------] [info ] [service.go:2491] file watcher started for config and auth directory changes
+[2026-07-26 23:42:12] [--------] [info ] [service.go:2501] core auth auto-refresh started (interval=15m0s)
+[2026-07-26 23:42:12] [--------] [info ] [updater.go:285] management asset updated successfully (hash=312a44930731c920edb54ec1dd1b6d995b786e66230dea2f2459111317d99d53)
+[2026-07-26 23:42:12] [--------] [info ] [events.go:125] auth file changed (WRITE): codex-nomorgan@gmail.com-plus.json, processing incrementally
+[2026-07-26 23:42:12] [--------] [info ] [events.go:125] auth file changed (WRITE): codex-1271a715-nomorgan@gmail.com-plus.json, processing incrementally
+[2026-07-26 23:42:12] [--------] [info ] [events.go:125] auth file changed (WRITE): antigravity-nomorgan@gmail.com.json, processing incrementally
