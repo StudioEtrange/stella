@@ -1768,12 +1768,13 @@ __daemonize() {
 # Usage: __daemon_start <daemon_name> <exec_file> [log_file] [process arguments...]
 # i.e : __daemon_start "cpa" "../aistack-cli/aistack" "$HOME/cpa.log" cpa launch
 __daemon_start() {
-    local _name="$1"
-    local _item_path="$2"
+	local _name="$1"
+	local _item_path="$2"
 	local _log_file="$3"
-    local _pid_file
+	local _pid_file
 	local _cmd_file
-    local _pid
+	local _log_path_file
+	local _pid
 
     if [ -z "$_name" ] || [ -z "$_item_path" ]; then
         return 2
@@ -1793,8 +1794,9 @@ __daemon_start() {
 
 	mkdir -p "${STELLA_APP_TEMP_DIR}"
 
-    _pid_file="${STELLA_APP_TEMP_DIR}/${_name}.pid"
+	_pid_file="${STELLA_APP_TEMP_DIR}/${_name}.pid"
 	_cmd_file="${STELLA_APP_TEMP_DIR}/${_name}.cmd"
+	_log_path_file="${STELLA_APP_TEMP_DIR}/${_name}.logpath"
 
 	[ -z "${_log_file}" ] && _log_file="${STELLA_APP_TEMP_DIR}/${_name}.log"
 
@@ -1804,7 +1806,7 @@ __daemon_start() {
         case "$_pid" in
             ''|*[!0-9]*)
                 __log "WARN" "Invalid PID file for task ${_name}; removing it"
-                rm -f "$_pid_file" "$_cmd_file"
+				rm -f "$_pid_file" "$_cmd_file" "$_log_path_file"
                 ;;
             *)
                 if kill -0 "$_pid" 2>/dev/null; then
@@ -1816,7 +1818,7 @@ __daemon_start() {
                     __log "WARN" "PID ${_pid} is used by another process; removing stale PID file"
                 fi
 
-                rm -f "$_pid_file" "$_cmd_file"
+				rm -f "$_pid_file" "$_cmd_file" "$_log_path_file"
                 ;;
         esac
     fi
@@ -1836,21 +1838,27 @@ __daemon_start() {
         return 1
     fi
 
-    if ! printf '%s\n' "$_item_path" >"$_cmd_file"; then
-        __log "ERROR" "Cannot write command file: ${_cmd_file}"
-        kill "$_pid" 2>/dev/null
-        rm -f "$_pid_file"
-        return 1
-    fi
+	if ! printf '%s\n' "$_item_path" >"$_cmd_file"; then
+		__log "ERROR" "Cannot write command file: ${_cmd_file}"
+		kill "$_pid" 2>/dev/null
+		rm -f "$_pid_file" "$_log_path_file"
+		return 1
+	fi
+
+	if ! printf '%s\n' "$_log_file" >"$_log_path_file"; then
+		__log "ERROR" "Cannot write log path file: ${_log_path_file}"
+		kill "$_pid" 2>/dev/null
+		rm -f "$_pid_file" "$_cmd_file"
+		return 1
+	fi
 
     sleep 1
 
      if ! kill -0 "$_pid" 2>/dev/null; then
-        __log "ERROR" \
-            "Task ${_name} could not start. See log: ${_log_file}"
-        rm -f "$_pid_file" "$_cmd_file"
-        return 1
-    fi
+        __log "ERROR" "Task ${_name} could not start. See log: ${_log_file}"
+		rm -f "$_pid_file" "$_cmd_file" "$_log_path_file"
+		return 1
+	fi
 
     __log "INFO" "Task ${_name} started - PID: ${_pid} - Log: ${_log_file}"
     return 0
@@ -1860,9 +1868,9 @@ __daemon_start() {
 __daemon_stop() {
     local _name="$1"
     local _timeout="${2:-10}"
-    local _pid_file
-    local _cmd_file
-    local _item_path
+	local _pid_file
+	local _cmd_file
+	local _item_path
     local _pid
     local _elapsed=0
 	local _kill_elapsed=0
@@ -1887,8 +1895,8 @@ __daemon_stop() {
             ;;
     esac
 
-    _pid_file="${STELLA_APP_TEMP_DIR}/${_name}.pid"
-    _cmd_file="${STELLA_APP_TEMP_DIR}/${_name}.cmd"
+	_pid_file="${STELLA_APP_TEMP_DIR}/${_name}.pid"
+	_cmd_file="${STELLA_APP_TEMP_DIR}/${_name}.cmd"
 
     if [ ! -f "$_pid_file" ]; then
         __log "WARN" "Task ${_name} is not started"
@@ -1900,14 +1908,14 @@ __daemon_stop() {
     case "$_pid" in
         ''|*[!0-9]*)
             __log "WARN" "Invalid PID in ${_pid_file}: ${_pid}"
-            rm -f "$_pid_file" "$_cmd_file"
+			rm -f "$_pid_file" "$_cmd_file"
             return 1
             ;;
     esac
 
     if ! kill -0 "$_pid" 2>/dev/null; then
         __log "WARN" "Task ${_name} is already stopped"
-        rm -f "$_pid_file" "$_cmd_file"
+		rm -f "$_pid_file" "$_cmd_file"
         return 0
     fi
 
@@ -1921,7 +1929,7 @@ __daemon_stop() {
 
     if ! __daemon_pid_matches "$_pid" "$_item_path"; then
         __log "ERROR" "PID ${_pid} no longer belongs to task ${_name}; refusing to stop it"
-        rm -f "$_pid_file" "$_cmd_file"
+		rm -f "$_pid_file" "$_cmd_file"
         return 1
     fi
 
@@ -1965,7 +1973,7 @@ __daemon_stop() {
 		_elapsed=$((_elapsed + 1))
 	done
 
-    rm -f "$_pid_file" "$_cmd_file"
+	rm -f "$_pid_file" "$_cmd_file"
 
     __log "INFO" "Task ${_name} with PID ${_pid} is stopped"
     return 0
@@ -2032,7 +2040,40 @@ __daemon_status() {
     return 0
 }
 
-# Usage:
+# Usage: __daemon_tail <daemon_name>
+__daemon_tail() {
+	local _name="$1"
+	local _log_file
+	local _log_path_file
+
+	if [ -z "$_name" ]; then
+		__log "ERROR" "Usage: __daemon_tail <daemon_name>"
+		return 2
+	fi
+
+	case "$_name" in
+		''|*[!a-zA-Z0-9_.-]*)
+			__log "ERROR" "Authorized chars for process name: a-z A-Z 0-9 _ . -"
+			return 2
+			;;
+	esac
+
+	_log_path_file="${STELLA_APP_TEMP_DIR}/${_name}.logpath"
+	_log_file="${STELLA_APP_TEMP_DIR}/${_name}.log"
+
+	if [ -f "$_log_path_file" ]; then
+		_log_file=$(cat "$_log_path_file" 2>/dev/null)
+	fi
+
+	if [ -z "$_log_file" ] || [ ! -f "$_log_file" ]; then
+		__log "ERROR" "Log file not found for task ${_name}: ${_log_file}"
+		return 1
+	fi
+
+	tail -F "$_log_file"
+}
+
+# Usagef
 #   __daemon_pid_matches <pid> <expected_binary_or_script>
 #
 # Comparison is based only on the executable or script basename.
