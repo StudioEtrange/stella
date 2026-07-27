@@ -1986,6 +1986,8 @@ __daemon_status() {
 	local _cmd_file
     local _item_path
     local _pid
+	local _log_file
+	local _log_path_file
 
     if [ -z "$_name" ]; then
         __log "ERROR" "Usage: __daemon_status <daemon_name>"
@@ -2001,6 +2003,11 @@ __daemon_status() {
 
     _pid_file="${STELLA_APP_TEMP_DIR}/${_name}.pid"
 	_cmd_file="${STELLA_APP_TEMP_DIR}/${_name}.cmd"
+	_log_path_file="${STELLA_APP_TEMP_DIR}/${_name}.logpath"
+	_log_file="${STELLA_APP_TEMP_DIR}/${_name}.log"
+	if [ -f "$_log_path_file" ]; then
+		_log_file=$(cat "$_log_path_file" 2>/dev/null)
+	fi
 
     if [ ! -f "$_pid_file" ]; then
         __log "INFO" "Task ${_name} is stopped"
@@ -2036,7 +2043,7 @@ __daemon_status() {
         return 2
     fi
 
-    __log "INFO" "Task ${_name} is running - PID: ${_pid}"
+    __log "INFO" "Task ${_name} is running - PID: ${_pid} - cmd: ${_item_path} - log file: ${_log_file}"
     return 0
 }
 
