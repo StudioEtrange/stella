@@ -2043,18 +2043,18 @@ __daemon_status() {
         return 2
     fi
 
-    __log "INFO" "Task ${_name} is running - PID: ${_pid} - cmd: ${_item_path} - log file: ${_log_file}"
+    __log "INFO" "Task ${_name} is running - PID: ${_pid} - CMD: ${_item_path} - LOG: ${_log_file}"
     return 0
 }
 
-# Usage: __daemon_tail <daemon_name>
-__daemon_tail() {
+# Usage: __daemon_logs <daemon_name>
+__daemon_logs() {
 	local _name="$1"
 	local _log_file
 	local _log_path_file
 
 	if [ -z "$_name" ]; then
-		__log "ERROR" "Usage: __daemon_tail <daemon_name>"
+		__log "ERROR" "Usage: __daemon_logs <daemon_name>"
 		return 2
 	fi
 
