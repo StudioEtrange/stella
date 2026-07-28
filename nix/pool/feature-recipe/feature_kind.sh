@@ -97,9 +97,6 @@ feature_kind_0_30_0() {
 
 }
 
-}
-}
-
 
 feature_kind_0_11_1() {
 	FEAT_VERSION="0_11_1"

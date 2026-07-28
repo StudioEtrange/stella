@@ -78,9 +78,6 @@ feature_helm_3_19_0() {
 
 }
 
-}
-
-
 feature_helm_3_13_3() {
 	FEAT_VERSION="3_13_3"
 
