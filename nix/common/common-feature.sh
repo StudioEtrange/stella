@@ -170,6 +170,7 @@ __feature_match_installed() {
 	local _version_selector=
 	local _version_matched=
 	local _match="0"
+	local _save_app_feature_root=
 	local _found_internal=
 	local _list_installed=
 	local _dirname=
@@ -725,7 +726,7 @@ __feature_install() {
 
 
 
-		_save_app_feature_root=
+		#_save_app_feature_root=
 		if [ "$_opt_internal_feature" = "ON" ]; then
 			_save_app_feature_root=$STELLA_APP_FEATURE_ROOT
 			STELLA_APP_FEATURE_ROOT=$STELLA_INTERNAL_FEATURE_ROOT
