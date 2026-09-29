@@ -10,7 +10,7 @@ feature_browsh() {
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="A fully-modern text-based browser, rendering to TTY and browsers "
-	FEAT_LINK="https://www.brow.sh"
+	FEAT_LINK="https://www.brow.sh https://github.com/browsh-org/browsh"
 }
 
 

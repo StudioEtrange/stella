@@ -27,7 +27,7 @@ feature_ctop_0_7_7() {
 	fi
 
 	if [ "${STELLA_CURRENT_PLATFORM}" = "darwin" ]; then
-		FEAT_BINARY_URL="https://github.com/bcicen/ctop/releases/download/0.7.7/ctop-0.7.7-darwin-amd64"
+		FEAT_BINARY_URL="https://github.com/bcicen/ctop/releases/download/v0.7.7/ctop-0.7.7-darwin-amd64"
 		FEAT_BINARY_URL_FILENAME="ctop-0.7.7-darwin-amd64"
 		FEAT_BINARY_URL_PROTOCOL="HTTP"
 	fi

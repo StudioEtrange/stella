@@ -4,7 +4,7 @@ _distrobox_INCLUDED_=1
 
 feature_distrobox() {
 	FEAT_NAME="distrobox"
-	FEAT_LIST_SCHEMA="1_8_2_4:binary 1_8_1_2:binary"
+	FEAT_LIST_SCHEMA="1_8_2_5:binary 1_8_2_4:binary 1_8_1_2:binary"
 	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
@@ -13,6 +13,18 @@ feature_distrobox() {
 }
 
 
+
+
+feature_distrobox_1_8_2_5() {
+	FEAT_VERSION="1_8_2_5"
+
+	FEAT_BINARY_URL="https://github.com/89luca89/distrobox/archive/refs/tags/1.8.2.5.tar.gz"
+	FEAT_BINARY_URL_FILENAME="distrobox_1.8.2.5.tar.gz"
+	FEAT_BINARY_URL_PROTOCOL="HTTP_ZIP"
+
+	FEAT_INSTALL_TEST="${FEAT_INSTALL_ROOT}/distrobox"
+	FEAT_SEARCH_PATH="${FEAT_INSTALL_ROOT}"
+}
 
 
 feature_distrobox_1_8_2_4() {

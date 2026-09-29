@@ -4,13 +4,14 @@ _curl_INCLUDED_=1
 
 
 feature_curl() {
-	FEAT_NAME=curl
+	FEAT_NAME="curl"
 
 	FEAT_LIST_SCHEMA="7_36_0:source"
 	
 	FEAT_DEFAULT_FLAVOUR="source"
+	FEAT_DESC="A command line tool and library for transferring data with URL syntax, supporting DICT, FILE, FTP, FTPS, GOPHER, GOPHERS, HTTP, HTTPS, IMAP, IMAPS, LDAP, LDAPS, MQTT, MQTTS, POP3, POP3S, RTSP, SCP, SFTP, SMB, SMBS, SMTP, SMTPS, TELNET, TFTP, WS and WSS. libcurl offers a myriad of powerful features"
 
-
+	FEAT_LINK="https://github.com/curl/curl https://curl.se"
 }
 
 feature_curl_7_36_0() {
@@ -20,20 +21,20 @@ feature_curl_7_36_0() {
 	FEAT_SOURCE_DEPENDENCIES="zlib#^1_2 openssl#1_0_2d krb5#1_15"
 	FEAT_BINARY_DEPENDENCIES=
 
-	FEAT_SOURCE_URL=https://github.com/bagder/curl/archive/curl-7_36_0.tar.gz
-	FEAT_SOURCE_URL_FILENAME=curl-7_36_0.tar.gz
-	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
+	FEAT_SOURCE_URL="https://github.com/curl/curl/archive/curl-7_36_0.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="curl-7_36_0.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
 
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
 
-	FEAT_SOURCE_CALLBACK=feature_curl_link
+	FEAT_SOURCE_CALLBACK="feature_curl_link"
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/curl
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/curl"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 
 }
 

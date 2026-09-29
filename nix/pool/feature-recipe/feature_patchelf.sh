@@ -5,12 +5,36 @@ _PATCHELF_INCLUDED_=1
 feature_patchelf() {
 	FEAT_NAME=patchelf
 
-	FEAT_LIST_SCHEMA="0_18_0:binary 0_18_0:source 0_17_2:binary 0_17_2:source 0_10:source 0_9:source 0_8:source"
+	FEAT_LIST_SCHEMA="0_19_1:binary 0_19_1:source 0_18_0:binary 0_18_0:source 0_17_2:binary 0_17_2:source 0_10:source 0_9:source 0_8:source"
 	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="A small utility to modify the dynamic linker and RPATH of ELF executables"
 	FEAT_LINK="http://nixos.org/patchelf.html https://github.com/NixOS/patchelf"
+
+}
+
+feature_patchelf_0_19_1() {
+
+	FEAT_VERSION="0_19_1"
+
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL="https://github.com/NixOS/patchelf/releases/download/0.19.1/patchelf-0.19.1.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="patchelf-0.19.1.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
+
+	FEAT_BINARY_URL="https://github.com/NixOS/patchelf/releases/download/0.19.1/patchelf-0.19.1-x86_64.tar.gz"
+	FEAT_BINARY_URL_FILENAME="patchelf-0.19.1-x86_64.tar.gz"
+	FEAT_BINARY_URL_PROTOCOL="HTTP_ZIP"
+
+	FEAT_SOURCE_CALLBACK=
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/patchelf"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 
 }
 
