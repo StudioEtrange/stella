@@ -2,25 +2,36 @@ if [ ! "$_gnustepmake_INCLUDED_" = "1" ]; then
 _gnustepmake_INCLUDED_=1
 
 feature_gnustep-make() {
-	FEAT_NAME=gnustep-make
+	FEAT_NAME="gnustep-make"
 
-	FEAT_LIST_SCHEMA="2_6_7:source"
+	FEAT_LIST_SCHEMA="2_9_3:source 2_6_7:source"
 	
 	FEAT_DEFAULT_FLAVOUR="source"
+	FEAT_DESC="GNUstep Make provides a build system for GNUstep projects"
+	FEAT_LINK="https://www.gnustep.org https://github.com/gnustep/tools-make"
+}
 
+feature_gnustep-make_2_9_3() {
+	FEAT_VERSION="2_9_3"
 
+	FEAT_SOURCE_URL="https://ftpmain.gnustep.org/pub/gnustep/core/gnustep-make-2.9.3.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="gnustep-make-2.9.3.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
+
+	FEAT_ENV_CALLBACK="feature_gnustep-make_setenv"
+	FEAT_INSTALL_TEST="${FEAT_INSTALL_ROOT}/bin/gnustep-config"
+	FEAT_SEARCH_PATH="${FEAT_INSTALL_ROOT}/bin"
 }
 
 feature_gnustep-make_2_6_7() {
-	FEAT_VERSION=2_6_7
-
+	FEAT_VERSION="2_6_7"
 
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
-	FEAT_SOURCE_URL=http://ftpmain.gnustep.org/pub/gnustep/core/gnustep-make-2.6.7.tar.gz
-	FEAT_SOURCE_URL_FILENAME=gnustep-make-2.6.7.tar.gz
-	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
+	FEAT_SOURCE_URL="http://ftpmain.gnustep.org/pub/gnustep/core/gnustep-make-2.6.7.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="gnustep-make-2.6.7.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
 
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
@@ -28,7 +39,7 @@ feature_gnustep-make_2_6_7() {
 
 	FEAT_SOURCE_CALLBACK=
 	FEAT_BINARY_CALLBACK=
-	FEAT_ENV_CALLBACK=feature_gnustep-make_setenv
+	FEAT_ENV_CALLBACK="feature_gnustep-make_setenv"
 
 	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/gnustep-config
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
@@ -37,7 +48,7 @@ feature_gnustep-make_2_6_7() {
 
 
 feature_gnustep-make_setenv() {
-	source $FEAT_INSTALL_ROOT/Library/GNUstep/Makefiles/GNUstep.sh
+	. "${FEAT_INSTALL_ROOT}/Library/GNUstep/Makefiles/GNUstep.sh"
 }
 
 feature_gnustep-make_install_source() {

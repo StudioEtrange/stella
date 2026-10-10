@@ -4,7 +4,6 @@ _oolite_INCLUDED_=1
 # TODO : to finish
 # https://github.com/OoliteProject/oolite
 
-# need gnustep-make https://github.com/Homebrew/homebrew/blob/master/Library/Formula/gnustep-make.rb
 feature_oolite() {
 	FEAT_NAME=oolite
 
