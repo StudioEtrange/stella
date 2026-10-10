@@ -42,6 +42,15 @@
   * https://github.com/herrbischoff/awesome-command-line-apps#games
   * https://ubuntupit.com/best-linux-terminal-console-games/
 
+  * rogue like games history https://tangaria.com/history/
+
+  * Tangaria
+    * https://tangaria.com/
+    * https://github.com/igroglaz/Tangaria
+    * https://github.com/igroglaz/Tangaria_release
+    * Tangaria (2019) is built on the powerful PWMAngband (2007) engine which was derived from MAngband (1998), originally based on classic vanilla Angband (1992).
+    * Tangaria inherits the solid foundation of PWMAngband
+    * Tangaria – free open-source multiplayer roguelike game based loosely on Tolkien’s lore and powered by PWMAngband
   * PWMAngband - multiplayer angband
     * http://powerwyrm.monsite-orange.fr
     * http://angband.online/
