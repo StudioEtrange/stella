@@ -182,7 +182,7 @@ feature_pwmangband_missing_config_file() {
 
 feature_pwmangband_message() {
 	printf '%s\n' \
-		'PWMAngband server : start pwmangband; connect using pwmangclient --host SERVER --port 18346.' \
+		'PWMAngband server : start pwmangband; connect using pwmangclient --host localhost --port 18346' \
 		'Configuration client: $HOME/.pwmangband/pwmangband.ini' \
 		'Configuration server: $HOME/.pwmangband/mangband.cfg' \
 		'Saves, accounts, scores, panic saves, logs and preferences: $HOME/.pwmangband/PWMAngband.' \
