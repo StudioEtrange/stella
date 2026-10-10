@@ -408,6 +408,26 @@ __sudo_end_session() {
 
 
 
+__get_github_latest_release() {
+    local repo="$1" # i.e StudioEtrange/aistack-cli
+
+    local api_url="https://api.github.com/repos/${repo}/releases/latest"
+
+    local latest_tag
+    latest_tag=$(curl -sLk "$api_url" | yq -r .tag_name)
+
+    if [ $? -ne 0 ]; then
+        echo "ERROR: Failed to fetch release information from GitHub." >&2
+        return 1
+    fi
+
+    if [ -z "$latest_tag" ] || [ "$latest_tag" = "null" ]; then
+        echo "ERROR: Could not fetch the latest version from GitHub." >&2
+        return 1
+    fi
+
+    echo -n "$latest_tag"
+}
 
 # get the most recent version of a list
 # option :
