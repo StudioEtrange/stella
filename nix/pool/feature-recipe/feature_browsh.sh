@@ -1,7 +1,7 @@
 if [ ! "$_browsh_INCLUDED_" = "1" ]; then
 _browsh_INCLUDED_=1
 
-
+# WARN : needs a preinstalled firefox 
 
 feature_browsh() {
 	FEAT_NAME=browsh
