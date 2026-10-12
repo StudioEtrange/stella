@@ -210,7 +210,8 @@ feature_pwmangband_install_source() (
 
 	__feature_callback
 
-	feature_pwmangband_version_generate
+	# Useless
+	#feature_pwmangband_version_generate
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP NO_OUT_OF_TREE_BUILD AUTOTOOLS autogen"
 
@@ -281,6 +282,8 @@ feature_pwmangband_default_config_generate() {
 	cp "$SRC_DIR/setup/mangclient.ini" "$INSTALL_DIR/share/pwmangband/defaults/pwmangclient.ini" || return 1
 }
 
+# Useless - Have no impact on version
+# server version can be printed vy using -v options
 feature_pwmangband_version_generate() {
 	local SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	# $SRC_DIR/scripts/versions.sh use git commands to retrieve version information

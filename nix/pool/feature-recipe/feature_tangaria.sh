@@ -103,7 +103,8 @@ feature_tangaria_install_source() (
 
 	__feature_callback
 
-	feature_pwmangband_version_generate
+	# Useless
+	#feature_pwmangband_version_generate
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP NO_OUT_OF_TREE_BUILD AUTOTOOLS autogen"
 
