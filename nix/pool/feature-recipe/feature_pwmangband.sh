@@ -2,7 +2,8 @@ if [ ! "$_PWMANGBAND_INCLUDED_" = "1" ]; then
 _PWMANGBAND_INCLUDED_=1
 
 # NOTE : pwmangband is the server - pwmangclient is the client
-#
+# to see server version
+#	./pwmangband -v
 
 # ./configure option from 1_6_2_build_3
 # Fine tuning of the installation directories:
@@ -113,13 +114,13 @@ _PWMANGBAND_INCLUDED_=1
 #   --with-gamedata-in-lib
 #				store the gamedata folder (txt.files) in <prefix>/share/pwmangband/gamedata
 #				without this option store the gamedata in path <sysconfdir>/pwmangband/gamedata
-#				gamedata contains rule txt files for server
-#				this option do not change path of customize folder customize/*.prf
+#				gamedata contains rule *.txt files for server
+#				this option do not change path of customize folder customize/*.prf (preferences files)
 #	--sysconfdir
 #				set server parameters and rule files path (which is NOT the server config file mangband.cfg)
 #					customize/*.prf server parameter files
 #					gamedata/*.txt server rule files
-#				always add /pwmangband => --sysconfdir=/etc means /etc/pwmangband
+#				always add /pwmangband at the end of the value => --sysconfdir=/etc means /etc/pwmangband
 #				by default the value is <prefix>/etc
 
 
@@ -158,42 +159,36 @@ feature_pwmangband_1_6_2_build_3() {
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
 	
-	FEAT_SOURCE_CALLBACK="feature_pwmangband_link feature_pwmangband_missing_config_file"
+	FEAT_SOURCE_CALLBACK="feature_pwmangband_link"
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK="feature_pwmangband_message"
 
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/pwmangband $FEAT_INSTALL_ROOT/bin/pwmangclient"
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/pwmangband $FEAT_INSTALL_ROOT/bin/pwmangclient $FEAT_INSTALL_ROOT/games/pwmangband $FEAT_INSTALL_ROOT/games/pwmangclient"
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
-}
 
-feature_pwmangband_link() {
-	__link_feature_library "ncurses#6_5" "FORCE_DYNAMIC"
-}
-
-feature_pwmangband_missing_config_file() {
-	local INSTALL_DIR="$FEAT_INSTALL_ROOT"
-	local SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
-	local SYSCONFDIR="$FEAT_INSTALL_ROOT/etc"
-	
-	# This Makefile version omits modes.txt
-	mkdir -p "$SYSCONFDIR/pwmangband/gamedata"
-	cp -f "$SRC_DIR/lib/gamedata/modes.txt" "$SYSCONFDIR/pwmangband/gamedata/modes.txt" || return 1
+	# matching FEAT_VERSION on github
+	FEAT_VERSION_SHORT_COMMIT="55348df"
 }
 
 feature_pwmangband_message() {
 	printf '%s\n' \
-		'PWMAngband server : start pwmangband; connect using pwmangclient --host localhost --port 18346' \
-		'Configuration client: $HOME/.pwmangband/pwmangband.ini' \
+		'--- PWMAngband ---' \
+		'Start server : ./pwmangband' \
+		'Connect client : ./pwmangclient --host localhost --port 18346' \
+		'Configuration client: $HOME/.pwmangband/pwmangclient.ini' \
 		'Configuration server: $HOME/.pwmangband/mangband.cfg' \
 		'Saves, accounts, scores, panic saves, logs and preferences: $HOME/.pwmangband/PWMAngband.' \
 		'New server configurations listen on all IPv4 interfaces, TCP 18346, without metaserver announcement.' \
 		'Console access is restricted to 127.0.0.1 peers on the shared listener, not a separate loopback bind.'
 }
 
+
+
 feature_pwmangband_install_source() (
 	local INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	local SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
 	local SYSCONFDIR="$FEAT_INSTALL_ROOT/etc"
+	local SYSCONFDIR_AUTOTOOLS_SYNTAX="\${prefix}/etc"
 
 	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE STRIP FORCE_NAME $FEAT_SOURCE_URL_FILENAME"
 
@@ -201,15 +196,119 @@ feature_pwmangband_install_source() (
 	__add_toolset "autotools"
 
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
-	# With this config
-	# SYSCONFDIR will contains SYSCONFDIR/pwmangband/gamedata/*.txt and SYSCONFDIR/pwmangband/customize/*.prf
+	# SYSCONFDIR will contains SYSCONFDIR/pwmangband/gamedata/*.txt rules files and SYSCONFDIR/pwmangband/customize/*.prf preference files
+	# SYSCONFDIR_AUTOTOOLS_SYNTAX is a trick to avoid problem with spaces in path - ${prefix} is a configure keyword
 	AUTO_INSTALL_CONF_FLAG_POSTFIX="--enable-curses --disable-x11 --disable-sdl \
 			--disable-sdl2 --disable-sdl-mixer --disable-sdl2-mixer \
-			--with-private-dirs --sysconfdir="$SYSCONFDIR""
+			--with-private-dirs --sysconfdir=$SYSCONFDIR_AUTOTOOLS_SYNTAX"
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
+	
+	feature_pwmangband_darwin_build
+	feature_pwmangband_arm_build
 
+	__feature_callback
+
+	feature_pwmangband_version_generate
+
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP NO_OUT_OF_TREE_BUILD AUTOTOOLS autogen"
+
+	feature_pwmangband_default_config_generate
+	feature_pwmangband_missing_config_files
+
+	# make launchers -------------------------------
+	mkdir -p "$INSTALL_DIR/bin" 
+
+	feature_pwmangband_create_launcher \
+		"client" \
+		"$INSTALL_DIR/bin/pwmangclient" \
+		"games/pwmangclient" \
+		"\$HOME/.pwmangband" \
+		"pwmangclient.ini" \
+		"share/pwmangband/defaults/pwmangclient.ini"
+
+	feature_pwmangband_create_launcher \
+		"server" \
+		"$INSTALL_DIR/bin/pwmangband" \
+		"games/pwmangband" \
+		"\$HOME/.pwmangband" \
+		"mangband.cfg" \
+		"share/pwmangband/defaults/mangband.cfg"
+
+	rm -Rf "$SRC_DIR"
+
+)
+
+
+
+
+
+
+
+feature_pwmangband_link() {
+	__link_feature_library "ncurses#6_5" "FORCE_DYNAMIC"
+}
+
+feature_pwmangband_missing_config_files() {
+	local INSTALL_DIR="$FEAT_INSTALL_ROOT"
+	local SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
+	local SYSCONFDIR="$FEAT_INSTALL_ROOT/etc"
+	
+	# the Makefile version omits modes.txt file
+	mkdir -p "$SYSCONFDIR/pwmangband/gamedata"
+	cp -f "$SRC_DIR/lib/gamedata/modes.txt" "$SYSCONFDIR/pwmangband/gamedata/modes.txt" || return 1
+	#cp -f "$SRC_DIR/lib/gamedata/"*.txt "$SYSCONFDIR/pwmangband/gamedata"
+}
+
+feature_pwmangband_default_config_generate() {
+	local INSTALL_DIR="$FEAT_INSTALL_ROOT"
+	local SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
+
+	mkdir -p "$INSTALL_DIR/share/pwmangband/defaults"
+	
+	# save server config default file
+	# REPORT_TO_METASERVER : disable metaserver announcement
+	# BIND_NAME : bind address
+	# CONSOLE_LOCAL_ONLY : admin console only from localhost
+
+	sed -e 's/^REPORT_TO_METASERVER = .*/REPORT_TO_METASERVER = false/' \
+		-e 's/^BIND_NAME = .*/BIND_NAME = "0.0.0.0"/' \
+		-e 's/^CONSOLE_LOCAL_ONLY = .*/CONSOLE_LOCAL_ONLY = true/' \
+		"$SRC_DIR/setup/mangband.cfg" > "$INSTALL_DIR/share/pwmangband/defaults/mangband.cfg"
+
+	# save client config default file
+	cp "$SRC_DIR/setup/mangclient.ini" "$INSTALL_DIR/share/pwmangband/defaults/pwmangclient.ini" || return 1
+}
+
+feature_pwmangband_version_generate() {
+	local SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
+	# $SRC_DIR/scripts/versions.sh use git commands to retrieve version information
+	#		or return $SRC_DIR/version file content
+	# as we not always have clone the repository, but maybe download a tarfile
+	# we need to mannually fill $SRC_DIR/version file before build
+
+	# https://github.com/draconisPW/PWMAngband/blob/master/scripts/version.sh
+
+	# an other formula to create $SRC_DIR/version using only 'git describe' command is used when packaging source code
+	# https://github.com/draconisPW/PWMAngband/blob/master/scripts/pkg_src
+
+
+	# we use the matching short commit
+	if [ -n "$FEAT_VERSION_SHORT_COMMIT" ]; then
+		echo "$FEAT_VERSION_SHORT_COMMIT" > "$SRC_DIR/version"
+	else
+		echo "unknown-version" > "$SRC_DIR/version"
+	fi
+}
+
+feature_pwmangband_arm_build() {
+	if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+		STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS -fsigned-char"
+	fi
+}
+
+feature_pwmangband_darwin_build() {
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		# Apple ld linker should not receive compiler-driver
 		# flags such as Stella's -Wl,-rpath on these intermediate relocatable links.
@@ -228,82 +327,87 @@ feature_pwmangband_install_source() (
 + 	$(LD) -nostdlib -r -o $@ $(CLIENT_OBJECTS)
 PATCH
 	fi
-
-	if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
-		STELLA_C_CXX_FLAGS="$STELLA_C_CXX_FLAGS -fsigned-char"
-	fi
-
-
-	__feature_callback
-
-
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "SOURCE_KEEP NO_OUT_OF_TREE_BUILD AUTOTOOLS autogen"
+}
 
 
 
-
-	# save default config files -------------------------------
-	mkdir -p "$INSTALL_DIR/share/pwmangband/defaults"
-	
-	# save server config default file
-	# REPORT_TO_METASERVER : disable metaserver announcement
-	# BIND_NAME : bind address
-	# CONSOLE_LOCAL_ONLY : admin console only from localhost
-	sed -e 's/^REPORT_TO_METASERVER = .*/REPORT_TO_METASERVER = false/' \
-		-e 's/^BIND_NAME = .*/BIND_NAME = "0.0.0.0"/' \
-		-e 's/^CONSOLE_LOCAL_ONLY = .*/CONSOLE_LOCAL_ONLY = true/' \
-		"$SRC_DIR/setup/mangband.cfg" > "$INSTALL_DIR/share/pwmangband/defaults/mangband.cfg" 
-	
-	# save client config default file
-	cp "$SRC_DIR/setup/mangclient.ini" "$INSTALL_DIR/share/pwmangband/defaults/pwmangclient.ini" || return 1
+feature_pwmangband_create_launcher() {
+	local type="$1" # client or server
+	local launcher_location="$2"
+	local executable_location="$3"
+	# same folder as the root folder used by "with-private-dirs"
+	local config_dir="$4"
+	local config_filename="$5"
+	local default_config_location="${6:-}"
 
 
-	# make launcher -------------------------------
-	mkdir -p "$INSTALL_DIR/bin" 
-
-	for c in pwmangclient pwmangband; do
-		cat <<'LAUNCHER' > "$INSTALL_DIR/bin/$c"
+	cat > "$launcher_location" <<LAUNCHER || return 1
 #!/bin/bash
-command="$(basename -- "$0")"
 set -e
-root="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd -P)"
-: "${HOME:?HOME must be set}"
-# same folder as the root folder used by "with-private-dirs" ~/.pwmangband/PWMAngband => ~/.pwmangband
-config_dir="$HOME/.pwmangband"
 
-# we do not use default config file for client, we will generate it at first client launch
-#default_config_file="$root/share/pwmangband/defaults/pwmangclient.ini"
-case $command in
-	pwmangclient) config_file="$config_dir/pwmangclient.ini"; default_config_file="" ;;
-	pwmangband) config_file="$config_dir/mangband.cfg"; default_config_file="$root/share/pwmangband/defaults/mangband.cfg" ;;
-esac
-if [ ! -e "$config_file" ]; then
-	if [ -f "$default_config_file" ]; then
-		mkdir -p "$config_dir"
-		cp "$default_config_file" "$config_file"
+root="\$(CDPATH= cd -- "\$(dirname -- "\$0")/.." && pwd -P)"
+: "\${HOME:?HOME must be set}"
+
+config_file="$config_dir/$config_filename"
+mkdir -p "$config_dir"
+
+if [ -n "$default_config_location" ]; then
+	default_config_file="\$root/$default_config_location"
+	# Initialize configuration if missing
+	if [ ! -e "\$config_file" ]; then
+		if [ -f "\$default_config_file" ]; then
+			cp "\$default_config_file" "\$config_file"
+		fi
 	fi
 fi
-if [ "$command" = "pwmangclient" ]; then
-	cd "$config_dir" # launching game from here allow to generate default config file in config_dir
-	for argument in "$@"; do
-		if [ "$argument" = "--config" ]; then
-			exec "$root/games/$command" "$@"
+
+if [ "$type" = "client" ]; then
+	# Resolve explicit configuration paths before changing directory.
+	arguments=()
+	config_provided=0
+	config_path_expected=0
+	for argument in "\$@"; do
+		if [ "\$config_path_expected" = "1" ]; then
+			case "\$argument" in
+				# config file path is absolute or empty
+				/*|"") ;;
+				*)
+					# convert config file path to abs path before we change dir later
+					argument="\$PWD/\$argument"
+					;;
+			esac
+			if [ ! -f "\$argument" ]; then
+				echo "ERROR: --config requires an existing file"  >&2
+				exit 1
+			fi
+			config_path_expected=0
+		elif [ "\$argument" = "--config" ]; then
+			config_provided=1
+			config_path_expected=1
 		fi
+		arguments+=("\$argument")
 	done
-	exec "$root/games/$command" --config "$config_file" "$@"
+	if [ "\$config_path_expected" = "1" ]; then
+		printf '%s\n' 'ERROR: --config requires a file path' >&2
+		exit 1
+	fi
+	set -- "\${arguments[@]}"
 fi
 
-if [ "$command" = "pwmangband" ]; then
-	cd "$config_dir"
-	exec "$root/games/$command" "$@"
+# Run from the configuration directory for default configuration generation.
+cd "$config_dir"
+
+if [ "$type" = "client" ]; then
+	if [ "\$config_provided" = "1" ]; then
+		exec "\$root/$executable_location" "\$@"
+	fi
+	exec "\$root/$executable_location" --config "\$config_file" "\$@"
+elif [ "$type" = "server" ]; then
+	exec "\$root/$executable_location" "\$@"
 fi
 LAUNCHER
 
-		chmod 755 "$INSTALL_DIR/bin/$c"
-	done
-
-	rm -Rf "$SRC_DIR"
-
-)
+	chmod 755 "$launcher_location" || return 1
+}
 
 fi
