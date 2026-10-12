@@ -38,31 +38,54 @@
     * https://conan.io/
 
 ## games to integrate
-  * https://ttygames.wordpress.com/
-  * https://github.com/herrbischoff/awesome-command-line-apps#games
-  * https://ubuntupit.com/best-linux-terminal-console-games/
 
-  * rogue like games history https://tangaria.com/history/
-
-  * Tangaria
-    * https://tangaria.com/
-    * https://github.com/igroglaz/Tangaria
-    * https://github.com/igroglaz/Tangaria_release
-    * Tangaria (2019) is built on the powerful PWMAngband (2007) engine which was derived from MAngband (1998), originally based on classic vanilla Angband (1992).
-    * Tangaria inherits the solid foundation of PWMAngband
-    * Tangaria – free open-source multiplayer roguelike game based loosely on Tolkien’s lore and powered by PWMAngband
-  * PWMAngband - multiplayer angband
-    * http://powerwyrm.monsite-orange.fr
-    * http://angband.online/
-    * http://tangar.info/en/p
-  * Mangband - another multiplayer version of angband
-    * https://mangband.org/
-    * https://github.com/mangband/mangband
-    * http://tangar.info/en/m
-  * TomeNet - indeep online roguelike game which include both MMORPG genre features and roguelike gameplay
-    * https://www.tomenet.eu/
-    * https://github.com/TomenetGame/tomenet
-
+  * list : 
+    * https://www.reddit.com/r/roguelikes/comments/1ibbkm4/looking_for_very_complex_ascii_or_tiles_roguelike/
+    * https://ttygames.wordpress.com/
+    * https://herrbischoff.com/code/me/awesome-command-line-apps#games
+    * https://ubuntupit.com/best-linux-terminal-console-games/
+    * MUD list : https://mudstats.com/
+  
+  * MUD
+    * GoMud
+      * https://github.com/GoMudEngine/GoMud
+      * server and go libraries to make MUD game
+      * world creation by editing yaml file
+      * provide a default world
+      * supports telnet, ssh and a webclient (https://www.gomud.net/)
+      * alternative world : https://dogmud.org/
+  * rogue like / dungeon crawler
+    * rogue like games history https://tangaria.com/history/
+    * Tangaria
+      * https://tangaria.com/
+      * https://github.com/igroglaz/Tangaria
+      * https://github.com/igroglaz/Tangaria_release
+      * Tangaria (2019) is built on the powerful PWMAngband (2007) engine which was derived from MAngband (1998), originally based on classic vanilla Angband (1992).
+      * Tangaria inherits the solid foundation of PWMAngband
+      * Tangaria – free open-source multiplayer roguelike game based loosely on Tolkien’s lore and powered by PWMAngband
+    * PWMAngband - multiplayer angband
+      * http://powerwyrm.monsite-orange.fr
+      * http://angband.online/
+      * http://tangar.info/en/p
+      * supports multiplayer
+    * Mangband - another multiplayer version of angband
+      * https://mangband.org/
+      * https://github.com/mangband/mangband
+      * http://tangar.info/en/m
+      * supports multiplayer
+    * TomeNet - indeep online roguelike game which include both MMORPG genre features and roguelike gameplay
+      * https://www.tomenet.eu/
+      * https://github.com/TomenetGame/tomenet
+      * supports multiplayer
+    * cataclysm dark days ahead
+      * https://cataclysmdda.org/
+      * https://github.com/CleverRaven/Cataclysm-DDA
+      * support ascii and SDL
+      * no multiplayer
+    * BrogueCE
+      * https://github.com/tmewett/BrogueCE
+      * https://sites.google.com/site/broguegame/?pli=1&authuser=0
+      * no multiplayer
 
 ## command line tools list
   * https://github.com/agarrharr/awesome-cli-apps
@@ -94,8 +117,6 @@
 # Various
 
 * NOTE : homebrew flag setting system https://github.com/Homebrew/homebrew/blob/master/Library/Homebrew/extend/ENV/super.rb
-
-* NOTE history : FIRST PUSH OF stella pre version : https://bitbucket.org/StudioEtrange/ryzomcore-script/src/1308706a1dc3f1dde7d65b048e9b16f2a2f2f518
 
 
 # Development environment
