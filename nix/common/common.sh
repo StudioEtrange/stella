@@ -319,7 +319,48 @@ __htpasswd_crypt() {
 }
 
 
-# generate an unique id for a machine
+# Generate a deterministic environment identifier (OS, hostname, architecture, and machine ID).
+# Environments sharing the same OS ID, hostname, architecture, and machine ID
+# produce the same identifier.
+__generate_environment_id() {
+    local os_id machine_id machine_name machine_arch machine_hash
+
+    case "$OSTYPE" in
+        darwin*)
+            os_id="macos"
+            machine_id=$(ioreg -rd1 -c IOPlatformExpertDevice | awk -F '"' '/IOPlatformUUID/ {print $4}')
+            ;;
+        *)
+            os_id=$(
+                unset ID
+                if [ -r /etc/os-release ]; then
+                    . /etc/os-release
+                elif [ -r /usr/lib/os-release ]; then
+                    . /usr/lib/os-release
+                fi
+                printf '%s' "${ID:-unknown}"
+            )
+            machine_id=$(cat /etc/machine-id 2>/dev/null)
+            ;;
+    esac
+
+    machine_name=$(uname -n)
+    machine_arch=$(uname -m)
+
+    machine_hash=$(
+		printf '%s\n' "$machine_name" "$machine_arch" "$machine_id" "$os_id" |
+		if [[ "$OSTYPE" == darwin* ]]; then
+			shasum -a 256
+		else
+			sha256sum
+		fi
+	)
+
+    printf '%s-%s-%.16s\n' "$os_id" "$machine_name" "$machine_hash"
+}
+
+# generate an id for a machine
+# choose which method to use
 # MACHINE_ID (default) use /etc/machine-id https://unix.stackexchange.com/a/144915
 # PRODUCT_UUID use product_uuid -- need sudo -- https://unix.stackexchange.com/a/144892
 # SEED is a way to salt result with a constant
