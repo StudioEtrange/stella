@@ -370,6 +370,7 @@ __push_schema_context() {
 	__stack_push "STELLA" "$FEAT_SOURCE_URL_PROTOCOL"
 	__stack_push "STELLA" "$FEAT_SOURCE_URL"
 	__stack_push "STELLA" "$FEAT_VERSION"
+	__stack_push "STELLA" "$FEAT_VERSION_OPTION"
 	
 	# __stack_push "STELLA" "$STELLA_APP_CACHE_DIR"
 	# __stack_push "STELLA" "$STELLA_APP_FEATURE_ROOT"
@@ -387,6 +388,7 @@ __pop_schema_context() {
 	# __stack_pop "STELLA" "STELLA_APP_FEATURE_ROOT"
 	# __stack_pop "STELLA" "STELLA_APP_CACHE_DIR"
 
+	__stack_pop "STELLA" "FEAT_VERSION_OPTION"
 	__stack_pop "STELLA" "FEAT_VERSION"
 	__stack_pop "STELLA" "FEAT_SOURCE_URL"
 	__stack_pop "STELLA" "FEAT_SOURCE_URL_PROTOCOL"
@@ -1094,6 +1096,7 @@ __internal_feature_context() {
 	FEAT_SOURCE_URL_PROTOCOL=
 	FEAT_SOURCE_URL=
 	FEAT_VERSION=
+	FEAT_VERSION_OPTION=
 	
 
 
@@ -1267,12 +1270,11 @@ __select_official_schema() {
 
 		# select last available version by default
 		if [ "${_TR_FEATURE_VER}" = "" ]; then
-			# TODO use ENDING_CHAR_REVERSE for some feature in a new FIELD (like FEAT_VERSION_ORDER)
-			_TR_FEATURE_VER="$(__get_last_version "$list_version" "SEP _")"
+			_TR_FEATURE_VER="$(__get_last_version "$list_version" "SEP _ ${FEAT_VERSION_OPTION}")"
 			[ ! "$_VAR_FEATURE_VER" = "" ] && eval $_VAR_FEATURE_VER=$_TR_FEATURE_VER
 		else
 			# find version from the list
-			_TR_FEATURE_VER="$(__select_version_from_list "${_TR_FEATURE_VER}" "${list_version}" "SEP _")"
+			_TR_FEATURE_VER="$(__select_version_from_list "${_TR_FEATURE_VER}" "${list_version}" "SEP _ ${FEAT_VERSION_OPTION}")"
 			# NOTE : if _TR_FEATURE_VER is empty here, its because we cannot find a matching version
 			[ ! "$_VAR_FEATURE_VER" = "" ] && eval $_VAR_FEATURE_VER=$_TR_FEATURE_VER
 		fi

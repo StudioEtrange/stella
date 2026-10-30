@@ -78,6 +78,7 @@ feature_arkade() {
     - **Format:** `<version>@<arch>:<flavour>`. Multiple entries are separated by spaces.
     - **Example:** `"1_0@x64:binary 2_0@x64:source"`
 - `FEAT_DEFAULT_FLAVOUR`: The default flavour to use if not specified by the user (e.g., `binary`, `source`).
+- `FEAT_VERSION_OPTION` (Optional): Version ordering options used when selecting a version from `FEAT_LIST_SCHEMA`. For example, `FEAT_VERSION_OPTION="ENDING_CHAR_REVERSE"` makes `1_4_19` sort as newer than `1_4_19serie4`.
 - `FEAT_DESC`: A one-line description of the feature.
 - `FEAT_LINK`: A space-separated list of relevant URLs.
 

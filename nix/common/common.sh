@@ -926,6 +926,8 @@ __select_version_from_list() {
 #  1.1.0 1.1.1 1.1.1a 1.1.1b
 #__sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "ASC SEP . ENDING_CHAR_REVERSE"
 #  1.1.0 1.1.1a 1.1.1b 1.1.1
+#__sort_version "1_4_19 1_4_19s2 1_4_18 1_4_17" "DESC ENDING_CHAR_REVERSE SEP _"
+# 1_4_19 1_4_19s2 1_4_18 1_4_17
 __sort_version() {
 	local list=$1
 	local opt="$2"
