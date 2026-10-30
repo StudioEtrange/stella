@@ -18,8 +18,8 @@ feature_texinfo() {
 feature_texinfo_7_2() {
 	FEAT_VERSION="7_2"
 
-	FEAT_SOURCE_URL="https://ftp.gnu.org/gnu/texinfo/texinfo-7.2.tar.xz"
-	FEAT_SOURCE_URL_FILENAME="texinfo-7.2.tar.xz"
+	FEAT_SOURCE_URL="https://ftp.gnu.org/gnu/texinfo/texinfo-7.2.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="texinfo-7.2.tar.gz"
 	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
 
 	FEAT_SOURCE_CALLBACK="feature_texinfo_patch_for_texinfo_7_2_5"
@@ -47,8 +47,8 @@ feature_texinfo_7_1_1() {
 feature_texinfo_5_1() {
 	FEAT_VERSION="5_1"
 
-	FEAT_SOURCE_URL="http://ftp.gnu.org/gnu/texinfo/texinfo-5.1.tar.xz"
-	FEAT_SOURCE_URL_FILENAME="texinfo-5.1.tar.xz"
+	FEAT_SOURCE_URL="http://ftp.gnu.org/gnu/texinfo/texinfo-5.1.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="texinfo-5.1.tar.gz"
 	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
 
 	FEAT_SOURCE_CALLBACK=
