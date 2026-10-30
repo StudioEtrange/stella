@@ -7,6 +7,7 @@ _TEMPLATE_INCLUDED_=1
 feature_template() {
 	FEAT_NAME="template"
 	FEAT_LIST_SCHEMA="1_0_0@x64:binary 1_0_0@x86:binary 1_0_0:source\macos"
+	FEAT_VERSION_OPTION=""
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="template is foo"
