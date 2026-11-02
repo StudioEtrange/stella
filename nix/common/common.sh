@@ -329,7 +329,8 @@ __generate_environment_id() {
         darwin*)
             os_id="macos"
             machine_id=$(ioreg -rd1 -c IOPlatformExpertDevice | awk -F '"' '/IOPlatformUUID/ {print $4}')
-            ;;
+            machine_name="$(scutil --get LocalHostName 2>/dev/null)" || "$(uname -n 2>/dev/null)"
+			;;
         *)
             os_id=$(
                 unset ID
@@ -341,10 +342,22 @@ __generate_environment_id() {
                 printf '%s' "${ID:-unknown}"
             )
             machine_id=$(cat /etc/machine-id 2>/dev/null)
+			if [ -r "/etc/hostname" ]; then
+				IFS= read -r machine_name < "/etc/hostname"
+			else
+				machine_name=$(uname -n 2>/dev/null)
+			fi
             ;;
     esac
 
-    machine_name=$(uname -n)
+	# NOTE : on macos (and sometimes on linux) uname -n are not stable on each network change
+	# Keep only characters suitable for a directory name.
+	machine_name="$(
+		printf '%s' "${machine_name}" |
+			LC_ALL=C tr -cs 'A-Za-z0-9._-' '-' |
+			LC_ALL=C tr '[:upper:]' '[:lower:]'
+	)"
+	machine_name="${machine_name:-unknown-machine}"
     machine_arch=$(uname -m)
 
     machine_hash=$(
