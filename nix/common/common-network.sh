@@ -601,9 +601,9 @@ __get_network_info() {
 	# TODO : choose between ipv4 and ipv6
 	STELLA_DEFAULT_INTERFACE="$STELLA_DEFAULT_INTERFACE_IPV4"
 
-	# contains default ip
-	STELLA_HOST_DEFAULT_IP_IPV4="$(__get_ip_from_interface "${STELLA_DEFAULT_INTERFACE_IPV4}" "ipv4")"
-	STELLA_HOST_DEFAULT_IP_IPV6="$(__get_ip_from_interface "${STELLA_DEFAULT_INTERFACE_IPV6}" "ipv6")"
+	# contains a list of default ip
+	STELLA_HOST_DEFAULT_IP_IPV4="$(__get_stable_ip_from_default_interface "ipv4")"
+	STELLA_HOST_DEFAULT_IP_IPV6="$(__get_stable_ip_from_default_interface "ipv6")"
 	# TODO : choose between ipv4 and ipv6
 	STELLA_HOST_DEFAULT_IP="${STELLA_HOST_DEFAULT_IP_IPV4}"
 
@@ -637,6 +637,7 @@ __get_network_info() {
 # retrieve a stable ip from default network interface
 # a stable ip is an ip which is not temporary, not tentative, not deprecated, not dadfailed for ipv6
 # a stable ip could be used as a server ip
+# can return several ip separated by space
 __get_stable_ip_from_default_interface() {
 	local _mode="$1"
 	[ "$_mode" = "" ] && _mode="ipv4"
@@ -653,6 +654,9 @@ __get_stable_ip_from_default_interface() {
 }
 
 # can return several ip separated by space
+#	sample:
+#	_get_ip_from_interface "${STELLA_DEFAULT_INTERFACE_IPV6}" "ipv6"
+#		xxx:xxx:xxx:d0c1:201:c0ff:fe38:1599 xxx:xxx:xxx:d0c1::50 xxx::xxx:c0ff:fe38:1599
 __get_ip_from_interface() {
 	local _if="$1"
 	local _mode="$2"
@@ -726,6 +730,8 @@ __get_ip_from_interface() {
 #					list all resolved address
 #						getent ahosts google.de
 # 					getent ahosts google.de | head -n 1 | cut -d ' ' -f 1
+# sample:
+# 	__get_ip_from_host "www.google.fr" "ipv6"
 __get_ip_from_host() {
 	local _mode="$2"
 	[ "$_mode" = "" ] && _mode="ipv4"
