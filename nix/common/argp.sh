@@ -1778,7 +1778,7 @@ try_c_version() {
 
 if [[ "$GETOPT_CMD" == "PURE_BASH" ]]; then
   # include pure-getopt from Aron Griffis https://github.com/agriffis/pure-getopt
-  source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../pool/artefact/pure-getopt/getopt.bash"
+  source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../pool/artefacts/pure-getopt/getopt.bash"
   GETOPT_CMD=getopt
 fi
 

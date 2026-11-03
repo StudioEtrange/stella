@@ -28,14 +28,14 @@ STELLA_PATCH="$STELLA_POOL/patch"
 STELLA_FEATURE_RECIPE="$STELLA_POOL/feature-recipe"
 STELLA_FEATURE_RECIPE_EXPERIMENTAL="$STELLA_FEATURE_RECIPE/exp"
 
-STELLA_ARTEFACT="$STELLA_POOL/artefact"
+STELLA_ARTEFACT="$STELLA_POOL/artefacts"
 STELLA_APPLICATION="$STELLA_ROOT/app"
 STELLA_TEMPLATE="$STELLA_POOL/template"
 
 # URL PATHS ---------------------------------------------
 STELLA_URL="http://stella.sh"
 STELLA_POOL_URL="$STELLA_URL/pool"
-STELLA_ARTEFACT_URL="$STELLA_POOL_URL/nix/artefact"
+STELLA_ARTEFACT_URL="$STELLA_POOL_URL/nix/artefacts"
 STELLA_FEATURE_RECIPE_URL="$STELLA_POOL_URL/nix/feature-recipe"
 STELLA_DIST_URL="$STELLA_URL/dist"
 
@@ -43,7 +43,7 @@ STELLA_DIST_URL="$STELLA_URL/dist"
 # /pool
 # /pool/nix
 # /pool/nix/feature-recipe
-# /pool/nix/artefact
+# /pool/nix/artefacts
 # /dist
 
 STELLA_ORIGINAL_SYSTEM_PATH="$PATH"

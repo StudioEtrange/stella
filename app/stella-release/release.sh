@@ -194,10 +194,10 @@ function pack_goconfig-cli() {
 	GOPATH="$GOPATH" go get github.com/laher/goxc
 	GOPATH="$GOPATH" "$GOPATH"/bin/goxc -tasks-=package
 
-	mkdir -p "$STELLA_APP_WORK_ROOT/output/pool/win/artefact/goconfig-cli"
-	cp "$GOPATH"/bin/goconfig-cli-xc/snapshot/windows_386/goconfig-cli.exe "$STELLA_APP_WORK_ROOT/output/pool/win/artefact/goconfig-cli/"
+	mkdir -p "$STELLA_APP_WORK_ROOT/output/pool/win/artefacts/goconfig-cli"
+	cp "$GOPATH"/bin/goconfig-cli-xc/snapshot/windows_386/goconfig-cli.exe "$STELLA_APP_WORK_ROOT/output/pool/win/artefacts/goconfig-cli/"
 
-	upx "$STELLA_APP_WORK_ROOT/output/pool/win/artefact/goconfig-cli/goconfig-cli.exe"
+	upx "$STELLA_APP_WORK_ROOT/output/pool/win/artefacts/goconfig-cli/goconfig-cli.exe"
 }
 
 

@@ -13,14 +13,14 @@ set STELLA_POOL=%STELLA_ROOT%\win\pool
 set "STELLA_PATCH=%STELLA_POOL%\patch"
 set STELLA_BIN=%STELLA_ROOT%\win\bin
 set STELLA_FEATURE_RECIPE=%STELLA_POOL%\feature-recipe
-set STELLA_ARTEFACT=%STELLA_POOL%\artefact
+set STELLA_ARTEFACT=%STELLA_POOL%\artefacts
 set STELLA_APPLICATION=%STELLA_ROOT%\app
 set STELLA_TEMPLATE=%STELLA_POOL%\template
 
 :: URL PATHS ---------------------------------------------
 set STELLA_URL=http://stella.sh
 set STELLA_POOL_URL=%STELLA_URL%/pool
-set STELLA_ARTEFACT_URL=%STELLA_POOL_URL%/win/artefact
+set STELLA_ARTEFACT_URL=%STELLA_POOL_URL%/win/artefacts
 set STELLA_FEATURE_RECIPE_URL=%STELLA_POOL_URL%/win/feature-recipe
 set STELLA_DIST_URL=%STELLA_URL%/dist
 
