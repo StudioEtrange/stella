@@ -597,15 +597,12 @@ __get_network_info() {
 			fi
 			;;
 	esac
-
-	# TODO : choose between ipv4 and ipv6
-	STELLA_DEFAULT_INTERFACE="$STELLA_DEFAULT_INTERFACE_IPV4"
+	[ -n "${STELLA_DEFAULT_INTERFACE_IPV4}" ] && STELLA_DEFAULT_INTERFACE="${STELLA_DEFAULT_INTERFACE_IPV4}" || STELLA_DEFAULT_INTERFACE="${STELLA_DEFAULT_INTERFACE_IPV6}"
 
 	# contains a list of default ip
 	STELLA_HOST_DEFAULT_IP_IPV4="$(__get_stable_ip_from_default_interface "ipv4")"
 	STELLA_HOST_DEFAULT_IP_IPV6="$(__get_stable_ip_from_default_interface "ipv6")"
-	# TODO : choose between ipv4 and ipv6
-	STELLA_HOST_DEFAULT_IP="${STELLA_HOST_DEFAULT_IP_IPV4}"
+	[ -n "${STELLA_HOST_DEFAULT_IP_IPV4}" ] && STELLA_HOST_DEFAULT_IP="${STELLA_HOST_DEFAULT_IP_IPV4}" || STELLA_HOST_DEFAULT_IP="${STELLA_HOST_DEFAULT_IP_IPV6}"
 
 	type ip >/dev/null 2>&1
 	if [ $? = 0 ]; then
@@ -629,9 +626,7 @@ __get_network_info() {
 			fi
 		fi
 	fi
-	# TODO : choose between ipv4 and ipv6
-	STELLA_HOST_IP="$STELLA_HOST_IP_IPV4"
-
+	[ -n "${STELLA_HOST_IP_IPV4}" ] && STELLA_HOST_IP="${STELLA_HOST_IP_IPV4}" || STELLA_HOST_IP="${STELLA_HOST_IP_IPV6}"
 }
 
 # retrieve a stable ip from default network interface
